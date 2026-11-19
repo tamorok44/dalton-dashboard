@@ -1,0 +1,31 @@
+name: Dalton-Daten aktualisieren
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: dalton-data
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Playwright installieren
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Profile auslesen
+        run: node scripts/scrape.mjs
+      - name: Änderungen speichern
+        run: |
+          git config user.name "dalton-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/characters.json
+          git diff --cached --quiet || git commit -m "Daten automatisch aktualisieren"
+          git push
