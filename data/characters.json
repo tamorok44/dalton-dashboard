@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T21:31:56.058Z",
+  "generatedAt": "2026-11-19T21:39:30.377Z",
   "characters": [
     {
       "slug": "cole-dalton",
@@ -14,27 +14,38 @@
         {
           "name": "Alchemie",
           "current": 58,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Kräuterkunde",
           "current": 58,
-          "max": 150
+          "max": 150,
+          "unverified": false
         },
         {
           "name": "Kochen",
           "current": 130,
-          "max": 150
+          "max": 150,
+          "unverified": true
         },
         {
           "name": "Angeln",
           "current": 99,
-          "max": 150
+          "max": 150,
+          "unverified": false
         },
         {
           "name": "Erste Hilfe",
           "current": 69,
-          "max": 150
+          "max": 150,
+          "unverified": false
+        },
+        {
+          "name": "Kochkunst",
+          "current": 130,
+          "max": 150,
+          "unverified": false
         }
       ],
       "stats": {
@@ -82,7 +93,10 @@
           "slot": "Zauberstab",
           "item": "Windbough Wand"
         }
-      ]
+      ],
+      "scrapeOk": true,
+      "scrapedAt": "2026-11-19T21:39:20.178Z",
+      "dataStatus": "auto"
     },
     {
       "slug": "chucky-dalton",
@@ -97,27 +111,38 @@
         {
           "name": "Kürschnerei",
           "current": 57,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Bergbau",
           "current": 46,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Kochen",
           "current": 2,
-          "max": 75
+          "max": 75,
+          "unverified": true
         },
         {
           "name": "Angeln",
           "current": 11,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Erste Hilfe",
           "current": 32,
-          "max": 75
+          "max": 75,
+          "unverified": false
+        },
+        {
+          "name": "Kochkunst",
+          "current": 2,
+          "max": 75,
+          "unverified": false
         }
       ],
       "stats": {
@@ -161,7 +186,10 @@
           "slot": "Waffe",
           "item": "Zephrali Greatstaff"
         }
-      ]
+      ],
+      "scrapeOk": true,
+      "scrapedAt": "2026-11-19T21:39:23.228Z",
+      "dataStatus": "auto"
     },
     {
       "slug": "dolly-dalton",
@@ -176,27 +204,38 @@
         {
           "name": "Lederverarbeitung",
           "current": 1,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Kürschnerei",
           "current": 71,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Kochen",
           "current": 6,
-          "max": 75
+          "max": 75,
+          "unverified": true
         },
         {
           "name": "Angeln",
           "current": 20,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Erste Hilfe",
           "current": 1,
-          "max": 75
+          "max": 75,
+          "unverified": false
+        },
+        {
+          "name": "Kochkunst",
+          "current": 6,
+          "max": 75,
+          "unverified": false
         }
       ],
       "stats": {
@@ -248,7 +287,10 @@
           "slot": "Distanz",
           "item": "Zephrali Bow"
         }
-      ]
+      ],
+      "scrapeOk": true,
+      "scrapedAt": "2026-11-19T21:39:27.343Z",
+      "dataStatus": "auto"
     },
     {
       "slug": "viola-dalton",
@@ -263,27 +305,32 @@
         {
           "name": "Alchemie",
           "current": 22,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Kräuterkunde",
           "current": 45,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Kochkunst",
           "current": 6,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Angeln",
           "current": 2,
-          "max": 75
+          "max": 75,
+          "unverified": false
         },
         {
           "name": "Erste Hilfe",
           "current": 11,
-          "max": 75
+          "max": 75,
+          "unverified": false
         }
       ],
       "stats": {
@@ -341,7 +388,9 @@
         }
       ],
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
-      "dataStatus": "verified"
+      "dataStatus": "auto",
+      "scrapeOk": true,
+      "scrapedAt": "2026-11-19T21:39:30.355Z"
     }
   ]
 }
