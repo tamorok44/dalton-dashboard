@@ -48,7 +48,12 @@ function gear(c) {
     const slot=slotNames[slotType]||entry.slot?.name||slotType;
     const icon=entry.media?.content?.assets?.find(a=>a.key==='icon')?.value;
     const level=entry.level?.value;
-    return typeof name==='string'&&slot?{slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined}:null;
+    // Blizzard übermittelt die originale Gegenstandsqualität, z.B. {type:"UNCOMMON",name:"Uncommon"}.
+    const rawQuality=entry.quality??entry.item?.quality;
+    const qualityType=typeof rawQuality==='string'?rawQuality:rawQuality?.type;
+    const allowedQualities=['POOR','COMMON','UNCOMMON','RARE','EPIC','LEGENDARY','ARTIFACT','HEIRLOOM'];
+    const quality=typeof qualityType==='string'&&allowedQualities.includes(qualityType.toUpperCase())?qualityType.toUpperCase():undefined;
+    return typeof name==='string'&&slot?{slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined,...(quality?{quality}:{})}:null;
   }).filter(Boolean);
 }
 const treeNames={'Feral Combat':'Wilder Kampf',Balance:'Gleichgewicht',Restoration:'Wiederherstellung',Arcane:'Arkan',Fire:'Feuer',Frost:'Frost','Beast Mastery':'Tierherrschaft',Marksmanship:'Treffsicherheit',Survival:'Überleben'};
@@ -132,9 +137,6 @@ for(const old of characters){
     const ps=professions(c);
     if(ps.length===0)throw new Error('Offizielle Berufe fehlen');
     const st=stats(c),eq=gear(c),ta=talents(c);
-    const auditEntries=Array.isArray(c.gear)?c.gear:Object.values(c.gear||{});
-    const auditRows=auditEntries.map(e=>({name:e?.name,slot:e?.slot?.type||e?.slot,quality:e?.quality,itemQuality:e?.item?.quality,level:e?.level,qualityKeys:Object.keys(e||{}).filter(k=>/quality|rarity/i.test(k))}));
-    console.log('QUALITY-FIELD-AUDIT '+old.name+' '+JSON.stringify(auditRows));
     let localizedGear=null,localizationError,localizedSource='ForeverSpec';
     try{localizedGear=await germanGearFor(old.slug,old.name,eq)}catch(e){
       localizationError=String(e.message).slice(0,160);
@@ -156,6 +158,15 @@ for(const old of characters){
           localizedSource='Blizzard Armory (de-DE)';
         }
       }catch(deErr){console.warn(old.name+': Blizzard de-DE: '+String(deErr.message).slice(0,120))}
+    }
+    // Die deutschsprachige Quelle benennt Gegenstände, die Qualität kommt aus Blizzard.
+    // So bleiben Seltenheitsfarben erhalten, auch wenn ForeverSpec keine Qualität liefert.
+    if(localizedGear){
+      const originalBySlot=new Map(eq.map(x=>[slotKey(x.slot),x]));
+      localizedGear=localizedGear.map(x=>{
+        const quality=x.quality||originalBySlot.get(slotKey(x.slot))?.quality;
+        return {...x,...(quality?{quality}:{})};
+      });
     }
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;
@@ -196,4 +207,4 @@ for(const old of characters){
 return {success,data:{generatedAt:new Date().toISOString(),characters:updated.sort((a,b)=>a.name.localeCompare(b.name,'de'))}};
 }
 
-export {extractGermanGear};
+export {extractGermanGear,gear};
