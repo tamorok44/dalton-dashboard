@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T23:30:10.947Z",
+  "generatedAt": "2026-11-19T23:44:11.080Z",
   "characters": [
     {
       "slug": "chucky-dalton",
@@ -57,73 +57,90 @@
         {
           "slot": "Rücken",
           "item": "Einfacher Umhang des Jägers",
-          "icon": "https://foreverspec.com/icons/7731373.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
           "level": 8,
-          "quality": "UNCOMMON"
+          "quality": "UNCOMMON",
+          "sourceName": "Hunter's Simple Cloak",
+          "localized": true
         },
         {
           "slot": "Brust",
           "item": "Banditenwams",
-          "icon": "https://foreverspec.com/icons/7731374.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731374.jpg",
           "level": 7,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Bandit's Jerkin",
+          "localized": true
         },
         {
           "slot": "Füße",
           "item": "Stiefel des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/132540.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Survivalist's Boots",
+          "localized": true
         },
         {
           "slot": "Beine",
           "item": "Ausgediente Hose",
-          "icon": "https://foreverspec.com/icons/7731377.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731377.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Well-Worn Pants",
+          "localized": true
         },
         {
           "slot": "Hemd",
           "item": "Hemd des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Survivalist's Shirt",
+          "localized": true
         },
         {
           "slot": "Taille",
           "item": "Wolfsbalggürtel",
-          "icon": "https://foreverspec.com/icons/7751144.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Wolfhide Belt",
+          "localized": true
         },
         {
           "slot": "Waffenhand",
           "item": "Großstab der Zephrali",
-          "icon": "https://foreverspec.com/icons/7798447.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7798447.jpg",
           "level": 14,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Zephrali Greatstaff",
+          "localized": true
         },
         {
           "slot": "Handgelenke",
           "item": "Vuldren-Tierhautarmschienen",
-          "icon": "https://foreverspec.com/icons/132604.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132604.jpg",
           "level": 5,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Vuldren Hide Bracers",
+          "localized": true
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T23:29:49.537Z",
+      "scrapedAt": "2026-11-19T23:43:50.484Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T23:29:49.537Z",
+      "imageCheckedAt": "2026-11-19T23:43:50.484Z",
       "statsVerified": true,
       "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
       "equipmentSource": "Blizzard Armory (de-DE)",
-      "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
+      "professionsVerified": true,
+      "imageVerified": true
     },
     {
       "slug": "cole-dalton",
@@ -181,80 +198,99 @@
         {
           "slot": "Rücken",
           "item": "Einfacher Umhang des Jägers",
-          "icon": "https://foreverspec.com/icons/7731373.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
           "level": 8,
-          "quality": "UNCOMMON"
+          "quality": "UNCOMMON",
+          "sourceName": "Hunter's Simple Cloak",
+          "localized": true
         },
         {
           "slot": "Füße",
           "item": "Feldstiefel des Bauern",
-          "icon": "https://foreverspec.com/icons/7758819.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7758819.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Farmer's Field Boots",
+          "localized": true
         },
         {
           "slot": "Hände",
           "item": "Handschuhe des Waldläufers von Thendal",
-          "icon": "https://foreverspec.com/icons/7734215.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7734215.jpg",
           "level": 5,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Ranger's Gloves",
+          "localized": true
         },
         {
           "slot": "Ring 1",
           "item": "Uraltes Erbstück",
-          "icon": "https://foreverspec.com/icons/629694.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Ancient Heirloom",
+          "localized": true
         },
         {
           "slot": "Beine",
           "item": "Flickwerkgamaschen",
-          "icon": "https://foreverspec.com/icons/7751150.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751150.jpg",
           "level": 7,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Patchwork Leggings",
+          "localized": true
         },
         {
           "slot": "Distanzwaffe",
           "item": "Windgebundener Zauberstab",
-          "icon": "https://foreverspec.com/icons/7802125.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7802125.jpg",
           "level": 10,
-          "quality": "UNCOMMON"
+          "quality": "UNCOMMON",
+          "sourceName": "Windbough Wand",
+          "localized": true
         },
         {
           "slot": "Hemd",
           "item": "Hemd des Lehrlings von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Apprentice's Shirt",
+          "localized": true
         },
         {
           "slot": "Waffenhand",
           "item": "Fleckliger Ritualdolch",
-          "icon": "https://foreverspec.com/icons/454058.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/454058.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Stained Ritual Dagger",
+          "localized": true
         },
         {
           "slot": "Handgelenke",
           "item": "Elegante Manschetten",
-          "icon": "https://foreverspec.com/icons/7758820.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7758820.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Elegant Cuffs",
+          "localized": true
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T23:29:56.673Z",
+      "scrapedAt": "2026-11-19T23:43:57.131Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T23:29:56.673Z",
+      "imageCheckedAt": "2026-11-19T23:43:57.131Z",
       "statsVerified": true,
       "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
       "equipmentSource": "Blizzard Armory (de-DE)",
-      "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
+      "professionsVerified": true,
+      "imageVerified": true
     },
     {
       "slug": "dolly-dalton",
@@ -312,87 +348,108 @@
         {
           "slot": "Rücken",
           "item": "Einfacher Umhang des Jägers",
-          "icon": "https://foreverspec.com/icons/7731373.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
           "level": 8,
-          "quality": "UNCOMMON"
+          "quality": "UNCOMMON",
+          "sourceName": "Hunter's Simple Cloak",
+          "localized": true
         },
         {
           "slot": "Brust",
           "item": "Abgenutzte Lederweste",
-          "icon": "https://foreverspec.com/icons/135009.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/135009.jpg",
           "level": 9,
-          "quality": "POOR"
+          "quality": "POOR",
+          "sourceName": "Worn Leather Vest",
+          "localized": true
         },
         {
           "slot": "Füße",
           "item": "Abgenutzte Lederstiefel",
-          "icon": "https://foreverspec.com/icons/132540.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
           "level": 8,
-          "quality": "POOR"
+          "quality": "POOR",
+          "sourceName": "Worn Leather Boots",
+          "localized": true
         },
         {
           "slot": "Ring 1",
           "item": "Uraltes Erbstück",
-          "icon": "https://foreverspec.com/icons/629694.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Ancient Heirloom",
+          "localized": true
         },
         {
           "slot": "Beine",
           "item": "Ausgediente Hose",
-          "icon": "https://foreverspec.com/icons/7731377.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731377.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Well-Worn Pants",
+          "localized": true
         },
         {
           "slot": "Distanzwaffe",
           "item": "Bogen der Zephrali",
-          "icon": "https://foreverspec.com/icons/7810733.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7810733.jpg",
           "level": 14,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Zephrali Bow",
+          "localized": true
         },
         {
           "slot": "Hemd",
           "item": "Hemd des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Survivalist's Shirt",
+          "localized": true
         },
         {
           "slot": "Taille",
           "item": "Wolfsbalggürtel",
-          "icon": "https://foreverspec.com/icons/7751144.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Wolfhide Belt",
+          "localized": true
         },
         {
           "slot": "Waffenhand",
           "item": "Ausbildungsschwert des Gorillas",
-          "icon": "https://foreverspec.com/icons/135355.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/135355.jpg",
           "level": 10,
-          "quality": "UNCOMMON"
+          "quality": "UNCOMMON",
+          "sourceName": "Training Sword of the Gorilla",
+          "localized": true
         },
         {
           "slot": "Handgelenke",
           "item": "Abgenutzte Lederarmschienen",
-          "icon": "https://foreverspec.com/icons/132604.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132604.jpg",
           "level": 9,
-          "quality": "POOR"
+          "quality": "POOR",
+          "sourceName": "Worn Leather Bracers",
+          "localized": true
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T23:30:03.456Z",
+      "scrapedAt": "2026-11-19T23:44:03.790Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T23:30:03.456Z",
+      "imageCheckedAt": "2026-11-19T23:44:03.790Z",
       "statsVerified": true,
       "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
       "equipmentSource": "Blizzard Armory (de-DE)",
-      "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
+      "professionsVerified": true,
+      "imageVerified": true
     },
     {
       "slug": "viola-dalton",
@@ -450,81 +507,100 @@
         {
           "slot": "Rücken",
           "item": "Einfacher Umhang des Jägers",
-          "icon": "https://foreverspec.com/icons/7731373.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
           "level": 8,
-          "quality": "UNCOMMON"
+          "quality": "UNCOMMON",
+          "sourceName": "Hunter's Simple Cloak",
+          "localized": true
         },
         {
           "slot": "Brust",
           "item": "Banditenwams",
-          "icon": "https://foreverspec.com/icons/7731374.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731374.jpg",
           "level": 7,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Bandit's Jerkin",
+          "localized": true
         },
         {
           "slot": "Füße",
           "item": "Stiefel des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/132540.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Survivalist's Boots",
+          "localized": true
         },
         {
           "slot": "Ring 1",
           "item": "Uraltes Erbstück",
-          "icon": "https://foreverspec.com/icons/629694.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Ancient Heirloom",
+          "localized": true
         },
         {
           "slot": "Beine",
           "item": "Struppige Lederhose",
-          "icon": "https://foreverspec.com/icons/134586.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/134586.jpg",
           "level": 2,
-          "quality": "POOR"
+          "quality": "POOR",
+          "sourceName": "Ragged Leather Pants",
+          "localized": true
         },
         {
           "slot": "Hemd",
           "item": "Hemd des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
           "level": 1,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Thendal Survivalist's Shirt",
+          "localized": true
         },
         {
           "slot": "Taille",
           "item": "Wolfsbalggürtel",
-          "icon": "https://foreverspec.com/icons/7751144.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg",
           "level": 10,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Wolfhide Belt",
+          "localized": true
         },
         {
           "slot": "Waffenhand",
           "item": "Stecken des Novizen",
-          "icon": "https://foreverspec.com/icons/135145.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/135145.jpg",
           "level": 5,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Novice's Quarterstaff",
+          "localized": true
         },
         {
           "slot": "Handgelenke",
           "item": "Brandleder-Armschienen",
-          "icon": "https://foreverspec.com/icons/132609.webp",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132609.jpg",
           "level": 8,
-          "quality": "COMMON"
+          "quality": "COMMON",
+          "sourceName": "Burnt Leather Bracers",
+          "localized": true
         }
       ],
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
       "dataStatus": "auto",
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T23:30:10.947Z",
+      "scrapedAt": "2026-11-19T23:44:11.080Z",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T23:30:10.947Z",
+      "imageCheckedAt": "2026-11-19T23:44:11.080Z",
       "statsVerified": true,
       "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
       "equipmentSource": "Blizzard Armory (de-DE)",
-      "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
+      "professionsVerified": true,
+      "imageVerified": true
     }
   ]
 }
