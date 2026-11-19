@@ -59,13 +59,14 @@ const treeNames={'Feral Combat':'Wilder Kampf',Balance:'Gleichgewicht',Restorati
 function talents(c) {
   const s=c.specs;
   const trees=Array.isArray(s)?s:Array.isArray(s?.specializations)?s.specializations:Array.isArray(s?.specs)?s.specs:null;
-  if(trees===null)return null;
+  if(trees===null)return 'noch keine verteilt';
   if(trees.length===0)return 'noch keine verteilt';
   const entries=trees.filter(t=>Number.isFinite(Number(t.spentPoints))&&Number(t.spentPoints)>0);
   if(entries.length===0)return 'noch keine verteilt';
   return entries.map(t=>(treeNames[t.name]||t.name||t.id||'Talente')+': '+Number(t.spentPoints)).join(' · ');
 }
 function timestamp(v){
+  if(typeof v==='string' && !/^\d+(?:\.\d+)?$/.test(v)){const parsed=Date.parse(v);return Number.isFinite(parsed)?new Date(parsed).toISOString():undefined;}
   const n=Number(v);
   if(!Number.isFinite(n)||n<=0)return undefined;
   const d=new Date(n>1e12?n:n*1000);
