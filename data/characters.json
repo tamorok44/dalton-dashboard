@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T21:39:30.377Z",
+  "generatedAt": "2026-11-19T21:40:44.731Z",
   "characters": [
     {
       "slug": "cole-dalton",
@@ -89,7 +89,7 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:39:20.178Z",
+      "scrapedAt": "2026-11-19T21:40:33.743Z",
       "dataStatus": "auto"
     },
     {
@@ -176,7 +176,7 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:39:23.228Z",
+      "scrapedAt": "2026-11-19T21:40:37.522Z",
       "dataStatus": "auto"
     },
     {
@@ -271,7 +271,7 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:39:27.343Z",
+      "scrapedAt": "2026-11-19T21:40:41.854Z",
       "dataStatus": "auto"
     },
     {
@@ -372,7 +372,7 @@
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
       "dataStatus": "auto",
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:39:30.355Z"
+      "scrapedAt": "2026-11-19T21:40:44.698Z"
     }
   ]
 }
