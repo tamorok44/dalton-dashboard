@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T21:40:44.731Z",
+  "generatedAt": "2026-11-19T21:56:05.993Z",
   "characters": [
     {
       "slug": "chucky-dalton",
@@ -8,7 +8,7 @@
       "level": 10,
       "class": "Druide",
       "race": "Himmelsgeborene",
-      "talents": "0 / 1 / 0",
+      "talents": "1",
       "url": "https://foreverspec.com/de/armory/eu/chucky-dalton/",
       "professions": [
         {
@@ -85,8 +85,15 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:40:37.522Z",
-      "dataStatus": "auto"
+      "scrapedAt": "2026-11-19T21:55:55.814Z",
+      "dataStatus": "auto",
+      "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-main-raw.png",
+      "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-avatar.jpg",
+      "imageCheckedAt": "2026-11-19T21:55:55.814Z",
+      "statsVerified": false,
+      "equipmentVerified": false,
+      "talentsVerified": true,
+      "source": "Blizzard Armory"
     },
     {
       "slug": "cole-dalton",
@@ -95,7 +102,7 @@
       "level": 11,
       "class": "Magier",
       "race": "Himmelsgeborene",
-      "talents": "0 / 0 / 2",
+      "talents": "2",
       "url": "https://foreverspec.com/de/armory/eu/cole-dalton/",
       "professions": [
         {
@@ -176,8 +183,15 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:40:33.743Z",
-      "dataStatus": "auto"
+      "scrapedAt": "2026-11-19T21:55:59.138Z",
+      "dataStatus": "auto",
+      "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-main-raw.png",
+      "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-avatar.jpg",
+      "imageCheckedAt": "2026-11-19T21:55:59.138Z",
+      "statsVerified": false,
+      "equipmentVerified": false,
+      "talentsVerified": true,
+      "source": "Blizzard Armory"
     },
     {
       "slug": "dolly-dalton",
@@ -186,7 +200,7 @@
       "level": 11,
       "class": "Jäger",
       "race": "Himmelsgeborene",
-      "talents": "1 / 1 / 0",
+      "talents": "1 / 1",
       "url": "https://foreverspec.com/de/armory/eu/dolly-dalton/",
       "professions": [
         {
@@ -271,8 +285,15 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:40:41.854Z",
-      "dataStatus": "auto"
+      "scrapedAt": "2026-11-19T21:56:02.463Z",
+      "dataStatus": "auto",
+      "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-main-raw.png",
+      "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-avatar.jpg",
+      "imageCheckedAt": "2026-11-19T21:56:02.463Z",
+      "statsVerified": false,
+      "equipmentVerified": false,
+      "talentsVerified": true,
+      "source": "Blizzard Armory"
     },
     {
       "slug": "viola-dalton",
@@ -372,7 +393,14 @@
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
       "dataStatus": "auto",
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:40:44.698Z"
+      "scrapedAt": "2026-11-19T21:56:05.793Z",
+      "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-main-raw.png",
+      "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-avatar.jpg",
+      "imageCheckedAt": "2026-11-19T21:56:05.793Z",
+      "statsVerified": false,
+      "equipmentVerified": false,
+      "talentsVerified": false,
+      "source": "Blizzard Armory"
     }
   ]
 }
