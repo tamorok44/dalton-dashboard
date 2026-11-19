@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "scripts/scrape.mjs"
+      - "scripts/official-scrape.mjs"
       - ".github/workflows/update-data.yml"
 permissions:
   contents: write
@@ -16,22 +16,32 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Playwright installieren
-        run: |
-          npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
-      - name: Profile auslesen
-        run: node scripts/scrape.mjs
-      - name: Änderungen speichern
+      - name: Blizzard-Profile, Werte, Talente und Bilder abrufen
+        run: node scripts/official-scrape.mjs
+      - name: Änderungen sicher speichern
         run: |
           git config user.name "dalton-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/characters.json
-          git diff --cached --quiet || git commit -m "Daten automatisch aktualisieren"
-          git push
+          if git diff --cached --quiet; then
+            echo "Keine Datenänderung"
+            exit 0
+          fi
+          git commit -m "Blizzard-Charakterdaten automatisch aktualisieren"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Daten erfolgreich veröffentlicht"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Push nach drei Versuchen fehlgeschlagen" >&2
+          exit 1
