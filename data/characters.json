@@ -1,0 +1,311 @@
+{
+  "generatedAt": "2026-11-19T20:57:00+01:00",
+  "characters": [
+    {
+      "slug": "cole-dalton",
+      "name": "Cole Dalton",
+      "player": "Christian",
+      "level": 11,
+      "class": "Magier",
+      "race": "Himmelsgeborene",
+      "talents": "0 / 0 / 2",
+      "url": "https://foreverspec.com/de/armory/eu/cole-dalton/",
+      "professions": [
+        {
+          "name": "Alchemie",
+          "current": 58,
+          "max": 75
+        },
+        {
+          "name": "Kräuterkunde",
+          "current": 58,
+          "max": 150
+        },
+        {
+          "name": "Kochen",
+          "current": 130,
+          "max": 150
+        },
+        {
+          "name": "Angeln",
+          "current": 99,
+          "max": 150
+        },
+        {
+          "name": "Erste Hilfe",
+          "current": 69,
+          "max": 150
+        }
+      ],
+      "stats": {
+        "Gesundheit": 202,
+        "Mana": 535,
+        "Intelligenz": 40,
+        "Willenskraft": 31,
+        "Zauberkrit": "5,12%",
+        "Rüstung": 99
+      },
+      "equipment": [
+        {
+          "slot": "Rücken",
+          "item": "Hunter's Simple Cloak"
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Apprentice's Shirt"
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Elegant Cuffs"
+        },
+        {
+          "slot": "Hände",
+          "item": "Thendal Ranger's Gloves"
+        },
+        {
+          "slot": "Beine",
+          "item": "Patchwork Leggings"
+        },
+        {
+          "slot": "Füsse",
+          "item": "Farmer's Field Boots"
+        },
+        {
+          "slot": "Ring",
+          "item": "Ancient Heirloom"
+        },
+        {
+          "slot": "Waffenhand",
+          "item": "Stained Ritual Dagger"
+        },
+        {
+          "slot": "Zauberstab",
+          "item": "Windbough Wand"
+        }
+      ]
+    },
+    {
+      "slug": "chucky-dalton",
+      "name": "Chucky Dalton",
+      "player": "Valentin",
+      "level": 10,
+      "class": "Druide",
+      "race": "Himmelsgeborene",
+      "talents": "0 / 1 / 0",
+      "url": "https://foreverspec.com/de/armory/eu/chucky-dalton/",
+      "professions": [
+        {
+          "name": "Kürschnerei",
+          "current": 57,
+          "max": 75
+        },
+        {
+          "name": "Bergbau",
+          "current": 46,
+          "max": 75
+        },
+        {
+          "name": "Kochen",
+          "current": 2,
+          "max": 75
+        },
+        {
+          "name": "Angeln",
+          "current": 11,
+          "max": 75
+        },
+        {
+          "name": "Erste Hilfe",
+          "current": 32,
+          "max": 75
+        }
+      ],
+      "stats": {
+        "Gesundheit": 207,
+        "Mana": 379,
+        "Beweglichkeit": 28,
+        "Intelligenz": 34,
+        "Willenskraft": 28,
+        "Rüstung": 197
+      },
+      "equipment": [
+        {
+          "slot": "Rücken",
+          "item": "Hunter's Simple Cloak"
+        },
+        {
+          "slot": "Brust",
+          "item": "Bandit's Jerkin"
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt"
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Vuldren Hide Bracers"
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt"
+        },
+        {
+          "slot": "Beine",
+          "item": "Well-Worn Pants"
+        },
+        {
+          "slot": "Füsse",
+          "item": "Thendal Survivalist's Boots"
+        },
+        {
+          "slot": "Waffe",
+          "item": "Zephrali Greatstaff"
+        }
+      ]
+    },
+    {
+      "slug": "dolly-dalton",
+      "name": "Dolly Dalton",
+      "player": "Max",
+      "level": 11,
+      "class": "Jäger",
+      "race": "Himmelsgeborene",
+      "talents": "1 / 1 / 0",
+      "url": "https://foreverspec.com/de/armory/eu/dolly-dalton/",
+      "professions": [
+        {
+          "name": "Lederverarbeitung",
+          "current": 1,
+          "max": 75
+        },
+        {
+          "name": "Kürschnerei",
+          "current": 71,
+          "max": 75
+        },
+        {
+          "name": "Kochen",
+          "current": 6,
+          "max": 75
+        },
+        {
+          "name": "Angeln",
+          "current": 20,
+          "max": 75
+        },
+        {
+          "name": "Erste Hilfe",
+          "current": 1,
+          "max": 75
+        }
+      ],
+      "stats": {
+        "Gesundheit": 236,
+        "Mana": 405,
+        "Beweglichkeit": 39,
+        "Ausdauer": 30,
+        "Distanz-Angriffskraft": 80,
+        "Distanzkrit": "5,07%"
+      },
+      "equipment": [
+        {
+          "slot": "Rücken",
+          "item": "Hunter's Simple Cloak"
+        },
+        {
+          "slot": "Brust",
+          "item": "Worn Leather Vest"
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt"
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Worn Leather Bracers"
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt"
+        },
+        {
+          "slot": "Beine",
+          "item": "Well-Worn Pants"
+        },
+        {
+          "slot": "Füsse",
+          "item": "Worn Leather Boots"
+        },
+        {
+          "slot": "Ring",
+          "item": "Ancient Heirloom"
+        },
+        {
+          "slot": "Waffe",
+          "item": "Training Sword of the Gorilla"
+        },
+        {
+          "slot": "Distanz",
+          "item": "Zephrali Bow"
+        }
+      ]
+    },
+    {
+      "slug": "viola-dalton",
+      "name": "Viola Dalton",
+      "player": "Stephan",
+      "level": 10,
+      "class": "Druide",
+      "race": "Himmelsgeborene",
+      "talents": "noch keine verteilt",
+      "url": "https://foreverspec.com/de/armory/eu/viola-dalton/",
+      "professions": [],
+      "stats": {
+        "Gesundheit": 207,
+        "Mana": 379,
+        "Beweglichkeit": 28,
+        "Intelligenz": 34,
+        "Willenskraft": 28,
+        "Rüstung": 173
+      },
+      "equipment": [
+        {
+          "slot": "Rücken",
+          "item": "Hunter's Simple Cloak"
+        },
+        {
+          "slot": "Brust",
+          "item": "Bandit's Jerkin"
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt"
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Burnt Leather Bracers"
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt"
+        },
+        {
+          "slot": "Beine",
+          "item": "Ragged Leather Pants"
+        },
+        {
+          "slot": "Füsse",
+          "item": "Thendal Survivalist's Boots"
+        },
+        {
+          "slot": "Ring",
+          "item": "Ancient Heirloom"
+        },
+        {
+          "slot": "Waffe",
+          "item": "Novice's Quarterstaff"
+        }
+      ]
+    }
+  ]
+}
