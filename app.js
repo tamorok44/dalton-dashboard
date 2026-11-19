@@ -66,7 +66,6 @@ const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Mat
   <div class="section"><h3>Berufe</h3><div class="rows">${professionRows(c.professions)}</div></div>
   <div class="section"><h3>Wichtige Werte${c.statsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${relevantStats(c).map(([k,v])=>row(k,v)).join("")||row("Werte","nicht verfügbar")}</div></div>
   ${equipmentPanel(c)}
-  <div class="actions"><a class="link" href="${esc(c.url)}" target="_blank" rel="noopener">ForeverSpec ↗</a><a class="link" href="${esc("https://worldofwarcraft.blizzard.com/de-de/forever/eu/armory/character/"+encodeURIComponent(c.slug))}" target="_blank" rel="noopener">Blizzard-Armory (DE) ↗</a></div>
  </article>`).join("");
  installPortraitFallbacks();
 }
