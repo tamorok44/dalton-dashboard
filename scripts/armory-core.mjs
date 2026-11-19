@@ -142,9 +142,9 @@ for(const old of characters){
       race:c.race?.name?.includes('Skyborne')?'Himmelsgeborene':old.race,
       professions:ps,
       stats:Object.keys(st).length?st:old.stats,
-      equipment:localizedGear||eq.length&&eq||old.equipment,
-      equipmentLanguage:localizedGear?'de':'en',
-      equipmentSource:localizedGear?'ForeverSpec':'Blizzard Armory',
+      equipment:localizedGear||(old.equipmentLanguage==='de'&&old.equipment?.length?old.equipment:(eq.length?eq:old.equipment)),
+      equipmentLanguage:(localizedGear||old.equipmentLanguage==='de'&&old.equipment?.length)?'de':'en',
+      equipmentSource:(localizedGear||old.equipmentLanguage==='de'&&old.equipment?.length)?'ForeverSpec':'Blizzard Armory',
       equipmentError:localizationError,
       talents:ta||old.talents,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
@@ -170,3 +170,5 @@ for(const old of characters){
 }
 return {success,data:{generatedAt:new Date().toISOString(),characters:updated.sort((a,b)=>a.name.localeCompare(b.name,'de'))}};
 }
+
+export {extractGermanGear};
