@@ -144,7 +144,7 @@ for(const old of characters){
         console.log(old.name+': Blizzard de-DE '+deGear.length+' Teile, '+distinct+' übersetzte Namen');
         if(deGear.length>=Math.max(1,eq.length-1)&&distinct>0){
           const previousBySlot=new Map((old.equipment||[]).map(x=>[slotKey(x.slot),x]));
-          const iconId=u=>String(u||'').match(/(\\d+)\\.(?:webp|jpg)$/)?.[1];
+          const iconId=u=>String(u||'').match(/(\d+)\.(?:webp|jpg)$/)?.[1];
           localizedGear=deGear.map(x=>{
             const p=previousBySlot.get(slotKey(x.slot));
             const icon=p&&iconId(p.icon)===iconId(x.icon)&&p.level===x.level?p.icon:x.icon;
