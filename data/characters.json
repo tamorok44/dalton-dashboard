@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T22:51:43.629Z",
+  "generatedAt": "2026-11-19T22:53:25.482Z",
   "characters": [
     {
       "slug": "chucky-dalton",
@@ -67,22 +67,10 @@
           "level": 7
         },
         {
-          "slot": "Hemd",
-          "item": "Hemd des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "slot": "Füße",
+          "item": "Stiefel des Überlebenskünstlers von Thendal",
+          "icon": "https://foreverspec.com/icons/132540.webp",
           "level": 1
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Vuldren-Tierhautarmschienen",
-          "icon": "https://foreverspec.com/icons/132604.webp",
-          "level": 5
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfsbalggürtel",
-          "icon": "https://foreverspec.com/icons/7751144.webp",
-          "level": 10
         },
         {
           "slot": "Beine",
@@ -91,30 +79,42 @@
           "level": 10
         },
         {
-          "slot": "Füße",
-          "item": "Stiefel des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/132540.webp",
+          "slot": "Hemd",
+          "item": "Hemd des Überlebenskünstlers von Thendal",
+          "icon": "https://foreverspec.com/icons/7813752.webp",
           "level": 1
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfsbalggürtel",
+          "icon": "https://foreverspec.com/icons/7751144.webp",
+          "level": 10
         },
         {
           "slot": "Waffenhand",
           "item": "Großstab der Zephrali",
           "icon": "https://foreverspec.com/icons/7798447.webp",
           "level": 14
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Vuldren-Tierhautarmschienen",
+          "icon": "https://foreverspec.com/icons/132604.webp",
+          "level": 5
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:51:32.412Z",
+      "scrapedAt": "2026-11-19T22:53:04.564Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:51:32.412Z",
+      "imageCheckedAt": "2026-11-19T22:53:04.564Z",
       "statsVerified": true,
-      "equipmentVerified": false,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
-      "equipmentSource": "ForeverSpec",
+      "equipmentSource": "Blizzard Armory (de-DE)",
       "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
     },
     {
@@ -177,15 +177,9 @@
           "level": 8
         },
         {
-          "slot": "Hemd",
-          "item": "Hemd des Lehrlings von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
-          "level": 1
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Elegante Manschetten",
-          "icon": "https://foreverspec.com/icons/7758820.webp",
+          "slot": "Füße",
+          "item": "Feldstiefel des Bauern",
+          "icon": "https://foreverspec.com/icons/7758819.webp",
           "level": 10
         },
         {
@@ -195,21 +189,27 @@
           "level": 5
         },
         {
+          "slot": "Ring 1",
+          "item": "Uraltes Erbstück",
+          "icon": "https://foreverspec.com/icons/629694.webp",
+          "level": 1
+        },
+        {
           "slot": "Beine",
           "item": "Flickwerkgamaschen",
           "icon": "https://foreverspec.com/icons/7751150.webp",
           "level": 7
         },
         {
-          "slot": "Füße",
-          "item": "Feldstiefel des Bauern",
-          "icon": "https://foreverspec.com/icons/7758819.webp",
+          "slot": "Distanzwaffe",
+          "item": "Windgebundener Zauberstab",
+          "icon": "https://foreverspec.com/icons/7802125.webp",
           "level": 10
         },
         {
-          "slot": "Ring 1",
-          "item": "Uraltes Erbstück",
-          "icon": "https://foreverspec.com/icons/629694.webp",
+          "slot": "Hemd",
+          "item": "Hemd des Lehrlings von Thendal",
+          "icon": "https://foreverspec.com/icons/7813752.webp",
           "level": 1
         },
         {
@@ -219,24 +219,24 @@
           "level": 10
         },
         {
-          "slot": "Distanzwaffe",
-          "item": "Windgebundener Zauberstab",
-          "icon": "https://foreverspec.com/icons/7802125.webp",
+          "slot": "Handgelenke",
+          "item": "Elegante Manschetten",
+          "icon": "https://foreverspec.com/icons/7758820.webp",
           "level": 10
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:51:36.383Z",
+      "scrapedAt": "2026-11-19T22:53:11.502Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:51:36.383Z",
+      "imageCheckedAt": "2026-11-19T22:53:11.502Z",
       "statsVerified": true,
-      "equipmentVerified": false,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
-      "equipmentSource": "ForeverSpec",
+      "equipmentSource": "Blizzard Armory (de-DE)",
       "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
     },
     {
@@ -305,30 +305,6 @@
           "level": 9
         },
         {
-          "slot": "Hemd",
-          "item": "Hemd des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
-          "level": 1
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Abgenutzte Lederarmschienen",
-          "icon": "https://foreverspec.com/icons/132604.webp",
-          "level": 9
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfsbalggürtel",
-          "icon": "https://foreverspec.com/icons/7751144.webp",
-          "level": 10
-        },
-        {
-          "slot": "Beine",
-          "item": "Ausgediente Hose",
-          "icon": "https://foreverspec.com/icons/7731377.webp",
-          "level": 10
-        },
-        {
           "slot": "Füße",
           "item": "Abgenutzte Lederstiefel",
           "icon": "https://foreverspec.com/icons/132540.webp",
@@ -341,9 +317,9 @@
           "level": 1
         },
         {
-          "slot": "Waffenhand",
-          "item": "Ausbildungsschwert des Gorillas",
-          "icon": "https://foreverspec.com/icons/135355.webp",
+          "slot": "Beine",
+          "item": "Ausgediente Hose",
+          "icon": "https://foreverspec.com/icons/7731377.webp",
           "level": 10
         },
         {
@@ -351,20 +327,44 @@
           "item": "Bogen der Zephrali",
           "icon": "https://foreverspec.com/icons/7810733.webp",
           "level": 14
+        },
+        {
+          "slot": "Hemd",
+          "item": "Hemd des Überlebenskünstlers von Thendal",
+          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "level": 1
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfsbalggürtel",
+          "icon": "https://foreverspec.com/icons/7751144.webp",
+          "level": 10
+        },
+        {
+          "slot": "Waffenhand",
+          "item": "Ausbildungsschwert des Gorillas",
+          "icon": "https://foreverspec.com/icons/135355.webp",
+          "level": 10
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Abgenutzte Lederarmschienen",
+          "icon": "https://foreverspec.com/icons/132604.webp",
+          "level": 9
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:51:40.008Z",
+      "scrapedAt": "2026-11-19T22:53:18.645Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:51:40.008Z",
+      "imageCheckedAt": "2026-11-19T22:53:18.645Z",
       "statsVerified": true,
-      "equipmentVerified": false,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
-      "equipmentSource": "ForeverSpec",
+      "equipmentSource": "Blizzard Armory (de-DE)",
       "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
     },
     {
@@ -433,30 +433,6 @@
           "level": 7
         },
         {
-          "slot": "Hemd",
-          "item": "Hemd des Überlebenskünstlers von Thendal",
-          "icon": "https://foreverspec.com/icons/7813752.webp",
-          "level": 1
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Brandleder-Armschienen",
-          "icon": "https://foreverspec.com/icons/132609.webp",
-          "level": 8
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfsbalggürtel",
-          "icon": "https://foreverspec.com/icons/7751144.webp",
-          "level": 10
-        },
-        {
-          "slot": "Beine",
-          "item": "Struppige Lederhose",
-          "icon": "https://foreverspec.com/icons/134586.webp",
-          "level": 2
-        },
-        {
           "slot": "Füße",
           "item": "Stiefel des Überlebenskünstlers von Thendal",
           "icon": "https://foreverspec.com/icons/132540.webp",
@@ -469,25 +445,49 @@
           "level": 1
         },
         {
+          "slot": "Beine",
+          "item": "Struppige Lederhose",
+          "icon": "https://foreverspec.com/icons/134586.webp",
+          "level": 2
+        },
+        {
+          "slot": "Hemd",
+          "item": "Hemd des Überlebenskünstlers von Thendal",
+          "icon": "https://foreverspec.com/icons/7813752.webp",
+          "level": 1
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfsbalggürtel",
+          "icon": "https://foreverspec.com/icons/7751144.webp",
+          "level": 10
+        },
+        {
           "slot": "Waffenhand",
           "item": "Stecken des Novizen",
           "icon": "https://foreverspec.com/icons/135145.webp",
           "level": 5
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Brandleder-Armschienen",
+          "icon": "https://foreverspec.com/icons/132609.webp",
+          "level": 8
         }
       ],
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
       "dataStatus": "auto",
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:51:43.629Z",
+      "scrapedAt": "2026-11-19T22:53:25.482Z",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:51:43.629Z",
+      "imageCheckedAt": "2026-11-19T22:53:25.482Z",
       "statsVerified": true,
-      "equipmentVerified": false,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory",
       "equipmentLanguage": "de",
-      "equipmentSource": "ForeverSpec",
+      "equipmentSource": "Blizzard Armory (de-DE)",
       "equipmentError": "ForeverSpec-Profil nicht bestätigt (HTML 64208 Zeichen)"
     }
   ]
