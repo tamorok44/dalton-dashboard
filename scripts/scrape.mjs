@@ -121,8 +121,9 @@ try {
               const state = JSON.parse(match[1]);
               console.log('DIAG state keys', Object.keys(state));
               console.log('DIAG character keys', Object.keys(state.character || {}));
-              for (const key of ['statistics','stats','equipment','talents','specializations','media','characterMedia','professions']) {
-                if (state.character?.[key]) console.log('DIAG state.' + key, JSON.stringify(state.character[key]).slice(0,1900));
+              console.log('DIAG stats groups', JSON.stringify(state.character?.stats?.basic?.groups?.map(g=>({name:g.name,stats:g.stats?.map(v=>({enum:v.enum,slug:v.slug,value:v.value}))}))).slice(0,8000));
+              for (const key of ['gear','specs','stats','media','professions']) {
+                if (state.character?.[key]) console.log('DIAG state.' + key, JSON.stringify(state.character[key]).slice(0,key==='gear'||key==='specs'?8500:2200));
               }
             } else console.log('DIAG no embedded JSON, HTML length', html.length);
           }
