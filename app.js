@@ -35,7 +35,7 @@ const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Mat
   <div class="section"><h3>Berufe</h3><div class="rows">${professionRows(c.professions)}</div></div>
   <div class="section"><h3>Wichtige Werte${c.statsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${relevantStats(c).map(([k,v])=>row(k,v)).join("")||row("Werte","nicht verfügbar")}</div></div>
   <details class="details"><summary>Ausrüstung anzeigen${c.equipmentVerified?"":" · letzter bekannter Stand"}</summary><div class="equipment">${(c.equipment||[]).map(i=>`<div class="equip">${/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(i.icon||"")?`<img class="equip-icon" src="${esc(i.icon)}" alt="" loading="lazy">`:""}<div><b>${esc(i.slot)}</b>${esc(i.item)}${i.level?` <small>· Gegenstandsstufe ${esc(i.level)}</small>`:""}</div></div>`).join("")||"<div class='equip'>nicht verfügbar</div>"}</div></details>
-  <div class="actions"><a class="link" href="${esc(c.url)}" target="_blank" rel="noopener">Charakterprofil öffnen ↗</a></div>
+  <div class="actions"><a class="link" href="${esc(c.url)}" target="_blank" rel="noopener">ForeverSpec ↗</a><a class="link" href="${esc("https://worldofwarcraft.blizzard.com/de-de/forever/eu/armory/character/"+encodeURIComponent(c.slug))}" target="_blank" rel="noopener">Blizzard-Armory (DE) ↗</a></div>
  </article>`).join("");
  installPortraitFallbacks();
 }
