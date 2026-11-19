@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T21:56:05.993Z",
+  "generatedAt": "2026-11-19T21:57:24.448Z",
   "characters": [
     {
       "slug": "chucky-dalton",
@@ -8,7 +8,7 @@
       "level": 10,
       "class": "Druide",
       "race": "Himmelsgeborene",
-      "talents": "1",
+      "talents": "Wilder Kampf: 1",
       "url": "https://foreverspec.com/de/armory/eu/chucky-dalton/",
       "professions": [
         {
@@ -45,53 +45,72 @@
       "stats": {
         "Gesundheit": 207,
         "Mana": 379,
+        "Stärke": 23,
         "Beweglichkeit": 28,
+        "Ausdauer": 25,
         "Intelligenz": 34,
-        "Willenskraft": 28,
-        "Rüstung": 197
+        "Rüstung": 197,
+        "Angriffskraft": 26,
+        "Gegenstandsstufe": 4
       },
       "equipment": [
         {
           "slot": "Rücken",
-          "item": "Hunter's Simple Cloak"
+          "item": "Hunter's Simple Cloak",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
+          "level": 8
         },
         {
           "slot": "Brust",
-          "item": "Bandit's Jerkin"
-        },
-        {
-          "slot": "Hemd",
-          "item": "Thendal Survivalist's Shirt"
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Vuldren Hide Bracers"
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfhide Belt"
-        },
-        {
-          "slot": "Beine",
-          "item": "Well-Worn Pants"
+          "item": "Bandit's Jerkin",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731374.jpg",
+          "level": 7
         },
         {
           "slot": "Füsse",
-          "item": "Thendal Survivalist's Boots"
+          "item": "Thendal Survivalist's Boots",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
+          "level": 1
         },
         {
-          "slot": "Waffe",
-          "item": "Zephrali Greatstaff"
+          "slot": "Beine",
+          "item": "Well-Worn Pants",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731377.jpg",
+          "level": 10
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
+          "level": 1
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg",
+          "level": 10
+        },
+        {
+          "slot": "Waffenhand",
+          "item": "Zephrali Greatstaff",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7798447.jpg",
+          "level": 14
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Vuldren Hide Bracers",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132604.jpg",
+          "level": 5
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:55:55.814Z",
+      "scrapedAt": "2026-11-19T21:57:14.406Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T21:55:55.814Z",
-      "statsVerified": false,
-      "equipmentVerified": false,
+      "imageCheckedAt": "2026-11-19T21:57:14.406Z",
+      "statsVerified": true,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory"
     },
@@ -102,7 +121,7 @@
       "level": 11,
       "class": "Magier",
       "race": "Himmelsgeborene",
-      "talents": "2",
+      "talents": "Frost: 2",
       "url": "https://foreverspec.com/de/armory/eu/cole-dalton/",
       "professions": [
         {
@@ -139,57 +158,78 @@
       "stats": {
         "Gesundheit": 202,
         "Mana": 535,
+        "Stärke": 18,
+        "Beweglichkeit": 26,
+        "Ausdauer": 23,
         "Intelligenz": 40,
-        "Willenskraft": 31,
-        "Zauberkrit": "5,12%",
-        "Rüstung": 99
+        "Rüstung": 99,
+        "Angriffskraft": 8,
+        "Gegenstandsstufe": 3
       },
       "equipment": [
         {
           "slot": "Rücken",
-          "item": "Hunter's Simple Cloak"
-        },
-        {
-          "slot": "Hemd",
-          "item": "Thendal Apprentice's Shirt"
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Elegant Cuffs"
-        },
-        {
-          "slot": "Hände",
-          "item": "Thendal Ranger's Gloves"
-        },
-        {
-          "slot": "Beine",
-          "item": "Patchwork Leggings"
+          "item": "Hunter's Simple Cloak",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
+          "level": 8
         },
         {
           "slot": "Füsse",
-          "item": "Farmer's Field Boots"
+          "item": "Farmer's Field Boots",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7758819.jpg",
+          "level": 10
         },
         {
-          "slot": "Ring",
-          "item": "Ancient Heirloom"
+          "slot": "Hände",
+          "item": "Thendal Ranger's Gloves",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7734215.jpg",
+          "level": 5
+        },
+        {
+          "slot": "Ring 1",
+          "item": "Ancient Heirloom",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg",
+          "level": 1
+        },
+        {
+          "slot": "Beine",
+          "item": "Patchwork Leggings",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751150.jpg",
+          "level": 7
+        },
+        {
+          "slot": "Distanz",
+          "item": "Windbough Wand",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7802125.jpg",
+          "level": 10
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Apprentice's Shirt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
+          "level": 1
         },
         {
           "slot": "Waffenhand",
-          "item": "Stained Ritual Dagger"
+          "item": "Stained Ritual Dagger",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/454058.jpg",
+          "level": 10
         },
         {
-          "slot": "Zauberstab",
-          "item": "Windbough Wand"
+          "slot": "Handgelenke",
+          "item": "Elegant Cuffs",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7758820.jpg",
+          "level": 10
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:55:59.138Z",
+      "scrapedAt": "2026-11-19T21:57:17.744Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T21:55:59.138Z",
-      "statsVerified": false,
-      "equipmentVerified": false,
+      "imageCheckedAt": "2026-11-19T21:57:17.744Z",
+      "statsVerified": true,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory"
     },
@@ -200,7 +240,7 @@
       "level": 11,
       "class": "Jäger",
       "race": "Himmelsgeborene",
-      "talents": "1 / 1",
+      "talents": "Tierherrschaft: 1 · Treffsicherheit: 1",
       "url": "https://foreverspec.com/de/armory/eu/dolly-dalton/",
       "professions": [
         {
@@ -237,61 +277,84 @@
       "stats": {
         "Gesundheit": 236,
         "Mana": 405,
+        "Stärke": 22,
         "Beweglichkeit": 39,
         "Ausdauer": 30,
-        "Distanz-Angriffskraft": 80,
-        "Distanzkrit": "5,07%"
+        "Intelligenz": 30,
+        "Rüstung": 256,
+        "Angriffskraft": 63,
+        "Gegenstandsstufe": 3
       },
       "equipment": [
         {
           "slot": "Rücken",
-          "item": "Hunter's Simple Cloak"
+          "item": "Hunter's Simple Cloak",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
+          "level": 8
         },
         {
           "slot": "Brust",
-          "item": "Worn Leather Vest"
-        },
-        {
-          "slot": "Hemd",
-          "item": "Thendal Survivalist's Shirt"
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Worn Leather Bracers"
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfhide Belt"
-        },
-        {
-          "slot": "Beine",
-          "item": "Well-Worn Pants"
+          "item": "Worn Leather Vest",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/135009.jpg",
+          "level": 9
         },
         {
           "slot": "Füsse",
-          "item": "Worn Leather Boots"
+          "item": "Worn Leather Boots",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
+          "level": 8
         },
         {
-          "slot": "Ring",
-          "item": "Ancient Heirloom"
+          "slot": "Ring 1",
+          "item": "Ancient Heirloom",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg",
+          "level": 1
         },
         {
-          "slot": "Waffe",
-          "item": "Training Sword of the Gorilla"
+          "slot": "Beine",
+          "item": "Well-Worn Pants",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731377.jpg",
+          "level": 10
         },
         {
           "slot": "Distanz",
-          "item": "Zephrali Bow"
+          "item": "Zephrali Bow",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7810733.jpg",
+          "level": 14
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
+          "level": 1
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg",
+          "level": 10
+        },
+        {
+          "slot": "Waffenhand",
+          "item": "Training Sword of the Gorilla",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/135355.jpg",
+          "level": 10
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Worn Leather Bracers",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132604.jpg",
+          "level": 9
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:56:02.463Z",
+      "scrapedAt": "2026-11-19T21:57:21.104Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T21:56:02.463Z",
-      "statsVerified": false,
-      "equipmentVerified": false,
+      "imageCheckedAt": "2026-11-19T21:57:21.104Z",
+      "statsVerified": true,
+      "equipmentVerified": true,
       "talentsVerified": true,
       "source": "Blizzard Armory"
     },
@@ -343,62 +406,75 @@
         "Beweglichkeit": 28,
         "Ausdauer": 25,
         "Intelligenz": 34,
-        "Willenskraft": 28,
         "Rüstung": 173,
-        "Verteidigung": 46,
         "Angriffskraft": 26,
-        "Nahkampfkrit": "4,36%",
-        "Distanzkrit": "3,36%",
-        "Zauberkrit": "5,20%",
-        "Ausweichen": "5,16%"
+        "Gegenstandsstufe": 2
       },
       "equipment": [
         {
           "slot": "Rücken",
-          "item": "Einfacher Umhang des Jägers"
+          "item": "Hunter's Simple Cloak",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg",
+          "level": 8
         },
         {
           "slot": "Brust",
-          "item": "Banditenwams"
-        },
-        {
-          "slot": "Hemd",
-          "item": "Hemd des Überlebenskünstlers von Thendal"
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Brandleder-Armschienen"
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfsbalggürtel"
-        },
-        {
-          "slot": "Beine",
-          "item": "Struppige Lederhose"
+          "item": "Bandit's Jerkin",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7731374.jpg",
+          "level": 7
         },
         {
           "slot": "Füsse",
-          "item": "Stiefel des Überlebenskünstlers von Thendal"
+          "item": "Thendal Survivalist's Boots",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
+          "level": 1
         },
         {
-          "slot": "Ring",
-          "item": "Uraltes Erbstück"
+          "slot": "Ring 1",
+          "item": "Ancient Heirloom",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg",
+          "level": 1
+        },
+        {
+          "slot": "Beine",
+          "item": "Ragged Leather Pants",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/134586.jpg",
+          "level": 2
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg",
+          "level": 1
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg",
+          "level": 10
         },
         {
           "slot": "Waffenhand",
-          "item": "Stecken des Novizen"
+          "item": "Novice's Quarterstaff",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/135145.jpg",
+          "level": 5
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Burnt Leather Bracers",
+          "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132609.jpg",
+          "level": 8
         }
       ],
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
       "dataStatus": "auto",
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:56:05.793Z",
+      "scrapedAt": "2026-11-19T21:57:24.436Z",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T21:56:05.793Z",
-      "statsVerified": false,
-      "equipmentVerified": false,
+      "imageCheckedAt": "2026-11-19T21:57:24.436Z",
+      "statsVerified": true,
+      "equipmentVerified": true,
       "talentsVerified": false,
       "source": "Blizzard Armory"
     }
