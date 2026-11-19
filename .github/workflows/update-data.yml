@@ -11,8 +11,8 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: dalton-official-v2
-  cancel-in-progress: false
+  group: dalton-data
+  cancel-in-progress: true
 jobs:
   update:
     runs-on: ubuntu-24.04
