@@ -5,9 +5,9 @@ const statOrder = ['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','S
 const renderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/;
 const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/;
 
-async function fetchCharacter(slug) {
-  const url='https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/'+encodeURIComponent(slug);
-  const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(25000) });
+async function fetchCharacter(slug,locale="en-gb") {
+  const url='https://worldofwarcraft.blizzard.com/'+locale+'/forever/eu/armory/character/'+encodeURIComponent(slug);
+  const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(25000) });
   if(!response.ok) throw new Error('Blizzard HTTP '+response.status);
   const html=await response.text();
   const match=html.match(/var characterProfileInitialState = (\{.*?\});\s*<\/script>/s);
@@ -132,8 +132,28 @@ for(const old of characters){
     const ps=professions(c);
     if(ps.length===0)throw new Error('Offizielle Berufe fehlen');
     const st=stats(c),eq=gear(c),ta=talents(c);
-    let localizedGear=null,localizationError;
-    try{localizedGear=await germanGearFor(old.slug,old.name,eq)}catch(e){localizationError=String(e.message).slice(0,160);console.warn(old.name+': '+localizationError)}
+    let localizedGear=null,localizationError,localizedSource='ForeverSpec';
+    try{localizedGear=await germanGearFor(old.slug,old.name,eq)}catch(e){
+      localizationError=String(e.message).slice(0,160);
+      console.warn(old.name+': ForeverSpec: '+localizationError);
+      try{
+        const germanProfile=await fetchCharacter(old.slug,'de-de');
+        const deGear=gear(germanProfile);
+        const englishBySlot=new Map(eq.map(x=>[x.slot,x.item]));
+        const distinct=deGear.filter(x=>x.item!==englishBySlot.get(x.slot)).length;
+        console.log(old.name+': Blizzard de-DE '+deGear.length+' Teile, '+distinct+' übersetzte Namen');
+        if(deGear.length>=Math.max(1,eq.length-1)&&distinct>0){
+          const previousBySlot=new Map((old.equipment||[]).map(x=>[slotKey(x.slot),x]));
+          const iconId=u=>String(u||'').match(/(\\d+)\\.(?:webp|jpg)$/)?.[1];
+          localizedGear=deGear.map(x=>{
+            const p=previousBySlot.get(slotKey(x.slot));
+            const icon=p&&iconId(p.icon)===iconId(x.icon)&&p.level===x.level?p.icon:x.icon;
+            return {...x,slot:slotKey(x.slot),icon};
+          });
+          localizedSource='Blizzard Armory (de-DE)';
+        }
+      }catch(deErr){console.warn(old.name+': Blizzard de-DE: '+String(deErr.message).slice(0,120))}
+    }
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;
     const now=new Date().toISOString();
@@ -146,7 +166,7 @@ for(const old of characters){
       stats:Object.keys(st).length?st:old.stats,
       equipment:localizedGear||(old.equipmentLanguage==='de'&&old.equipment?.length?old.equipment:(eq.length?eq:old.equipment)),
       equipmentLanguage:(localizedGear||old.equipmentLanguage==='de'&&old.equipment?.length)?'de':'en',
-      equipmentSource:(localizedGear||old.equipmentLanguage==='de'&&old.equipment?.length)?'ForeverSpec':'Blizzard Armory',
+      equipmentSource:localizedGear?localizedSource:(old.equipmentLanguage==='de'&&old.equipment?.length?'ForeverSpec':'Blizzard Armory'),
       equipmentError:localizationError,
       talents:ta||old.talents,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
