@@ -113,6 +113,34 @@ function extractGermanGear(html,baseGear){
  const old=new Map((baseGear||[]).map(x=>[slotKey(x.slot),x]));
  return [...new Map(gear.map(g=>[g.slot,{...g,icon:g.icon||old.get(g.slot)?.icon,level:g.level||old.get(g.slot)?.level}])).values()];
 }
+// Vergleich mit dem aktuellen offiziellen englischen Profil: veraltete ForeverSpec-
+// oder lokalisierte Blizzard-Ausrüstung darf niemals aktuelle Gegenstände überschreiben.
+const normalizedSlot=slot=>slotKey(slot||'');
+const iconId=url=>String(url||'').match(/\/(\d+)\.(?:webp|jpg)(?:\?|$)/)?.[1];
+function equipmentMatches(current,translated){
+ if(!Array.isArray(current)||!Array.isArray(translated)||current.length!==translated.length)return false;
+ const translatedBySlot=new Map(translated.map(x=>[normalizedSlot(x.slot),x]));
+ if(translatedBySlot.size!==current.length)return false;
+ return current.every(x=>{
+   const other=translatedBySlot.get(normalizedSlot(x.slot));
+   return other&&x.level===other.level&&iconId(x.icon)&&iconId(x.icon)===iconId(other.icon);
+ });
+}
+function preserveCurrentTranslations(current,previous){
+ const oldBySlot=new Map((previous||[]).map(x=>[normalizedSlot(x.slot),x]));
+ return current.map(item=>{
+   const previousItem=oldBySlot.get(normalizedSlot(item.slot));
+   // Ein alter deutscher Name ist nur sicher, wenn auch der offizielle englische
+   // Ursprungsname, das Icon und die Stufe unverändert geblieben sind.
+   const unchanged=previousItem?.sourceName===item.item &&
+     previousItem.level===item.level &&
+     iconId(previousItem.icon)&&iconId(previousItem.icon)===iconId(item.icon);
+   return unchanged
+     ? {...item,item:previousItem.item,icon:previousItem.icon,sourceName:item.item,localized:true}
+     : {...item,sourceName:item.item,localized:false};
+ });
+}
+
 async function germanGearFor(slug,name,baseGear){
  const response=await fetch('https://foreverspec.com/de/armory/eu/'+encodeURIComponent(slug)+'/',{
   headers:{'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','accept':'text/html','accept-language':'de-DE,de;q=0.9'},
@@ -135,39 +163,40 @@ for(const old of characters){
     const level=Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
     const ps=professions(c);
-    if(ps.length===0)throw new Error('Offizielle Berufe fehlen');
     const st=stats(c),eq=gear(c),ta=talents(c);
-    let localizedGear=null,localizationError,localizedSource='ForeverSpec';
-    try{localizedGear=await germanGearFor(old.slug,old.name,eq)}catch(e){
-      localizationError=String(e.message).slice(0,160);
-      console.warn(old.name+': ForeverSpec: '+localizationError);
+    const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
+    let localizedGear=null,localizationError,localizedSource;
+    if(hasOfficialGear && eq.length){
       try{
-        const germanProfile=await fetchCharacter(old.slug,'de-de');
-        const deGear=gear(germanProfile);
-        const englishBySlot=new Map(eq.map(x=>[x.slot,x.item]));
-        const distinct=deGear.filter(x=>x.item!==englishBySlot.get(x.slot)).length;
-        console.log(old.name+': Blizzard de-DE '+deGear.length+' Teile, '+distinct+' übersetzte Namen');
-        if(deGear.length>=Math.max(1,eq.length-1)&&distinct>0){
-          const previousBySlot=new Map((old.equipment||[]).map(x=>[slotKey(x.slot),x]));
-          const iconId=u=>String(u||'').match(/(\d+)\.(?:webp|jpg)$/)?.[1];
-          localizedGear=deGear.map(x=>{
-            const p=previousBySlot.get(slotKey(x.slot));
-            const icon=p&&iconId(p.icon)===iconId(x.icon)&&p.level===x.level?p.icon:x.icon;
-            return {...x,slot:slotKey(x.slot),icon};
-          });
+        const fromForeverSpec=await germanGearFor(old.slug,old.name,eq);
+        if(!equipmentMatches(eq,fromForeverSpec))throw new Error('ForeverSpec-Ausrüstung weicht vom aktuellen Blizzard-Profil ab');
+        localizedGear=fromForeverSpec;
+        localizedSource='ForeverSpec';
+      }catch(e){
+        localizationError=String(e.message).slice(0,160);
+        console.warn(old.name+': ForeverSpec: '+localizationError);
+        try{
+          const germanProfile=await fetchCharacter(old.slug,'de-de');
+          const deGear=gear(germanProfile);
+          if(!equipmentMatches(eq,deGear))throw new Error('Deutsche Blizzard-Ausrüstung weicht vom aktuellen englischen Profil ab');
+          localizedGear=deGear;
           localizedSource='Blizzard Armory (de-DE)';
-        }
-      }catch(deErr){console.warn(old.name+': Blizzard de-DE: '+String(deErr.message).slice(0,120))}
+        }catch(deErr){console.warn(old.name+': Blizzard de-DE: '+String(deErr.message).slice(0,160))}
+      }
     }
-    // Die deutschsprachige Quelle benennt Gegenstände, die Qualität kommt aus Blizzard.
-    // So bleiben Seltenheitsfarben erhalten, auch wenn ForeverSpec keine Qualität liefert.
-    if(localizedGear){
-      const originalBySlot=new Map(eq.map(x=>[slotKey(x.slot),x]));
-      localizedGear=localizedGear.map(x=>{
-        const quality=x.quality||originalBySlot.get(slotKey(x.slot))?.quality;
-        return {...x,...(quality?{quality}:{})};
-      });
-    }
+    const equipment= !hasOfficialGear ? old.equipment||[] :
+      localizedGear ? localizedGear.map(x=>{
+        const source=eq.find(e=>normalizedSlot(e.slot)===normalizedSlot(x.slot));
+        return {...x,quality:source?.quality||x.quality,sourceName:source?.item,localized:true};
+      }) : preserveCurrentTranslations(eq,old.equipment);
+    const localizedCount=equipment.filter(x=>x.localized).length;
+    const equipmentLanguage= !hasOfficialGear ? old.equipmentLanguage||'de':
+      equipment.length===0||localizedCount===equipment.length?'de':
+      localizedCount===0?'en':'gemischt';
+    const equipmentSource= !hasOfficialGear ? old.equipmentSource||'Letzter bestätigter Stand':
+      localizedGear ? localizedSource:'Blizzard Armory (en-GB), aktuelle Gegenstände';
+    const requiredStats=['Gesundheit','Mana','Stärke','Beweglichkeit','Ausdauer','Intelligenz','Rüstung','Angriffskraft','Gegenstandsstufe'];
+    const statsVerified=requiredStats.every(k=>Number.isFinite(st[k]));
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;
     const now=new Date().toISOString();
@@ -176,20 +205,22 @@ for(const old of characters){
       level,
       class:classNames[c.class?.name]||old.class,
       race:c.race?.name?.includes('Skyborne')?'Himmelsgeborene':old.race,
-      professions:ps,
-      stats:Object.keys(st).length?st:old.stats,
-      equipment:localizedGear||(old.equipmentLanguage==='de'&&old.equipment?.length?old.equipment:(eq.length?eq:old.equipment)),
-      equipmentLanguage:(localizedGear||old.equipmentLanguage==='de'&&old.equipment?.length)?'de':'en',
-      equipmentSource:localizedGear?localizedSource:(old.equipmentLanguage==='de'&&old.equipment?.length?'ForeverSpec':'Blizzard Armory'),
+      professions:ps.length?ps:(old.professions||[]).map(p=>({...p,unverified:true})),
+      professionsVerified:ps.length>0,
+      stats:{...(old.stats||{}),...st},
+      equipment,
+      equipmentLanguage,
+      equipmentSource,
       equipmentError:localizationError,
+      equipmentVerified:hasOfficialGear,
       talents:ta||old.talents,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
       avatarUrl:avatarPattern.test(avatar||'')?avatar:old.avatarUrl,
       imageCheckedAt:renderPattern.test(img||'')?now:old.imageCheckedAt,
       scrapedAt:now,
       sourceUpdatedAt:timestamp(c.lastUpdatedTimestamp)||old.sourceUpdatedAt,
-      statsVerified:Object.keys(st).length>0,
-      equipmentVerified:Boolean(localizedGear),
+      statsVerified,
+      imageVerified:renderPattern.test(img||''),
       talentsVerified:ta!==null,
       scrapeOk:true,
       scrapeError:undefined,
