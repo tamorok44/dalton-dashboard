@@ -26,8 +26,13 @@ function professions(c) {
     .filter(p=>p.name&&Number.isFinite(p.current)&&Number.isFinite(p.max)&&p.max>0);
 }
 function stats(c) {
+  const raw=c.stats||{};
+  const groups=[
+    ...(Array.isArray(raw.groups)?raw.groups:[]),
+    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
+    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]}
+  ];
   const values=new Map();
-  const groups=c.stats?.basic?.groups||[];
   for(const group of groups)for(const stat of group.stats||[]) {
     const n=stat?.value?.value;
     if(stat?.enum&&Number.isFinite(n))values.set(stat.enum,n);
@@ -36,24 +41,29 @@ function stats(c) {
   for(const key of statOrder)if(values.has(key))result[statNames[key]]=values.get(key);
   return result;
 }
+const slotNames={HEAD:'Kopf',NECK:'Hals',SHOULDER:'Schultern',BACK:'Rücken',CHEST:'Brust',SHIRT:'Hemd',WRIST:'Handgelenke',HANDS:'Hände',WAIST:'Taille',LEGS:'Beine',FEET:'Füsse',FINGER_1:'Ring 1',FINGER_2:'Ring 2',FINGER:'Ring',TRINKET_1:'Schmuck 1',TRINKET_2:'Schmuck 2',MAIN_HAND:'Waffenhand',OFF_HAND:'Nebenhand',RANGED:'Distanz',TABARD:'Wappenrock'};
 function gear(c) {
   const raw=c.gear;
-  const items=Array.isArray(raw)?raw:Array.isArray(raw?.items)?raw.items:Array.isArray(raw?.equippedItems)?raw.equippedItems:Array.isArray(raw?.equipped)?raw.equipped:[];
-  return items.map(entry=>{
-    const item=entry.item||entry;
-    const name=item.name?.name||item.name||entry.name;
-    const slot=entry.slot?.name||entry.slot?.type||entry.slot||entry.equipmentSlot?.name||entry.equipmentSlot;
-    return name&&slot?{slot:String(slot),item:String(name)}:null;
+  const entries=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
+  return entries.map(entry=>{
+    if(!entry||typeof entry!=='object')return null;
+    const name=entry.name||entry.item?.name;
+    const slotType=entry.slot?.type||entry.slot?.name||entry.slot;
+    const slot=slotNames[slotType]||entry.slot?.name||slotType;
+    const icon=entry.media?.content?.assets?.find(a=>a.key==='icon')?.value;
+    const level=entry.level?.value;
+    return typeof name==='string'&&slot?{slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined}:null;
   }).filter(Boolean);
 }
+const treeNames={'Feral Combat':'Wilder Kampf',Balance:'Gleichgewicht',Restoration:'Wiederherstellung',Arcane:'Arkan',Fire:'Feuer',Frost:'Frost','Beast Mastery':'Tierherrschaft',Marksmanship:'Treffsicherheit',Survival:'Überleben'};
 function talents(c) {
   const s=c.specs;
-  if(s===null || s===undefined)return null;
-  const trees=Array.isArray(s)?s:Array.isArray(s.specializations)?s.specializations:Array.isArray(s.specs)?s.specs:[];
-  if(trees.length===0)return null;
-  const vals=trees.map(t=>Number(t.spentPoints??t.pointsSpent??t.points??NaN));
-  if(vals.every(Number.isFinite))return vals.join(' / ');
-  return null;
+  const trees=Array.isArray(s)?s:Array.isArray(s?.specializations)?s.specializations:Array.isArray(s?.specs)?s.specs:null;
+  if(trees===null)return null;
+  if(trees.length===0)return 'noch keine verteilt';
+  const entries=trees.filter(t=>Number.isFinite(Number(t.spentPoints))&&Number(t.spentPoints)>0);
+  if(entries.length===0)return 'noch keine verteilt';
+  return entries.map(t=>(treeNames[t.name]||t.name||t.id||'Talente')+': '+Number(t.spentPoints)).join(' · ');
 }
 function timestamp(v){
   const n=Number(v);
@@ -67,11 +77,6 @@ let success=0;
 for(const old of previous.characters){
   try{
     const c=await fetchCharacter(old.slug);
-    if(old.slug==='chucky-dalton'){
-      console.log('DIAG official gear',JSON.stringify(c.gear).slice(0,10000));
-      console.log('DIAG official specs',JSON.stringify(c.specs).slice(0,10000));
-      console.log('DIAG official stats keys',Object.keys(c.stats||{}));
-    }
     const level=Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
     const ps=professions(c);
