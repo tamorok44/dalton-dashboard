@@ -2,6 +2,93 @@
   "generatedAt": "2026-11-19T21:40:44.731Z",
   "characters": [
     {
+      "slug": "chucky-dalton",
+      "name": "Chucky Dalton",
+      "player": "Valentin",
+      "level": 10,
+      "class": "Druide",
+      "race": "Himmelsgeborene",
+      "talents": "0 / 1 / 0",
+      "url": "https://foreverspec.com/de/armory/eu/chucky-dalton/",
+      "professions": [
+        {
+          "name": "Kürschnerei",
+          "current": 57,
+          "max": 75,
+          "unverified": false
+        },
+        {
+          "name": "Bergbau",
+          "current": 46,
+          "max": 75,
+          "unverified": false
+        },
+        {
+          "name": "Kochkunst",
+          "current": 2,
+          "max": 75,
+          "unverified": false
+        },
+        {
+          "name": "Angeln",
+          "current": 11,
+          "max": 75,
+          "unverified": false
+        },
+        {
+          "name": "Erste Hilfe",
+          "current": 32,
+          "max": 75,
+          "unverified": false
+        }
+      ],
+      "stats": {
+        "Gesundheit": 207,
+        "Mana": 379,
+        "Beweglichkeit": 28,
+        "Intelligenz": 34,
+        "Willenskraft": 28,
+        "Rüstung": 197
+      },
+      "equipment": [
+        {
+          "slot": "Rücken",
+          "item": "Hunter's Simple Cloak"
+        },
+        {
+          "slot": "Brust",
+          "item": "Bandit's Jerkin"
+        },
+        {
+          "slot": "Hemd",
+          "item": "Thendal Survivalist's Shirt"
+        },
+        {
+          "slot": "Handgelenke",
+          "item": "Vuldren Hide Bracers"
+        },
+        {
+          "slot": "Taille",
+          "item": "Wolfhide Belt"
+        },
+        {
+          "slot": "Beine",
+          "item": "Well-Worn Pants"
+        },
+        {
+          "slot": "Füsse",
+          "item": "Thendal Survivalist's Boots"
+        },
+        {
+          "slot": "Waffe",
+          "item": "Zephrali Greatstaff"
+        }
+      ],
+      "scrapeOk": true,
+      "scrapedAt": "2026-11-19T21:40:37.522Z",
+      "dataStatus": "auto"
+    },
+    {
       "slug": "cole-dalton",
       "name": "Cole Dalton",
       "player": "Christian",
@@ -90,93 +177,6 @@
       ],
       "scrapeOk": true,
       "scrapedAt": "2026-11-19T21:40:33.743Z",
-      "dataStatus": "auto"
-    },
-    {
-      "slug": "chucky-dalton",
-      "name": "Chucky Dalton",
-      "player": "Valentin",
-      "level": 10,
-      "class": "Druide",
-      "race": "Himmelsgeborene",
-      "talents": "0 / 1 / 0",
-      "url": "https://foreverspec.com/de/armory/eu/chucky-dalton/",
-      "professions": [
-        {
-          "name": "Kürschnerei",
-          "current": 57,
-          "max": 75,
-          "unverified": false
-        },
-        {
-          "name": "Bergbau",
-          "current": 46,
-          "max": 75,
-          "unverified": false
-        },
-        {
-          "name": "Kochkunst",
-          "current": 2,
-          "max": 75,
-          "unverified": false
-        },
-        {
-          "name": "Angeln",
-          "current": 11,
-          "max": 75,
-          "unverified": false
-        },
-        {
-          "name": "Erste Hilfe",
-          "current": 32,
-          "max": 75,
-          "unverified": false
-        }
-      ],
-      "stats": {
-        "Gesundheit": 207,
-        "Mana": 379,
-        "Beweglichkeit": 28,
-        "Intelligenz": 34,
-        "Willenskraft": 28,
-        "Rüstung": 197
-      },
-      "equipment": [
-        {
-          "slot": "Rücken",
-          "item": "Hunter's Simple Cloak"
-        },
-        {
-          "slot": "Brust",
-          "item": "Bandit's Jerkin"
-        },
-        {
-          "slot": "Hemd",
-          "item": "Thendal Survivalist's Shirt"
-        },
-        {
-          "slot": "Handgelenke",
-          "item": "Vuldren Hide Bracers"
-        },
-        {
-          "slot": "Taille",
-          "item": "Wolfhide Belt"
-        },
-        {
-          "slot": "Beine",
-          "item": "Well-Worn Pants"
-        },
-        {
-          "slot": "Füsse",
-          "item": "Thendal Survivalist's Boots"
-        },
-        {
-          "slot": "Waffe",
-          "item": "Zephrali Greatstaff"
-        }
-      ],
-      "scrapeOk": true,
-      "scrapedAt": "2026-11-19T21:40:37.522Z",
       "dataStatus": "auto"
     },
     {
