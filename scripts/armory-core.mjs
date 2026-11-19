@@ -7,7 +7,7 @@ const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/char
 
 async function fetchCharacter(slug,locale="en-gb") {
   const url='https://worldofwarcraft.blizzard.com/'+locale+'/forever/eu/armory/character/'+encodeURIComponent(slug);
-  const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(25000) });
+  const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(20000) });
   if(!response.ok) throw new Error('Blizzard HTTP '+response.status);
   const html=await response.text();
   const match=html.match(/var characterProfileInitialState = (\{.*?\});\s*<\/script>/s);
@@ -144,7 +144,7 @@ function preserveCurrentTranslations(current,previous){
 async function germanGearFor(slug,name,baseGear){
  const response=await fetch('https://foreverspec.com/de/armory/eu/'+encodeURIComponent(slug)+'/',{
   headers:{'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','accept':'text/html','accept-language':'de-DE,de;q=0.9'},
-  signal:AbortSignal.timeout(15000)
+  signal:AbortSignal.timeout(10000)
  });
  if(!response.ok)throw new Error('ForeverSpec HTTP '+response.status);
  const html=await response.text();
@@ -167,21 +167,23 @@ for(const old of characters){
     const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
     let localizedGear=null,localizationError,localizedSource;
     if(hasOfficialGear && eq.length){
+      // Offizielles deutsches Blizzard-Profil zuerst: weniger Verzögerung,
+      // keine Abhängigkeit von der häufig unzugänglichen ForeverSpec-Seite.
       try{
-        const fromForeverSpec=await germanGearFor(old.slug,old.name,eq);
-        if(!equipmentMatches(eq,fromForeverSpec))throw new Error('ForeverSpec-Ausrüstung weicht vom aktuellen Blizzard-Profil ab');
-        localizedGear=fromForeverSpec;
-        localizedSource='ForeverSpec';
-      }catch(e){
-        localizationError=String(e.message).slice(0,160);
-        console.warn(old.name+': ForeverSpec: '+localizationError);
+        const germanProfile=await fetchCharacter(old.slug,'de-de');
+        const deGear=gear(germanProfile);
+        if(!equipmentMatches(eq,deGear))throw new Error('Deutsche Blizzard-Ausrüstung weicht vom aktuellen englischen Profil ab');
+        localizedGear=deGear;
+        localizedSource='Blizzard Armory (de-DE)';
+      }catch(deErr){
+        localizationError=String(deErr.message).slice(0,160);
+        console.warn(old.name+': Blizzard de-DE: '+localizationError);
         try{
-          const germanProfile=await fetchCharacter(old.slug,'de-de');
-          const deGear=gear(germanProfile);
-          if(!equipmentMatches(eq,deGear))throw new Error('Deutsche Blizzard-Ausrüstung weicht vom aktuellen englischen Profil ab');
-          localizedGear=deGear;
-          localizedSource='Blizzard Armory (de-DE)';
-        }catch(deErr){console.warn(old.name+': Blizzard de-DE: '+String(deErr.message).slice(0,160))}
+          const fromForeverSpec=await germanGearFor(old.slug,old.name,eq);
+          if(!equipmentMatches(eq,fromForeverSpec))throw new Error('ForeverSpec-Ausrüstung weicht vom aktuellen Blizzard-Profil ab');
+          localizedGear=fromForeverSpec;
+          localizedSource='ForeverSpec';
+        }catch(fsErr){console.warn(old.name+': ForeverSpec: '+String(fsErr.message).slice(0,160))}
       }
     }
     const equipment= !hasOfficialGear ? old.equipment||[] :
