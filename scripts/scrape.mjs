@@ -93,6 +93,31 @@ async function extractProfessions(page) {
   return [...unique.values()];
 }
 
+
+async function extractEquipment(page) {
+  await clickTab(page, 'Ausrüstung');
+  await page.locator('div.a-slot, .equipment-slot').first().waitFor({state:'attached',timeout:10000});
+  const items = await page.locator('div.a-slot, .equipment-slot').evaluateAll(slots => {
+    const result = [];
+    for (const slot of slots) {
+      const link = slot.querySelector('a.item-link, a[href*="/items/"]');
+      if (!link) continue;
+      const item = (slot.querySelector('.item-name')?.textContent || link.getAttribute('title') || link.getAttribute('data-tooltip') || link.textContent || '').trim();
+      const slotName = (slot.querySelector('.item-slot, .slot-label')?.textContent || slot.getAttribute('data-slot') || '').trim();
+      const levelText = (slot.querySelector('.item-level')?.textContent || '').trim();
+      const image = slot.querySelector('img');
+      const icon = image?.getAttribute('src') || image?.getAttribute('data-src') || '';
+      const id = link.getAttribute('data-item-id') || link.getAttribute('href')?.match(/\/items\/(\d+)/)?.[1] || '';
+      if (!item || /^(leer|empty)$/i.test(item) || !slotName) continue;
+      result.push({slot:slotName,item,level:Number(levelText.match(/\d+/)?.[0]||0)||undefined,icon:icon ? new URL(icon,location.origin).href : (id ? new URL('/icons/'+id+'.webp',location.origin).href : '')});
+    }
+    return result;
+  });
+  const unique = new Map(items.map(i => [i.slot,i]));
+  if (!unique.size) throw new Error('Keine Ausrüstung aus ForeverSpec auslesbar');
+  return [...unique.values()];
+}
+
 const browser = await chromium.launch({ headless: true });
 const results = [];
 let successful = 0;
@@ -137,6 +162,7 @@ try {
       const level = Number(levelMatch[1]);
       if (level < 10 || level > 60) throw new Error('Unplausibles Level ' + level);
 
+      const equipment = await extractEquipment(page);
       const professions = await extractProfessions(page);
       if (professions.length === 0) throw new Error('Keine Berufe auslesbar; vorhandene Daten bleiben erhalten');
 
@@ -150,6 +176,8 @@ try {
         ...character,
         level,
         professions: [...mergedProfessions.values()],
+        equipment,
+        equipmentVerified: true,
         talents,
         scrapeOk: true,
         scrapedAt: new Date().toISOString(),
