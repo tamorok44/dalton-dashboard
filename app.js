@@ -1,7 +1,17 @@
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
-const relevantStats=c=>{const s=c.stats||{};const keys=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];const extra=c.class==='Magier'?['Intelligenz','Ausdauer','Willenskraft']:c.class==='Jäger'?['Beweglichkeit','Angriffskraft','Ausdauer']:['Ausdauer','Beweglichkeit','Intelligenz'];return [...new Set([...keys,...extra])].filter(k=>s[k]!==undefined).map(k=>[k,s[k]]);};
+const mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];
+const secondaryStatNames=['Stärke','Beweglichkeit','Ausdauer','Intelligenz','Angriffskraft'];
+function statsPanel(c,open=false){
+  const s=c.stats||{};
+  const main=mainStatNames.map(name=>'<div class="vital"><small>'+esc(name)+'</small><strong>'+esc(s[name]??'–')+'</strong></div>').join('');
+  const rest=secondaryStatNames.map(name=>row(name,s[name]??'–')).join('');
+  return '<div class="section character-stats"><h3>Charakterwerte'+(c.statsVerified?'':' · letzter bekannter Stand')+'</h3><div class="vitals">'+main+'</div><details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'><summary>Weitere Charakterwerte anzeigen</summary><div class="rows">'+rest+'</div></details></div>';
+}
+const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhnlich',RARE:'Selten',EPIC:'Episch',LEGENDARY:'Legendär',ARTIFACT:'Artefakt',HEIRLOOM:'Erbstück'};
+const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
+
 const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
 function professionRows(list=[]){return list.length?list.map(p=>row(p.name+(p.unverified?" · älterer Stand":""),`${p.current ?? "–"}/${p.max ?? "–"}`)).join(""):row("Berufe","nicht verfügbar")}
 
@@ -19,7 +29,7 @@ const equipmentSlotAliases={
   'Schmuck':'Schmuck 1','Trinket 1':'Schmuck 1','Trinket 2':'Schmuck 2',
   'Schildhand':'Nebenhand','Nebenwaffe':'Nebenhand','Offhand':'Nebenhand'
 };
-function equipmentPanel(c){
+function equipmentPanel(c,open=false){
   const available=new Map();
   for(const item of c.equipment||[]){
     const slot=equipmentSlotAliases[item.slot]||item.slot;
@@ -30,10 +40,13 @@ function equipmentPanel(c){
     if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
     const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(item.icon||'');
     const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">✦</span>';
-    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(slot)+'</b>'+esc(item.item)+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
+    const quality=String(item.quality||'').toUpperCase();
+    const qualityClass=itemQualityClasses[quality]||'quality-unknown';
+    const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
+    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(slot)+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
   }).join('');
   const verified=c.equipmentVerified?'':' · letzter bekannter Stand';
-  return '<details class="details"><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+'</summary><div class="equipment">'+rows+'</div></details>';
+  return '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+'</summary><div class="equipment">'+rows+'</div></details>';
 }
 
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
@@ -53,6 +66,7 @@ function installPortraitFallbacks(){
 }
 
 function render(data,{live=false}={}){
+ const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
 const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Math.min(...levels),max=Math.max(...levels),avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
  summary.innerHTML=[["Gruppenlevel",levels.length?`${min}–${max}`:"–"],["Durchschnitt",avg],["Abstand",levels.length?`${max-min} Level`:"–"],["Charaktere",chars.length]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join("");
@@ -64,8 +78,8 @@ const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Mat
   <p class="status">${c.scrapeOk===false?"⚠ Automatischer Abruf fehlgeschlagen – letzter bekannter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
   <div class="section"><h3>Talente${c.talentsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
   <div class="section"><h3>Berufe</h3><div class="rows">${professionRows(c.professions)}</div></div>
-  <div class="section"><h3>Wichtige Werte${c.statsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${relevantStats(c).map(([k,v])=>row(k,v)).join("")||row("Werte","nicht verfügbar")}</div></div>
-  ${equipmentPanel(c)}
+  ${statsPanel(c,openDetails.has(c.slug+':stats'))}
+  ${equipmentPanel(c,openDetails.has(c.slug+':equipment'))}
  </article>`).join("");
  installPortraitFallbacks();
 }
