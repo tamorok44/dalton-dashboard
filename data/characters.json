@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T20:57:00+01:00",
+  "generatedAt": "2026-11-19T21:31:56.058Z",
   "characters": [
     {
       "slug": "cole-dalton",
@@ -259,53 +259,89 @@
       "race": "Himmelsgeborene",
       "talents": "noch keine verteilt",
       "url": "https://foreverspec.com/de/armory/eu/viola-dalton/",
-      "professions": [],
+      "professions": [
+        {
+          "name": "Alchemie",
+          "current": 22,
+          "max": 75
+        },
+        {
+          "name": "Kräuterkunde",
+          "current": 45,
+          "max": 75
+        },
+        {
+          "name": "Kochkunst",
+          "current": 6,
+          "max": 75
+        },
+        {
+          "name": "Angeln",
+          "current": 2,
+          "max": 75
+        },
+        {
+          "name": "Erste Hilfe",
+          "current": 11,
+          "max": 75
+        }
+      ],
       "stats": {
         "Gesundheit": 207,
         "Mana": 379,
+        "Stärke": 23,
         "Beweglichkeit": 28,
+        "Ausdauer": 25,
         "Intelligenz": 34,
         "Willenskraft": 28,
-        "Rüstung": 173
+        "Rüstung": 173,
+        "Verteidigung": 46,
+        "Angriffskraft": 26,
+        "Nahkampfkrit": "4,36%",
+        "Distanzkrit": "3,36%",
+        "Zauberkrit": "5,20%",
+        "Ausweichen": "5,16%"
       },
       "equipment": [
         {
           "slot": "Rücken",
-          "item": "Hunter's Simple Cloak"
+          "item": "Einfacher Umhang des Jägers"
         },
         {
           "slot": "Brust",
-          "item": "Bandit's Jerkin"
+          "item": "Banditenwams"
         },
         {
           "slot": "Hemd",
-          "item": "Thendal Survivalist's Shirt"
+          "item": "Hemd des Überlebenskünstlers von Thendal"
         },
         {
           "slot": "Handgelenke",
-          "item": "Burnt Leather Bracers"
+          "item": "Brandleder-Armschienen"
         },
         {
           "slot": "Taille",
-          "item": "Wolfhide Belt"
+          "item": "Wolfsbalggürtel"
         },
         {
           "slot": "Beine",
-          "item": "Ragged Leather Pants"
+          "item": "Struppige Lederhose"
         },
         {
           "slot": "Füsse",
-          "item": "Thendal Survivalist's Boots"
+          "item": "Stiefel des Überlebenskünstlers von Thendal"
         },
         {
           "slot": "Ring",
-          "item": "Ancient Heirloom"
+          "item": "Uraltes Erbstück"
         },
         {
-          "slot": "Waffe",
-          "item": "Novice's Quarterstaff"
+          "slot": "Waffenhand",
+          "item": "Stecken des Novizen"
         }
-      ]
+      ],
+      "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
+      "dataStatus": "verified"
     }
   ]
 }
