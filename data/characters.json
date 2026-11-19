@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-19T22:26:15.854Z",
+  "generatedAt": "2026-11-19T22:48:26.267Z",
   "characters": [
     {
       "slug": "chucky-dalton",
@@ -67,7 +67,7 @@
           "level": 7
         },
         {
-          "slot": "Füsse",
+          "slot": "Füße",
           "item": "Thendal Survivalist's Boots",
           "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
           "level": 1
@@ -104,15 +104,18 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:26:05.598Z",
+      "scrapedAt": "2026-11-19T22:48:15.898Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/237/75715821-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:26:05.598Z",
+      "imageCheckedAt": "2026-11-19T22:48:15.898Z",
       "statsVerified": true,
-      "equipmentVerified": true,
+      "equipmentVerified": false,
       "talentsVerified": true,
-      "source": "Blizzard Armory"
+      "source": "Blizzard Armory",
+      "equipmentLanguage": "en",
+      "equipmentSource": "Blizzard Armory",
+      "equipmentError": "ForeverSpec lieferte falsches Profil"
     },
     {
       "slug": "cole-dalton",
@@ -174,7 +177,7 @@
           "level": 8
         },
         {
-          "slot": "Füsse",
+          "slot": "Füße",
           "item": "Farmer's Field Boots",
           "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7758819.jpg",
           "level": 10
@@ -198,7 +201,7 @@
           "level": 7
         },
         {
-          "slot": "Distanz",
+          "slot": "Distanzwaffe",
           "item": "Windbough Wand",
           "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7802125.jpg",
           "level": 10
@@ -223,15 +226,18 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:26:08.875Z",
+      "scrapedAt": "2026-11-19T22:48:19.378Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/247/75586551-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:26:08.875Z",
+      "imageCheckedAt": "2026-11-19T22:48:19.378Z",
       "statsVerified": true,
-      "equipmentVerified": true,
+      "equipmentVerified": false,
       "talentsVerified": true,
-      "source": "Blizzard Armory"
+      "source": "Blizzard Armory",
+      "equipmentLanguage": "en",
+      "equipmentSource": "Blizzard Armory",
+      "equipmentError": "ForeverSpec lieferte falsches Profil"
     },
     {
       "slug": "dolly-dalton",
@@ -299,7 +305,7 @@
           "level": 9
         },
         {
-          "slot": "Füsse",
+          "slot": "Füße",
           "item": "Worn Leather Boots",
           "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
           "level": 8
@@ -317,7 +323,7 @@
           "level": 10
         },
         {
-          "slot": "Distanz",
+          "slot": "Distanzwaffe",
           "item": "Zephrali Bow",
           "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/7810733.jpg",
           "level": 14
@@ -348,15 +354,18 @@
         }
       ],
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:26:12.289Z",
+      "scrapedAt": "2026-11-19T22:48:22.810Z",
       "dataStatus": "auto",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/48/75594032-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:26:12.289Z",
+      "imageCheckedAt": "2026-11-19T22:48:22.810Z",
       "statsVerified": true,
-      "equipmentVerified": true,
+      "equipmentVerified": false,
       "talentsVerified": true,
-      "source": "Blizzard Armory"
+      "source": "Blizzard Armory",
+      "equipmentLanguage": "en",
+      "equipmentSource": "Blizzard Armory",
+      "equipmentError": "ForeverSpec lieferte falsches Profil"
     },
     {
       "slug": "viola-dalton",
@@ -424,7 +433,7 @@
           "level": 7
         },
         {
-          "slot": "Füsse",
+          "slot": "Füße",
           "item": "Thendal Survivalist's Boots",
           "icon": "https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg",
           "level": 1
@@ -469,14 +478,17 @@
       "sourceUpdatedLabel": "21:30 Uhr (ForeverSpec)",
       "dataStatus": "auto",
       "scrapeOk": true,
-      "scrapedAt": "2026-11-19T22:26:15.614Z",
+      "scrapedAt": "2026-11-19T22:48:26.267Z",
       "imageUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-main-raw.png",
       "avatarUrl": "https://render.worldofwarcraft.com/forever-eu/character/8/75619080-avatar.jpg",
-      "imageCheckedAt": "2026-11-19T22:26:15.614Z",
+      "imageCheckedAt": "2026-11-19T22:48:26.267Z",
       "statsVerified": true,
-      "equipmentVerified": true,
+      "equipmentVerified": false,
       "talentsVerified": true,
-      "source": "Blizzard Armory"
+      "source": "Blizzard Armory",
+      "equipmentLanguage": "en",
+      "equipmentSource": "Blizzard Armory",
+      "equipmentError": "ForeverSpec lieferte falsches Profil"
     }
   ]
 }
