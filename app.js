@@ -8,7 +8,7 @@ function renderPortrait(c){
   const image=validRender(c.imageUrl)?c.imageUrl:null;
   const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
-  const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
+  const version=encodeURIComponent((c.imageCheckedAt||c.scrapedAt||"") + "-" + Date.now());
   return '<figure class="portrait"><img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Aktuelles Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>Original-Charakterbild von Blizzard · nach letztem Logout</figcaption></figure>';
 }
 function installPortraitFallbacks(){
