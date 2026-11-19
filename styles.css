@@ -18,3 +18,23 @@ footer{padding:28px 0 40px;color:#747e8d;font-size:.76rem;text-align:center}
 @media(max-width:720px){.portrait{height:270px}}
 
 .equip{display:flex;align-items:center;gap:9px;min-width:0}.equip-icon{height:36px;width:36px;flex:0 0 36px;border:1px solid #4a5366;border-radius:6px;object-fit:cover}.equip>div{min-width:0;overflow-wrap:anywhere}.equip small{color:#8792a3;font-size:.67rem}
+
+/* Dalton-Western-Fantasy: eigene, schlanke Gestaltung */
+:root{--bg:#101820;--panel:#201d1b;--panel2:#302720;--text:#f6e9d2;--muted:#c2b39f;--gold:#dfb96d;--line:#6b5336}
+body{background:radial-gradient(ellipse at 50% 0%,#244466 0%,#152638 26%,#151819 58%,#100f0e 100%)}
+.hero{position:relative;flex-wrap:wrap;align-items:center;margin-top:16px;padding:32px 24px 26px;background:linear-gradient(135deg,#3c2a1e,#201c1b 62%,#1b324b);border:2px solid #a17c43;border-radius:19px;box-shadow:inset 0 0 0 4px #251e19,0 15px 45px #0006}
+.hero:before{content:'✦  ✦  ✦  ✦';position:absolute;right:24px;top:14px;color:#d6b36d;letter-spacing:.5em;font-size:.8rem}
+.hero h1{font-family:Georgia,serif;font-weight:900;letter-spacing:.055em;text-transform:uppercase;color:#f9e7b7;text-shadow:0 3px 2px #000,0 0 24px #9c6b2b66}
+.eyebrow{color:#a9c6e6}.subtitle{color:#e3c995}
+.chapter-title{font-family:Georgia,serif;text-align:center;color:#e8cb8d;text-transform:uppercase;letter-spacing:.16em;font-size:.9rem;margin:24px 0 12px}
+.refresh{background:linear-gradient(#315e92,#163658);border:1px solid #b59a62;color:#fff0c8;box-shadow:0 3px 0 #101d2b}
+.stat,.card{border-color:#775a37;background:linear-gradient(155deg,#31291f,#191c23 65%,#151a24);box-shadow:inset 0 1px #c69a5140,0 12px 30px #0005}
+.stat{border-radius:9px}.stat strong{color:#f5d698}.card{position:relative;border-width:2px;border-radius:12px}
+.card:before{content:'✦';position:absolute;top:9px;left:50%;transform:translateX(-50%);color:#b38a4b;font-size:.75rem}
+.card.mage{--class:#3fc7eb}.card.hunter{--class:#aad372}.card.druid{--class:#ff7c0a}.card.other{--class:#d9aa52}
+.card .name{color:var(--class);text-shadow:0 1px 8px #000}.card .level{border-color:var(--class);color:var(--class);background:#10151bcf}
+.card .portrait{border:2px solid var(--class);background:radial-gradient(ellipse at 50% 60%,#476c8999,transparent 67%),linear-gradient(160deg,#243c54,#141923 75%);height:320px}
+.card .portrait img{height:125%;width:125%;max-width:none;object-fit:contain;object-position:center bottom;transform:translateY(5%)}
+.section h3,.details summary{color:#e9c381}.link{background:linear-gradient(#3b2c1e,#201b17);border-color:#9c7842;color:#f8dfab}
+.equip{background:#17191e;border-color:#54432e}
+@media(max-width:720px){.hero{padding:28px 16px 18px}.hero h1{font-size:2.4rem}.card .portrait{height:290px}}
