@@ -1,4 +1,4 @@
-const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const button=document.querySelector("#refreshButton");
+const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
 const mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];
@@ -69,6 +69,12 @@ function installPortraitFallbacks(){
 function render(data,{live=false}={}){
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+ if(heroCast){
+   heroCast.innerHTML=chars.filter(c=>validRender(c.imageUrl)).map((c,i)=>{
+     const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||'');
+     return '<img class="hero-figure hero-figure-'+(i+1)+'" src="'+esc(c.imageUrl+'?v='+version)+'" alt="" loading="eager" decoding="async">';
+   }).join('');
+ }
 const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Math.min(...levels),max=Math.max(...levels),avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
  summary.innerHTML=[["Gruppenlevel",levels.length?`${min}–${max}`:"–"],["Durchschnitt",avg],["Abstand",levels.length?`${max-min} Level`:"–"],["Charaktere",chars.length]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join("");
  status.textContent=`${live?"Gerade live abgerufen":"Letzter gespeicherter Datenstand"}: ${new Date(data.generatedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"})} · automatischer Abgleich etwa alle 30 Minuten.`;
