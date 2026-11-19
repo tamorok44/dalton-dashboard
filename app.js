@@ -46,7 +46,7 @@ async function load({silent=false}={}){
     const r=await fetch('/data/characters.json?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error("HTTP "+r.status);
     const data=await r.json();
-    if(!silent||data.generatedAt!==lastGeneratedAt){lastGeneratedAt=data.generatedAt;render(data)}
+    if(!silent||!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){lastGeneratedAt=data.generatedAt;render(data)}
   }catch(e){if(!silent)status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
 }
 async function refreshLive(){
