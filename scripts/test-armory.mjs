@@ -13,5 +13,5 @@ assert.deepEqual(result.map(x=>x.slot),['Rücken','Waffenhand']);
 assert.deepEqual(result.map(x=>x.item),['Einfacher Umhang des Jägers','Fleckliger Ritualdolch']);
 assert.equal(result[0].icon,'https://foreverspec.com/icons/7731373.webp');
 assert.equal(result[1].level,10);
-assert.deepEqual(extractGermanGear('<html></html>',[]).length,0); // empty if no readable equipment
+assert.throws(()=>extractGermanGear('<html></html>',[]),/keine auslesbare Ausrüstung/);
 console.log('ForeverSpec equipment extractor: OK');
