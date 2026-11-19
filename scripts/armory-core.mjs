@@ -132,7 +132,9 @@ for(const old of characters){
     const ps=professions(c);
     if(ps.length===0)throw new Error('Offizielle Berufe fehlen');
     const st=stats(c),eq=gear(c),ta=talents(c);
-    console.log('QUALITY-FIELD-AUDIT '+old.name+' '+JSON.stringify((Array.isArray(c.gear)?c.gear:Object.values(c.gear||{})).map(e=>({name:e?.name,slot:e?.slot?.type||e?.slot,quality:e?.quality,itemQuality:e?.item?.quality,level:e?.level,qualityKeys:Object.keys(e||{}).filter(k=>/quality|rarity/i.test(k))})))));
+    const auditEntries=Array.isArray(c.gear)?c.gear:Object.values(c.gear||{});
+    const auditRows=auditEntries.map(e=>({name:e?.name,slot:e?.slot?.type||e?.slot,quality:e?.quality,itemQuality:e?.item?.quality,level:e?.level,qualityKeys:Object.keys(e||{}).filter(k=>/quality|rarity/i.test(k))}));
+    console.log('QUALITY-FIELD-AUDIT '+old.name+' '+JSON.stringify(auditRows));
     let localizedGear=null,localizationError,localizedSource='ForeverSpec';
     try{localizedGear=await germanGearFor(old.slug,old.name,eq)}catch(e){
       localizationError=String(e.message).slice(0,160);
