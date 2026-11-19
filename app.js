@@ -5,6 +5,37 @@ const relevantStats=c=>{const s=c.stats||{};const keys=['Gesundheit','Mana','Rü
 const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
 function professionRows(list=[]){return list.length?list.map(p=>row(p.name+(p.unverified?" · älterer Stand":""),`${p.current ?? "–"}/${p.max ?? "–"}`)).join(""):row("Berufe","nicht verfügbar")}
 
+
+// Feste Slot-Reihenfolge: links oben nach unten, dann Ringe/Schmuck und Waffen.
+// Alle Charaktere verwenden dieselben 19 Plätze, auch wenn sie leer sind.
+const equipmentSlotOrder=[
+  'Kopf','Hals','Schultern','Rücken','Brust','Hemd','Wappenrock','Handgelenke',
+  'Hände','Taille','Beine','Füße','Ring 1','Ring 2','Schmuck 1','Schmuck 2',
+  'Waffenhand','Nebenhand','Distanzwaffe'
+];
+const equipmentSlotAliases={
+  'Füsse':'Füße','Distanz':'Distanzwaffe','Fernkampf':'Distanzwaffe',
+  'Ring':'Ring 1','Finger':'Ring 1','Finger 1':'Ring 1','Finger 2':'Ring 2',
+  'Schmuck':'Schmuck 1','Trinket 1':'Schmuck 1','Trinket 2':'Schmuck 2',
+  'Schildhand':'Nebenhand','Nebenwaffe':'Nebenhand','Offhand':'Nebenhand'
+};
+function equipmentPanel(c){
+  const available=new Map();
+  for(const item of c.equipment||[]){
+    const slot=equipmentSlotAliases[item.slot]||item.slot;
+    if(equipmentSlotOrder.includes(slot)&&item.item&&!available.has(slot))available.set(slot,item);
+  }
+  const rows=equipmentSlotOrder.map(slot=>{
+    const item=available.get(slot);
+    if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
+    const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(item.icon||'');
+    const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">✦</span>';
+    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(slot)+'</b>'+esc(item.item)+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
+  }).join('');
+  const verified=c.equipmentVerified?'':' · letzter bekannter Stand';
+  return '<details class="details"><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+'</summary><div class="equipment">'+rows+'</div></details>';
+}
+
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
   const image=validRender(c.imageUrl)?c.imageUrl:null;
@@ -34,7 +65,7 @@ const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Mat
   <div class="section"><h3>Talente${c.talentsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
   <div class="section"><h3>Berufe</h3><div class="rows">${professionRows(c.professions)}</div></div>
   <div class="section"><h3>Wichtige Werte${c.statsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${relevantStats(c).map(([k,v])=>row(k,v)).join("")||row("Werte","nicht verfügbar")}</div></div>
-  <details class="details"><summary>Ausrüstung anzeigen${c.equipmentVerified?"":" · letzter bekannter Stand"}</summary><div class="equipment">${(c.equipment||[]).map(i=>`<div class="equip">${/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(i.icon||"")?`<img class="equip-icon" src="${esc(i.icon)}" alt="" loading="lazy">`:""}<div><b>${esc(i.slot)}</b>${esc(i.item)}${i.level?` <small>· Gegenstandsstufe ${esc(i.level)}</small>`:""}</div></div>`).join("")||"<div class='equip'>nicht verfügbar</div>"}</div></details>
+  ${equipmentPanel(c)}
   <div class="actions"><a class="link" href="${esc(c.url)}" target="_blank" rel="noopener">ForeverSpec ↗</a><a class="link" href="${esc("https://worldofwarcraft.blizzard.com/de-de/forever/eu/armory/character/"+encodeURIComponent(c.slug))}" target="_blank" rel="noopener">Blizzard-Armory (DE) ↗</a></div>
  </article>`).join("");
  installPortraitFallbacks();
