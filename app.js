@@ -72,10 +72,17 @@ function render(data,{live=false}={}){
 const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Math.min(...levels),max=Math.max(...levels),avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
  summary.innerHTML=[["Gruppenlevel",levels.length?`${min}–${max}`:"–"],["Durchschnitt",avg],["Abstand",levels.length?`${max-min} Level`:"–"],["Charaktere",chars.length]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join("");
  status.textContent=`${live?"Gerade live abgerufen":"Letzter gespeicherter Datenstand"}: ${new Date(data.generatedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"})} · automatischer Abgleich etwa alle 30 Minuten.`;
- cards.innerHTML=chars.map(c=>`<article class="card ${classColors[c.class]||'other'}">
-  <div class="cardhead"><div><h2 class="name">${esc(c.name)}</h2><p class="player">${esc(c.player)}</p></div><div class="level">Lv. ${esc(c.level)}</div></div>
+ cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColors[c.class]||'other'}">
+  <div class="cardhead">
+    <div class="card-intro">
+      <span class="card-overline">✦ &nbsp; STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
+      <h2 class="name">${esc(c.name)}</h2>
+      <p class="player">Abenteurer: <strong>${esc(c.player)}</strong></p>
+    </div>
+    <div class="level"><span>Stufe</span>${esc(c.level)}</div>
+  </div>
   ${renderPortrait(c)}
-  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">EU · PvP · Allianz</span></div>
+  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">Himmelsgeborene · Hoher Orden</span><span class="pill">Allianz · EU-PvP</span></div>
   <p class="status">${c.scrapeOk===false?"⚠ Automatischer Abruf fehlgeschlagen – letzter bekannter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
   <div class="section"><h3>Talente${c.talentsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
   <div class="section"><h3>Berufe</h3><div class="rows">${professionRows(c.professions)}</div></div>
@@ -111,7 +118,7 @@ async function refreshLive(){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar; die automatische Aktualisierung läuft unabhängig weiter.</span>';
   }finally{button.disabled=false;button.textContent="↻ Aktualisieren"}
 }
-button.textContent="↻ Aktualisieren";
+button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
 setInterval(()=>{if(!document.hidden&&!button.disabled)load({silent:true})},60000);
