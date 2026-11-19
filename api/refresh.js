@@ -3,12 +3,11 @@ import {refreshCharacters} from '../scripts/armory-core.mjs';
 const require=createRequire(import.meta.url);
 const snapshot=require('../data/characters.json');
 export const config={maxDuration:60};
-let pending=null,cache=null;
+let pending=null;
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
   try{
-    if(cache&&Date.now()-cache.at<15000)return res.status(200).json({...cache.value,cached:true});
     if(!pending)pending=(async()=>{
       const results=await Promise.all(snapshot.characters.map(c=>refreshCharacters([c])));
       const success=results.reduce((n,r)=>n+r.success,0);
@@ -17,7 +16,6 @@ export default async function handler(req,res){
     })().finally(()=>{pending=null});
     const value=await pending;
     if(value.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar'});
-    cache={at:Date.now(),value};
     return res.status(200).json(value);
   }catch(e){console.error('Live-Abruf fehlgeschlagen:',e);return res.status(503).json({error:'Live-Abruf derzeit nicht verfügbar'})}
 }
