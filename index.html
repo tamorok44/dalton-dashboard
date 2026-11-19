@@ -3,29 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111318">
-  <meta name="description" content="Die Daltons – Allianz-Abenteurerbande">
+  <meta name="theme-color" content="#101b2a">
+  <meta name="description" content="Die Daltons – vier Himmelsgeborene des Hohen Ordens. Ein wilder Himmel. Das Western-Fantasy-Hauptquartier unserer WoW-Forever-Bande.">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="preload" href="/skyborne-horizon.svg" as="image" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
-  <title>Die Daltons</title>
+  <title>Die Daltons · Legenden des Himmels</title>
 </head>
 <body>
   <header class="hero">
-    <div>
-      <p class="eyebrow">World of Warcraft: Forever · EU · PvP · Allianz</p>
-      <h1>Die Daltons</h1>
-      <p class="subtitle">Eine Legende der Allianz · Chucky · Cole · Dolly · Viola</p>
+    <div class="hero-art" aria-hidden="true"></div>
+    <div class="hero-frame" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-topline">
+        <span class="worldmark">✦ &nbsp; WORLD OF WARCRAFT: FOREVER</span>
+        <span class="hero-division">ALLIANZ <span aria-hidden="true">✧</span> HOHER ORDEN</span>
+      </div>
+      <div class="hero-center">
+        <img class="hero-crest" src="/dalton-crest.svg" alt="" width="144" height="144">
+        <p class="hero-kicker">Aus den Wolken von Zephras</p>
+        <h1><span class="hero-the">Die</span> <span class="hero-family">Daltons</span></h1>
+        <div class="hero-rule" aria-hidden="true"><span>✦</span></div>
+        <p class="hero-subtitle">Vier Himmelsgeborene. Ein wilder Himmel.</p>
+        <p class="hero-story">Der Hohe Orden hat seine Helden. Das Grenzland hat seine Legenden.</p>
+      </div>
+      <div class="hero-bottomline">
+        <span><span class="tiny-star" aria-hidden="true">✶</span> DAS HIMMLISCHE GRENZLAND</span>
+        <span>ZEPHRAS <span aria-hidden="true">✧</span> AZEROTH <span aria-hidden="true">✧</span> EU · PvP</span>
+      </div>
     </div>
-    <button id="refreshButton" class="refresh">↻ Aktualisieren</button>
   </header>
+
   <main>
-    <div class="chapter-title">Das Hauptquartier der Daltons</div><section id="summary" class="summary" aria-label="Gruppenübersicht"></section>
-    <p id="status" class="status">Daten werden geladen …</p>
+    <section class="command-deck" aria-label="Hauptquartier">
+      <div class="command-title">
+        <p class="chapter-eyebrow">✦ &nbsp; DAS HAUPTQUARTIER &nbsp; ✦</p>
+        <h2>Die Bande im Überblick</h2>
+        <p class="command-description">Vier Steckbriefe aus dem Hohen Orden. Direkt aus der Armory.</p>
+      </div>
+      <div class="command-actions">
+        <button id="refreshButton" class="refresh" type="button"><span aria-hidden="true">↻</span> Aktualisieren</button>
+        <span class="refresh-hint">Frische Kunde aus dem Grenzland</span>
+      </div>
+    </section>
+
+    <section id="summary" class="summary" aria-label="Gruppenübersicht"></section>
+    <p id="status" class="status" role="status">Die Steckbriefe werden geladen …</p>
+    <div class="roster-heading">
+      <div class="roster-rule" aria-hidden="true"></div>
+      <div class="roster-title">
+        <span class="roster-kicker">GESUCHT · IM NAMEN DES HOHEN ORDENS</span>
+        <h2>Die vier Daltons</h2>
+        <p>Jeder ein Original. Zusammen eine Legende.</p>
+      </div>
+      <div class="roster-rule" aria-hidden="true"></div>
+    </div>
     <section id="cards" class="grid" aria-live="polite"></section>
   </main>
   <footer>
-    <span>Charakterdaten aus der öffentlichen WoW-Forever-Armory. Bilder und Werte können sich nach dem Ausloggen verzögert ändern.</span>
+    <div class="footer-ornament" aria-hidden="true">✦ &nbsp; ✧ &nbsp; ✦</div>
+    <strong>Die Daltons</strong> <span>· Der Hohe Orden · WoW: Forever</span>
+    <p>Charakterdaten der öffentlichen Blizzard-Armory. Ausrüstung und Porträts können sich erst nach dem Ausloggen aktualisieren.</p>
   </footer>
   <script type="module" src="/app.js"></script>
 </body>
