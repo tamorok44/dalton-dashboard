@@ -102,6 +102,33 @@ try {
     try {
       await page.goto(character.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.getByText(character.name, { exact: false }).first().waitFor({ state: 'visible', timeout: 25000 });
+
+      if (character.slug === 'chucky-dalton') {
+        const images = await page.locator('img').evaluateAll(els => els.map(e => ({ src: e.getAttribute('src'), currentSrc: e.currentSrc, loaded: e.complete && e.naturalWidth > 0 })).filter(e => (e.src || e.currentSrc || '').includes('render.worldofwarcraft.com')));
+        console.log('DIAG images', JSON.stringify(images).slice(0,2200));
+        await clickTab(page, 'Ausrüstung');
+        console.log('DIAG equipment', JSON.stringify(await page.locator('div.a-slot').allInnerTexts()).slice(0,2600));
+        console.log('DIAG equipment html', (await page.locator('div.a-slot').first().evaluate(e => e.outerHTML)).slice(0,1500));
+        await clickTab(page, 'Talente');
+        console.log('DIAG talents', (await page.locator('body').innerText()).slice(-4000));
+        try {
+          const official = await page.request.get('https://worldofwarcraft.blizzard.com/en-gb/forever/eu/armory/character/' + character.slug, { timeout: 15000 });
+          console.log('DIAG official status', official.status());
+          if (official.ok()) {
+            const html = await official.text();
+            const match = html.match(/var characterProfileInitialState = (\{.*?\});\s*<\/script>/s);
+            if (match) {
+              const state = JSON.parse(match[1]);
+              console.log('DIAG state keys', Object.keys(state));
+              console.log('DIAG character keys', Object.keys(state.character || {}));
+              for (const key of ['statistics','stats','equipment','talents','specializations','media','characterMedia','professions']) {
+                if (state.character?.[key]) console.log('DIAG state.' + key, JSON.stringify(state.character[key]).slice(0,1900));
+              }
+            } else console.log('DIAG no embedded JSON, HTML length', html.length);
+          }
+        } catch(e) { console.log('DIAG official request error', e.message); }
+      }
+
       const headerText = await page.locator('body').innerText();
       if (!headerText.toLowerCase().includes(character.name.toLowerCase())) throw new Error('Charaktername nicht gefunden');
       const levelMatch = headerText.match(/\b(?:Stufe|Level)\s+(\d{1,2})\b/i);
