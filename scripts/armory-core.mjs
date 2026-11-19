@@ -115,7 +115,10 @@ async function germanGearFor(slug,name,baseGear){
  });
  if(!response.ok)throw new Error('ForeverSpec HTTP '+response.status);
  const html=await response.text();
- if(!html.toLowerCase().includes(name.toLowerCase()))throw new Error('ForeverSpec lieferte falsches Profil');
+ if(!html.toLowerCase().includes(name.toLowerCase())&&!html.toLowerCase().includes(slug.toLowerCase())){
+  const title=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i)?.[1]?.replace(/\\s+/g,' ').slice(0,120)||'kein Titel';
+  throw new Error('ForeverSpec-Profil nicht bestätigt: '+title+', HTML '+html.length+' Zeichen');
+ }
  return extractGermanGear(html,baseGear);
 }
 
