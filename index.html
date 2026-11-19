@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111318">
+  <meta name="description" content="Gemeinsames WoW-Forever-Dashboard der Dalton-Brüder">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <title>Die Dalton Brüder</title>
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">World of Warcraft: Forever · EU · PvP · Allianz</p>
+      <h1>Die Dalton Brüder</h1>
+      <p class="subtitle">Cole · Chucky · Dolly · Viola</p>
+    </div>
+    <button id="refreshButton" class="refresh">↻ Neu laden</button>
+  </header>
+  <main>
+    <section id="summary" class="summary" aria-label="Gruppenübersicht"></section>
+    <p id="status" class="status">Daten werden geladen …</p>
+    <section id="cards" class="grid" aria-live="polite"></section>
+  </main>
+  <footer>
+    <span>Automatisch aus öffentlichen ForeverSpec-Profilen aktualisiert.</span>
+  </footer>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
