@@ -41,4 +41,6 @@ body{background:radial-gradient(ellipse at 50% 0%,#244466 0%,#152638 26%,#151819
 
 /* Portrait framing correction: centered actual zoom, not bottom displacement */
 .card .portrait{display:block;position:relative;overflow:hidden}
-.card .portrait img.character-render{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;object-position:center center;transform:scale(1.28);transform-origin:50% 50%;}
+.card .portrait img.character-render{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;object-position:center center;transform:scale(1.65);transform-origin:50% 50%;}
+
+@media(max-width:720px){.card .portrait img.character-render{transform:scale(1.55)}}
