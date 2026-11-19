@@ -24,10 +24,10 @@
           "unverified": false
         },
         {
-          "name": "Kochen",
+          "name": "Kochkunst",
           "current": 130,
           "max": 150,
-          "unverified": true
+          "unverified": false
         },
         {
           "name": "Angeln",
@@ -38,12 +38,6 @@
         {
           "name": "Erste Hilfe",
           "current": 69,
-          "max": 150,
-          "unverified": false
-        },
-        {
-          "name": "Kochkunst",
-          "current": 130,
           "max": 150,
           "unverified": false
         }
@@ -121,10 +115,10 @@
           "unverified": false
         },
         {
-          "name": "Kochen",
+          "name": "Kochkunst",
           "current": 2,
           "max": 75,
-          "unverified": true
+          "unverified": false
         },
         {
           "name": "Angeln",
@@ -135,12 +129,6 @@
         {
           "name": "Erste Hilfe",
           "current": 32,
-          "max": 75,
-          "unverified": false
-        },
-        {
-          "name": "Kochkunst",
-          "current": 2,
           "max": 75,
           "unverified": false
         }
@@ -214,10 +202,10 @@
           "unverified": false
         },
         {
-          "name": "Kochen",
+          "name": "Kochkunst",
           "current": 6,
           "max": 75,
-          "unverified": true
+          "unverified": false
         },
         {
           "name": "Angeln",
@@ -228,12 +216,6 @@
         {
           "name": "Erste Hilfe",
           "current": 1,
-          "max": 75,
-          "unverified": false
-        },
-        {
-          "name": "Kochkunst",
-          "current": 6,
           "max": 75,
           "unverified": false
         }
