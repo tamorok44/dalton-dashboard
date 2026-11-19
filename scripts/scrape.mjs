@@ -115,7 +115,8 @@ try {
       await clickTab(page, 'Talente');
       const talentText = await page.locator('body').innerText();
       const talents = /Noch keine Talentpunkte verteilt/i.test(talentText) ? 'noch keine verteilt' : character.talents;
-      const mergedProfessions = new Map((character.professions || []).map(p => [p.name, { ...p, unverified: true }]));
+      const canonicalName = name => name === 'Kochen' ? 'Kochkunst' : name === 'Alchimie' ? 'Alchemie' : name;
+      const mergedProfessions = new Map((character.professions || []).map(p => [canonicalName(p.name), { ...p, name: canonicalName(p.name), unverified: true }]));
       for (const p of professions) mergedProfessions.set(p.name, { ...p, unverified: false });
       const result = {
         ...character,
