@@ -21,6 +21,7 @@ export const FOREVER_CHARACTER_ENDPOINTS={
   mythicKeystone:'/mythic-keystone-profile',
   pvp:'/pvp-summary',
   quests:'/quests',
+  completedQuests:'/quests/completed',
   reputations:'/reputations',
   titles:'/titles',
   hunterPets:'/hunter-pets'
