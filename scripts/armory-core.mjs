@@ -1,3 +1,4 @@
+import {blizzardApiConfigured,fetchForeverProfile} from './blizzard-api.mjs';
 const classNames = { Druid: 'Druide', Mage: 'Magier', Hunter: 'Jäger', Priest: 'Priester', Warlock: 'Hexenmeister', Paladin: 'Paladin', Warrior: 'Krieger', Rogue: 'Schurke', Shaman: 'Schamane' };
 const professionNames = { Alchemy:'Alchemie', Herbalism:'Kräuterkunde', Mining:'Bergbau', Skinning:'Kürschnerei', Leatherworking:'Lederverarbeitung', Blacksmithing:'Schmiedekunst', Engineering:'Ingenieurskunst', Tailoring:'Schneiderei', Enchanting:'Verzauberkunst', Cooking:'Kochkunst', Fishing:'Angeln', 'First Aid':'Erste Hilfe' };
 const statNames = { HEALTH:'Gesundheit', MANA:'Mana', STRENGTH:'Stärke', AGILITY:'Beweglichkeit', STAMINA:'Ausdauer', INTELLECT:'Intelligenz', SPIRIT:'Willenskraft', ARMOR:'Rüstung', ATTACKPOWER:'Angriffskraft', ITEMLEVEL:'Gegenstandsstufe', DEFENSE:'Verteidigung' };
@@ -174,8 +175,19 @@ const updated=[];
 let success=0;
 for(const old of characters){
   try{
+    const apiCheckedAt=new Date().toISOString();
+    let apiProfileError;
+    const apiProfilePromise=blizzardApiConfigured()
+      ?fetchForeverProfile(old.slug).catch(error=>{
+        apiProfileError=String(error.message).slice(0,160);
+        console.warn(old.name+': Blizzard Forever API: '+apiProfileError);
+        return null;
+      })
+      :Promise.resolve(null);
     const c=await fetchCharacter(old.slug);
-    const level=Number(c.level);
+    const apiProfile=await apiProfilePromise;
+    const apiLevel=Number(apiProfile?.level);
+    const level=Number.isInteger(apiLevel)?apiLevel:Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
     const ps=professions(c);
     const knownProfessions=new Map((old.professions||[]).map(p=>[p.name,{...p,unverified:true}]));
@@ -234,9 +246,16 @@ for(const old of characters){
     const next={
       ...old,
       level,
-      class:classNames[c.class?.name]||old.class,
-      race:c.race?.name?.includes('Skyborne')?'Himmelsgeborene':old.race,
-      gender:characterGender(c)||old.gender||null,
+      class:classNames[apiProfile?.character_class?.name||c.class?.name]||old.class,
+      race:String(apiProfile?.race?.name||c.race?.name||'').includes('Skyborne')?'Himmelsgeborene':old.race,
+      gender:characterGender(apiProfile)||characterGender(c)||old.gender||null,
+      faction:apiProfile?.faction?.name==='Alliance'?'Allianz':apiProfile?.faction?.name||old.faction||'Allianz',
+      blizzardCharacterId:Number.isInteger(Number(apiProfile?.id))?Number(apiProfile.id):old.blizzardCharacterId,
+      experience:Number.isInteger(Number(apiProfile?.experience))?Number(apiProfile.experience):old.experience,
+      achievementPoints:Number.isInteger(Number(apiProfile?.achievement_points))?Number(apiProfile.achievement_points):old.achievementPoints,
+      averageItemLevel:Number.isInteger(Number(apiProfile?.average_item_level))?Number(apiProfile.average_item_level):old.averageItemLevel,
+      equippedItemLevel:Number.isInteger(Number(apiProfile?.equipped_item_level))?Number(apiProfile.equipped_item_level):old.equippedItemLevel,
+      ruleset:apiProfile?.ruleset?.name?{id:Number(apiProfile.ruleset.id)||undefined,name:apiProfile.ruleset.name}:old.ruleset,
       professions:currentProfessions,
       professionsVerified,
       stats:{...(old.stats||{}),...st},
@@ -255,14 +274,18 @@ for(const old of characters){
         (img!==old.imageUrl||(timestamp(c.lastUpdatedTimestamp)&&timestamp(c.lastUpdatedTimestamp)!==old.sourceUpdatedAt))
         ?now:old.imageCheckedAt,
       scrapedAt:now,
+      lastLoginAt:timestamp(apiProfile?.last_login_timestamp??c.lastLoginTimestamp??c.last_login_timestamp)||old.lastLoginAt,
       sourceUpdatedAt:timestamp(c.lastUpdatedTimestamp)||old.sourceUpdatedAt,
+      apiProfileVerified:Boolean(apiProfile),
+      apiProfileCheckedAt:apiCheckedAt,
+      apiProfileError:apiProfile?undefined:apiProfileError||old.apiProfileError,
       statsVerified,
       imageVerified:renderPattern.test(img||''),
       talentsVerified:ta!==null,
       scrapeOk:true,
       scrapeError:undefined,
       dataStatus:'live',
-      source:'Blizzard Armory'
+      source:apiProfile?'Blizzard API + Armory':'Blizzard Armory'
     };
     updated.push(next);
     success++;

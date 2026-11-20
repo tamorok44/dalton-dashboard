@@ -170,6 +170,14 @@ function keepNewestProfiles(data){
     };
   })};
 }
+function lastActivity(c){
+ const options={dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'};
+ const login=Date.parse(c.lastLoginAt||'');
+ if(Number.isFinite(login)){
+   return 'Zuletzt im Spiel: <strong>'+esc(new Date(login).toLocaleString('de-DE',options))+'</strong> · Blizzard API';
+ }
+ return 'Zuletzt im Spiel: von Blizzard nicht angegeben';
+}
 function render(data,{live=false,success=null}={}){
  displayedData=data;
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
@@ -197,7 +205,8 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
     <div class="level" aria-label="Stufe ${esc(c.level)}"><div class="level-inner"><span>Stufe</span><strong>${esc(c.level)}</strong></div></div>
   </div>
   ${renderPortrait(c)}
-  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">Allianz · EU-PvP</span></div>
+  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">${esc(c.faction||'Allianz')} · EU-${esc(c.ruleset?.name||'PvP')}</span></div>
+  <p class="status activity-note">${lastActivity(c)}</p>
   <p class="status">${c.scrapeOk===false?"⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
   <div class="section"><h3>Talente${c.talentsVerified&&c.scrapeOk!==false?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
   <div class="section professions-section"><h3>Berufe</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions,c.scrapeOk===false)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
