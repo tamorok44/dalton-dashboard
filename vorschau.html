@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101b2a">
+  <meta name="description" content="Die Daltons – vier Himmelsgeborene des Hohen Ordens. Ein wilder Himmel. Das Western-Fantasy-Hauptquartier unserer WoW-Forever-Bande.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="preload" href="./skyborne-horizon.svg" as="image" type="image/svg+xml">
+  <style>/* DIE DALTONS — SKYBORNE FRONTIER
+   Original WoW character images, High Order leylines and Western wanted posters. */
+:root{
+  color-scheme:dark;
+  --ink:#0a111c;--night:#0f1928;--wood:#312118;--leather:#281d19;
+  --gold:#e9bd76;--gold-deep:#9f7542;--cream:#ffe9c2;
+  --paper:#e2caa5;--muted:#b3ad9f;--line:rgba(217,163,92,.40);
+  --sky:#80d7d6;--text:#f6e9d2;--ok:#94d8a5;
+  --display: "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --body:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--text);font-family:var(--body);
+  background:
+    radial-gradient(ellipse 70% 36% at 48% -4%,rgba(67,122,143,.26),transparent 90%),
+    radial-gradient(ellipse 40% 40% at 0% 53%,rgba(107,72,48,.18),transparent 95%),
+    radial-gradient(ellipse 35% 36% at 100% 70%,rgba(31,117,121,.15),transparent 95%),
+    repeating-linear-gradient(94deg,rgba(213,161,105,.012) 0 1px,transparent 1px 4px),
+    #0a1019
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(#f8db9e 0.55px,transparent .8px);
+  background-size:41px 47px;opacity:.055
+}
+button{font:inherit}button:focus-visible,summary:focus-visible{outline:3px solid var(--sky);outline-offset:4px}
+.hero{position:relative;isolation:isolate;min-height:590px;overflow:hidden;background:#142338;border-bottom:7px ridge #94643e;box-shadow:0 25px 62px #03070dcc}
+.hero-art{position:absolute;inset:0;z-index:-3;background:url("./skyborne-horizon.svg") center 57%/cover no-repeat;filter:saturate(1.05)}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(4,9,17,.39),rgba(2,8,17,.18) 30%,rgba(5,9,19,.28) 73%,rgba(4,9,18,.5)),linear-gradient(180deg,rgba(4,11,22,.42),transparent 22%,rgba(6,11,21,.19) 66%,rgba(6,9,15,.72))}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.34;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 6px,rgba(254,221,168,.018) 6px 7px)}
+.hero-frame{position:absolute;inset:16px 16px 14px;pointer-events:none;border:1px solid rgba(236,199,134,.48);z-index:2}
+
+/* Vier echte Himmelsgeborene als leise Lichtgestalten hinter dem Western-Schriftzug. */
+.hero-cast{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.hero-cast::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(8,18,31,.14) 19%,rgba(8,18,31,.30) 38%,rgba(8,18,31,.30) 62%,rgba(8,18,31,.14) 81%,transparent 100%)}
+.hero-figure{position:absolute;bottom:5px;width:23%;height:73%;object-fit:contain;object-position:center bottom;opacity:.51;transform:scale(1.45);transform-origin:50% 85%;filter:drop-shadow(0 15px 12px rgba(2,10,20,.75)) saturate(.70) brightness(.82);-webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 15%,#000 77%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0%,#000 15%,#000 77%,transparent 100%)}
+.hero-figure-1{left:0%;bottom:6px;opacity:.40}
+.hero-figure-2{left:13%;bottom:-9px}
+.hero-figure-3{right:13%;bottom:0;opacity:.47}
+.hero-figure-4{right:0%;bottom:-13px;opacity:.40}
+.hero-content{z-index:1}
+@media(max-width:1130px){.hero-cast{display:none}}
+
+.hero-frame::before,.hero-frame::after{content:"✦";position:absolute;top:-12px;color:#eac791;background:#132436;padding:0 12px;font-size:18px}
+.hero-frame::before{left:30px}.hero-frame::after{right:30px}
+.hero-content{width:min(1240px,calc(100% - 72px));min-height:576px;margin:auto;position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between}
+.hero-topline,.hero-bottomline{display:flex;align-items:center;justify-content:space-between;gap:20px;color:#f2ddad;font-size:.69rem;font-weight:850;letter-spacing:.24em;text-transform:uppercase;text-shadow:0 2px 8px #071320}
+.hero-topline{padding-top:37px}.worldmark{color:#f4d49b}.hero-division{color:#bce8e4}
+.hero-division span,.hero-bottomline span span{color:#e5bb75;margin:0 8px}
+.hero-bottomline{padding-bottom:41px;color:#f2d59f;letter-spacing:.19em}
+.tiny-star{color:#9ae4df}
+.hero-center{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 30px}
+.hero-crest{width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 9px 16px #040812b8) drop-shadow(0 0 20px #e1af6a3d);animation:crest-float 8s ease-in-out infinite}
+.hero-kicker{font-size:.77rem;font-weight:850;letter-spacing:.43em;text-transform:uppercase;color:#a7e7e4;text-shadow:0 2px 10px #041523;margin:16px 0 7px}
+.hero h1{margin:0;line-height:.94;text-transform:uppercase;font-family:var(--display);font-weight:900;letter-spacing:.075em;filter:drop-shadow(0 6px 10px #010a15)}
+.hero-the{font-size:clamp(2.3rem,5.4vw,5rem);color:#f7e2b1;font-style:italic;letter-spacing:.005em;text-transform:none;text-shadow:0 3px 1px #372313,1px 0 #986d41}
+.hero-family{
+  display:block;font-size:clamp(4.4rem,12vw,9.2rem);line-height:.91;letter-spacing:.08em;
+  background:linear-gradient(180deg,#fff9d8 0%,#edc88a 35%,#b6814d 65%,#f7d397 81%,#805438 100%);
+  color:transparent;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-stroke:1px rgba(84,50,34,.8);
+  text-shadow:0 5px 0 rgba(21,22,30,.60),0 11px 21px rgba(2,7,16,.86)
+}
+.hero-rule{margin:19px 0 8px;display:flex;align-items:center;justify-content:center;gap:18px;color:#cbe9df;width:min(365px,90%)}
+.hero-rule::before,.hero-rule::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#efc185)}
+.hero-rule::after{transform:rotate(180deg)}
+.hero-subtitle{margin:0;color:#ffead0;font-size:clamp(1.02rem,2vw,1.43rem);font-weight:780;letter-spacing:.035em;text-shadow:0 2px 12px #020918}
+.hero-story{margin:10px 0 0;color:#d4dfe0;font:italic 1.03rem var(--display);text-shadow:0 2px 8px #08111c}
+main{position:relative;width:min(1220px,calc(100% - 42px));margin:-21px auto 0;z-index:5}
+.command-deck{
+  position:relative;padding:23px 28px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  background:linear-gradient(115deg,rgba(61,42,28,.98),rgba(34,29,29,.98) 49%,rgba(21,40,51,.98));
+  border:2px solid #be955f;border-radius:7px;box-shadow:inset 0 0 0 4px rgba(13,15,20,.72),0 18px 32px #05080e9c
+}
+.command-deck::before,.command-deck::after{content:"◆";position:absolute;font-size:.65rem;color:#edc380;top:8px}
+.command-deck::before{left:11px}.command-deck::after{right:11px}
+.chapter-eyebrow{font-size:.64rem;letter-spacing:.24em;color:#8ed1d0;font-weight:850;margin:0 0 4px}
+.command-title h2{font:900 clamp(1.28rem,3vw,1.75rem)/1.1 var(--display);margin:0;color:#f2d19c;text-shadow:0 2px #120c0b;text-transform:uppercase;letter-spacing:.085em}
+.command-description{font-size:.79rem;color:#c7bda9;margin:6px 0 0}
+.command-actions{display:flex;flex-direction:column;align-items:center;gap:6px}
+.refresh{
+  appearance:none;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:10px;
+  background:linear-gradient(180deg,#3e777e 0%,#224f64 48%,#18374d 100%);
+  border:2px solid #dab47a;border-radius:5px;box-shadow:inset 0 1px #9bf1ec70,inset 0 -4px #041724a1,0 3px 0 #110f12,0 6px 19px #050d18ad;
+  color:#fff6df;font-weight:900;font-size:.87rem;letter-spacing:.045em;padding:12px 23px;white-space:nowrap;min-height:46px;transition:filter .15s,transform .15s
+}
+.refresh:hover:not(:disabled){filter:brightness(1.16);transform:translateY(-2px)}
+.refresh:disabled{opacity:.72;cursor:progress}
+.refresh span{font-size:1.38rem;line-height:.7;color:#d7fdf4}
+.refresh-hint{font:.73rem var(--display);font-style:italic;color:#bea88c}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0 11px}
+.stat{position:relative;min-height:100px;overflow:hidden;padding:20px 20px 18px;background:linear-gradient(165deg,rgba(39,55,63,.92),rgba(19,24,31,.98) 55%,rgba(45,32,25,.9));border:1px solid #856c4c;border-radius:4px;box-shadow:inset 0 0 0 3px #151b22,0 8px 18px #02060a75}
+.stat::before{content:"✧";position:absolute;right:15px;top:8px;font-size:1.4rem;color:#7acac4;opacity:.27}
+.stat::after{content:"";position:absolute;left:12px;right:12px;bottom:8px;height:1px;background:linear-gradient(90deg,transparent,#b0885d,transparent)}
+.stat small{display:block;margin:0 0 8px;color:#bfcbd0;font-size:.67rem;font-weight:850;text-transform:uppercase;letter-spacing:.12em}
+.stat strong{font:900 clamp(1.5rem,2.7vw,2.05rem)/1.05 var(--display);color:#f6d69d;text-shadow:0 2px #281711;font-variant-numeric:tabular-nums}
+.status{font-size:.76rem;color:#a9b6b8;margin:9px 0 0;line-height:1.55}
+main>.status{padding-left:5px}
+.roster-heading{display:flex;align-items:center;text-align:center;gap:22px;margin:41px 0 26px}
+.roster-rule{height:1px;flex:1;background:linear-gradient(90deg,transparent,#b48e5a 75%,#e1bc7d)}
+.roster-rule:last-child{transform:rotate(180deg)}
+.roster-title{flex:0 0 auto}
+.roster-kicker{color:#84cbd0;letter-spacing:.25em;font-size:.62rem;font-weight:850}
+.roster-title h2{font:900 clamp(1.9rem,3.8vw,3.35rem)/1.12 var(--display);text-transform:uppercase;letter-spacing:.14em;color:#f2d39f;margin:5px 0;text-shadow:0 2px 0 #2c2016,0 6px 13px #060910}
+.roster-title p{margin:0;color:#aaa597;font:italic .95rem var(--display)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;align-items:start;margin-bottom:24px}
+.card{
+  --class:#e4ba77;--class-glow:rgba(200,159,99,.25);
+  position:relative;isolation:isolate;min-width:0;padding:22px;
+  border:3px solid #926b47;border-radius:6px;
+  background:
+    linear-gradient(150deg,rgba(247,194,121,.075),transparent 34%),
+    repeating-linear-gradient(90deg,rgba(225,168,96,.013) 0 2px,transparent 2px 8px),
+    linear-gradient(145deg,#39291e 0%,#25232a 33%,#151c26 66%,#2a211d 100%);
+  box-shadow:inset 0 0 0 3px #17181d,inset 0 0 0 5px rgba(196,150,90,.36),0 19px 47px #03060cb8,0 2px 0 #ddb47b52;
+  transition:box-shadow .2s,border-color .2s
+}
+.card:hover{border-color:#bd935d;box-shadow:inset 0 0 0 3px #17181d,inset 0 0 0 5px rgba(225,175,104,.43),0 22px 50px #03060cd9,0 0 30px var(--class-glow)}
+.card::before,.card::after{content:"✣";pointer-events:none;position:absolute;font-size:23px;color:#d6b281;text-shadow:0 2px #0e0e12;z-index:3}
+.card::before{left:5px;top:1px}.card::after{right:5px;top:1px}
+.card.mage{--class:#67d4f0;--class-glow:rgba(63,199,235,.22)}
+.card.hunter{--class:#aad372;--class-glow:rgba(170,211,114,.20)}
+.card.druid{--class:#ff9b48;--class-glow:rgba(255,124,10,.17)}
+.cardhead{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 8px 12px;border-bottom:1px solid #a9815375;position:relative}
+.cardhead::after{content:"";position:absolute;bottom:-3px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#f2d59f,transparent)}
+.card-intro{min-width:0}
+.card-overline{display:block;color:#b1a998;font-size:.62rem;letter-spacing:.23em;text-transform:uppercase;font-weight:850;margin-bottom:3px}
+.name{font:900 clamp(1.8rem,3.2vw,2.45rem)/1.08 var(--display);color:#f5dfb8;margin:0;letter-spacing:.038em;text-shadow:0 3px 0 #130f13,0 0 17px var(--class-glow);overflow-wrap:anywhere}
+.name::first-letter{color:var(--class)}
+.player{font-size:.77rem;color:#b2b6b5;margin:7px 0 0}
+.player strong{color:#e8c998;font-weight:750}
+.level{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:76px;height:76px;transform:rotate(8deg);background:radial-gradient(circle at 45% 25%,#3d454e,#13212c 77%);border:2px solid #d6ac6d;border-radius:50%;box-shadow:inset 0 0 0 4px #1b2026,0 2px 9px #020810a9;color:#f3dba8;font:900 1.46rem var(--display);text-align:center}
+.level span{display:block;font:800 .53rem var(--body);text-transform:uppercase;letter-spacing:.16em;color:#a9d9d6;margin-bottom:2px}
+.portrait{position:relative;height:375px;margin:15px 0 0;overflow:hidden;border:2px solid #b58a56;border-radius:4px;isolation:isolate;background:linear-gradient(180deg,#1a364b 0%,#385b65 39%,#68545b 68%,#2c272a 100%);box-shadow:inset 0 0 0 4px #1a242b,0 5px 13px #05060a9c}
+.portrait::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 38% 45% at 50% 48%,rgba(158,242,239,.32) 0%,rgba(114,197,206,.12) 51%,transparent 76%),
+    url('./skyborne-horizon.svg') center 53%/auto 120% no-repeat;
+  filter:saturate(.78)
+}
+.portrait::after{
+  content:"";pointer-events:none;position:absolute;z-index:3;inset:0;
+  border:8px solid transparent;outline:1px solid #ebc3866b;outline-offset:-10px;
+  background:linear-gradient(180deg,rgba(6,16,27,.12) 0%,transparent 21%,transparent 62%,rgba(5,11,16,.76) 100%);
+  box-shadow:inset 0 0 29px #0610177f
+}
+.portrait img.character-render{
+  position:absolute;z-index:2;inset:0;width:100%;height:100%;max-width:none;
+  display:block;object-fit:contain;object-position:center center;transform:scale(1.56);
+  transform-origin:50% 50%;filter:drop-shadow(0 15px 18px #01080ea8);
+  transition:transform .35s ease
+}
+.card:hover .portrait img.character-render{transform:scale(1.61)}
+.portrait figcaption{position:absolute;z-index:4;bottom:0;left:0;right:0;margin:0;padding:24px 10px 12px;text-align:center;color:#f2d3a0;font-size:.63rem;letter-spacing:.04em;text-shadow:0 1px #060e14;pointer-events:none}
+.portrait-missing{display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:#c0c7c5}
+.portrait-missing::before,.portrait-missing::after{display:none}
+.meta{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0}
+.pill{font-size:.68rem;font-weight:800;letter-spacing:.02em;color:#e9d2a7;padding:6px 11px;border:1px solid #7e6c57;border-radius:2px;background:linear-gradient(180deg,#44372c,#222734)}
+.pill:first-child{color:var(--class);border-color:var(--class)}
+.pill:nth-child(2){color:#a5e1de;border-color:#528b8f}
+.card>.status{margin:12px 2px 14px;color:#999f9e;font-size:.69rem}
+.section{margin-top:17px;padding:17px 1px 0;border-top:1px solid rgba(209,163,103,.31)}
+.section h3{display:flex;align-items:center;gap:8px;font:900 .77rem var(--body);letter-spacing:.16em;text-transform:uppercase;color:#f2cd93;margin:0 0 14px}
+.section h3::before{content:"✦";font-size:.65rem;color:var(--class,#d6b27a)}
+.section .rows{display:grid;gap:7px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;min-width:0;padding:4px 0;border-bottom:1px dotted rgba(208,186,148,.14);color:#f2e6d2;font-size:.81rem}
+.row span{color:#c2b4a2}
+.row strong{font-variant-numeric:tabular-nums;font-weight:800;text-align:right;overflow-wrap:anywhere}
+.vitals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.vital{position:relative;min-width:0;padding:14px 14px 13px;border:1px solid #776449;border-radius:3px;background:linear-gradient(155deg,rgba(48,52,55,.84),rgba(17,26,35,.95));box-shadow:inset 0 0 0 2px #141a21}
+.vital::before{content:"";height:2px;position:absolute;top:0;left:9px;right:9px;background:linear-gradient(90deg,transparent,#d9b379,transparent);opacity:.55}
+.vital small{display:block;font-size:.69rem;color:#c3bbae;font-weight:850;letter-spacing:.035em}
+.vital strong{display:block;margin-top:5px;font:900 1.8rem var(--display);font-variant-numeric:tabular-nums;line-height:1.05;color:#fce2ab}
+/* Mana und alle übrigen Hauptwerte verwenden denselben neutralen Schriftton. */
+/* Gegenstandsstufe verwendet denselben neutralen Messingrahmen und Schriftton wie die anderen Hauptwerte. */
+.details{margin-top:14px}
+.details summary{
+  position:relative;cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;min-height:41px;padding:10px 31px 10px 13px;
+  border:1px solid #8d714c;border-radius:3px;background:linear-gradient(115deg,#3a2c22,#26242b 75%,#202f35);
+  color:#f6d5a0;font-size:.78rem;font-weight:850;line-height:1.4;
+  box-shadow:inset 0 1px #cfa16d33;transition:filter .15s
+}
+.details summary::-webkit-details-marker{display:none}
+.details summary::before{content:"◇";font-size:1.13rem;line-height:1;color:var(--class,#d6b27a)}
+.details summary::after{content:"⌄";position:absolute;right:13px;top:7px;font-size:1.3rem;color:#f5d49b;transform-origin:center;transition:transform .15s}
+.details[open] summary::after{transform:rotate(180deg)}
+.details summary:hover{filter:brightness(1.15)}
+.attributes .rows{padding:12px 3px 5px}
+.equipment{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:11px}
+.equip{display:flex;align-items:center;min-width:0;min-height:70px;gap:9px;padding:9px;border:1px solid #6c553b;border-radius:3px;background:linear-gradient(130deg,#272323,#171d26);font-size:.76rem;box-shadow:inset 0 0 0 1px #12161e}
+.equip-filled{border-left:3px solid var(--class);background:linear-gradient(115deg,rgba(36,44,48,.95),rgba(25,26,29,.92))}
+.equip>div{min-width:0;overflow-wrap:anywhere}
+.equip b{display:block;color:#baa78d;text-transform:uppercase;letter-spacing:.075em;font-size:.61rem;font-weight:800;margin-bottom:4px}
+.equip-name{display:block;font-weight:800;line-height:1.36;text-shadow:0 1px 1px #000a;color:var(--text)}
+.equip small{display:block;color:#b3ac9f;font-size:.65rem;margin-top:4px}
+.equip-icon{flex:0 0 43px;width:43px;height:43px;object-fit:cover;border:2px solid #9b7955;border-radius:3px;background:#17202c;box-shadow:0 3px 6px #01060da3}
+.equip-placeholder{display:flex;align-items:center;justify-content:center;flex:0 0 43px;width:43px;height:43px;border:1px dashed #675c50;border-radius:3px;background:#202126;color:#7b807f;font-size:1.24rem}
+.equip-empty{background:#141a21b6;border:1px dashed #554b40;color:#8a8f8b}
+.equip-empty b{color:#97928a}
+.equip-empty span:not(.equip-placeholder){color:#8b9290;font-style:italic}
+.quality-poor{color:#9d9d9d}
+.quality-common{color:#fff}
+.quality-uncommon{color:#1eff00}
+.quality-rare{color:#0070dd}
+.quality-epic{color:#a335ee}
+.quality-legendary{color:#ff8000}
+.quality-artifact{color:#e6cc80}
+.quality-heirloom{color:#00ccff}
+.quality-unknown{color:var(--text)}
+footer{margin:58px auto 0;padding:25px 16px 42px;max-width:960px;text-align:center;border-top:1px solid #59432e;color:#b6aca0;font-size:.81rem}
+.footer-ornament{color:#dfb976;letter-spacing:.6em;margin:0 0 11px}
+footer strong{color:#f0d29b;font:900 1.2rem var(--display);text-transform:uppercase;letter-spacing:.12em}
+footer>span{color:#93c5c6}
+footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
+.error{padding:10px 14px;border:1px solid #a45c4b;color:#f8c6af;background:#3c211e;border-radius:4px}
+@keyframes crest-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (max-width:1040px){
+  .hero{min-height:540px}.hero-content{min-height:528px}
+  .grid{gap:18px}.card{padding:17px}
+  .portrait{height:340px}
+  .equipment{grid-template-columns:1fr}
+}
+@media(max-width:740px){
+  .hero{min-height:530px}
+  .hero-content{width:calc(100% - 48px);min-height:518px}
+  .hero-topline,.hero-bottomline{font-size:.57rem;letter-spacing:.11em}
+  .hero-crest{width:92px;height:92px}
+  .hero-center{padding:20px 0}
+  .hero-kicker{letter-spacing:.27em;font-size:.65rem}
+  .hero-family{font-size:clamp(3.35rem,12vw,5.9rem);letter-spacing:.035em}
+  .hero-the{font-size:clamp(2.4rem,6.4vw,3.3rem)}
+  .hero-story{font-size:.93rem}
+  main{width:calc(100% - 26px);margin-top:-14px}
+  .command-deck{padding:20px;flex-wrap:wrap}
+  .command-actions{align-items:flex-start}
+  .summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{grid-template-columns:1fr;gap:21px}
+  .card{padding:18px}
+  .portrait{height:420px}
+  .equipment{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .roster-heading{gap:10px}
+  .roster-kicker{letter-spacing:.12em;font-size:.55rem}
+}
+@media(max-width:520px){
+  .hero{min-height:508px}
+  .hero-content{min-height:497px;width:calc(100% - 41px)}
+  .hero-frame{inset:10px 9px 9px}
+  .hero-topline{padding-top:25px}
+  .hero-topline,.hero-bottomline{font-size:.49rem;letter-spacing:.065em}
+  .worldmark{max-width:54%}
+  .hero-division{text-align:right}
+  .hero-bottomline{padding-bottom:25px}
+  .hero-crest{width:76px;height:76px}
+  .hero-kicker{font-size:.56rem;letter-spacing:.21em;margin-top:12px}
+  .hero-the{font-size:2.1rem}
+  .hero-family{font-size:clamp(2.83rem,12.7vw,4.4rem);letter-spacing:.005em}
+  .hero-subtitle{font-size:1rem}
+  .hero-story{max-width:300px;font-size:.78rem;line-height:1.4}
+  .command-deck{padding:20px 15px 16px;gap:15px}
+  .command-title h2{font-size:1.42rem}
+  .refresh{width:100%;min-height:44px}
+  .command-actions{width:100%}
+  .refresh-hint{align-self:center}
+  .stat{min-height:89px;padding:17px 13px 14px}
+  .stat strong{font-size:1.56rem}
+  .stat small{font-size:.6rem}
+  .roster-heading{margin:37px 0 20px}
+  .roster-title h2{font-size:1.85rem;letter-spacing:.07em}
+  .roster-title p{font-size:.82rem}
+  .card{padding:13px}
+  .cardhead{padding:12px 5px}
+  .name{font-size:1.92rem}
+  .level{width:63px;height:63px;font-size:1.17rem}
+  .portrait{height:330px}
+  .portrait img.character-render{transform:scale(1.55)}
+  .card:hover .portrait img.character-render{transform:scale(1.55)}
+  .equipment{grid-template-columns:1fr}
+  .equip{min-height:65px}
+  .vital strong{font-size:1.52rem}
+  .pill{font-size:.61rem}
+}
+@media(max-width:355px){
+  .hero-family{font-size:2.65rem}
+  .hero-topline,.hero-bottomline{font-size:.43rem}
+  .name{font-size:1.65rem}
+  .portrait{height:290px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+}
+@media(display-mode:standalone){body{padding-bottom:env(safe-area-inset-bottom)}.hero-content{padding-top:env(safe-area-inset-top)}}
+
+
+/* Vier eigenständige Western-Fantasy-Kulissen hinter unveränderten Blizzard-Figuren. */
+.portrait[class*="scene-"]::before{
+  background-size:cover;
+  background-position:center 52%;
+  background-repeat:no-repeat;
+  filter:saturate(1.06) contrast(1.04);
+}
+.portrait.scene-cole::before{background-image:linear-gradient(180deg,rgba(5,17,35,.05),rgba(10,23,38,.10) 67%,rgba(9,12,23,.20)),url("./scene-cole.svg")}
+.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(48,82,42,.13),rgba(32,66,31,.08) 65%,rgba(12,25,15,.23)),url("./scene-dolly.svg?v=20261120b")}
+.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(255,140,47,.16),rgba(154,71,28,.08) 65%,rgba(32,17,15,.24)),url("./scene-chucky.svg?v=20261120b")}
+.portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(255,138,47,.15),rgba(153,69,24,.09) 65%,rgba(31,17,17,.22)),url("./scene-viola.svg")}
+.portrait .scene-label{
+  position:absolute;z-index:4;top:15px;left:17px;max-width:calc(100% - 34px);
+  padding:6px 11px 7px;
+  border:1px solid var(--class,#d4ae79);
+  box-shadow:inset 0 0 0 1px rgba(15,18,25,.6),0 2px 9px #0b121c88;
+  background:linear-gradient(110deg,rgba(20,27,34,.92),rgba(34,31,31,.85));
+  color:#f7d6a7;font:italic 750 .77rem var(--display);
+  letter-spacing:.03em;text-shadow:0 1px 2px #080a0f;
+}
+.portrait.scene-cole{border-color:var(--class)}
+.portrait.scene-dolly{border-color:var(--class)}
+.portrait.scene-chucky{border-color:var(--class)}
+.portrait.scene-viola{border-color:var(--class)}
+
+/* Explizit neutral: Gegenstandsstufe ist KEINE Klassenfarbe. */
+.vital:last-child{border-color:#776449;background:linear-gradient(155deg,rgba(48,52,55,.84),rgba(17,26,35,.95))}
+.vital:last-child strong{color:#fce2ab}
+
+/* WoW Forever: 0–300 bleibt einheitlich, die Freischaltung und der Fortschritt
+   übernehmen die Klassenfarbe. Gesperrte Stufen bleiben neutral dunkel. */
+.card.mage{
+  --skill-light:#c9f3ff;--skill-mid:#67d4f0;--skill-bottom:#238bb9;--skill-shadow:#175977;
+  --skill-open-top:#316f86;--skill-open-mid:#24576c;--skill-open-bottom:#18394c;
+  --skill-highlight:rgba(115,221,255,.45);
+}
+.card.hunter{
+  --skill-light:#edffcc;--skill-mid:#aad372;--skill-bottom:#6a9d42;--skill-shadow:#345a2e;
+  --skill-open-top:#507247;--skill-open-mid:#3e5d3d;--skill-open-bottom:#2c4733;
+  --skill-highlight:rgba(178,226,120,.45);
+}
+.card.druid{
+  --skill-light:#ffe2b4;--skill-mid:#ff9b48;--skill-bottom:#cf6422;--skill-shadow:#854019;
+  --skill-open-top:#985b36;--skill-open-mid:#75462c;--skill-open-bottom:#593523;
+  --skill-highlight:rgba(255,160,80,.47);
+}
+.professions-list{display:grid;gap:9px}
+.profession-scale{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;
+  padding:0 2px 4px;gap:3px;
+  color:#c4ac84;font:800 .67rem var(--body);font-variant-numeric:tabular-nums;letter-spacing:.07em;
+}
+.profession-scale span{display:block;text-align:right;padding-right:2px}
+.profession-scale span:not(:last-child){border-right:1px solid #77634873}
+.profession{
+  display:block;position:relative;min-width:0;padding:10px 11px 11px;
+  border:1px solid rgba(182,148,97,.40);border-radius:3px;
+  background:linear-gradient(110deg,rgba(28,40,44,.85),rgba(25,26,34,.89));
+  box-shadow:inset 0 0 0 1px rgba(9,12,18,.7);
+}
+.profession-head{display:flex;align-items:baseline;justify-content:space-between;gap:7px;margin:0 1px 8px;flex-wrap:wrap}
+.profession-label{color:#f2d7ab;font:800 .82rem var(--body);line-height:1.35}
+.profession-rank{
+  display:inline-flex;align-items:center;white-space:nowrap;padding:2px 7px;
+  color:#f3d0a0;font:800 .69rem var(--body);
+  border:1px solid #8b704d;border-radius:3px;background:#342b23;
+}
+.profession-track{
+  position:relative;isolation:isolate;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;
+  height:33px;overflow:hidden;padding:2px;
+  border:2px solid #987b52;border-radius:3px;
+  box-shadow:inset 0 2px 7px #090f1fc9,0 2px 8px #0b0d11ad;
+  background:linear-gradient(180deg,#101b25,#171c26);
+}
+.profession-segment{display:block;position:relative;overflow:hidden;min-width:0;
+  border-radius:1px;background:linear-gradient(180deg,#10171f,#171c26);box-shadow:inset 0 1px 4px #010a12}
+.profession-segment.is-unlocked{background:linear-gradient(180deg,var(--skill-open-top,#31575a),var(--skill-open-mid,#20444d) 70%,var(--skill-open-bottom,#19333f))}
+.profession-segment-fill{
+  position:absolute;inset:0 auto 0 0;display:block;
+  background:repeating-linear-gradient(115deg,rgba(255,255,255,.10) 0 10px,transparent 10px 20px),
+    linear-gradient(180deg,var(--skill-light,#b6efe4) 0%,var(--skill-mid,#6fc6c3) 33%,var(--skill-bottom,#368998) 78%,var(--skill-shadow,#226c80) 100%);
+  box-shadow:inset 0 1px 0 #ffffff8a,inset 0 -2px 0 var(--skill-shadow,#125266),2px 0 10px var(--skill-highlight,#8ee6d673);
+  transition:width .3s ease;
+}
+.profession-overlay{
+  position:absolute;z-index:2;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  font:900 .96rem var(--display);letter-spacing:.07em;color:#fff7e4;
+  text-shadow:0 1px 2px #06121d,0 2px 7px #04101b,1px 0 #04101b,-1px 0 #04101b;
+  font-variant-numeric:tabular-nums;
+}
+.profession-legend{
+  display:flex;align-items:center;justify-content:center;gap:11px;flex-wrap:wrap;
+  margin-top:12px;font-size:.66rem;color:#bcb3a2
+}
+.profession-legend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.profession-legend span::before{content:"";display:block;width:10px;height:10px;border:1px solid #776d5f;border-radius:2px}
+.profession-legend span:nth-child(1)::before{background:var(--skill-mid,#6fc6c3);border-color:var(--skill-light,#86d8cc)}
+.profession-legend span:nth-child(2)::before{background:var(--skill-open-mid,#2e5558);border-color:var(--skill-open-top,#477c80)}
+.profession-legend span:nth-child(3)::before{background:#131923;border-color:#555355}
+@media(max-width:520px){
+  .portrait .scene-label{font-size:.69rem;top:10px;left:10px}
+  .profession-track{height:36px}
+  .profession-legend{gap:7px;font-size:.61rem}
+}
+</style>
+<style>
+.dalton-preview-strip{position:relative;z-index:9999;width:100%;padding:9px 17px;text-align:center;background:#392d1f;border-bottom:2px solid #d3ab6d;font:700 12px/1.4 system-ui,sans-serif;color:#f3deb7;letter-spacing:.015em}
+.dalton-preview-strip strong{color:#abf4df}
+</style>
+  <title>Die Daltons · Aktuelle Vorschau</title>
+</head>
+<body><div class="dalton-preview-strip"><strong>AKTUELLE VORSCHAU</strong> · Alle neuen Farben und Berufsbalken · Daten aus dem öffentlichen GitHub-Stand · Live-Abruf direkt aus Blizzard nur auf der Hauptseite</div>
+  <header class="hero">
+    <div class="hero-art" aria-hidden="true"></div>
+    <div id="heroCast" class="hero-cast" aria-hidden="true"></div>
+    <div class="hero-frame" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-topline">
+        <span class="worldmark">✦ &nbsp; WORLD OF WARCRAFT: FOREVER</span>
+        <span class="hero-division">ALLIANZ <span aria-hidden="true">✧</span> HOHER ORDEN</span>
+      </div>
+      <div class="hero-center">
+        <img class="hero-crest" src="./dalton-crest.svg" alt="" width="144" height="144">
+        <p class="hero-kicker">Aus den Wolken von Zephras</p>
+        <h1><span class="hero-the">Die</span> <span class="hero-family">Daltons</span></h1>
+        <div class="hero-rule" aria-hidden="true"><span>✦</span></div>
+        <p class="hero-subtitle">Vier Himmelsgeborene. Ein wilder Himmel.</p>
+        <p class="hero-story">Der Hohe Orden hat seine Helden. Das Grenzland hat seine Legenden.</p>
+      </div>
+      <div class="hero-bottomline">
+        <span><span class="tiny-star" aria-hidden="true">✶</span> DAS HIMMLISCHE GRENZLAND</span>
+        <span>ZEPHRAS <span aria-hidden="true">✧</span> AZEROTH <span aria-hidden="true">✧</span> EU · PvP</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="command-deck" aria-label="Hauptquartier">
+      <div class="command-title">
+        <p class="chapter-eyebrow">✦ &nbsp; DAS HAUPTQUARTIER &nbsp; ✦</p>
+        <h2>Die Bande im Überblick</h2>
+        <p class="command-description">Vier Steckbriefe aus dem Hohen Orden. Direkt aus der Armory.</p>
+      </div>
+      <div class="command-actions">
+        <button id="refreshButton" class="refresh" type="button"><span aria-hidden="true">↻</span> Aktualisieren</button>
+        <span class="refresh-hint">Frische Kunde aus dem Grenzland</span>
+      </div>
+    </section>
+
+    <section id="summary" class="summary" aria-label="Gruppenübersicht"></section>
+    <p id="status" class="status" role="status">Die Steckbriefe werden geladen …</p>
+    <div class="roster-heading">
+      <div class="roster-rule" aria-hidden="true"></div>
+      <div class="roster-title">
+        <span class="roster-kicker">GESUCHT · IM NAMEN DES HOHEN ORDENS</span>
+        <h2>Die vier Daltons</h2>
+        <p>Jeder ein Original. Zusammen eine Legende.</p>
+      </div>
+      <div class="roster-rule" aria-hidden="true"></div>
+    </div>
+    <section id="cards" class="grid" aria-live="polite"></section>
+  </main>
+  <footer>
+    <div class="footer-ornament" aria-hidden="true">✦ &nbsp; ✧ &nbsp; ✦</div>
+    <strong>Die Daltons</strong> <span>· Der Hohe Orden · WoW: Forever</span>
+    <p>Charakterdaten der öffentlichen Blizzard-Armory. Ausrüstung und Porträts können sich erst nach dem Ausloggen aktualisieren.</p>
+  </footer>
+  <script type="module">// Public preview during Vercel deployment quota: data stays read-only.
+const PREVIEW_SNAPSHOT={"generatedAt":"2026-11-20T07:42:22.478Z","characters":[{"slug":"chucky-dalton","name":"Chucky Dalton","player":"Valentin","level":10,"class":"Druide","race":"Himmelsgeborene","talents":"Wilder Kampf: 1","url":"https://foreverspec.com/de/armory/eu/chucky-dalton/","professions":[{"name":"Kürschnerei","current":57,"max":75,"unverified":false},{"name":"Bergbau","current":46,"max":75,"unverified":false},{"name":"Kochkunst","current":2,"max":75,"unverified":false},{"name":"Angeln","current":11,"max":75,"unverified":false},{"name":"Erste Hilfe","current":32,"max":75,"unverified":false}],"stats":{"Gesundheit":207,"Mana":379,"Stärke":23,"Beweglichkeit":28,"Ausdauer":25,"Intelligenz":34,"Rüstung":197,"Angriffskraft":26,"Gegenstandsstufe":4},"equipment":[{"slot":"Rücken","item":"Einfacher Umhang des Jägers","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg","level":8,"quality":"UNCOMMON","sourceName":"Hunter's Simple Cloak","localized":true},{"slot":"Brust","item":"Banditenwams","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731374.jpg","level":7,"quality":"COMMON","sourceName":"Bandit's Jerkin","localized":true},{"slot":"Füße","item":"Stiefel des Überlebenskünstlers von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg","level":1,"quality":"COMMON","sourceName":"Thendal Survivalist's Boots","localized":true},{"slot":"Beine","item":"Ausgediente Hose","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731377.jpg","level":10,"quality":"COMMON","sourceName":"Well-Worn Pants","localized":true},{"slot":"Hemd","item":"Hemd des Überlebenskünstlers von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg","level":1,"quality":"COMMON","sourceName":"Thendal Survivalist's Shirt","localized":true},{"slot":"Taille","item":"Wolfsbalggürtel","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg","level":10,"quality":"COMMON","sourceName":"Wolfhide Belt","localized":true},{"slot":"Waffenhand","item":"Großstab der Zephrali","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7798447.jpg","level":14,"quality":"COMMON","sourceName":"Zephrali Greatstaff","localized":true},{"slot":"Handgelenke","item":"Vuldren-Tierhautarmschienen","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/132604.jpg","level":5,"quality":"COMMON","sourceName":"Vuldren Hide Bracers","localized":true}],"scrapeOk":true,"scrapedAt":"2026-11-20T07:42:02.537Z","dataStatus":"auto","imageUrl":"https://render.worldofwarcraft.com/forever-eu/character/237/75715821-main-raw.png","avatarUrl":"https://render.worldofwarcraft.com/forever-eu/character/237/75715821-avatar.jpg","imageCheckedAt":"2026-11-20T07:42:02.537Z","statsVerified":true,"equipmentVerified":true,"talentsVerified":true,"source":"Blizzard Armory","equipmentLanguage":"de","equipmentSource":"Blizzard Armory (de-DE)","professionsVerified":true,"imageVerified":true},{"slug":"cole-dalton","name":"Cole Dalton","player":"Christian","level":11,"class":"Magier","race":"Himmelsgeborene","talents":"Frost: 2","url":"https://foreverspec.com/de/armory/eu/cole-dalton/","professions":[{"name":"Alchemie","current":58,"max":75,"unverified":false},{"name":"Kräuterkunde","current":58,"max":150,"unverified":false},{"name":"Kochkunst","current":130,"max":150,"unverified":false},{"name":"Angeln","current":99,"max":150,"unverified":false},{"name":"Erste Hilfe","current":69,"max":150,"unverified":false}],"stats":{"Gesundheit":202,"Mana":535,"Stärke":18,"Beweglichkeit":26,"Ausdauer":23,"Intelligenz":40,"Rüstung":99,"Angriffskraft":8,"Gegenstandsstufe":3},"equipment":[{"slot":"Rücken","item":"Einfacher Umhang des Jägers","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg","level":8,"quality":"UNCOMMON","sourceName":"Hunter's Simple Cloak","localized":true},{"slot":"Füße","item":"Feldstiefel des Bauern","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7758819.jpg","level":10,"quality":"COMMON","sourceName":"Farmer's Field Boots","localized":true},{"slot":"Hände","item":"Handschuhe des Waldläufers von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7734215.jpg","level":5,"quality":"COMMON","sourceName":"Thendal Ranger's Gloves","localized":true},{"slot":"Ring 1","item":"Uraltes Erbstück","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg","level":1,"quality":"COMMON","sourceName":"Ancient Heirloom","localized":true},{"slot":"Beine","item":"Flickwerkgamaschen","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7751150.jpg","level":7,"quality":"COMMON","sourceName":"Patchwork Leggings","localized":true},{"slot":"Distanzwaffe","item":"Windgebundener Zauberstab","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7802125.jpg","level":10,"quality":"UNCOMMON","sourceName":"Windbough Wand","localized":true},{"slot":"Hemd","item":"Hemd des Lehrlings von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg","level":1,"quality":"COMMON","sourceName":"Thendal Apprentice's Shirt","localized":true},{"slot":"Waffenhand","item":"Fleckliger Ritualdolch","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/454058.jpg","level":10,"quality":"COMMON","sourceName":"Stained Ritual Dagger","localized":true},{"slot":"Handgelenke","item":"Elegante Manschetten","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7758820.jpg","level":10,"quality":"COMMON","sourceName":"Elegant Cuffs","localized":true}],"scrapeOk":true,"scrapedAt":"2026-11-20T07:42:09.148Z","dataStatus":"auto","imageUrl":"https://render.worldofwarcraft.com/forever-eu/character/247/75586551-main-raw.png","avatarUrl":"https://render.worldofwarcraft.com/forever-eu/character/247/75586551-avatar.jpg","imageCheckedAt":"2026-11-20T07:42:09.148Z","statsVerified":true,"equipmentVerified":true,"talentsVerified":true,"source":"Blizzard Armory","equipmentLanguage":"de","equipmentSource":"Blizzard Armory (de-DE)","professionsVerified":true,"imageVerified":true},{"slug":"dolly-dalton","name":"Dolly Dalton","player":"Max","level":11,"class":"Jäger","race":"Himmelsgeborene","talents":"Tierherrschaft: 1 · Treffsicherheit: 1","url":"https://foreverspec.com/de/armory/eu/dolly-dalton/","professions":[{"name":"Lederverarbeitung","current":1,"max":75,"unverified":false},{"name":"Kürschnerei","current":71,"max":75,"unverified":false},{"name":"Kochkunst","current":6,"max":75,"unverified":false},{"name":"Angeln","current":20,"max":75,"unverified":false},{"name":"Erste Hilfe","current":1,"max":75,"unverified":false}],"stats":{"Gesundheit":236,"Mana":405,"Stärke":22,"Beweglichkeit":39,"Ausdauer":30,"Intelligenz":30,"Rüstung":256,"Angriffskraft":63,"Gegenstandsstufe":3},"equipment":[{"slot":"Rücken","item":"Einfacher Umhang des Jägers","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg","level":8,"quality":"UNCOMMON","sourceName":"Hunter's Simple Cloak","localized":true},{"slot":"Brust","item":"Abgenutzte Lederweste","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/135009.jpg","level":9,"quality":"POOR","sourceName":"Worn Leather Vest","localized":true},{"slot":"Füße","item":"Abgenutzte Lederstiefel","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg","level":8,"quality":"POOR","sourceName":"Worn Leather Boots","localized":true},{"slot":"Ring 1","item":"Uraltes Erbstück","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg","level":1,"quality":"COMMON","sourceName":"Ancient Heirloom","localized":true},{"slot":"Beine","item":"Ausgediente Hose","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731377.jpg","level":10,"quality":"COMMON","sourceName":"Well-Worn Pants","localized":true},{"slot":"Distanzwaffe","item":"Bogen der Zephrali","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7810733.jpg","level":14,"quality":"COMMON","sourceName":"Zephrali Bow","localized":true},{"slot":"Hemd","item":"Hemd des Überlebenskünstlers von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg","level":1,"quality":"COMMON","sourceName":"Thendal Survivalist's Shirt","localized":true},{"slot":"Taille","item":"Wolfsbalggürtel","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg","level":10,"quality":"COMMON","sourceName":"Wolfhide Belt","localized":true},{"slot":"Waffenhand","item":"Ausbildungsschwert des Gorillas","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/135355.jpg","level":10,"quality":"UNCOMMON","sourceName":"Training Sword of the Gorilla","localized":true},{"slot":"Handgelenke","item":"Abgenutzte Lederarmschienen","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/132604.jpg","level":9,"quality":"POOR","sourceName":"Worn Leather Bracers","localized":true}],"scrapeOk":true,"scrapedAt":"2026-11-20T07:42:15.743Z","dataStatus":"auto","imageUrl":"https://render.worldofwarcraft.com/forever-eu/character/48/75594032-main-raw.png","avatarUrl":"https://render.worldofwarcraft.com/forever-eu/character/48/75594032-avatar.jpg","imageCheckedAt":"2026-11-20T07:42:15.743Z","statsVerified":true,"equipmentVerified":true,"talentsVerified":true,"source":"Blizzard Armory","equipmentLanguage":"de","equipmentSource":"Blizzard Armory (de-DE)","professionsVerified":true,"imageVerified":true},{"slug":"viola-dalton","name":"Viola Dalton","player":"Stephan","level":10,"class":"Druide","race":"Himmelsgeborene","talents":"noch keine verteilt","url":"https://foreverspec.com/de/armory/eu/viola-dalton/","professions":[{"name":"Alchemie","current":22,"max":75,"unverified":false},{"name":"Kräuterkunde","current":45,"max":75,"unverified":false},{"name":"Kochkunst","current":6,"max":75,"unverified":false},{"name":"Angeln","current":2,"max":75,"unverified":false},{"name":"Erste Hilfe","current":11,"max":75,"unverified":false}],"stats":{"Gesundheit":207,"Mana":379,"Stärke":23,"Beweglichkeit":28,"Ausdauer":25,"Intelligenz":34,"Rüstung":173,"Angriffskraft":26,"Gegenstandsstufe":2},"equipment":[{"slot":"Rücken","item":"Einfacher Umhang des Jägers","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731373.jpg","level":8,"quality":"UNCOMMON","sourceName":"Hunter's Simple Cloak","localized":true},{"slot":"Brust","item":"Banditenwams","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7731374.jpg","level":7,"quality":"COMMON","sourceName":"Bandit's Jerkin","localized":true},{"slot":"Füße","item":"Stiefel des Überlebenskünstlers von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/132540.jpg","level":1,"quality":"COMMON","sourceName":"Thendal Survivalist's Boots","localized":true},{"slot":"Ring 1","item":"Uraltes Erbstück","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/629694.jpg","level":1,"quality":"COMMON","sourceName":"Ancient Heirloom","localized":true},{"slot":"Beine","item":"Struppige Lederhose","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/134586.jpg","level":2,"quality":"POOR","sourceName":"Ragged Leather Pants","localized":true},{"slot":"Hemd","item":"Hemd des Überlebenskünstlers von Thendal","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7813752.jpg","level":1,"quality":"COMMON","sourceName":"Thendal Survivalist's Shirt","localized":true},{"slot":"Taille","item":"Wolfsbalggürtel","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/7751144.jpg","level":10,"quality":"COMMON","sourceName":"Wolfhide Belt","localized":true},{"slot":"Waffenhand","item":"Stecken des Novizen","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/135145.jpg","level":5,"quality":"COMMON","sourceName":"Novice's Quarterstaff","localized":true},{"slot":"Handgelenke","item":"Brandleder-Armschienen","icon":"https://render.worldofwarcraft.com/forever-eu/icons/56/132609.jpg","level":8,"quality":"COMMON","sourceName":"Burnt Leather Bracers","localized":true}],"sourceUpdatedLabel":"21:30 Uhr (ForeverSpec)","dataStatus":"auto","scrapeOk":true,"scrapedAt":"2026-11-20T07:42:22.478Z","imageUrl":"https://render.worldofwarcraft.com/forever-eu/character/8/75619080-main-raw.png","avatarUrl":"https://render.worldofwarcraft.com/forever-eu/character/8/75619080-avatar.jpg","imageCheckedAt":"2026-11-20T07:42:22.478Z","statsVerified":true,"equipmentVerified":true,"talentsVerified":true,"source":"Blizzard Armory","equipmentLanguage":"de","equipmentSource":"Blizzard Armory (de-DE)","professionsVerified":true,"imageVerified":true}]};
+async function fetchPreviewData(){
+  try{
+    const result=await fetch('https://raw.githubusercontent.com/tamorok44/dalton-dashboard/main/data/characters.json?t='+Date.now(),{cache:'no-store'});
+    if(result.ok)return result;
+  }catch(_){}
+  return {ok:true,json:async()=>PREVIEW_SNAPSHOT};
+}
+
+const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const button=document.querySelector("#refreshButton");
+const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
+const portraitScenes={
+  'cole-dalton':{className:'scene-cole',label:'Der arkane Saloon'},
+  'dolly-dalton':{className:'scene-dolly',label:'Die Canyons der Himmelssteppe'},
+  'chucky-dalton':{className:'scene-chucky',label:'Das Heiligtum der Windheide'},
+  'viola-dalton':{className:'scene-viola',label:'Die Ranch am Sonnenpass'}
+};
+const mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];
+const secondaryStatNames=['Stärke','Beweglichkeit','Ausdauer','Intelligenz','Angriffskraft'];
+function statsPanel(c,open=false){
+  const s=c.stats||{};
+  const main=mainStatNames.map(name=>'<div class="vital"><small>'+esc(name)+'</small><strong>'+esc(s[name]??'–')+'</strong></div>').join('');
+  const rest=secondaryStatNames.map(name=>row(name,s[name]??'–')).join('');
+  return '<div class="section character-stats"><h3>Charakterwerte'+(c.statsVerified?'':' · letzter bekannter Stand')+'</h3><div class="vitals">'+main+'</div><details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'><summary>Weitere Charakterwerte anzeigen</summary><div class="rows">'+rest+'</div></details></div>';
+}
+const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhnlich',RARE:'Selten',EPIC:'Episch',LEGENDARY:'Legendär',ARTIFACT:'Artefakt',HEIRLOOM:'Erbstück'};
+const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
+
+const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
+// WoW Classic/Forever: ein gemeinsamer Maßstab von 0 bis 300, vier Stufen zu je 75.
+const professionStages=[
+  {end:75,rank:'Lehrling'},
+  {end:150,rank:'Geselle'},
+  {end:225,rank:'Experte'},
+  {end:300,rank:'Fachmann'}
+];
+function professionRank(max){
+  return professionStages.find(stage=>stage.end===max)?.rank||'Rang unbekannt';
+}
+function professionScale(){
+  return '<div class="profession-scale" aria-label="Berufsskala: 75, 150, 225, 300">'+
+    professionStages.map(stage=>'<span title="'+esc(stage.rank)+'">'+stage.end+'</span>').join('')+
+    '</div>';
+}
+function professionRows(list=[]){
+  if(!list.length)return row('Berufe','nicht verfügbar');
+  return list.map(p=>{
+    const current=Number(p.current),max=Number(p.max);
+    const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
+    const currentSkill=valid?Math.max(0,current):0;
+    const rank=valid?professionRank(max):'Rang unbekannt';
+    const fraction=valid?Math.round(current)+'/'+Math.round(max):'–/–';
+    const label=String(p.name||'Beruf')+(p.unverified?' · letzter Stand':'');
+    const stageSegments=professionStages.map((stage,index)=>{
+      const from=index*75,unlocked=valid&&max>from;
+      const pct=valid?Math.max(0,Math.min(100,((currentSkill-from)/75)*100)):0;
+      return '<span class="profession-segment '+(unlocked?'is-unlocked':'is-locked')+'">'+
+        '<span class="profession-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
+    }).join('');
+    return '<div class="profession">'+
+      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span>'+
+      '<span class="profession-rank">'+esc(rank)+'</span></div>'+
+      '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction+' · '+rank:'kein bestätigter Stand')+'">'+
+      stageSegments+
+      '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
+      '</div></div>';
+  }).join('');
+}
+
+
+// Feste Slot-Reihenfolge: links oben nach unten, dann Ringe/Schmuck und Waffen.
+// Alle Charaktere verwenden dieselben 19 Plätze, auch wenn sie leer sind.
+const equipmentSlotOrder=[
+  'Kopf','Hals','Schultern','Rücken','Brust','Hemd','Wappenrock','Handgelenke',
+  'Hände','Taille','Beine','Füße','Ring 1','Ring 2','Schmuck 1','Schmuck 2',
+  'Waffenhand','Nebenhand','Distanzwaffe'
+];
+const equipmentSlotAliases={
+  'Füsse':'Füße','Distanz':'Distanzwaffe','Fernkampf':'Distanzwaffe',
+  'Ring':'Ring 1','Finger':'Ring 1','Finger 1':'Ring 1','Finger 2':'Ring 2',
+  'Schmuck':'Schmuck 1','Trinket 1':'Schmuck 1','Trinket 2':'Schmuck 2',
+  'Schildhand':'Nebenhand','Nebenwaffe':'Nebenhand','Offhand':'Nebenhand'
+};
+function equipmentPanel(c,open=false){
+  const available=new Map();
+  for(const item of c.equipment||[]){
+    const slot=equipmentSlotAliases[item.slot]||item.slot;
+    if(equipmentSlotOrder.includes(slot)&&item.item&&!available.has(slot))available.set(slot,item);
+  }
+  const rows=equipmentSlotOrder.map(slot=>{
+    const item=available.get(slot);
+    if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
+    const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(item.icon||'');
+    const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">✦</span>';
+    const quality=String(item.quality||'').toUpperCase();
+    const qualityClass=itemQualityClasses[quality]||'quality-unknown';
+    const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
+    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(slot)+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
+  }).join('');
+  const verified=c.equipmentVerified?'':' · letzter bekannter Stand';
+  const languageNote=c.equipmentLanguage==='en'?' · Namen derzeit auf Englisch':c.equipmentLanguage==='gemischt'?' · teilweise englische Namen':'';
+  return '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details>';
+}
+
+const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
+function renderPortrait(c){
+  const scene=portraitScenes[c.slug]||null;
+  const image=validRender(c.imageUrl)?c.imageUrl:null;
+  const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
+  if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
+  const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
+  return '<figure class="portrait '+(scene?scene.className:'')+'"><span class="scene-label" aria-hidden="true">'+esc(scene?.label||'Zephras · Himmelsgeborene')+'</span><img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
+}
+function installPortraitFallbacks(){
+  cards.querySelectorAll('img.character-render').forEach(img=>img.addEventListener('error',()=>{
+    const fallback=img.dataset.fallback;
+    if(fallback && img.src!==fallback){img.src=fallback;img.dataset.fallback='';return}
+    const parent=img.closest('.portrait');if(parent){parent.classList.add('portrait-missing');parent.innerHTML='<span>Charakterbild vorübergehend nicht verfügbar</span>'}
+  }));
+}
+
+function render(data,{live=false}={}){
+ const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
+ const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+ if(heroCast){
+   heroCast.innerHTML=chars.filter(c=>validRender(c.imageUrl)).map((c,i)=>{
+     const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||'');
+     return '<img class="hero-figure hero-figure-'+(i+1)+'" src="'+esc(c.imageUrl+'?v='+version)+'" alt="" loading="eager" decoding="async">';
+   }).join('');
+ }
+const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Math.min(...levels),max=Math.max(...levels),avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
+ summary.innerHTML=[["Gruppenlevel",levels.length?`${min}–${max}`:"–"],["Durchschnitt",avg],["Abstand",levels.length?`${max-min} Level`:"–"],["Charaktere",chars.length]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join("");
+ status.textContent=`${live?"Gerade live abgerufen":"Letzter gespeicherter Datenstand"}: ${new Date(data.generatedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"})} · automatischer Abgleich etwa alle 30 Minuten.`;
+ cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColors[c.class]||'other'}">
+  <div class="cardhead">
+    <div class="card-intro">
+      <span class="card-overline">✦ &nbsp; STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
+      <h2 class="name">${esc(c.name)}</h2>
+      <p class="player">Abenteurer: <strong>${esc(c.player)}</strong></p>
+    </div>
+    <div class="level"><span>Stufe</span>${esc(c.level)}</div>
+  </div>
+  ${renderPortrait(c)}
+  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">Himmelsgeborene · Hoher Orden</span><span class="pill">Allianz · EU-PvP</span></div>
+  <p class="status">${c.scrapeOk===false?"⚠ Automatischer Abruf fehlgeschlagen – letzter bekannter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
+  <div class="section"><h3>Talente${c.talentsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
+  <div class="section professions-section"><h3>Berufe</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
+  ${statsPanel(c,openDetails.has(c.slug+':stats'))}
+  ${equipmentPanel(c,openDetails.has(c.slug+':equipment'))}
+ </article>`).join("");
+ installPortraitFallbacks();
+}
+let lastGeneratedAt=null;
+async function load({silent=false}={}){
+  if(!silent)status.textContent="Gespeicherte Daten werden geladen …";
+  try{
+    const r=await fetchPreviewData();
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const data=await r.json();
+    if(!silent||!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){lastGeneratedAt=data.generatedAt;render(data)}
+  }catch(e){if(!silent)status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
+}
+async function refreshLive(){
+  if(button.disabled)return;
+  button.disabled=true;button.textContent="↻ Wird aktualisiert …";
+  await load({silent:true});
+  status.textContent="Der neueste veröffentlichte Armory-Datenstand wird aus GitHub geladen …";
+  try{
+    const r=await fetchPreviewData();
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const latest=await r.json();
+    const response={data:latest,success:latest.characters?.length||0};
+    if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
+    lastGeneratedAt=response.data.generatedAt;
+    render(response.data,{live:false});
+    if(response.success<response.data.characters.length){status.textContent+=' · Einige Profile zeigen den letzten bestätigten Stand.'}
+  }catch(e){
+    status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar; die automatische Aktualisierung läuft unabhängig weiter.</span>';
+  }finally{button.disabled=false;button.textContent="↻ Aktualisieren"}
+}
+button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
+button.addEventListener('click',refreshLive);
+load();
+setInterval(()=>{if(!document.hidden&&!button.disabled)load({silent:true})},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!button.disabled)load({silent:true})});
+
+</script>
+</body>
+</html>
