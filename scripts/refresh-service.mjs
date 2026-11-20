@@ -2,8 +2,8 @@ import {refreshCharacters} from './armory-core.mjs';
 import {archiveImages} from './archive-images.mjs';
 import {loadCharacters,saveCharacters,mergeProfiles} from './character-store.mjs';
 import {appendChangeBatch} from './history-store.mjs';
-import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails} from './blizzard-api.mjs';
-import {collectKnownRecipeRefs,enrichWithForeverDetails} from './forever-details.mjs';
+import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fetchForeverLocalizedNames} from './blizzard-api.mjs';
+import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -25,10 +25,14 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
         endpointNames:['professions','specializations','reputations','quests']
       });
       const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
-      const recipeDetails=Date.now()-start<40000
-        ?await fetchForeverRecipeDetails(recipeRefs,{locale:'de_DE'})
-        :{};
-      latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails);
+      const localizedRefs=collectLocalizedRefs(detailsSnapshot);
+      const [recipeDetails,localizedNames]=Date.now()-start<40000
+        ?await Promise.all([
+          fetchForeverRecipeDetails(recipeRefs,{locale:'de_DE'}),
+          fetchForeverLocalizedNames(localizedRefs,{locale:'de_DE'})
+        ])
+        :[{},{}];
+      latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails,localizedNames);
     }catch(error){
       console.warn('Erweiterte Forever-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,180));
     }

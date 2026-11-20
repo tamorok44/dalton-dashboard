@@ -303,3 +303,40 @@ export async function fetchForeverRecipeDetails(recipes,{
   }));
   return Object.fromEntries(entries.filter(([,detail])=>detail));
 }
+
+
+function localizedResourceUrl(href,locale){
+  const url=new URL(href);
+  if(url.protocol!=='https:'||url.hostname!==REGION+'.api.blizzard.com')throw new Error('Ungültiger Blizzard-Game-Data-Link');
+  if(!url.pathname.startsWith('/data/wow/'))throw new Error('Ungültiger Blizzard-Game-Data-Pfad');
+  const namespace=url.searchParams.get('namespace')||'';
+  if(!/-forever-eu$/.test(namespace))throw new Error('Ungültiger Forever-Game-Data-Namespace');
+  url.searchParams.set('locale',locale);
+  return url;
+}
+
+export async function fetchForeverLocalizedNames(refs,{
+  fetchImpl=fetch,
+  locale='de_DE'
+}={}){
+  const unique=[...new Map((Array.isArray(refs)?refs:[])
+    .filter(ref=>ref?.type&&Number.isInteger(Number(ref?.id))&&typeof ref?.href==='string')
+    .map(ref=>[String(ref.type)+':'+Number(ref.id),ref])).values()];
+  if(!unique.length)return {};
+  const {token}=await accessToken(fetchImpl);
+  const entries=await Promise.all(unique.map(async ref=>{
+    const key=String(ref.type)+':'+Number(ref.id);
+    try{
+      const response=await fetchImpl(localizedResourceUrl(ref.href,locale),{
+        headers:{authorization:'Bearer '+token,accept:'application/json'},
+        signal:AbortSignal.timeout(15000)
+      });
+      const body=await parseResponse(response);
+      if(!response.ok||typeof body?.name!=='string'||!body.name)return [key,null];
+      return [key,body.name];
+    }catch{
+      return [key,null];
+    }
+  }));
+  return Object.fromEntries(entries.filter(([,name])=>name));
+}

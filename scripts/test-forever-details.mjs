@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {collectKnownRecipeRefs,enrichWithForeverDetails} from './forever-details.mjs';
+import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
 
 const snapshot={
   locale:'de_DE',
@@ -7,7 +7,7 @@ const snapshot={
     'cole-dalton':{
       professions:{ok:true,data:{
         primaries:[{
-          profession:{id:171,name:'Alchemie'},
+          profession:{id:171,name:'Alchemy',key:{href:'https://eu.api.blizzard.com/data/wow/profession/171?namespace=static-1.60.1_70399-forever-eu'}},
           tiers:[{
             skill_points:58,max_skill_points:75,
             tier:{id:2937,name:'Alchemie'},
@@ -23,9 +23,9 @@ const snapshot={
         }]}]
       }},
       reputations:{ok:true,data:{
-        reputations:[{faction:{id:72,name:'Sturmwind'},standing:{raw:3100,value:100,max:6000,tier:4,name:'Freundlich'}}]
+        reputations:[{faction:{id:72,name:'Stormwind',key:{href:'https://eu.api.blizzard.com/data/wow/reputation-faction/72?namespace=static-1.60.1_70399-forever-eu'}},standing:{raw:3100,value:100,max:6000,tier:4,name:'Freundlich'}}]
       }},
-      quests:{ok:true,data:{in_progress:[{id:9001,name:'Ein großes Abenteuer'}]}}
+      quests:{ok:true,data:{in_progress:[{id:9001,name:'A Grand Adventure',key:{href:'https://eu.api.blizzard.com/data/wow/quest/9001?namespace=static-1.60.1_70399-forever-eu'}}]}}
     }
   }
 };
@@ -37,6 +37,9 @@ assert.equal(refs[0].id,1832);
 const source={generatedAt:'2026-11-20T18:00:00.000Z',characters:[{
   slug:'cole-dalton',name:'Cole Dalton',professions:[],talents:'Frost: 2'
 }]};
+const localizedRefs=collectLocalizedRefs(snapshot);
+assert.equal(localizedRefs.length,3);
+
 const enriched=enrichWithForeverDetails(source,snapshot,{
   1832:{
     id:1832,name:'Schwaches Trollblutelixier',
@@ -44,6 +47,10 @@ const enriched=enrichWithForeverDetails(source,snapshot,{
     craftedQuantity:{minimum:1,maximum:1,value:1},
     reagents:[{id:2447,name:'Friedensblume',quantity:1}]
   }
+},{
+  'profession:171':'Alchemie',
+  'faction:72':'Sturmwind',
+  'quest:9001':'Ein großes Abenteuer'
 });
 const cole=enriched.characters[0];
 assert.equal(cole.professions[0].name,'Alchemie');
