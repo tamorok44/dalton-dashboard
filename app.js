@@ -109,7 +109,10 @@ function equipmentPanel(c,open=false){
 
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
-  const scene=portraitScenes[c.slug]||null;
+  const configuredScene=portraitScenes[c.slug]||null;
+  // Blizzard-Geschlecht ist zuverlässiger als die Pose oder der visuelle Renderer.
+  const scene=configuredScene&&c.slug==='chucky-dalton'&&c.gender==='male'
+    ? {...configuredScene,epithet:'Der Windsurfer'} : configuredScene;
   const image=validRender(c.imageUrl)?c.imageUrl:null;
   const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';

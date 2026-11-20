@@ -5,6 +5,21 @@ const statOrder = ['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','S
 const renderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/;
 const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/;
 
+function characterGender(character) {
+  const fields=[
+    character?.gender?.type,character?.gender?.name,character?.gender,
+    character?.sex?.type,character?.sex?.name,character?.sex,
+    character?.bodyType?.name,character?.bodyType?.type,
+    character?.body_type?.name,character?.body_type?.type
+  ];
+  for(const field of fields) {
+    if(typeof field!=='string')continue;
+    const value=field.trim().toLowerCase();
+    if(value==='female'||value==='weiblich')return 'female';
+    if(value==='male'||value==='männlich')return 'male';
+  }
+  return null;
+}
 async function fetchCharacter(slug,locale="en-gb") {
   const url='https://worldofwarcraft.blizzard.com/'+locale+'/forever/eu/armory/character/'+encodeURIComponent(slug);
   const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(20000) });
@@ -207,6 +222,7 @@ for(const old of characters){
       level,
       class:classNames[c.class?.name]||old.class,
       race:c.race?.name?.includes('Skyborne')?'Himmelsgeborene':old.race,
+      gender:characterGender(c)||old.gender||null,
       professions:ps.length?ps:(old.professions||[]).map(p=>({...p,unverified:true})),
       professionsVerified:ps.length>0,
       stats:{...(old.stats||{}),...st},

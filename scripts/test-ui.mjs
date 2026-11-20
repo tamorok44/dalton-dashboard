@@ -105,11 +105,12 @@ for(const {name,klass,scene,color} of expectedCards){
   assert.ok(area.includes('portrait '+scene+'"'),'Correct backdrop for '+name);
   assert.ok(css.includes('--class:'+color),'Class color for '+name);
 }
+// The official Blizzard profile can override Chucky's grammatically correct nickname.
 // Four distinct portrait emblems: unique nickname, character name and class-inspired SVG icon.
 const expectedBadges=[
   {name:'Cole Dalton',klass:'mage',firstName:'Cole',nickname:'Der Runenreiter',icon:'rune'},
   {name:'Dolly Dalton',klass:'hunter',firstName:'Dolly',nickname:'Das Adlerauge',icon:'crosshair'},
-  {name:'Chucky Dalton',klass:'druid',firstName:'Chucky',nickname:'Die Windsurferin',icon:'leaf'},
+  {name:'Chucky Dalton',klass:'druid',firstName:'Chucky',nickname:data.characters.find(c=>c.slug==='chucky-dalton')?.gender==='male'?'Der Windsurfer':'Die Windsurferin',icon:'leaf'},
   {name:'Viola Dalton',klass:'druid',firstName:'Viola',nickname:'Die Sonnenwandlerin',icon:'sun'}
 ];
 assert.equal((cards.match(/class="portrait-badge"/g)||[]).length,4,'One personalized badge per Blizzard portrait');
