@@ -54,7 +54,7 @@ loginCole.lastLoginAt='2026-11-20T10:11:12.000Z';
 loginCole.faction='Allianz';
 loginCole.ruleset={id:1,name:'PvP'};
 ui.render(loginData);
-assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.11.26, 11:11</strong> · Blizzard API'),
+assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.11.26, 11:11</strong>'),
   'Display the genuine official Blizzard API last-login time in German local time');
 assert.ok(nodes.get('#cards').innerHTML.includes('Allianz · EU-PvP'),
   'Faction and ruleset are rendered from API-backed character metadata');
@@ -216,8 +216,9 @@ assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weite
 /* Western design contract – old cosmological decorations and Ordens copy must not return. */
 assert.ok(!heroHtml.includes('Hoher Orden') && !source.includes('Hoher Orden'));
 assert.ok(!source.includes('automatischer Abgleich etwa alle 30 Minuten'));
-assert.ok(heroHtml.includes('id="dataFreshness"') && source.includes('Zuletzt live abgefragt: '));
-assert.ok(source.includes('Gespeicherter Stand: '));
+assert.ok(heroHtml.includes('id="dataFreshness"') && source.includes('Zuletzt aktualisiert: '));
+assert.ok(!source.includes('Profil abgerufen: '),'Per-character refresh timestamps are removed');
+assert.ok(!source.includes(' · Blizzard API'),'Per-field source labels are removed');
 assert.ok(css.includes('rotate(16deg)') && !css.includes('rotate(8deg)'));
 assert.ok(css.includes('margin:27px auto 0') && css.includes('margin-top:23px'));
 assert.ok(css.includes('main{margin-top:22px}'));
