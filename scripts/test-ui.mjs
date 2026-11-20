@@ -312,4 +312,31 @@ for(const id of ['cole','dolly','chucky','viola']){
   assert.ok(fromCss&&workerAssetList.includes(fromCss),'Service worker uses live CSS scene URL for '+id);
 }
 
+
+/* Typeface contract: exactly two font stacks, one intentional italic and
+   a small set of reusable label/body sizes across all character cards. */
+const typeGuide=read('TYPOGRAFIE.md');
+assert.ok(heroHtml.includes('Noch keine Legenden, aber schon gesucht.'),'Correct German headline punctuation');
+assert.ok(!heroHtml.includes('Noch keine Legenden. Aber schon gesucht.'),'No obsolete slogan');
+const heroBottom=heroHtml.split('<div class="hero-bottomline">')[1]?.split('</div>')[0];
+assert.ok(heroBottom?.includes('CHUCKY · COLE · DOLLY · VIOLA'),'All four names still in order');
+assert.ok(!heroBottom?.includes('EU · PvP'),'EU-PvP is not duplicated at the bottom of the title image');
+assert.ok(heroHtml.includes('ALLIANZ · EU-PVP'),'Server info remains in the top-right header');
+assert.ok(!heroHtml.includes('━━━━━━━━ • ━━━━━━━━') && !heroHtml.includes('footer-ornament'),'No decorative text line in footer');
+assert.ok(!css.includes('.footer-ornament'),'Orphan footer style removed');
+assert.ok(css.includes('justify-content:center;text-align:center'),'Names are centered in header');
+for(const token of ['--type-caption:', '--type-small:', '--type-body:', '--type-lead:', '--leading-copy:', '--tracking-label:']){
+  assert.ok(css.includes(token),'Shared typography token '+token);
+}
+assert.equal((css.match(/font-style:italic|font:italic/g)||[]).length,1,'Only the word Die uses italic styling');
+for(const selector of ['.hero-story{','.roster-title p{','.refresh-hint{']){
+  const block=css.split(selector)[1]?.split('}')[0]||'';
+  assert.ok(block.includes('font-family:var(--body)'),selector+' uses the information font');
+  assert.ok(block.includes('font-style:normal'),selector+' is not italic');
+}
+assert.ok(css.includes('.hero-story{margin:12px 0 0;color:#fff5de'),'Motto readability improved');
+assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text removed');
+assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
+assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');
+
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
