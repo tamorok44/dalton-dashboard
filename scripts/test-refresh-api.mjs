@@ -8,6 +8,10 @@ const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
 const classEnglish={'Druide':'Druid','Magier':'Mage','Jäger':'Hunter'};
 const professionEnglish={'Alchemie':'Alchemy','Kräuterkunde':'Herbalism','Bergbau':'Mining','Kürschnerei':'Skinning','Lederverarbeitung':'Leatherworking','Angeln':'Fishing','Kochkunst':'Cooking','Erste Hilfe':'First Aid'};
 const originalFetch=globalThis.fetch;
+process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
+process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
+process.env.CRON_SECRET='test-cron-secret';
+let saved=null;
 
 function fakeResponse(req){
   let status=200,payload=null;
@@ -46,7 +50,14 @@ function armoryHtml(old){
   return '<script>var characterProfileInitialState = '+JSON.stringify({character})+';</script>';
 }
 let peak=0,inFlight=0,requests=0,failSlug=null,failAll=false;
-globalThis.fetch=async url=>{
+globalThis.fetch=async (url,options={})=>{
+  if(String(url).startsWith('https://test-redis.example.com')){
+    const [op,key,value]=JSON.parse(options.body);
+    assert.equal(key,'dalton-dashboard:characters:v1');
+    if(op==='GET')return {ok:true,json:async()=>({result:saved})};
+    if(op==='SET'){saved=value;return {ok:true,json:async()=>({result:'OK'})}}
+    throw Error('Unexpected Redis command');
+  }
   const slug=decodeURIComponent(String(url).split('/').at(-1));
   const profile=baseline.get(slug);
   assert.ok(profile,'Only configured Dalton profiles are requested');
@@ -63,11 +74,17 @@ try{
   assert.equal(rejected.result().status,405,'Only GET is allowed');
   assert.equal(requests,0,'Invalid method must not query Blizzard');
 
+  const denied=fakeResponse();
+  await handler({method:'POST',headers:{}},denied);
+  assert.equal(denied.result().status,401);
+
   const ok=fakeResponse();
   await handler({method:'GET'},ok);
   const result=ok.result();
   assert.equal(result.status,200);
   assert.equal(result.payload.success,4);
+  assert.equal(result.payload.persisted,true);
+  assert.ok(saved,'Redis contains a durable snapshot');
   assert.equal(result.payload.data.characters.length,4);
   assert.ok(Number.isFinite(Date.parse(result.payload.data.generatedAt)));
   assert.ok(peak>=4,'Four Blizzard profiles are fetched concurrently');
@@ -89,6 +106,7 @@ try{
   assert.equal(partialResult.payload.success,3);
   assert.equal(partialResult.payload.data.characters.length,4);
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).scrapeOk,false);
+  assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).level,baseline.get(failSlug).level+2,'Partially failed profile preserves last persisted live level');
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton').scrapeOk,true);
 
   failAll=true;
@@ -96,6 +114,10 @@ try{
   await handler({method:'GET'},unavailable);
   assert.equal(unavailable.result().status,503,'Total outage must not claim fresh data');
   assert.ok(unavailable.result().payload.error);
+  const scheduled=fakeResponse();
+  failAll=false;failSlug=null;
+  await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},scheduled);
+  assert.equal(scheduled.result().status,200,'Authorized scheduled update succeeds');
   console.log('Manual API: parallel fetch, latest level/skills/stats, partial/total failure, cache controls: OK');
 }finally{
   globalThis.fetch=originalFetch;
