@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {describeShape,probeForeverCharacter,fetchForeverSnapshot} from './blizzard-api.mjs';
+import {describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames} from './blizzard-api.mjs';
 
 process.env.BLIZZARD_CLIENT_ID='test-client';
 process.env.BLIZZARD_CLIENT_SECRET='test-secret';
@@ -64,4 +64,23 @@ assert.equal(full.characters['cole-dalton'].profile.status,200);
 assert.equal(full.characters['cole-dalton'].equipment.status,200);
 assert.equal(calls.length,beforeSnapshotCalls+3,'Cached OAuth token plus every requested raw snapshot endpoint');
 for(const call of calls.slice(beforeSnapshotCalls))assert.equal(new URL(call.url).searchParams.get('locale'),'de_DE','Jeder Vollsnapshot-Endpunkt nutzt de_DE');
+
+const localizedCalls=[];
+const localizedFetch=async (url,options={})=>{
+  localizedCalls.push(String(url));
+  assert.equal(options.headers.authorization,'Bearer secret-access-token');
+  const parsed=new URL(String(url));
+  assert.equal(parsed.searchParams.get('locale'),'de_DE');
+  assert.equal(parsed.searchParams.get('namespace'),'static-1.60.1_70399-forever-eu');
+  if(parsed.pathname==='/data/wow/quest/92709')return fakeResponse(200,{id:92709,title:'Ein großes Abenteuer'});
+  if(parsed.pathname==='/data/wow/profession/171')return fakeResponse(200,{id:171,name:'Alchimie'});
+  return fakeResponse(404,{});
+};
+const localizedNames=await fetchForeverLocalizedNames([
+  {type:'quest',id:92709,href:'https://eu.api.blizzard.com/data/wow/quest/92709?namespace=static-1.60.1_70399-forever-eu'},
+  {type:'profession',id:171,href:'https://eu.api.blizzard.com/data/wow/profession/171?namespace=static-1.60.1_70399-forever-eu'}
+],{fetchImpl:localizedFetch,locale:'de_DE'});
+assert.equal(localizedNames['quest:92709'],'Ein großes Abenteuer','Quest-Game-Data verwendet title statt name');
+assert.equal(localizedNames['profession:171'],'Alchimie','Andere Game-Data verwendet weiterhin name');
+assert.equal(localizedCalls.length,2);
 console.log('Blizzard Forever API client, schema inventory and raw snapshots: OK');
