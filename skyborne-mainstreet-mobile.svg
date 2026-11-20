@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200" role="img" aria-label="Die Dalton-Main-Street im sonnigen Western-Grenzland: Saloon, Wasserturm, Telegrafenmast und Canyon">
+<defs>
+<linearGradient id="day" x1="0" y1="0" x2=".18" y2="1"><stop stop-color="#8acddc"/><stop offset=".4" stop-color="#c4ded6"/><stop offset=".78" stop-color="#f3d3a6"/><stop offset="1" stop-color="#dba880"/></linearGradient>
+<radialGradient id="sunMist"><stop stop-color="#fff7d8" stop-opacity=".85"/><stop offset=".34" stop-color="#fae4b6" stop-opacity=".40"/><stop offset="1" stop-color="#f9e0ad" stop-opacity="0"/></radialGradient>
+<linearGradient id="mesa" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bd9580"/><stop offset="1" stop-color="#8c8881"/></linearGradient>
+<linearGradient id="prairie" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c29d7e"/><stop offset="1" stop-color="#7a7368"/></linearGradient>
+<linearGradient id="road" x1="0" y1="0" x2=".5" y2="1"><stop stop-color="#e7ca9f"/><stop offset=".62" stop-color="#d5b088"/><stop offset="1" stop-color="#b79070"/></linearGradient>
+<linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c7a17d"/><stop offset=".48" stop-color="#9b7659"/><stop offset="1" stop-color="#715849"/></linearGradient>
+<linearGradient id="tower" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d0ad85"/><stop offset=".5" stop-color="#a67d5d"/><stop offset="1" stop-color="#7b5c49"/></linearGradient>
+<linearGradient id="dust" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#efd9b6" stop-opacity=".05"/><stop offset="1" stop-color="#d3b998" stop-opacity=".44"/></linearGradient>
+</defs>
+<rect width="900" height="1200" fill="url(#day)"/>
+<ellipse cx="705" cy="295" rx="300" ry="265" fill="url(#sunMist)"/><circle cx="705" cy="295" r="52" fill="#fff4ce" opacity=".75"/>
+<!-- One continuous sunny sky, diffuse clouds, no night stars -->
+<g fill="none" stroke-linecap="round">
+<path d="M-60 312C207 270 333 318 549 283S819 288 960 252" stroke="#fff4e2" opacity=".21" stroke-width="54"/>
+<path d="M-80 480C180 432 405 510 612 444S783 480 940 420" stroke="#f8e9d0" opacity=".26" stroke-width="65"/></g>
+<!-- Rounded mesa horizons and distant canyon rather than pasted polygon blocks -->
+<path d="M0 835Q117 764 198 810T441 793Q549 748 666 799T900 788V1200H0Z" fill="#bcad97" opacity=".48"/>
+<path d="M0 879Q81 813 189 844T414 833Q576 801 693 840T900 819V1200H0Z" fill="url(#mesa)" opacity=".63"/>
+<path d="M0 923Q117 855 279 901T567 879Q783 845 900 873V1200H0Z" fill="url(#prairie)" opacity=".86"/>
+<path d="M0 975Q162 937 369 955T720 927Q828 906 900 927V1200H0Z" fill="#a48269" opacity=".48"/>
+<!-- Wide dusty main street converging to the middle -->
+<path d="M460 820C279 915 207 1080 72 1230H855C711 1056 603 913 508 820Z" fill="url(#road)" opacity=".88"/>
+<path d="M472 832Q306 984 180 1200" stroke="#a98061" stroke-opacity=".32" stroke-width="5" fill="none"/>
+<path d="M490 835Q558 960 720 1200" stroke="#ac8062" stroke-opacity=".27" stroke-width="5" fill="none"/>
+<path d="M0 1112Q216 1092 378 1110T900 1092V1200H0Z" fill="#887865" opacity=".38"/>
+<!-- Iconic frontier SALOON on left, porch, windows, rough wooden timbers -->
+<g transform="translate(-78 748) scale(1.11)" stroke-linejoin="round">
+<path d="M16 245V17h309v228Z" fill="url(#wood)" stroke="#755c4e" stroke-width="11"/>
+<path d="M7 20Q155-17 340 19L318 38 28 40Z" fill="#84634f" stroke="#d4ac85" stroke-width="9"/>
+<path d="M44 5V-81H284V5" fill="#ad8867" stroke="#84634f" stroke-width="9"/>
+<path d="M33-78Q157-101 294-77" fill="none" stroke="#e0ba8e" stroke-width="10"/>
+<rect x="81" y="-63" width="174" height="49" rx="3" fill="#e4c49a" stroke="#84634f" stroke-width="6"/>
+<text x="168" y="-30" font-family="Georgia,serif" font-size="24" font-weight="900" fill="#795641" text-anchor="middle" letter-spacing="3">SALOON</text>
+<path d="M37 95h274M41 151h270M41 205h270" stroke="#e1b587" stroke-width="8" opacity=".5"/>
+<path d="M100 245V75h105v170" fill="#5f514a" stroke="#d4ac7a" stroke-width="9"/>
+<path d="M137 89V235M165 89V235" stroke="#bea181" stroke-width="6"/>
+<path d="M237 104V70h60v34Z" fill="#c4d7cc" opacity=".67" stroke="#735947" stroke-width="8"/>
+<path d="M235 88h63M265 72v37" stroke="#816951" stroke-width="5"/>
+<path d="M-18 259h382M-5 278h364" stroke="#80614c" stroke-width="20"/>
+<path d="M17 260V25M326 260V25" stroke="#b99170" stroke-width="15"/>
+<path d="M-17 300h368" stroke="#c2a07e" stroke-width="15"/>
+</g>
+<!-- Tall wooden water tower to the right; no second house -->
+<g transform="translate(674 708) scale(0.79)" stroke-linejoin="round">
+<path d="M32 319V73M194 319V73M46 97l138 195M190 94L42 296" stroke="#8d705b" stroke-width="14" fill="none"/>
+<path d="M27 177h177M28 266h177" stroke="#d5b38c" stroke-width="13"/>
+<path d="M26 81V9h183v72Q120 111 26 81Z" fill="url(#tower)" stroke="#84654f" stroke-width="8"/>
+<ellipse cx="118" cy="9" rx="93" ry="24" fill="#e4c39c" stroke="#80624e" stroke-width="8"/>
+<path d="M28 37h179M28 61h179" stroke="#705849" stroke-width="7" opacity=".53"/>
+<path d="M45 103v166M72 103v166M99 103v166" stroke="#765d4d" stroke-width="4" stroke-dasharray="7 8"/>
+<path d="M9 325h223" stroke="#795947" stroke-width="12"/>
+</g>
+<!-- Telegraph mast, wires, sunbaked fences -->
+<g transform="translate(624 766) scale(0.75)" stroke="#856b54" fill="none" stroke-linecap="round">
+<path d="M0 300V-91M-43-67H50M-35-29H41" stroke-width="11"/>
+<path d="M-34-72v13m42-13v13m37-13v13M-25-35v13m47-13v13" stroke="#ddc4a0" stroke-width="6"/>
+<path d="M-45-65Q-210-12-378-55M52-64Q177-15 291-62" stroke-width="2.5" stroke="#8e816d" opacity=".67"/></g>
+<g stroke="#9c7b5d" fill="none" stroke-linecap="round">
+<path d="M18 1096l13-79m28 75l12-83m26 83l9-78M9 1046l144 8" stroke-width="9"/>
+<path d="M810 1105l-11-75m-28 79l-8-82m-27 80l-9-82M801 1046l90-10" stroke-width="9"/></g>
+<path d="M0 1176Q288 1140 450 1167T900 1152V1200H0Z" fill="#9e8770" opacity=".45"/>
+<rect width="900" height="1200" fill="url(#dust)" pointer-events="none"/>
+</svg>

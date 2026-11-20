@@ -152,6 +152,18 @@ assert.match(crest,/sechszackiger Dalton-Sheriffstern/);
 assert.ok(crest.includes('>D</text>') && crest.includes('url(#blueEnamel)'));
 assert.ok(icon.includes('Dalton-Sheriffstern'));
 assert.ok(sky.includes('url(#day)') && sky.includes('url(#sunMist)'));
+const mobileSky=read('skyborne-mainstreet-mobile.svg');
+for(const scene of [sky,mobileSky]){
+  assert.ok(scene.includes('SALOON') && scene.includes('water tower') && scene.includes('Telegraph'),'Main Street must show three distinctive Western elements');
+  assert.ok(scene.includes('Wide dusty main street') && scene.includes('url(#road)'),'Street creates perspective to the horizon');
+  assert.ok(!scene.includes('floating island') && !scene.includes('Hoher Orden'),'No old skyborne/Order motifs');
+}
+assert.ok(mobileSky.includes('width="900" height="1200"'),'Separate portrait asset for iPhone');
+assert.ok(sky.includes('width="1600" height="730"'),'Wide desktop asset for hero');
+assert.ok(css.includes('skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c'),'Mobile composition active in CSS');
+assert.ok(heroHtml.includes('styles.css?v=mainstreet-20261120c') && heroHtml.includes('app.js?v=mainstreet-20261120c'),'Versioned assets are synchronized');
+assert.ok(read('sw.js').includes('skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c'),'Offline cache includes portrait scene');
+
 assert.ok(!sky.includes('url(#moon)') && !sky.includes('#071526'));
 assert.ok(css.includes('skill-energy-flow 3.8s linear infinite'));
 assert.ok(css.includes('skill-light-sweep 7.6s ease-in-out infinite'));

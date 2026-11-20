@@ -23,7 +23,7 @@ body{
 body::before{content:none}
 button{font:inherit}button:focus-visible,summary:focus-visible{outline:3px solid var(--sky);outline-offset:4px}
 .hero{position:relative;isolation:isolate;min-height:590px;overflow:hidden;background:#acd5d8;border-bottom:5px solid #b78d58;box-shadow:0 12px 27px #03070d77}
-.hero-art{position:absolute;inset:0;z-index:-3;background:url("/skyborne-horizon.svg") center 55%/cover no-repeat;filter:saturate(1.08) brightness(1.02)}
+.hero-art{position:absolute;inset:0;z-index:-3;background:url("/skyborne-horizon.svg?v=mainstreet-20261120c") center 55%/cover no-repeat;filter:saturate(1.08) brightness(1.02)}
 .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(27,72,83,.12),rgba(30,68,72,.02) 35%,rgba(22,59,67,.03) 70%,rgba(26,64,74,.14)),linear-gradient(180deg,transparent 0%,rgba(41,68,69,.07) 56%,rgba(22,45,49,.40) 100%)}
 .hero::after{content:none}
 .hero-frame{position:absolute;inset:16px 16px 14px;pointer-events:none;border:1px solid rgba(236,199,134,.48);z-index:2}
@@ -480,4 +480,9 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
  main{margin-top:22px}
  .data-freshness{font-size:.77rem}
  .command-deck{gap:16px}
+}
+
+/* Main Street: own portrait composition keeps Saloon, water tower and road visible on iPhone. */
+@media(max-width:740px){
+  .hero-art{background-image:url("/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c");background-position:center center;background-size:cover}
 }
