@@ -13,7 +13,7 @@ const document={querySelector(selector){
   if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',querySelectorAll:()=>[],addEventListener(){}});
   return nodes.get(selector);
 }};
-const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document);
+const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -44,11 +44,22 @@ assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
 assert.match(invalid,/Rang unbekannt/);
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
 assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
+const orderedNames=list=>ui.sortProfessionsForDisplay(list.map(name=>({name}))).map(x=>x.name);
+assert.deepEqual(orderedNames(['Alchimie','Kräuterkunde','Kochkunst','Angeln','Erste Hilfe']),['Kräuterkunde','Alchimie','Angeln','Kochkunst','Erste Hilfe']);
+assert.deepEqual(orderedNames(['Lederverarbeitung','Kürschnerei','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe']);
+assert.deepEqual(orderedNames(['Kürschnerei','Bergbau','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Bergbau','Angeln','Kochkunst','Erste Hilfe']);
+const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Rüstung','Angriffskraft','Zaubermacht','Ausweichen'],stats:{Gesundheit:202,Mana:535,Stärke:18,Intelligenz:40,Beweglichkeit:26,Ausdauer:23,'Kritische Trefferchance':5.0068,Willenskraft:31,Rüstung:99,Angriffskraft:8,Zaubermacht:0,Ausweichen:5.2468}});
+assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,8);
+assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,7);
+assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %'));
+assert.match(statQa,/Zaubermacht[\s\S]*?>0</);
+assert.match(statQa,/Nahkampf-Krit[\s\S]*?>–</);
 
 const chuckyXp=ui.experienceProgress({level:10,experience:5143});
-assert.ok(chuckyXp.includes('5.143 / 7.600 XP · 67,7 %'),'Chucky XP is shown as progress within level 10');
-assert.ok(chuckyXp.includes('27.600 Gesamt-XP'),'Level 10 starts at the correct cumulative XP threshold');
-assert.ok(chuckyXp.includes('35.200 Gesamt-XP'),'Level 11 threshold is the right end of the bar');
+assert.ok(chuckyXp.includes('5.143 / 7.600 XP'),'Chucky XP is shown as progress within level 10');
+assert.ok(!chuckyXp.includes('67,7 %'),'Visible XP percentage is deliberately omitted');
+assert.ok(!chuckyXp.includes('Gesamt-XP'),'Cumulative XP thresholds are deliberately omitted');
+assert.ok(chuckyXp.includes('Level 10')&&chuckyXp.includes('Level 11'),'Current and next level frame the bar');
 assert.equal(ui.totalXpAtLevel(10),27600);
 assert.equal(ui.totalXpAtLevel(11),35200);
 
@@ -122,7 +133,8 @@ assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain d
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
-assert.equal((cards.match(/class="vital"/g)||[]).length,data.characters.length*3);
+assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,data.characters.length*8);
+assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,data.characters.length*7);
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
@@ -130,7 +142,6 @@ assert.equal((cards.match(/data-character-tab=/g)||[]).length,data.characters.le
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one synchronized tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,data.characters.length*6,'All tab panels remain available without showing them at once');
 assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterTab)"),'A tab click switches the same category across all character cards');
-assert.ok(!css.includes('.vital:nth-child(2) strong{color:#91dbe7}'),'Mana must not be blue');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
 assert.ok(css.includes('.card.hunter{--class:#aad372')&&css.includes('.card.druid{--class:#ff9b48'));
@@ -427,4 +438,4 @@ assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text remov
 assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
 assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');
 
-console.log('UI QA: synchronized tabs, XP bar, quest details, neutral 3 stats, professions, rarity and gear: OK');
+console.log('UI QA: synchronized tabs, simplified XP, 8+7 stats, profession order, quest details, rarity and gear: OK');

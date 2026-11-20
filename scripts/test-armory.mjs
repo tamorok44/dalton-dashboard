@@ -46,7 +46,12 @@ let germanFetches=0,englishFetches=0,foreverSpecFetches=0,oauthFetches=0,apiFetc
 const fakeCharacter=(locale)=>{
  const c={
   slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
-  stats:{groups:[{stats:(partialStats?['HEALTH']:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','ITEMLEVEL']).map((name,i)=>({enum:name,value:{value:100+i}}))}]},
+  stats:partialStats
+    ?{groups:[{stats:[{enum:'HEALTH',value:{value:100}}]}]}
+    :{groups:[
+       {stats:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL'].map((name,i)=>({enum:name,value:{value:100+i}}))},
+       {stats:[{enum:'CRITICALSTRIKE',value:{value:5.25}}]}
+     ],overview:[{enum:'SPIRIT',value:{value:31}}]},
   media:{'main-raw':{url:originalMedia},avatar:{url:'https://render.worldofwarcraft.com/forever-eu/character/12/34567-avatar.jpg'}},
   specs:[],
  };

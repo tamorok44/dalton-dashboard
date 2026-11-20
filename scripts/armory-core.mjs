@@ -1,8 +1,8 @@
 import {blizzardApiConfigured,fetchForeverProfile} from './blizzard-api.mjs';
 const classNames = { Druid: 'Druide', Mage: 'Magier', Hunter: 'Jäger', Priest: 'Priester', Warlock: 'Hexenmeister', Paladin: 'Paladin', Warrior: 'Krieger', Rogue: 'Schurke', Shaman: 'Schamane' };
 const professionNames = { Alchemy:'Alchemie', Herbalism:'Kräuterkunde', Mining:'Bergbau', Skinning:'Kürschnerei', Leatherworking:'Lederverarbeitung', Blacksmithing:'Schmiedekunst', Engineering:'Ingenieurskunst', Tailoring:'Schneiderei', Enchanting:'Verzauberkunst', Cooking:'Kochkunst', Fishing:'Angeln', 'First Aid':'Erste Hilfe' };
-const statNames = { HEALTH:'Gesundheit', MANA:'Mana', STRENGTH:'Stärke', AGILITY:'Beweglichkeit', STAMINA:'Ausdauer', INTELLECT:'Intelligenz', SPIRIT:'Willenskraft', ARMOR:'Rüstung', ATTACKPOWER:'Angriffskraft', ITEMLEVEL:'Gegenstandsstufe', DEFENSE:'Verteidigung' };
-const statOrder = ['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','SPIRIT','ARMOR','ATTACKPOWER','ITEMLEVEL','DEFENSE'];
+const statNames = { HEALTH:'Gesundheit', MANA:'Mana', STRENGTH:'Stärke', AGILITY:'Beweglichkeit', STAMINA:'Ausdauer', INTELLECT:'Intelligenz', SPIRIT:'Willenskraft', ARMOR:'Rüstung', ATTACKPOWER:'Angriffskraft', SPELLPOWER:'Zaubermacht', CRITICALSTRIKE:'Kritische Trefferchance', MELEECRIT:'Nahkampf-Krit', RANGEDCRIT:'Fernkampf-Krit', SPELLCRIT:'Zauber-Krit', DODGE:'Ausweichen', PARRY:'Parieren', BLOCK:'Blocken', ATTACKDPS:'Waffen-DPS', ATTACKSPEED:'Angriffsgeschwindigkeit', MANAREGEN:'Manaregeneration', ITEMLEVEL:'Gegenstandsstufe', DEFENSE:'Verteidigung' };
+const statOrder = ['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ARMOR','ATTACKPOWER','SPELLPOWER','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK','ATTACKDPS','ATTACKSPEED','MANAREGEN','ITEMLEVEL','DEFENSE'];
 const renderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/;
 const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/;
 
@@ -42,7 +42,8 @@ function stats(c) {
   const groups=[
     ...(Array.isArray(raw.groups)?raw.groups:[]),
     ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
-    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]}
+    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
+    {stats:Array.isArray(raw.overview)?raw.overview:[]}
   ];
   const values=new Map();
   for(const group of groups)for(const stat of group.stats||[]) {
@@ -247,7 +248,7 @@ for(const old of characters){
       localizedCount===0?'en':'gemischt';
     const equipmentSource= !hasOfficialGear ? old.equipmentSource||'Letzter bestätigter Stand':
       localizedGear ? localizedSource:translationsReusable?(old.equipmentSource||'Blizzard Armory, bestätigte Übersetzungen'):'Blizzard Armory (en-GB), aktuelle Gegenstände';
-    const requiredStats=['Gesundheit','Mana','Stärke','Beweglichkeit','Ausdauer','Intelligenz','Rüstung','Angriffskraft','Gegenstandsstufe'];
+    const requiredStats=['Gesundheit','Mana','Stärke','Beweglichkeit','Ausdauer','Intelligenz','Kritische Trefferchance','Willenskraft','Rüstung','Angriffskraft','Zaubermacht','Ausweichen','Gegenstandsstufe'];
     const statsVerified=requiredStats.every(k=>Number.isFinite(st[k]));
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;

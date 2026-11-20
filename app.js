@@ -20,16 +20,43 @@ function portraitBadge(scene){
     '<span class="portrait-badge-copy"><span class="portrait-badge-firstname">'+esc(scene.firstName)+'</span>'+
     '<span class="portrait-badge-epithet">'+esc(scene.epithet)+'</span></span></span>';
 }
-const mainStatNames=['Gesundheit','Mana','Rüstung'];
-const secondaryStatNames=['Stärke','Beweglichkeit','Ausdauer','Intelligenz','Angriffskraft'];
+const mainStatNames=['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft'];
+const detailStatNames=['Rüstung','Angriffskraft','Zaubermacht','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen'];
+const percentStatNames=new Set(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen']);
+const statIcons={
+  'Gesundheit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.2 3.5 8.9A4.4 4.4 0 0 1 12 6.7a4.4 4.4 0 0 1 8.5 2.2c0 6.3-8.5 11.6-8.5 11.6Z"/></svg>',
+  'Mana':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v4l-4.6 8.1A3.9 3.9 0 0 0 8.8 21h6.4a3.9 3.9 0 0 0 3.4-5.9L14 7V3"/><path d="M7.8 15h8.4"/></svg>',
+  'Stärke':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg>',
+  'Intelligenz':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M8.2 14.7A6 6 0 1 1 15.8 14.7c-1.1.8-1.5 1.6-1.6 2.3h-4.4c-.1-.7-.5-1.5-1.6-2.3Z"/></svg>',
+  'Beweglichkeit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 10.8c1.3-1 4.3-1 5.6 0 1.8 1.4 3.2 4.1 1.7 6.2-1.2 1.7-3.1.4-4.5.4s-3.3 1.3-4.5-.4c-1.5-2.1-.1-4.8 1.7-6.2Z"/><circle cx="6.4" cy="8" r="1.6"/><circle cx="10.1" cy="5.3" r="1.6"/><circle cx="13.9" cy="5.3" r="1.6"/><circle cx="17.6" cy="8" r="1.6"/></svg>',
+  'Ausdauer':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19 6v5.2c0 4.4-2.7 7.9-7 10-4.3-2.1-7-5.6-7-10V6l7-3.2Z"/><path d="M12 7v8M8 11h8"/></svg>',
+  'Kritische Trefferchance':'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>',
+  'Willenskraft':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>'
+};
+function formatStatValue(name,value){
+  if(value==null||value==='')return '–';
+  const n=Number(value);
+  if(!Number.isFinite(n))return String(value);
+  if(percentStatNames.has(name))return new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n)+' %';
+  return new Intl.NumberFormat('de-DE',{maximumFractionDigits:2}).format(n);
+}
+function statTile(name,value,stale=false,icon=false){
+  return '<div class="stat-tile '+(icon?'stat-tile-main':'stat-tile-detail')+'">'+
+    (icon?'<span class="stat-icon">'+(statIcons[name]||'')+'</span>':'')+
+    '<span class="stat-copy"><small>'+esc(name)+(stale?' <span class="stale-value" title="Nicht im letzten Blizzard-Abruf bestätigt">· letzter Stand</span>':'')+'</small>'+
+    '<strong>'+esc(formatStatValue(name,value))+'</strong></span></div>';
+}
 function statsPanel(c,open=false){
   const s=c.stats||{};
   const currentKeys=Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:(c.statsVerified?Object.keys(s):[]);
   const verified=new Set(c.scrapeOk===false?[]:currentKeys);
   const isStale=name=>Object.hasOwn(s,name)&&!verified.has(name);
-  const main=mainStatNames.map(name=>'<div class="vital"><small>'+esc(name)+(isStale(name)?' <span class="stale-value" title="Nicht im letzten Blizzard-Abruf bestätigt">· letzter Stand</span>':'')+'</small><strong>'+esc(s[name]??'–')+'</strong></div>').join('');
-  const rest=secondaryStatNames.map(name=>row(name+(isStale(name)?' · letzter Stand':''),s[name]??'–')).join('');
-  return '<div class="section character-stats"><h3>Charakterwerte'+(c.scrapeOk!==false&&c.statsVerified?'':' · teilweise letzter Stand')+'</h3><div class="vitals">'+main+'</div><details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'><summary>Weitere Charakterwerte anzeigen</summary><div class="rows">'+rest+'</div></details></div>';
+  const main=mainStatNames.map(name=>statTile(name,s[name],isStale(name),true)).join('');
+  const rest=detailStatNames.map(name=>statTile(name,s[name],isStale(name),false)).join('');
+  return '<div class="section character-stats"><h3>Charakterwerte'+(c.scrapeOk!==false&&c.statsVerified?'':' · teilweise letzter Stand')+'</h3>'+
+    '<div class="stat-grid stat-grid-main">'+main+'</div>'+
+    '<details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'>'+
+      '<summary>Weitere Charakterwerte anzeigen</summary><div class="stat-grid stat-grid-detail">'+rest+'</div></details></div>';
 }
 const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhnlich',RARE:'Selten',EPIC:'Episch',LEGENDARY:'Legendär',ARTIFACT:'Artefakt',HEIRLOOM:'Erbstück'};
 const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
@@ -77,9 +104,19 @@ function recipeRows(recipes=[]){
       '</div>';
   }).join('')+'</div>';
 }
+const gatheringProfessions=new Set(['Kräuterkunde','Kürschnerei','Bergbau']);
+const secondaryProfessionOrder=new Map([['Angeln',100],['Kochkunst',110],['Erste Hilfe',120]]);
+function sortProfessionsForDisplay(list=[]){
+  return list.map((profession,index)=>({profession,index})).sort((a,b)=>{
+    const an=a.profession?.name||'',bn=b.profession?.name||'';
+    const ap=secondaryProfessionOrder.has(an)?secondaryProfessionOrder.get(an):(gatheringProfessions.has(an)?0:10);
+    const bp=secondaryProfessionOrder.has(bn)?secondaryProfessionOrder.get(bn):(gatheringProfessions.has(bn)?0:10);
+    return ap-bp||a.index-b.index;
+  }).map(entry=>entry.profession);
+}
 function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()){
   if(!list.length)return row('Berufe','nicht verfügbar');
-  return list.map(p=>{
+  return sortProfessionsForDisplay(list).map(p=>{
     const current=p.current==null?NaN:Number(p.current),max=p.max==null?NaN:Number(p.max);
     const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
     const currentSkill=valid?Math.max(0,current):0;
@@ -173,22 +210,20 @@ function experienceProgress(c){
   const level=Number(c.level),current=Number(c.experience);
   if(!Number.isInteger(level)||level<1||!Number.isFinite(current))return '';
   if(level>=60){
-    return '<div class="experience-progress"><div class="experience-head"><strong>Level 60</strong><span>Maximalstufe</span></div></div>';
+    return '<div class="experience-progress"><div class="experience-levels"><strong>Level 60</strong><span>Maximalstufe</span></div></div>';
   }
   const needed=Number(xpToNextByLevel[level]);
   if(!Number.isFinite(needed)||needed<=0)return '';
   const safe=Math.max(0,Math.min(needed,current));
   const pct=safe/needed*100;
-  const startTotal=totalXpAtLevel(level),endTotal=startTotal+needed;
   const nf=new Intl.NumberFormat('de-DE');
-  const percent=new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(pct);
   return '<div class="experience-progress">'+
-    '<div class="experience-head"><strong>Level '+esc(level)+'</strong><span>'+nf.format(startTotal)+' Gesamt-XP</span>'+
-      '<strong>Level '+esc(level+1)+'</strong><span>'+nf.format(endTotal)+' Gesamt-XP</span></div>'+
-    '<div class="experience-track" role="progressbar" aria-label="Erfahrung bis Level '+esc(level+1)+'" aria-valuemin="0" aria-valuemax="'+esc(needed)+'" aria-valuenow="'+esc(Math.round(safe))+'" aria-valuetext="'+esc(nf.format(safe)+' von '+nf.format(needed)+' XP · '+percent+' %')+'">'+
+    '<div class="experience-track" role="progressbar" aria-label="Erfahrung bis Level '+esc(level+1)+'" aria-valuemin="0" aria-valuemax="'+esc(needed)+'" aria-valuenow="'+esc(Math.round(safe))+'" aria-valuetext="'+esc(nf.format(safe)+' von '+nf.format(needed)+' XP')+'">'+
       '<span class="experience-fill" style="width:'+pct.toFixed(2)+'%"></span>'+
-      '<span class="experience-overlay" aria-hidden="true">'+esc(nf.format(safe)+' / '+nf.format(needed)+' XP · '+percent+' %')+'</span>'+
-    '</div></div>';
+      '<span class="experience-overlay" aria-hidden="true">'+esc(nf.format(safe)+' / '+nf.format(needed)+' XP')+'</span>'+
+    '</div>'+
+    '<div class="experience-levels"><strong>Level '+esc(level)+'</strong><strong>Level '+esc(level+1)+'</strong></div>'+
+  '</div>';
 }
 
 function shortCharacterName(character){
