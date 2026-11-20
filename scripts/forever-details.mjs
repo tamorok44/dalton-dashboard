@@ -18,22 +18,45 @@ export function collectKnownRecipeRefs(snapshot={}){
   return [...byId.values()];
 }
 
+export function collectLocalizedRefs(snapshot={}){
+  const refs=new Map();
+  const add=(type,id,href)=>{
+    const numeric=integer(id);
+    if(numeric&&typeof href==='string')refs.set(type+':'+numeric,{type,id:numeric,href});
+  };
+  for(const endpoints of Object.values(snapshot.characters||{})){
+    const professionsData=endpoints?.professions?.ok?endpoints.professions.data:null;
+    for(const profession of [...asArray(professionsData?.primaries),...asArray(professionsData?.secondaries)]){
+      add('profession',profession?.profession?.id,profession?.profession?.key?.href);
+    }
+    const reputationsData=endpoints?.reputations?.ok?endpoints.reputations.data:null;
+    for(const entry of asArray(reputationsData?.reputations)){
+      add('faction',entry?.faction?.id,entry?.faction?.key?.href);
+    }
+    const questsData=endpoints?.quests?.ok?endpoints.quests.data:null;
+    for(const entry of asArray(questsData?.in_progress)){
+      add('quest',entry?.id,entry?.key?.href);
+    }
+  }
+  return [...refs.values()];
+}
+
 function normalizedRecipe(recipe,detailsById){
   const id=integer(recipe?.id);
   const detail=id?detailsById?.[id]:null;
   return {
     id,
-    name:recipe?.name||detail?.name||'Unbekannte Kenntnis',
+    name:detail?.name||recipe?.name||'Unbekannte Kenntnis',
     craftedItem:detail?.craftedItem||null,
     craftedQuantity:detail?.craftedQuantity||null,
     reagents:asArray(detail?.reagents)
   };
 }
 
-function professions(data,detailsById){
+function professions(data,detailsById,localizedNames={}){
   const all=[...asArray(data?.primaries),...asArray(data?.secondaries)];
   return all.flatMap(entry=>{
-    const base={id:integer(entry?.profession?.id),name:entry?.profession?.name||'Beruf'};
+    const professionId=integer(entry?.profession?.id); const base={id:professionId,name:localizedNames['profession:'+professionId]||entry?.profession?.name||'Beruf'};
     return asArray(entry?.tiers).map(tier=>({
       ...base,
       tierId:integer(tier?.tier?.id),
@@ -65,10 +88,10 @@ function talentDetails(data){
   })));
 }
 
-function reputationDetails(data){
+function reputationDetails(data,localizedNames={}){
   return asArray(data?.reputations).map(entry=>({
     id:integer(entry?.faction?.id),
-    name:entry?.faction?.name||'Fraktion',
+    name:localizedNames['faction:'+integer(entry?.faction?.id)]||entry?.faction?.name||'Fraktion',
     standing:{
       raw:Number.isFinite(Number(entry?.standing?.raw))?Number(entry.standing.raw):null,
       value:Number.isFinite(Number(entry?.standing?.value))?Number(entry.standing.value):null,
@@ -79,14 +102,14 @@ function reputationDetails(data){
   }));
 }
 
-function activeQuests(data){
+function activeQuests(data,localizedNames={}){
   return asArray(data?.in_progress).map(entry=>({
     id:integer(entry?.id),
-    name:entry?.name||'Quest'
+    name:localizedNames['quest:'+integer(entry?.id)]||entry?.name||'Quest'
   }));
 }
 
-export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={}){
+export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={},localizedNames={}){
   const bySlug=snapshot?.characters||{};
   return {
     ...data,
@@ -95,7 +118,7 @@ export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={}){
       let next={...character};
 
       if(endpoints.professions?.ok){
-        next.professions=professions(endpoints.professions.data,recipeDetailsById);
+        next.professions=professions(endpoints.professions.data,recipeDetailsById,localizedNames);
         next.professionsVerified=true;
         next.professionDetailsVerified=true;
       }
@@ -112,12 +135,12 @@ export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={}){
       }
 
       if(endpoints.reputations?.ok){
-        next.reputations=reputationDetails(endpoints.reputations.data);
+        next.reputations=reputationDetails(endpoints.reputations.data,localizedNames);
         next.reputationsVerified=true;
       }
 
       if(endpoints.quests?.ok){
-        next.activeQuests=activeQuests(endpoints.quests.data);
+        next.activeQuests=activeQuests(endpoints.quests.data,localizedNames);
         next.questsVerified=true;
       }
 
