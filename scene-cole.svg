@@ -25,18 +25,18 @@
  <path d="M225 28v69m36-69v69M173 56h132" stroke="#476779" stroke-width="9"/>
  </g>
 <!-- Main professions: alchemy, herbalism; class palette remains dominant. -->
-<g transform="translate(30 690)"><path d="M6 60Q112 32 233 60" fill="none" stroke="#91775f" stroke-width="11"/><path d="M30 60q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#67d4f0" stroke="#387f9f" stroke-width="3"/><path d="M63 90q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/><path d="M96 120q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#67d4f0" stroke="#387f9f" stroke-width="3"/><path d="M129 60q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/><path d="M162 90q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#67d4f0" stroke="#387f9f" stroke-width="3"/><path d="M195 120q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/>
+<g transform="translate(30 690)"><path d="M6 60Q112 32 233 60" fill="none" stroke="#91775f" stroke-width="11"/><path d="M30 60q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#3fc7eb" stroke="#387f9f" stroke-width="3"/><path d="M63 90q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/><path d="M96 120q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#3fc7eb" stroke="#387f9f" stroke-width="3"/><path d="M129 60q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/><path d="M162 90q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#3fc7eb" stroke="#387f9f" stroke-width="3"/><path d="M195 120q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/>
  <path d="M15 67v142m185-150v142" stroke="#91775f" stroke-width="14"/><path d="M-5 177h242" stroke="#d2b48e" stroke-width="17"/></g><g transform="translate(580 759)" stroke-linejoin="round">
  <path d="M-30 240h344M0 237V27h285v210" stroke="#91775f" stroke-width="18" fill="none"/>
  <path d="M-34 45h336" stroke="#d2b48e" stroke-width="22"/>
  <path d="M22 16h80m111 0h54" stroke="#476779" stroke-width="7"/>
  <path d="M27 4v-68h37V4l-19 27Z" fill="#82d9ee" fill-opacity=".65" stroke="#387f9f" stroke-width="6"/>
- <path d="M28-22h35" stroke="#67d4f0" stroke-width="12" stroke-opacity=".7"/>
+ <path d="M28-22h35" stroke="#3fc7eb" stroke-width="12" stroke-opacity=".7"/>
  <path d="M142 10l-6-60h22l-6 60 43 51q6 26-38 27t-48-27Z" fill="#82d9ee" fill-opacity=".8" stroke="#387f9f" stroke-width="7"/>
- <path d="M121 50h66" stroke="#67d4f0" stroke-width="20" stroke-opacity=".72"/>
+ <path d="M121 50h66" stroke="#3fc7eb" stroke-width="20" stroke-opacity=".72"/>
  <path d="M236-8v-36h27v36l16 22v64h-57V15Z" fill="#82d9ee" fill-opacity=".7" stroke="#387f9f" stroke-width="6"/>
- <path d="M228 39h45" stroke="#67d4f0" stroke-width="17"/>
+ <path d="M228 39h45" stroke="#3fc7eb" stroke-width="17"/>
  <path d="M30 111h219" stroke="#d2b48e" stroke-width="10"/>
- </g><g stroke="#67d4f0" stroke-width="4" fill="none" opacity=".56"><path d="M375 220q86-65 168-12m-146 50q75-45 136-18"/><circle cx="503" cy="208" r="35" stroke-opacity=".48"/></g>
+ </g><g stroke="#3fc7eb" stroke-width="4" fill="none" opacity=".56"><path d="M375 220q86-65 168-12m-146 50q75-45 136-18"/><circle cx="503" cy="208" r="35" stroke-opacity=".48"/></g>
 <rect width="960" height="1160" fill="url(#veil)" pointer-events="none"/>
 </svg>

@@ -6,6 +6,18 @@
   --gold:#e9bd76;--gold-deep:#9f7542;--cream:#ffe9c2;
   --paper:#e2caa5;--muted:#b3ad9f;--line:rgba(217,163,92,.40);
   --sky:#80d7d6;--text:#f6e9d2;--ok:#94d8a5;
+  /* Canonical World of Warcraft colors: keep centralized and test-locked. */
+  --wow-class-mage:#3fc7eb;
+  --wow-class-hunter:#aad372;
+  --wow-class-druid:#ff7c0a;
+  --wow-quality-poor:#9d9d9d;
+  --wow-quality-common:#ffffff;
+  --wow-quality-uncommon:#1eff00;
+  --wow-quality-rare:#0070dd;
+  --wow-quality-epic:#a335ee;
+  --wow-quality-legendary:#ff8000;
+  --wow-quality-artifact:#e6cc80;
+  --wow-quality-heirloom:#00ccff;
   --display: "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
   --body:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   /* Four consistent text sizes; titles/hero remain deliberately larger. */
@@ -122,9 +134,9 @@ main>.status{padding-left:5px}
 .card:hover{border-color:#bd935d;box-shadow:inset 0 0 0 3px #17181d,inset 0 0 0 5px rgba(225,175,104,.43),0 22px 50px #03060cd9,0 0 30px var(--class-glow)}
 .card::before,.card::after{content:"";pointer-events:none;position:absolute;top:9px;width:9px;height:9px;border:1px solid #d3ab72;border-radius:50%;background:radial-gradient(circle at 31% 25%,#ffe4b0,#9e6e37);box-shadow:0 1px 3px #100c0a;z-index:3}
 .card::before{left:9px}.card::after{right:9px}
-.card.mage{--class:#67d4f0;--class-glow:rgba(63,199,235,.22)}
-.card.hunter{--class:#aad372;--class-glow:rgba(170,211,114,.20)}
-.card.druid{--class:#ff9b48;--class-glow:rgba(255,124,10,.17)}
+.card.mage{--class:var(--wow-class-mage);--class-glow:rgba(63,199,235,.22)}
+.card.hunter{--class:var(--wow-class-hunter);--class-glow:rgba(170,211,114,.20)}
+.card.druid{--class:var(--wow-class-druid);--class-glow:rgba(255,124,10,.17)}
 .cardhead{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 8px 12px;border-bottom:1px solid #a9815375;position:relative}
 .cardhead::after{content:"";position:absolute;bottom:-3px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#f2d59f,transparent)}
 .card-intro{min-width:0}
@@ -225,14 +237,14 @@ main>.status{padding-left:5px}
 .equip-empty{background:#141a21b6;border:1px dashed #554b40;color:#8a8f8b}
 .equip-empty b{color:#97928a}
 .equip-empty span:not(.equip-placeholder){color:#8b9290;font-style:normal}
-.quality-poor{color:#9d9d9d}
-.quality-common{color:#fff}
-.quality-uncommon{color:#1eff00}
-.quality-rare{color:#0070dd}
-.quality-epic{color:#a335ee}
-.quality-legendary{color:#ff8000}
-.quality-artifact{color:#e6cc80}
-.quality-heirloom{color:#00ccff}
+.quality-poor{color:var(--wow-quality-poor)}
+.quality-common{color:var(--wow-quality-common)}
+.quality-uncommon{color:var(--wow-quality-uncommon)}
+.quality-rare{color:var(--wow-quality-rare)}
+.quality-epic{color:var(--wow-quality-epic)}
+.quality-legendary{color:var(--wow-quality-legendary)}
+.quality-artifact{color:var(--wow-quality-artifact)}
+.quality-heirloom{color:var(--wow-quality-heirloom)}
 .quality-unknown{color:var(--text)}
 footer{margin:58px auto 0;padding:25px 16px 42px;max-width:960px;text-align:center;border-top:1px solid #59432e;color:#b6aca0;font-size:var(--type-body);line-height:1.5}
 
@@ -329,10 +341,10 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   background-repeat:no-repeat;
   filter:saturate(1.06) contrast(1.01);
 }
-.portrait.scene-cole::before{background-image:linear-gradient(180deg,rgba(35,76,91,.00),rgba(19,62,78,.04) 67%,rgba(23,51,67,.12)),url("/scene-cole.svg?v=frontier-unified-20261120a")}
-.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(80,115,58,.04),rgba(48,88,47,.04) 65%,rgba(32,69,38,.13)),url("/scene-dolly.svg?v=frontier-unified-20261120a")}
-.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(255,166,87,.04),rgba(181,93,36,.04) 65%,rgba(95,48,24,.13)),url("/scene-chucky.svg?v=frontier-unified-20261120a")}
-.portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(255,161,83,.03),rgba(172,97,38,.04) 65%,rgba(96,53,27,.13)),url("/scene-viola.svg?v=frontier-unified-20261120a")}
+.portrait.scene-cole::before{background-image:linear-gradient(180deg,rgba(35,76,91,.00),rgba(19,62,78,.04) 67%,rgba(23,51,67,.12)),url("/scene-cole.svg?v=wow-colors-20261121a")}
+.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(80,115,58,.04),rgba(48,88,47,.04) 65%,rgba(32,69,38,.13)),url("/scene-dolly.svg?v=wow-colors-20261121a")}
+.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(255,166,87,.04),rgba(181,93,36,.04) 65%,rgba(95,48,24,.13)),url("/scene-chucky.svg?v=wow-colors-20261121a")}
+.portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(255,161,83,.03),rgba(172,97,38,.04) 65%,rgba(96,53,27,.13)),url("/scene-viola.svg?v=wow-colors-20261121a")}
 /* Personalisierte Western-Siegel statt austauschbarer Ortsnamen. */
 .portrait .portrait-badge{
   position:absolute;z-index:5;top:14px;left:14px;
@@ -377,17 +389,17 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 /* WoW Forever: 0–300 bleibt einheitlich, die Freischaltung und der Fortschritt
    übernehmen die Klassenfarbe. Gesperrte Stufen bleiben neutral dunkel. */
 .card.mage{
-  --skill-light:#c9f3ff;--skill-mid:#67d4f0;--skill-bottom:#238bb9;--skill-shadow:#175977;
+  --skill-light:#c9f3ff;--skill-mid:var(--class);--skill-bottom:#238bb9;--skill-shadow:#175977;
   --skill-open-top:#316f86;--skill-open-mid:#24576c;--skill-open-bottom:#18394c;
   --skill-highlight:rgba(115,221,255,.45);
 }
 .card.hunter{
-  --skill-light:#edffcc;--skill-mid:#aad372;--skill-bottom:#6a9d42;--skill-shadow:#345a2e;
+  --skill-light:#edffcc;--skill-mid:var(--class);--skill-bottom:#6a9d42;--skill-shadow:#345a2e;
   --skill-open-top:#507247;--skill-open-mid:#3e5d3d;--skill-open-bottom:#2c4733;
   --skill-highlight:rgba(178,226,120,.45);
 }
 .card.druid{
-  --skill-light:#ffe2b4;--skill-mid:#ff9b48;--skill-bottom:#cf6422;--skill-shadow:#854019;
+  --skill-light:#ffe2b4;--skill-mid:var(--class);--skill-bottom:#cf6422;--skill-shadow:#854019;
   --skill-open-top:#985b36;--skill-open-mid:#75462c;--skill-open-bottom:#593523;
   --skill-highlight:rgba(255,160,80,.47);
 }
@@ -612,7 +624,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 
 .experience-progress{margin:15px 0 13px;padding:11px 12px 10px;border:1px solid rgba(208,186,148,.16);border-radius:6px;background:rgba(4,12,18,.34)}
 .experience-track{position:relative;height:32px;overflow:hidden;border:1px solid rgba(221,197,151,.24);border-radius:5px;background:linear-gradient(180deg,#10171f,#171c26);box-shadow:inset 0 0 8px rgba(0,0,0,.55)}
-.experience-fill{position:absolute;inset:0 auto 0 0;min-width:0;background:linear-gradient(180deg,var(--skill-light,#8ddfe2),var(--skill-mid,#6fc6c3) 56%,var(--skill-dark,#305c65));overflow:hidden}
+.experience-fill{position:absolute;inset:0 auto 0 0;min-width:0;background:linear-gradient(180deg,var(--skill-light,#b6efe4) 0%,var(--skill-mid,#6fc6c3) 33%,var(--skill-bottom,#368998) 78%,var(--skill-shadow,#226c80) 100%);overflow:hidden}
 .experience-fill::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 0 12px,rgba(255,255,255,.14) 12px 17px,transparent 17px 29px);background-size:58px 58px;animation:skill-energy-flow 3.8s linear infinite}
 .experience-fill::after{content:"";position:absolute;top:-48%;bottom:-48%;left:-65%;width:38%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08) 24%,rgba(255,255,255,.53) 50%,rgba(255,255,255,.08) 76%,transparent);filter:blur(2.5px);transform:skewX(-19deg);animation:skill-light-sweep 7.6s ease-in-out infinite}
 .experience-overlay{position:absolute;z-index:3;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}

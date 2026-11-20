@@ -31,7 +31,7 @@
  <path d="M140 45l119 265" stroke="#936a4c" stroke-width="18" stroke-linecap="round"/>
  <path d="M64 67Q153 6 245 65q-52 32-74 25-54 33-107-23Z" fill="#dfb183" stroke="#ab632f" stroke-width="8"/>
  <path d="M249 308l51-53 52 30-13 53-67 24Z" fill="#ab632f" stroke="#dfb183" stroke-width="6"/>
- <path d="M261 299l60-6" stroke="#ff9b48" stroke-width="10"/>
+ <path d="M261 299l60-6" stroke="#ff7c0a" stroke-width="10"/>
  <path d="M26 329l29-18 35 31-18 33-44-4Z" fill="#dfb183" stroke="#7d4e39" stroke-width="7"/>
  </g><g transform="translate(680 788)" stroke-linejoin="round">
  <path d="M25 292V-28M268 292V-28M-15 8h335M-15 261h335" stroke="#936a4c" stroke-width="19" fill="none"/>
