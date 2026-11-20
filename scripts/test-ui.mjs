@@ -65,11 +65,34 @@ for(const [slug,klass] of Object.entries({
 })){
   assert.match(cards,new RegExp('portrait '+klass));
   assert.ok(css.includes('.portrait.'+klass+'::before'));
-  assert.ok(css.includes('url("/'+klass+'.svg")'));
+  assert.ok(css.includes('url("/'+klass+'.svg') && css.includes('.portrait.'+klass+'::before'));
+  // Druid scene and hunter scene are intentionally versioned to bypass stale PWA/browser artwork caches.
   const scene=read(klass+'.svg');
   assert.match(scene,/<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
   assert.match(scene,/<\/svg>\s*$/);
 }
+
+const expectedCards=[
+  {name:'Chucky Dalton',klass:'druid',scene:'scene-chucky',color:'#ff9b48'},
+  {name:'Cole Dalton',klass:'mage',scene:'scene-cole',color:'#67d4f0'},
+  {name:'Dolly Dalton',klass:'hunter',scene:'scene-dolly',color:'#aad372'},
+  {name:'Viola Dalton',klass:'druid',scene:'scene-viola',color:'#ff9b48'}
+];
+for(const {name,klass,scene,color} of expectedCards){
+  const start=cards.indexOf('<article class="card '+klass+'">');
+  const marker=cards.indexOf('<h2 class="name">'+name+'</h2>');
+  assert.ok(start>=0 && marker>start,'Right class for '+name);
+  const area=cards.slice(start,cards.indexOf('</article>',start));
+  assert.ok(area.includes('portrait '+scene+'"'),'Correct backdrop for '+name);
+  assert.ok(css.includes('--class:'+color),'Class color for '+name);
+}
+const chucky=read('scene-chucky.svg'),dolly=read('scene-dolly.svg');
+assert.match(chucky,/<linearGradient id="sky"[^>]*><stop stop-color="#392836"/,'Chucky warm dusk sky');
+assert.match(chucky,/<g fill="#ac612f"/,'Chucky orange autumn foliage, not green');
+assert.match(dolly,/<linearGradient id="sky"[^>]*><stop stop-color="#153e3c"/,'Dolly green frontier sky');
+assert.match(dolly,/<path d="M0 679[^"]*" fill="#65805c"/,'Dolly green canyon, not orange');
+assert.ok(css.includes('url("/scene-chucky.svg?v=20261120b")'));
+assert.ok(css.includes('url("/scene-dolly.svg?v=20261120b")'));
 assert.ok(!/\.vital:last-child\s*\{\s*border-color:\s*var\(--class\)/.test(css),
   'Item-level frame must match other vital tiles, not use the class color');
 assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css),
