@@ -134,6 +134,19 @@ try{
   await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},scheduled);
   assert.equal(scheduled.result().status,200,'Authorized scheduled update succeeds');
   assert.ok(lockReleases>=3,'Distributed lock is released after runs');
+  lock='other-instance';
+  const savedBeforeConflict=saved, requestsBeforeConflict=requests;
+  const overlapping=fakeResponse();
+  await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},overlapping);
+  assert.equal(overlapping.result().status,200,'Scheduled overlapping requests are acknowledged');
+  assert.equal(overlapping.result().payload.pending,true,'Overlapping requests are not treated as a completed refresh');
+  assert.equal(saved,savedBeforeConflict,'No stale data overwrites when another instance holds the lock');
+  assert.equal(requests,requestsBeforeConflict,'Locked request does not contact Blizzard');
+  lock=null;
+  cooldown=true;
+  const throttled=fakeResponse();
+  await handler({method:'GET'},throttled);
+  assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
   console.log('Manual API: parallel fetch, latest level/skills/stats, partial/total failure, cache controls: OK');
 }finally{
   globalThis.fetch=originalFetch;
