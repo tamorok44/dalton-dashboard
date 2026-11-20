@@ -266,4 +266,18 @@ ui.render(preserved,{live:true,success:3});
 assert.ok(nodes.get('#status').textContent.includes('3 von 4 Profilen'),'Partial refresh clearly reported');
 assert.ok(css.includes('.stale-value{'),'Stale-value formatting available');
 
+
+/* Asset performance: don't preload a desktop landscape on a phone, and
+   ensure the service worker never downloads an obsolete duplicate URL. */
+const workerAssetList=read('sw.js');
+const expectedHero=css.match(/skyborne-horizon\\.svg\\?v=[^"]+/)?.[0];
+const expectedMobileHero=css.match(/skyborne-mainstreet-mobile\\.svg\\?v=[^"]+/)?.[0];
+assert.ok(expectedHero&&expectedMobileHero);
+assert.ok(heroHtml.includes('media="(min-width: 741px)" href="/'+expectedHero+'"'),'Desktop image is preloaded only at desktop widths');
+assert.ok(heroHtml.includes('media="(max-width: 740px)" href="/'+expectedMobileHero+'"'),'Mobile image is preloaded only at mobile widths');
+for(const id of ['cole','dolly','chucky','viola']){
+  const fromCss=css.match(new RegExp('/scene-'+id+'\\\\.svg\\\\?v=[^"]+'))?.[0];
+  assert.ok(fromCss&&workerAssetList.includes(fromCss),'Service worker uses actual CSS scene URL for '+id);
+}
+
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
