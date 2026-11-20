@@ -69,7 +69,7 @@ button{font:inherit}button:focus-visible,summary:focus-visible{outline:3px solid
 .hero-rule::before,.hero-rule::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#efc185)}
 .hero-rule::after{transform:rotate(180deg)}
 .hero-subtitle{margin:0;color:#ffead0;font-size:clamp(1.06rem,2vw,1.3rem);font-weight:700;letter-spacing:.015em;line-height:1.45;text-shadow:0 2px 7px #132d39}
-.hero-story{margin:14px 0 0;color:#f8dfb5;font-family:var(--body);font-style:normal;font-size:clamp(.94rem,1.6vw,1.06rem);font-weight:700;line-height:1.5;letter-spacing:.015em;text-shadow:0 1px 4px #0c2735,0 3px 10px #0e2430;max-width:540px}
+.hero-story{margin:14px 0 0;color:#f8dfb5;font-family:var(--body);font-style:italic;font-size:clamp(.94rem,1.6vw,1.06rem);font-weight:700;line-height:1.5;letter-spacing:.015em;text-shadow:0 1px 4px #0c2735,0 3px 10px #0e2430;max-width:540px}
 main{position:relative;width:min(1220px,calc(100% - 42px));margin:27px auto 0;z-index:5}
 .command-deck{
   position:relative;padding:23px 28px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;
