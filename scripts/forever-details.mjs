@@ -109,6 +109,18 @@ function activeQuests(data,localizedNames={}){
   }));
 }
 
+function completedQuestIds(data){
+  const candidates=[
+    ...asArray(data),
+    ...asArray(data?.quests),
+    ...asArray(data?.completed_quests),
+    ...asArray(data?.completed)
+  ];
+  return [...new Set(candidates.map(entry=>integer(
+    typeof entry==='number'||typeof entry==='string' ? entry : entry?.id??entry?.quest?.id
+  )).filter(Boolean))].sort((a,b)=>a-b);
+}
+
 export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={},localizedNames={}){
   const bySlug=snapshot?.characters||{};
   return {
@@ -142,6 +154,11 @@ export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={},loca
       if(endpoints.quests?.ok){
         next.activeQuests=activeQuests(endpoints.quests.data,localizedNames);
         next.questsVerified=true;
+      }
+
+      if(endpoints.completedQuests?.ok){
+        next.completedQuestIds=completedQuestIds(endpoints.completedQuests.data);
+        next.completedQuestsVerified=true;
       }
 
       return next;

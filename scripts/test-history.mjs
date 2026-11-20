@@ -8,6 +8,8 @@ const base={
     slug:'cole-dalton',name:'Cole Dalton',level:11,class:'Magier',race:'Himmelsgeborene',
     experience:100,lastLoginAt:'2026-11-20T09:00:00.000Z',
     professions:[{name:'Alchemie',current:58,max:75}],
+    activeQuests:[{id:9001,name:'Ein großes Abenteuer'}],
+    completedQuestIds:[8123],
     stats:{Gesundheit:200,Mana:500},
     equipment:[{slot:'Brust',item:'Altes Wams',level:8,quality:'COMMON',icon:'https://example.test/a.jpg'}],
     scrapedAt:'2026-11-20T10:00:00.000Z',imageCheckedAt:'2026-11-20T10:00:00.000Z',
@@ -26,11 +28,14 @@ changed.characters[0].level=12;
 changed.characters[0].experience=250;
 changed.characters[0].professions[0].current=63;
 changed.characters[0].equipment[0].item='Neues Wams';
+changed.characters[0].completedQuestIds.push(9001);
 const changes=diffMeaningfulChanges(base,changed);
 assert.ok(changes.some(x=>x.path==='level'&&x.before===11&&x.after===12));
 assert.ok(changes.some(x=>x.path==='experience'&&x.before===100&&x.after===250));
 assert.ok(changes.some(x=>x.path==='professions.Alchemie.current'&&x.after===63));
 assert.ok(changes.some(x=>x.path==='equipment.Brust.item'&&x.after==='Neues Wams'));
+assert.ok(changes.some(x=>x.path==='completedQuests.9001'&&x.before===null&&x.after===true),'Ein neuer Questabschluss wird als einzelne ID statt als komplette Liste historisiert');
+assert.ok(!changes.some(x=>x.path==='completedQuests'&&Array.isArray(x.after)),'Completed-Liste darf die Historie nicht mit Vollkopien aufblasen');
 assert.ok(!Object.hasOwn(historyProjection(changed.characters[0]),'scrapedAt'));
 console.log('Historie: nur fachliche Änderungen, keine Abrufzeitstempel: OK');
 

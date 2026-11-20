@@ -280,6 +280,7 @@ for(const old of characters){
       talentDetailsVerified:false,
       reputationsVerified:false,
       questsVerified:false,
+      completedQuestsVerified:false,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
       avatarUrl:avatarPattern.test(avatar||'')?avatar:old.avatarUrl,
       // Keep the same render URL and cache key until Blizzard changes it.

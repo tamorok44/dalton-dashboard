@@ -163,12 +163,64 @@ function progressPanel(c){
   return entries.length?'<div class="section progress-section"><h3>Fortschritt</h3><div class="rows">'+entries.join('')+'</div></div>':'';
 }
 
-function questsPanel(c,open=false){
-  const quests=Array.isArray(c.activeQuests)?c.activeQuests:[];
+function shortCharacterName(character){
+  const name=String(character?.name||character?.player||'').trim();
+  return name.replace(/\s+Dalton$/i,'')||'Unbekannt';
+}
+function questGroupStatus(chars=[]){
+  const byId=new Map();
+  const ensure=(id,name)=>{
+    const numeric=Number(id);
+    if(!Number.isInteger(numeric))return null;
+    if(!byId.has(numeric))byId.set(numeric,{id:numeric,name:name||null,open:[],completed:[]});
+    const entry=byId.get(numeric);
+    if(!entry.name&&name)entry.name=name;
+    return entry;
+  };
+  for(const character of chars){
+    const seenOpen=new Set();
+    for(const quest of Array.isArray(character.activeQuests)?character.activeQuests:[]){
+      const entry=ensure(quest?.id,quest?.name);
+      if(entry&&!seenOpen.has(entry.id)){entry.open.push(character);seenOpen.add(entry.id)}
+    }
+    const seenCompleted=new Set();
+    for(const id of Array.isArray(character.completedQuestIds)?character.completedQuestIds:[]){
+      const entry=ensure(id,null);
+      if(entry&&!seenCompleted.has(entry.id)){entry.completed.push(character);seenCompleted.add(entry.id)}
+    }
+  }
+  const ordered=[...byId.values()].filter(entry=>entry.open.length).sort((a,b)=>
+    b.open.length-a.open.length||String(a.name||'').localeCompare(String(b.name||''),'de')
+  );
+  return {
+    byId,
+    rank:new Map(ordered.map((entry,index)=>[entry.id,index])),
+    completedFresh:chars.every(character=>character.completedQuestsVerified===true)
+  };
+}
+function questsPanel(c,group,open=false){
+  const quests=[...(Array.isArray(c.activeQuests)?c.activeQuests:[])].sort((a,b)=>{
+    const ar=group?.rank?.get(Number(a?.id))??Number.MAX_SAFE_INTEGER;
+    const br=group?.rank?.get(Number(b?.id))??Number.MAX_SAFE_INTEGER;
+    return ar-br||String(a?.name||'').localeCompare(String(b?.name||''),'de');
+  });
   if(!quests.length)return '';
+  const rows=quests.map(quest=>{
+    const status=group?.byId?.get(Number(quest?.id));
+    const alsoOpen=(status?.open||[]).filter(other=>other.slug!==c.slug).map(shortCharacterName);
+    const completedBy=(status?.completed||[]).filter(other=>other.slug!==c.slug).map(shortCharacterName);
+    const meta=[
+      alsoOpen.length?'<span class="quest-shared">Auch offen: '+esc(alsoOpen.join(' · '))+'</span>':'',
+      completedBy.length?'<span class="quest-completed">Bereits abgeschlossen: '+esc(completedBy.join(' · '))+'</span>':''
+    ].filter(Boolean).join('');
+    return '<div class="quest-entry"><span aria-hidden="true">›</span><div class="quest-copy"><strong>'+esc(quest.name)+'</strong>'+
+      (meta?'<div class="quest-meta">'+meta+'</div>':'')+'</div></div>';
+  }).join('');
+  const stale=(c.questsVerified===false?' · letzter bekannter Stand':'')+
+    (group?.completedFresh===false?' · Abschlussstatus letzter bekannter Stand':'');
   return '<details class="details quests-details" data-detail-key="'+esc(c.slug)+':quests"'+(open?' open':'')+'>'+
-    '<summary>Aktive Quests · '+quests.length+(c.questsVerified===false?' · letzter bekannter Stand':'')+'</summary>'+
-    '<div class="quest-list">'+quests.map(quest=>'<div class="quest-entry"><span aria-hidden="true">›</span><strong>'+esc(quest.name)+'</strong></div>').join('')+'</div>'+
+    '<summary>Aktive Quests · '+quests.length+stale+'</summary>'+
+    '<div class="quest-list">'+rows+'</div>'+
   '</details>';
 }
 
@@ -279,6 +331,7 @@ function render(data,{live=false,success=null}={}){
  displayedData=data;
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+ const questStatus=questGroupStatus(chars);
 
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  const min=levels.length?Math.min(...levels):null,max=levels.length?Math.max(...levels):null;
@@ -309,7 +362,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${talentPanel(c)}
   <div class="section professions-section"><h3>Berufe${c.professionDetailsVerified===false?' · Kenntnisse letzter bekannter Stand':''}</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions,c.scrapeOk===false,c.slug,openDetails)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
   ${reputationPanel(c)}
-  ${questsPanel(c,openDetails.has(c.slug+':quests'))}
+  ${questsPanel(c,questStatus,openDetails.has(c.slug+':quests'))}
   ${statsPanel(c,openDetails.has(c.slug+':stats'))}
   ${equipmentPanel(c,openDetails.has(c.slug+':equipment'))}
  </article>`).join("");
