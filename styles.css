@@ -175,7 +175,7 @@ main>.status{padding-left:5px}
 .vital small{display:block;font-size:.69rem;color:#c3bbae;font-weight:850;letter-spacing:.035em}
 .vital strong{display:block;margin-top:5px;font:900 1.8rem var(--display);font-variant-numeric:tabular-nums;line-height:1.05;color:#fce2ab}
 .vital:nth-child(2) strong{color:#91dbe7}
-.vital:last-child{border-color:var(--class)}.vital:last-child strong{color:var(--class)}
+/* Gegenstandsstufe verwendet denselben neutralen Messingrahmen und Schriftton wie die anderen Hauptwerte. */
 .details{margin-top:14px}
 .details summary{
   position:relative;cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;min-height:41px;padding:10px 31px 10px 13px;
@@ -292,3 +292,63 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
 @media(display-mode:standalone){body{padding-bottom:env(safe-area-inset-bottom)}.hero-content{padding-top:env(safe-area-inset-top)}}
+
+
+/* Vier eigenständige Western-Fantasy-Kulissen hinter unveränderten Blizzard-Figuren. */
+.portrait[class*="scene-"]::before{
+  background-size:cover;
+  background-position:center 52%;
+  background-repeat:no-repeat;
+  filter:saturate(1.06) contrast(1.04);
+}
+.portrait.scene-cole::before{background-image:linear-gradient(180deg,rgba(5,17,35,.05),rgba(10,23,38,.10) 67%,rgba(9,12,23,.20)),url("/scene-cole.svg")}
+.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(24,18,22,.04),rgba(34,22,21,.09) 70%,rgba(13,14,21,.24)),url("/scene-dolly.svg")}
+.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(10,28,23,.04),rgba(20,37,34,.10) 65%,rgba(11,21,22,.24)),url("/scene-chucky.svg")}
+.portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(37,17,25,.04),rgba(43,29,22,.10) 65%,rgba(15,17,20,.23)),url("/scene-viola.svg")}
+.portrait .scene-label{
+  position:absolute;z-index:4;top:15px;left:17px;max-width:calc(100% - 34px);
+  padding:6px 11px 7px;
+  border:1px solid rgba(241,205,142,.56);
+  box-shadow:inset 0 0 0 1px rgba(15,18,25,.6),0 2px 9px #0b121c88;
+  background:linear-gradient(110deg,rgba(20,27,34,.92),rgba(34,31,31,.85));
+  color:#f7d6a7;font:italic 750 .77rem var(--display);
+  letter-spacing:.03em;text-shadow:0 1px 2px #080a0f;
+}
+.portrait.scene-cole{border-color:#75b4c2}
+.portrait.scene-dolly{border-color:#bc9863}
+.portrait.scene-chucky{border-color:#9aaf82}
+.portrait.scene-viola{border-color:#cf9a75}
+
+/* Berufsfortschritt: die gefüllte Strecke liegt hinter der Zahl X/Y. */
+.profession{
+  display:block;position:relative;min-width:0;padding:9px 10px 11px;
+  border:1px solid rgba(182,148,97,.40);border-radius:3px;
+  background:linear-gradient(110deg,rgba(28,40,44,.85),rgba(25,26,34,.89));
+  box-shadow:inset 0 0 0 1px rgba(9,12,18,.7);
+}
+.profession-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 8px}
+.profession-label{color:#f2d7ab;font:800 .81rem var(--body);line-height:1.35}
+.profession-track{
+  position:relative;isolation:isolate;height:32px;overflow:hidden;
+  border:2px solid #987b52;border-radius:3px;
+  box-shadow:inset 0 2px 7px #090f1fc9,0 2px 8px #0b0d11ad;
+  background:repeating-linear-gradient(90deg,transparent 0 9.8%,rgba(224,187,121,.14) 9.8% 10%),
+    linear-gradient(180deg,#0b1826,#111e2b 57%,#131c24);
+}
+.profession-progress{
+  position:absolute;z-index:0;top:0;bottom:0;left:0;
+  background:repeating-linear-gradient(112deg,rgba(242,255,245,.10) 0 12px,transparent 12px 25px),
+    linear-gradient(180deg,#9adad7 0%,#438d9b 30%,#206b78 80%,#145466 100%);
+  box-shadow:inset 0 1px 0 #e4fff2a1,inset 0 -2px 0 #0e4557,2px 0 12px #a2eeed7a;
+  transition:width .28s ease;
+}
+.profession-overlay{
+  position:absolute;z-index:1;inset:0;display:flex;align-items:center;justify-content:center;
+  font:900 .93rem var(--display);letter-spacing:.08em;color:#fff4db;
+  text-shadow:0 1px 2px #031220,0 2px 6px #02101f,1px 0 #071624;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:520px){
+  .portrait .scene-label{font-size:.69rem;top:10px;left:10px}
+  .profession-track{height:35px}
+}
