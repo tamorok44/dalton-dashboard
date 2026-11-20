@@ -1,5 +1,5 @@
-const CACHE="daltons-western-scenes-v3";
-const ASSETS=["/","/styles.css","/app.js","/icon.svg","/dalton-crest.svg","/skyborne-horizon.svg","/scene-cole.svg","/scene-dolly.svg","/scene-chucky.svg","/scene-viola.svg"];
+const CACHE="daltons-western-scenes-v4";
+const ASSETS=["/","/styles.css?v=western-palettes-20261120b","/app.js","/icon.svg","/dalton-crest.svg","/skyborne-horizon.svg","/scene-cole.svg","/scene-dolly.svg?v=20261120b","/scene-chucky.svg?v=20261120b","/scene-viola.svg"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
