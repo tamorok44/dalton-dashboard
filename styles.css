@@ -319,6 +319,10 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
 .portrait.scene-chucky{border-color:#9aaf82}
 .portrait.scene-viola{border-color:#cf9a75}
 
+/* Explizit neutral: Gegenstandsstufe ist KEINE Klassenfarbe. */
+.vital:last-child{border-color:#776449;background:linear-gradient(155deg,rgba(48,52,55,.84),rgba(17,26,35,.95))}
+.vital:last-child strong{color:#fce2ab}
+
 /* Berufsfortschritt: die gefüllte Strecke liegt hinter der Zahl X/Y. */
 .profession{
   display:block;position:relative;min-width:0;padding:9px 10px 11px;
