@@ -21,7 +21,6 @@ const fetchImpl=async (url,options={})=>{
   assert.equal(options.headers.authorization,'Bearer secret-access-token');
   const parsed=new URL(String(url));
   assert.equal(parsed.searchParams.get('namespace'),'profile-forever-eu');
-  assert.equal(parsed.searchParams.get('locale'),'en_GB');
   if(parsed.pathname.endsWith('/equipment')){
     return fakeResponse(200,{equipped_items:[{slot:{type:'HEAD'},item:{id:123,name:'Test Hat'}}]});
   }
@@ -51,6 +50,7 @@ assert.equal(result.endpoints.equipment.status,200);
 assert.ok(result.endpoints.profile.timeFields.some(x=>x.path==='$.last_login_timestamp'));
 assert.ok(result.endpoints.equipment.schema.paths.some(x=>x.path==='$.equipped_items[].item.name'));
 assert.equal(calls.length,3,'One OAuth request plus two API requests');
+for(const call of calls.slice(1,3))assert.equal(new URL(call.url).searchParams.get('locale'),'en_GB','Diagnose bleibt standardmässig en_GB');
 
 const beforeSnapshotCalls=calls.length;
 const full=await fetchForeverSnapshot(['cole-dalton'],{
@@ -58,8 +58,10 @@ const full=await fetchForeverSnapshot(['cole-dalton'],{
   endpointNames:['profile','equipment','professions']
 });
 assert.equal(full.namespace,'profile-forever-eu');
+assert.equal(full.locale,'de_DE','Vollsnapshots werden standardmässig mit deutschem Blizzard-Locale abgerufen');
 assert.equal(Object.keys(full.characters['cole-dalton']).length,3);
 assert.equal(full.characters['cole-dalton'].profile.status,200);
 assert.equal(full.characters['cole-dalton'].equipment.status,200);
 assert.equal(calls.length,beforeSnapshotCalls+3,'Cached OAuth token plus every requested raw snapshot endpoint');
+for(const call of calls.slice(beforeSnapshotCalls))assert.equal(new URL(call.url).searchParams.get('locale'),'de_DE','Jeder Vollsnapshot-Endpunkt nutzt de_DE');
 console.log('Blizzard Forever API client, schema inventory and raw snapshots: OK');
