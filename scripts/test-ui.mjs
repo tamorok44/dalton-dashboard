@@ -79,10 +79,11 @@ const expectedCards=[
   {name:'Viola Dalton',klass:'druid',scene:'scene-viola',color:'#ff9b48'}
 ];
 for(const {name,klass,scene,color} of expectedCards){
-  const start=cards.indexOf('<article class="card '+klass+'">');
   const marker=cards.indexOf('<h2 class="name">'+name+'</h2>');
-  assert.ok(start>=0 && marker>start,'Right class for '+name);
-  const area=cards.slice(start,cards.indexOf('</article>',start));
+  const start=cards.lastIndexOf('<article class="card ',marker);
+  assert.ok(start>=0 && marker>start,'Character exists: '+name);
+  assert.ok(cards.slice(start,marker).startsWith('<article class="card '+klass+'">'),'Right class for '+name);
+  const area=cards.slice(start,cards.indexOf('</article>',marker));
   assert.ok(area.includes('portrait '+scene+'"'),'Correct backdrop for '+name);
   assert.ok(css.includes('--class:'+color),'Class color for '+name);
 }
