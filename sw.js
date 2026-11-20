@@ -1,5 +1,5 @@
-const CACHE="daltons-skyborne-v2";
-const ASSETS=["/","/styles.css","/app.js","/icon.svg","/dalton-crest.svg","/skyborne-horizon.svg"];
+const CACHE="daltons-western-scenes-v3";
+const ASSETS=["/","/styles.css","/app.js","/icon.svg","/dalton-crest.svg","/skyborne-horizon.svg","/scene-cole.svg","/scene-dolly.svg","/scene-chucky.svg","/scene-viola.svg"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
