@@ -69,6 +69,10 @@ function questMap(list=[]){
     .map(quest=>({id:quest?.id??null,name:quest?.name??null}))
     .sort((a,b)=>(a.id??0)-(b.id??0));
 }
+function completedQuestMap(list=[]){
+  return Object.fromEntries([...new Set(list.map(Number).filter(Number.isInteger))]
+    .sort((a,b)=>a-b).map(id=>[String(id),true]));
+}
 function stableStats(stats={}){
   return Object.fromEntries(Object.entries(stats).sort(([a],[b])=>a.localeCompare(b,'de')));
 }
@@ -91,6 +95,7 @@ export function historyProjection(c={}){
     professions:professionMap(c.professions),
     reputations:reputationMap(c.reputations),
     activeQuests:questMap(c.activeQuests),
+    completedQuests:completedQuestMap(c.completedQuestIds||[]),
     stats:stableStats(c.stats),
     equipment:equipmentMap(c.equipment),
     imageUrl:c.imageUrl??null,
