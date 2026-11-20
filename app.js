@@ -98,8 +98,9 @@ function equipmentPanel(c,open=false){
   const rows=equipmentSlotOrder.map(slot=>{
     const item=available.get(slot);
     if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
-    const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(item.icon||'');
-    const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
+    const iconUrl=item.storedIcon||item.icon;
+    const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(iconUrl||'')||validBlob(iconUrl);
+    const icon=safeIcon?'<img class="equip-icon" src="'+esc(iconUrl)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
     const quality=String(item.quality||'').toUpperCase();
     const qualityClass=itemQualityClasses[quality]||'quality-unknown';
     const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
@@ -110,7 +111,7 @@ function equipmentPanel(c,open=false){
   return '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details>';
 }
 
-const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&/^[a-z0-9-]+\\.public\\.blob\\.vercel-storage\\.com$/.test(x.hostname)&&/^\\/(?:portraits|equipment)\\//.test(x.pathname)}catch{return false}};
+const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/)/.test(x.pathname)}catch{return false}};
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
   const configuredScene=portraitScenes[c.slug]||null;
@@ -118,7 +119,7 @@ function renderPortrait(c){
   const scene=configuredScene&&c.slug==='chucky-dalton'&&c.gender==='male'
     ? {...configuredScene,epithet:'Der Windsurfer'} : configuredScene;
   const image=validBlob(c.storedImageUrl)?c.storedImageUrl:validRender(c.imageUrl)?c.imageUrl:null;
-  const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
+  const avatar=validBlob(c.storedAvatarUrl)?c.storedAvatarUrl:/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
   const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
   return '<figure class="portrait '+(scene?scene.className:'')+'">'+portraitBadge(scene)+'<img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
