@@ -302,9 +302,9 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   filter:saturate(1.06) contrast(1.04);
 }
 .portrait.scene-cole::before{background-image:linear-gradient(180deg,rgba(5,17,35,.05),rgba(10,23,38,.10) 67%,rgba(9,12,23,.20)),url("/scene-cole.svg")}
-.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(24,18,22,.04),rgba(34,22,21,.09) 70%,rgba(13,14,21,.24)),url("/scene-dolly.svg")}
-.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(10,28,23,.04),rgba(20,37,34,.10) 65%,rgba(11,21,22,.24)),url("/scene-chucky.svg")}
-.portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(37,17,25,.04),rgba(43,29,22,.10) 65%,rgba(15,17,20,.23)),url("/scene-viola.svg")}
+.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(48,82,42,.13),rgba(32,66,31,.08) 65%,rgba(12,25,15,.23)),url("/scene-dolly.svg")}
+.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(255,140,47,.16),rgba(154,71,28,.08) 65%,rgba(32,17,15,.24)),url("/scene-chucky.svg")}
+.portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(255,138,47,.15),rgba(153,69,24,.09) 65%,rgba(31,17,17,.22)),url("/scene-viola.svg")}
 .portrait .scene-label{
   position:absolute;z-index:4;top:15px;left:17px;max-width:calc(100% - 34px);
   padding:6px 11px 7px;
@@ -314,10 +314,10 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   color:#f7d6a7;font:italic 750 .77rem var(--display);
   letter-spacing:.03em;text-shadow:0 1px 2px #080a0f;
 }
-.portrait.scene-cole{border-color:#75b4c2}
-.portrait.scene-dolly{border-color:#bc9863}
-.portrait.scene-chucky{border-color:#9aaf82}
-.portrait.scene-viola{border-color:#cf9a75}
+.portrait.scene-cole{border-color:var(--class)}
+.portrait.scene-dolly{border-color:var(--class)}
+.portrait.scene-chucky{border-color:var(--class)}
+.portrait.scene-viola{border-color:var(--class)}
 
 /* Explizit neutral: Gegenstandsstufe ist KEINE Klassenfarbe. */
 .vital:last-child{border-color:#776449;background:linear-gradient(155deg,rgba(48,52,55,.84),rgba(17,26,35,.95))}
