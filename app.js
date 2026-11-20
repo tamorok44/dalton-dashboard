@@ -92,14 +92,18 @@ function craftedQuantityText(quantity){
 function recipeRows(recipes=[]){
   if(!recipes.length)return '<p class="knowledge-empty">Blizzard meldet derzeit keine einzelnen Kenntnisse.</p>';
   return '<div class="knowledge-list">'+recipes.map(recipe=>{
-    const crafted=recipe?.craftedItem?.name
-      ?'<span class="recipe-crafted">Erstellt: <strong>'+esc(recipe.craftedItem.name)+esc(craftedQuantityText(recipe.craftedQuantity))+'</strong></span>'
+    const recipeName=String(recipe?.name||'').trim();
+    const craftedName=String(recipe?.craftedItem?.name||'').trim();
+    const craftedQuantity=craftedQuantityText(recipe?.craftedQuantity);
+    const sameAsRecipe=Boolean(recipeName&&craftedName&&recipeName.localeCompare(craftedName,'de',{sensitivity:'base'})===0);
+    const crafted=craftedName&&(!sameAsRecipe||craftedQuantity)
+      ?'<span class="recipe-crafted">Erstellt: <strong>'+esc(craftedName)+esc(craftedQuantity)+'</strong></span>'
       :'';
     const reagents=(recipe?.reagents||[]).filter(x=>x?.name).map(x=>(Number.isFinite(Number(x.quantity))?Math.round(Number(x.quantity))+'× ':'')+x.name);
     const materials=reagents.length?'<span class="recipe-reagents">Materialien: '+esc(reagents.join(' · '))+'</span>':'';
     const hasDetails=Boolean(crafted||materials);
     return '<div class="recipe-entry">'+
-      '<div class="recipe-name"><span class="recipe-dot" aria-hidden="true"></span><strong>'+esc(recipe?.name||'Kenntnis')+'</strong></div>'+
+      '<div class="recipe-name"><span class="recipe-dot" aria-hidden="true"></span><strong>'+esc(recipeName||'Kenntnis')+'</strong></div>'+
       (hasDetails?'<div class="recipe-meta">'+crafted+materials+'</div>':'')+
       '</div>';
   }).join('')+'</div>';
