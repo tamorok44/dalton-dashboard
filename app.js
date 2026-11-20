@@ -220,15 +220,19 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
 }
 let lastGeneratedAt=null;
 async function load(){
-  status.textContent="Gespeicherte Daten werden geladen …";
+  status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
   try{
-    const r=await fetch('/data/characters.json?t='+Date.now(),{cache:"no-store"});
+    const r=await fetch('/api/characters?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error("HTTP "+r.status);
-    const data=await r.json();
+    const result=await r.json();
+    const data=result.data;
     if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
       lastGeneratedAt=data.generatedAt;render(data);
     }
-  }catch(e){if(!displayedData)status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
+  }catch(e){if(!displayedData){
+      try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
+      catch{status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
+    }}
 }
 async function refreshLive(){
   if(button.disabled)return;
@@ -241,7 +245,7 @@ async function refreshLive(){
     const response=await r.json();
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
-    render(keepNewestProfiles(response.data),{live:true,success:response.success});
+    render(response.data,{live:true,success:response.success});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
@@ -250,5 +254,5 @@ async function refreshLive(){
 button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
-// Neue Blizzard-Profildaten ausschliesslich auf ausdruecklichen Button-Klick abrufen.
+// Live-Aufrufe hier nur per Button; zusätzlich aktualisiert ein geplanter Server-Aufruf alle 30 Minuten.
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
