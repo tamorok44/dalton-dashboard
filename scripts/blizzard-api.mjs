@@ -332,8 +332,9 @@ export async function fetchForeverLocalizedNames(refs,{
         signal:AbortSignal.timeout(15000)
       });
       const body=await parseResponse(response);
-      if(!response.ok||typeof body?.name!=='string'||!body.name)return [key,null];
-      return [key,body.name];
+      const localizedName=typeof body?.name==='string'&&body.name?body.name:typeof body?.title==='string'&&body.title?body.title:null;
+      if(!response.ok||!localizedName)return [key,null];
+      return [key,localizedName];
     }catch{
       return [key,null];
     }
