@@ -316,6 +316,49 @@ function localizedResourceUrl(href,locale){
   return url;
 }
 
+
+function normalizeQuestDetail(body,ref,locale){
+  let namespace='';
+  try{namespace=new URL(ref.href).searchParams.get('namespace')||''}catch{}
+  const text=value=>typeof value==='string'&&value.trim()?value.trim():null;
+  return {
+    id:Number(body?.id)||Number(ref?.id)||null,
+    title:text(body?.title)||text(body?.name),
+    description:text(body?.description),
+    area:text(body?.area?.name)||text(body?.zone?.name)||text(body?.category?.name),
+    minimumLevel:Number.isInteger(Number(body?.requirements?.min_character_level))?Number(body.requirements.min_character_level):null,
+    locale,
+    namespace,
+    fetchedAt:new Date().toISOString()
+  };
+}
+
+export async function fetchForeverQuestDetails(refs,{
+  fetchImpl=fetch,
+  locale='de_DE'
+}={}){
+  const unique=[...new Map((Array.isArray(refs)?refs:[])
+    .filter(ref=>ref?.type==='quest'&&Number.isInteger(Number(ref?.id))&&typeof ref?.href==='string')
+    .map(ref=>[Number(ref.id),ref])).values()];
+  if(!unique.length)return {};
+  const {token}=await accessToken(fetchImpl);
+  const entries=await Promise.all(unique.map(async ref=>{
+    try{
+      const response=await fetchImpl(localizedResourceUrl(ref.href,locale),{
+        headers:{authorization:'Bearer '+token,accept:'application/json'},
+        signal:AbortSignal.timeout(15000)
+      });
+      const body=await parseResponse(response);
+      if(!response.ok)return [Number(ref.id),null];
+      const detail=normalizeQuestDetail(body,ref,locale);
+      return [Number(ref.id),detail?.title?detail:null];
+    }catch{
+      return [Number(ref.id),null];
+    }
+  }));
+  return Object.fromEntries(entries.filter(([,detail])=>detail));
+}
+
 export async function fetchForeverLocalizedNames(refs,{
   fetchImpl=fetch,
   locale='de_DE'

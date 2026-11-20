@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {FOREVER_CHARACTER_ENDPOINTS,describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames} from './blizzard-api.mjs';
+import {FOREVER_CHARACTER_ENDPOINTS,describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames,fetchForeverQuestDetails} from './blizzard-api.mjs';
 
 process.env.BLIZZARD_CLIENT_ID='test-client';
 process.env.BLIZZARD_CLIENT_SECRET='test-secret';
@@ -85,4 +85,27 @@ const localizedNames=await fetchForeverLocalizedNames([
 assert.equal(localizedNames['quest:92709'],'Ein großes Abenteuer','Quest-Game-Data verwendet title statt name');
 assert.equal(localizedNames['profession:171'],'Alchimie','Andere Game-Data verwendet weiterhin name');
 assert.equal(localizedCalls.length,2);
+
+const questDetailFetch=async (url,options={})=>{
+  assert.equal(options.headers.authorization,'Bearer secret-access-token');
+  const parsed=new URL(String(url));
+  assert.equal(parsed.searchParams.get('locale'),'de_DE');
+  assert.equal(parsed.searchParams.get('namespace'),'static-1.60.1_70399-forever-eu');
+  return fakeResponse(200,{
+    id:92709,
+    title:'Ein großes Abenteuer',
+    description:'Sprich mit dem Kundschafter und untersuche die Spuren.',
+    area:{id:42,name:'Testgebiet'},
+    requirements:{min_character_level:10}
+  });
+};
+const questDetails=await fetchForeverQuestDetails([
+  {type:'quest',id:92709,href:'https://eu.api.blizzard.com/data/wow/quest/92709?namespace=static-1.60.1_70399-forever-eu'}
+],{fetchImpl:questDetailFetch,locale:'de_DE'});
+assert.equal(questDetails[92709].title,'Ein großes Abenteuer');
+assert.equal(questDetails[92709].description,'Sprich mit dem Kundschafter und untersuche die Spuren.');
+assert.equal(questDetails[92709].area,'Testgebiet');
+assert.equal(questDetails[92709].minimumLevel,10);
+assert.equal(questDetails[92709].namespace,'static-1.60.1_70399-forever-eu');
+assert.equal(questDetails[92709].locale,'de_DE');
 console.log('Blizzard Forever API client, schema inventory and raw snapshots: OK');

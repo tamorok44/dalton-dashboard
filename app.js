@@ -20,7 +20,7 @@ function portraitBadge(scene){
     '<span class="portrait-badge-copy"><span class="portrait-badge-firstname">'+esc(scene.firstName)+'</span>'+
     '<span class="portrait-badge-epithet">'+esc(scene.epithet)+'</span></span></span>';
 }
-const mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];
+const mainStatNames=['Gesundheit','Mana','Rüstung'];
 const secondaryStatNames=['Stärke','Beweglichkeit','Ausdauer','Intelligenz','Angriffskraft'];
 function statsPanel(c,open=false){
   const s=c.stats||{};
@@ -108,6 +108,12 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
   }).join('');
 }
 
+function professionsPanel(c,openDetails=new Set()){
+  return '<div class="section professions-section"><h3>Berufe'+(c.professionDetailsVerified===false?' · Kenntnisse letzter bekannter Stand':'')+'</h3>'+
+    professionScale()+'<div class="professions-list">'+professionRows(c.professions,c.scrapeOk===false,c.slug,openDetails)+'</div>'+
+    '<div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>';
+}
+
 function talentPanel(c){
   const trees=Array.isArray(c.talentDetails)?c.talentDetails:[];
   const active=trees.filter(tree=>Number(tree.spentPoints)>0||(tree.talents||[]).length);
@@ -156,11 +162,33 @@ function reputationPanel(c){
   return '<div class="section reputation-section"><h3>Ruf'+(c.reputationsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="reputations-list">'+rows+'</div></div>';
 }
 
-function progressPanel(c){
-  const entries=[];
-  if(Number.isFinite(Number(c.experience)))entries.push(row('Erfahrung',Number(c.experience).toLocaleString('de-DE')));
-  if(Number.isFinite(Number(c.equippedItemLevel)))entries.push(row('Gegenstandsstufe',c.equippedItemLevel));
-  return entries.length?'<div class="section progress-section"><h3>Fortschritt</h3><div class="rows">'+entries.join('')+'</div></div>':'';
+const xpToNextByLevel=[null,400,900,1400,2100,2800,3600,4500,5400,6500,7600,8800,10100,11400,12900,14400,16000,17700,19400,21300,23200,25200,27300,29400,31700,34000,36400,38900,41400,44300,47400,50800,54500,58600,62800,67100,71600,76100,80800,85700,90700,95800,101000,106300,111800,117500,123200,129100,135100,141200,147500,153900,160400,167100,173900,180800,187900,195000,202300,209800,null];
+function totalXpAtLevel(level){
+  const target=Math.max(1,Math.min(60,Number(level)||1));
+  let total=0;
+  for(let current=1;current<target;current++)total+=Number(xpToNextByLevel[current])||0;
+  return total;
+}
+function experienceProgress(c){
+  const level=Number(c.level),current=Number(c.experience);
+  if(!Number.isInteger(level)||level<1||!Number.isFinite(current))return '';
+  if(level>=60){
+    return '<div class="experience-progress"><div class="experience-head"><strong>Level 60</strong><span>Maximalstufe</span></div></div>';
+  }
+  const needed=Number(xpToNextByLevel[level]);
+  if(!Number.isFinite(needed)||needed<=0)return '';
+  const safe=Math.max(0,Math.min(needed,current));
+  const pct=safe/needed*100;
+  const startTotal=totalXpAtLevel(level),endTotal=startTotal+needed;
+  const nf=new Intl.NumberFormat('de-DE');
+  const percent=new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(pct);
+  return '<div class="experience-progress">'+
+    '<div class="experience-head"><strong>Level '+esc(level)+'</strong><span>'+nf.format(startTotal)+' Gesamt-XP</span>'+
+      '<strong>Level '+esc(level+1)+'</strong><span>'+nf.format(endTotal)+' Gesamt-XP</span></div>'+
+    '<div class="experience-track" role="progressbar" aria-label="Erfahrung bis Level '+esc(level+1)+'" aria-valuemin="0" aria-valuemax="'+esc(needed)+'" aria-valuenow="'+esc(Math.round(safe))+'" aria-valuetext="'+esc(nf.format(safe)+' von '+nf.format(needed)+' XP · '+percent+' %')+'">'+
+      '<span class="experience-fill" style="width:'+pct.toFixed(2)+'%"></span>'+
+      '<span class="experience-overlay" aria-hidden="true">'+esc(nf.format(safe)+' / '+nf.format(needed)+' XP · '+percent+' %')+'</span>'+
+    '</div></div>';
 }
 
 function shortCharacterName(character){
@@ -198,32 +226,41 @@ function questGroupStatus(chars=[]){
     completedFresh:chars.every(character=>character.completedQuestsVerified===true)
   };
 }
-function questsPanel(c,group,open=false){
+function questsPanel(c,group,questCatalog={},openDetails=new Set()){
   const quests=[...(Array.isArray(c.activeQuests)?c.activeQuests:[])].sort((a,b)=>{
     const ar=group?.rank?.get(Number(a?.id))??Number.MAX_SAFE_INTEGER;
     const br=group?.rank?.get(Number(b?.id))??Number.MAX_SAFE_INTEGER;
     return ar-br||String(a?.name||'').localeCompare(String(b?.name||''),'de');
   });
-  if(!quests.length)return '';
+  const stale=(c.questsVerified===false?' · letzter bekannter Stand':'')+
+    (group?.completedFresh===false?' · Abschlussstatus letzter bekannter Stand':'');
+  if(!quests.length)return '<div class="section quests-section"><h3>Aktive Quests · 0'+stale+'</h3><p class="knowledge-empty">Keine aktiven Quests gemeldet.</p></div>';
   const rows=quests.map(quest=>{
-    const status=group?.byId?.get(Number(quest?.id));
+    const id=Number(quest?.id);
+    const status=group?.byId?.get(id);
+    const detail=questCatalog?.[id]||questCatalog?.[String(id)]||null;
+    const title=detail?.title||quest.name;
     const alsoOpen=(status?.open||[]).filter(other=>other.slug!==c.slug).map(shortCharacterName);
     const completedBy=(status?.completed||[]).filter(other=>other.slug!==c.slug).map(shortCharacterName);
     const meta=[
       alsoOpen.length?'<span class="quest-shared">Auch offen: '+esc(alsoOpen.join(' · '))+'</span>':'',
       completedBy.length?'<span class="quest-completed">Bereits abgeschlossen: '+esc(completedBy.join(' · '))+'</span>':''
     ].filter(Boolean).join('');
-    return '<div class="quest-entry"><span aria-hidden="true">›</span><div class="quest-copy"><strong>'+esc(quest.name)+'</strong>'+
-      (meta?'<div class="quest-meta">'+meta+'</div>':'')+'</div></div>';
+    const detailKey=c.slug+':quest:'+(Number.isInteger(id)?id:'unknown');
+    const detailRows=[
+      detail?.area?'<div class="quest-detail-row"><span>Gebiet</span><strong>'+esc(detail.area)+'</strong></div>':'',
+      Number.isInteger(Number(detail?.minimumLevel))?'<div class="quest-detail-row"><span>Mindeststufe</span><strong>'+esc(detail.minimumLevel)+'</strong></div>':''
+    ].filter(Boolean).join('');
+    const expandable=detail&&(detail.description||detailRows)
+      ?'<details class="quest-detail" data-detail-key="'+esc(detailKey)+'"'+(openDetails.has(detailKey)?' open':'')+'>'+
+        '<summary>Beschreibung & Gebiet</summary>'+detailRows+
+        (detail.description?'<p class="quest-description">'+esc(detail.description)+'</p>':'')+'</details>'
+      :'';
+    return '<div class="quest-entry"><span aria-hidden="true">›</span><div class="quest-copy"><strong>'+esc(title)+'</strong>'+
+      (meta?'<div class="quest-meta">'+meta+'</div>':'')+expandable+'</div></div>';
   }).join('');
-  const stale=(c.questsVerified===false?' · letzter bekannter Stand':'')+
-    (group?.completedFresh===false?' · Abschlussstatus letzter bekannter Stand':'');
-  return '<details class="details quests-details" data-detail-key="'+esc(c.slug)+':quests"'+(open?' open':'')+'>'+
-    '<summary>Aktive Quests · '+quests.length+stale+'</summary>'+
-    '<div class="quest-list">'+rows+'</div>'+
-  '</details>';
+  return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div></div>';
 }
-
 
 // Feste Slot-Reihenfolge: links oben nach unten, dann Ringe/Schmuck und Waffen.
 // Alle Charaktere verwenden dieselben 19 Plätze, auch wenn sie leer sind.
@@ -257,7 +294,10 @@ function equipmentPanel(c,open=false){
   }).join('');
   const verified=c.equipmentVerified&&c.scrapeOk!==false?'':' · letzter bekannter Stand';
   const languageNote=c.equipmentLanguage==='en'?' · Namen derzeit auf Englisch':c.equipmentLanguage==='gemischt'?' · teilweise englische Namen':'';
-  return '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details>';
+  const itemLevel=Number.isFinite(Number(c.equippedItemLevel))?Number(c.equippedItemLevel):null;
+  const overview=itemLevel===null?'':'<div class="equipment-overview"><small>Gegenstandsstufe</small><strong>'+esc(itemLevel)+'</strong></div>';
+  return '<div class="section equipment-section"><h3>Ausrüstung</h3>'+overview+
+    '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details></div>';
 }
 
 const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/)/.test(x.pathname)}catch{return false}};
@@ -279,6 +319,43 @@ function installPortraitFallbacks(){
     if(fallback && img.src!==fallback){img.src=fallback;img.dataset.fallback='';return}
     const parent=img.closest('.portrait');if(parent){parent.classList.add('portrait-missing');parent.innerHTML='<span>Charakterbild vorübergehend nicht verfügbar</span>'}
   }));
+}
+
+const characterTabs=[
+  {id:'talents',label:'Talente'},
+  {id:'professions',label:'Berufe'},
+  {id:'reputation',label:'Ruf'},
+  {id:'quests',label:'Quests'},
+  {id:'stats',label:'Charakterwerte'},
+  {id:'equipment',label:'Ausrüstung'}
+];
+let activeCharacterTab='talents';
+let displayedQuestCatalog={};
+function characterTabsNav(c){
+  return '<div class="character-tabs" role="tablist" aria-label="Details von '+esc(c.name)+'">'+characterTabs.map(tab=>{
+    const selected=tab.id===activeCharacterTab;
+    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-tab="'+tab.id+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
+  }).join('')+'</div>';
+}
+function characterTabPanel(c,id,content){
+  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" data-character-panel="'+id+'"'+(id===activeCharacterTab?'':' hidden')+'>'+content+'</section>';
+}
+function setActiveCharacterTab(tab){
+  if(!characterTabs.some(item=>item.id===tab))return;
+  activeCharacterTab=tab;
+  cards.querySelectorAll('[data-character-tab]').forEach(button=>{
+    const selected=button.dataset.characterTab===tab;
+    button.classList.toggle('is-active',selected);
+    button.setAttribute('aria-selected',String(selected));
+  });
+  cards.querySelectorAll('[data-character-panel]').forEach(panel=>{
+    panel.hidden=panel.dataset.characterPanel!==tab;
+  });
+}
+function installCharacterTabs(){
+  cards.querySelectorAll('button[data-character-tab]').forEach(button=>
+    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterTab))
+  );
 }
 
 let displayedData=null;
@@ -327,8 +404,9 @@ function lastActivity(c){
  }
  return 'Zuletzt im Spiel: von Blizzard nicht angegeben';
 }
-function render(data,{live=false,success=null}={}){
+function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog}={}){
  displayedData=data;
+ displayedQuestCatalog=questCatalog||{};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
  const questStatus=questGroupStatus(chars);
@@ -358,15 +436,19 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   <p class="status activity-note">${lastActivity(c)}</p>
   <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">${esc(c.faction||'Allianz')} · EU-${esc(c.ruleset?.name||'PvP')}</span></div>
   ${c.scrapeOk===false?'<p class="status profile-warning">⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand</p>':''}
-  ${progressPanel(c)}
-  ${talentPanel(c)}
-  <div class="section professions-section"><h3>Berufe${c.professionDetailsVerified===false?' · Kenntnisse letzter bekannter Stand':''}</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions,c.scrapeOk===false,c.slug,openDetails)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
-  ${reputationPanel(c)}
-  ${questsPanel(c,questStatus,openDetails.has(c.slug+':quests'))}
-  ${statsPanel(c,openDetails.has(c.slug+':stats'))}
-  ${equipmentPanel(c,openDetails.has(c.slug+':equipment'))}
+  ${experienceProgress(c)}
+  ${characterTabsNav(c)}
+  <div class="character-tab-panels">
+    ${characterTabPanel(c,'talents',talentPanel(c))}
+    ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
+    ${characterTabPanel(c,'reputation',reputationPanel(c))}
+    ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}
+    ${characterTabPanel(c,'stats',statsPanel(c,openDetails.has(c.slug+':stats')))}
+    ${characterTabPanel(c,'equipment',equipmentPanel(c,openDetails.has(c.slug+':equipment')))}
+  </div>
  </article>`).join("");
  installPortraitFallbacks();
+ installCharacterTabs();
 }
 let lastGeneratedAt=null;
 async function load(){
@@ -377,7 +459,7 @@ async function load(){
     const result=await r.json();
     const data=result.data;
     if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
-      lastGeneratedAt=data.generatedAt;render(data);
+      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{}});
     }
   }catch(e){if(!displayedData){
       try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
@@ -396,7 +478,7 @@ async function refreshLive(){
     if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
-    render(response.data,{live:true,success:response.success});
+    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{}});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}

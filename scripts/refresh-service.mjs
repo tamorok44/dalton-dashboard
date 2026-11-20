@@ -2,8 +2,9 @@ import {refreshCharacters} from './armory-core.mjs';
 import {archiveImages} from './archive-images.mjs';
 import {loadCharacters,saveCharacters,mergeProfiles} from './character-store.mjs';
 import {appendChangeBatch} from './history-store.mjs';
-import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fetchForeverLocalizedNames} from './blizzard-api.mjs';
+import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fetchForeverLocalizedNames,fetchForeverQuestDetails} from './blizzard-api.mjs';
 import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
+import {loadQuestCatalog,loadQuestCatalogByIds,saveQuestCatalog} from './quest-catalog-store.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -26,12 +27,28 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
       });
       const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
       const localizedRefs=collectLocalizedRefs(detailsSnapshot);
-      const [recipeDetails,localizedNames]=Date.now()-start<40000
+      const questRefs=localizedRefs.filter(ref=>ref.type==='quest');
+      const otherLocalizedRefs=localizedRefs.filter(ref=>ref.type!=='quest');
+      let questCatalog=await loadQuestCatalog(questRefs,{locale:'de_DE'});
+      const missingQuestRefs=questRefs.filter(ref=>!questCatalog[Number(ref.id)]);
+      const [recipeDetails,otherLocalizedNames,newQuestDetails]=Date.now()-start<40000
         ?await Promise.all([
           fetchForeverRecipeDetails(recipeRefs,{locale:'de_DE'}),
-          fetchForeverLocalizedNames(localizedRefs,{locale:'de_DE'})
+          fetchForeverLocalizedNames(otherLocalizedRefs,{locale:'de_DE'}),
+          fetchForeverQuestDetails(missingQuestRefs,{locale:'de_DE'})
         ])
-        :[{},{}];
+        :[{},{},{}];
+      const newQuestRecords=Object.values(newQuestDetails);
+      if(newQuestRecords.length){
+        try{await saveQuestCatalog(newQuestRecords)}catch(error){
+          console.warn('Quest-Katalog konnte nicht vollständig gespeichert werden:',String(error.message).slice(0,160));
+        }
+        questCatalog={...questCatalog,...newQuestDetails};
+      }
+      const questLocalizedNames=Object.fromEntries(Object.values(questCatalog)
+        .filter(detail=>detail?.title&&Number.isInteger(Number(detail?.id)))
+        .map(detail=>['quest:'+Number(detail.id),detail.title]));
+      const localizedNames={...otherLocalizedNames,...questLocalizedNames};
       latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails,localizedNames);
     }catch(error){
       console.warn('Erweiterte Forever-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,180));
@@ -56,5 +73,12 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
       archived=merged;
     }
   }
-  return {success,data:archived,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
+  const activeQuestIds=[...new Set(archived.characters.flatMap(character=>
+    (Array.isArray(character.activeQuests)?character.activeQuests:[]).map(quest=>Number(quest?.id)).filter(Number.isInteger)
+  ))];
+  let questCatalog={};
+  try{questCatalog=await loadQuestCatalogByIds(activeQuestIds,{locale:'de_DE'})}catch(error){
+    console.warn('Quest-Katalog konnte für die Antwort nicht geladen werden:',String(error.message).slice(0,140));
+  }
+  return {success,data:archived,questCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
 }
