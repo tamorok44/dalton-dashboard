@@ -105,6 +105,29 @@ for(const {name,klass,scene,color} of expectedCards){
   assert.ok(area.includes('portrait '+scene+'"'),'Correct backdrop for '+name);
   assert.ok(css.includes('--class:'+color),'Class color for '+name);
 }
+// Four distinct portrait emblems: unique nickname, character name and class-inspired SVG icon.
+const expectedBadges=[
+  {name:'Cole Dalton',klass:'mage',firstName:'Cole',nickname:'Der Runenreiter',icon:'rune'},
+  {name:'Dolly Dalton',klass:'hunter',firstName:'Dolly',nickname:'Adlerauge',icon:'crosshair'},
+  {name:'Chucky Dalton',klass:'druid',firstName:'Chucky',nickname:'Der Windrufer',icon:'leaf'},
+  {name:'Viola Dalton',klass:'druid',firstName:'Viola',nickname:'Die Sonnenwandlerin',icon:'sun'}
+];
+assert.equal((cards.match(/class="portrait-badge"/g)||[]).length,4,'One personalized badge per Blizzard portrait');
+for(const p of expectedBadges){
+  const marker=cards.indexOf('<h2 class="name">'+p.name+'</h2>');
+  const start=cards.lastIndexOf('<article class="card ',marker);
+  const end=cards.indexOf('</article>',marker);
+  assert.ok(start>=0 && end>start,'Character card for '+p.name);
+  const area=cards.slice(start,end);
+  assert.ok(area.startsWith('<article class="card '+p.klass+'">'),'Correct class for badge '+p.name);
+  assert.ok(area.includes('portrait-badge-firstname">'+p.firstName+'</span>'),'Correct first name for '+p.name);
+  assert.ok(area.includes('portrait-badge-epithet">'+p.nickname+'</span>'),'Correct epithet for '+p.name);
+  assert.ok(area.includes('portrait-badge-icon'),'SVG class icon visible for '+p.name);
+}
+assert.ok(!cards.includes('scene-label'),'No old place names in portrait badges');
+assert.ok(css.includes('.portrait .portrait-badge{'),'Badge style exists');
+assert.ok(css.includes('border:1px solid var(--class,#d4ae79)'),'Badges use class border color');
+assert.ok(css.includes('.portrait-badge-symbol{'),'SVG badges styled');
 const chucky=read('scene-chucky.svg'),dolly=read('scene-dolly.svg');
 assert.match(chucky,/<linearGradient id="sky"[^>]*><stop stop-color="#392836"/,'Chucky warm dusk sky');
 assert.match(chucky,/<g fill="#ac612f"/,'Chucky orange autumn foliage, not green');
