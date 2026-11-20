@@ -146,7 +146,7 @@ const heroHtml=read('index.html'),crest=read('dalton-crest.svg'),sky=read('skybo
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
 assert.ok(heroHtml.includes('Noch keine Legenden. Aber schon gesucht.'));
-assert.ok(heroHtml.includes('COLE · DOLLY · CHUCKY · VIOLA'));
+assert.ok(heroHtml.includes('CHUCKY · COLE · DOLLY · VIOLA'));
 assert.ok(!heroHtml.includes('Vier Himmelsgeborene. Ein wilder Himmel.'));
 assert.match(crest,/sechszackiger Dalton-Sheriffstern/);
 assert.ok(crest.includes('>D</text>') && crest.includes('url(#blueEnamel)'));
