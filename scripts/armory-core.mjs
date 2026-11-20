@@ -189,7 +189,7 @@ for(const old of characters){
     // Fast path: don't re-fetch localized gear if the officially verified
     // equipment is unchanged. This is the common case for skill/level updates.
     const previousBySlot=new Map((old.equipment||[]).map(x=>[normalizedSlot(x.slot),x]));
-    const translationsReusable=hasOfficialGear&&eq.length>0&&eq.length===(old.equipment||[]).length&&
+    const translationsReusable=old.equipmentLanguage==='de'&&hasOfficialGear&&eq.length>0&&eq.length===(old.equipment||[]).length&&
       eq.every(item=>{
         const prior=previousBySlot.get(normalizedSlot(item.slot));
         return prior?.sourceName===item.item&&prior.level===item.level&&
