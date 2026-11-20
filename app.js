@@ -13,7 +13,23 @@ const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhn
 const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
 
 const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
-function professionRows(list=[]){return list.length?list.map(p=>row(p.name+(p.unverified?" · älterer Stand":""),`${p.current ?? "–"}/${p.max ?? "–"}`)).join(""):row("Berufe","nicht verfügbar")}
+function professionRows(list=[]){
+  if(!list.length)return row("Berufe","nicht verfügbar");
+  return list.map(p=>{
+    const current=Number(p.current),max=Number(p.max);
+    const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
+    const percent=valid?Math.max(0,Math.min(100,(current/max)*100)):0;
+    const fraction=valid?Math.round(current)+'/'+Math.round(max):'–/–';
+    const label=String(p.name||'Beruf')+(p.unverified?' · letzter Stand':'');
+    return '<div class="profession">'+
+      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span><strong class="profession-values">'+esc(fraction)+'</strong></div>'+
+      '<div class="profession-track" role="progressbar" aria-label="'+esc('Fortschritt '+label)+'" aria-valuemin="0" aria-valuemax="'+(valid?Math.round(max):100)+'" aria-valuenow="'+(valid?Math.max(0,Math.min(Math.round(current),Math.round(max))):0)+'">'+
+      '<div class="profession-progress" style="width:'+percent.toFixed(2)+'%"></div>'+
+      '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
+      '</div>'+
+      '</div>';
+  }).join('');
+}
 
 
 // Feste Slot-Reihenfolge: links oben nach unten, dann Ringe/Schmuck und Waffen.
