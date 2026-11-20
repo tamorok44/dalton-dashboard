@@ -1,1 +1,11 @@
-{"name":"dalton-dashboard","private":true,"type":"module","engines":{"node":">=22"},"scripts":{"test":"node scripts/test-armory.mjs"}}
+{
+  "name": "dalton-dashboard",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node scripts/test-armory.mjs && node scripts/test-ui.mjs"
+  }
+}
