@@ -56,6 +56,23 @@ assert.ok(!css.includes('.vital:nth-child(2) strong{color:#91dbe7}'),'Mana must 
 assert.ok(css.includes('.section h3::before{content:"✦";font-size:.65rem;color:var(--class,#d6b27a)}'));
 assert.ok(css.includes('.details summary::before{content:"◇";font-size:1.13rem;line-height:1;color:var(--class,#d6b27a)}'));
 assert.ok(css.includes('.card.hunter{--class:#aad372')&&css.includes('.card.druid{--class:#ff9b48'));
+const colorsByClass={
+  mage:{mid:'#67d4f0',unlocked:'#24576c'},
+  hunter:{mid:'#aad372',unlocked:'#3e5d3d'},
+  druid:{mid:'#ff9b48',unlocked:'#75462c'}
+};
+for(const [klass,expected] of Object.entries(colorsByClass)){
+  const block=css.match(new RegExp('\\\\.card\\\\.'+klass+'\\\\{\\\\s+--skill-light:[^}]+\\\\}'))?.[0];
+  assert.ok(block,klass+' has unique skill palette');
+  assert.ok(block.includes('--skill-mid:'+expected.mid),klass+' fill matches exact WoW class color');
+  assert.ok(block.includes('--skill-open-mid:'+expected.unlocked),klass+' unlock is a darker class shade');
+}
+assert.match(css,/\\.profession-segment\\.is-unlocked\\{background:linear-gradient\\([^}]*var\\(--skill-open-mid/);
+assert.match(css,/\\.profession-segment-fill\\{[^}]*var\\(--skill-mid/s);
+assert.match(css,/\\.profession-legend span:nth-child\\(1\\)::before\\{background:var\\(--skill-mid/);
+assert.match(css,/\\.profession-legend span:nth-child\\(2\\)::before\\{background:var\\(--skill-open-mid/);
+assert.ok(css.includes('.profession-segment{')&&css.includes('background:linear-gradient(180deg,#10171f,#171c26)'),'Locked segments stay neutral');
+
 
 assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
 assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
