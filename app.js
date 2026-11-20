@@ -148,7 +148,7 @@ const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Mat
       <h2 class="name">${esc(c.name)}</h2>
       <p class="player">Abenteurer: <strong>${esc(c.player)}</strong></p>
     </div>
-    <div class="level"><span>Stufe</span>${esc(c.level)}</div>
+    <div class="level" aria-label="Stufe ${esc(c.level)}"><div class="level-inner"><span>Stufe</span><strong>${esc(c.level)}</strong></div></div>
   </div>
   ${renderPortrait(c)}
   <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">Allianz · EU-PvP</span></div>

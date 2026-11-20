@@ -1,5 +1,5 @@
-const CACHE="daltons-frontier-unified-v8";
-const ASSETS=["/","/styles.css?v=frontier-unified-20261120a","/app.js?v=frontier-unified-20261120a","/icon.svg","/dalton-crest.svg","/skyborne-horizon.svg","/scene-cole.svg?v=frontier-unified-20261120a","/scene-dolly.svg?v=frontier-unified-20261120a","/scene-chucky.svg?v=frontier-unified-20261120a","/scene-viola.svg?v=frontier-unified-20261120a"];
+const CACHE="daltons-level-sheriff-v9";
+const ASSETS=["/","/styles.css?v=frontier-unified-20261120b","/app.js?v=frontier-unified-20261120b","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg","/scene-cole.svg?v=frontier-unified-20261120b","/scene-dolly.svg?v=frontier-unified-20261120b","/scene-chucky.svg?v=frontier-unified-20261120b","/scene-viola.svg?v=frontier-unified-20261120b"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });

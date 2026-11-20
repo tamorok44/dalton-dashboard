@@ -127,8 +127,22 @@ main>.status{padding-left:5px}
 .name::first-letter{color:var(--class)}
 .player{font-size:.77rem;color:#b2b6b5;margin:7px 0 0}
 .player strong{color:#e8c998;font-weight:750}
-.level{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:76px;height:76px;transform:rotate(16deg);background:radial-gradient(circle at 45% 25%,#3d454e,#13212c 77%);border:2px solid #d6ac6d;border-radius:50%;box-shadow:inset 0 0 0 4px #1b2026,0 2px 9px #020810a9;color:#f3dba8;font:900 1.46rem var(--display);text-align:center}
-.level span{display:block;font:800 .53rem var(--body);text-transform:uppercase;letter-spacing:.16em;color:#a9d9d6;margin-bottom:2px}
+/* Goldener, sechszackiger Sheriffstern statt kreisrunder Level-Plakette. */
+.level{
+  position:relative;flex:0 0 auto;display:grid;place-items:center;
+  width:88px;height:88px;transform:rotate(16deg);isolation:isolate;
+  border:0;border-radius:0;box-shadow:none;
+  background:url("/level-sheriff.svg?v=level-sheriff-20261120b") center/contain no-repeat;
+  filter:drop-shadow(0 5px 6px rgba(13,19,24,.46));
+  color:#fff1c8;text-align:center;
+}
+.level-inner{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;z-index:1;padding-top:2px;transform:rotate(-16deg);
+  text-shadow:0 1px 3px #0b2533;line-height:1;
+}
+.level-inner span{display:block;font:900 .47rem var(--body);text-transform:uppercase;letter-spacing:.10em;color:#ffdc9e;margin-bottom:3px}
+.level-inner strong{display:block;font:900 1.46rem/1 var(--display);color:#ffebbe;font-variant-numeric:tabular-nums}
 .portrait{position:relative;height:375px;margin:15px 0 0;overflow:hidden;border:2px solid #b58a56;border-radius:4px;isolation:isolate;background:linear-gradient(180deg,#1a364b 0%,#385b65 39%,#68545b 68%,#2c272a 100%);box-shadow:inset 0 0 0 4px #1a242b,0 5px 13px #05060a9c}
 .portrait::before{
   content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
@@ -269,7 +283,9 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   .card{padding:13px}
   .cardhead{padding:12px 5px}
   .name{font-size:1.92rem}
-  .level{width:63px;height:63px;font-size:1.17rem}
+  .level{width:72px;height:72px}
+  .level-inner span{font-size:.40rem;margin-bottom:1px}
+  .level-inner strong{font-size:1.19rem}
   .portrait{height:330px}
   .portrait img.character-render{transform:scale(1.55)}
   .card:hover .portrait img.character-render{transform:scale(1.55)}
@@ -279,6 +295,8 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   .pill{font-size:.61rem}
 }
 @media(max-width:355px){
+  .level{width:64px;height:64px}
+  .level-inner strong{font-size:1.07rem}
   .hero-family{font-size:2.65rem}
   .hero-topline,.hero-bottomline{font-size:.43rem}
   .name{font-size:1.65rem}

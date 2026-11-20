@@ -197,4 +197,15 @@ assert.ok(!/#[0-9a-f]{6}/i.test(read('scene-viola.svg').match(/#(?:477050|6f9e6e
 assert.ok(css.includes('skill-energy-flow') && css.includes('skill-light-sweep'));
 assert.ok(!/^\s*schedule:/m.test(updateWorkflow));
 
+
+const levelSvg=read('level-sheriff.svg');
+assert.equal((cards.match(/class="level" aria-label="Stufe /g)||[]).length,data.characters.length,'Each character receives a labeled sheriff-star level badge');
+assert.equal((cards.match(/class="level-inner"/g)||[]).length,data.characters.length,'Every level badge contains its level number');
+assert.ok(levelSvg.includes('Sechszackiger Sheriffstern'),'Level art is a sheriff star');
+assert.ok(levelSvg.includes('<polygon') && levelSvg.includes('url(#goldMetal)'),'Six-point star has golden arms');
+assert.ok(css.includes('background:url("/level-sheriff.svg?v=level-sheriff-20261120b")'),'CSS displays sheriff star, not circular gradient');
+assert.ok(css.includes('transform:rotate(16deg)') && css.includes('transform:rotate(-16deg)'),'Star tilts 16 degrees while number remains upright');
+assert.ok(!/\\.level\\{[^}]*border-radius:50%/.test(css),'Level is no longer a round badge');
+assert.ok(css.includes('.level{width:72px;height:72px}'),'Mobile sheriff star is fully sized');
+
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');

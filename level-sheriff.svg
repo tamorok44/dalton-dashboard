@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Sechszackiger Sheriffstern als Stufenabzeichen">
+<defs>
+  <linearGradient id="goldMetal" x1="0" y1="0" x2=".85" y2="1">
+    <stop stop-color="#fff6d9"/><stop offset=".28" stop-color="#f0d08b"/>
+    <stop offset=".60" stop-color="#b17a3a"/><stop offset=".84" stop-color="#f4c579"/><stop offset="1" stop-color="#885525"/>
+  </linearGradient>
+  <radialGradient id="enamel" cx=".34" cy=".28" r=".82">
+    <stop stop-color="#45657c"/><stop offset=".58" stop-color="#243e56"/><stop offset="1" stop-color="#132a3b"/>
+  </radialGradient>
+</defs>
+<polygon points="60.00,7.50 75.25,33.59 105.47,33.75 90.50,60.00 105.47,86.25 75.25,86.41 60.00,112.50 44.75,86.41 14.53,86.25 29.50,60.00 14.53,33.75 44.75,33.59" fill="url(#goldMetal)" stroke="#684724" stroke-width="2.3" stroke-linejoin="round"/>
+<polygon points="60.00,7.50 75.25,33.59 105.47,33.75 90.50,60.00 105.47,86.25 75.25,86.41 60.00,112.50 44.75,86.41 14.53,86.25 29.50,60.00 14.53,33.75 44.75,33.59" fill="none" stroke="#fff1be" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round" transform="translate(60 60) scale(.93) translate(-60 -60)"/>
+<circle cx="60.00" cy="7.50" r="3.4" fill="#f8d08a" stroke="#6e4a29" stroke-width="1.1"/>
+<circle cx="105.47" cy="33.75" r="3.4" fill="#f8d08a" stroke="#6e4a29" stroke-width="1.1"/>
+<circle cx="105.47" cy="86.25" r="3.4" fill="#f8d08a" stroke="#6e4a29" stroke-width="1.1"/>
+<circle cx="60.00" cy="112.50" r="3.4" fill="#f8d08a" stroke="#6e4a29" stroke-width="1.1"/>
+<circle cx="14.53" cy="86.25" r="3.4" fill="#f8d08a" stroke="#6e4a29" stroke-width="1.1"/>
+<circle cx="14.53" cy="33.75" r="3.4" fill="#f8d08a" stroke="#6e4a29" stroke-width="1.1"/>
+<circle cx="60" cy="60" r="32.5" fill="#9e7039" stroke="#ffebbd" stroke-width="2"/>
+<circle cx="60" cy="60" r="29.5" fill="url(#enamel)" stroke="#d2a264" stroke-width="3"/>
+<circle cx="60" cy="60" r="25.6" fill="none" stroke="#f6d29c" stroke-width="1" stroke-opacity=".46" stroke-dasharray="2 3.5"/>
+</svg>
