@@ -163,6 +163,14 @@ assert.ok(css.includes('var(--skill-mid,#6fc6c3)'),'The achieved section uses cl
 assert.ok(css.includes('.profession-legend span:nth-child(1)::before{background:var(--skill-mid'),'Achieved legend follows class');
 assert.ok(css.includes('.profession-legend span:nth-child(2)::before{background:var(--skill-open-mid'),'Unlocked legend follows class');
 assert.ok(css.includes('background:linear-gradient(180deg,#10171f,#171c26)'),'Locked segments stay neutral');
+const sharedBarTypography='.profession-overlay,.reputation-overlay,.experience-overlay{';
+assert.ok(css.includes(sharedBarTypography),'Profession, reputation and XP overlays share one typography rule');
+const sharedBarStart=css.indexOf(sharedBarTypography);
+const sharedBarBlock=css.slice(sharedBarStart,css.indexOf('}',sharedBarStart)+1);
+assert.ok(sharedBarBlock.includes('font:800 .94rem/1 var(--display)'),'All three progress bars use the same font family, weight, size and line height');
+assert.ok(sharedBarBlock.includes('letter-spacing:.025em'),'All three progress bars use the same letter spacing');
+assert.ok(sharedBarBlock.includes('font-variant-numeric:tabular-nums'),'All three progress bars align numbers consistently');
+assert.ok(sharedBarBlock.includes('1px 0 #04101b,-1px 0 #04101b'),'All three progress bars use the same text shadow');
 
 assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
 assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
