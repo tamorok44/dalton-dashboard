@@ -6,6 +6,6 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --check app.js && node --check api/refresh.js && node --check scripts/armory-core.mjs && node scripts/test-armory.mjs && node scripts/test-ui.mjs"
+    "test": "node --check app.js && node --check api/refresh.js && node --check scripts/armory-core.mjs && node scripts/test-armory.mjs && node scripts/test-ui.mjs && node scripts/test-refresh-api.mjs"
   }
 }

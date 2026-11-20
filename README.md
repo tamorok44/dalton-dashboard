@@ -54,7 +54,8 @@ npm test
 
 Prüft Syntax und die fachliche Datenverarbeitung einschließlich simulierter
 Änderungen an Stufe, Gruppenkennzahlen, Berufen, Talenten, Charakterwerten
-und Ausrüstung. Keine produktive Blizzard-Anfrage wird im Test ausgeführt.
+und Ausrüstung. Zusätzlich testet die Suite den HTTP-Endpunkt mit parallelen
+Blizzard-Profilen, Teilfehlern und vollständigen Ausfällen. Keine produktive Blizzard-Anfrage wird im Test ausgeführt.
 
 ## Betriebsgrenzen
 
