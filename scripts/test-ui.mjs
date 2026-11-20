@@ -216,7 +216,8 @@ assert.equal((cards.match(/class="level-inner"/g)||[]).length,data.characters.le
 assert.ok(levelSvg.includes('Sechszackiger Sheriffstern'),'Level art is a sheriff star');
 assert.ok(levelSvg.includes('<polygon') && levelSvg.includes('url(#goldMetal)'),'Six-point star has golden arms');
 assert.ok(css.includes('background:url("/level-sheriff.svg?v=level-sheriff-20261120b")'),'CSS displays sheriff star, not circular gradient');
-assert.ok(css.includes('transform:rotate(16deg)') && css.includes('transform:rotate(-16deg)'),'Star tilts 16 degrees while number remains upright');
+assert.ok(css.includes('transform:rotate(16deg)') && css.includes('.level-inner{') && css.includes('padding-top:2px;transform:none;'),'Star, label and number all tilt together by 16 degrees');
+assert.ok(!css.includes('transform:rotate(-16deg)'),'Level text must not be counter-rotated');
 assert.ok(!/\\.level\\{[^}]*border-radius:50%/.test(css),'Level is no longer a round badge');
 assert.ok(css.includes('.level{width:72px;height:72px}'),'Mobile sheriff star is fully sized');
 
