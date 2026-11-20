@@ -135,12 +135,37 @@ function keepNewestProfiles(data){
   if(!displayedData)return data;
   const priorBySlug=new Map((displayedData.characters||[]).map(c=>[c.slug,c]));
   return {...data,characters:(data.characters||[]).map(c=>{
-    if(c.scrapeOk!==false)return c;
     const prior=priorBySlug.get(c.slug);
-    if(!prior||!Number.isFinite(Date.parse(prior.scrapedAt))||
-      Date.parse(prior.scrapedAt)<=Date.parse(c.scrapedAt||0))return c;
-    // A failed fetch cannot roll back data from a previous successful click.
-    return {...prior,scrapeOk:false,scrapeError:c.scrapeError};
+    if(!prior)return c;
+    if(c.scrapeOk===false){
+      const oldTime=Date.parse(prior.scrapedAt||''),failedTime=Date.parse(c.scrapedAt||'');
+      if(!Number.isFinite(oldTime)||(Number.isFinite(failedTime)&&oldTime<=failedTime))return c;
+      return {...prior,scrapeOk:false,scrapeError:c.scrapeError};
+    }
+    // Live fields always win. For only those subfields that Blizzard omitted,
+    // reuse the latest value from this browser session instead of regressing
+    // to the older build-time JSON snapshot.
+    const liveStats=new Set(Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:
+      c.statsVerified?Object.keys(c.stats||{}):[]);
+    const mergedStats={...c.stats};
+    for(const [key,value] of Object.entries(prior.stats||{})){
+      if(!liveStats.has(key))mergedStats[key]=value;
+    }
+    const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));
+    const mergedProfessions=(c.professions||[]).map(p=>{
+      const previous=priorSkills.get(p.name);
+      return p.unverified&&previous?{...previous,unverified:true}:p;
+    });
+    const keepPreviousImage=c.imageVerified===false&&prior.imageUrl;
+    return {...c,
+      stats:mergedStats,
+      professions:mergedProfessions,
+      equipment:c.equipmentVerified===false&&prior.equipment?prior.equipment:c.equipment,
+      talents:c.talentsVerified===false&&prior.talents!=null?prior.talents:c.talents,
+      imageUrl:keepPreviousImage?prior.imageUrl:c.imageUrl,
+      avatarUrl:keepPreviousImage?prior.avatarUrl:c.avatarUrl,
+      imageCheckedAt:keepPreviousImage?prior.imageCheckedAt:c.imageCheckedAt
+    };
   })};
 }
 function render(data,{live=false,success=null}={}){

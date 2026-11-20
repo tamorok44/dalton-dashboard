@@ -255,6 +255,33 @@ assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLev
 assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
 assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt live abgefragt'),'Visible live timestamp');
 assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not fetch stale JSON first');
+/* A second click with a partial Blizzard response must keep the latest known
+   in-session skill, mana, equipment and talent values, not the old snapshot. */
+cole.stats.Mana=680;
+ui.render(changed,{live:true,success:4});
+const partial=structuredClone(data);
+const partialCole=partial.characters.find(c=>c.slug==='cole-dalton');
+partialCole.level=cole.level;
+partialCole.scrapeOk=true;
+partialCole.scrapedAt='2026-11-20T16:00:00.000Z';
+partialCole.stats.Gesundheit=991;
+partialCole.statsFreshKeys=['Gesundheit'];
+partialCole.statsVerified=false;
+partialCole.professions.find(p=>p.name==='Alchemie').unverified=true;
+partialCole.equipmentVerified=false;
+partialCole.talentsVerified=false;
+partialCole.talents='unbestätigt';
+partialCole.imageVerified=false;
+const partialMerged=ui.keepNewestProfiles(partial);
+const updatedCole=partialMerged.characters.find(c=>c.slug==='cole-dalton');
+assert.equal(updatedCole.stats.Gesundheit,991,'New confirmed health value wins');
+assert.equal(updatedCole.stats.Mana,680,'Latest in-session fallback is retained');
+assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').current,74,'Earlier live skill is not replaced by snapshot');
+assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').unverified,true,'Fallback skill stays visibly unverified');
+assert.equal(updatedCole.equipment[0].item,'QA neuer Stab aus der Armory','Equipment fallback uses last in-session set');
+assert.equal(updatedCole.talents,'Arkan: 7','Talent fallback uses last in-session distribution');
+assert.equal(updatedCole.imageUrl,cole.imageUrl,'Last live image is kept on partial media failure');
+ui.render(partialMerged,{live:true,success:4});
 const failed=structuredClone(data);
 const failedCole=failed.characters.find(c=>c.slug==='cole-dalton');
 failedCole.scrapeOk=false;
