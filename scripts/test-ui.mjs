@@ -278,7 +278,7 @@ assert.ok(changedCards.includes('Geselle'),'Live training rank changes');
 assert.ok(changedSummary.includes(Math.min(...changedLevels)+'–'+Math.max(...changedLevels)),'Group min/max are recomputed');
 assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLevels.length).toFixed(1)),'Group average is recomputed');
 assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
-assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt live abgefragt'),'Visible live timestamp');
+assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt aktualisiert'),'Visible live timestamp');
 assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not fetch stale JSON first');
 /* A second click with a partial Blizzard response must keep the latest known
    in-session skill, mana, equipment and talent values, not the old snapshot. */
