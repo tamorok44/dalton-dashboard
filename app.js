@@ -182,12 +182,11 @@ async function refreshLive(){
     render(response.data,{live:true});
     if(response.success<response.data.characters.length){status.textContent+=' · Einige Profile zeigen den letzten bestätigten Stand.'}
   }catch(e){
-    status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar; die automatische Aktualisierung läuft unabhängig weiter.</span>';
+    status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
   }finally{button.disabled=false;button.textContent="↻ Aktualisieren"}
 }
 button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
-setInterval(()=>{if(!document.hidden&&!button.disabled)load({silent:true})},60000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!button.disabled)load({silent:true})});
+// Neue Blizzard-Profildaten ausschliesslich auf ausdruecklichen Button-Klick abrufen.
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});

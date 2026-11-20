@@ -158,4 +158,19 @@ assert.ok(css.includes('skill-light-sweep 7.6s ease-in-out infinite'));
 assert.ok(css.includes('.profession-segment-fill::before{') && css.includes('.profession-segment-fill::after{'));
 assert.ok(css.includes('prefers-reduced-motion:reduce'));
 
+
+// Daten werden ausschliesslich ueber /api/refresh beim Klick aktualisiert;
+// GitHub prueft bei Code-Pushes nur noch die Tests, ohne Daten zu committen.
+const updateWorkflow=read('.github/workflows/update-data.yml');
+const refreshApi=read('api/refresh.js');
+assert.ok(!/^\s*schedule:/m.test(updateWorkflow),'No timed GitHub data updates');
+assert.ok(!updateWorkflow.includes('official-scrape.mjs'),'CI no longer scrapes Blizzard automatically');
+assert.ok(!updateWorkflow.includes('git push'),'CI must never publish timestamp-only data commits');
+assert.ok(updateWorkflow.includes('run: npm test'),'Keep tests on code changes');
+assert.ok(source.includes("button.addEventListener('click',refreshLive)"),'Manual button still calls Blizzard live');
+assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button requests live API');
+assert.ok(refreshApi.includes('refreshCharacters([c])'),'Live API fetches Blizzard character profiles');
+assert.ok(!source.includes('setInterval('),'No periodic background refresh in client');
+assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
+
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
