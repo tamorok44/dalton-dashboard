@@ -267,17 +267,22 @@ assert.ok(nodes.get('#status').textContent.includes('3 von 4 Profilen'),'Partial
 assert.ok(css.includes('.stale-value{'),'Stale-value formatting available');
 
 
-/* Asset performance: don't preload a desktop landscape on a phone, and
-   ensure the service worker never downloads an obsolete duplicate URL. */
+/* Asset performance: a phone must not preload a desktop scene, and the
+   service worker must use the exact URLs referenced by live CSS. */
 const workerAssetList=read('sw.js');
-const expectedHero=css.match(/skyborne-horizon\\.svg\\?v=[^"]+/)?.[0];
-const expectedMobileHero=css.match(/skyborne-mainstreet-mobile\\.svg\\?v=[^"]+/)?.[0];
-assert.ok(expectedHero&&expectedMobileHero);
-assert.ok(heroHtml.includes('media="(min-width: 741px)" href="/'+expectedHero+'"'),'Desktop image is preloaded only at desktop widths');
-assert.ok(heroHtml.includes('media="(max-width: 740px)" href="/'+expectedMobileHero+'"'),'Mobile image is preloaded only at mobile widths');
+const getAssetVersion=asset=>{
+  const marker=asset+'?v=';
+  const suffix=css.split(marker)[1]?.split('"')[0];
+  return suffix?marker+suffix:null;
+};
+const expectedHero=getAssetVersion('skyborne-horizon.svg');
+const expectedMobileHero=getAssetVersion('skyborne-mainstreet-mobile.svg');
+assert.ok(expectedHero&&expectedMobileHero,'Both hero scenes must be referenced');
+assert.ok(heroHtml.includes('media="(min-width: 741px)" href="/'+expectedHero+'"'),'Desktop hero preloaded only at desktop widths');
+assert.ok(heroHtml.includes('media="(max-width: 740px)" href="/'+expectedMobileHero+'"'),'Mobile hero preloaded only on phones');
 for(const id of ['cole','dolly','chucky','viola']){
-  const fromCss=css.match(new RegExp('/scene-'+id+'\\\\.svg\\\\?v=[^"]+'))?.[0];
-  assert.ok(fromCss&&workerAssetList.includes(fromCss),'Service worker uses actual CSS scene URL for '+id);
+  const fromCss=getAssetVersion('/scene-'+id+'.svg');
+  assert.ok(fromCss&&workerAssetList.includes(fromCss),'Service worker uses live CSS scene URL for '+id);
 }
 
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
