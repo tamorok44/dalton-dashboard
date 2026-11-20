@@ -359,7 +359,7 @@ for(const selector of ['.hero-story{','.roster-title p{','.refresh-hint{']){
   assert.ok(block.includes('font-family:var(--body)'),selector+' uses the information font');
   assert.ok(block.includes('font-style:normal'),selector+' is not italic');
 }
-assert.ok(css.includes('.hero-story{margin:12px 0 0;color:#fff5de'),'Motto readability improved');
+assert.ok(css.includes('.hero-story{margin:14px 0 0;color:#f8dfb5')&&css.includes('font-weight:700'),'Motto remains readable as the third hero hierarchy level');
 assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text removed');
 assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
 assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');
