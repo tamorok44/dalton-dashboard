@@ -25,7 +25,8 @@ const snapshot={
       reputations:{ok:true,data:{
         reputations:[{faction:{id:72,name:'Stormwind',key:{href:'https://eu.api.blizzard.com/data/wow/reputation-faction/72?namespace=static-1.60.1_70399-forever-eu'}},standing:{raw:3100,value:100,max:6000,tier:4,name:'Freundlich'}}]
       }},
-      quests:{ok:true,data:{in_progress:[{id:9001,name:'A Grand Adventure',key:{href:'https://eu.api.blizzard.com/data/wow/quest/9001?namespace=static-1.60.1_70399-forever-eu'}}]}}
+      quests:{ok:true,data:{in_progress:[{id:9001,name:'A Grand Adventure',key:{href:'https://eu.api.blizzard.com/data/wow/quest/9001?namespace=static-1.60.1_70399-forever-eu'}}]}},
+      completedQuests:{ok:true,data:{quests:[{id:8123},{id:9001},{id:8123}]}}
     }
   }
 };
@@ -65,4 +66,6 @@ assert.equal(cole.professionDetailsVerified,true);
 assert.equal(cole.talentDetailsVerified,true);
 assert.equal(cole.reputationsVerified,true);
 assert.equal(cole.questsVerified,true);
-console.log('Forever-Detaildaten: deutsche Rezepte, Talente, Ruf und Quests: OK');
+assert.deepEqual(cole.completedQuestIds,[8123,9001]);
+assert.equal(cole.completedQuestsVerified,true);
+console.log('Forever-Detaildaten: deutsche Rezepte, Talente, Ruf sowie offene und abgeschlossene Quests: OK');
