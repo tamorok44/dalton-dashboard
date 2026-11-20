@@ -361,14 +361,14 @@ function installPortraitFallbacks(){
 }
 
 const characterTabs=[
-  {id:'talents',label:'Talente'},
-  {id:'professions',label:'Berufe'},
-  {id:'reputation',label:'Ruf'},
-  {id:'quests',label:'Quests'},
   {id:'stats',label:'Charakterwerte'},
-  {id:'equipment',label:'Ausrüstung'}
+  {id:'equipment',label:'Ausrüstung'},
+  {id:'talents',label:'Talente'},
+  {id:'quests',label:'Quests'},
+  {id:'professions',label:'Berufe'},
+  {id:'reputation',label:'Ruf'}
 ];
-let activeCharacterTab='talents';
+let activeCharacterTab='stats';
 let displayedQuestCatalog={};
 function characterTabsNav(c){
   return '<div class="character-tabs" role="tablist" aria-label="Details von '+esc(c.name)+'">'+characterTabs.map(tab=>{
