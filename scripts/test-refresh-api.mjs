@@ -54,7 +54,7 @@ let peak=0,inFlight=0,requests=0,failSlug=null,failAll=false;
 globalThis.fetch=async (url,options={})=>{
   if(String(url).startsWith('https://test-redis.example.com')){
     const [op,key,value]=JSON.parse(options.body);
-    assert.equal(key,'dalton-dashboard:characters:v1');
+    assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
     if(op==='GET')return {ok:true,json:async()=>({result:saved})};
     if(op==='SET'){
       let result='OK';
