@@ -17,14 +17,19 @@ export async function archiveImages(data,previous){
   if(!process.env.BLOB_READ_WRITE_TOKEN)return data;
   const old=new Map((previous.characters||[]).map(c=>[c.slug,c]));
   const cache=new Map();
+  let active=0;
+  const waiting=[];
+  async function limited(fn){
+    if(active>=6)await new Promise(resolve=>waiting.push(resolve));
+    active++;
+    try{return await fn()}finally{active--;waiting.shift()?.()}
+  }
   async function stored(url,path,prior){
     if(prior)return prior;
     if(cache.has(url))return cache.get(url);
-    try{
-      const result=await copyImage(url,path);
-      cache.set(url,result);
-      return result;
-    }catch(e){console.warn('Bildarchivierung fehlgeschlagen:',String(e.message).slice(0,130));return undefined}
+    const task=limited(()=>copyImage(url,path)).catch(e=>{console.warn('Bildarchivierung fehlgeschlagen:',String(e.message).slice(0,130));return undefined});
+    cache.set(url,task);
+    return task;
   }
   const characters=[];
   for(const c of data.characters){
@@ -39,8 +44,7 @@ export async function archiveImages(data,previous){
         c.avatarUrl===before.avatarUrl&&c.imageCheckedAt===before.imageCheckedAt?before.storedAvatarUrl:null);
     }
     const previousGear=new Map((before.equipment||[]).map(i=>[i.slot,i]));
-    next.equipment=[];
-    for(const item of c.equipment||[]){
+    next.equipment=await Promise.all((c.equipment||[]).map(async item=>{
       const prior=previousGear.get(item.slot);
       const copy={...item};
       if(icon.test(item.icon||'')){
@@ -48,8 +52,8 @@ export async function archiveImages(data,previous){
         copy.storedIcon=await stored(item.icon,'equipment/'+hash(item.icon)+'.'+ext,
           item.icon===prior?.icon?prior.storedIcon:null);
       }
-      next.equipment.push(copy);
-    }
+      return copy;
+    }));
     characters.push(next);
   }
   return {...data,characters};
