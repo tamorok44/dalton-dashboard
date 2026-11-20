@@ -53,8 +53,8 @@ assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every prof
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
 assert.ok(!css.includes('.vital:nth-child(2) strong{color:#91dbe7}'),'Mana must not be blue');
-assert.ok(css.includes('.section h3::before{content:"✦";font-size:.65rem;color:var(--class,#d6b27a)}'));
-assert.ok(css.includes('.details summary::before{content:"◇";font-size:1.13rem;line-height:1;color:var(--class,#d6b27a)}'));
+assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
+assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
 assert.ok(css.includes('.card.hunter{--class:#aad372')&&css.includes('.card.druid{--class:#ff9b48'));
 const colorsByClass={
   mage:{mid:'#67d4f0',unlocked:'#24576c'},
@@ -130,12 +130,12 @@ assert.ok(css.includes('.portrait .portrait-badge{'),'Badge style exists');
 assert.ok(css.includes('border:1px solid var(--class,#d4ae79)'),'Badges use class border color');
 assert.ok(css.includes('.portrait-badge-symbol{'),'SVG badges styled');
 const chucky=read('scene-chucky.svg'),dolly=read('scene-dolly.svg');
-assert.match(chucky,/<linearGradient id="sky"[^>]*><stop stop-color="#392836"/,'Chucky warm dusk sky');
-assert.match(chucky,/<g fill="#ac612f"/,'Chucky orange autumn foliage, not green');
-assert.match(dolly,/<linearGradient id="sky"[^>]*><stop stop-color="#153e3c"/,'Dolly green frontier sky');
-assert.match(dolly,/<path d="M0 679[^"]*" fill="#65805c"/,'Dolly green canyon, not orange');
-assert.ok(css.includes('url("/scene-chucky.svg?v=20261120b")'));
-assert.ok(css.includes('url("/scene-dolly.svg?v=20261120b")'));
+assert.match(chucky,/<linearGradient id="sky"[^>]*><stop stop-color="#e5b89b"/,'Chucky bright warm day');
+assert.ok(chucky.includes("mining, skinning"),"Chucky mining and skinning scene");
+assert.match(dolly,/<linearGradient id="sky"[^>]*><stop stop-color="#9bc4b9"/,'Dolly bright green frontier sky');
+assert.ok(dolly.includes("leatherworking, skinning"),"Dolly leatherworking and skinning scene");
+assert.ok(css.includes('url("/scene-chucky.svg?v=frontier-unified-20261120a")'));
+assert.ok(css.includes('url("/scene-dolly.svg?v=frontier-unified-20261120a")'));
 assert.ok(!/\.vital:last-child\s*\{\s*border-color:\s*var\(--class\)/.test(css),
   'Item-level frame must match other vital tiles, not use the class color');
 assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css),
@@ -151,7 +151,7 @@ assert.ok(!heroHtml.includes('Vier Himmelsgeborene. Ein wilder Himmel.'));
 assert.match(crest,/sechszackiger Dalton-Sheriffstern/);
 assert.ok(crest.includes('>D</text>') && crest.includes('url(#blueEnamel)'));
 assert.ok(icon.includes('Dalton-Sheriffstern'));
-assert.ok(sky.includes('Daylight: no stars') && sky.includes('url(#sun)'));
+assert.ok(sky.includes('url(#day)') && sky.includes('url(#sunMist)'));
 assert.ok(!sky.includes('url(#moon)') && !sky.includes('#071526'));
 assert.ok(css.includes('skill-energy-flow 3.8s linear infinite'));
 assert.ok(css.includes('skill-light-sweep 7.6s ease-in-out infinite'));
@@ -172,5 +172,29 @@ assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button 
 assert.ok(refreshApi.includes('refreshCharacters([c])'),'Live API fetches Blizzard character profiles');
 assert.ok(!source.includes('setInterval('),'No periodic background refresh in client');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
+
+
+/* Western design contract – old cosmological decorations and Ordens copy must not return. */
+assert.ok(!heroHtml.includes('Hoher Orden') && !source.includes('Hoher Orden'));
+assert.ok(!source.includes('automatischer Abgleich etwa alle 30 Minuten'));
+assert.ok(heroHtml.includes('id="dataFreshness"') && source.includes('Zuletzt live abgefragt: '));
+assert.ok(source.includes('Gespeicherter Stand: '));
+assert.ok(css.includes('rotate(16deg)') && !css.includes('rotate(8deg)'));
+assert.ok(css.includes('margin:27px auto 0') && css.includes('margin-top:23px'));
+assert.ok(css.includes('main{margin-top:22px}'));
+assert.ok(!css.includes('radial-gradient(#f8db9e'));
+assert.ok(!/[✦✧✶✣✳✴★☆]/.test(heroHtml+source+css),'No sky star symbols on page');
+assert.ok(!css.includes('0 11px 21px rgba(2,7,16,.86)'),'No oversized black hero shadow');
+for(const id of ['cole','dolly','chucky','viola']){
+ const scene=read('scene-'+id+'.svg');
+ assert.ok(scene.includes('Main professions:'),'Every backdrop has occupational props');
+ assert.ok(!/<g fill="#[^"]+"><circle cx="41"/.test(scene),'No star fields in scenes');
+ assert.ok(scene.includes('<circle cx="740" cy="257" r="61"'),'All scenes share warm daylight');
+}
+assert.ok(read('scene-cole.svg').includes('alchemy, herbalism'));
+assert.ok(read('scene-viola.svg').includes('alchemy, herbalism'));
+assert.ok(!/#[0-9a-f]{6}/i.test(read('scene-viola.svg').match(/#(?:477050|6f9e6e|6c9969)/g)||''),'No green Viola foliage');
+assert.ok(css.includes('skill-energy-flow') && css.includes('skill-light-sweep'));
+assert.ok(!/^\s*schedule:/m.test(updateWorkflow));
 
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');

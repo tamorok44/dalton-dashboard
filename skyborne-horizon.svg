@@ -1,49 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="730" viewBox="0 0 1600 730" role="img" aria-label="Himmel über den schwebenden Grenzlanden von Zephras">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="730" viewBox="0 0 1600 730" role="img" aria-label="Helles Westerngrenzland von Azeroth bei goldener Sonne">
 <defs>
-  <linearGradient id="sky" x1="0" y1="0" x2=".15" y2="1"><stop stop-color="#88c8db"/><stop offset=".32" stop-color="#b4dbe0"/><stop offset=".66" stop-color="#e8c5ac"/><stop offset="1" stop-color="#dfa47d"/></linearGradient>
-  <radialGradient id="halo"><stop stop-color="#fff2c4" stop-opacity=".74"/><stop offset=".30" stop-color="#ffde9c" stop-opacity=".34"/><stop offset="1" stop-color="#ffd4a3" stop-opacity="0"/></radialGradient>
-  <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff8d4"/><stop offset=".62" stop-color="#ffecb3"/><stop offset="1" stop-color="#f7c78b"/></linearGradient>
-  <linearGradient id="rock" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#c69d7d"/><stop offset=".47" stop-color="#a77965"/><stop offset="1" stop-color="#526575"/></linearGradient>
-  <linearGradient id="rocklight" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#e3b08a"/><stop offset="1" stop-color="#687683"/></linearGradient>
-  <linearGradient id="cloud" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff1d7" stop-opacity=".74"/><stop offset="1" stop-color="#f6bba1" stop-opacity=".12"/></linearGradient>
-  <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c6e4e6" stop-opacity=".04"/><stop offset=".42" stop-color="#f8dfbe" stop-opacity=".05"/><stop offset="1" stop-color="#213d4c" stop-opacity=".38"/></linearGradient>
-  <filter id="blur"><feGaussianBlur stdDeviation="24"/></filter>
-  <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+ <linearGradient id="day" x1="0" y1="0" x2=".13" y2="1"><stop stop-color="#82c6d8"/><stop offset=".36" stop-color="#b6dce0"/><stop offset=".68" stop-color="#e8cba9"/><stop offset="1" stop-color="#dea278"/></linearGradient>
+ <radialGradient id="sunMist"><stop stop-color="#fff6d6" stop-opacity=".9"/><stop offset=".24" stop-color="#fbe8b9" stop-opacity=".48"/><stop offset="1" stop-color="#fce3b4" stop-opacity="0"/></radialGradient>
+ <linearGradient id="stone" x1="0" y1="0" x2=".4" y2="1"><stop stop-color="#d0a486"/><stop offset=".58" stop-color="#9f8d82"/><stop offset="1" stop-color="#637784"/></linearGradient>
+ <linearGradient id="foot" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a88673"/><stop offset="1" stop-color="#4a6773"/></linearGradient>
 </defs>
-<rect width="1600" height="730" fill="url(#sky)"/>
-<!-- Daylight: no stars -->
-<circle cx="1166" cy="250" r="295" fill="url(#halo)"/><circle cx="1166" cy="250" r="75" fill="url(#sun)" opacity=".97"/>
-<path d="M-60 382C106 306 188 356 332 333S591 299 768 330 1075 365 1261 302s266-41 416-26v190H-60Z" fill="url(#cloud)" opacity=".35"/>
-<path d="M-70 474Q116 395 330 425T799 416T1275 402T1678 441V565H-70Z" fill="#fff0dd" opacity=".27"/>
-<path d="M-30 548Q171 482 324 492T603 506T959 488T1262 515T1636 473V679H-30Z" fill="#f2ba96" opacity=".27"/>
-<path d="M-10 612L118 518 172 537 257 465 356 517 443 479 580 600 741 525 846 575 962 508 1123 590 1288 492 1407 537 1538 469 1650 560V730H-10Z" fill="#75828a" opacity=".44"/>
-<path d="M0 667L93 580 168 603 275 546 363 602 469 582 564 660 652 619 757 654 870 580 951 614 1086 560 1247 628 1386 568 1500 622 1600 581V730H0Z" fill="#536b75" opacity=".82"/>
-<!-- floating rocky outposts -->
-<g transform="translate(90 335)" opacity=".9">
- <path d="M-82 35Q39-25 202 9L229 31Q161 55 92 57L62 151 32 189 7 124-35 73-88 49Z" fill="url(#rock)"/>
- <path d="M-85 31Q62-25 210 12L226 30Q85 40-75 51Z" fill="#dfaa87"/>
- <path d="M-16 2V-50h14V-80h43v84M7-80v-33h11v34M73-5v-49h54v48M85-54v-26h12v25M125-54v-18h12v19" fill="#566476" stroke="#b99a78" stroke-opacity=".7" stroke-width="3"/>
- <path d="M-31-46L22-83 75-46M65-53L100-77 145-52" fill="none" stroke="#d5b18a" stroke-opacity=".65" stroke-width="4"/>
- <rect x="12" y="-43" width="15" height="29" fill="#f6bd83" opacity=".8"/><rect x="89" y="-38" width="14" height="18" fill="#f6bd83" opacity=".75"/>
- <path d="M50 67l-18 46M150 52l-20 54" stroke="#7a6672" stroke-width="4"/>
+<rect width="1600" height="730" fill="url(#day)"/>
+<circle cx="1180" cy="250" r="330" fill="url(#sunMist)"/><circle cx="1180" cy="250" r="65" fill="#fff1c8" opacity=".85"/>
+<!-- Smooth cloudbanks, no hard-edged triangular mountain mosaics -->
+<path d="M-100 242C120 215 273 236 440 224S756 247 962 226 1315 218 1700 199" fill="none" stroke="#e9f0df" stroke-opacity=".28" stroke-width="68" stroke-linecap="round"/>
+<path d="M-100 379C105 333 223 361 374 345S647 352 848 332 1231 353 1690 308" fill="none" stroke="#f7e7d1" stroke-opacity=".36" stroke-width="95" stroke-linecap="round"/>
+<path d="M-50 481C192 423 345 445 484 420S797 420 937 427 1198 396 1416 402 1580 414 1700 389V675H-50Z" fill="#b0b8b1" opacity=".34"/>
+<path d="M-50 547C162 495 261 525 394 485S679 489 807 502 1045 479 1261 458 1482 481 1660 453V708H-50Z" fill="#8e9e9e" opacity=".48"/>
+<path d="M-60 620C170 575 302 584 470 557S760 560 888 551 1080 536 1305 513 1510 532 1660 507V730H-60Z" fill="url(#stone)" opacity=".62"/>
+<!-- Timber frontier settlement integrated into one horizon -->
+<g fill="#907563" stroke="#786459" stroke-width="6" stroke-linejoin="round" opacity=".68">
+ <path d="M135 534V440h145v94M119 441l92-58 85 58" /><path d="M272 530V459h82v71M266 458l47-37 48 37"/>
+ <path d="M1274 528V427h155v101M1259 428l91-67 94 67"/><path d="M1445 530V460h74v70M1438 460l46-35 42 35"/>
+ <path d="M655 560V488h114v72M640 490l76-49 71 49"/><path d="M802 557V500h95v57M795 500l55-39 54 39"/>
 </g>
-<g transform="translate(1408 373)" opacity=".85">
- <path d="M-165 33Q-49-22 114 3L181 34Q94 64-44 59L-76 132-104 156-113 92Z" fill="url(#rocklight)"/>
- <path d="M-163 32Q-6-18 119 7L171 27Q-17 34-154 46Z" fill="#eab58e"/>
- <path d="M-100 6v-78h30v-18h16v95M-48 0v-56h48V-5M-18-56v-34h12v32M28-1v-39h50v36" fill="#687283" stroke="#d2b18d" stroke-opacity=".5" stroke-width="3"/>
- <path d="M-118-73L-86-103-50-72M-57-57L-23-81 13-56M19-40L55-65 94-39" fill="none" stroke="#e5c29f" stroke-opacity=".6" stroke-width="4"/>
- <rect x="-82" y="-46" width="9" height="25" fill="#f1bc8d"/><rect x="-31" y="-37" width="10" height="18" fill="#ecbb91"/>
-</g>
-<!-- tiny airborne wind stones -->
-<g fill="#978088" opacity=".7"><path d="M385 250l16-8 14 8-8 35-15 27-8-30Z"/><path d="M1004 420l14-11 20 10-10 36-10 15Z"/><path d="M1290 166l25-11 16 21-22 42-13-15Z"/></g>
-<!-- wind arcs and ancient leylines -->
-<g fill="none" stroke-linecap="round">
- <path d="M-20 256C263 162 408 248 527 200S779 129 911 152" stroke="#95dfd7" opacity=".26" stroke-width="4"/>
- <path d="M998 143c180-65 332-50 580-115" stroke="#bce5df" opacity=".20" stroke-width="4"/>
- <path d="M198 456c88-57 234-62 349-37" stroke="#f8cea4" opacity=".30" stroke-width="3"/>
- <path d="M1079 495c144-64 315-60 490-26" stroke="#a9e6db" opacity=".27" stroke-width="3"/>
- <path d="M487 141c90-43 166-39 246-20" stroke="#9be0e0" opacity=".28" stroke-width="2"/>
-</g>
-<g stroke="#9be6dc" opacity=".7"><path d="M487 94v14m-7-7h14M1373 168v14m-7-7h14M814 226v10m-5-5h10" stroke-width="2"/></g>
-<rect width="1600" height="730" fill="url(#fade)"/>
+<g fill="#e4b78e" opacity=".7"><rect x="190" y="479" width="28" height="44"/><rect x="1319" y="473" width="23" height="42"/><rect x="710" y="516" width="19" height="40"/></g>
+<path d="M-40 636C148 600 262 604 398 592S667 609 842 587 1080 584 1299 568 1518 571 1640 555V730H-40Z" fill="#748c8f" opacity=".69"/>
+<path d="M-40 699C211 671 326 685 512 659S834 673 990 647 1354 650 1640 622V730H-40Z" fill="url(#foot)" opacity=".74"/>
+<path d="M-30 560C209 534 426 553 604 532S963 556 1194 521 1504 533 1660 513" stroke="#f6dfbf" stroke-opacity=".17" stroke-width="29" fill="none"/>
 </svg>

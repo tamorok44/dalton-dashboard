@@ -1,4 +1,4 @@
-const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const button=document.querySelector("#refreshButton");
+const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
 const portraitScenes={
@@ -96,7 +96,7 @@ function equipmentPanel(c,open=false){
     const item=available.get(slot);
     if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
     const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(item.icon||'');
-    const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">✦</span>';
+    const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
     const quality=String(item.quality||'').toUpperCase();
     const qualityClass=itemQualityClasses[quality]||'quality-unknown';
     const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
@@ -138,19 +138,21 @@ function render(data,{live=false}={}){
  }
 const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Math.min(...levels),max=Math.max(...levels),avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
  summary.innerHTML=[["Gruppenlevel",levels.length?`${min}–${max}`:"–"],["Durchschnitt",avg],["Abstand",levels.length?`${max-min} Level`:"–"],["Charaktere",chars.length]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join("");
- status.textContent=`${live?"Gerade live abgerufen":"Letzter gespeicherter Datenstand"}: ${new Date(data.generatedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"})} · automatischer Abgleich etwa alle 30 Minuten.`;
+ const stamp=Number.isFinite(Date.parse(data.generatedAt))?new Date(data.generatedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";
+ if(freshness)freshness.textContent=(live?"Zuletzt live abgefragt: ":"Gespeicherter Stand: ")+stamp;
+ status.textContent=live?"Blizzard-Profile gerade manuell abgefragt.":"Für aktuelle Charakterdaten oben auf „Aktualisieren“ klicken.";
  cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColors[c.class]||'other'}">
   <div class="cardhead">
     <div class="card-intro">
-      <span class="card-overline">✦ &nbsp; STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
+      <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
       <h2 class="name">${esc(c.name)}</h2>
       <p class="player">Abenteurer: <strong>${esc(c.player)}</strong></p>
     </div>
     <div class="level"><span>Stufe</span>${esc(c.level)}</div>
   </div>
   ${renderPortrait(c)}
-  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">Himmelsgeborene · Hoher Orden</span><span class="pill">Allianz · EU-PvP</span></div>
-  <p class="status">${c.scrapeOk===false?"⚠ Automatischer Abruf fehlgeschlagen – letzter bekannter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
+  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">Allianz · EU-PvP</span></div>
+  <p class="status">${c.scrapeOk===false?"⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
   <div class="section"><h3>Talente${c.talentsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
   <div class="section professions-section"><h3>Berufe</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
   ${statsPanel(c,openDetails.has(c.slug+':stats'))}
@@ -171,8 +173,9 @@ async function load({silent=false}={}){
 async function refreshLive(){
   if(button.disabled)return;
   button.disabled=true;button.textContent="↻ Wird aktualisiert …";
+  if(freshness)freshness.textContent="Live-Abfrage läuft …";
   await load({silent:true});
-  status.textContent="Neuester gespeicherter Stand geladen · Live-Profile werden im Hintergrund abgefragt …";
+  status.textContent="Blizzard-Profile werden jetzt direkt abgefragt …";
   try{
     const r=await fetch('/api/refresh?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error('HTTP '+r.status);
@@ -183,6 +186,7 @@ async function refreshLive(){
     if(response.success<response.data.characters.length){status.textContent+=' · Einige Profile zeigen den letzten bestätigten Stand.'}
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
+    if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
   }finally{button.disabled=false;button.textContent="↻ Aktualisieren"}
 }
 button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';

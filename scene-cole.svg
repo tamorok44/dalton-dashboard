@@ -1,60 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1160" viewBox="0 0 960 1160" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1160" viewBox="0 0 960 1160" role="img" aria-label="Blauer Magierposten mit Alchemie und Kräuterkunde">
 <defs>
-<linearGradient id="sky" x1="0" y1="0" x2=".15" y2="1"><stop stop-color="#07152f"/><stop offset=".52" stop-color="#213f59"/><stop offset="1" stop-color="#bb6f64"/></linearGradient>
-<radialGradient id="halo"><stop stop-color="#85e5f6" stop-opacity=".78"/><stop offset=".30" stop-color="#85e5f6" stop-opacity=".3"/><stop offset="1" stop-color="#85e5f6" stop-opacity="0"/></radialGradient>
-<linearGradient id="stone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91766a"/><stop offset=".46" stop-color="#76596c"/><stop offset="1" stop-color="#273952"/></linearGradient>
-<linearGradient id="wood" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#a67c54"/><stop offset=".45" stop-color="#64422f"/><stop offset="1" stop-color="#2a2425"/></linearGradient>
-<linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b0d2e7" stop-opacity=".04"/><stop offset=".7" stop-color="#b0d2e7" stop-opacity=".24"/><stop offset="1" stop-color="#b0d2e7" stop-opacity=".02"/></linearGradient>
-<linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#040f22" stop-opacity=".15"/><stop offset=".30" stop-color="#061120" stop-opacity=".02"/><stop offset=".77" stop-color="#050d16" stop-opacity=".14"/><stop offset="1" stop-color="#090b14" stop-opacity=".72"/></linearGradient>
-<filter id="soft"><feGaussianBlur stdDeviation="22"/></filter>
-<filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".44" numOctaves="2" seed="8" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-</defs>
+ <linearGradient id="sky" x1="0" y1="0" x2=".15" y2="1"><stop stop-color="#90c8e0"/><stop offset=".58" stop-color="#c0e1e9"/><stop offset="1" stop-color="#f0d4a9"/></linearGradient>
+ <radialGradient id="sunGlow"><stop stop-color="#fff2c5" stop-opacity=".68"/><stop offset=".48" stop-color="#fff2c5" stop-opacity=".26"/><stop offset="1" stop-color="#fff2c5" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#768d91"/><stop offset="1" stop-color="#476779"/></linearGradient>
+ <linearGradient id="timber" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d2b48e"/><stop offset=".47" stop-color="#91775f"/><stop offset="1" stop-color="#476779"/></linearGradient>
+ <linearGradient id="veil" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffffff" stop-opacity=".02"/><stop offset=".70" stop-color="#f0d4a9" stop-opacity=".06"/><stop offset="1" stop-color="#172a30" stop-opacity=".45"/></linearGradient>
+ </defs>
 <rect width="960" height="1160" fill="url(#sky)"/>
-<g fill="#85e5f6"><circle cx="41" cy="67" r="2.2" opacity="0.3"/><circle cx="234" cy="138" r="1.15" opacity="0.41"/><circle cx="427" cy="209" r="1.15" opacity="0.52"/><circle cx="620" cy="280" r="1.15" opacity="0.63"/><circle cx="813" cy="351" r="1.15" opacity="0.74"/><circle cx="46" cy="422" r="1.15" opacity="0.3"/><circle cx="239" cy="58" r="2.2" opacity="0.41"/><circle cx="432" cy="129" r="1.15" opacity="0.52"/><circle cx="625" cy="200" r="1.15" opacity="0.63"/><circle cx="818" cy="271" r="1.15" opacity="0.74"/><circle cx="51" cy="342" r="1.15" opacity="0.3"/><circle cx="244" cy="413" r="1.15" opacity="0.41"/><circle cx="437" cy="49" r="2.2" opacity="0.52"/><circle cx="630" cy="120" r="1.15" opacity="0.63"/><circle cx="823" cy="191" r="1.15" opacity="0.74"/><circle cx="56" cy="262" r="1.15" opacity="0.3"/><circle cx="249" cy="333" r="1.15" opacity="0.41"/><circle cx="442" cy="404" r="1.15" opacity="0.52"/><circle cx="635" cy="40" r="2.2" opacity="0.63"/><circle cx="828" cy="111" r="1.15" opacity="0.74"/><circle cx="61" cy="182" r="1.15" opacity="0.3"/><circle cx="254" cy="253" r="1.15" opacity="0.41"/><circle cx="447" cy="324" r="1.15" opacity="0.52"/><circle cx="640" cy="395" r="1.15" opacity="0.63"/><circle cx="833" cy="31" r="2.2" opacity="0.74"/><circle cx="66" cy="102" r="1.15" opacity="0.3"/><circle cx="259" cy="173" r="1.15" opacity="0.41"/><circle cx="452" cy="244" r="1.15" opacity="0.52"/><circle cx="645" cy="315" r="1.15" opacity="0.63"/><circle cx="838" cy="386" r="1.15" opacity="0.74"/></g>
-<circle cx="737" cy="287" r="323" fill="url(#halo)"/>
-<path d="M0 316C135 265 242 275 350 310S597 354 745 288 925 266 1040 270V470H0Z" fill="#b0d2e7" opacity=".14"/>
-<path d="M0 438C152 381 239 432 368 410S611 368 725 409 893 439 1013 395V610H0Z" fill="url(#haze)"/>
-<g opacity=".64">
-<path d="M0 578L98 514 155 536 247 437 318 483 396 435 515 563 625 476 738 541 816 475 960 549V730H0Z" fill="#76596c" opacity=".51"/>
-<path d="M0 672L100 571 199 625 288 548 394 601 498 532 593 598 716 529 831 595 960 524V800H0Z" fill="#273952" opacity=".43"/>
-</g>
-<!-- distant skyborne floating frontier outpost -->
-<g transform="translate(692 390) scale(.8)" opacity=".72">
- <path d="M-111 0Q-3-38 111-9L157 10 85 35 26 33 7 93-9 136-32 81-62 40-124 16Z" fill="url(#stone)"/>
- <path d="M-116-1Q11-43 113-10L157 9Q10 19-112 17Z" fill="#91766a"/>
- <path d="M-72-8v-55h24v-27h20v81M-9-10v-42h56v43M13-52v-18h17v18M56-12v-33h35v31" fill="#25313e" stroke="#b0d2e7" stroke-opacity=".62" stroke-width="3"/>
- <path d="M-82-63l48-27 47 28M40-44l34-23 37 25" fill="none" stroke="#85e5f6" stroke-opacity=".43" stroke-width="4"/>
- <rect x="-54" y="-46" width="10" height="19" fill="#85e5f6" opacity=".75"/>
-</g>
-<path d="M0 695Q116 644 217 659T453 650T713 650T979 603V800H0Z" fill="#b0d2e7" opacity=".10"/>
-<path d="M0 747Q180 684 335 721L502 681 685 734 960 688V970H0Z" fill="#373e56" opacity=".57"/>
- <g stroke="#81e1ef" stroke-opacity=".47" fill="none" stroke-width="4">
-  <path d="M455 275c138-65 196-36 261-103"/><path d="M423 296c149-83 223-49 306-123"/>
-  <circle cx="748" cy="247" r="67" stroke-width="3"/><circle cx="748" cy="247" r="84" stroke-width="1.7" stroke-dasharray="12 12"/>
-  <path d="M748 154v186M650 247h196M683 183l132 128M813 183 683 313" opacity=".55"/>
+ <circle cx="740" cy="257" r="315" fill="url(#sunGlow)"/>
+ <circle cx="740" cy="257" r="61" fill="#fff2c5" opacity=".88"/>
+ <path d="M-40 309 C143 264 209 292 359 286 S602 318 760 283 940 285 1018 259" fill="none" stroke="#fff5dd" stroke-opacity=".35" stroke-width="39" stroke-linecap="round"/>
+ <path d="M-70 404 C122 383 249 419 383 397 S691 396 853 405 949 398 1040 378" fill="none" stroke="#d8eff0" stroke-opacity=".37" stroke-width="66" stroke-linecap="round"/>
+ <path d="M0 490 C160 438 225 475 338 432 S535 429 663 455 810 428 960 442 V800 H0Z" fill="#9cabb2" opacity=".52"/>
+ <path d="M0 624 C138 564 245 606 365 551 S547 560 671 564 840 530 960 568 V910 H0Z" fill="#688c9f" opacity=".63"/>
+ <path d="M0 702 C162 671 284 697 417 679 S760 672 960 650 V915 H0Z" fill="#d8eff0" opacity=".18"/>
+ <path d="M0 805 C110 760 262 804 382 759 S610 788 737 746 871 750 960 728 V1160H0Z" fill="url(#ground)" opacity=".8"/>
+ <path d="M0 973 Q170 935 331 964 T651 946 960 925 V1160 H0Z" fill="#768d91" opacity=".68"/>
+ <path d="M0 1099 Q193 1044 355 1074 T682 1056 960 1034 V1160 H0Z" fill="#476779" opacity=".66"/>
+ <!-- Distant frontier ranch on a single continuous horizon, no floating fragments -->
+ <g opacity=".5" transform="translate(580 528)">
+ <path d="M-28 98V10h161v88M-49 10L48-37 155 10" fill="#91775f" stroke="#476779" stroke-width="12" stroke-linejoin="round"/>
+ <path d="M31 31h52v67H31Z" fill="#476779" opacity=".8"/>
+ <path d="M183 97V13h119v84M167 12l75-39 79 39" fill="#d2b48e" stroke="#91775f" stroke-width="10" stroke-linejoin="round"/>
+ <path d="M225 28v69m36-69v69M173 56h132" stroke="#476779" stroke-width="9"/>
  </g>
-<!-- arcane frontier saloon -->
- <g transform="translate(-92 515)">
-  <path d="M42 177V-35L304-55 427 28V320H42Z" fill="url(#wood)" stroke="#2c2731" stroke-width="13"/>
-  <path d="M12-35L304-93 459 17 442 42 297-45 18 3Z" fill="#2a292f" stroke="#b48a65" stroke-width="12"/>
-  <path d="M75 40L358 5 351 84 81 114Z" fill="#3a2a34" stroke="#9c805f" stroke-width="9"/>
-  <path d="M108 24l208-26-3 76-205 28Z" fill="#172a38" stroke="#5ebec7" stroke-width="5"/>
-  <path d="M132 45Q206 12 284 38" stroke="#9aebf0" fill="none" stroke-width="3"/>
-  <rect x="68" y="149" width="99" height="149" fill="#242836" stroke="#d3aa75" stroke-width="8"/>
-  <rect x="225" y="125" width="88" height="115" fill="#e4b071" stroke="#7c624b" stroke-width="11"/>
-  <rect x="248" y="145" width="42" height="75" fill="#87e0ec" opacity=".7"/>
-  <rect x="341" y="128" width="48" height="110" fill="#dea170" stroke="#302a35" stroke-width="8"/>
-  <path d="M41 129l394-45" stroke="#251e28" stroke-width="21"/><path d="M44 121l390-45" stroke="#c39b6c" stroke-width="9"/>
-  <path d="M49 332l416-29" stroke="#2b2529" stroke-width="15"/>
-  <path d="M86 335v124M417 311v110" stroke="#4b3933" stroke-width="24"/>
- </g>
-<!-- telegraph posts, saloon lantern and leyline -->
- <g fill="none" stroke="#322937" stroke-width="10"><path d="M817 630v432M788 664h64M782 718h76"/><path d="M805 673Q700 706 597 703Q457 692 346 722" stroke-width="4"/></g>
- <g fill="#e1b976" opacity=".91"><circle cx="813" cy="666" r="9"/><circle cx="833" cy="712" r="6"/></g>
- <path d="M-30 982Q244 912 488 950T984 883" fill="none" stroke="#70dbec" stroke-width="5" opacity=".45"/>
- <g fill="#d7f9ef"><circle cx="603" cy="510" r="3"/><circle cx="560" cy="433" r="2"/><circle cx="813" cy="403" r="4"/></g>
-<path d="M0 1095Q176 1024 315 1068T634 1049T973 1021V1160H0Z" fill="#171d2f" opacity=".85"/>
-<path d="M0 1119Q254 1080 445 1100T960 1068" fill="none" stroke="#91766a" stroke-width="5" opacity=".30"/>
-<rect width="960" height="1160" fill="url(#shade)"/>
-<rect width="960" height="1160" opacity=".065" filter="url(#grain)"/>
+<!-- Main professions: alchemy, herbalism; class palette remains dominant. -->
+<g transform="translate(30 690)"><path d="M6 60Q112 32 233 60" fill="none" stroke="#91775f" stroke-width="11"/><path d="M30 60q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#67d4f0" stroke="#387f9f" stroke-width="3"/><path d="M63 90q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/><path d="M96 120q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#67d4f0" stroke="#387f9f" stroke-width="3"/><path d="M129 60q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/><path d="M162 90q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#67d4f0" stroke="#387f9f" stroke-width="3"/><path d="M195 120q-24-27-32-3 12 31 32 3m0 0q22-29 33-6-6 31-33 6" fill="#d2b48e" stroke="#387f9f" stroke-width="3"/>
+ <path d="M15 67v142m185-150v142" stroke="#91775f" stroke-width="14"/><path d="M-5 177h242" stroke="#d2b48e" stroke-width="17"/></g><g transform="translate(580 759)" stroke-linejoin="round">
+ <path d="M-30 240h344M0 237V27h285v210" stroke="#91775f" stroke-width="18" fill="none"/>
+ <path d="M-34 45h336" stroke="#d2b48e" stroke-width="22"/>
+ <path d="M22 16h80m111 0h54" stroke="#476779" stroke-width="7"/>
+ <path d="M27 4v-68h37V4l-19 27Z" fill="#82d9ee" fill-opacity=".65" stroke="#387f9f" stroke-width="6"/>
+ <path d="M28-22h35" stroke="#67d4f0" stroke-width="12" stroke-opacity=".7"/>
+ <path d="M142 10l-6-60h22l-6 60 43 51q6 26-38 27t-48-27Z" fill="#82d9ee" fill-opacity=".8" stroke="#387f9f" stroke-width="7"/>
+ <path d="M121 50h66" stroke="#67d4f0" stroke-width="20" stroke-opacity=".72"/>
+ <path d="M236-8v-36h27v36l16 22v64h-57V15Z" fill="#82d9ee" fill-opacity=".7" stroke="#387f9f" stroke-width="6"/>
+ <path d="M228 39h45" stroke="#67d4f0" stroke-width="17"/>
+ <path d="M30 111h219" stroke="#d2b48e" stroke-width="10"/>
+ </g><g stroke="#67d4f0" stroke-width="4" fill="none" opacity=".56"><path d="M375 220q86-65 168-12m-146 50q75-45 136-18"/><circle cx="503" cy="208" r="35" stroke-opacity=".48"/></g>
+<rect width="960" height="1160" fill="url(#veil)" pointer-events="none"/>
 </svg>

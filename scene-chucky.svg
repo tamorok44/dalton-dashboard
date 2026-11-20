@@ -1,63 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1160" viewBox="0 0 960 1160" role="img">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1160" viewBox="0 0 960 1160" role="img" aria-label="Orangefarbener Druidenposten mit Bergbau und Kuerschnerei">
 <defs>
-<linearGradient id="sky" x1="0" y1="0" x2=".15" y2="1"><stop stop-color="#392836"/><stop offset=".52" stop-color="#a75f43"/><stop offset="1" stop-color="#f1b36b"/></linearGradient>
-<radialGradient id="halo"><stop stop-color="#ffd29a" stop-opacity=".78"/><stop offset=".30" stop-color="#ffd29a" stop-opacity=".3"/><stop offset="1" stop-color="#ffd29a" stop-opacity="0"/></radialGradient>
-<linearGradient id="stone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b78662"/><stop offset=".46" stop-color="#9c5c42"/><stop offset="1" stop-color="#634037"/></linearGradient>
-<linearGradient id="wood" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#a67c54"/><stop offset=".45" stop-color="#64422f"/><stop offset="1" stop-color="#2a2425"/></linearGradient>
-<linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#eac09a" stop-opacity=".04"/><stop offset=".7" stop-color="#eac09a" stop-opacity=".24"/><stop offset="1" stop-color="#eac09a" stop-opacity=".02"/></linearGradient>
-<linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#040f22" stop-opacity=".15"/><stop offset=".30" stop-color="#061120" stop-opacity=".02"/><stop offset=".77" stop-color="#050d16" stop-opacity=".14"/><stop offset="1" stop-color="#090b14" stop-opacity=".72"/></linearGradient>
-<filter id="soft"><feGaussianBlur stdDeviation="22"/></filter>
-<filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".44" numOctaves="2" seed="8" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-</defs>
+ <linearGradient id="sky" x1="0" y1="0" x2=".15" y2="1"><stop stop-color="#e5b89b"/><stop offset=".58" stop-color="#f4d3b1"/><stop offset="1" stop-color="#f8cd91"/></linearGradient>
+ <radialGradient id="sunGlow"><stop stop-color="#fff0c3" stop-opacity=".68"/><stop offset=".48" stop-color="#fff0c3" stop-opacity=".26"/><stop offset="1" stop-color="#fff0c3" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ad7150"/><stop offset="1" stop-color="#7d4e39"/></linearGradient>
+ <linearGradient id="timber" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfb183"/><stop offset=".47" stop-color="#936a4c"/><stop offset="1" stop-color="#7d4e39"/></linearGradient>
+ <linearGradient id="veil" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffffff" stop-opacity=".02"/><stop offset=".70" stop-color="#f8cd91" stop-opacity=".06"/><stop offset="1" stop-color="#172a30" stop-opacity=".45"/></linearGradient>
+ </defs>
 <rect width="960" height="1160" fill="url(#sky)"/>
-<g fill="#ffd29a"><circle cx="41" cy="67" r="2.2" opacity="0.3"/><circle cx="234" cy="138" r="1.15" opacity="0.41"/><circle cx="427" cy="209" r="1.15" opacity="0.52"/><circle cx="620" cy="280" r="1.15" opacity="0.63"/><circle cx="813" cy="351" r="1.15" opacity="0.74"/><circle cx="46" cy="422" r="1.15" opacity="0.3"/><circle cx="239" cy="58" r="2.2" opacity="0.41"/><circle cx="432" cy="129" r="1.15" opacity="0.52"/><circle cx="625" cy="200" r="1.15" opacity="0.63"/><circle cx="818" cy="271" r="1.15" opacity="0.74"/><circle cx="51" cy="342" r="1.15" opacity="0.3"/><circle cx="244" cy="413" r="1.15" opacity="0.41"/><circle cx="437" cy="49" r="2.2" opacity="0.52"/><circle cx="630" cy="120" r="1.15" opacity="0.63"/><circle cx="823" cy="191" r="1.15" opacity="0.74"/><circle cx="56" cy="262" r="1.15" opacity="0.3"/><circle cx="249" cy="333" r="1.15" opacity="0.41"/><circle cx="442" cy="404" r="1.15" opacity="0.52"/><circle cx="635" cy="40" r="2.2" opacity="0.63"/><circle cx="828" cy="111" r="1.15" opacity="0.74"/><circle cx="61" cy="182" r="1.15" opacity="0.3"/><circle cx="254" cy="253" r="1.15" opacity="0.41"/><circle cx="447" cy="324" r="1.15" opacity="0.52"/><circle cx="640" cy="395" r="1.15" opacity="0.63"/><circle cx="833" cy="31" r="2.2" opacity="0.74"/><circle cx="66" cy="102" r="1.15" opacity="0.3"/><circle cx="259" cy="173" r="1.15" opacity="0.41"/><circle cx="452" cy="244" r="1.15" opacity="0.52"/><circle cx="645" cy="315" r="1.15" opacity="0.63"/><circle cx="838" cy="386" r="1.15" opacity="0.74"/></g>
-<circle cx="737" cy="287" r="323" fill="url(#halo)"/>
-<path d="M0 316C135 265 242 275 350 310S597 354 745 288 925 266 1040 270V470H0Z" fill="#eac09a" opacity=".14"/>
-<path d="M0 438C152 381 239 432 368 410S611 368 725 409 893 439 1013 395V610H0Z" fill="url(#haze)"/>
-<g opacity=".64">
-<path d="M0 578L98 514 155 536 247 437 318 483 396 435 515 563 625 476 738 541 816 475 960 549V730H0Z" fill="#9c5c42" opacity=".51"/>
-<path d="M0 672L100 571 199 625 288 548 394 601 498 532 593 598 716 529 831 595 960 524V800H0Z" fill="#634037" opacity=".43"/>
-</g>
-<!-- distant skyborne floating frontier outpost -->
-<g transform="translate(692 390) scale(.8)" opacity=".72">
- <path d="M-111 0Q-3-38 111-9L157 10 85 35 26 33 7 93-9 136-32 81-62 40-124 16Z" fill="url(#stone)"/>
- <path d="M-116-1Q11-43 113-10L157 9Q10 19-112 17Z" fill="#b78662"/>
- <path d="M-72-8v-55h24v-27h20v81M-9-10v-42h56v43M13-52v-18h17v18M56-12v-33h35v31" fill="#25313e" stroke="#eac09a" stroke-opacity=".62" stroke-width="3"/>
- <path d="M-82-63l48-27 47 28M40-44l34-23 37 25" fill="none" stroke="#ffd29a" stroke-opacity=".43" stroke-width="4"/>
- <rect x="-54" y="-46" width="10" height="19" fill="#ffd29a" opacity=".75"/>
-</g>
-<path d="M0 695Q116 644 217 659T453 650T713 650T979 603V800H0Z" fill="#eac09a" opacity=".10"/>
-<path d="M0 675Q200 615 325 632T646 638T960 599V916H0Z" fill="#a35e3e" opacity=".65"/>
- <path d="M0 810Q223 711 453 781T960 697V969H0Z" fill="#753b30" opacity=".75"/>
-<!-- ancient wind-bent oak at the frontier -->
- <g transform="translate(75 390)">
-  <path d="M105 716Q118 522 146 371T168 189Q171 106 130 24M143 379Q49 314 5 223M148 246Q242 175 277 63M171 180Q192 92 233 21" fill="none" stroke="#523a31" stroke-linecap="round" stroke-width="55"/>
-  <path d="M105 715Q126 496 147 371T168 189Q171 106 130 24M143 379Q49 314 5 223M148 246Q242 175 277 63M171 180Q192 92 233 21" fill="none" stroke="#a07456" stroke-linecap="round" stroke-width="28"/>
-  <g fill="#ac612f" opacity=".93">
-   <ellipse cx="66" cy="90" rx="140" ry="87"/><ellipse cx="193" cy="20" rx="145" ry="91"/><ellipse cx="305" cy="93" rx="115" ry="83"/><ellipse cx="-12" cy="210" rx="80" ry="57"/><ellipse cx="235" cy="177" rx="120" ry="69"/>
-  </g>
-  <g fill="#e49a54" opacity=".42"><ellipse cx="51" cy="55" rx="115" ry="50"/><ellipse cx="230" cy="3" rx="99" ry="41"/><ellipse cx="287" cy="79" rx="77" ry="43"/></g>
-  <path d="M110 677l-68 78M114 664l84 88" stroke="#79593f" stroke-width="20" stroke-linecap="round"/>
+ <circle cx="740" cy="257" r="315" fill="url(#sunGlow)"/>
+ <circle cx="740" cy="257" r="61" fill="#fff0c3" opacity=".88"/>
+ <path d="M-40 309 C143 264 209 292 359 286 S602 318 760 283 940 285 1018 259" fill="none" stroke="#fff5dd" stroke-opacity=".35" stroke-width="39" stroke-linecap="round"/>
+ <path d="M-70 404 C122 383 249 419 383 397 S691 396 853 405 949 398 1040 378" fill="none" stroke="#ffe0b7" stroke-opacity=".37" stroke-width="66" stroke-linecap="round"/>
+ <path d="M0 490 C160 438 225 475 338 432 S535 429 663 455 810 428 960 442 V800 H0Z" fill="#d79b72" opacity=".52"/>
+ <path d="M0 624 C138 564 245 606 365 551 S547 560 671 564 840 530 960 568 V910 H0Z" fill="#bb7755" opacity=".63"/>
+ <path d="M0 702 C162 671 284 697 417 679 S760 672 960 650 V915 H0Z" fill="#ffe0b7" opacity=".18"/>
+ <path d="M0 805 C110 760 262 804 382 759 S610 788 737 746 871 750 960 728 V1160H0Z" fill="url(#ground)" opacity=".8"/>
+ <path d="M0 973 Q170 935 331 964 T651 946 960 925 V1160 H0Z" fill="#ad7150" opacity=".68"/>
+ <path d="M0 1099 Q193 1044 355 1074 T682 1056 960 1034 V1160 H0Z" fill="#7d4e39" opacity=".66"/>
+ <!-- Distant frontier ranch on a single continuous horizon, no floating fragments -->
+ <g opacity=".5" transform="translate(580 528)">
+ <path d="M-28 98V10h161v88M-49 10L48-37 155 10" fill="#936a4c" stroke="#7d4e39" stroke-width="12" stroke-linejoin="round"/>
+ <path d="M31 31h52v67H31Z" fill="#7d4e39" opacity=".8"/>
+ <path d="M183 97V13h119v84M167 12l75-39 79 39" fill="#dfb183" stroke="#936a4c" stroke-width="10" stroke-linejoin="round"/>
+ <path d="M225 28v69m36-69v69M173 56h132" stroke="#7d4e39" stroke-width="9"/>
  </g>
- <!-- standing stones of the High Order -->
- <g transform="translate(623 677)">
-  <path d="M0 235L22 64 65 46 97 240Z" fill="#ad7b56" stroke="#593b30" stroke-width="9"/>
-  <path d="M119 219l9-255 66-18 50 260Z" fill="#b98a64" stroke="#6e4939" stroke-width="11"/>
-  <path d="M260 237l15-153 39-20 35 182Z" fill="#d3a17b" stroke="#6e483b" stroke-width="9"/>
-  <path d="M146 5l30-9m-18 33l-5 67 35 11m-161-14 33 7" fill="none" stroke="#ffce8d" stroke-width="7" opacity=".8"/>
-  <circle cx="171" cy="102" r="24" fill="none" stroke="#ffd89c" stroke-width="5"/>
-  <path d="M147 101h47M170 81v45" stroke="#fff0b8" stroke-width="3"/>
+<!-- Main professions: mining, skinning; class palette remains dominant. -->
+<g transform="translate(5 665)" stroke-linejoin="round">
+ <path d="M-35 356L21 238l105-43 64 62 104-46 95 144Z" fill="#ad7150" stroke="#7d4e39" stroke-width="10"/>
+ <path d="M27 333l60-90 52-21 52 61" fill="#d79b72" stroke="#ab632f" stroke-width="6"/>
+ <path d="M140 45l119 265" stroke="#936a4c" stroke-width="18" stroke-linecap="round"/>
+ <path d="M64 67Q153 6 245 65q-52 32-74 25-54 33-107-23Z" fill="#dfb183" stroke="#ab632f" stroke-width="8"/>
+ <path d="M249 308l51-53 52 30-13 53-67 24Z" fill="#ab632f" stroke="#dfb183" stroke-width="6"/>
+ <path d="M261 299l60-6" stroke="#ff9b48" stroke-width="10"/>
+ <path d="M26 329l29-18 35 31-18 33-44-4Z" fill="#dfb183" stroke="#7d4e39" stroke-width="7"/>
+ </g><g transform="translate(680 788)" stroke-linejoin="round">
+ <path d="M25 292V-28M268 292V-28M-15 8h335M-15 261h335" stroke="#936a4c" stroke-width="19" fill="none"/>
+ <path d="M70 17Q145-3 220 17l10 78-38 50 19 72-57 27-71-29 17-66-40-49Z" fill="#dfb183" stroke="#936a4c" stroke-width="8"/>
+ <path d="M97 70Q155 96 205 69M112 188l92-20" stroke="#7d4e39" stroke-width="5" fill="none" stroke-dasharray="7 7"/>
+ <path d="M50-13L27-58M240-13l33-54" stroke="#ab632f" stroke-width="8" stroke-linecap="round"/>
+ <path d="M-10 278h343" stroke="#ab632f" stroke-width="12"/>
  </g>
-<!-- living wind magic among prairie grass -->
- <g fill="none" stroke="#ffc578" stroke-linecap="round" opacity=".65">
- <path d="M407 392C550 343 582 392 503 420S465 475 578 452" stroke-width="6"/>
- <path d="M437 520C549 490 632 526 586 550S512 594 629 583" stroke-width="3"/>
- <path d="M525 747c-80-30-124-6-93 25s99 24 112 1" stroke-width="4"/>
- </g>
- <g stroke="#a47843" fill="none" stroke-width="5"><path d="M28 1106l-21-88M37 1106l36-107M412 1095l-33-99M440 1090l31-82M885 1070l30-80"/></g>
- <g fill="#ffe1a0" opacity=".75"><circle cx="531" cy="483" r="4"/><circle cx="667" cy="576" r="3"/><circle cx="400" cy="640" r="4"/></g>
-<path d="M0 1095Q176 1024 315 1068T634 1049T973 1021V1160H0Z" fill="#33252a" opacity=".85"/>
-<path d="M0 1119Q254 1080 445 1100T960 1068" fill="none" stroke="#b78662" stroke-width="5" opacity=".30"/>
-<rect width="960" height="1160" fill="url(#shade)"/>
-<rect width="960" height="1160" opacity=".065" filter="url(#grain)"/>
+<rect width="960" height="1160" fill="url(#veil)" pointer-events="none"/>
 </svg>
