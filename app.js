@@ -110,13 +110,14 @@ function equipmentPanel(c,open=false){
   return '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details>';
 }
 
+const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&/^[a-z0-9-]+\\.public\\.blob\\.vercel-storage\\.com$/.test(x.hostname)&&/^\\/(?:portraits|equipment)\\//.test(x.pathname)}catch{return false}};
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
   const configuredScene=portraitScenes[c.slug]||null;
   // Blizzard-Geschlecht ist zuverlässiger als die Pose oder der visuelle Renderer.
   const scene=configuredScene&&c.slug==='chucky-dalton'&&c.gender==='male'
     ? {...configuredScene,epithet:'Der Windsurfer'} : configuredScene;
-  const image=validRender(c.imageUrl)?c.imageUrl:null;
+  const image=validBlob(c.storedImageUrl)?c.storedImageUrl:validRender(c.imageUrl)?c.imageUrl:null;
   const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
   const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
@@ -176,12 +177,12 @@ function render(data,{live=false,success=null}={}){
    // Four redundant remote images are unnecessary when this layer is hidden.
    const isWide=typeof window==='undefined'||window.matchMedia('(min-width: 1131px)').matches;
    if(isWide){
-     const visible=chars.filter(c=>validRender(c.imageUrl));
-     const signature=visible.map(c=>c.imageUrl+'@'+(c.imageCheckedAt||'')).join('|');
+     const visible=chars.filter(c=>validBlob(c.storedImageUrl)||validRender(c.imageUrl));
+     const signature=visible.map(c=>(c.storedImageUrl||c.imageUrl)+'@'+(c.imageCheckedAt||'')).join('|');
      if(!heroCast.dataset||heroCast.dataset.signature!==signature){
        heroCast.innerHTML=visible.map((c,i)=>{
          const version=encodeURIComponent(c.imageCheckedAt||'');
-         return '<img class="hero-figure hero-figure-'+(i+1)+'" src="'+esc(c.imageUrl+'?v='+version)+'" alt="" loading="lazy" decoding="async">';
+         return '<img class="hero-figure hero-figure-'+(i+1)+'" src="'+esc((validBlob(c.storedImageUrl)?c.storedImageUrl:c.imageUrl)+'?v='+version)+'" alt="" loading="lazy" decoding="async">';
        }).join('');
        if(heroCast.dataset)heroCast.dataset.signature=signature;
      }
