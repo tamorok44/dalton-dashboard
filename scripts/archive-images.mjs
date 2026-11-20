@@ -17,6 +17,7 @@ export async function archiveImages(data,previous){
   if(!process.env.BLOB_READ_WRITE_TOKEN)return data;
   const old=new Map((previous.characters||[]).map(c=>[c.slug,c]));
   const cache=new Map();
+  let newIcons=0;
   let active=0;
   const waiting=[];
   async function limited(fn){
@@ -24,9 +25,12 @@ export async function archiveImages(data,previous){
     active++;
     try{return await fn()}finally{active--;waiting.shift()?.()}
   }
-  async function stored(url,path,prior){
+  async function stored(url,path,prior,isIcon=false){
     if(prior)return prior;
     if(cache.has(url))return cache.get(url);
+    // Archive old gear icons incrementally so the first refresh does not exceed server timeouts.
+    if(isIcon&&newIcons>=12)return undefined;
+    if(isIcon)newIcons++;
     const task=limited(()=>copyImage(url,path)).catch(e=>{console.warn('Bildarchivierung fehlgeschlagen:',String(e.message).slice(0,130));return undefined});
     cache.set(url,task);
     return task;
@@ -50,7 +54,7 @@ export async function archiveImages(data,previous){
       if(icon.test(item.icon||'')){
         const ext=item.icon.endsWith('.webp')?'webp':'jpg';
         copy.storedIcon=await stored(item.icon,'equipment/'+hash(item.icon)+'.'+ext,
-          item.icon===prior?.icon?prior.storedIcon:null);
+          item.icon===prior?.icon?prior.storedIcon:null,true);
       }
       return copy;
     }));
