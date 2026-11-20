@@ -3,8 +3,8 @@ const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
 const portraitScenes={
   'cole-dalton':{className:'scene-cole',firstName:'Cole',epithet:'Der Runenreiter',icon:'rune'},
-  'dolly-dalton':{className:'scene-dolly',firstName:'Dolly',epithet:'Adlerauge',icon:'crosshair'},
-  'chucky-dalton':{className:'scene-chucky',firstName:'Chucky',epithet:'Der Windrufer',icon:'leaf'},
+  'dolly-dalton':{className:'scene-dolly',firstName:'Dolly',epithet:'Das Adlerauge',icon:'crosshair'},
+  'chucky-dalton':{className:'scene-chucky',firstName:'Chucky',epithet:'Die Windsurferin',icon:'leaf'},
   'viola-dalton':{className:'scene-viola',firstName:'Viola',epithet:'Die Sonnenwandlerin',icon:'sun'}
 };
 const badgeIcons={

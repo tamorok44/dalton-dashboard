@@ -108,8 +108,8 @@ for(const {name,klass,scene,color} of expectedCards){
 // Four distinct portrait emblems: unique nickname, character name and class-inspired SVG icon.
 const expectedBadges=[
   {name:'Cole Dalton',klass:'mage',firstName:'Cole',nickname:'Der Runenreiter',icon:'rune'},
-  {name:'Dolly Dalton',klass:'hunter',firstName:'Dolly',nickname:'Adlerauge',icon:'crosshair'},
-  {name:'Chucky Dalton',klass:'druid',firstName:'Chucky',nickname:'Der Windrufer',icon:'leaf'},
+  {name:'Dolly Dalton',klass:'hunter',firstName:'Dolly',nickname:'Das Adlerauge',icon:'crosshair'},
+  {name:'Chucky Dalton',klass:'druid',firstName:'Chucky',nickname:'Die Windsurferin',icon:'leaf'},
   {name:'Viola Dalton',klass:'druid',firstName:'Viola',nickname:'Die Sonnenwandlerin',icon:'sun'}
 ];
 assert.equal((cards.match(/class="portrait-badge"/g)||[]).length,4,'One personalized badge per Blizzard portrait');
@@ -139,4 +139,22 @@ assert.ok(!/\.vital:last-child\s*\{\s*border-color:\s*var\(--class\)/.test(css),
   'Item-level frame must match other vital tiles, not use the class color');
 assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css),
   'Item-level number must use neutral color');
-console.log('UI QA: four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
+
+// Golden sheriff-star header and daylight/western landscape should not regress.
+const heroHtml=read('index.html'),crest=read('dalton-crest.svg'),sky=read('skyborne-horizon.svg'),icon=read('icon.svg');
+assert.ok(heroHtml.includes('WANTED · AZEROTH'));
+assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
+assert.ok(heroHtml.includes('Noch keine Legenden. Aber schon gesucht.'));
+assert.ok(heroHtml.includes('COLE · DOLLY · CHUCKY · VIOLA'));
+assert.ok(!heroHtml.includes('Vier Himmelsgeborene. Ein wilder Himmel.'));
+assert.match(crest,/sechszackiger Dalton-Sheriffstern/);
+assert.ok(crest.includes('>D</text>') && crest.includes('url(#blueEnamel)'));
+assert.ok(icon.includes('Dalton-Sheriffstern'));
+assert.ok(sky.includes('Daylight: no stars') && sky.includes('url(#sun)'));
+assert.ok(!sky.includes('url(#moon)') && !sky.includes('#071526'));
+assert.ok(css.includes('skill-energy-flow 3.8s linear infinite'));
+assert.ok(css.includes('skill-light-sweep 7.6s ease-in-out infinite'));
+assert.ok(css.includes('.profession-segment-fill::before{') && css.includes('.profession-segment-fill::after{'));
+assert.ok(css.includes('prefers-reduced-motion:reduce'));
+
+console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');

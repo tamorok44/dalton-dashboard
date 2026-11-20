@@ -26,9 +26,9 @@ body::before{
   background-size:41px 47px;opacity:.055
 }
 button{font:inherit}button:focus-visible,summary:focus-visible{outline:3px solid var(--sky);outline-offset:4px}
-.hero{position:relative;isolation:isolate;min-height:590px;overflow:hidden;background:#142338;border-bottom:7px ridge #94643e;box-shadow:0 25px 62px #03070dcc}
-.hero-art{position:absolute;inset:0;z-index:-3;background:url("/skyborne-horizon.svg") center 57%/cover no-repeat;filter:saturate(1.05)}
-.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(4,9,17,.39),rgba(2,8,17,.18) 30%,rgba(5,9,19,.28) 73%,rgba(4,9,18,.5)),linear-gradient(180deg,rgba(4,11,22,.42),transparent 22%,rgba(6,11,21,.19) 66%,rgba(6,9,15,.72))}
+.hero{position:relative;isolation:isolate;min-height:590px;overflow:hidden;background:#9bcdd4;border-bottom:7px ridge #94643e;box-shadow:0 25px 62px #03070dcc}
+.hero-art{position:absolute;inset:0;z-index:-3;background:url("/skyborne-horizon.svg") center 57%/cover no-repeat;filter:saturate(1.16) brightness(1.05)}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(13,45,60,.17),rgba(15,43,56,.05) 30%,rgba(18,47,62,.06) 73%,rgba(19,49,62,.20)),linear-gradient(180deg,rgba(30,75,84,.04),transparent 22%,rgba(15,37,50,.06) 66%,rgba(13,30,44,.57))}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.34;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 6px,rgba(254,221,168,.018) 6px 7px)}
 .hero-frame{position:absolute;inset:16px 16px 14px;pointer-events:none;border:1px solid rgba(236,199,134,.48);z-index:2}
 
@@ -46,14 +46,15 @@ button{font:inherit}button:focus-visible,summary:focus-visible{outline:3px solid
 .hero-frame::before,.hero-frame::after{content:"✦";position:absolute;top:-12px;color:#eac791;background:#132436;padding:0 12px;font-size:18px}
 .hero-frame::before{left:30px}.hero-frame::after{right:30px}
 .hero-content{width:min(1240px,calc(100% - 72px));min-height:576px;margin:auto;position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between}
-.hero-topline,.hero-bottomline{display:flex;align-items:center;justify-content:space-between;gap:20px;color:#f2ddad;font-size:.69rem;font-weight:850;letter-spacing:.24em;text-transform:uppercase;text-shadow:0 2px 8px #071320}
-.hero-topline{padding-top:37px}.worldmark{color:#f4d49b}.hero-division{color:#bce8e4}
+.hero-topline,.hero-bottomline{display:flex;align-items:center;justify-content:space-between;gap:20px;color:#193b4b;font-size:.69rem;font-weight:850;letter-spacing:.24em;text-transform:uppercase;text-shadow:0 1px 8px #f3dfc8}
+.hero-topline{padding-top:37px}.worldmark{color:#173c4d}.hero-division{color:#235665}
 .hero-division span,.hero-bottomline span span{color:#e5bb75;margin:0 8px}
-.hero-bottomline{padding-bottom:41px;color:#f2d59f;letter-spacing:.19em}
+.hero-bottomline{padding-bottom:41px;color:#ffe4b7;letter-spacing:.16em}
 .tiny-star{color:#9ae4df}
-.hero-center{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 30px}
-.hero-crest{width:110px;height:110px;object-fit:contain;filter:drop-shadow(0 9px 16px #040812b8) drop-shadow(0 0 20px #e1af6a3d);animation:crest-float 8s ease-in-out infinite}
-.hero-kicker{font-size:.77rem;font-weight:850;letter-spacing:.43em;text-transform:uppercase;color:#a7e7e4;text-shadow:0 2px 10px #041523;margin:16px 0 7px}
+.hero-center{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 30px}
+.hero-center::before{content:"";position:absolute;z-index:-1;inset:-9px -5vw;background:radial-gradient(ellipse 74% 60% at 50% 54%,rgba(18,39,53,.70),rgba(17,41,58,.46) 58%,rgba(21,54,67,.06) 100%);pointer-events:none}
+.hero-crest{width:125px;height:125px;object-fit:contain;filter:drop-shadow(0 7px 12px #0c1b29a9) drop-shadow(0 0 16px #ffe2a3a3);animation:crest-float 8s ease-in-out infinite}
+.hero-kicker{font-size:.77rem;font-weight:850;letter-spacing:.43em;text-transform:uppercase;color:#ffe3ae;text-shadow:0 2px 10px #041523;margin:16px 0 7px}
 .hero h1{margin:0;line-height:.94;text-transform:uppercase;font-family:var(--display);font-weight:900;letter-spacing:.075em;filter:drop-shadow(0 6px 10px #010a15)}
 .hero-the{font-size:clamp(2.3rem,5.4vw,5rem);color:#f7e2b1;font-style:italic;letter-spacing:.005em;text-transform:none;text-shadow:0 3px 1px #372313,1px 0 #986d41}
 .hero-family{
@@ -67,7 +68,7 @@ button{font:inherit}button:focus-visible,summary:focus-visible{outline:3px solid
 .hero-rule::before,.hero-rule::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#efc185)}
 .hero-rule::after{transform:rotate(180deg)}
 .hero-subtitle{margin:0;color:#ffead0;font-size:clamp(1.02rem,2vw,1.43rem);font-weight:780;letter-spacing:.035em;text-shadow:0 2px 12px #020918}
-.hero-story{margin:10px 0 0;color:#d4dfe0;font:italic 1.03rem var(--display);text-shadow:0 2px 8px #08111c}
+.hero-story{margin:10px 0 0;color:#f4e6d3;font:italic 1.03rem var(--display);text-shadow:0 2px 8px #08111c}
 main{position:relative;width:min(1220px,calc(100% - 42px));margin:-21px auto 0;z-index:5}
 .command-deck{
   position:relative;padding:23px 28px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;
@@ -227,7 +228,7 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   .hero{min-height:530px}
   .hero-content{width:calc(100% - 48px);min-height:518px}
   .hero-topline,.hero-bottomline{font-size:.57rem;letter-spacing:.11em}
-  .hero-crest{width:92px;height:92px}
+  .hero-crest{width:106px;height:106px}
   .hero-center{padding:20px 0}
   .hero-kicker{letter-spacing:.27em;font-size:.65rem}
   .hero-family{font-size:clamp(3.35rem,12vw,5.9rem);letter-spacing:.035em}
@@ -245,20 +246,20 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   .roster-kicker{letter-spacing:.12em;font-size:.55rem}
 }
 @media(max-width:520px){
-  .hero{min-height:508px}
-  .hero-content{min-height:497px;width:calc(100% - 41px)}
+  .hero{min-height:525px}
+  .hero-content{min-height:513px;width:calc(100% - 41px)}
   .hero-frame{inset:10px 9px 9px}
   .hero-topline{padding-top:25px}
   .hero-topline,.hero-bottomline{font-size:.49rem;letter-spacing:.065em}
   .worldmark{max-width:54%}
   .hero-division{text-align:right}
   .hero-bottomline{padding-bottom:25px}
-  .hero-crest{width:76px;height:76px}
+  .hero-crest{width:91px;height:91px}
   .hero-kicker{font-size:.56rem;letter-spacing:.21em;margin-top:12px}
   .hero-the{font-size:2.1rem}
   .hero-family{font-size:clamp(2.83rem,12.7vw,4.4rem);letter-spacing:.005em}
   .hero-subtitle{font-size:1rem}
-  .hero-story{max-width:300px;font-size:.78rem;line-height:1.4}
+  .hero-story{max-width:300px;font-size:.85rem;line-height:1.4}
   .command-deck{padding:20px 15px 16px;gap:15px}
   .command-title h2{font-size:1.42rem}
   .refresh{width:100%;min-height:44px}
@@ -422,3 +423,32 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   .profession-track{height:36px}
   .profession-legend{gap:7px;font-size:.61rem}
 }
+
+/* Sheriff-Header: ein heller 60/40-Western-Fantasy-Himmel mit lesbarem WANTED-Titel. */
+.hero .hero-crest{position:relative;z-index:1}
+.hero .hero-subtitle{max-width:min(630px,100%);line-height:1.35}
+@media(max-width:520px){
+  .hero-topline{line-height:1.5}
+  .hero-center::before{inset:-8px -20px;background:radial-gradient(ellipse 87% 59% at 50% 51%,rgba(17,39,54,.74),rgba(17,44,57,.43) 67%,transparent)}
+  .hero-bottomline{line-height:1.6;gap:8px}
+  .hero-subtitle{max-width:300px;font-size:.92rem;line-height:1.38}
+  .hero-crest{filter:drop-shadow(0 5px 8px #0d1b26a1) drop-shadow(0 0 15px #ffe0a6ab)}
+}
+/* Die Zahlen wachsen nicht: nur die bereits erreichte, farbige Fläche bewegt sich in sich. */
+.profession-segment-fill{isolation:isolate}
+.profession-segment-fill::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(115deg,transparent 0 12px,rgba(255,255,255,.14) 12px 17px,transparent 17px 29px);
+  background-size:58px 58px;animation:skill-energy-flow 3.8s linear infinite;
+}
+.profession-segment-fill::after{
+  content:"";position:absolute;z-index:2;top:-48%;bottom:-48%;left:-65%;width:38%;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08) 24%,rgba(255,255,255,.53) 50%,rgba(255,255,255,.08) 76%,transparent);
+  filter:blur(2.5px);transform:skewX(-19deg) translateX(0);
+  animation:skill-light-sweep 7.6s ease-in-out infinite;
+}
+.card.hunter .profession-segment-fill::after{animation-delay:-2.1s}
+.card.druid .profession-segment-fill::after{animation-delay:-4.2s}
+@keyframes skill-energy-flow{from{background-position:0 0}to{background-position:58px 0}}
+@keyframes skill-light-sweep{0%,10%{transform:skewX(-19deg) translateX(0);opacity:0}17%{opacity:.75}47%{transform:skewX(-19deg) translateX(550%);opacity:.85}56%,100%{transform:skewX(-19deg) translateX(550%);opacity:0}}
+/* Vorhandene prefers-reduced-motion-Regel stoppt beide Animationen komplett. */

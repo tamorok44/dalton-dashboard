@@ -1,20 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Dalton-Stern des Hohen Ordens">
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Goldener sechszackiger Dalton-Sheriffstern mit dem Buchstaben D">
 <defs>
- <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2c9"/><stop offset=".34" stop-color="#d8a760"/><stop offset=".7" stop-color="#886037"/><stop offset="1" stop-color="#efc67b"/></linearGradient>
- <linearGradient id="navy" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#223e55"/><stop offset=".52" stop-color="#0b1f31"/><stop offset="1" stop-color="#132337"/></linearGradient>
- <radialGradient id="gem"><stop stop-color="#d7ffef"/><stop offset=".45" stop-color="#77d6d0"/><stop offset="1" stop-color="#236784"/></radialGradient>
+ <linearGradient id="polishedGold" x1="0" y1="0" x2=".85" y2="1"><stop stop-color="#fff6d8"/><stop offset=".27" stop-color="#f4d597"/><stop offset=".54" stop-color="#d49a50"/><stop offset=".75" stop-color="#af763c"/><stop offset="1" stop-color="#ffdea0"/></linearGradient>
+ <linearGradient id="goldEmboss" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff8df"/><stop offset=".36" stop-color="#f8d69e"/><stop offset=".65" stop-color="#d6a15e"/><stop offset="1" stop-color="#f2c985"/></linearGradient>
+ <radialGradient id="blueEnamel" cx=".4" cy=".28" r=".83"><stop stop-color="#496b83"/><stop offset=".5" stop-color="#26475f"/><stop offset="1" stop-color="#172e43"/></radialGradient>
+ <radialGradient id="turquoise"><stop stop-color="#e4fff0"/><stop offset=".52" stop-color="#8de1d9"/><stop offset="1" stop-color="#288e9d"/></radialGradient>
+ <filter id="metalShadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#132638" flood-opacity=".47"/></filter>
 </defs>
-<g fill="url(#gold)" stroke="#3f2b24" stroke-width="2">
- <path d="M120 8l19 31 34-12-3 36 36 6-19 31 31 20-31 20 19 31-36 6 3 36-34-12-19 31-19-31-34 12 3-36-36-6 19-31-31-20 31-20-19-31 36-6-3-36 34 12Z"/>
+<g filter="url(#metalShadow)">
+ <polygon points="120.00,25.00 149.50,68.90 202.27,72.50 179.00,120.00 202.27,167.50 149.50,171.10 120.00,215.00 90.50,171.10 37.73,167.50 61.00,120.00 37.73,72.50 90.50,68.90" fill="url(#polishedGold)" stroke="#67472e" stroke-width="3" stroke-linejoin="round"/>
+ <polygon points="120.00,25.00 149.50,68.90 202.27,72.50 179.00,120.00 202.27,167.50 149.50,171.10 120.00,215.00 90.50,171.10 37.73,167.50 61.00,120.00 37.73,72.50 90.50,68.90" fill="none" stroke="#fff1bd" stroke-opacity=".57" stroke-width="1.8" stroke-linejoin="round" transform="translate(120 120) scale(.93) translate(-120 -120)"/>
+ <circle cx="120.00" cy="25.00" r="6.5" fill="url(#polishedGold)" stroke="#75522d" stroke-width="2"/>
+<circle cx="202.27" cy="72.50" r="6.5" fill="url(#polishedGold)" stroke="#75522d" stroke-width="2"/>
+<circle cx="202.27" cy="167.50" r="6.5" fill="url(#polishedGold)" stroke="#75522d" stroke-width="2"/>
+<circle cx="120.00" cy="215.00" r="6.5" fill="url(#polishedGold)" stroke="#75522d" stroke-width="2"/>
+<circle cx="37.73" cy="167.50" r="6.5" fill="url(#polishedGold)" stroke="#75522d" stroke-width="2"/>
+<circle cx="37.73" cy="72.50" r="6.5" fill="url(#polishedGold)" stroke="#75522d" stroke-width="2"/>
+ <circle cx="120" cy="120" r="68" fill="#986e3f" stroke="#fff0c1" stroke-width="3"/>
+ <circle cx="120" cy="120" r="62" fill="url(#blueEnamel)" stroke="url(#goldEmboss)" stroke-width="6"/>
+ <circle cx="120" cy="120" r="53" fill="none" stroke="#ffdfaa" stroke-opacity=".66" stroke-width="1.3" stroke-dasharray="2 6"/>
+ <path d="M120 65l9 13-9 13-9-13Z" fill="url(#turquoise)" stroke="#f5e7b6" stroke-width="2"/>
+ <text x="120" y="151" text-anchor="middle" font-family="Georgia,serif" font-size="82" font-weight="900" fill="url(#goldEmboss)" stroke="#754b2d" stroke-width="1.5" paint-order="stroke">D</text>
+ <path d="M90 169Q120 181 150 169" fill="none" stroke="#e8bc7c" stroke-width="2"/>
+ <circle cx="120" cy="177" r="3.5" fill="#94dfdb"/>
 </g>
-<circle cx="120" cy="120" r="78" fill="url(#navy)" stroke="url(#gold)" stroke-width="7"/>
-<circle cx="120" cy="120" r="65" fill="none" stroke="#8c7b5f" stroke-width="1.5" stroke-dasharray="3 7"/>
-<g fill="none" stroke="#cfa76c" stroke-width="3" stroke-linecap="round">
- <path d="M108 104c-26-28-44-28-59-20 13 13 25 23 41 26-15 0-24 6-32 14 20 8 34 4 45-8"/>
- <path d="M132 104c26-28 44-28 59-20-13 13-25 23-41 26 15 0 24 6 32 14-20 8-34 4-45-8"/>
-</g>
-<path d="M120 65l13 27-13 15-13-15Z" fill="url(#gem)" stroke="#efdaae" stroke-width="3"/>
-<text x="120" y="154" text-anchor="middle" font-family="Georgia, serif" font-size="69" font-weight="bold" fill="url(#gold)" stroke="#51371f" stroke-width="1.1" paint-order="stroke">D</text>
-<path d="M85 171Q120 188 155 171" fill="none" stroke="#daa968" stroke-width="3"/>
-<circle cx="120" cy="181" r="4" fill="#a9e4e2"/>
 </svg>
