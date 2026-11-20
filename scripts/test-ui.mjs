@@ -161,7 +161,10 @@ for(const scene of [sky,mobileSky]){
 assert.ok(mobileSky.includes('width="900" height="1200"'),'Separate portrait asset for iPhone');
 assert.ok(sky.includes('width="1600" height="730"'),'Wide desktop asset for hero');
 assert.ok(css.includes('skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c'),'Mobile composition active in CSS');
-assert.ok(heroHtml.includes('styles.css?v=mainstreet-20261120c') && heroHtml.includes('app.js?v=mainstreet-20261120c'),'Versioned assets are synchronized');
+const cssAssetVersion=heroHtml.match(/styles\\.css\\?v=([^"]+)/)?.[1];
+const jsAssetVersion=heroHtml.match(/app\\.js\\?v=([^"]+)/)?.[1];
+assert.ok(cssAssetVersion && cssAssetVersion===jsAssetVersion,'Versioned CSS and JS are synchronized');
+assert.ok(read('sw.js').includes('/styles.css?v='+cssAssetVersion) && read('sw.js').includes('/app.js?v='+jsAssetVersion),'Service worker uses the current CSS and JS asset versions');
 assert.ok(read('sw.js').includes('skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c'),'Offline cache includes portrait scene');
 
 assert.ok(!sky.includes('url(#moon)') && !sky.includes('#071526'));
