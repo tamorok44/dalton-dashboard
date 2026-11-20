@@ -302,13 +302,13 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
   filter:saturate(1.06) contrast(1.04);
 }
 .portrait.scene-cole::before{background-image:linear-gradient(180deg,rgba(5,17,35,.05),rgba(10,23,38,.10) 67%,rgba(9,12,23,.20)),url("/scene-cole.svg")}
-.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(48,82,42,.13),rgba(32,66,31,.08) 65%,rgba(12,25,15,.23)),url("/scene-dolly.svg")}
-.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(255,140,47,.16),rgba(154,71,28,.08) 65%,rgba(32,17,15,.24)),url("/scene-chucky.svg")}
+.portrait.scene-dolly::before{background-image:linear-gradient(180deg,rgba(48,82,42,.13),rgba(32,66,31,.08) 65%,rgba(12,25,15,.23)),url("/scene-dolly.svg?v=20261120b")}
+.portrait.scene-chucky::before{background-image:linear-gradient(180deg,rgba(255,140,47,.16),rgba(154,71,28,.08) 65%,rgba(32,17,15,.24)),url("/scene-chucky.svg?v=20261120b")}
 .portrait.scene-viola::before{background-image:linear-gradient(180deg,rgba(255,138,47,.15),rgba(153,69,24,.09) 65%,rgba(31,17,17,.22)),url("/scene-viola.svg")}
 .portrait .scene-label{
   position:absolute;z-index:4;top:15px;left:17px;max-width:calc(100% - 34px);
   padding:6px 11px 7px;
-  border:1px solid rgba(241,205,142,.56);
+  border:1px solid var(--class,#d4ae79);
   box-shadow:inset 0 0 0 1px rgba(15,18,25,.6),0 2px 9px #0b121c88;
   background:linear-gradient(110deg,rgba(20,27,34,.92),rgba(34,31,31,.85));
   color:#f7d6a7;font:italic 750 .77rem var(--display);
