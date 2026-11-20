@@ -2,6 +2,8 @@ import {refreshCharacters} from './armory-core.mjs';
 import {archiveImages} from './archive-images.mjs';
 import {loadCharacters,saveCharacters,mergeProfiles} from './character-store.mjs';
 import {appendChangeBatch} from './history-store.mjs';
+import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails} from './blizzard-api.mjs';
+import {collectKnownRecipeRefs,enrichWithForeverDetails} from './forever-details.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -10,10 +12,28 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   const results=await Promise.all(previous.characters.map(c=>refreshCharacters([c])));
   const success=results.reduce((n,r)=>n+r.success,0);
   if(success===0)return {success:0};
-  const latest={
+  let latest={
     generatedAt:new Date().toISOString(),
     characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))
   };
+
+  if(blizzardApiConfigured()){
+    try{
+      const slugs=latest.characters.map(c=>c.slug);
+      const detailsSnapshot=await fetchForeverSnapshot(slugs,{
+        locale:'de_DE',
+        endpointNames:['professions','specializations','reputations','quests']
+      });
+      const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
+      const recipeDetails=Date.now()-start<40000
+        ?await fetchForeverRecipeDetails(recipeRefs,{locale:'de_DE'})
+        :{};
+      latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails);
+    }catch(error){
+      console.warn('Erweiterte Forever-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,180));
+    }
+  }
+
   const merged=mergeProfiles(previous,latest);
   await saveCharacters(merged,lockToken);
   let changeLog={count:0,id:null};
