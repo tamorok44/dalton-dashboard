@@ -2,11 +2,24 @@ const heroCast=document.querySelector("#heroCast");const cards=document.querySel
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
 const portraitScenes={
-  'cole-dalton':{className:'scene-cole',label:'Der arkane Saloon'},
-  'dolly-dalton':{className:'scene-dolly',label:'Die Canyons der Himmelssteppe'},
-  'chucky-dalton':{className:'scene-chucky',label:'Das Heiligtum der Windheide'},
-  'viola-dalton':{className:'scene-viola',label:'Die Ranch am Sonnenpass'}
+  'cole-dalton':{className:'scene-cole',firstName:'Cole',epithet:'Der Runenreiter',icon:'rune'},
+  'dolly-dalton':{className:'scene-dolly',firstName:'Dolly',epithet:'Adlerauge',icon:'crosshair'},
+  'chucky-dalton':{className:'scene-chucky',firstName:'Chucky',epithet:'Der Windrufer',icon:'leaf'},
+  'viola-dalton':{className:'scene-viola',firstName:'Viola',epithet:'Die Sonnenwandlerin',icon:'sun'}
 };
+const badgeIcons={
+  rune:'<svg class="portrait-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1.8 15.1 8.9 22.2 12l-7.1 3.1L12 22.2l-3.1-7.1L1.8 12l7.1-3.1L12 1.8Z"/><path d="M12 7v10M7 12h10"/></svg>',
+  crosshair:'<svg class="portrait-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7.2"/><circle cx="12" cy="12" r="2.4"/><path d="M12 1v6M12 17v6M1 12h6M17 12h6"/></svg>',
+  leaf:'<svg class="portrait-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2.5C10 2.5 3.5 7 3.5 14a6.5 6.5 0 0 0 6.5 6.5C17 20.5 21.5 13 21.5 2.5Z"/><path d="M3 22c2.1-5.2 6.5-9.3 13.3-12.2"/></svg>',
+  sun:'<svg class="portrait-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 1.3v4M12 18.7v4M1.3 12h4M18.7 12h4M4.45 4.45l2.85 2.85m9.4 9.4 2.85 2.85M19.55 4.45 16.7 7.3m-9.4 9.4-2.85 2.85"/></svg>'
+};
+function portraitBadge(scene){
+  if(!scene)return '';
+  return '<span class="portrait-badge" aria-hidden="true">'+
+    '<span class="portrait-badge-symbol">'+badgeIcons[scene.icon]+'</span>'+
+    '<span class="portrait-badge-copy"><span class="portrait-badge-firstname">'+esc(scene.firstName)+'</span>'+
+    '<span class="portrait-badge-epithet">'+esc(scene.epithet)+'</span></span></span>';
+}
 const mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];
 const secondaryStatNames=['Stärke','Beweglichkeit','Ausdauer','Intelligenz','Angriffskraft'];
 function statsPanel(c,open=false){
@@ -101,7 +114,7 @@ function renderPortrait(c){
   const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
   const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
-  return '<figure class="portrait '+(scene?scene.className:'')+'"><span class="scene-label" aria-hidden="true">'+esc(scene?.label||'Zephras · Himmelsgeborene')+'</span><img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
+  return '<figure class="portrait '+(scene?scene.className:'')+'">'+portraitBadge(scene)+'<img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
 }
 function installPortraitFallbacks(){
   cards.querySelectorAll('img.character-render').forEach(img=>img.addEventListener('error',()=>{
