@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames} from './blizzard-api.mjs';
+import {FOREVER_CHARACTER_ENDPOINTS,describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames} from './blizzard-api.mjs';
 
 process.env.BLIZZARD_CLIENT_ID='test-client';
 process.env.BLIZZARD_CLIENT_SECRET='test-secret';
@@ -34,6 +34,8 @@ const fetchImpl=async (url,options={})=>{
     ruleset:{id:1,name:'PvP'}
   });
 };
+
+assert.equal(FOREVER_CHARACTER_ENDPOINTS.completedQuests,'/quests/completed','Completed-Quest-Endpunkt gehört zum vollständigen Forever-Snapshot');
 
 const shape=describeShape({a:1,b:[{c:'x'},{c:'y',d:true}]});
 assert.ok(shape.paths.some(x=>x.path==='$.b[].c'&&x.types.includes('string')));
