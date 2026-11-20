@@ -58,6 +58,50 @@ assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.1
   'Display the genuine official Blizzard API last-login time in German local time');
 assert.ok(nodes.get('#cards').innerHTML.includes('Allianz · EU-PvP'),
   'Faction and ruleset are rendered from API-backed character metadata');
+
+const questData=structuredClone(data);
+const questBySlug=new Map(questData.characters.map(character=>[character.slug,character]));
+for(const character of questData.characters){
+  character.activeQuests=[];
+  character.completedQuestIds=[];
+  character.questsVerified=true;
+  character.completedQuestsVerified=true;
+}
+questBySlug.get('cole-dalton').activeQuests=[
+  {id:1001,name:'Gemeinsam für alle'},
+  {id:1002,name:'Gemeinsam für drei'},
+  {id:1003,name:'Gemeinsam für zwei'},
+  {id:1004,name:'Nur für Cole'}
+];
+questBySlug.get('chucky-dalton').activeQuests=[
+  {id:1001,name:'Gemeinsam für alle'},
+  {id:1002,name:'Gemeinsam für drei'},
+  {id:1003,name:'Gemeinsam für zwei'}
+];
+questBySlug.get('dolly-dalton').activeQuests=[
+  {id:1001,name:'Gemeinsam für alle'},
+  {id:1002,name:'Gemeinsam für drei'}
+];
+questBySlug.get('viola-dalton').activeQuests=[{id:1001,name:'Gemeinsam für alle'}];
+questBySlug.get('dolly-dalton').completedQuestIds=[1003];
+questBySlug.get('viola-dalton').completedQuestIds=[1003,1004];
+ui.render(questData);
+const questCards=nodes.get('#cards').innerHTML;
+const coleMarker=questCards.indexOf('<h2 class="name">Cole Dalton</h2>');
+const coleStart=questCards.lastIndexOf('<article class="card ',coleMarker);
+const coleEnd=questCards.indexOf('</article>',coleMarker);
+const coleArea=questCards.slice(coleStart,coleEnd);
+const q1=coleArea.indexOf('Gemeinsam für alle');
+const q2=coleArea.indexOf('Gemeinsam für drei');
+const q3=coleArea.indexOf('Gemeinsam für zwei');
+const q4=coleArea.indexOf('Nur für Cole');
+assert.ok(q1>=0&&q1<q2&&q2<q3&&q3<q4,'Quests werden bei jedem Rendern gruppenweit 4/4 → 3/4 → 2/4 → 1/4 sortiert');
+assert.ok(coleArea.includes('Auch offen: Chucky · Dolly · Viola'),'Gemeinsame Quest nennt alle anderen offenen Daltons');
+assert.ok(coleArea.includes('Auch offen: Chucky'),'2/4-Quest nennt den anderen offenen Dalton');
+assert.ok(coleArea.includes('Bereits abgeschlossen: Dolly · Viola'),'Questvergleich nennt andere Daltons, die die Quest bereits abgeschlossen haben');
+assert.ok(coleArea.includes('Bereits abgeschlossen: Viola'),'Individuelle offene Quest kann einen bereits fertigen Dalton nennen');
+assert.ok(!coleArea.includes('Auch offen: Cole'),'Aktueller Charakter wird in der Auch-offen-Liste nicht wiederholt');
+assert.ok(!coleArea.includes('Bereits abgeschlossen: Cole'),'Aktueller Charakter wird in der Abschlussliste nicht wiederholt');
 ui.render(data);
 // The hero illustration remains unchanged, including its static colour overlay.
 // Character renders belong exclusively to the profile cards below the banner.
