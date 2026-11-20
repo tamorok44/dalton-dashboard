@@ -1,67 +1,26 @@
 # Die Daltons – WoW Forever Dashboard
 
-Western-Dashboard für die vier Dalton-Charaktere. Statische Website und eine
-Vercel-Serverfunktion, ohne Datenbank oder zusätzliche Client-Bibliotheken.
+Western-Dashboard für vier Dalton-Charaktere. Statische Website plus Vercel-Funktionen, Redis-Datenbank und optional Vercel Blob.
 
-## Architektur und Aktualisierung
+## Dauerhafte Aktualisierung
 
-- `index.html` und `styles.css`: Western-Layout, Sheriffsterne und
-  klassenbezogene Farben (Magier blau, Jäger grün, Druiden orange).
-- `app.js`: Alle Charakterkarten und Gruppenkennzahlen werden aus dem aktuellen
-  Datensatz erzeugt. Kein Level, Fertigkeitsstand, Talent oder Attribut ist als
-  fester Wert im HTML hinterlegt.
-- `data/characters.json`: letzter **dauerhaft gespeicherter** Stand. Er wird
-  beim Öffnen der Seite angezeigt, bis manuell aktualisiert wird.
-- `api/refresh.js`: ein Klick auf „Aktualisieren“ fragt alle vier Profile
-  **parallel** über `scripts/armory-core.mjs` bei Blizzard ab.
-- `scripts/armory-core.mjs`: validiert Blizzard-Daten, lokalisiert geänderte
-  Ausrüstung, kennzeichnet nicht bestätigte Ersatzwerte und führt einen
-  älteren Stand nur bei unvollständigen Quellen fort.
-- `sw.js`: Offline-Fallback für die statischen Ressourcen. Blizzard-Daten
-  und die Live-API werden nicht vom Service Worker gecacht.
-- `.github/workflows/update-data.yml`: führt nur die Tests bei Codeänderungen
-  aus. Es gibt **keinen** zeitgesteuerten Datenabruf und keine 30-Minuten-Deployments.
+- `/api/characters` liest die jüngste dauerhafte Momentaufnahme aus Redis. Bei erstmaligem leerem Speicher liefert es `data/characters.json` als Startwert.
+- `/api/refresh` fragt die vier Blizzard-Profile parallel ab und speichert das Ergebnis **vor** einer erfolgreichen HTTP-Antwort in Redis. Teilfehler behalten die zuvor gespeicherten Werte des jeweiligen Charakters.
+- Der Aktualisieren-Button verwendet `GET /api/refresh`; ein GitHub-Actions-Zeitplan ruft alle 30 Minuten `POST /api/refresh` mit einem geheimen Bearer-Token auf. **Keine Pushes und keine Deployments bei Datenaktualisierungen.**
+- Charakterporträts, Avatare und Ausrüstungs-Icons werden bei konfiguriertem Vercel Blob im Objektspeicher archiviert; ihre URLs sind Bestandteile des Redis-Datensatzes. Je Durchgang werden höchstens zwölf neue Ausrüstungs-Icons hochgeladen, bis die Ersterfassung abgeschlossen ist. Original-URLs dienen als Fallback. Unveränderte Grafiken werden wiederverwendet.
+- `data/characters.json` bleibt ein festes Sicherheitsnetz für den ersten Start oder einen Fehler beim Laden.
 
-**Wichtig:** Der manuelle Live-Abruf aktualisiert den geöffneten Browser,
-aber schreibt keine Daten zurück nach GitHub. Nach einem Neuladen gilt
-deshalb wieder der gespeicherte Stand. Das ist absichtlich so vereinbart.
+## Aktivierung (vor dem Zusammenführen des Pull Requests)
 
-## Felder und Berechnungen
+1. Eine Upstash-Redis-Datenbank anlegen und in der zugehörigen Vercel-Website `UPSTASH_REDIS_REST_URL` und `UPSTASH_REDIS_REST_TOKEN` als **serverseitige** Umgebungsvariablen eintragen. Alternativ funktionieren die Namen `KV_REST_API_URL` und `KV_REST_API_TOKEN`.
+2. Einen **öffentlichen** Vercel-Blob-Speicher an das Projekt anbinden. Dabei wird üblicherweise `BLOB_READ_WRITE_TOKEN` im Projekt gesetzt. Die archivierten Bilder sind dann über öffentliche URLs sichtbar; das Token bleibt serverseitig.
+3. In Vercel einen zufälligen `CRON_SECRET` konfigurieren. Diesen gleichen Wert als GitHub-Actions-Repository-Secret `CRON_SECRET` speichern. In GitHub zusätzlich `DASHBOARD_URL` als Secret auf die vollständige **produktive** Dashboard-Adresse setzen.
+4. Änderungen deployen, `GET /api/characters` testen, dann einmal manuell aktualisieren. Website neu laden und das erhaltene `generatedAt` prüfen.
+5. Der GitHub-Zeitplan wird automatisch nach Übernahme in `main` aktiv. Der Task kann in GitHub Actions auch manuell gestartet werden. Zeitpläne sind best effort und können bei GitHub Actions verzögert werden.
 
-| Anzeige | Quelle / Berechnung |
-| --- | --- |
-| Charakter-Stufe | `character.level` aus Blizzard |
-| Gruppenlevel | Minimum–Maximum aller vier angezeigten Stufen |
-| Durchschnitt | arithmetischer Mittelwert der angezeigten Stufen |
-| Abstand | Maximum minus Minimum |
-| Berufe | Blizzard-Fertigkeit `skillPoints / maxSkillPoints`; 4 Segmente zu je 75 |
-| Berufsrang | Maximum 75/150/225/300 → Lehrling/Geselle/Experte/Fachmann |
-| Talente | Talentbäume und verteilte Punkte aus `specs` |
-| Gesundheit, Mana, Rüstung usw. | `stats`; fehlende Werte markiert |
-| Ausrüstung | `gear` mit Gegenstand, Qualität, Stufe und Slot |
-| Charakterbild | Blizzard-Medien-URL; unveränderte Bilder behalten ihren Cache-Key |
-| Datenstand | `generatedAt` des gespeicherten oder manuellen Abrufs |
+**Keine Zugangstokens ins Repository schreiben.** Ohne Redis-Konfiguration schlägt ein manueller Aktualisierungsversuch mit 503 fehl, damit niemals ein nur scheinbar gespeicherter Zustand angezeigt wird. Ohne Blob-Konfiguration bleibt Redis funktionsfähig, zeigt dann aber die ursprünglichen Blizzard-Bildadressen.
 
-Fehlschläge betreffen nur die jeweiligen Profile: Erreichbare Profile
-werden weiterhin frisch dargestellt, für die anderen wird der letzte
-bestätigte Stand **ausdrücklich** markiert.
+## Entwicklung
 
-## Qualität
+`npm test` führt Parser-, UI- und API-Tests aus. Ein Pull Request startet denselben Test-Workflow.
 
-```bash
-npm test
-```
-
-Prüft Syntax und die fachliche Datenverarbeitung einschließlich simulierter
-Änderungen an Stufe, Gruppenkennzahlen, Berufen, Talenten, Charakterwerten
-und Ausrüstung. Zusätzlich testet die Suite den HTTP-Endpunkt mit parallelen
-Blizzard-Profilen, Teilfehlern und vollständigen Ausfällen. Keine produktive Blizzard-Anfrage wird im Test ausgeführt.
-
-## Betriebsgrenzen
-
-Vercel Hobby begrenzt Deployments. Die manuelle Aktualisierung benötigt
-**kein** neues Deployment. Die manuell abgerufenen Werte sind ohne
-dauerhaften Speicher nicht über neue Browser-Sitzungen hinweg persistent.
-
-Für dauerhafte Live-Werte wäre später eine kleine persistente Ablage
-erforderlich; sie ist bewusst **nicht** Teil dieser Implementierung.
