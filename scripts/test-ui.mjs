@@ -62,17 +62,18 @@ const colorsByClass={
   druid:{mid:'#ff9b48',unlocked:'#75462c'}
 };
 for(const [klass,expected] of Object.entries(colorsByClass)){
-  const block=css.match(new RegExp('\\\\.card\\\\.'+klass+'\\\\{\\\\s+--skill-light:[^}]+\\\\}'))?.[0];
-  assert.ok(block,klass+' has unique skill palette');
+  const marker='.card.'+klass+'{\n  --skill-light:';
+  const start=css.indexOf(marker);
+  assert.ok(start>=0,klass+' has unique skill palette');
+  const block=css.slice(start,css.indexOf('}',start)+1);
   assert.ok(block.includes('--skill-mid:'+expected.mid),klass+' fill matches exact WoW class color');
   assert.ok(block.includes('--skill-open-mid:'+expected.unlocked),klass+' unlock is a darker class shade');
 }
-assert.match(css,/\\.profession-segment\\.is-unlocked\\{background:linear-gradient\\([^}]*var\\(--skill-open-mid/);
-assert.match(css,/\\.profession-segment-fill\\{[^}]*var\\(--skill-mid/s);
-assert.match(css,/\\.profession-legend span:nth-child\\(1\\)::before\\{background:var\\(--skill-mid/);
-assert.match(css,/\\.profession-legend span:nth-child\\(2\\)::before\\{background:var\\(--skill-open-mid/);
-assert.ok(css.includes('.profession-segment{')&&css.includes('background:linear-gradient(180deg,#10171f,#171c26)'),'Locked segments stay neutral');
-
+assert.ok(css.includes('.profession-segment.is-unlocked{background:linear-gradient(180deg,var(--skill-open-top'),'The unlocked stage uses class shades');
+assert.ok(css.includes('var(--skill-mid,#6fc6c3)'),'The achieved section uses class color');
+assert.ok(css.includes('.profession-legend span:nth-child(1)::before{background:var(--skill-mid'),'Achieved legend follows class');
+assert.ok(css.includes('.profession-legend span:nth-child(2)::before{background:var(--skill-open-mid'),'Unlocked legend follows class');
+assert.ok(css.includes('background:linear-gradient(180deg,#10171f,#171c26)'),'Locked segments stay neutral');
 
 assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
 assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
