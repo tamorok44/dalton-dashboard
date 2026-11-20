@@ -13,7 +13,7 @@ const document={querySelector(selector){
   if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',querySelectorAll:()=>[],addEventListener(){}});
   return nodes.get(selector);
 }};
-const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,equipmentSlotOrder,keepNewestProfiles};')(document);
+const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -44,6 +44,13 @@ assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
 assert.match(invalid,/Rang unbekannt/);
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
 assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
+
+const chuckyXp=ui.experienceProgress({level:10,experience:5143});
+assert.ok(chuckyXp.includes('5.143 / 7.600 XP · 67,7 %'),'Chucky XP is shown as progress within level 10');
+assert.ok(chuckyXp.includes('27.600 Gesamt-XP'),'Level 10 starts at the correct cumulative XP threshold');
+assert.ok(chuckyXp.includes('35.200 Gesamt-XP'),'Level 11 threshold is the right end of the bar');
+assert.equal(ui.totalXpAtLevel(10),27600);
+assert.equal(ui.totalXpAtLevel(11),35200);
 
 ui.render(data);
 assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: von Blizzard nicht angegeben'),
@@ -85,7 +92,7 @@ questBySlug.get('dolly-dalton').activeQuests=[
 questBySlug.get('viola-dalton').activeQuests=[{id:1001,name:'Gemeinsam für alle'}];
 questBySlug.get('dolly-dalton').completedQuestIds=[1003];
 questBySlug.get('viola-dalton').completedQuestIds=[1003,1004];
-ui.render(questData);
+ui.render(questData,{questCatalog:{1001:{id:1001,title:'Gemeinsam für alle',description:'Erledige die gemeinsame Aufgabe.',area:'Testgebiet',minimumLevel:10}}});
 const questCards=nodes.get('#cards').innerHTML;
 const coleMarker=questCards.indexOf('<h2 class="name">Cole Dalton</h2>');
 const coleStart=questCards.lastIndexOf('<article class="card ',coleMarker);
@@ -102,6 +109,9 @@ assert.ok(coleArea.includes('Bereits abgeschlossen: Dolly · Viola'),'Questvergl
 assert.ok(coleArea.includes('Bereits abgeschlossen: Viola'),'Individuelle offene Quest kann einen bereits fertigen Dalton nennen');
 assert.ok(!coleArea.includes('Auch offen: Cole'),'Aktueller Charakter wird in der Auch-offen-Liste nicht wiederholt');
 assert.ok(!coleArea.includes('Bereits abgeschlossen: Cole'),'Aktueller Charakter wird in der Abschlussliste nicht wiederholt');
+assert.ok(coleArea.includes('Beschreibung &amp; Gebiet'),'Questdetails sind innerhalb des Quest-Reiters aufklappbar');
+assert.ok(coleArea.includes('Erledige die gemeinsame Aufgabe.'),'Zentraler Quest-Katalog liefert die Blizzard-Beschreibung in die Anzeige');
+assert.ok(coleArea.includes('Testgebiet'),'Questgebiet wird aus dem zentralen Katalog angezeigt');
 ui.render(data);
 // The hero illustration remains unchanged, including its static colour overlay.
 // Character renders belong exclusively to the profile cards below the banner.
@@ -112,10 +122,14 @@ assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain d
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
-assert.equal((cards.match(/class="vital"/g)||[]).length,data.characters.length*4);
+assert.equal((cards.match(/class="vital"/g)||[]).length,data.characters.length*3);
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
+assert.equal((cards.match(/data-character-tab=/g)||[]).length,data.characters.length*6,'Every character has all six detail tabs');
+assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one synchronized tab is initially active per character');
+assert.equal((cards.match(/data-character-panel=/g)||[]).length,data.characters.length*6,'All tab panels remain available without showing them at once');
+assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterTab)"),'A tab click switches the same category across all character cards');
 assert.ok(!css.includes('.vital:nth-child(2) strong{color:#91dbe7}'),'Mana must not be blue');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
@@ -263,7 +277,8 @@ assert.ok(!source.includes('automatischer Abgleich etwa alle 30 Minuten'));
 assert.ok(heroHtml.includes('id="dataFreshness"') && source.includes('Zuletzt aktualisiert: '));
 assert.ok(!source.includes('Profil abgerufen: '),'Per-character refresh timestamps are removed');
 assert.ok(!source.includes(' · Blizzard API'),'Per-field source labels are removed');
-assert.ok(source.includes("row('Gegenstandsstufe',c.equippedItemLevel)"),'Only equipped item level is labeled as Gegenstandsstufe');
+assert.ok(source.includes('class="equipment-overview"'),'Equipped item level belongs to the equipment tab');
+assert.ok(!source.includes("mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe']"),'Item level is no longer a character-stat tile');
 assert.ok(!source.includes("Ø Gegenstandsstufe"),'Average item level is not shown in the frontend');
 assert.ok(!source.includes("Angelegte Gegenstandsstufe"),'Redundant equipped label is removed');
 assert.ok(css.includes('rotate(16deg)') && !css.includes('rotate(8deg)'));
@@ -400,15 +415,16 @@ assert.ok(css.includes('justify-content:center;text-align:center'),'Names are ce
 for(const token of ['--type-caption:', '--type-small:', '--type-body:', '--type-lead:', '--leading-copy:', '--tracking-label:']){
   assert.ok(css.includes(token),'Shared typography token '+token);
 }
-assert.equal((css.match(/font-style:italic|font:italic/g)||[]).length,1,'Only the word Die uses italic styling');
+assert.equal((css.match(/font-style:italic|font:italic/g)||[]).length,2,'Only Die and the third hero claim use italic styling');
 for(const selector of ['.hero-story{','.roster-title p{','.refresh-hint{']){
   const block=css.split(selector)[1]?.split('}')[0]||'';
   assert.ok(block.includes('font-family:var(--body)'),selector+' uses the information font');
-  assert.ok(block.includes('font-style:normal'),selector+' is not italic');
+  if(selector==='.hero-story{')assert.ok(block.includes('font-style:italic'),selector+' is intentionally italic');
+  else assert.ok(block.includes('font-style:normal'),selector+' is not italic');
 }
 assert.ok(css.includes('.hero-story{margin:14px 0 0;color:#f8dfb5')&&css.includes('font-weight:700'),'Motto remains readable as the third hero hierarchy level');
 assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text removed');
 assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
 assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');
 
-console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
+console.log('UI QA: synchronized tabs, XP bar, quest details, neutral 3 stats, professions, rarity and gear: OK');
