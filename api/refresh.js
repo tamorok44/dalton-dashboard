@@ -1,21 +1,31 @@
-import {createRequire} from 'node:module';
 import {refreshCharacters} from '../scripts/armory-core.mjs';
-const require=createRequire(import.meta.url);
-const snapshot=require('../data/characters.json');
+import {loadCharacters,saveCharacters,mergeProfiles,configured} from '../scripts/character-store.mjs';
 export const config={maxDuration:60};
 let pending=null;
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
-  if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
+  if(!['GET','POST'].includes(req.method)){res.setHeader('Allow','GET, POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
+  if(req.method==='POST'){
+    const secret=process.env.CRON_SECRET;
+    if(!secret||req.headers?.authorization!=='Bearer '+secret)return res.status(401).json({error:'Nicht autorisiert'});
+  }
+  if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt; Live-Daten wurden nicht gespeichert'});
   try{
     if(!pending)pending=(async()=>{
-      const results=await Promise.all(snapshot.characters.map(c=>refreshCharacters([c])));
+      const {data:previous}=await loadCharacters();
+      const results=await Promise.all(previous.characters.map(c=>refreshCharacters([c])));
       const success=results.reduce((n,r)=>n+r.success,0);
-      const characters=results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'));
-      return {success,data:{generatedAt:new Date().toISOString(),characters},live:true};
+      if(success===0)return {success:0};
+      const latest={generatedAt:new Date().toISOString(),characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))};
+      const merged=mergeProfiles(previous,latest);
+      await saveCharacters(merged);
+      return {success,data:merged,live:true,persisted:true};
     })().finally(()=>{pending=null});
-    const value=await pending;
-    if(value.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar'});
-    return res.status(200).json(value);
-  }catch(e){console.error('Live-Abruf fehlgeschlagen:',e);return res.status(503).json({error:'Live-Abruf derzeit nicht verfügbar'})}
+    const result=await pending;
+    if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
+    return res.status(200).json(result);
+  }catch(e){
+    console.error('Live-Abruf oder Speichern fehlgeschlagen:',e);
+    return res.status(503).json({error:'Aktualisierung konnte nicht dauerhaft gespeichert werden'});
+  }
 }
