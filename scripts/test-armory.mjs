@@ -46,7 +46,7 @@ const fakeCharacter=(locale)=>{
   slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
   stats:{groups:[{stats:(partialStats?['HEALTH']:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','ITEMLEVEL']).map((name,i)=>({enum:name,value:{value:100+i}}))}]},
   media:{'main-raw':{url:originalMedia},avatar:{url:'https://render.worldofwarcraft.com/forever-eu/character/12/34567-avatar.jpg'}},
-  specs:[],
+  specs:[],lastLoginTimestamp:1795176000000,
  };
  if(missingSpecs)delete c.specs;
  if(gearAvailable)c.gear=[{name:locale==='de-de'?germanName:englishName,slot:{type:'CHEST'},level:{value:12},quality:{type:qualityType},media:{content:{assets:[{key:'icon',value:itemIcon}]}}}];
@@ -74,6 +74,7 @@ try{
  assert.equal(c.imageVerified,true);
  assert.equal(c.statsVerified,true);
  assert.equal(c.professions[0].current,61);
+ assert.equal(c.lastLoginAt,new Date(1795176000000).toISOString(),'Explicit Blizzard login timestamp is saved');
  assert.equal(c.equipmentVerified,true);
  // No redundant localized request when Blizzard equipment has not changed.
  const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;

@@ -46,6 +46,19 @@ assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<scr
 assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
 
 ui.render(data);
+assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: von Blizzard nicht angegeben'),
+  'Do not invent a login timestamp from the periodic data refresh or scrape time');
+const loginData=structuredClone(data);
+loginData.characters.find(c=>c.slug==='cole-dalton').lastLoginAt='2026-11-20T10:11:12.000Z';
+ui.render(loginData);
+assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.11.26, 11:11</strong> · Blizzard'),
+  'Display the genuine Blizzard last-login time in German local time');
+const updatedProfile=structuredClone(data);
+updatedProfile.characters.find(c=>c.slug==='cole-dalton').sourceUpdatedAt='2026-11-20T10:11:12.000Z';
+ui.render(updatedProfile);
+assert.ok(nodes.get('#cards').innerHTML.includes('Armory-Datenstand: <strong>20.11.26, 11:11</strong> · kein bestätigter Login-Zeitpunkt'),
+  'Distinguish profile updates from last-login timestamps');
+ui.render(data);
 // The hero illustration remains unchanged, including its static colour overlay.
 // Character renders belong exclusively to the profile cards below the banner.
 assert.ok(read('index.html').includes('<div id="heroCast" class="hero-cast" aria-hidden="true"></div>'),

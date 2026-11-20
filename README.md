@@ -25,3 +25,10 @@ Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funk
 ## Entwicklung
 
 `npm test`: Syntax-, Parser-, UI- und API-Tests. Der Draft-PR löst GitHub Actions aus.
+
+## Zuletzt im Spiel (optionale Blizzard-Angabe)
+
+- Das Charakterprofil kann den expliziten Blizzard-Zeitstempel `lastLoginTimestamp` oder `last_login_timestamp` enthalten. Nur dann erscheint in der Charakterkarte **„Zuletzt im Spiel“** mit Datum und Uhrzeit in Europe/Berlin.
+- Fehlt dieser Wert, aber Blizzard liefert `lastUpdatedTimestamp`, zeigen wir ausschliesslich **„Armory-Datenstand“** und kennzeichnen ihn **nicht** als Login-Zeitpunkt. Ohne beide Angaben steht „von Blizzard nicht angegeben“.
+- Ein aktueller `generatedAt`-/`scrapedAt`-Zeitstempel ist **kein** Login-Beweis. Die Angaben werden mit den übrigen Charakterdaten in Redis gespeichert. Aktuelle Anwesenheit (online/offline) wird nicht behauptet.
+- Den **letzten Aufenthaltsort beim Logout** veröffentlicht die öffentliche Blizzard-Armory derzeit nicht. Deshalb keinen erfundenen Ortswert anzeigen; dafür wäre zukünftig eine freiwillige Ingame-Addon-/Companion-Datenquelle nötig.

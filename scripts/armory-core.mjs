@@ -255,6 +255,8 @@ for(const old of characters){
         (img!==old.imageUrl||(timestamp(c.lastUpdatedTimestamp)&&timestamp(c.lastUpdatedTimestamp)!==old.sourceUpdatedAt))
         ?now:old.imageCheckedAt,
       scrapedAt:now,
+      // Never substitute a data-fetch timestamp for an actual Blizzard login.
+      lastLoginAt:timestamp(c.lastLoginTimestamp??c.last_login_timestamp)||old.lastLoginAt,
       sourceUpdatedAt:timestamp(c.lastUpdatedTimestamp)||old.sourceUpdatedAt,
       statsVerified,
       imageVerified:renderPattern.test(img||''),
