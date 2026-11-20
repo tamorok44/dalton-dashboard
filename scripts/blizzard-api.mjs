@@ -245,3 +245,61 @@ export async function fetchForeverSnapshot(slugs,{
   })));
   return snapshot;
 }
+
+
+function recipeResourceUrl(href,locale){
+  const url=new URL(href);
+  if(url.protocol!=='https:'||url.hostname!==REGION+'.api.blizzard.com')throw new Error('Ungültiger Blizzard-Rezeptlink');
+  if(!/^\/data\/wow\/recipe\/\d+$/.test(url.pathname))throw new Error('Ungültiger Blizzard-Rezeptpfad');
+  const namespace=url.searchParams.get('namespace')||'';
+  if(!/-forever-eu$/.test(namespace))throw new Error('Ungültiger Forever-Rezept-Namespace');
+  url.searchParams.set('locale',locale);
+  return url;
+}
+
+function normalizeRecipeDetail(body){
+  const quantity=body?.crafted_quantity;
+  return {
+    id:Number(body?.id)||null,
+    name:body?.name||null,
+    craftedItem:body?.crafted_item?{
+      id:Number(body.crafted_item.id)||null,
+      name:body.crafted_item.name||null
+    }:null,
+    craftedQuantity:quantity?{
+      minimum:Number.isFinite(Number(quantity.minimum))?Number(quantity.minimum):null,
+      maximum:Number.isFinite(Number(quantity.maximum))?Number(quantity.maximum):null,
+      value:Number.isFinite(Number(quantity.value))?Number(quantity.value):null
+    }:null,
+    reagents:Array.isArray(body?.reagents)?body.reagents.map(entry=>({
+      id:Number(entry?.reagent?.id)||null,
+      name:entry?.reagent?.name||null,
+      quantity:Number.isFinite(Number(entry?.quantity))?Number(entry.quantity):null
+    })).filter(entry=>entry.name):[]
+  };
+}
+
+export async function fetchForeverRecipeDetails(recipes,{
+  fetchImpl=fetch,
+  locale='de_DE'
+}={}){
+  const refs=[...new Map((Array.isArray(recipes)?recipes:[])
+    .filter(recipe=>Number.isInteger(Number(recipe?.id))&&typeof recipe?.href==='string')
+    .map(recipe=>[Number(recipe.id),recipe])).values()];
+  if(!refs.length)return {};
+  const {token}=await accessToken(fetchImpl);
+  const entries=await Promise.all(refs.map(async recipe=>{
+    try{
+      const response=await fetchImpl(recipeResourceUrl(recipe.href,locale),{
+        headers:{authorization:'Bearer '+token,accept:'application/json'},
+        signal:AbortSignal.timeout(15000)
+      });
+      const body=await parseResponse(response);
+      if(!response.ok)return [recipe.id,null];
+      return [recipe.id,normalizeRecipeDetail(body)];
+    }catch{
+      return [recipe.id,null];
+    }
+  }));
+  return Object.fromEntries(entries.filter(([,detail])=>detail));
+}
