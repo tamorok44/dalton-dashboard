@@ -19,21 +19,43 @@ const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhn
 const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
 
 const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
+// WoW Classic/Forever: ein gemeinsamer Maßstab von 0 bis 300, vier Stufen zu je 75.
+const professionStages=[
+  {end:75,rank:'Lehrling'},
+  {end:150,rank:'Geselle'},
+  {end:225,rank:'Experte'},
+  {end:300,rank:'Fachmann'}
+];
+function professionRank(max){
+  return professionStages.find(stage=>stage.end===max)?.rank||'Rang unbekannt';
+}
+function professionScale(){
+  return '<div class="profession-scale" aria-label="Berufsskala: 75, 150, 225, 300">'+
+    professionStages.map(stage=>'<span title="'+esc(stage.rank)+'">'+stage.end+'</span>').join('')+
+    '</div>';
+}
 function professionRows(list=[]){
-  if(!list.length)return row("Berufe","nicht verfügbar");
+  if(!list.length)return row('Berufe','nicht verfügbar');
   return list.map(p=>{
     const current=Number(p.current),max=Number(p.max);
     const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
-    const percent=valid?Math.max(0,Math.min(100,(current/max)*100)):0;
+    const currentSkill=valid?Math.max(0,current):0;
+    const rank=valid?professionRank(max):'Rang unbekannt';
     const fraction=valid?Math.round(current)+'/'+Math.round(max):'–/–';
     const label=String(p.name||'Beruf')+(p.unverified?' · letzter Stand':'');
+    const stageSegments=professionStages.map((stage,index)=>{
+      const from=index*75,unlocked=valid&&max>from;
+      const pct=valid?Math.max(0,Math.min(100,((currentSkill-from)/75)*100)):0;
+      return '<span class="profession-segment '+(unlocked?'is-unlocked':'is-locked')+'">'+
+        '<span class="profession-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
+    }).join('');
     return '<div class="profession">'+
-      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span></div>'+
-      '<div class="profession-track" role="progressbar" aria-label="'+esc('Fortschritt '+label)+'" aria-valuemin="0" aria-valuemax="'+(valid?Math.round(max):100)+'" aria-valuenow="'+(valid?Math.max(0,Math.min(Math.round(current),Math.round(max))):0)+'">'+
-      '<div class="profession-progress" style="width:'+percent.toFixed(2)+'%"></div>'+
+      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span>'+
+      '<span class="profession-rank">'+esc(rank)+'</span></div>'+
+      '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction+' · '+rank:'kein bestätigter Stand')+'">'+
+      stageSegments+
       '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
-      '</div>'+
-      '</div>';
+      '</div></div>';
   }).join('');
 }
 
@@ -114,7 +136,7 @@ const levels=chars.map(c=>Number(c.level)).filter(Number.isFinite);const min=Mat
   <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">Himmelsgeborene · Hoher Orden</span><span class="pill">Allianz · EU-PvP</span></div>
   <p class="status">${c.scrapeOk===false?"⚠ Automatischer Abruf fehlgeschlagen – letzter bekannter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
   <div class="section"><h3>Talente${c.talentsVerified?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
-  <div class="section"><h3>Berufe</h3><div class="rows">${professionRows(c.professions)}</div></div>
+  <div class="section professions-section"><h3>Berufe</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
   ${statsPanel(c,openDetails.has(c.slug+':stats'))}
   ${equipmentPanel(c,openDetails.has(c.slug+':equipment'))}
  </article>`).join("");
