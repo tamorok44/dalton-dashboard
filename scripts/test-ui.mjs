@@ -13,7 +13,7 @@ const document={querySelector(selector){
   if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',querySelectorAll:()=>[],addEventListener(){}});
   return nodes.get(selector);
 }};
-const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,equipmentSlotOrder};')(document);
+const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,equipmentSlotOrder,keepNewestProfiles};')(document);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -223,5 +223,47 @@ assert.ok(css.includes('transform:rotate(16deg)') && css.includes('.level-inner{
 assert.ok(!css.includes('transform:rotate(-16deg)'),'Level text must not be counter-rotated');
 assert.ok(!/\\.level\\{[^}]*border-radius:50%/.test(css),'Level is no longer a round badge');
 assert.ok(css.includes('.level{width:72px;height:72px}'),'Mobile sheriff star is fully sized');
+
+
+/* Dynamic-data contract: simulate changing official profiles and re-render.
+   No displayed level, group metric, skill, stat, talent or equipment is hard-coded. */
+const changed=structuredClone(data);
+const cole=changed.characters.find(c=>c.slug==='cole-dalton');
+const oldLevel=cole.level;
+cole.level=oldLevel+7;
+const alchemy=cole.professions.find(p=>p.name==='Alchemie');
+alchemy.current=74;alchemy.max=150;
+cole.stats.Gesundheit=987;
+cole.statsFreshKeys=['Gesundheit'];cole.statsVerified=false;
+cole.equipment[0].item='QA neuer Stab aus der Armory';
+cole.talents='Arkan: 7';
+cole.talentsVerified=true;
+changed.generatedAt='2026-11-20T15:32:00.000Z';
+ui.render(changed,{live:true,success:4});
+const changedCards=nodes.get('#cards').innerHTML;
+const changedSummary=nodes.get('#summary').innerHTML;
+const changedLevels=changed.characters.map(c=>c.level);
+assert.ok(changedCards.includes('class="level" aria-label="Stufe '+cole.level+'"'),'Live level updates sheriff badge');
+assert.ok(changedCards.includes('QA neuer Stab aus der Armory'),'Live equipment changes');
+assert.ok(changedCards.includes('Arkan: 7'),'Live talent distribution changes');
+assert.ok(changedCards.includes('987'),'Live health changes');
+assert.ok(changedCards.includes('Mana <span class="stale-value"'),'Missing stat clearly marked stale');
+assert.ok(changedCards.includes('74/150'),'Live skill numerator and rank cap');
+assert.ok(changedCards.includes('Geselle'),'Live training rank changes');
+assert.ok(changedSummary.includes(Math.min(...changedLevels)+'–'+Math.max(...changedLevels)),'Group min/max are recomputed');
+assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLevels.length).toFixed(1)),'Group average is recomputed');
+assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
+assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt live abgefragt'),'Visible live timestamp');
+assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not fetch stale JSON first');
+const failed=structuredClone(data);
+const failedCole=failed.characters.find(c=>c.slug==='cole-dalton');
+failedCole.scrapeOk=false;
+failedCole.scrapedAt='2020-01-01T00:00:00.000Z';
+const preserved=ui.keepNewestProfiles(failed);
+assert.equal(preserved.characters.find(c=>c.slug==='cole-dalton').level,cole.level,'Failed fetch cannot roll back a newer live level');
+assert.equal(preserved.characters.find(c=>c.slug==='cole-dalton').scrapeOk,false,'Reused data are marked stale');
+ui.render(preserved,{live:true,success:3});
+assert.ok(nodes.get('#status').textContent.includes('3 von 4 Profilen'),'Partial refresh clearly reported');
+assert.ok(css.includes('.stale-value{'),'Stale-value formatting available');
 
 console.log('UI QA: sheriff daylight header, animated profession fills and four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');

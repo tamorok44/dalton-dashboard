@@ -75,7 +75,7 @@ const treeNames={'Feral Combat':'Wilder Kampf',Balance:'Gleichgewicht',Restorati
 function talents(c) {
   const s=c.specs;
   const trees=Array.isArray(s)?s:Array.isArray(s?.specializations)?s.specializations:Array.isArray(s?.specs)?s.specs:null;
-  if(trees===null)return 'noch keine verteilt';
+  if(trees===null)return null;
   if(trees.length===0)return 'noch keine verteilt';
   const entries=trees.filter(t=>Number.isFinite(Number(t.spentPoints))&&Number(t.spentPoints)>0);
   if(entries.length===0)return 'noch keine verteilt';
@@ -178,10 +178,24 @@ for(const old of characters){
     const level=Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
     const ps=professions(c);
+    const knownProfessions=new Map((old.professions||[]).map(p=>[p.name,{...p,unverified:true}]));
+    for(const p of ps)knownProfessions.set(p.name,p);
+    // Never silently remove a profession when Blizzard returns a partial result.
+    const currentProfessions=[...knownProfessions.values()];
+    const professionsVerified=ps.length>0&&currentProfessions.every(p=>!p.unverified);
     const st=stats(c),eq=gear(c),ta=talents(c);
     const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
     let localizedGear=null,localizationError,localizedSource;
-    if(hasOfficialGear && eq.length){
+    // Fast path: don't re-fetch localized gear if the officially verified
+    // equipment is unchanged. This is the common case for skill/level updates.
+    const previousBySlot=new Map((old.equipment||[]).map(x=>[normalizedSlot(x.slot),x]));
+    const translationsReusable=hasOfficialGear&&eq.length>0&&eq.length===(old.equipment||[]).length&&
+      eq.every(item=>{
+        const prior=previousBySlot.get(normalizedSlot(item.slot));
+        return prior?.sourceName===item.item&&prior.level===item.level&&
+          Boolean(iconId(prior.icon))&&iconId(prior.icon)===iconId(item.icon);
+      });
+    if(hasOfficialGear&&eq.length&&!translationsReusable){
       // Offizielles deutsches Blizzard-Profil zuerst: weniger Verzögerung,
       // keine Abhängigkeit von der häufig unzugänglichen ForeverSpec-Seite.
       try{
@@ -211,7 +225,7 @@ for(const old of characters){
       equipment.length===0||localizedCount===equipment.length?'de':
       localizedCount===0?'en':'gemischt';
     const equipmentSource= !hasOfficialGear ? old.equipmentSource||'Letzter bestätigter Stand':
-      localizedGear ? localizedSource:'Blizzard Armory (en-GB), aktuelle Gegenstände';
+      localizedGear ? localizedSource:translationsReusable?(old.equipmentSource||'Blizzard Armory, bestätigte Übersetzungen'):'Blizzard Armory (en-GB), aktuelle Gegenstände';
     const requiredStats=['Gesundheit','Mana','Stärke','Beweglichkeit','Ausdauer','Intelligenz','Rüstung','Angriffskraft','Gegenstandsstufe'];
     const statsVerified=requiredStats.every(k=>Number.isFinite(st[k]));
     const img=c.media?.['main-raw']?.url;
@@ -223,18 +237,23 @@ for(const old of characters){
       class:classNames[c.class?.name]||old.class,
       race:c.race?.name?.includes('Skyborne')?'Himmelsgeborene':old.race,
       gender:characterGender(c)||old.gender||null,
-      professions:ps.length?ps:(old.professions||[]).map(p=>({...p,unverified:true})),
-      professionsVerified:ps.length>0,
+      professions:currentProfessions,
+      professionsVerified,
       stats:{...(old.stats||{}),...st},
+      // Provenance of each stat; old fallback values are never called fresh.
+      statsFreshKeys:Object.keys(st),
       equipment,
       equipmentLanguage,
       equipmentSource,
       equipmentError:localizationError,
       equipmentVerified:hasOfficialGear,
-      talents:ta||old.talents,
+      talents:ta===null?(old.talents||'nicht verfügbar'):ta,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
       avatarUrl:avatarPattern.test(avatar||'')?avatar:old.avatarUrl,
-      imageCheckedAt:renderPattern.test(img||'')?now:old.imageCheckedAt,
+      // Keep the same render URL and cache key until Blizzard changes it.
+      imageCheckedAt:renderPattern.test(img||'')&&
+        (img!==old.imageUrl||(timestamp(c.lastUpdatedTimestamp)&&timestamp(c.lastUpdatedTimestamp)!==old.sourceUpdatedAt))
+        ?now:old.imageCheckedAt,
       scrapedAt:now,
       sourceUpdatedAt:timestamp(c.lastUpdatedTimestamp)||old.sourceUpdatedAt,
       statsVerified,
@@ -242,7 +261,7 @@ for(const old of characters){
       talentsVerified:ta!==null,
       scrapeOk:true,
       scrapeError:undefined,
-      dataStatus:'auto',
+      dataStatus:'live',
       source:'Blizzard Armory'
     };
     updated.push(next);

@@ -1,1 +1,17 @@
-{"name":"Die Daltons","short_name":"Daltons","start_url":"/","display":"standalone","background_color":"#0a1019","theme_color":"#101b2a","lang":"de","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "Die Daltons",
+  "short_name": "Daltons",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1019",
+  "theme_color": "#305764",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

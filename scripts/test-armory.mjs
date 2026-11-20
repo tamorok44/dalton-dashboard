@@ -39,23 +39,26 @@ const fakeOld={
   professions:[{name:'Bergbau',current:4,max:75}],stats:{Gesundheit:42,Mana:100},
   imageUrl:'https://render.worldofwarcraft.com/forever-eu/character/12/1234-main-raw.png'
 };
-let englishName='New Chest', germanName='Neues Wams',qualityType='RARE',deAvailable=true,gearAvailable=true,partialStats=false;
+let englishName='New Chest', germanName='Neues Wams',qualityType='RARE',deAvailable=true,gearAvailable=true,partialStats=false,partialProfessions=false,missingSpecs=false;
+let germanFetches=0,englishFetches=0,foreverSpecFetches=0;
 const fakeCharacter=(locale)=>{
  const c={
-  slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
+  slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
   stats:{groups:[{stats:(partialStats?['HEALTH']:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','ITEMLEVEL']).map((name,i)=>({enum:name,value:{value:100+i}}))}]},
   media:{'main-raw':{url:originalMedia},avatar:{url:'https://render.worldofwarcraft.com/forever-eu/character/12/34567-avatar.jpg'}},
   specs:[],
  };
+ if(missingSpecs)delete c.specs;
  if(gearAvailable)c.gear=[{name:locale==='de-de'?germanName:englishName,slot:{type:'CHEST'},level:{value:12},quality:{type:qualityType},media:{content:{assets:[{key:'icon',value:itemIcon}]}}}];
  return c;
 };
 const htmlFor=locale=>'<script>var characterProfileInitialState = '+JSON.stringify({character:fakeCharacter(locale)})+';</script>';
 globalThis.fetch=async url=>{
  const u=String(url);
- if(u.includes('foreverspec.com'))return {ok:false,status:503};
- if(u.includes('/de-de/'))return deAvailable?{ok:true,text:async()=>htmlFor('de-de')}:{ok:false,status:503};
- if(u.includes('/en-gb/'))return {ok:true,text:async()=>htmlFor('en-gb')};
+ if(u.includes('foreverspec.com')){foreverSpecFetches++;return {ok:false,status:503}}
+ if(u.includes('/de-de/')){germanFetches++;return deAvailable?{ok:true,text:async()=>htmlFor('de-de')}:{ok:false,status:503}}
+ if(u.includes('/en-gb/')){englishFetches++;return {ok:true,text:async()=>htmlFor('en-gb')}}
+
  throw new Error('Unbekannter Testabruf: '+u);
 };
 try{
@@ -72,6 +75,13 @@ try{
  assert.equal(c.statsVerified,true);
  assert.equal(c.professions[0].current,61);
  assert.equal(c.equipmentVerified,true);
+ // No redundant localized request when Blizzard equipment has not changed.
+ const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;
+ r=await refreshCharacters([c]);c=r.data.characters[0];
+ assert.equal(germanFetches,priorGerman,'Unchanged equipment skips costly localization');
+ assert.equal(englishFetches,priorEnglish+1,'Still fetches authoritative Blizzard profile');
+ assert.equal(c.equipment[0].item,'Neues Wams');
+ assert.equal(c.imageCheckedAt,priorImageChecked,'Unchanged character portrait retains cache key');
  // Trotz gleichem Icon und Level: geänderter offizieller Gegenstandsname wird aktuell.
  deAvailable=false;englishName='Fresh Chest';qualityType='EPIC';
  r=await refreshCharacters([c]);c=r.data.characters[0];
@@ -96,5 +106,16 @@ try{
  r=await refreshCharacters([c]);c=r.data.characters[0];
  assert.equal(c.statsVerified,false);
  assert.equal(c.stats.Mana,101);
- console.log('Gemeinsamer Live-/Auto-Abruf, Qualität, Bild und sichere Fallbacks: OK');
+ assert.deepEqual(c.statsFreshKeys,['Gesundheit'],'Only the value received from Blizzard is fresh');
+ partialProfessions=true;missingSpecs=true;
+ r=await refreshCharacters([c]);c=r.data.characters[0];
+ assert.equal(c.professions.length,1,'Missing profession is retained');
+ assert.equal(c.professions[0].name,'Bergbau');
+ assert.equal(c.professions[0].unverified,true);
+ assert.equal(c.professionsVerified,false);
+ assert.equal(c.talentsVerified,false,'Unavailable talent tree is not misread as zero points');
+ assert.equal(c.talents,'noch keine verteilt','Previously known talents retained');
+ assert.equal(c.scrapeOk,true,'Incomplete subfields do not invalidate an otherwise updated profile');
+ assert.ok(englishFetches>=6);
+ console.log('Blizzard refresh: updated gear, professions, stale stats provenance, talents and request efficiency: OK');
 }finally{globalThis.fetch=originalFetch}

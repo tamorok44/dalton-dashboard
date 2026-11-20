@@ -486,3 +486,7 @@ footer p{color:#928e8b;line-height:1.65;margin:9px 0 0;font-size:.73rem}
 @media(max-width:740px){
   .hero-art{background-image:url("/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c");background-position:center center;background-size:cover}
 }
+
+/* A cached stat value is retained for context, never presented as verified live. */
+.stale-value{display:inline;font-size:.58rem;font-weight:650;letter-spacing:0;color:#e0b28c;text-transform:none;white-space:normal}
+.vital small{line-height:1.45}

@@ -1,5 +1,5 @@
-const CACHE="daltons-mainstreet-level-unified-v11";
-const ASSETS=["/","/styles.css?v=mainstreet-20261120d","/app.js?v=mainstreet-20261120d","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=frontier-unified-20261120b","/scene-dolly.svg?v=frontier-unified-20261120b","/scene-chucky.svg?v=frontier-unified-20261120b","/scene-viola.svg?v=frontier-unified-20261120b"];
+const CACHE="daltons-armory-quality-v12";
+const ASSETS=["/","/styles.css?v=armory-quality-20261120a","/app.js?v=armory-quality-20261120a","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=frontier-unified-20261120b","/scene-dolly.svg?v=frontier-unified-20261120b","/scene-chucky.svg?v=frontier-unified-20261120b","/scene-viola.svg?v=frontier-unified-20261120b"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
@@ -10,6 +10,10 @@ self.addEventListener("activate",event=>{
   ]));
 });
 self.addEventListener("fetch",event=>{
-  if(event.request.method!=="GET"||event.request.url.includes("/data/characters.json")||event.request.url.includes("/api/refresh"))return;
+  const url=new URL(event.request.url);
+  // Only own static assets need a service worker. Remote Blizzard portraits,
+  // live API replies and changing character snapshots must bypass it.
+  if(event.request.method!=="GET"||url.origin!==self.location.origin||
+    url.pathname.startsWith("/data/")||url.pathname.startsWith("/api/"))return;
   event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));
 });
