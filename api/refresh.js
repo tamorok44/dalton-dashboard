@@ -22,6 +22,7 @@ export default async function handler(req,res){
       if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
       return res.status(202).json({pending:true,reason:'already_running'});
     }
+    const start=Date.now();
     pending=(async()=>{
       try{
         const {data:previous}=await loadCharacters();
@@ -30,8 +31,18 @@ export default async function handler(req,res){
         if(success===0)return {success:0};
         const latest={generatedAt:new Date().toISOString(),characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))};
         const merged=mergeProfiles(previous,latest);
-        const archived=await archiveImages(merged,previous);
-        await saveCharacters(archived,lockToken);
+        // Commit the authoritative values before any optional media work.
+        await saveCharacters(merged,lockToken);
+        let archived=merged;
+        if(Date.now()-start<35000){
+          try{
+            archived=await archiveImages(merged,previous);
+            if(archived!==merged)await saveCharacters(archived,lockToken);
+          }catch(e){
+            console.warn('Bildarchiv nicht vollständig:',String(e.message).slice(0,140));
+            archived=merged;
+          }
+        }
         return {success,data:archived,live:true,persisted:true};
       }finally{
         try{await releaseRefreshLock(lockToken)}catch(e){console.error('Redis-Refresh-Sperre konnte nicht freigegeben werden:',e)}

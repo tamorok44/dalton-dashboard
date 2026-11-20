@@ -18,6 +18,7 @@ export async function archiveImages(data,previous){
   const old=new Map((previous.characters||[]).map(c=>[c.slug,c]));
   const cache=new Map();
   let newIcons=0;
+  let newPortraits=0;
   let active=0;
   const waiting=[];
   async function limited(fn){
@@ -29,8 +30,9 @@ export async function archiveImages(data,previous){
     if(prior)return prior;
     if(cache.has(url))return cache.get(url);
     // Archive old gear icons incrementally so the first refresh does not exceed server timeouts.
-    if(isIcon&&newIcons>=12)return undefined;
-    if(isIcon)newIcons++;
+    if(isIcon&&newIcons>=4)return undefined;
+    if(!isIcon&&newPortraits>=2)return undefined;
+    if(isIcon)newIcons++;else newPortraits++;
     const task=limited(()=>copyImage(url,path)).catch(e=>{console.warn('Bildarchivierung fehlgeschlagen:',String(e.message).slice(0,130));return undefined});
     cache.set(url,task);
     return task;
@@ -39,16 +41,12 @@ export async function archiveImages(data,previous){
   for(const c of data.characters){
     const before=old.get(c.slug)||{};
     const next={...c};
-    if(portrait.test(c.imageUrl||'')){
-      next.storedImageUrl=await stored(c.imageUrl,'portraits/'+c.slug+'/main-'+hash(c.imageUrl+'@'+(c.imageCheckedAt||''))+'.png',
-        c.imageUrl===before.imageUrl&&c.imageCheckedAt===before.imageCheckedAt?before.storedImageUrl:null);
-    }
-    if(portrait.test(c.avatarUrl||'')){
-      next.storedAvatarUrl=await stored(c.avatarUrl,'portraits/'+c.slug+'/avatar-'+hash(c.avatarUrl+'@'+(c.imageCheckedAt||''))+'.jpg',
-        c.avatarUrl===before.avatarUrl&&c.imageCheckedAt===before.imageCheckedAt?before.storedAvatarUrl:null);
-    }
+    const mainTask=portrait.test(c.imageUrl||'')?stored(c.imageUrl,'portraits/'+c.slug+'/main-'+hash(c.imageUrl+'@'+(c.imageCheckedAt||''))+'.png',
+      c.imageUrl===before.imageUrl&&c.imageCheckedAt===before.imageCheckedAt?before.storedImageUrl:null):Promise.resolve(undefined);
+    const avatarTask=portrait.test(c.avatarUrl||'')?stored(c.avatarUrl,'portraits/'+c.slug+'/avatar-'+hash(c.avatarUrl+'@'+(c.imageCheckedAt||''))+'.jpg',
+      c.avatarUrl===before.avatarUrl&&c.imageCheckedAt===before.imageCheckedAt?before.storedAvatarUrl:null):Promise.resolve(undefined);
     const previousGear=new Map((before.equipment||[]).map(i=>[i.slot,i]));
-    next.equipment=await Promise.all((c.equipment||[]).map(async item=>{
+    const equipmentTask=Promise.all((c.equipment||[]).map(async item=>{
       const prior=previousGear.get(item.slot);
       const copy={...item};
       if(icon.test(item.icon||'')){
@@ -58,6 +56,7 @@ export async function archiveImages(data,previous){
       }
       return copy;
     }));
+    [next.storedImageUrl,next.storedAvatarUrl,next.equipment]=await Promise.all([mainTask,avatarTask,equipmentTask]);
     characters.push(next);
   }
   return {...data,characters};
