@@ -144,22 +144,36 @@ assert.equal((cards.match(/data-character-panel=/g)||[]).length,data.characters.
 assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterTab)"),'A tab click switches the same category across all character cards');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
-assert.ok(css.includes('.card.hunter{--class:#aad372')&&css.includes('.card.druid{--class:#ff9b48'));
-const colorsByClass={
-  mage:{mid:'#67d4f0',unlocked:'#24576c'},
-  hunter:{mid:'#aad372',unlocked:'#3e5d3d'},
-  druid:{mid:'#ff9b48',unlocked:'#75462c'}
-};
-for(const [klass,expected] of Object.entries(colorsByClass)){
+const wowClassColors={mage:'#3fc7eb',hunter:'#aad372',druid:'#ff7c0a'};
+for(const [klass,color] of Object.entries(wowClassColors)){
+  assert.ok(css.includes('--wow-class-'+klass+':'+color+';'),klass+' canonical WoW class token is exact');
+  assert.ok(css.includes('.card.'+klass+'{--class:var(--wow-class-'+klass+');'),klass+' card consumes the canonical WoW class token');
   const marker='.card.'+klass+'{\n  --skill-light:';
-  const start=css.indexOf(marker);
-  assert.ok(start>=0,klass+' has unique skill palette');
-  const block=css.slice(start,css.indexOf('}',start)+1);
-  assert.ok(block.includes('--skill-mid:'+expected.mid),klass+' fill matches exact WoW class color');
-  assert.ok(block.includes('--skill-open-mid:'+expected.unlocked),klass+' unlock is a darker class shade');
+  const paletteStart=css.indexOf(marker);
+  assert.ok(paletteStart>=0,klass+' has unique skill palette');
+  const block=css.slice(paletteStart,css.indexOf('}',paletteStart)+1);
+  assert.ok(block.includes('--skill-mid:var(--class)'),klass+' progress fill consumes the same canonical class color');
+}
+assert.ok(!css.includes('#67d4f0'),'Former lightened Mage class color must not return');
+assert.ok(!css.includes('#ff9b48'),'Former lightened Druid class color must not return');
+
+const wowQualityColors={
+  poor:'#9d9d9d',common:'#ffffff',uncommon:'#1eff00',rare:'#0070dd',
+  epic:'#a335ee',legendary:'#ff8000',artifact:'#e6cc80',heirloom:'#00ccff'
+};
+for(const [quality,color] of Object.entries(wowQualityColors)){
+  assert.ok(css.includes('--wow-quality-'+quality+':'+color+';'),quality+' canonical WoW quality token is exact');
+  assert.ok(css.includes('.quality-'+quality+'{color:var(--wow-quality-'+quality+')}'),quality+' display consumes the canonical WoW quality token');
+}
+
+const definedCustomProperties=new Set([...css.matchAll(/(--[\w-]+)\s*:/g)].map(match=>match[1]));
+for(const match of css.matchAll(/var\((--[\w-]+)/g)){
+  assert.ok(definedCustomProperties.has(match[1]),'CSS custom property is defined before use: '+match[1]);
 }
 assert.ok(css.includes('.profession-segment.is-unlocked{background:linear-gradient(180deg,var(--skill-open-top'),'The unlocked stage uses class shades');
 assert.ok(css.includes('var(--skill-mid,#6fc6c3)'),'The achieved section uses class color');
+assert.ok(css.includes('.experience-fill{position:absolute;inset:0 auto 0 0;min-width:0;background:linear-gradient(180deg,var(--skill-light,#b6efe4) 0%,var(--skill-mid,#6fc6c3) 33%,var(--skill-bottom,#368998) 78%,var(--skill-shadow,#226c80) 100%)'),'XP uses the same four-stop class palette as professions and reputation');
+assert.ok(!css.includes('--skill-dark'),'No undefined shared XP color variable may return');
 assert.ok(css.includes('.profession-legend span:nth-child(1)::before{background:var(--skill-mid'),'Achieved legend follows class');
 assert.ok(css.includes('.profession-legend span:nth-child(2)::before{background:var(--skill-open-mid'),'Unlocked legend follows class');
 assert.ok(css.includes('background:linear-gradient(180deg,#10171f,#171c26)'),'Locked segments stay neutral');
@@ -185,13 +199,15 @@ for(const [slug,klass] of Object.entries({
   const scene=read(klass+'.svg');
   assert.match(scene,/<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/);
   assert.match(scene,/<\/svg>\s*$/);
+  assert.ok(!scene.includes('#67d4f0'),'Scene artwork must not contain the former lightened Mage class color');
+  assert.ok(!scene.includes('#ff9b48'),'Scene artwork must not contain the former lightened Druid class color');
 }
 
 const expectedCards=[
-  {name:'Chucky Dalton',klass:'druid',scene:'scene-chucky',color:'#ff9b48'},
-  {name:'Cole Dalton',klass:'mage',scene:'scene-cole',color:'#67d4f0'},
+  {name:'Chucky Dalton',klass:'druid',scene:'scene-chucky',color:'#ff7c0a'},
+  {name:'Cole Dalton',klass:'mage',scene:'scene-cole',color:'#3fc7eb'},
   {name:'Dolly Dalton',klass:'hunter',scene:'scene-dolly',color:'#aad372'},
-  {name:'Viola Dalton',klass:'druid',scene:'scene-viola',color:'#ff9b48'}
+  {name:'Viola Dalton',klass:'druid',scene:'scene-viola',color:'#ff7c0a'}
 ];
 for(const {name,klass,scene,color} of expectedCards){
   const marker=cards.indexOf('<h2 class="name">'+name+'</h2>');
@@ -200,7 +216,7 @@ for(const {name,klass,scene,color} of expectedCards){
   assert.ok(cards.slice(start,marker).startsWith('<article class="card '+klass+'">'),'Right class for '+name);
   const area=cards.slice(start,cards.indexOf('</article>',marker));
   assert.ok(area.includes('portrait '+scene+'"'),'Correct backdrop for '+name);
-  assert.ok(css.includes('--class:'+color),'Class color for '+name);
+  assert.ok(css.includes('--wow-class-'+klass+':'+color+';'),'Canonical WoW class color for '+name);
 }
 // The official Blizzard profile can override Chucky's grammatically correct nickname.
 // Four distinct portrait emblems: unique nickname, character name and class-inspired SVG icon.
@@ -231,8 +247,8 @@ assert.match(chucky,/<linearGradient id="sky"[^>]*><stop stop-color="#e5b89b"/,'
 assert.ok(chucky.includes("mining, skinning"),"Chucky mining and skinning scene");
 assert.match(dolly,/<linearGradient id="sky"[^>]*><stop stop-color="#9bc4b9"/,'Dolly bright green frontier sky');
 assert.ok(dolly.includes("leatherworking, skinning"),"Dolly leatherworking and skinning scene");
-assert.ok(css.includes('url("/scene-chucky.svg?v=frontier-unified-20261120a")'));
-assert.ok(css.includes('url("/scene-dolly.svg?v=frontier-unified-20261120a")'));
+assert.ok(css.includes('url("/scene-chucky.svg?v=wow-colors-20261121a")'));
+assert.ok(css.includes('url("/scene-dolly.svg?v=wow-colors-20261121a")'));
 assert.ok(!/\.vital:last-child\s*\{\s*border-color:\s*var\(--class\)/.test(css),
   'Item-level frame must match other vital tiles, not use the class color');
 assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css),
