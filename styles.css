@@ -20,6 +20,17 @@
   --wow-quality-heirloom:#00ccff;
   --display: "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
   --body:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  /* Dalton typography CI: use semantic roles, never arbitrary sizes in new components. */
+  --type-h1:2.25rem;    /* 36 px, outside the intentionally oversized hero */
+  --type-h2:1.75rem;    /* 28 px */
+  --type-h3:1.375rem;   /* 22 px */
+  --type-h4:1rem;      /* 16 px */
+  --type-bar:.75rem;    /* 12 px */
+  --type-detail:.6875rem; /* 11 px */
+  --weight-body:400;
+  --weight-label:700;
+  --weight-heading:800;
+  --leading-heading:1.16;
   /* Four consistent text sizes; titles/hero remain deliberately larger. */
   --type-caption:.6875rem; /* 11 px */
   --type-small:.75rem;     /* 12 px */
@@ -630,12 +641,12 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .experience-overlay{position:absolute;z-index:3;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .profession-overlay,.reputation-overlay,.experience-overlay{
   color:#fff7e4;
-  font:800 .94rem/1 var(--display);
+  font:var(--weight-label) var(--type-bar)/1.2 var(--body);
   letter-spacing:.025em;
   font-variant-numeric:tabular-nums;
   text-shadow:0 1px 2px #06121d,0 2px 7px #04101b,1px 0 #04101b,-1px 0 #04101b;
 }
-.experience-levels{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:7px;color:#f1dfbf;font:700 var(--type-caption) var(--display);letter-spacing:.035em;font-variant-numeric:tabular-nums}
+.experience-levels{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:7px;color:#f1dfbf;font:var(--weight-label) var(--type-detail)/1.35 var(--body);letter-spacing:.02em;font-variant-numeric:tabular-nums}
 .experience-levels span{margin-left:auto;color:#cbb898;font-family:var(--body);letter-spacing:0}
 
 .character-tabs{display:flex;gap:5px;margin:12px 0 8px;padding:4px;overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid rgba(208,186,148,.16);border-radius:6px;background:rgba(4,12,18,.32);scrollbar-width:thin}
@@ -657,3 +668,13 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   .reputation-head{gap:6px}
   .recipe-meta{margin-left:0}
 }
+
+/* TYPOGRAPHY CI — canonical semantic heading hierarchy.
+   Hero lettering, level medallions and prominent stat numerals are deliberate brand exceptions.
+   Progress bars, descriptions, tabs, and metadata must always use --body. */
+.command-title h2{font-family:var(--display);font-size:clamp(var(--type-h3),2.5vw,var(--type-h2));font-weight:var(--weight-heading);line-height:var(--leading-heading)}
+.roster-title h2{font-family:var(--display);font-size:clamp(var(--type-h2),3.8vw,3.35rem);font-weight:var(--weight-heading);line-height:var(--leading-heading)}
+.name{font-family:var(--display);font-size:clamp(var(--type-h3),3.2vw,2.45rem);font-weight:var(--weight-heading)}
+.section h3{font-family:var(--body);font-size:var(--type-small);font-weight:var(--weight-label)}
+.profession-overlay,.reputation-overlay,.experience-overlay{font-family:var(--body);font-size:var(--type-bar);font-weight:var(--weight-label);line-height:1.2;letter-spacing:.01em}
+.experience-levels{font-family:var(--body);font-size:var(--type-detail);font-weight:var(--weight-label)}
