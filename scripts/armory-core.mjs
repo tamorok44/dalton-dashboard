@@ -163,6 +163,7 @@ for(const old of characters){
     const level=Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
     const ps=professions(c);
+    if(old.slug==='cole-dalton') console.log('PROFESSION-TIER-AUDIT '+JSON.stringify({raw:c.professions,parsed:ps}).slice(0,6500));
     const st=stats(c),eq=gear(c),ta=talents(c);
     const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
     let localizedGear=null,localizationError,localizedSource;
