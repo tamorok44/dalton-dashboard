@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {describeShape,probeForeverCharacter} from './blizzard-api.mjs';
+import {describeShape,probeForeverCharacter,fetchForeverSnapshot} from './blizzard-api.mjs';
 
 process.env.BLIZZARD_CLIENT_ID='test-client';
 process.env.BLIZZARD_CLIENT_SECRET='test-secret';
@@ -51,4 +51,15 @@ assert.equal(result.endpoints.equipment.status,200);
 assert.ok(result.endpoints.profile.timeFields.some(x=>x.path==='$.last_login_timestamp'));
 assert.ok(result.endpoints.equipment.schema.paths.some(x=>x.path==='$.equipped_items[].item.name'));
 assert.equal(calls.length,3,'One OAuth request plus two API requests');
-console.log('Blizzard Forever API client and schema inventory: OK');
+
+const beforeSnapshotCalls=calls.length;
+const full=await fetchForeverSnapshot(['cole-dalton'],{
+  fetchImpl,
+  endpointNames:['profile','equipment','professions']
+});
+assert.equal(full.namespace,'profile-forever-eu');
+assert.equal(Object.keys(full.characters['cole-dalton']).length,3);
+assert.equal(full.characters['cole-dalton'].profile.status,200);
+assert.equal(full.characters['cole-dalton'].equipment.status,200);
+assert.equal(calls.length,beforeSnapshotCalls+3,'Cached OAuth token plus every requested raw snapshot endpoint');
+console.log('Blizzard Forever API client, schema inventory and raw snapshots: OK');

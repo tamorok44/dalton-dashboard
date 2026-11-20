@@ -26,6 +26,7 @@ if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
 if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
 else delete process.env.BLOB_READ_WRITE_TOKEN;
 let saved=null;
+let history=[];
 let lock=null,cooldown=false,lockReleases=0;
 
 function fakeResponse(req){
@@ -77,6 +78,10 @@ globalThis.fetch=async (url,options={})=>{
       else saved=value;
       return {ok:true,json:async()=>({result})};
     }
+    if(op==='RPUSH'){
+      history.push(value);
+      return {ok:true,json:async()=>({result:history.length})};
+    }
     if(op==='EVAL'){
       const keys=JSON.parse(options.body);
       const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
@@ -112,6 +117,8 @@ try{
   assert.equal(result.payload.success,4);
   assert.equal(result.payload.persisted,true);
   assert.ok(saved,'Redis contains a durable snapshot');
+  assert.ok(result.payload.changes>0,'Manual refresh reports meaningful changes');
+  assert.equal(history.length,1,'Manual refresh appends one change batch');
   assert.equal(result.payload.data.characters.length,4);
   assert.ok(Number.isFinite(Date.parse(result.payload.data.generatedAt)));
   assert.ok(peak>=4,'Four Blizzard profiles are fetched concurrently');
