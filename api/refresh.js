@@ -1,4 +1,5 @@
 import {refreshCharacters} from '../scripts/armory-core.mjs';
+import {archiveImages} from '../scripts/archive-images.mjs';
 import {loadCharacters,saveCharacters,mergeProfiles,configured} from '../scripts/character-store.mjs';
 export const config={maxDuration:60};
 let pending=null;
@@ -18,8 +19,9 @@ export default async function handler(req,res){
       if(success===0)return {success:0};
       const latest={generatedAt:new Date().toISOString(),characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))};
       const merged=mergeProfiles(previous,latest);
-      await saveCharacters(merged);
-      return {success,data:merged,live:true,persisted:true};
+      const archived=await archiveImages(merged,previous);
+      await saveCharacters(archived);
+      return {success,data:archived,live:true,persisted:true};
     })().finally(()=>{pending=null});
     const result=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
