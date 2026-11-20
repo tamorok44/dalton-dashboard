@@ -121,6 +121,8 @@ export default async function handler(req,res){
       perCharacter[slug]={rawBytes:raw,gzipBytes:gz};
     }
 
+    if(req.query?.full==='1')return res.status(200).json(snapshot);
+
     return res.status(200).json({
       measuredAt:snapshot.snapshotAt,
       characters:CHARACTERS.length,
