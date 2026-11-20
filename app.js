@@ -1,4 +1,4 @@
-const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
+const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
 const portraitScenes={
@@ -174,21 +174,7 @@ function render(data,{live=false,success=null}={}){
  displayedData=data;
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
- if(heroCast){
-   // Four redundant remote images are unnecessary when this layer is hidden.
-   const isWide=typeof window==='undefined'||window.matchMedia('(min-width: 1131px)').matches;
-   if(isWide){
-     const visible=chars.filter(c=>validBlob(c.storedImageUrl)||validRender(c.imageUrl));
-     const signature=visible.map(c=>(c.storedImageUrl||c.imageUrl)+'@'+(c.imageCheckedAt||'')).join('|');
-     if(!heroCast.dataset||heroCast.dataset.signature!==signature){
-       heroCast.innerHTML=visible.map((c,i)=>{
-         const version=encodeURIComponent(c.imageCheckedAt||'');
-         return '<img class="hero-figure hero-figure-'+(i+1)+'" src="'+esc((validBlob(c.storedImageUrl)?c.storedImageUrl:c.imageUrl)+'?v='+version)+'" alt="" loading="lazy" decoding="async">';
-       }).join('');
-       if(heroCast.dataset)heroCast.dataset.signature=signature;
-     }
-   }else if(heroCast.innerHTML){heroCast.innerHTML='';if(heroCast.dataset)heroCast.dataset.signature=''}
- }
+
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  const min=levels.length?Math.min(...levels):null,max=levels.length?Math.max(...levels):null;
  const avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
