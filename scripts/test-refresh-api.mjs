@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import handler from '../api/refresh.js';
+import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
 const require=createRequire(import.meta.url);
 const snapshot=require('../data/characters.json');
@@ -8,6 +9,24 @@ const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
 const classEnglish={'Druide':'Druid','Magier':'Mage','Jäger':'Hunter'};
 const professionEnglish={'Alchemie':'Alchemy','Kräuterkunde':'Herbalism','Bergbau':'Mining','Kürschnerei':'Skinning','Lederverarbeitung':'Leatherworking','Angeln':'Fishing','Kochkunst':'Cooking','Erste Hilfe':'First Aid'};
 const originalFetch=globalThis.fetch;
+process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
+process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
+process.env.CRON_SECRET='test-cron-secret';
+const previousBlobId=process.env.BLOB_STORE_ID;
+const previousBlobToken=process.env.BLOB_READ_WRITE_TOKEN;
+delete process.env.BLOB_STORE_ID;
+delete process.env.BLOB_READ_WRITE_TOKEN;
+assert.equal(imageStoreConfigured(),false,'No image storage when not connected');
+process.env.BLOB_STORE_ID='test-store';
+assert.equal(imageStoreConfigured(),true,'OIDC Blob store requires no read/write token');
+delete process.env.BLOB_STORE_ID;
+process.env.BLOB_READ_WRITE_TOKEN='legacy-token';
+assert.equal(imageStoreConfigured(),true,'Existing token-based stores are still supported');
+if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
+if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
+else delete process.env.BLOB_READ_WRITE_TOKEN;
+let saved=null;
+let lock=null,cooldown=false,lockReleases=0;
 
 function fakeResponse(req){
   let status=200,payload=null;
@@ -46,7 +65,26 @@ function armoryHtml(old){
   return '<script>var characterProfileInitialState = '+JSON.stringify({character})+';</script>';
 }
 let peak=0,inFlight=0,requests=0,failSlug=null,failAll=false;
-globalThis.fetch=async url=>{
+globalThis.fetch=async (url,options={})=>{
+  if(String(url).startsWith('https://test-redis.example.com')){
+    const [op,key,value]=JSON.parse(options.body);
+    assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
+    if(op==='GET')return {ok:true,json:async()=>({result:saved})};
+    if(op==='SET'){
+      let result='OK';
+      if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
+      else if(key==='dalton-dashboard:refresh:manual:cooldown'){if(cooldown)result=null;else cooldown=true}
+      else saved=value;
+      return {ok:true,json:async()=>({result})};
+    }
+    if(op==='EVAL'){
+      const keys=JSON.parse(options.body);
+      const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
+        (lock===keys[5]?(saved=keys[6],'OK'):'ERROR');
+      return {ok:true,json:async()=>({result})};
+    }
+    throw Error('Unexpected Redis command');
+  }
   const slug=decodeURIComponent(String(url).split('/').at(-1));
   const profile=baseline.get(slug);
   assert.ok(profile,'Only configured Dalton profiles are requested');
@@ -59,15 +97,21 @@ globalThis.fetch=async url=>{
 
 try{
   const rejected=fakeResponse();
-  await handler({method:'POST'},rejected);
-  assert.equal(rejected.result().status,405,'Only GET is allowed');
+  await handler({method:'PUT'},rejected);
+  assert.equal(rejected.result().status,405,'Unsupported methods are rejected');
   assert.equal(requests,0,'Invalid method must not query Blizzard');
+
+  const denied=fakeResponse();
+  await handler({method:'POST',headers:{}},denied);
+  assert.equal(denied.result().status,401);
 
   const ok=fakeResponse();
   await handler({method:'GET'},ok);
   const result=ok.result();
   assert.equal(result.status,200);
   assert.equal(result.payload.success,4);
+  assert.equal(result.payload.persisted,true);
+  assert.ok(saved,'Redis contains a durable snapshot');
   assert.equal(result.payload.data.characters.length,4);
   assert.ok(Number.isFinite(Date.parse(result.payload.data.generatedAt)));
   assert.ok(peak>=4,'Four Blizzard profiles are fetched concurrently');
@@ -81,6 +125,7 @@ try{
   }
   assert.equal(result.headers['Cache-Control'],'private, no-store');
 
+  cooldown=false;
   failSlug='chucky-dalton';
   const partial=fakeResponse();
   await handler({method:'GET'},partial);
@@ -89,13 +134,33 @@ try{
   assert.equal(partialResult.payload.success,3);
   assert.equal(partialResult.payload.data.characters.length,4);
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).scrapeOk,false);
+  assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).level,baseline.get(failSlug).level+2,'Partially failed profile preserves last persisted live level');
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton').scrapeOk,true);
 
+  cooldown=false;
   failAll=true;
   const unavailable=fakeResponse();
   await handler({method:'GET'},unavailable);
   assert.equal(unavailable.result().status,503,'Total outage must not claim fresh data');
   assert.ok(unavailable.result().payload.error);
+  const scheduled=fakeResponse();
+  failAll=false;failSlug=null;
+  await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},scheduled);
+  assert.equal(scheduled.result().status,200,'Authorized scheduled update succeeds');
+  assert.ok(lockReleases>=3,'Distributed lock is released after runs');
+  lock='other-instance';
+  const savedBeforeConflict=saved, requestsBeforeConflict=requests;
+  const overlapping=fakeResponse();
+  await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},overlapping);
+  assert.equal(overlapping.result().status,200,'Scheduled overlapping requests are acknowledged');
+  assert.equal(overlapping.result().payload.pending,true,'Overlapping requests are not treated as a completed refresh');
+  assert.equal(saved,savedBeforeConflict,'No stale data overwrites when another instance holds the lock');
+  assert.equal(requests,requestsBeforeConflict,'Locked request does not contact Blizzard');
+  lock=null;
+  cooldown=true;
+  const throttled=fakeResponse();
+  await handler({method:'GET'},throttled);
+  assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
   console.log('Manual API: parallel fetch, latest level/skills/stats, partial/total failure, cache controls: OK');
 }finally{
   globalThis.fetch=originalFetch;

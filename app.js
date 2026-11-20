@@ -1,4 +1,4 @@
-const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
+const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
 const portraitScenes={
@@ -98,8 +98,9 @@ function equipmentPanel(c,open=false){
   const rows=equipmentSlotOrder.map(slot=>{
     const item=available.get(slot);
     if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
-    const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(item.icon||'');
-    const icon=safeIcon?'<img class="equip-icon" src="'+esc(item.icon)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
+    const iconUrl=item.storedIcon||item.icon;
+    const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(iconUrl||'')||validBlob(iconUrl);
+    const icon=safeIcon?'<img class="equip-icon" src="'+esc(iconUrl)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
     const quality=String(item.quality||'').toUpperCase();
     const qualityClass=itemQualityClasses[quality]||'quality-unknown';
     const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
@@ -110,14 +111,15 @@ function equipmentPanel(c,open=false){
   return '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details>';
 }
 
+const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/)/.test(x.pathname)}catch{return false}};
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
   const configuredScene=portraitScenes[c.slug]||null;
   // Blizzard-Geschlecht ist zuverlässiger als die Pose oder der visuelle Renderer.
   const scene=configuredScene&&c.slug==='chucky-dalton'&&c.gender==='male'
     ? {...configuredScene,epithet:'Der Windsurfer'} : configuredScene;
-  const image=validRender(c.imageUrl)?c.imageUrl:null;
-  const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
+  const image=validBlob(c.storedImageUrl)?c.storedImageUrl:validRender(c.imageUrl)?c.imageUrl:null;
+  const avatar=validBlob(c.storedAvatarUrl)?c.storedAvatarUrl:/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
   const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
   return '<figure class="portrait '+(scene?scene.className:'')+'">'+portraitBadge(scene)+'<img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
@@ -172,21 +174,7 @@ function render(data,{live=false,success=null}={}){
  displayedData=data;
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
- if(heroCast){
-   // Four redundant remote images are unnecessary when this layer is hidden.
-   const isWide=typeof window==='undefined'||window.matchMedia('(min-width: 1131px)').matches;
-   if(isWide){
-     const visible=chars.filter(c=>validRender(c.imageUrl));
-     const signature=visible.map(c=>c.imageUrl+'@'+(c.imageCheckedAt||'')).join('|');
-     if(!heroCast.dataset||heroCast.dataset.signature!==signature){
-       heroCast.innerHTML=visible.map((c,i)=>{
-         const version=encodeURIComponent(c.imageCheckedAt||'');
-         return '<img class="hero-figure hero-figure-'+(i+1)+'" src="'+esc(c.imageUrl+'?v='+version)+'" alt="" loading="lazy" decoding="async">';
-       }).join('');
-       if(heroCast.dataset)heroCast.dataset.signature=signature;
-     }
-   }else if(heroCast.innerHTML){heroCast.innerHTML='';if(heroCast.dataset)heroCast.dataset.signature=''}
- }
+
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  const min=levels.length?Math.min(...levels):null,max=levels.length?Math.max(...levels):null;
  const avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
@@ -220,15 +208,19 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
 }
 let lastGeneratedAt=null;
 async function load(){
-  status.textContent="Gespeicherte Daten werden geladen …";
+  status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
   try{
-    const r=await fetch('/data/characters.json?t='+Date.now(),{cache:"no-store"});
+    const r=await fetch('/api/characters?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error("HTTP "+r.status);
-    const data=await r.json();
+    const result=await r.json();
+    const data=result.data;
     if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
       lastGeneratedAt=data.generatedAt;render(data);
     }
-  }catch(e){if(!displayedData)status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
+  }catch(e){if(!displayedData){
+      try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
+      catch{status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
+    }}
 }
 async function refreshLive(){
   if(button.disabled)return;
@@ -239,9 +231,10 @@ async function refreshLive(){
     const r=await fetch('/api/refresh?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error('HTTP '+r.status);
     const response=await r.json();
+    if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
-    render(keepNewestProfiles(response.data),{live:true,success:response.success});
+    render(response.data,{live:true,success:response.success});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
@@ -250,5 +243,5 @@ async function refreshLive(){
 button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
-// Neue Blizzard-Profildaten ausschliesslich auf ausdruecklichen Button-Klick abrufen.
+// Live-Aufrufe hier nur per Button; zusätzlich aktualisiert ein geplanter Server-Aufruf alle 30 Minuten.
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});

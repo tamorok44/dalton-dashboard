@@ -1,5 +1,5 @@
-const CACHE="daltons-typography-unified-v16";
-const ASSETS=["/","/styles.css?v=typography-western-20261120b","/app.js?v=armory-quality-20261120b","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=frontier-unified-20261120a","/scene-dolly.svg?v=frontier-unified-20261120a","/scene-chucky.svg?v=frontier-unified-20261120a","/scene-viola.svg?v=frontier-unified-20261120a"];
+const CACHE="daltons-persistent-v18";
+const ASSETS=["/","/styles.css?v=typography-western-20261120b","/app.js?v=persistent-20261120b","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=frontier-unified-20261120a","/scene-dolly.svg?v=frontier-unified-20261120a","/scene-chucky.svg?v=frontier-unified-20261120a","/scene-viola.svg?v=frontier-unified-20261120a"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });

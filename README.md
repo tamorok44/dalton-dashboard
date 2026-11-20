@@ -1,67 +1,27 @@
 # Die Daltons – WoW Forever Dashboard
 
-Western-Dashboard für die vier Dalton-Charaktere. Statische Website und eine
-Vercel-Serverfunktion, ohne Datenbank oder zusätzliche Client-Bibliotheken.
+Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funktionen, Upstash Redis und optional Vercel Blob.
 
-## Architektur und Aktualisierung
+## Persistenter Betrieb
 
-- `index.html` und `styles.css`: Western-Layout, Sheriffsterne und
-  klassenbezogene Farben (Magier blau, Jäger grün, Druiden orange).
-- `app.js`: Alle Charakterkarten und Gruppenkennzahlen werden aus dem aktuellen
-  Datensatz erzeugt. Kein Level, Fertigkeitsstand, Talent oder Attribut ist als
-  fester Wert im HTML hinterlegt.
-- `data/characters.json`: letzter **dauerhaft gespeicherter** Stand. Er wird
-  beim Öffnen der Seite angezeigt, bis manuell aktualisiert wird.
-- `api/refresh.js`: ein Klick auf „Aktualisieren“ fragt alle vier Profile
-  **parallel** über `scripts/armory-core.mjs` bei Blizzard ab.
-- `scripts/armory-core.mjs`: validiert Blizzard-Daten, lokalisiert geänderte
-  Ausrüstung, kennzeichnet nicht bestätigte Ersatzwerte und führt einen
-  älteren Stand nur bei unvollständigen Quellen fort.
-- `sw.js`: Offline-Fallback für die statischen Ressourcen. Blizzard-Daten
-  und die Live-API werden nicht vom Service Worker gecacht.
-- `.github/workflows/update-data.yml`: führt nur die Tests bei Codeänderungen
-  aus. Es gibt **keinen** zeitgesteuerten Datenabruf und keine 30-Minuten-Deployments.
+- `GET /api/characters` liest den letzten vollständigen Datensatz aus Redis, beim erstmaligen Start aus `data/characters.json`.
+- Ein Klick auf **Aktualisieren** löst `GET /api/refresh` aus und speichert erfolgreich abgerufene Daten dauerhaft. Der manuelle Abruf ist global auf einmal pro Minute begrenzt.
+- Die GitHub-Aktion `.github/workflows/refresh-characters.yml` ruft **alle 30 Minuten** `GET /api/refresh` auf, unabhängig vom manuellen Aktualisieren. Sie benötigt keine zusätzlichen Konten oder Zugangsdaten und führt **kein Deployment** aus. GitHub-Zeitpläne können verzögert ausfallen. Der bereits vorhandene geschützte `POST`-Endpunkt bleibt für eine eventuelle spätere QStash-Umstellung verfügbar.
+- Redis-basierte Sperre (`SET NX EX`) schützt gegen parallele Serverinstanzen. Ein per Lua validierter Schreibvorgang verhindert Überschreiben nach abgelaufener Sperre. Eine laufende Aktualisierung erhält HTTP 202 (manuell) oder 200 (QStash).
+- Teilfehler behalten den letzten Datenstand des betroffenen Charakters. Bei einem vollständigen Blizzard-Ausfall wird kein neuer Stand gespeichert.
+- Vercel Blob speichert optional Porträts, Avatare und Ausrüstungs-Icons. Neue Icons werden schrittweise archiviert. Die Originale bleiben als Fallback erhalten. Alle Blob-Adressen werden in Redis gespeichert.
+- Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
-**Wichtig:** Der manuelle Live-Abruf aktualisiert den geöffneten Browser,
-aber schreibt keine Daten zurück nach GitHub. Nach einem Neuladen gilt
-deshalb wieder der gespeicherte Stand. Das ist absichtlich so vereinbart.
+## Noch nötige Einrichtung vor Produktionsstart
 
-## Felder und Berechnungen
+1. In Vercel prüfen, dass beim Projekt `dalton-dashboard` die Variablen `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` und `BLOB_STORE_ID` für **Production** vorhanden sind. Alternativ funktionieren für Redis `KV_REST_API_URL` / `KV_REST_API_TOKEN`. Vercel Blob verwendet bei neuen Projekt-Verbindungen standardmässig kurzlebige OIDC-Anmeldedaten mit `BLOB_STORE_ID` (kein `BLOB_READ_WRITE_TOKEN` nötig). Ältere Token-basierte Blob-Verbindungen bleiben ebenfalls unterstützt.
+2. Eine **zusätzliche** Vercel-Umgebungsvariable `CRON_SECRET` für Production mit einem langen zufälligen Passwort einrichten. Geheimnisse nur im Vercel-Dashboard eingeben.
+3. Nach grünem GitHub-Test die Änderungen einmalig nach Production deployen, `/api/characters` aufrufen und anschliessend den Aktualisieren-Button testen. Datenstand nach Neuladen prüfen.
+4. Nach dem Merge in `main` ist der GitHub-Actions-Zeitplan `7,37 * * * *` (UTC) automatisch aktiv. Unter **Actions → Dalton-Profile automatisch aktualisieren** den ersten Lauf ansehen und unter `/api/characters` den neuen Zeitstempel prüfen.
+5. **Keinen zweiten QStash-Zeitplan** einrichten, solange dieser GitHub-Actions-Zeitplan aktiv ist.
 
-| Anzeige | Quelle / Berechnung |
-| --- | --- |
-| Charakter-Stufe | `character.level` aus Blizzard |
-| Gruppenlevel | Minimum–Maximum aller vier angezeigten Stufen |
-| Durchschnitt | arithmetischer Mittelwert der angezeigten Stufen |
-| Abstand | Maximum minus Minimum |
-| Berufe | Blizzard-Fertigkeit `skillPoints / maxSkillPoints`; 4 Segmente zu je 75 |
-| Berufsrang | Maximum 75/150/225/300 → Lehrling/Geselle/Experte/Fachmann |
-| Talente | Talentbäume und verteilte Punkte aus `specs` |
-| Gesundheit, Mana, Rüstung usw. | `stats`; fehlende Werte markiert |
-| Ausrüstung | `gear` mit Gegenstand, Qualität, Stufe und Slot |
-| Charakterbild | Blizzard-Medien-URL; unveränderte Bilder behalten ihren Cache-Key |
-| Datenstand | `generatedAt` des gespeicherten oder manuellen Abrufs |
+**Wichtig:** Der Zeitplan aktualisiert Redis/Blob und niemals das GitHub-Repository. Der erste planmäßige Abruf startet erst nach dem Merge (die Produktionswebsite muss dafür bereits deployed sein). Der öffentliche GET-Endpunkt nutzt die bestehende globale Redis-Drosselung und verteilte Sperre.
 
-Fehlschläge betreffen nur die jeweiligen Profile: Erreichbare Profile
-werden weiterhin frisch dargestellt, für die anderen wird der letzte
-bestätigte Stand **ausdrücklich** markiert.
+## Entwicklung
 
-## Qualität
-
-```bash
-npm test
-```
-
-Prüft Syntax und die fachliche Datenverarbeitung einschließlich simulierter
-Änderungen an Stufe, Gruppenkennzahlen, Berufen, Talenten, Charakterwerten
-und Ausrüstung. Zusätzlich testet die Suite den HTTP-Endpunkt mit parallelen
-Blizzard-Profilen, Teilfehlern und vollständigen Ausfällen. Keine produktive Blizzard-Anfrage wird im Test ausgeführt.
-
-## Betriebsgrenzen
-
-Vercel Hobby begrenzt Deployments. Die manuelle Aktualisierung benötigt
-**kein** neues Deployment. Die manuell abgerufenen Werte sind ohne
-dauerhaften Speicher nicht über neue Browser-Sitzungen hinweg persistent.
-
-Für dauerhafte Live-Werte wäre später eine kleine persistente Ablage
-erforderlich; sie ist bewusst **nicht** Teil dieser Implementierung.
+`npm test`: Syntax-, Parser-, UI- und API-Tests. Der Draft-PR löst GitHub Actions aus.
