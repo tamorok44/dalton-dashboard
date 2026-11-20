@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import handler from '../api/refresh.js';
+import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
 const require=createRequire(import.meta.url);
 const snapshot=require('../data/characters.json');
@@ -11,6 +12,19 @@ const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
 process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
 process.env.CRON_SECRET='test-cron-secret';
+const previousBlobId=process.env.BLOB_STORE_ID;
+const previousBlobToken=process.env.BLOB_READ_WRITE_TOKEN;
+delete process.env.BLOB_STORE_ID;
+delete process.env.BLOB_READ_WRITE_TOKEN;
+assert.equal(imageStoreConfigured(),false,'No image storage when not connected');
+process.env.BLOB_STORE_ID='test-store';
+assert.equal(imageStoreConfigured(),true,'OIDC Blob store requires no read/write token');
+delete process.env.BLOB_STORE_ID;
+process.env.BLOB_READ_WRITE_TOKEN='legacy-token';
+assert.equal(imageStoreConfigured(),true,'Existing token-based stores are still supported');
+if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
+if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
+else delete process.env.BLOB_READ_WRITE_TOKEN;
 let saved=null;
 let lock=null,cooldown=false,lockReleases=0;
 

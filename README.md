@@ -14,7 +14,7 @@ Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funk
 
 ## Noch nötige Einrichtung vor Produktionsstart
 
-1. In Vercel prüfen, dass beim Projekt `dalton-dashboard` die Variablen `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` und `BLOB_READ_WRITE_TOKEN` für **Production** vorhanden sind. Alternativ funktionieren für Redis `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
+1. In Vercel prüfen, dass beim Projekt `dalton-dashboard` die Variablen `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` und `BLOB_STORE_ID` für **Production** vorhanden sind. Alternativ funktionieren für Redis `KV_REST_API_URL` / `KV_REST_API_TOKEN`. Vercel Blob verwendet bei neuen Projekt-Verbindungen standardmässig kurzlebige OIDC-Anmeldedaten mit `BLOB_STORE_ID` (kein `BLOB_READ_WRITE_TOKEN` nötig). Ältere Token-basierte Blob-Verbindungen bleiben ebenfalls unterstützt.
 2. Eine **zusätzliche** Vercel-Umgebungsvariable `CRON_SECRET` für Production mit einem langen zufälligen Passwort einrichten. Geheimnisse nur im Vercel-Dashboard eingeben.
 3. Nach grünem GitHub-Test die Änderungen einmalig nach Production deployen, `/api/characters` aufrufen und anschliessend den Aktualisieren-Button testen. Datenstand nach Neuladen prüfen.
 4. In [Upstash QStash](https://console.upstash.com/qstash) unter **Schedules** einen Zeitplan für `https://dalton-dashboard-eight.vercel.app/api/refresh` einrichten. HTTP-Methode **POST**, CRON `*/30 * * * *` (UTC); beim Erstellen als **weitergeleiteten** Header `Authorization: Bearer <CRON_SECRET>` setzen. Für QStash API wird dieser Header als `Upstash-Forward-Authorization` übergeben. QStash verwendet für die API-Anmeldung einen getrennten QStash-Token, nicht den CRON_SECRET.

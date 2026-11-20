@@ -10,11 +10,15 @@ async function copyImage(url,path){
   const body=Buffer.from(await r.arrayBuffer());
   if(body.length===0||body.length>5_000_000)throw Error('Bildgröße unzulässig');
   const {put}=await import('@vercel/blob');
-  const result=await put(path,body,{access:'public',addRandomSuffix:false,allowOverwrite:true,contentType:type,token:process.env.BLOB_READ_WRITE_TOKEN});
+  const result=await put(path,body,{access:'public',addRandomSuffix:false,allowOverwrite:true,contentType:type});
   return result.url;
 }
+export function imageStoreConfigured(){
+  // Vercel Blob supports project-scoped OIDC (BLOB_STORE_ID) or the legacy read/write token.
+  return Boolean(process.env.BLOB_STORE_ID||process.env.BLOB_READ_WRITE_TOKEN);
+}
 export async function archiveImages(data,previous){
-  if(!process.env.BLOB_READ_WRITE_TOKEN)return data;
+  if(!imageStoreConfigured())return data;
   const old=new Map((previous.characters||[]).map(c=>[c.slug,c]));
   const cache=new Map();
   let newIcons=0;
