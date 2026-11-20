@@ -159,8 +159,7 @@ function reputationPanel(c){
 function progressPanel(c){
   const entries=[];
   if(Number.isFinite(Number(c.experience)))entries.push(row('Erfahrung',Number(c.experience).toLocaleString('de-DE')));
-  if(Number.isFinite(Number(c.equippedItemLevel)))entries.push(row('Angelegte Gegenstandsstufe',c.equippedItemLevel));
-  if(Number.isFinite(Number(c.averageItemLevel)))entries.push(row('Ø Gegenstandsstufe',c.averageItemLevel));
+  if(Number.isFinite(Number(c.equippedItemLevel)))entries.push(row('Gegenstandsstufe',c.equippedItemLevel));
   return entries.length?'<div class="section progress-section"><h3>Fortschritt</h3><div class="rows">'+entries.join('')+'</div></div>':'';
 }
 
