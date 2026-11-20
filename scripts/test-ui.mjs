@@ -13,7 +13,7 @@ const document={querySelector(selector){
   if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',querySelectorAll:()=>[],addEventListener(){}});
   return nodes.get(selector);
 }};
-const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document);
+const ui=new Function('document',source.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -44,6 +44,30 @@ assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
 assert.match(invalid,/Rang unbekannt/);
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
 assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
+const redundantRecipe=ui.recipeRows([{
+  name:'Manabrunnen',
+  craftedItem:{name:'Manabrunnen'},
+  craftedQuantity:{value:1},
+  reagents:[{name:'Friedensblume',quantity:1},{name:'Leere Phiole',quantity:1}]
+}]);
+assert.ok(!redundantRecipe.includes('Erstellt:'),'Identical recipe and crafted-item names must not be repeated');
+assert.ok(redundantRecipe.includes('Materialien: 1× Friedensblume · 1× Leere Phiole'),'Materials remain visible when redundant crafted-item text is hidden');
+
+const transformedRecipe=ui.recipeRows([{
+  name:'Kupfer verhütten',
+  craftedItem:{name:'Kupferbarren'},
+  craftedQuantity:{value:1},
+  reagents:[{name:'Kupfererz',quantity:1}]
+}]);
+assert.ok(transformedRecipe.includes('Erstellt: <strong>Kupferbarren</strong>'),'Different crafted-item names remain visible');
+
+const multiYieldRecipe=ui.recipeRows([{
+  name:'Testprodukt',
+  craftedItem:{name:'Testprodukt'},
+  craftedQuantity:{value:2},
+  reagents:[]
+}]);
+assert.ok(multiYieldRecipe.includes('Erstellt: <strong>Testprodukt × 2</strong>'),'A non-default crafted quantity remains visible even when names match');
 const orderedNames=list=>ui.sortProfessionsForDisplay(list.map(name=>({name}))).map(x=>x.name);
 assert.deepEqual(orderedNames(['Alchimie','Kräuterkunde','Kochkunst','Angeln','Erste Hilfe']),['Kräuterkunde','Alchimie','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Lederverarbeitung','Kürschnerei','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe']);
