@@ -598,7 +598,11 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   color:#ddc7a5;font-size:var(--type-small)
 }
 .quest-entry>span{color:var(--class);font-size:1.15rem;line-height:1}
-.quest-entry strong{font-weight:700;line-height:1.45}
+.quest-copy{flex:1;min-width:0}
+.quest-entry strong{display:block;font-weight:700;line-height:1.45}
+.quest-meta{display:grid;gap:2px;margin-top:3px;font-size:var(--type-caption);line-height:1.35}
+.quest-shared{color:#cdb78f}
+.quest-completed{color:#a8c895}
 
 @media(max-width:520px){
   .talent-entry-head{align-items:flex-start}
