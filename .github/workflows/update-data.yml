@@ -9,6 +9,9 @@ on:
       - "scripts/official-scrape.mjs"
       - "scripts/armory-core.mjs"
       - "scripts/test-armory.mjs"
+      - "scripts/test-ui.mjs"
+      - "app.js"
+      - "styles.css"
       - ".github/workflows/update-data.yml"
 permissions:
   contents: write
@@ -25,7 +28,7 @@ jobs:
         with:
           node-version: "22"
       - name: Prüfen, ob deutsche Ausrüstung korrekt erkannt wird
-        run: node scripts/test-armory.mjs
+        run: npm test
       - name: Blizzard-Profile, Werte, Talente und Bilder abrufen
         run: node scripts/official-scrape.mjs
       - name: Änderungen sicher speichern
