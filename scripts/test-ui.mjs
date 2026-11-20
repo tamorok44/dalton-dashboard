@@ -356,11 +356,12 @@ assert.ok(css.includes('justify-content:center;text-align:center'),'Names are ce
 for(const token of ['--type-caption:', '--type-small:', '--type-body:', '--type-lead:', '--leading-copy:', '--tracking-label:']){
   assert.ok(css.includes(token),'Shared typography token '+token);
 }
-assert.equal((css.match(/font-style:italic|font:italic/g)||[]).length,1,'Only the word Die uses italic styling');
+assert.equal((css.match(/font-style:italic|font:italic/g)||[]).length,2,'Only Die and the third hero claim use italic styling');
 for(const selector of ['.hero-story{','.roster-title p{','.refresh-hint{']){
   const block=css.split(selector)[1]?.split('}')[0]||'';
   assert.ok(block.includes('font-family:var(--body)'),selector+' uses the information font');
-  assert.ok(block.includes('font-style:normal'),selector+' is not italic');
+  if(selector==='.hero-story{')assert.ok(block.includes('font-style:italic'),selector+' is intentionally italic');
+  else assert.ok(block.includes('font-style:normal'),selector+' is not italic');
 }
 assert.ok(css.includes('.hero-story{margin:14px 0 0;color:#f8dfb5')&&css.includes('font-weight:700'),'Motto remains readable as the third hero hierarchy level');
 assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text removed');
