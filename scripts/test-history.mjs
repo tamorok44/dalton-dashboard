@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {diffMeaningfulChanges,historyProjection} from './history-store.mjs';
+import {berlinClock} from '../api/daily-snapshot.js';
 
 const base={
   generatedAt:'2026-11-20T10:00:00.000Z',
@@ -32,3 +33,8 @@ assert.ok(changes.some(x=>x.path==='professions.Alchemie.current'&&x.after===63)
 assert.ok(changes.some(x=>x.path==='equipment.Brust.item'&&x.after==='Neues Wams'));
 assert.ok(!Object.hasOwn(historyProjection(changed.characters[0]),'scrapedAt'));
 console.log('Historie: nur fachliche Änderungen, keine Abrufzeitstempel: OK');
+
+const winter=berlinClock(new Date('2026-01-15T04:07:00.000Z'));
+const summer=berlinClock(new Date('2026-07-15T04:07:00.000Z'));
+assert.equal(winter.hour,5,'04:07 UTC corresponds to 05:07 in Berlin winter time');
+assert.equal(summer.hour,6,'04:07 UTC corresponds to 06:07 in Berlin summer time');

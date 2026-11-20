@@ -21,7 +21,7 @@ export default async function handler(req,res){
   const secret=process.env.CRON_SECRET;
   if(!secret||req.headers?.authorization!=='Bearer '+secret)return res.status(401).json({error:'Nicht autorisiert'});
   const local=berlinClock();
-  if(local.hour!==5)return res.status(200).json({skipped:true,reason:'outside_05_local_hour',local});
+  if(![5,6].includes(local.hour))return res.status(200).json({skipped:true,reason:'outside_early_morning_window',local});
   if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt'});
   if(!blizzardApiConfigured())return res.status(503).json({error:'Blizzard API-Zugangsdaten fehlen'});
   if(!dailySnapshotStoreConfigured())return res.status(503).json({error:'Blob-Speicher fehlt'});
