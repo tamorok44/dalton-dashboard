@@ -27,8 +27,16 @@
   --type-h4:1rem;      /* 16 px */
   --type-bar:.75rem;    /* 12 px */
   --type-detail:.6875rem; /* 11 px */
+  /* Exactly three permitted font weights: regular 400, emphasis 700, display 800. */
   --weight-body:400;
+  --weight-small:400;
+  --weight-detail:400;
   --weight-label:700;
+  --weight-bar:700;
+  --weight-h1:800;
+  --weight-h2:800;
+  --weight-h3:700;
+  --weight-h4:700;
   --weight-heading:800;
   --leading-heading:1.16;
   /* Four consistent text sizes; titles/hero remain deliberately larger. */
@@ -499,7 +507,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 /* Vorhandene prefers-reduced-motion-Regel stoppt beide Animationen komplett. */
 
 /* Einheitliche Western-Systematik: sichtbarer Datenstand, Messing-Details statt Sternen. */
-.data-freshness{display:flex;align-items:center;gap:9px;margin:12px 0 0;color:#f7d7a5;font-size:var(--type-small);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.4}
+.data-freshness{display:flex;align-items:center;gap:9px;margin:12px 0 0;color:#f7d7a5;font-size:var(--type-small);font-weight:var(--weight-body);font-variant-numeric:tabular-nums;line-height:1.4}
 .data-freshness::before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#d7ad72;border:1px solid #fae0b3;box-shadow:0 0 8px #d7ad725a}
 .command-title{min-width:0}
 .command-description{line-height:var(--leading-copy)}
@@ -520,13 +528,13 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 }
 
 /* A cached stat value is retained for context, never presented as verified live. */
-.stale-value{display:inline;font-size:var(--type-caption);font-weight:600;letter-spacing:0;color:#e0b28c;text-transform:none;white-space:normal}
+.stale-value{display:inline;font-size:var(--type-caption);font-weight:var(--weight-body);letter-spacing:0;color:#e0b28c;text-transform:none;white-space:normal}
 .stat-tile small{line-height:1.45}
 
 
 /* Detailansichten: deutsche Blizzard-Originaldaten bleiben kompakt, aber vollständig zugänglich. */
 .card>.activity-note{
-  margin:9px 2px 0;color:#dcc6a3;font-size:var(--type-small);font-weight:600;
+  margin:9px 2px 0;color:#dcc6a3;font-size:var(--type-small);font-weight:var(--weight-body);
   font-variant-numeric:tabular-nums
 }
 .card>.profile-warning{margin:10px 2px 0;color:#efbd9d}
@@ -641,7 +649,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .experience-overlay{position:absolute;z-index:3;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .profession-overlay,.reputation-overlay,.experience-overlay{
   color:#fff7e4;
-  font:var(--weight-label) var(--type-bar)/1.2 var(--body);
+  font:var(--weight-bar) var(--type-bar)/1.2 var(--body);
   letter-spacing:.025em;
   font-variant-numeric:tabular-nums;
   text-shadow:0 1px 2px #06121d,0 2px 7px #04101b,1px 0 #04101b,-1px 0 #04101b;
@@ -678,3 +686,15 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .section h3{font-family:var(--body);font-size:var(--type-small);font-weight:var(--weight-label)}
 .profession-overlay,.reputation-overlay,.experience-overlay{font-family:var(--body);font-size:var(--type-bar);font-weight:var(--weight-label);line-height:1.2;letter-spacing:.01em}
 .experience-levels{font-family:var(--body);font-size:var(--type-detail);font-weight:var(--weight-label)}
+
+/* Semantic text roles: regular copy remains regular even at small sizes.
+   Explicit emphasis uses --weight-label; avoid arbitrary intermediate weights. */
+.refresh-hint,.status,.player,.equip small,.talent-entry p,.knowledge-empty,.recipe-name,.quest-description,.quest-entry,.data-freshness,.card>.activity-note{
+  font-weight:var(--weight-small);
+}
+.recipe-meta,.quest-meta,.quest-detail-row,.quest-detail summary,.stale-value{
+  font-weight:var(--weight-detail);
+}
+.section h3,.profession-label,.reputation-head>span,.talent-tree-head>strong{
+  font-weight:var(--weight-h4);
+}
