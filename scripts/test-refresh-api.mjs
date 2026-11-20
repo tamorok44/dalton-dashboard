@@ -12,6 +12,7 @@ process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
 process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
 process.env.CRON_SECRET='test-cron-secret';
 let saved=null;
+let lock=null,cooldown=false,lockReleases=0;
 
 function fakeResponse(req){
   let status=200,payload=null;
@@ -55,7 +56,19 @@ globalThis.fetch=async (url,options={})=>{
     const [op,key,value]=JSON.parse(options.body);
     assert.equal(key,'dalton-dashboard:characters:v1');
     if(op==='GET')return {ok:true,json:async()=>({result:saved})};
-    if(op==='SET'){saved=value;return {ok:true,json:async()=>({result:'OK'})}}
+    if(op==='SET'){
+      let result='OK';
+      if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
+      else if(key==='dalton-dashboard:refresh:manual:cooldown'){if(cooldown)result=null;else cooldown=true}
+      else saved=value;
+      return {ok:true,json:async()=>({result})};
+    }
+    if(op==='EVAL'){
+      const keys=JSON.parse(options.body);
+      const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
+        (lock===keys[5]?(saved=keys[6],'OK'):'ERROR');
+      return {ok:true,json:async()=>({result})};
+    }
     throw Error('Unexpected Redis command');
   }
   const slug=decodeURIComponent(String(url).split('/').at(-1));
@@ -98,6 +111,7 @@ try{
   }
   assert.equal(result.headers['Cache-Control'],'private, no-store');
 
+  cooldown=false;
   failSlug='chucky-dalton';
   const partial=fakeResponse();
   await handler({method:'GET'},partial);
@@ -109,6 +123,7 @@ try{
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).level,baseline.get(failSlug).level+2,'Partially failed profile preserves last persisted live level');
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton').scrapeOk,true);
 
+  cooldown=false;
   failAll=true;
   const unavailable=fakeResponse();
   await handler({method:'GET'},unavailable);
@@ -118,6 +133,7 @@ try{
   failAll=false;failSlug=null;
   await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},scheduled);
   assert.equal(scheduled.result().status,200,'Authorized scheduled update succeeds');
+  assert.ok(lockReleases>=3,'Distributed lock is released after runs');
   console.log('Manual API: parallel fetch, latest level/skills/stats, partial/total failure, cache controls: OK');
 }finally{
   globalThis.fetch=originalFetch;

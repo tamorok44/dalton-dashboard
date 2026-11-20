@@ -1,6 +1,6 @@
 import {refreshCharacters} from '../scripts/armory-core.mjs';
 import {archiveImages} from '../scripts/archive-images.mjs';
-import {loadCharacters,saveCharacters,mergeProfiles,configured} from '../scripts/character-store.mjs';
+import {loadCharacters,saveCharacters,mergeProfiles,configured,acquireRefreshLock,releaseRefreshLock,manualCooldown} from '../scripts/character-store.mjs';
 export const config={maxDuration:60};
 let pending=null;
 export default async function handler(req,res){
@@ -12,16 +12,30 @@ export default async function handler(req,res){
   }
   if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt; Live-Daten wurden nicht gespeichert'});
   try{
-    if(!pending)pending=(async()=>{
-      const {data:previous}=await loadCharacters();
-      const results=await Promise.all(previous.characters.map(c=>refreshCharacters([c])));
-      const success=results.reduce((n,r)=>n+r.success,0);
-      if(success===0)return {success:0};
-      const latest={generatedAt:new Date().toISOString(),characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))};
-      const merged=mergeProfiles(previous,latest);
-      const archived=await archiveImages(merged,previous);
-      await saveCharacters(archived);
-      return {success,data:archived,live:true,persisted:true};
+    if(pending){
+      if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
+      return res.status(202).json({pending:true,reason:'already_running'});
+    }
+    if(req.method==='GET'&&!(await manualCooldown()))return res.status(429).json({error:'Aktualisierung wurde kürzlich gestartet. Bitte eine Minute warten.'});
+    const lockToken=await acquireRefreshLock();
+    if(!lockToken){
+      if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
+      return res.status(202).json({pending:true,reason:'already_running'});
+    }
+    pending=(async()=>{
+      try{
+        const {data:previous}=await loadCharacters();
+        const results=await Promise.all(previous.characters.map(c=>refreshCharacters([c])));
+        const success=results.reduce((n,r)=>n+r.success,0);
+        if(success===0)return {success:0};
+        const latest={generatedAt:new Date().toISOString(),characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))};
+        const merged=mergeProfiles(previous,latest);
+        const archived=await archiveImages(merged,previous);
+        await saveCharacters(archived,lockToken);
+        return {success,data:archived,live:true,persisted:true};
+      }finally{
+        try{await releaseRefreshLock(lockToken)}catch(e){console.error('Redis-Refresh-Sperre konnte nicht freigegeben werden:',e)}
+      }
     })().finally(()=>{pending=null});
     const result=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});

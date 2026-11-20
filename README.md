@@ -1,26 +1,27 @@
 # Die Daltons – WoW Forever Dashboard
 
-Western-Dashboard für vier Dalton-Charaktere. Statische Website plus Vercel-Funktionen, Redis-Datenbank und optional Vercel Blob.
+Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funktionen, Upstash Redis und optional Vercel Blob.
 
-## Dauerhafte Aktualisierung
+## Persistenter Betrieb
 
-- `/api/characters` liest die jüngste dauerhafte Momentaufnahme aus Redis. Bei erstmaligem leerem Speicher liefert es `data/characters.json` als Startwert.
-- `/api/refresh` fragt die vier Blizzard-Profile parallel ab und speichert das Ergebnis **vor** einer erfolgreichen HTTP-Antwort in Redis. Teilfehler behalten die zuvor gespeicherten Werte des jeweiligen Charakters.
-- Der Aktualisieren-Button verwendet `GET /api/refresh`; ein GitHub-Actions-Zeitplan ruft alle 30 Minuten `POST /api/refresh` mit einem geheimen Bearer-Token auf. **Keine Pushes und keine Deployments bei Datenaktualisierungen.**
-- Charakterporträts, Avatare und Ausrüstungs-Icons werden bei konfiguriertem Vercel Blob im Objektspeicher archiviert; ihre URLs sind Bestandteile des Redis-Datensatzes. Je Durchgang werden höchstens zwölf neue Ausrüstungs-Icons hochgeladen, bis die Ersterfassung abgeschlossen ist. Original-URLs dienen als Fallback. Unveränderte Grafiken werden wiederverwendet.
-- `data/characters.json` bleibt ein festes Sicherheitsnetz für den ersten Start oder einen Fehler beim Laden.
+- `GET /api/characters` liest den letzten vollständigen Datensatz aus Redis, beim erstmaligen Start aus `data/characters.json`.
+- Ein Klick auf **Aktualisieren** löst `GET /api/refresh` aus und speichert erfolgreich abgerufene Daten dauerhaft. Der manuelle Abruf ist global auf einmal pro Minute begrenzt.
+- QStash soll `POST /api/refresh` alle 30 Minuten auslösen. Der POST-Endpunkt setzt `Authorization: Bearer <CRON_SECRET>` voraus.
+- Redis-basierte Sperre (`SET NX EX`) schützt gegen parallele Serverinstanzen. Ein per Lua validierter Schreibvorgang verhindert Überschreiben nach abgelaufener Sperre. Eine laufende Aktualisierung erhält HTTP 202 (manuell) oder 200 (QStash).
+- Teilfehler behalten den letzten Datenstand des betroffenen Charakters. Bei einem vollständigen Blizzard-Ausfall wird kein neuer Stand gespeichert.
+- Vercel Blob speichert optional Porträts, Avatare und Ausrüstungs-Icons. Neue Icons werden schrittweise archiviert. Die Originale bleiben als Fallback erhalten. Alle Blob-Adressen werden in Redis gespeichert.
+- Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
-## Aktivierung (vor dem Zusammenführen des Pull Requests)
+## Noch nötige Einrichtung vor Produktionsstart
 
-1. Eine Upstash-Redis-Datenbank anlegen und in der zugehörigen Vercel-Website `UPSTASH_REDIS_REST_URL` und `UPSTASH_REDIS_REST_TOKEN` als **serverseitige** Umgebungsvariablen eintragen. Alternativ funktionieren die Namen `KV_REST_API_URL` und `KV_REST_API_TOKEN`.
-2. Einen **öffentlichen** Vercel-Blob-Speicher an das Projekt anbinden. Dabei wird üblicherweise `BLOB_READ_WRITE_TOKEN` im Projekt gesetzt. Die archivierten Bilder sind dann über öffentliche URLs sichtbar; das Token bleibt serverseitig.
-3. In Vercel einen zufälligen `CRON_SECRET` konfigurieren. Diesen gleichen Wert als GitHub-Actions-Repository-Secret `CRON_SECRET` speichern. In GitHub zusätzlich `DASHBOARD_URL` als Secret auf die vollständige **produktive** Dashboard-Adresse setzen.
-4. Änderungen deployen, `GET /api/characters` testen, dann einmal manuell aktualisieren. Website neu laden und das erhaltene `generatedAt` prüfen.
-5. Der GitHub-Zeitplan wird automatisch nach Übernahme in `main` aktiv. Der Task kann in GitHub Actions auch manuell gestartet werden. Zeitpläne sind best effort und können bei GitHub Actions verzögert werden.
+1. In Vercel prüfen, dass beim Projekt `dalton-dashboard` die Variablen `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` und `BLOB_READ_WRITE_TOKEN` für **Production** vorhanden sind. Alternativ funktionieren für Redis `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
+2. Eine **zusätzliche** Vercel-Umgebungsvariable `CRON_SECRET` für Production mit einem langen zufälligen Passwort einrichten. Geheimnisse nur im Vercel-Dashboard eingeben.
+3. Nach grünem GitHub-Test die Änderungen einmalig nach Production deployen, `/api/characters` aufrufen und anschliessend den Aktualisieren-Button testen. Datenstand nach Neuladen prüfen.
+4. In [Upstash QStash](https://console.upstash.com/qstash) unter **Schedules** einen Zeitplan für `https://dalton-dashboard-eight.vercel.app/api/refresh` einrichten. HTTP-Methode **POST**, CRON `*/30 * * * *` (UTC); beim Erstellen als **weitergeleiteten** Header `Authorization: Bearer <CRON_SECRET>` setzen. Für QStash API wird dieser Header als `Upstash-Forward-Authorization` übergeben. QStash verwendet für die API-Anmeldung einen getrennten QStash-Token, nicht den CRON_SECRET.
+5. Testen, ob QStash die Route erfolgreich erreicht und `generatedAt` neu gespeichert wird. Nur **einen** Zeitplan aktivieren; kein paralleler GitHub-Actions-Cron.
 
-**Keine Zugangstokens ins Repository schreiben.** Ohne Redis-Konfiguration schlägt ein manueller Aktualisierungsversuch mit 503 fehl, damit niemals ein nur scheinbar gespeicherter Zustand angezeigt wird. Ohne Blob-Konfiguration bleibt Redis funktionsfähig, zeigt dann aber die ursprünglichen Blizzard-Bildadressen.
+**Wichtig:** QStash wird nicht allein dadurch aktiviert, dass Redis verbunden ist. Den Zeitplan erst nach dem Produktionsdeployment erstellen. Keine Geheimnisse an ChatGPT oder in GitHub-Dateien senden.
 
 ## Entwicklung
 
-`npm test` führt Parser-, UI- und API-Tests aus. Ein Pull Request startet denselben Test-Workflow.
-
+`npm test`: Syntax-, Parser-, UI- und API-Tests. Der Draft-PR löst GitHub Actions aus.

@@ -245,6 +245,7 @@ async function refreshLive(){
     const r=await fetch('/api/refresh?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error('HTTP '+r.status);
     const response=await r.json();
+    if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
     render(response.data,{live:true,success:response.success});
