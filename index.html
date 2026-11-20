@@ -24,4 +24,49 @@
       </div>
       <div class="hero-center">
         <img class="hero-crest" src="/dalton-crest.svg" alt="" width="144" height="144">
-        <p class=���q�^
+        <p class="hero-kicker">WANTED · AZEROTH</p>
+        <h1><span class="hero-the">Die</span> <span class="hero-family">Daltons</span></h1>
+        <div class="hero-rule" aria-hidden="true"><span>●</span></div>
+        <p class="hero-subtitle">Vier Abenteurer. Eine berüchtigte Bande.</p>
+        <p class="hero-story">Noch keine Legenden, aber schon gesucht.</p>
+      </div>
+      <div class="hero-bottomline">
+        <span>CHUCKY · COLE · DOLLY · VIOLA</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="command-deck" aria-label="Hauptquartier">
+      <div class="command-title">
+        <p class="chapter-eyebrow">DAS HAUPTQUARTIER</p>
+        <h2>Die Bande im Überblick</h2>
+        <p class="command-description">Vier Steckbriefe. Ein gemeinsamer aktueller Datenstand.</p>
+        <p id="dataFreshness" class="data-freshness" aria-live="polite">Gespeicherter Datenstand wird geladen …</p>
+      </div>
+      <div class="command-actions">
+        <button id="refreshButton" class="refresh" type="button"><span aria-hidden="true">↻</span> Aktualisieren</button>
+        <span class="refresh-hint">Live-Daten auf Knopfdruck</span>
+      </div>
+    </section>
+
+    <section id="summary" class="summary" aria-label="Gruppenübersicht"></section>
+    <p id="status" class="status" role="status">Die Steckbriefe werden geladen …</p>
+    <div class="roster-heading">
+      <div class="roster-rule" aria-hidden="true"></div>
+      <div class="roster-title">
+        <span class="roster-kicker">GESUCHT IN AZEROTH</span>
+        <h2>Die vier Daltons</h2>
+        <p>Jeder ein Original. Zusammen eine Legende.</p>
+      </div>
+      <div class="roster-rule" aria-hidden="true"></div>
+    </div>
+    <section id="cards" class="grid" aria-live="polite"></section>
+  </main>
+  <footer>
+    <strong>Die Daltons</strong> <span>· World of Warcraft: Forever</span>
+    <p>Datenquelle: offizielle Blizzard-Forever-API und Blizzard-Armory. Namen und Beschreibungen werden in der deutschen Blizzard-Originalfassung verwendet. Ausrüstung und Porträts können sich erst nach dem Ausloggen aktualisieren.</p>
+  </footer>
+  <script type="module" src="/app.js?v=stats-professions-xp-20261121a"></script>
+</body>
+</html>
