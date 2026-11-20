@@ -109,7 +109,7 @@ assert.ok(coleArea.includes('Bereits abgeschlossen: Dolly · Viola'),'Questvergl
 assert.ok(coleArea.includes('Bereits abgeschlossen: Viola'),'Individuelle offene Quest kann einen bereits fertigen Dalton nennen');
 assert.ok(!coleArea.includes('Auch offen: Cole'),'Aktueller Charakter wird in der Auch-offen-Liste nicht wiederholt');
 assert.ok(!coleArea.includes('Bereits abgeschlossen: Cole'),'Aktueller Charakter wird in der Abschlussliste nicht wiederholt');
-assert.ok(coleArea.includes('Beschreibung &amp; Gebiet'),'Questdetails sind innerhalb des Quest-Reiters aufklappbar');
+assert.ok(coleArea.includes('Beschreibung & Gebiet'),'Questdetails sind innerhalb des Quest-Reiters aufklappbar');
 assert.ok(coleArea.includes('Erledige die gemeinsame Aufgabe.'),'Zentraler Quest-Katalog liefert die Blizzard-Beschreibung in die Anzeige');
 assert.ok(coleArea.includes('Testgebiet'),'Questgebiet wird aus dem zentralen Katalog angezeigt');
 ui.render(data);
