@@ -213,7 +213,7 @@ export async function probeForeverCharacter(slug,{
 
 export async function fetchForeverSnapshot(slugs,{
   fetchImpl=fetch,
-  locale='en_GB',
+  locale='de_DE',
   endpointNames=Object.keys(FOREVER_CHARACTER_ENDPOINTS)
 }={}){
   if(!Array.isArray(slugs)||!slugs.length)throw new Error('Keine Charaktere für Snapshot angegeben');
