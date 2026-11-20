@@ -70,8 +70,8 @@ globalThis.fetch=async (url,options={})=>{
 
 try{
   const rejected=fakeResponse();
-  await handler({method:'POST'},rejected);
-  assert.equal(rejected.result().status,405,'Only GET is allowed');
+  await handler({method:'PUT'},rejected);
+  assert.equal(rejected.result().status,405,'Unsupported methods are rejected');
   assert.equal(requests,0,'Invalid method must not query Blizzard');
 
   const denied=fakeResponse();
