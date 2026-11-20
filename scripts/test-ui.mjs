@@ -198,13 +198,17 @@ assert.ok(css.includes('prefers-reduced-motion:reduce'));
 // GitHub prueft bei Code-Pushes nur noch die Tests, ohne Daten zu committen.
 const updateWorkflow=read('.github/workflows/update-data.yml');
 const refreshApi=read('api/refresh.js');
+const refreshService=read('scripts/refresh-service.mjs');
+const vercelConfig=read('vercel.json');
 assert.ok(!/^\s*schedule:/m.test(updateWorkflow),'No timed GitHub data updates');
 assert.ok(!updateWorkflow.includes('official-scrape.mjs'),'CI no longer scrapes Blizzard automatically');
 assert.ok(!updateWorkflow.includes('git push'),'CI must never publish timestamp-only data commits');
 assert.ok(updateWorkflow.includes('run: npm test'),'Keep tests on code changes');
 assert.ok(source.includes("button.addEventListener('click',refreshLive)"),'Manual button still calls Blizzard live');
 assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button requests live API');
-assert.ok(refreshApi.includes('refreshCharacters([c])'),'Live API fetches Blizzard character profiles');
+assert.ok(refreshService.includes('refreshCharacters([c])'),'Shared refresh service fetches Blizzard character profiles');
+assert.ok(refreshApi.includes("source:req.method==='GET'?'manual':'scheduled'"),'Manual and scheduled refresh sources stay distinguishable');
+assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"'),'Exactly one Hobby-compatible daily Vercel cron is configured');
 assert.ok(!source.includes('setInterval('),'No periodic background refresh in client');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
 

@@ -6,7 +6,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --check app.js && node --check api/refresh.js && node --check api/characters.js && node --check scripts/character-store.mjs && node --check scripts/archive-images.mjs && node --check scripts/armory-core.mjs && node --check scripts/blizzard-api.mjs && node scripts/test-armory.mjs && node scripts/test-ui.mjs && node scripts/test-refresh-api.mjs && node scripts/test-blizzard-api.mjs"
+    "test": "node --check app.js && node --check api/refresh.js && node --check api/characters.js && node --check api/daily-snapshot.js && node --check scripts/character-store.mjs && node --check scripts/history-store.mjs && node --check scripts/daily-snapshot-store.mjs && node --check scripts/refresh-service.mjs && node --check scripts/archive-images.mjs && node --check scripts/armory-core.mjs && node --check scripts/blizzard-api.mjs && node scripts/test-armory.mjs && node scripts/test-ui.mjs && node scripts/test-refresh-api.mjs && node scripts/test-blizzard-api.mjs && node scripts/test-history.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.0.0"

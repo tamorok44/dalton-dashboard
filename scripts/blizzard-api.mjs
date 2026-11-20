@@ -209,3 +209,39 @@ export async function probeForeverCharacter(slug,{
     endpoints
   };
 }
+
+
+export async function fetchForeverSnapshot(slugs,{
+  fetchImpl=fetch,
+  locale='en_GB',
+  endpointNames=Object.keys(FOREVER_CHARACTER_ENDPOINTS)
+}={}){
+  if(!Array.isArray(slugs)||!slugs.length)throw new Error('Keine Charaktere für Snapshot angegeben');
+  for(const slug of slugs){
+    if(!/^[a-z0-9-]+$/i.test(slug))throw new Error('Ungültiger Charakter-Slug');
+  }
+  const {token}=await accessToken(fetchImpl);
+  const snapshot={
+    snapshotAt:new Date().toISOString(),
+    region:REGION,
+    namespace:PROFILE_NAMESPACE,
+    locale,
+    characters:{}
+  };
+  for(const slug of slugs)snapshot.characters[slug]={};
+  await Promise.all(slugs.flatMap(slug=>endpointNames.map(async name=>{
+    const suffix=FOREVER_CHARACTER_ENDPOINTS[name];
+    if(suffix===undefined)throw new Error('Unbekannter Snapshot-Endpunkt: '+name);
+    const response=await fetchImpl(endpointUrl(slug,suffix,locale),{
+      headers:{authorization:'Bearer '+token,accept:'application/json'},
+      signal:AbortSignal.timeout(15000)
+    });
+    const body=await parseResponse(response);
+    snapshot.characters[slug][name]={
+      status:response.status,
+      ok:response.ok,
+      data:body
+    };
+  })));
+  return snapshot;
+}

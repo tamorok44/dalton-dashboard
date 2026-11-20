@@ -1,0 +1,111 @@
+import {randomUUID} from 'node:crypto';
+import {redis} from './character-store.mjs';
+
+const CHANGE_KEY='dalton-dashboard:history:changes:v1';
+const DAILY_INDEX='dalton-dashboard:history:daily:index:v1';
+const DAILY_LAST='dalton-dashboard:history:daily:last:v1';
+const DAILY_LOCK_PREFIX='dalton-dashboard:history:daily:lock:';
+
+function equipmentMap(list=[]){
+  return Object.fromEntries([...list]
+    .filter(item=>item?.slot)
+    .sort((a,b)=>String(a.slot).localeCompare(String(b.slot),'de'))
+    .map(item=>[item.slot,{
+      item:item.item??null,
+      sourceName:item.sourceName??null,
+      level:item.level??null,
+      quality:item.quality??null,
+      icon:item.icon??null
+    }]));
+}
+function professionMap(list=[]){
+  return Object.fromEntries([...list]
+    .filter(item=>item?.name)
+    .sort((a,b)=>String(a.name).localeCompare(String(b.name),'de'))
+    .map(item=>[item.name,{current:item.current??null,max:item.max??null}]));
+}
+function stableStats(stats={}){
+  return Object.fromEntries(Object.entries(stats).sort(([a],[b])=>a.localeCompare(b,'de')));
+}
+export function historyProjection(c={}){
+  return {
+    level:c.level??null,
+    class:c.class??null,
+    race:c.race??null,
+    gender:c.gender??null,
+    faction:c.faction??null,
+    blizzardCharacterId:c.blizzardCharacterId??null,
+    experience:c.experience??null,
+    achievementPoints:c.achievementPoints??null,
+    averageItemLevel:c.averageItemLevel??null,
+    equippedItemLevel:c.equippedItemLevel??null,
+    ruleset:c.ruleset?.name??null,
+    lastLoginAt:c.lastLoginAt??null,
+    talents:c.talents??null,
+    professions:professionMap(c.professions),
+    stats:stableStats(c.stats),
+    equipment:equipmentMap(c.equipment),
+    imageUrl:c.imageUrl??null,
+    avatarUrl:c.avatarUrl??null
+  };
+}
+function plainObject(value){
+  return Boolean(value)&&typeof value==='object'&&!Array.isArray(value);
+}
+function walkDiff(before,after,path,out){
+  if(Object.is(before,after))return;
+  if(plainObject(before)&&plainObject(after)){
+    const keys=[...new Set([...Object.keys(before),...Object.keys(after)])].sort();
+    for(const key of keys)walkDiff(before[key],after[key],path?path+'.'+key:key,out);
+    return;
+  }
+  const same=JSON.stringify(before)===JSON.stringify(after);
+  if(!same)out.push({path,before:before??null,after:after??null});
+}
+export function diffMeaningfulChanges(previous,latest){
+  const beforeBySlug=new Map((previous?.characters||[]).map(c=>[c.slug,c]));
+  const changes=[];
+  for(const current of latest?.characters||[]){
+    const prior=beforeBySlug.get(current.slug);
+    if(!prior)continue;
+    const local=[];
+    walkDiff(historyProjection(prior),historyProjection(current),'',local);
+    for(const change of local){
+      changes.push({slug:current.slug,name:current.name||prior.name||current.slug,...change});
+    }
+  }
+  return changes;
+}
+export async function appendChangeBatch(previous,latest,{source='manual'}={}){
+  const changes=diffMeaningfulChanges(previous,latest);
+  if(!changes.length)return {count:0,id:null};
+  const batch={
+    id:randomUUID(),
+    observedAt:latest.generatedAt||new Date().toISOString(),
+    source,
+    fromGeneratedAt:previous.generatedAt||null,
+    toGeneratedAt:latest.generatedAt||null,
+    changes
+  };
+  await redis(['RPUSH',CHANGE_KEY,JSON.stringify(batch)]);
+  return {count:changes.length,id:batch.id};
+}
+export async function getDailySnapshot(date){
+  const value=await redis(['HGET',DAILY_INDEX,date]);
+  return value?JSON.parse(value):null;
+}
+export async function registerDailySnapshot(meta){
+  if(!meta?.date||!meta?.url)throw new Error('Ungültige Snapshot-Metadaten');
+  const value=JSON.stringify(meta);
+  await redis(['HSET',DAILY_INDEX,meta.date,value]);
+  await redis(['SET',DAILY_LAST,value]);
+}
+export async function acquireDailySnapshotLock(date){
+  const token=randomUUID();
+  const ok=await redis(['SET',DAILY_LOCK_PREFIX+date,token,'EX',900,'NX']);
+  return ok==='OK'?token:null;
+}
+export async function releaseDailySnapshotLock(date,token){
+  const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
+  return redis(['EVAL',lua,1,DAILY_LOCK_PREFIX+date,token]);
+}
