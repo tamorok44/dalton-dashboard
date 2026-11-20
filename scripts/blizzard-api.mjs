@@ -2,6 +2,8 @@ const REGION='eu';
 const PROFILE_NAMESPACE='profile-forever-eu';
 const API_BASE='https://'+REGION+'.api.blizzard.com';
 const TOKEN_URL='https://oauth.battle.net/token';
+let cachedToken=null;
+let tokenRequest=null;
 
 export const FOREVER_CHARACTER_ENDPOINTS={
   profile:'',
@@ -118,22 +120,32 @@ async function parseResponse(response){
 }
 
 async function accessToken(fetchImpl){
-  const id=process.env.BLIZZARD_CLIENT_ID;
-  const secret=process.env.BLIZZARD_CLIENT_SECRET;
-  if(!id||!secret)throw new Error('Blizzard API-Zugangsdaten fehlen');
-  const basic=Buffer.from(id+':'+secret).toString('base64');
-  const response=await fetchImpl(TOKEN_URL,{
-    method:'POST',
-    headers:{
-      authorization:'Basic '+basic,
-      'content-type':'application/x-www-form-urlencoded'
-    },
-    body:'grant_type=client_credentials',
-    signal:AbortSignal.timeout(15000)
-  });
-  const payload=await parseResponse(response);
-  if(!response.ok||!payload?.access_token)throw new Error('Blizzard OAuth HTTP '+response.status);
-  return {token:payload.access_token,expiresIn:payload.expires_in};
+  const now=Date.now();
+  if(cachedToken?.expiresAt>now+300000){
+    return {token:cachedToken.token,expiresIn:Math.max(0,Math.floor((cachedToken.expiresAt-now)/1000))};
+  }
+  if(tokenRequest)return tokenRequest;
+  tokenRequest=(async()=>{
+    const id=process.env.BLIZZARD_CLIENT_ID;
+    const secret=process.env.BLIZZARD_CLIENT_SECRET;
+    if(!id||!secret)throw new Error('Blizzard API-Zugangsdaten fehlen');
+    const basic=Buffer.from(id+':'+secret).toString('base64');
+    const response=await fetchImpl(TOKEN_URL,{
+      method:'POST',
+      headers:{
+        authorization:'Basic '+basic,
+        'content-type':'application/x-www-form-urlencoded'
+      },
+      body:'grant_type=client_credentials',
+      signal:AbortSignal.timeout(15000)
+    });
+    const payload=await parseResponse(response);
+    if(!response.ok||!payload?.access_token)throw new Error('Blizzard OAuth HTTP '+response.status);
+    const expiresIn=Number(payload.expires_in)||3600;
+    cachedToken={token:payload.access_token,expiresAt:Date.now()+expiresIn*1000};
+    return {token:payload.access_token,expiresIn};
+  })();
+  try{return await tokenRequest}finally{tokenRequest=null}
 }
 
 function endpointUrl(slug,suffix,locale){
@@ -141,6 +153,21 @@ function endpointUrl(slug,suffix,locale){
   url.searchParams.set('namespace',PROFILE_NAMESPACE);
   url.searchParams.set('locale',locale);
   return url;
+}
+
+export async function fetchForeverProfile(slug,{fetchImpl=fetch,locale='en_GB'}={}){
+  if(!/^[a-z0-9-]+$/i.test(slug))throw new Error('Ungültiger Charakter-Slug');
+  const {token}=await accessToken(fetchImpl);
+  const response=await fetchImpl(endpointUrl(slug,'',locale),{
+    headers:{authorization:'Bearer '+token,accept:'application/json'},
+    signal:AbortSignal.timeout(15000)
+  });
+  const body=await parseResponse(response);
+  if(!response.ok)throw new Error('Blizzard Forever API HTTP '+response.status);
+  const returnedSlug=[body?.name,body?.surname].filter(Boolean).join('-')
+    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  if(!body?.id||returnedSlug!==slug.toLowerCase())throw new Error('Blizzard API-Profil passt nicht zum angefragten Charakter');
+  return body;
 }
 
 export async function probeForeverCharacter(slug,{

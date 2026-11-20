@@ -30,6 +30,8 @@ console.log('ForeverSpec and Blizzard gear quality extractors: OK');
    Deutsche Namen, Seltenheit und Bilder müssen nach jedem Abruf aktuell sein.
    Fällt die Übersetzung aus, dürfen keine veralteten deutschen Namen bleiben. */
 const originalFetch=globalThis.fetch;
+process.env.BLIZZARD_CLIENT_ID='test-client';
+process.env.BLIZZARD_CLIENT_SECRET='test-secret';
 const originalMedia='https://render.worldofwarcraft.com/forever-eu/character/12/34567-main-raw.png';
 const itemIcon='https://render.worldofwarcraft.com/forever-eu/icons/56/222.jpg';
 const fakeOld={
@@ -40,7 +42,7 @@ const fakeOld={
   imageUrl:'https://render.worldofwarcraft.com/forever-eu/character/12/1234-main-raw.png'
 };
 let englishName='New Chest', germanName='Neues Wams',qualityType='RARE',deAvailable=true,gearAvailable=true,partialStats=false,partialProfessions=false,missingSpecs=false;
-let germanFetches=0,englishFetches=0,foreverSpecFetches=0;
+let germanFetches=0,englishFetches=0,foreverSpecFetches=0,oauthFetches=0,apiFetches=0,apiAvailable=true;
 const fakeCharacter=(locale)=>{
  const c={
   slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
@@ -53,8 +55,24 @@ const fakeCharacter=(locale)=>{
  return c;
 };
 const htmlFor=locale=>'<script>var characterProfileInitialState = '+JSON.stringify({character:fakeCharacter(locale)})+';</script>';
-globalThis.fetch=async url=>{
+globalThis.fetch=async (url,options={})=>{
  const u=String(url);
+ if(u==='https://oauth.battle.net/token'){
+   oauthFetches++;
+   assert.match(options.headers.authorization,/^Basic /);
+   return {ok:true,status:200,text:async()=>JSON.stringify({access_token:'test-api-token',expires_in:86399})};
+ }
+ if(u.startsWith('https://eu.api.blizzard.com/profile/wow/character/qa-dalton')){
+   apiFetches++;
+   if(!apiAvailable)return {ok:false,status:503,text:async()=>JSON.stringify({detail:'Unavailable'})};
+   return {ok:true,status:200,text:async()=>JSON.stringify({
+     id:123456,name:'QA',surname:'Dalton',level:12,experience:4321,achievement_points:25,
+     last_login_timestamp:1795176000000,average_item_level:12,equipped_item_level:12,
+     gender:{type:'MALE',name:'Male'},faction:{type:'ALLIANCE',name:'Alliance'},
+     race:{id:95,name:'High Order Skyborne'},character_class:{id:3,name:'Hunter'},
+     ruleset:{id:1,name:'PvP'}
+   })};
+ }
  if(u.includes('foreverspec.com')){foreverSpecFetches++;return {ok:false,status:503}}
  if(u.includes('/de-de/')){germanFetches++;return deAvailable?{ok:true,text:async()=>htmlFor('de-de')}:{ok:false,status:503}}
  if(u.includes('/en-gb/')){englishFetches++;return {ok:true,text:async()=>htmlFor('en-gb')}}
@@ -75,6 +93,14 @@ try{
  assert.equal(c.statsVerified,true);
  assert.equal(c.professions[0].current,61);
  assert.equal(c.equipmentVerified,true);
+ assert.equal(c.blizzardCharacterId,123456);
+ assert.equal(c.experience,4321);
+ assert.equal(c.achievementPoints,25);
+ assert.equal(c.lastLoginAt,new Date(1795176000000).toISOString());
+ assert.equal(c.faction,'Allianz');
+ assert.equal(c.ruleset.name,'PvP');
+ assert.equal(c.apiProfileVerified,true);
+ assert.equal(c.source,'Blizzard API + Armory');
  // No redundant localized request when Blizzard equipment has not changed.
  const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;
  r=await refreshCharacters([c]);c=r.data.characters[0];
@@ -107,7 +133,8 @@ try{
  assert.equal(c.statsVerified,false);
  assert.equal(c.stats.Mana,101);
  assert.deepEqual(c.statsFreshKeys,['Gesundheit'],'Only the value received from Blizzard is fresh');
- partialProfessions=true;missingSpecs=true;
+ partialProfessions=true;missingSpecs=true;apiAvailable=false;
+ const confirmedLogin=c.lastLoginAt;
  r=await refreshCharacters([c]);c=r.data.characters[0];
  assert.equal(c.professions.length,1,'Missing profession is retained');
  assert.equal(c.professions[0].name,'Bergbau');
@@ -116,6 +143,10 @@ try{
  assert.equal(c.talentsVerified,false,'Unavailable talent tree is not misread as zero points');
  assert.equal(c.talents,'noch keine verteilt','Previously known talents retained');
  assert.equal(c.scrapeOk,true,'Incomplete subfields do not invalidate an otherwise updated profile');
+ assert.equal(c.apiProfileVerified,false,'API outage does not invalidate the existing Armory refresh');
+ assert.equal(c.lastLoginAt,confirmedLogin,'Last verified API login survives a temporary API outage');
+ assert.ok(apiFetches>=6,'Official Forever profile is checked on every refresh');
+ assert.equal(oauthFetches,1,'OAuth token is reused instead of requested for every profile refresh');
  assert.ok(englishFetches>=6);
  console.log('Blizzard refresh: updated gear, professions, stale stats provenance, talents and request efficiency: OK');
 }finally{globalThis.fetch=originalFetch}
