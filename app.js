@@ -1,6 +1,12 @@
 const heroCast=document.querySelector("#heroCast");const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
+const portraitScenes={
+  'cole-dalton':{className:'scene-cole',label:'Der arkane Saloon'},
+  'dolly-dalton':{className:'scene-dolly',label:'Die Canyons der Himmelssteppe'},
+  'chucky-dalton':{className:'scene-chucky',label:'Das Heiligtum der Windheide'},
+  'viola-dalton':{className:'scene-viola',label:'Die Ranch am Sonnenpass'}
+};
 const mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe'];
 const secondaryStatNames=['Stärke','Beweglichkeit','Ausdauer','Intelligenz','Angriffskraft'];
 function statsPanel(c,open=false){
@@ -22,7 +28,7 @@ function professionRows(list=[]){
     const fraction=valid?Math.round(current)+'/'+Math.round(max):'–/–';
     const label=String(p.name||'Beruf')+(p.unverified?' · letzter Stand':'');
     return '<div class="profession">'+
-      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span><strong class="profession-values">'+esc(fraction)+'</strong></div>'+
+      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span></div>'+
       '<div class="profession-track" role="progressbar" aria-label="'+esc('Fortschritt '+label)+'" aria-valuemin="0" aria-valuemax="'+(valid?Math.round(max):100)+'" aria-valuenow="'+(valid?Math.max(0,Math.min(Math.round(current),Math.round(max))):0)+'">'+
       '<div class="profession-progress" style="width:'+percent.toFixed(2)+'%"></div>'+
       '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
@@ -68,11 +74,12 @@ function equipmentPanel(c,open=false){
 
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
+  const scene=portraitScenes[c.slug]||null;
   const image=validRender(c.imageUrl)?c.imageUrl:null;
   const avatar=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
   const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
-  return '<figure class="portrait"><img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
+  return '<figure class="portrait '+(scene?scene.className:'')+'"><span class="scene-label" aria-hidden="true">'+esc(scene?.label||'Zephras · Himmelsgeborene')+'</span><img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
 }
 function installPortraitFallbacks(){
   cards.querySelectorAll('img.character-render').forEach(img=>img.addEventListener('error',()=>{
