@@ -22,7 +22,52 @@ function professionMap(list=[]){
   return Object.fromEntries([...list]
     .filter(item=>item?.name)
     .sort((a,b)=>String(a.name).localeCompare(String(b.name),'de'))
-    .map(item=>[item.name,{current:item.current??null,max:item.max??null}]));
+    .map(item=>[item.name,{
+      current:item.current??null,
+      max:item.max??null,
+      knownRecipes:[...(item.knownRecipes||[])]
+        .sort((a,b)=>(a?.id??0)-(b?.id??0))
+        .map(recipe=>({
+          id:recipe?.id??null,
+          name:recipe?.name??null,
+          craftedItem:recipe?.craftedItem??null,
+          craftedQuantity:recipe?.craftedQuantity??null,
+          reagents:[...(recipe?.reagents||[])].sort((a,b)=>(a?.id??0)-(b?.id??0))
+        }))
+    }]));
+}
+function talentDetailMap(list=[]){
+  return [...list].map(tree=>({
+    id:tree?.id??null,
+    name:tree?.name??null,
+    spentPoints:tree?.spentPoints??0,
+    talents:[...(tree?.talents||[])]
+      .sort((a,b)=>(a?.id??0)-(b?.id??0))
+      .map(talent=>({
+        id:talent?.id??null,
+        name:talent?.name??null,
+        rank:talent?.rank??null,
+        description:talent?.description??null
+      }))
+  })).sort((a,b)=>(a.id??0)-(b.id??0));
+}
+function reputationMap(list=[]){
+  return Object.fromEntries([...list]
+    .filter(item=>item?.name)
+    .sort((a,b)=>String(a.name).localeCompare(String(b.name),'de'))
+    .map(item=>[item.name,{
+      id:item.id??null,
+      raw:item.standing?.raw??null,
+      value:item.standing?.value??null,
+      max:item.standing?.max??null,
+      tier:item.standing?.tier??null,
+      standing:item.standing?.name??null
+    }]));
+}
+function questMap(list=[]){
+  return [...list]
+    .map(quest=>({id:quest?.id??null,name:quest?.name??null}))
+    .sort((a,b)=>(a.id??0)-(b.id??0));
 }
 function stableStats(stats={}){
   return Object.fromEntries(Object.entries(stats).sort(([a],[b])=>a.localeCompare(b,'de')));
@@ -42,7 +87,10 @@ export function historyProjection(c={}){
     ruleset:c.ruleset?.name??null,
     lastLoginAt:c.lastLoginAt??null,
     talents:c.talents??null,
+    talentDetails:talentDetailMap(c.talentDetails),
     professions:professionMap(c.professions),
+    reputations:reputationMap(c.reputations),
+    activeQuests:questMap(c.activeQuests),
     stats:stableStats(c.stats),
     equipment:equipmentMap(c.equipment),
     imageUrl:c.imageUrl??null,

@@ -54,7 +54,7 @@ loginCole.lastLoginAt='2026-11-20T10:11:12.000Z';
 loginCole.faction='Allianz';
 loginCole.ruleset={id:1,name:'PvP'};
 ui.render(loginData);
-assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.11.26, 11:11</strong> · Blizzard API'),
+assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.11.26, 11:11</strong>'),
   'Display the genuine official Blizzard API last-login time in German local time');
 assert.ok(nodes.get('#cards').innerHTML.includes('Allianz · EU-PvP'),
   'Faction and ruleset are rendered from API-backed character metadata');
@@ -216,8 +216,9 @@ assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weite
 /* Western design contract – old cosmological decorations and Ordens copy must not return. */
 assert.ok(!heroHtml.includes('Hoher Orden') && !source.includes('Hoher Orden'));
 assert.ok(!source.includes('automatischer Abgleich etwa alle 30 Minuten'));
-assert.ok(heroHtml.includes('id="dataFreshness"') && source.includes('Zuletzt live abgefragt: '));
-assert.ok(source.includes('Gespeicherter Stand: '));
+assert.ok(heroHtml.includes('id="dataFreshness"') && source.includes('Zuletzt aktualisiert: '));
+assert.ok(!source.includes('Profil abgerufen: '),'Per-character refresh timestamps are removed');
+assert.ok(!source.includes(' · Blizzard API'),'Per-field source labels are removed');
 assert.ok(css.includes('rotate(16deg)') && !css.includes('rotate(8deg)'));
 assert.ok(css.includes('margin:27px auto 0') && css.includes('margin-top:23px'));
 assert.ok(css.includes('main{margin-top:22px}'));
@@ -277,7 +278,7 @@ assert.ok(changedCards.includes('Geselle'),'Live training rank changes');
 assert.ok(changedSummary.includes(Math.min(...changedLevels)+'–'+Math.max(...changedLevels)),'Group min/max are recomputed');
 assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLevels.length).toFixed(1)),'Group average is recomputed');
 assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
-assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt live abgefragt'),'Visible live timestamp');
+assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt aktualisiert'),'Visible live timestamp');
 assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not fetch stale JSON first');
 /* A second click with a partial Blizzard response must keep the latest known
    in-session skill, mana, equipment and talent values, not the old snapshot. */
@@ -358,7 +359,7 @@ for(const selector of ['.hero-story{','.roster-title p{','.refresh-hint{']){
   assert.ok(block.includes('font-family:var(--body)'),selector+' uses the information font');
   assert.ok(block.includes('font-style:normal'),selector+' is not italic');
 }
-assert.ok(css.includes('.hero-story{margin:12px 0 0;color:#fff5de'),'Motto readability improved');
+assert.ok(css.includes('.hero-story{margin:14px 0 0;color:#f8dfb5')&&css.includes('font-weight:700'),'Motto remains readable as the third hero hierarchy level');
 assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text removed');
 assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
 assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');

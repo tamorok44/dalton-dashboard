@@ -191,7 +191,16 @@ for(const old of characters){
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
     const ps=professions(c);
     const knownProfessions=new Map((old.professions||[]).map(p=>[p.name,{...p,unverified:true}]));
-    for(const p of ps)knownProfessions.set(p.name,p);
+    for(const p of ps){
+      const prior=knownProfessions.get(p.name);
+      knownProfessions.set(p.name,{
+        ...p,
+        ...(prior?.id?{id:prior.id}:{}),
+        ...(prior?.tierId?{tierId:prior.tierId}:{}),
+        ...(prior?.tierName?{tierName:prior.tierName}:{}),
+        ...(Array.isArray(prior?.knownRecipes)?{knownRecipes:prior.knownRecipes}:{})
+      });
+    }
     // Never silently remove a profession when Blizzard returns a partial result.
     const currentProfessions=[...knownProfessions.values()];
     const professionsVerified=ps.length>0&&currentProfessions.every(p=>!p.unverified);
@@ -258,6 +267,7 @@ for(const old of characters){
       ruleset:apiProfile?.ruleset?.name?{id:Number(apiProfile.ruleset.id)||undefined,name:apiProfile.ruleset.name}:old.ruleset,
       professions:currentProfessions,
       professionsVerified,
+      professionDetailsVerified:false,
       stats:{...(old.stats||{}),...st},
       // Provenance of each stat; old fallback values are never called fresh.
       statsFreshKeys:Object.keys(st),
@@ -267,6 +277,9 @@ for(const old of characters){
       equipmentError:localizationError,
       equipmentVerified:hasOfficialGear,
       talents:ta===null?(old.talents||'nicht verfügbar'):ta,
+      talentDetailsVerified:false,
+      reputationsVerified:false,
+      questsVerified:false,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
       avatarUrl:avatarPattern.test(avatar||'')?avatar:old.avatarUrl,
       // Keep the same render URL and cache key until Blizzard changes it.

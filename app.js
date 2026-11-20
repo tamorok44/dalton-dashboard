@@ -50,7 +50,34 @@ function professionScale(){
     professionStages.map(stage=>'<span title="'+esc(stage.rank)+'">'+stage.end+'</span>').join('')+
     '</div>';
 }
-function professionRows(list=[],previousOnly=false){
+function knowledgeLabel(name){
+  if(name==='Bergbau')return 'Verhüttung & Fähigkeiten';
+  if(['Kräuterkunde','Kürschnerei','Angeln'].includes(name))return 'Fähigkeiten & Camping';
+  return 'Rezepte & Fähigkeiten';
+}
+function craftedQuantityText(quantity){
+  if(!quantity)return '';
+  const min=Number(quantity.minimum),max=Number(quantity.maximum),value=Number(quantity.value);
+  if(Number.isFinite(value)&&value>1)return ' × '+Math.round(value);
+  if(Number.isFinite(min)&&Number.isFinite(max)&&min!==max)return ' × '+Math.round(min)+'–'+Math.round(max);
+  return '';
+}
+function recipeRows(recipes=[]){
+  if(!recipes.length)return '<p class="knowledge-empty">Blizzard meldet derzeit keine einzelnen Kenntnisse.</p>';
+  return '<div class="knowledge-list">'+recipes.map(recipe=>{
+    const crafted=recipe?.craftedItem?.name
+      ?'<span class="recipe-crafted">Erstellt: <strong>'+esc(recipe.craftedItem.name)+esc(craftedQuantityText(recipe.craftedQuantity))+'</strong></span>'
+      :'';
+    const reagents=(recipe?.reagents||[]).filter(x=>x?.name).map(x=>(Number.isFinite(Number(x.quantity))?Math.round(Number(x.quantity))+'× ':'')+x.name);
+    const materials=reagents.length?'<span class="recipe-reagents">Materialien: '+esc(reagents.join(' · '))+'</span>':'';
+    const hasDetails=Boolean(crafted||materials);
+    return '<div class="recipe-entry">'+
+      '<div class="recipe-name"><span class="recipe-dot" aria-hidden="true"></span><strong>'+esc(recipe?.name||'Kenntnis')+'</strong></div>'+
+      (hasDetails?'<div class="recipe-meta">'+crafted+materials+'</div>':'')+
+      '</div>';
+  }).join('')+'</div>';
+}
+function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()){
   if(!list.length)return row('Berufe','nicht verfügbar');
   return list.map(p=>{
     const current=p.current==null?NaN:Number(p.current),max=p.max==null?NaN:Number(p.max);
@@ -65,14 +92,85 @@ function professionRows(list=[],previousOnly=false){
       return '<span class="profession-segment '+(unlocked?'is-unlocked':'is-locked')+'">'+
         '<span class="profession-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
     }).join('');
+    const recipes=Array.isArray(p.knownRecipes)?p.knownRecipes:[];
+    const detailKey=slug+':profession:'+(p.id||p.name||'unknown');
+    const knowledge=recipes.length
+      ?'<details class="profession-knowledge" data-detail-key="'+esc(detailKey)+'"'+(openDetails.has(detailKey)?' open':'')+'>'+
+        '<summary>'+esc(knowledgeLabel(p.name))+' · '+recipes.length+'</summary>'+recipeRows(recipes)+'</details>'
+      :'';
     return '<div class="profession">'+
       '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span>'+
       '<span class="profession-rank">'+esc(rank)+'</span></div>'+
       '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction+' · '+rank:'kein bestätigter Stand')+'">'+
       stageSegments+
       '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
+      '</div>'+knowledge+'</div>';
+  }).join('');
+}
+
+function talentPanel(c){
+  const trees=Array.isArray(c.talentDetails)?c.talentDetails:[];
+  const active=trees.filter(tree=>Number(tree.spentPoints)>0||(tree.talents||[]).length);
+  if(!active.length){
+    return '<div class="section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="rows">'+row('Verteilung',c.talents||'noch keine verteilt')+'</div></div>';
+  }
+  const body=active.map(tree=>'<div class="talent-tree">'+
+    '<div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(tree.spentPoints)+' '+(Number(tree.spentPoints)===1?'Punkt':'Punkte')+'</span></div>'+
+    '<div class="talent-list">'+(tree.talents||[]).map(talent=>'<div class="talent-entry">'+
+      '<div class="talent-entry-head"><strong>'+esc(talent.name)+'</strong>'+(Number.isFinite(Number(talent.rank))?'<span>Rang '+esc(talent.rank)+'</span>':'')+'</div>'+
+      (talent.description?'<p>'+esc(talent.description)+'</p>':'')+
+    '</div>').join('')+'</div></div>').join('');
+  return '<div class="section talents-section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="talent-trees">'+body+'</div></div>';
+}
+
+const reputationStages=[
+  {name:'Hasserfüllt',weight:1},{name:'Feindselig',weight:1},{name:'Unfreundlich',weight:1},{name:'Neutral',weight:1},
+  {name:'Freundlich',weight:2},{name:'Wohlwollend',weight:4},{name:'Respektvoll',weight:7},{name:'Ehrfürchtig',weight:.333}
+];
+function reputationStageIndex(standing={}){
+  const byName=reputationStages.findIndex(stage=>stage.name===standing.name);
+  if(byName>=0)return byName;
+  const tier=Number(standing.tier);
+  return Number.isInteger(tier)&&tier>=0&&tier<reputationStages.length?tier:-1;
+}
+function reputationPanel(c){
+  const list=Array.isArray(c.reputations)?c.reputations:[];
+  if(!list.length)return '';
+  const columns='repeat(4,minmax(0,1fr)) 2fr 4fr 7fr minmax(7px,.333fr)';
+  const rows=list.map(rep=>{
+    const standing=rep.standing||{},index=reputationStageIndex(standing);
+    const value=Number(standing.value),max=Number(standing.max);
+    const valid=Number.isFinite(value)&&Number.isFinite(max)&&max>0;
+    const segments=reputationStages.map((stage,i)=>{
+      const pct=index<0?0:i<index?100:i===index&&valid?Math.max(0,Math.min(100,value/max*100)):0;
+      return '<span class="reputation-segment '+(i<=index?'is-reached':'is-future')+'" title="'+esc(stage.name)+'">'+
+        '<span class="reputation-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
+    }).join('');
+    const fraction=valid?Math.round(value)+'/'+Math.round(max):'–/–';
+    return '<div class="reputation">'+
+      '<div class="reputation-head"><span>'+esc(rep.name)+'</span><strong>'+esc(standing.name||'Unbekannt')+'</strong></div>'+
+      '<div class="reputation-track" style="grid-template-columns:'+columns+'" role="progressbar" aria-label="'+esc(rep.name)+'" aria-valuemin="0" aria-valuemax="'+esc(valid?max:0)+'" aria-valuenow="'+esc(valid?Math.round(value):0)+'" aria-valuetext="'+esc(fraction+' · '+(standing.name||'Unbekannt'))+'">'+
+        segments+'<span class="reputation-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
       '</div></div>';
   }).join('');
+  return '<div class="section reputation-section"><h3>Ruf'+(c.reputationsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="reputations-list">'+rows+'</div></div>';
+}
+
+function progressPanel(c){
+  const entries=[];
+  if(Number.isFinite(Number(c.experience)))entries.push(row('Erfahrung',Number(c.experience).toLocaleString('de-DE')));
+  if(Number.isFinite(Number(c.equippedItemLevel)))entries.push(row('Angelegte Gegenstandsstufe',c.equippedItemLevel));
+  if(Number.isFinite(Number(c.averageItemLevel)))entries.push(row('Ø Gegenstandsstufe',c.averageItemLevel));
+  return entries.length?'<div class="section progress-section"><h3>Fortschritt</h3><div class="rows">'+entries.join('')+'</div></div>':'';
+}
+
+function questsPanel(c,open=false){
+  const quests=Array.isArray(c.activeQuests)?c.activeQuests:[];
+  if(!quests.length)return '';
+  return '<details class="details quests-details" data-detail-key="'+esc(c.slug)+':quests"'+(open?' open':'')+'>'+
+    '<summary>Aktive Quests · '+quests.length+(c.questsVerified===false?' · letzter bekannter Stand':'')+'</summary>'+
+    '<div class="quest-list">'+quests.map(quest=>'<div class="quest-entry"><span aria-hidden="true">›</span><strong>'+esc(quest.name)+'</strong></div>').join('')+'</div>'+
+  '</details>';
 }
 
 
@@ -122,7 +220,7 @@ function renderPortrait(c){
   const avatar=validBlob(c.storedAvatarUrl)?c.storedAvatarUrl:/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/.test(c.avatarUrl||"")?c.avatarUrl:null;
   if(!image)return '<div class="portrait portrait-missing"><span>Charakterbild noch nicht verfügbar</span></div>';
   const version=encodeURIComponent(c.imageCheckedAt||c.scrapedAt||"");
-  return '<figure class="portrait '+(scene?scene.className:'')+'">'+portraitBadge(scene)+'<img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Blizzard-Charakterbild':'Original-Charakterbild von Blizzard · nach letztem Logout')+'</figcaption></figure>';
+  return '<figure class="portrait '+(scene?scene.className:'')+'">'+portraitBadge(scene)+'<img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Charakterbild':'Charakterbild · nach letztem Logout')+'</figcaption></figure>';
 }
 function installPortraitFallbacks(){
   cards.querySelectorAll('img.character-render').forEach(img=>img.addEventListener('error',()=>{
@@ -174,7 +272,7 @@ function lastActivity(c){
  const options={dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'};
  const login=Date.parse(c.lastLoginAt||'');
  if(Number.isFinite(login)){
-   return 'Zuletzt im Spiel: <strong>'+esc(new Date(login).toLocaleString('de-DE',options))+'</strong> · Blizzard API';
+   return 'Zuletzt im Spiel: <strong>'+esc(new Date(login).toLocaleString('de-DE',options))+'</strong>';
  }
  return 'Zuletzt im Spiel: von Blizzard nicht angegeben';
 }
@@ -188,7 +286,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  const avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):"–";
  summary.innerHTML=[["Gruppenlevel",levels.length?`${min}–${max}`:"–"],["Durchschnitt",avg],["Abstand",levels.length?`${max-min} Level`:"–"],["Charaktere",chars.length]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join("");
  const stamp=Number.isFinite(Date.parse(data.generatedAt))?new Date(data.generatedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";
- if(freshness)freshness.textContent=(live?"Zuletzt live abgefragt: ":"Gespeicherter Stand: ")+stamp;
+ if(freshness)freshness.textContent="Zuletzt aktualisiert: "+stamp;
  const total=chars.length;
  const freshCount=live?(Number.isInteger(success)?success:chars.filter(c=>c.scrapeOk!==false).length):null;
  status.textContent=live
@@ -205,11 +303,14 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
     <div class="level" aria-label="Stufe ${esc(c.level)}"><div class="level-inner"><span>Stufe</span><strong>${esc(c.level)}</strong></div></div>
   </div>
   ${renderPortrait(c)}
-  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">${esc(c.faction||'Allianz')} · EU-${esc(c.ruleset?.name||'PvP')}</span></div>
   <p class="status activity-note">${lastActivity(c)}</p>
-  <p class="status">${c.scrapeOk===false?"⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand":c.scrapedAt?"Profil abgerufen: "+esc(new Date(c.scrapedAt).toLocaleString("de-DE",{dateStyle:"short",timeStyle:"short"})):c.sourceUpdatedLabel?"ForeverSpec geprüft: "+esc(c.sourceUpdatedLabel):"Gespeicherte Profildaten"}</p>
-  <div class="section"><h3>Talente${c.talentsVerified&&c.scrapeOk!==false?"":" · letzter bekannter Stand"}</h3><div class="rows">${row("Verteilung",c.talents||"nicht verfügbar")}</div></div>
-  <div class="section professions-section"><h3>Berufe</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions,c.scrapeOk===false)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
+  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">${esc(c.faction||'Allianz')} · EU-${esc(c.ruleset?.name||'PvP')}</span></div>
+  ${c.scrapeOk===false?'<p class="status profile-warning">⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand</p>':''}
+  ${progressPanel(c)}
+  ${talentPanel(c)}
+  <div class="section professions-section"><h3>Berufe${c.professionDetailsVerified===false?' · Kenntnisse letzter bekannter Stand':''}</h3>${professionScale()}<div class="professions-list">${professionRows(c.professions,c.scrapeOk===false,c.slug,openDetails)}</div><div class="profession-legend"><span>Erreicht</span><span>Freigeschaltet</span><span>Noch gesperrt</span></div></div>
+  ${reputationPanel(c)}
+  ${questsPanel(c,openDetails.has(c.slug+':quests'))}
   ${statsPanel(c,openDetails.has(c.slug+':stats'))}
   ${equipmentPanel(c,openDetails.has(c.slug+':equipment'))}
  </article>`).join("");
@@ -252,5 +353,5 @@ async function refreshLive(){
 button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
-// Live-Aufrufe hier nur per Button; zusätzlich aktualisiert ein geplanter Server-Aufruf alle 30 Minuten.
+// Live-Aufrufe hier nur per Button; ein täglicher Server-Snapshot archiviert zusätzlich den vollständigen Blizzard-Datenstand.
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
