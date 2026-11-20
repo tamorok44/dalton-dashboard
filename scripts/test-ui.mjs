@@ -13,25 +13,50 @@ const document={querySelector(selector){
   if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',querySelectorAll:()=>[],addEventListener(){}});
   return nodes.get(selector);
 }};
-const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,equipmentSlotOrder};')(document);
+const ui=new Function('document',source.slice(0,start)+'\nreturn {render,professionRows,professionScale,equipmentSlotOrder};')(document);
 
-// A 75/150 progress bar must be exactly half-filled, never guessed.
-const p=ui.professionRows([{name:'Angeln',current:75,max:150}]);
-assert.match(p,/width:50\.00%/);
-assert.match(p,/>75\/150<\/span>/);
-assert.equal((p.match(/75\/150/g)||[]).length,1,'Skill fraction should appear exactly once');
-assert.match(p,/role="progressbar"/);
-assert.match(p,/aria-valuenow="75"/);
-assert.match(ui.professionRows([{name:'Test',current:0,max:75}]),/width:0\.00%/);
-assert.match(ui.professionRows([{name:'Test',current:150,max:150}]),/width:100\.00%/);
-assert.match(ui.professionRows([{name:'Test',current:200,max:150}]),/width:100\.00%/);
-assert.match(ui.professionRows([{name:'Test',current:20,max:0}]),/width:0\.00%/);
+// Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
+const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
+  .map(m=>({state:m[1],width:Number(m[2])}));
+const examples=[
+  {current:37,max:75,rank:'Lehrling',widths:[49.33,0,0,0],unlocked:1},
+  {current:75,max:75,rank:'Lehrling',widths:[100,0,0,0],unlocked:1},
+  {current:75,max:150,rank:'Geselle',widths:[100,0,0,0],unlocked:2},
+  {current:99,max:150,rank:'Geselle',widths:[100,32,0,0],unlocked:2},
+  {current:170,max:225,rank:'Experte',widths:[100,100,26.67,0],unlocked:3},
+  {current:240,max:300,rank:'Fachmann',widths:[100,100,100,20],unlocked:4},
+  {current:0,max:75,rank:'Lehrling',widths:[0,0,0,0],unlocked:1},
+  {current:300,max:300,rank:'Fachmann',widths:[100,100,100,100],unlocked:4}
+];
+for(const e of examples){
+  const html=ui.professionRows([{name:'Angeln',current:e.current,max:e.max}]);
+  const parts=getSegments(html);
+  assert.equal(parts.length,4,'Exactly four skill segments for all ranks');
+  assert.deepEqual(parts.map(p=>p.width),e.widths,'Precise fixed 75-point segments');
+  assert.equal(parts.filter(p=>p.state==='is-unlocked').length,e.unlocked,'Cap must control unlocked segments');
+  assert.match(html,new RegExp('class="profession-rank">'+e.rank+'</span>'));
+  assert.equal((html.match(new RegExp('>'+e.current+'\\/'+e.max+'<','g'))||[]).length,1);
+  assert.match(html,/aria-valuemax="300"/);
+  assert.match(html,/role="progressbar"/);
+}
+const invalid=ui.professionRows([{name:'Angeln',current:20,max:0}]);
+assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
+assert.match(invalid,/Rang unbekannt/);
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
+assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
 
 ui.render(data);
 const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
 assert.equal((cards.match(/class="vital"/g)||[]).length,data.characters.length*4);
+assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
+assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
+assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
+assert.ok(!css.includes('.vital:nth-child(2) strong{color:#91dbe7}'),'Mana must not be blue');
+assert.ok(css.includes('.section h3::before{content:"✦";font-size:.65rem;color:var(--class,#d6b27a)}'));
+assert.ok(css.includes('.details summary::before{content:"◇";font-size:1.13rem;line-height:1;color:var(--class,#d6b27a)}'));
+assert.ok(css.includes('.card.hunter{--class:#aad372')&&css.includes('.card.druid{--class:#ff9b48'));
+
 assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
 assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
 assert.equal(ui.equipmentSlotOrder.length,19);
@@ -49,4 +74,4 @@ assert.ok(!/\.vital:last-child\s*\{\s*border-color:\s*var\(--class\)/.test(css),
   'Item-level frame must match other vital tiles, not use the class color');
 assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css),
   'Item-level number must use neutral color');
-console.log('UI QA: four Western backdrops, neutral item-level, 20 profession bars, rarity and gear: OK');
+console.log('UI QA: four Western backdrops, neutral 4 stats, class icons, 4-tier profession bars, rarity and gear: OK');
