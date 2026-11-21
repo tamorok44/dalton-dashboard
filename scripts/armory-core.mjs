@@ -319,6 +319,13 @@ for(const old of characters){
       typeof apiProfile?.race?.name==='string'&&apiProfile.race.name.trim()?apiProfile.race.name.trim():null;
     const sourceFaction=typeof c.faction?.name==='string'&&c.faction.name.trim()?c.faction.name.trim():
       typeof apiProfile?.faction?.name==='string'&&apiProfile.faction.name.trim()?apiProfile.faction.name.trim():null;
+    const statsDetailsByEnum=new Map((Array.isArray(old.statsDetails)?old.statsDetails:[])
+      .filter(entry=>entry?.enum).map(entry=>[entry.enum,{...entry}]));
+    for(const entry of st.details)statsDetailsByEnum.set(entry.enum,{...statsDetailsByEnum.get(entry.enum),...entry});
+    const statsDetails=[
+      ...statEnumOrder.filter(key=>statsDetailsByEnum.has(key)).map(key=>statsDetailsByEnum.get(key)),
+      ...[...statsDetailsByEnum.values()].filter(entry=>!statEnumOrder.includes(entry.enum))
+    ];
 
     const next={
       ...old,
@@ -343,7 +350,7 @@ for(const old of characters){
       hunterPetsError,
       stats:{...(old.stats||{}),...st.display},
       statsByEnum:{...(old.statsByEnum||{}),...st.byEnum},
-      statsDetails:st.details.length?st.details:(old.statsDetails||[]),
+      statsDetails,
       statsFreshKeys:Object.keys(st.display),
       statsFreshEnums:Object.keys(st.byEnum),
       equipment,
