@@ -23,13 +23,18 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   if(blizzardApiConfigured()){
     try{
       const slugs=latest.characters.map(c=>c.slug);
-      const reputationCatalogPromise=ensureReputationCatalog({force:false,archiveMedia:true});
       const detailsSnapshot=await fetchForeverSnapshot(slugs,{
         locale:'de_DE',
         endpointNames:['professions','specializations','reputations','quests','completedQuests']
       });
       const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
       const localizedRefs=collectLocalizedRefs(detailsSnapshot);
+      const factionNamespace=localizedRefs.find(ref=>ref.type==='faction')?.href
+        ?new URL(localizedRefs.find(ref=>ref.type==='faction').href).searchParams.get('namespace')
+        :null;
+      const reputationCatalogPromise=factionNamespace
+        ?ensureReputationCatalog({namespace:factionNamespace,force:false,archiveMedia:true})
+        :Promise.resolve(null);
       const questRefs=localizedRefs.filter(ref=>ref.type==='quest');
       const otherLocalizedRefs=localizedRefs.filter(ref=>ref.type!=='quest');
       let questCatalog=await loadQuestCatalog(questRefs,{locale:'de_DE'});
