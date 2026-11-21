@@ -277,8 +277,8 @@ function petRuleStatus(ruleId){
 function petRuleVerified(ruleId){return petRuleStatus(ruleId)==='verified'}
 function petRuleBanner(){
   const state=displayedPetRules;
-  if(!state){
-    return '<div class="pet-rule-banner is-unverified"><strong>Regelprüfung noch nicht bestätigt</strong><span>Regelbasierte Werte bleiben ausgeblendet, bis der Server die Forever-Quellen geprüft hat.</span></div>';
+  if(!state||state.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION){
+    return '<div class="pet-rule-banner is-unverified"><strong>Regelprüfung noch nicht bestätigt</strong><span>Regelbasierte Werte bleiben ausgeblendet, bis der Server genau diese Regelwerk-Version gegen die Forever-Quellen geprüft hat.</span></div>';
   }
   const rules=Object.values(state.rules||{});
   const verified=rules.filter(rule=>rule.status==='verified').length;
