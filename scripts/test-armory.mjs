@@ -130,6 +130,8 @@ try{
   assert.equal(c.classId,3);
   assert.equal(c.race,'Himmelsgeborener des Hohen Ordens');
   assert.equal(c.faction,'Allianz');
+  assert.equal(c.gameStringsVerified,true);
+  assert.equal(c.gameStringsLocale,'de_DE');
   assert.equal(c.equipment[0].item,'Neues Wams');
   assert.equal(c.equipment[0].slot,'Brust');
   assert.equal(c.equipment[0].slotType,'CHEST');
