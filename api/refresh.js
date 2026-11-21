@@ -1,5 +1,7 @@
 import {configured,acquireRefreshLock,releaseRefreshLock,manualCooldown} from '../scripts/character-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
+import {ensurePetRuleState} from '../scripts/pet-rule-store.mjs';
+import {publicPetRuleState} from '../scripts/pet-rulebook.mjs';
 export const config={maxDuration:60};
 let pending=null;
 export default async function handler(req,res){
@@ -21,6 +23,7 @@ export default async function handler(req,res){
       if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
       return res.status(202).json({pending:true,reason:'already_running'});
     }
+    const petRuleState=await ensurePetRuleState({force:false});
     pending=refreshAndPersist({lockToken,source:req.method==='GET'?'manual':'scheduled'})
       .finally(async()=>{
         try{await releaseRefreshLock(lockToken)}catch(error){console.error('Redis-Refresh-Sperre konnte nicht freigegeben werden:',error)}
@@ -28,7 +31,7 @@ export default async function handler(req,res){
       });
     const result=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
-    return res.status(200).json(result);
+    return res.status(200).json({...result,petRules:publicPetRuleState(petRuleState)});
   }catch(error){
     console.error('Live-Abruf oder Speichern fehlgeschlagen:',error);
     return res.status(503).json({error:'Aktualisierung konnte nicht dauerhaft gespeichert werden'});

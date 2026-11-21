@@ -2,6 +2,7 @@
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({
     name:'Fuchs',
+    ruleIds:Object.freeze({profile:'fox.family.profile',training:'fox.training'}),
     modifiers:Object.freeze({damage:0,armor:5,health:0}),
     diet:Object.freeze(['Fleisch']),
     abilities:Object.freeze([
@@ -27,7 +28,7 @@ export const hunterPetFamilies=Object.freeze({
         ranks:Object.freeze([{rank:1,level:30},{rank:2,level:40},{rank:3,level:50}])
       })
     ]),
-    sourceNote:'Forever 1.60.1 · Familienwerte und Ausbildungsstufen aus aktuellen Forever-Spieldaten'
+    sourceNote:'Regelwerte werden nur bei bestätigtem zentralem Pet-Regelwerk angezeigt'
   })
 });
 

@@ -3,6 +3,8 @@ import {saveDailySnapshot,dailySnapshotStoreConfigured} from '../scripts/daily-s
 import {configured,loadCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {getDailySnapshot,registerDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from '../scripts/history-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
+import {ensurePetRuleState} from '../scripts/pet-rule-store.mjs';
+import {publicPetRuleState} from '../scripts/pet-rulebook.mjs';
 
 export const config={maxDuration:60};
 
@@ -34,6 +36,8 @@ export default async function handler(req,res){
   try{
     const secondCheck=await getDailySnapshot(local.date);
     if(secondCheck)return res.status(200).json({skipped:true,reason:'already_saved',snapshot:secondCheck});
+    // Regelprüfung bewusst vor Snapshot und Profil-Refresh: neue Livewerte dürfen nie mit ungeprüften Pet-Regeln verrechnet werden.
+    const petRuleState=await ensurePetRuleState({force:true});
     const {data:current}=await loadCharacters();
     const slugs=current.characters.map(c=>c.slug);
     const snapshot=await fetchForeverSnapshot(slugs);
@@ -50,7 +54,7 @@ export default async function handler(req,res){
         await releaseRefreshLock(refreshLock);
       }
     }
-    return res.status(200).json({saved:true,snapshot:meta,refresh});
+    return res.status(200).json({saved:true,snapshot:meta,refresh,petRules:publicPetRuleState(petRuleState)});
   }catch(error){
     console.error('Tages-Snapshot fehlgeschlagen:',error);
     return res.status(503).json({error:'Tages-Snapshot konnte nicht gespeichert werden'});
