@@ -102,17 +102,30 @@ function stats(c) {
   }
   return result;
 }
-const slotType=entry.slot?.type||entry.slot?.name||entry.slot;
-    const slot=slotNames[slotType]||entry.slot?.name||slotType;
+function gear(c) {
+  const raw=c.gear;
+  const entries=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
+  return entries.map(entry=>{
+    if(!entry||typeof entry!=='object')return null;
+    const name=entry.name||entry.item?.name;
+    const id=Number(entry.id??entry.item?.id);
+    const slot=typeof entry.slot?.name==='string'&&entry.slot.name.trim()?entry.slot.name.trim():null;
     const icon=entry.media?.content?.assets?.find(a=>a.key==='icon')?.value;
     const level=entry.level?.value;
-    // Blizzard übermittelt die originale Gegenstandsqualität, z.B. {type:"UNCOMMON",name:"Uncommon"}.
     const rawQuality=entry.quality??entry.item?.quality;
     const qualityType=typeof rawQuality==='string'?rawQuality:rawQuality?.type;
     const allowedQualities=['POOR','COMMON','UNCOMMON','RARE','EPIC','LEGENDARY','ARTIFACT','HEIRLOOM'];
     const quality=typeof qualityType==='string'&&allowedQualities.includes(qualityType.toUpperCase())?qualityType.toUpperCase():undefined;
     const qualityName=typeof rawQuality?.name==='string'&&rawQuality.name.trim()?rawQuality.name.trim():undefined;
-    return typeof name==='string'&&slot?{...(Number.isInteger(id)&&id>0?{id}:{}),slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined,...(quality?{quality}:{}),...(qualityName?{qualityName}:{})}:null;
+    return typeof name==='string'&&slot?{
+      ...(Number.isInteger(id)&&id>0?{id}:{}),
+      slot:String(slot),
+      item:name,
+      icon:typeof icon==='string'?icon:undefined,
+      level:Number.isFinite(level)?level:undefined,
+      ...(quality?{quality}:{}),
+      ...(qualityName?{qualityName}:{})
+    }:null;
   }).filter(Boolean);
 }
 function talents(c) {
