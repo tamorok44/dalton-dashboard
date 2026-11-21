@@ -275,8 +275,14 @@ export function normalizeForeverDbRecipe(raw={},professionSlug){
 function totalFromMeta(meta={},fallbackCount=0){
   return firstNumber(meta.total,meta.count,meta.totalCount,meta.pagination?.total,meta.pagination?.count)??fallbackCount;
 }
-export async function fetchForeverDbRecipeIndex({fetchImpl=fetch,pageSize=100,maxRequests=28}={}){
-  const slugs=[...PROFESSION_SLUGS];
+export async function fetchForeverDbRecipeIndex({
+  fetchImpl=fetch,
+  pageSize=100,
+  maxRequests=28,
+  professionSlugs=[...PROFESSION_SLUGS]
+}={}){
+  const slugs=[...new Set(asArray(professionSlugs).filter(slug=>PROFESSION_SLUGS.has(slug)))].sort();
+  if(!slugs.length)return {generatedAt:new Date().toISOString(),build:null,requestCount:0,complete:true,professionSlugs:[],recipes:[],byItem:new Map()};
   let requestCount=0;
   const firstPages=await Promise.all(slugs.map(async slug=>{
     requestCount++;
@@ -292,7 +298,7 @@ export async function fetchForeverDbRecipeIndex({fetchImpl=fetch,pageSize=100,ma
     for(let n=1;n<pages;n++)extraJobs.push({slug,offset:n*pageSize});
   }
   if(requestCount+extraJobs.length>maxRequests){
-    throw new Error('ForeverDB-Rezeptkatalog würde das sichere Request-Budget überschreiten ('+(requestCount+extraJobs.length)+' Requests)');
+    throw new Error('ForeverDB-Rezeptkatalog würde das sichere Request-Budget überschreiten ('+(requestCount+extraJobs.length)+' Requests für '+slugs.length+' Berufe)');
   }
   const extra=await Promise.all(extraJobs.map(async job=>{
     requestCount++;
@@ -312,8 +318,24 @@ export async function fetchForeverDbRecipeIndex({fetchImpl=fetch,pageSize=100,ma
     build,
     requestCount,
     complete:true,
+    professionSlugs:slugs,
     recipes,
     byItem
+  };
+}
+
+export async function searchForeverDbRecipesForItem(itemId,itemName,{fetchImpl=fetch}={}){
+  const id=integer(itemId);
+  const query=string(itemName);
+  if(!id||!query)return {generatedAt:new Date().toISOString(),requestCount:0,recipes:[]};
+  const slugs=[...PROFESSION_SLUGS].sort();
+  const pages=await Promise.all(slugs.map(slug=>fetchForeverDbProfession(slug,{query,limit:100,offset:0,fetchImpl}).then(page=>({slug,page}))));
+  const recipes=pages.flatMap(({slug,page})=>page.recipes.map(raw=>normalizeForeverDbRecipe(raw,slug)).filter(Boolean))
+    .filter(recipe=>Number(recipe.craftedItem?.id)===id);
+  return {
+    generatedAt:new Date().toISOString(),
+    requestCount:slugs.length,
+    recipes
   };
 }
 export function serializableRecipeIndex(index){
@@ -322,6 +344,7 @@ export function serializableRecipeIndex(index){
     build:index.build||null,
     requestCount:index.requestCount||0,
     complete:index.complete===true,
+    professionSlugs:asArray(index.professionSlugs),
     recipes:asArray(index.recipes)
   };
 }
