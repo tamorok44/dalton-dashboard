@@ -109,6 +109,11 @@ export function normalizeFactionName(value=''){
     .replace(/&/g,'and').replace(/[^a-z0-9]+/g,' ').trim();
 }
 const aliases=new Map([
+  ['sturmwind','stormwind'],
+  ['eisenschmiede','ironforge'],
+  ['donnerfels','thunder-bluff'],
+  ['unterstadt','undercity'],
+  ['dunkelspeertrolle','darkspear-trolls'],
   ['gnomeregangnome','gnomeregan-exiles'],
   ['gnomeregan exiles','gnomeregan-exiles'],
   ['schildwachen der silverwing','silverwing-sentinels'],
