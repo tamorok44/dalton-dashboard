@@ -34,7 +34,7 @@ export const PET_RULES=Object.freeze({
     evidence:'reference_model',
     evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit sind aktueller Forever-Konsens; die Serverkoeffizienten sind im Client-Auraexport nicht direkt enthalten.',
     reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','mobalyticsScaling'])
+    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit'])
   }),
   'pet.focus':Object.freeze({
     version:2,
@@ -141,10 +141,9 @@ const sources=Object.freeze({
     url:'https://efficient.games/wowf/hunter-pets',
     mode:'markers',
     semanticPatterns:Object.freeze([
-      /bite[\s\S]{0,260}?rank\s+1[\s\S]{0,80}?pet\s+level\s+1[\s\S]{0,80}?1\s+training\s+point/i,
-      /rank\s+2[\s\S]{0,80}?pet\s+level\s+8[\s\S]{0,80}?4\s+training\s+points/i,
-      /trickster(?:'|’)?s\s+dance[\s\S]{0,180}?rank\s+1[\s\S]{0,80}?20[\s\S]{0,80}?10/i,
-      /dash[\s\S]{0,220}?rank\s+1[\s\S]{0,80}?30[\s\S]{0,100}?15\s+for\s+boar,\s*cat,\s*fox/i
+      /bite\s+rank\s+1\s+1\s+1[\s\S]{0,80}?bite\s+rank\s+2\s+8\s+4/i,
+      /trickster(?:'|’)?s\s+dance\s+rank\s+1\s+20\s+10/i,
+      /dash\s+rank\s+1\s+30\s+15\s+for\s+boar,\s*cat,\s*fox/i
     ]),
     buildPattern:/1\.60\.1\s*\(build\s+(\d+)\)/i
   }),
