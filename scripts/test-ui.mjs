@@ -132,14 +132,18 @@ petDolly.talentDetails=[{
 }];
 
 const verifiedPetRules={
-  rulebookVersion:'2026.11.21.2',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
+  rulebookVersion:'2026.11.21.3',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
   rules:{
-    'fox.family.profile':{status:'verified',version:1},
-    'fox.training':{status:'verified',version:1},
-    'pet.scaling':{status:'verified',version:2},
-    'pet.focus':{status:'verified',version:1},
-    'pet.health.global':{status:'verified',version:1}
-  }
+    'fox.family.profile':{status:'verified',version:2,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
+    'fox.training':{status:'verified',version:2,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
+    'pet.scaling':{status:'verified',version:3,evidence:'reference_model',evidenceLabel:'Referenzmodell',evidenceNote:'Serverkoeffizient nicht direkt veröffentlicht'},
+    'pet.focus':{status:'verified',version:2,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
+    'pet.health.global':{status:'verified',version:2,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Blizzard-Hotfix'}
+  },
+  history:[
+    {at:'2026-11-21T04:07:00.000Z',type:'rulebook_version',fromRulebookVersion:'2026.11.21.2',toRulebookVersion:'2026.11.21.3'},
+    {at:'2026-11-21T04:07:00.000Z',type:'rule_state',ruleId:'pet.scaling',label:'Jägerbegleiter-Skalierung',fromStatus:'verified',toStatus:'verified',fromEvidence:'client',toEvidence:'reference_model'}
+  ]
 };
 ui.render(petData,{petRules:verifiedPetRules});
 const petPanel=ui.hunterPetsPanel(petDolly);
@@ -148,6 +152,7 @@ assert.ok(petPanel.includes('5 Stufen')&&petPanel.includes('hinter Dolly'),'Pet-
 assert.ok(petPanel.includes('Schaden')&&petPanel.includes('±0 %')&&petPanel.includes('+5 %'),'Fox family modifiers are shown');
 assert.ok(petPanel.includes('Fleisch'),'Fox diet is shown');
 assert.ok(petPanel.includes('Beißen')&&petPanel.includes('nächster Rang ab Stufe 8'),'Training guidance is level-aware');
+assert.ok(petPanel.includes('1 TP')&&petPanel.includes('4 TP'),'Known training-point costs are shown without inventing the current free-point balance');
 assert.ok(petPanel.includes('Tanz des Täuschers')&&petPanel.includes('Ab Begleiterstufe 20'),'Fox-exclusive ability is shown as future unlock');
 assert.ok(petPanel.includes('Nicht mit „bereits gelernt“ gleichzusetzen.'),'Trainable ranks are never presented as learned');
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
@@ -161,7 +166,8 @@ assert.ok(combat.includes('Belastbarkeit-Ausbildung')&&combat.includes('>Rang 1<
 assert.ok(combat.includes('Maximaler Fokus')&&combat.includes('>150<'),'Verified maximum Focus is shown');
 assert.ok(combat.includes('Fokusregeneration')&&combat.includes('>+10/Sek.<'),'Verified continuous Focus regeneration is shown');
 assert.ok(combat.includes('Angriffskraft aus Dolly')&&combat.includes('Nahkampf-/Fernkampf-Angriffskraft'),'AP inheritance remains blocked without an unambiguous highest AP source');
-assert.ok(combat.includes('keine geschätzten Gesamtwerte')&&combat.includes('Warum fehlen Gesamtleben, Gesamtrüstung und DPS?'),'Combat panel explains the strict calculation boundary');
+assert.ok(combat.includes('Referenzmodell')&&combat.includes('Clientdaten')&&combat.includes('Offiziell'),'Combat values expose their evidence level');
+assert.ok(combat.includes('Warum fehlen Gesamtleben, Gesamtrüstung und DPS?'),'Combat panel explains the strict calculation boundary');
 const derived=hunterPetCombatProfile(petDolly);
 assert.equal(derived.inherited.health.value,60);
 assert.equal(derived.inherited.armor.value,76.8);
@@ -172,7 +178,9 @@ assert.equal(derived.enduranceTraining.rank,1);
 
 ui.render(petData,{petRules:verifiedPetRules});
 const petCards=nodes.get('#cards').innerHTML;
-assert.ok(petCards.includes('Regelstand bestätigt · 5/5'),'Verified pet rules are visibly identified');
+assert.ok(petCards.includes('Quellenstand aktuell · 5/5'),'Current source status is visibly identified');
+assert.ok(petCards.includes('1× Referenzmodell')&&petCards.includes('3× Clientdaten')&&petCards.includes('1× Offiziell'),'Evidence mix is summarized without implying equal certainty');
+assert.ok(petCards.includes('Regelstatus-Protokoll'),'Rule transition history is visible in the companion tab');
 const blockedRules=structuredClone(verifiedPetRules);
 blockedRules.overall='review_required';
 blockedRules.rules['fox.family.profile'].status='review_required';
@@ -191,7 +199,7 @@ assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rul
 assert.ok(!blockedPetPanel.includes('>115 %<'),'Blocked health rule hides the global health factor');
 assert.ok(!blockedPetPanel.includes('Maximaler Fokus'),'Blocked focus rule hides focus mechanics');
 const staleRuleVersion=structuredClone(verifiedPetRules);
-staleRuleVersion.rulebookVersion='2026.11.21.1';
+staleRuleVersion.rulebookVersion='2026.11.21.2';
 ui.render(petData,{petRules:staleRuleVersion});
 const staleVersionPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(staleVersionPanel.includes('Regelprüfung noch nicht bestätigt'),'A stale rulebook version is never trusted by the new frontend');
