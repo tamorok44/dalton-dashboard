@@ -25,4 +25,7 @@ assert.match(refresh,/locale:'de_DE'/);
 assert.match(app,/Klasse nicht verfügbar/);
 assert.match(app,/Volk nicht verfügbar/);
 assert.match(app,/Fraktion nicht verfügbar/);
+assert.match(app,/gameStringsVerified===true/);
+assert.ok(!app.includes("'+item.qualityName"),'Unverified textual quality localization is not displayed');
+assert.ok(!app.includes('family.diet'),'Pet diet text is not taken from a manually translated rulebook');
 console.log('Game language guard: visible WoW strings come from German source data, not translation tables: OK');
