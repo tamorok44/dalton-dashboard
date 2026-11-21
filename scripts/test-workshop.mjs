@@ -1,0 +1,97 @@
+import assert from 'node:assert/strict';
+import {
+  buildWorkshopCatalog,
+  searchWorkshopItems,
+  workshopBrowseTree,
+  buildProductionPlan
+} from './workshop-core.mjs';
+import {
+  searchForeverDbItems,
+  fetchForeverDbItem,
+  fetchForeverDbProfession
+} from './foreverdb-api.mjs';
+
+const data={
+  generatedAt:'2026-11-21T12:00:00.000Z',
+  characters:[
+    {
+      slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',
+      professions:[{id:186,name:'Bergbau',current:46,max:75,knownRecipes:[
+        {id:3324,name:'Kupfer verhütten',craftedItem:{id:2840,name:'Kupferbarren'},craftedQuantity:{value:1},reagents:[{id:2770,name:'Kupfererz',quantity:1}]}
+      ]}]
+    },
+    {
+      slug:'dolly-dalton',name:'Dolly Dalton',player:'Max',
+      professions:[{id:165,name:'Lederverarbeitung',current:20,max:75,knownRecipes:[
+        {id:9001,name:'Testklinge',craftedItem:{id:99001,name:'Kupfer-Testklinge'},craftedQuantity:{value:1},reagents:[{id:2840,name:'Kupferbarren',quantity:2},{id:2318,name:'Leichtes Leder',quantity:1}]}
+      ]}]
+    }
+  ]
+};
+const catalog=buildWorkshopCatalog(data);
+assert.equal(catalog.recipes.length,2);
+assert.equal(catalog.byItemId.get(2840).craftable,true);
+assert.equal(catalog.byItemId.get(2770).craftable,false);
+assert.equal(catalog.byItemId.get(2840).crafters[0].name,'Chucky Dalton');
+
+const suggestions=searchWorkshopItems(catalog,'Kup',{limit:10});
+assert.deepEqual(suggestions.map(item=>item.name),['Kupfer-Testklinge','Kupferbarren','Kupfererz'],
+  'Namensanfänge werden alphabetisch vor anderen Treffern sortiert');
+
+const browse=workshopBrowseTree(catalog);
+const browseText=JSON.stringify(browse);
+assert.ok(browseText.includes('Kupfer-Testklinge'));
+assert.ok(browseText.includes('Kupferbarren'));
+assert.ok(!browseText.includes('Kupfererz'),'Dropdown enthält nur tatsächlich craftbare Gegenstände');
+
+const plan=buildProductionPlan(catalog,99001,5);
+assert.equal(plan.tree.recipe.craftsRequired,5);
+const bars=plan.tree.materials.find(item=>item.item.id===2840);
+assert.equal(bars.quantity,10);
+assert.equal(bars.recipe.craftsRequired,10);
+assert.equal(bars.materials[0].item.id,2770);
+assert.equal(bars.materials[0].quantity,10);
+assert.deepEqual(plan.externalMaterials,[
+  {id:2318,name:'Leichtes Leder',quantity:5},
+  {id:2770,name:'Kupfererz',quantity:10}
+]);
+
+const variableData={
+  generatedAt:data.generatedAt,
+  characters:[{slug:'cole-dalton',name:'Cole Dalton',player:'Christian',professions:[{
+    id:171,name:'Alchimie',current:100,max:150,knownRecipes:[{
+      id:9100,name:'Testausbeute',craftedItem:{id:99002,name:'Testausbeute'},craftedQuantity:{minimum:2,maximum:4},
+      reagents:[{id:2447,name:'Friedensblume',quantity:1}]
+    }]
+  }]}]
+};
+const variable=buildProductionPlan(buildWorkshopCatalog(variableData),99002,5);
+assert.equal(variable.tree.recipe.craftsRequired,3,'Variable Ausbeute plant konservativ mit der garantierten Mindestausbeute');
+assert.deepEqual(variable.tree.recipe.outputRange,{min:6,max:12});
+assert.equal(variable.externalMaterials[0].quantity,3);
+
+const previousKey=process.env.FOREVERDB_API_KEY;
+process.env.FOREVERDB_API_KEY='test-key';
+const requests=[];
+const fakeFetch=async url=>{
+  requests.push(String(url));
+  const parsed=new URL(url);
+  const body=parsed.pathname.includes('/professions/')
+    ?{data:{recipes:[{id:1,name:'Recipe'}]},meta:{total:1}}
+    :parsed.pathname.endsWith('/items/2840')
+      ?{data:{id:2840,name:'Kupferbarren',quality:1,class:7,slot:0,requiredLevel:0},meta:{build:'test'}}
+      :{data:[{id:2840,name:'Kupferbarren'},{id:2770,name:'Kupfererz'}],meta:{total:2}};
+  return {ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify(body)};
+};
+const remoteSearch=await searchForeverDbItems('Kup',{limit:10,fetchImpl:fakeFetch});
+assert.equal(remoteSearch.items.length,2);
+assert.equal(remoteSearch.items[0].name,'Kupferbarren');
+assert.ok(!Object.hasOwn(remoteSearch.items[0],'raw'),'Rohe ForeverDB-Payloads werden nicht an die Oberfläche gereicht');
+const remoteItem=await fetchForeverDbItem(2840,{fetchImpl:fakeFetch});
+assert.equal(remoteItem.item.id,2840);
+const profession=await fetchForeverDbProfession('mining',{fetchImpl:fakeFetch});
+assert.equal(profession.recipes.length,1);
+assert.ok(requests.every(url=>new URL(url).searchParams.get('lang')==='de'),'ForeverDB wird mit deutschen Clientnamen abgefragt');
+if(previousKey===undefined)delete process.env.FOREVERDB_API_KEY;else process.env.FOREVERDB_API_KEY=previousKey;
+
+console.log('Werkstatt: Katalog, Autocomplete, Browse, Mengenplanung, Produktionsbaum und ForeverDB-Adapter: OK');
