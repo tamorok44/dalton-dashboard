@@ -8,6 +8,27 @@ import {reputationStages,reputationColors} from '../reputation-data.js';
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
+// Legacy JSON fixture is normalized into the new source-backed shape only for UI unit tests.
+const testClassIds={'Magier':8,'Jäger':3,'Druide':11};
+const testStatEnums={
+  Gesundheit:'HEALTH',Mana:'MANA','Stärke':'STRENGTH','Intelligenz':'INTELLECT','Beweglichkeit':'AGILITY','Ausdauer':'STAMINA',
+  'Kritische Trefferchance':'CRITICALSTRIKE','Willenskraft':'SPIRIT','Waffen-DPS':'ATTACKDPS','Manaregeneration':'MANAREGEN',
+  'Rüstung':'ARMOR','Angriffskraft':'ATTACKPOWER','Zaubermacht':'SPELLPOWER','Nahkampf-Krit':'MELEECRIT','Fernkampf-Krit':'RANGEDCRIT',
+  'Zauber-Krit':'SPELLCRIT','Ausweichen':'DODGE','Parieren':'PARRY','Blocken':'BLOCK','Angriffsgeschwindigkeit':'ATTACKSPEED','Gegenstandsstufe':'ITEMLEVEL'
+};
+const testSlotTypes={
+  Kopf:'HEAD',Hals:'NECK',Schultern:'SHOULDER',Rücken:'BACK',Brust:'CHEST',Hemd:'SHIRT',Wappenrock:'TABARD',Handgelenke:'WRIST',
+  Hände:'HANDS',Taille:'WAIST',Beine:'LEGS',Füße:'FEET','Ring 1':'FINGER_1','Ring 2':'FINGER_2','Schmuck 1':'TRINKET_1','Schmuck 2':'TRINKET_2',
+  Waffenhand:'MAIN_HAND',Nebenhand:'OFF_HAND',Distanzwaffe:'RANGED'
+};
+for(const c of data.characters){
+  c.classId=testClassIds[c.class]||null;
+  c.gameStringsVerified=true;c.gameStringsLocale='de_DE';
+  c.statsDetails=Object.entries(c.stats||{}).filter(([name])=>testStatEnums[name]).map(([name,value])=>({enum:testStatEnums[name],name,value}));
+  c.statsByEnum=Object.fromEntries(c.statsDetails.map(entry=>[entry.enum,entry.value]));
+  c.statsFreshEnums=[...c.statsDetails.map(entry=>entry.enum)];
+  for(const item of c.equipment||[])item.slotType=testSlotTypes[item.slot]||item.slotType;
+}
 const executableSource=source
   .replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'')
   .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'');
@@ -313,7 +334,7 @@ const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
 assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,data.characters.length*10);
 assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,data.characters.length*10);
-assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
+assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
 const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(Number(character.classId)===3?1:0),0);
