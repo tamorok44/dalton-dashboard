@@ -512,6 +512,10 @@ assert.ok(source.includes("window.addEventListener('focus'"),'Fokus auf das Dash
 assert.ok(source.includes("function applyServerPayload(")&&source.includes("invalidateWorkshopData({reloadVisible:true})"),'Ein zentraler Payload-Pfad aktualisiert alle Ansichten und invalidiert abgeleitete Werkstattdaten');
 assert.ok(source.includes("if(!compareView.hidden)renderComparison()"),'Charaktere und Vergleich teilen denselben gerenderten Datenstand');
 assert.ok(source.includes("workshopDataEpoch++"),'Veraltete laufende Werkstattanfragen können nach einem Datenwechsel nicht zurückschreiben');
+assert.ok(source.includes("async function selectWorkshopItem(itemId,{preserveQuery=false,preserveQuantity=false}={})"),'Werkstatt-Auswahl unterscheidet Gegenstandswechsel von bewusstem Mengenerhalt');
+assert.ok(source.includes("if(changedItem&&!preserveQuantity)workshopState.quantity=1"),'Ein anderer Gegenstand setzt die Menge auf eins zurück');
+assert.ok(source.includes("selectWorkshopItem(workshopState.selected.item.id,{preserveQuery:true,preserveQuantity:true})"),'Mengenänderung am selben Gegenstand behält die gewählte Menge');
+assert.ok(source.includes("selectWorkshopItem(selectedId,{preserveQuery:true,preserveQuantity:true})"),'Automatisches Neuladen desselben Gegenstands behält die gewählte Menge');
 assert.ok(css.includes('.segmented-control{')&&css.includes('.segmented-option.is-active'),'Segment-Schalter ist als gemeinsame Dalton-CI-Komponente gestaltet');
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
