@@ -303,6 +303,7 @@ for(const old of characters){
       ...old,
       level,
       class:typeof sourceClassName==='string'&&sourceClassName.trim()?sourceClassName.trim():old.class,
+      classId:Number.isInteger(sourceClassId)?sourceClassId:old.classId,
       race:apiProfile?.race?.name||c.race?.name||old.race,
       gender:characterGender(apiProfile)||characterGender(c)||old.gender||null,
       faction:apiProfile?.faction?.name||c.faction?.name||old.faction,
