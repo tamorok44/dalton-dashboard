@@ -122,7 +122,7 @@ export default async function handler(req,res){
         }
         if(!local?.craftable&&!remoteRecipe&&item?.name){
           try{
-            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.name);
+            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.englishName||item.name);
             if(targetedRecipeSearch.recipes?.length){
               const targetedIndex={byItem:new Map([[itemId,targetedRecipeSearch.recipes]])};
               remoteRecipe=preferredForeverRecipeForItem(targetedIndex,itemId);
