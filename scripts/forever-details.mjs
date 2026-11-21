@@ -1,3 +1,4 @@
+import {preferredGermanGameName} from './player-terminology.mjs';
 function asArray(value){return Array.isArray(value)?value:[]}
 function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
 
@@ -56,7 +57,7 @@ function normalizedRecipe(recipe,detailsById){
 function professions(data,detailsById,localizedNames={}){
   const all=[...asArray(data?.primaries),...asArray(data?.secondaries)];
   return all.flatMap(entry=>{
-    const professionId=integer(entry?.profession?.id); const base={id:professionId,name:localizedNames['profession:'+professionId]||entry?.profession?.name||'Beruf'};
+    const professionId=integer(entry?.profession?.id); const technicalName=localizedNames['profession:'+professionId]||entry?.profession?.name||null; const base={id:professionId,name:preferredGermanGameName('profession',professionId,technicalName)||'Beruf'};
     return asArray(entry?.tiers).map(tier=>({
       ...base,
       tierId:integer(tier?.tier?.id),
