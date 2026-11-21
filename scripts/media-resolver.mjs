@@ -6,7 +6,8 @@ const ALLOWED_TYPES=new Set(['image/png','image/jpeg','image/webp']);
 const SOURCE_RULES=[
   /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\//,
   /^https:\/\/foreverspec\.com\/icons\/\d+\.webp$/,
-  /^https:\/\/foreverdb\.net\/icons\/\d+\.webp$/
+  /^https:\/\/foreverdb\.net\/icons\/\d+\.webp$/,
+  /^https:\/\/warcraft\.wiki\.gg\/images\//
 ];
 
 function hash(value){
@@ -58,7 +59,10 @@ export async function resolveMediaAsset({
 
   if(!imageStoreConfigured())return null;
 
-  const response=await fetchImpl(sourceUrl,{signal:AbortSignal.timeout(12000)});
+  const response=await fetchImpl(sourceUrl,{
+    headers:{'user-agent':'Dalton-Dashboard/1.0 media archiver'},
+    signal:AbortSignal.timeout(12000)
+  });
   if(!response.ok)throw Error('Bildquelle HTTP '+response.status);
   const contentType=(response.headers.get('content-type')||'').split(';')[0];
   if(!ALLOWED_TYPES.has(contentType))throw Error('Ungültiges Bildformat');
