@@ -36,7 +36,7 @@ const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
 const document={querySelector(selector){
-  if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',hidden:selector==='#compareView',querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){}});
+  if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',hidden:selector==='#compareView'||selector==='#workshopView',querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){}});
   return nodes.get(selector);
 }};
 const window={addEventListener(){}};
@@ -493,6 +493,10 @@ assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css
 
 // Golden sheriff-star header and daylight/western landscape should not regress.
 const heroHtml=read('index.html'),crest=read('dalton-crest.svg'),sky=read('skyborne-horizon.svg'),icon=read('icon.svg');
+assert.ok(heroHtml.includes('data-view-link="workshop"'),'Werkstatt ist dritter Hauptreiter');
+assert.ok(heroHtml.includes('id="workshopView" class="main-view workshop-view"'),'Werkstatt nutzt verbindlichen main-view-Vertrag');
+assert.ok(source.includes("location.hash==='#werkstatt'?'workshop'"),'Werkstatt hat eigene Hash-Route');
+assert.ok(source.includes("workshopFetch('/api/workshop"),'Werkstatt nutzt serverseitige API');
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
 assert.ok(heroHtml.includes('Noch keine Legenden, aber schon gesucht.'),'Hero uses grammatically correct comma');
