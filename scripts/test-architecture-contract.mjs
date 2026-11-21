@@ -80,6 +80,7 @@ assert.ok(sourceByFile.has('api/data-version.js'),'Lightweight data-version endp
 assert.ok(sourceByFile.has('scripts/data-version.mjs'),'Central data-version module is required');
 assert.ok((sourceByFile.get('api/refresh.js')||'').includes('dataVersion'),'Manual refresh must return the global data version');
 assert.ok((sourceByFile.get('api/characters.js')||'').includes('dataVersion'),'Stored-data API must return the global data version');
+assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefreshLockWithRetry'),'Daily refresh must retry a temporarily occupied refresh lock');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
 assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
 for(const markup of checkboxMarkup){
