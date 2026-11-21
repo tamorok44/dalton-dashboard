@@ -226,10 +226,8 @@ const htmlText=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/&(#x[\da-f]+|#\d
  return e.startsWith('#x')?String.fromCodePoint(parseInt(e.slice(2),16)):e.startsWith('#')?String.fromCodePoint(parseInt(e.slice(1),10)):d[e]||'&'+e+';';
 }).replace(/\s+/g,' ').trim();
 const attribute=(tag,key)=>tag.match(new RegExp('\\b'+key+'\\s*=\\s*(["\\x27])([\\s\\S]*?)\\1','i'))?.[2]||'';
-const slotKey=s=>({'Füsse':'Füße','Distanz':'Distanzwaffe'}[s]||s);
 function extractGermanGear(html,baseGear){
  const tags=[...html.matchAll(/<div\b[^>]*\bclass\s*=\s*["'][^"']*\ba-slot\b[^"']*["'][^>]*>/gi)];
- const names={head:'Kopf',neck:'Hals',shoulders:'Schultern',back:'Rücken',chest:'Brust',shirt:'Hemd',wrists:'Handgelenke',hands:'Hände',waist:'Taille',legs:'Beine',feet:'Füße',ring1:'Ring 1',ring2:'Ring 2',trinket1:'Schmuck 1',trinket2:'Schmuck 2',mainhand:'Waffenhand',offhand:'Nebenhand',ranged:'Distanzwaffe'};
  const gear=[];
  for(let i=0;i<tags.length;i++){
    const tag=tags[i][0],id=attribute(tag,'data-itemid');
@@ -237,9 +235,10 @@ function extractGermanGear(html,baseGear){
    const section=html.slice(tags[i].index+tag.length,tags[i+1]?.index||html.length);
    const name=htmlText(section.match(/<(?:div|span)\b[^>]*\bclass\s*=\s*["'][^"']*\bslot-name\b[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|span)>/i)?.[1]);
    const desc=htmlText(section.match(/<(?:div|span)\b[^>]*\bclass\s*=\s*["'][^"']*\bslot-level\b[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|span)>/i)?.[1]);
-   const slot=slotKey(desc.replace(/^\d+\s*[·•\-–]\s*/,'').trim()||names[attribute(tag,'data-itemtype').toLowerCase()]);
+   const slot=desc.replace(/^\d+\s*[·•\-–]\s*/,'').trim();
+   const sourceSlotType=attribute(tag,'data-itemtype').toLowerCase()||null;
    const level=Number(attribute(tag,'data-itemlevel'))||Number(desc.match(/^\d+/)?.[0])||undefined;
-   if(name&&slot&&!/^leer$/i.test(name))gear.push({id:Number(id),slot,item:name,icon:'https://foreverspec.com/icons/'+id+'.webp',level});
+   if(name&&slot&&!/^leer$/i.test(name))gear.push({id:Number(id),...(sourceSlotType?{sourceSlotType}:{}),slot,item:name,icon:'https://foreverspec.com/icons/'+id+'.webp',level});
  }
  if(!gear.length){
    for(const script of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){
@@ -247,7 +246,7 @@ function extractGermanGear(html,baseGear){
        const value=JSON.parse(script[1]),values=Array.isArray(value)?value:[value];
        const l=values.find(x=>x?.['@type']==='ItemList'&&Array.isArray(x.itemListElement));
        for(const x of l?.itemListElement||[]){
-         const item=x.item||x,name=htmlText(item.name),slot=slotKey(htmlText(item.description));
+         const item=x.item||x,name=htmlText(item.name),slot=htmlText(item.description);
          const level=Number(item.additionalProperty?.value)||undefined;
          if(name&&slot)gear.push({slot,item:name,level});
        }
@@ -256,26 +255,29 @@ function extractGermanGear(html,baseGear){
    }
  }
  if(!gear.length)throw new Error('ForeverSpec lieferte keine auslesbare Ausrüstung');
- const old=new Map((baseGear||[]).map(x=>[slotKey(x.slot),x]));
- return [...new Map(gear.map(g=>[g.slot,{...g,icon:g.icon||old.get(g.slot)?.icon,level:g.level||old.get(g.slot)?.level}])).values()];
+ const technicalKey=item=>String(item?.slotType||item?.sourceSlotType||item?.slot||'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+ const old=new Map((baseGear||[]).map(x=>[technicalKey(x),x]));
+ return [...new Map(gear.map(g=>{
+   const key=technicalKey(g),prior=old.get(key);
+   return [key||g.slot,{...g,icon:g.icon||prior?.icon,level:g.level||prior?.level}];
+ })).values()];
 }
-// Vergleich mit dem aktuellen offiziellen englischen Profil: veraltete ForeverSpec-
-// oder lokalisierte Blizzard-Ausrüstung darf niemals aktuelle Gegenstände überschreiben.
-const normalizedSlot=slot=>slotKey(slot||'');
+// Technische Slot-IDs dienen nur der Identität; sichtbare Slotnamen stammen aus der deutschen Quelle.
+const normalizedSlot=item=>String(item?.slotType||item?.sourceSlotType||item?.slot||item||'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const iconId=url=>String(url||'').match(/\/(\d+)\.(?:webp|jpg)(?:\?|$)/)?.[1];
 function equipmentMatches(current,translated){
  if(!Array.isArray(current)||!Array.isArray(translated)||current.length!==translated.length)return false;
- const translatedBySlot=new Map(translated.map(x=>[normalizedSlot(x.slot),x]));
+ const translatedBySlot=new Map(translated.map(x=>[normalizedSlot(x),x]));
  if(translatedBySlot.size!==current.length)return false;
  return current.every(x=>{
-   const other=translatedBySlot.get(normalizedSlot(x.slot));
+   const other=translatedBySlot.get(normalizedSlot(x));
    return other&&x.level===other.level&&iconId(x.icon)&&iconId(x.icon)===iconId(other.icon);
  });
 }
 function preserveCurrentTranslations(current,previous){
- const oldBySlot=new Map((previous||[]).map(x=>[normalizedSlot(x.slot),x]));
+ const oldBySlot=new Map((previous||[]).map(x=>[normalizedSlot(x),x]));
  return current.map(item=>{
-   const previousItem=oldBySlot.get(normalizedSlot(item.slot));
+   const previousItem=oldBySlot.get(normalizedSlot(item));
    // Ein alter deutscher Name ist nur sicher, wenn auch der offizielle englische
    // Ursprungsname, das Icon und die Stufe unverändert geblieben sind.
    const unchanged=previousItem?.sourceName===item.item &&
