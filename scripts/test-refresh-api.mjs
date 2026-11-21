@@ -102,6 +102,15 @@ Trickster's Dance gives 50% dodge and 30% faster attacks for 12 s. Pet level 20.
 Bite Rank 1 1 Rank 2 8 Rank 3 16 Rank 4 24 Rank 5 32 Rank 6 40 Rank 7 48 Rank 8 56.
 Dash Rank 1 30 Rank 2 40 Rank 3 50. Fox pets eat meat.`};
   if(sourceUrl.includes('60.tools/guides/hunter-pets'))return {ok:true,status:200,text:async()=>`Family Damage Armor Health Diet Its own abilities Fox 0% +5% 0% Meat Trickster's Dance.`};
+  if(sourceUrl.includes('github-wiki-see.page/m/classic-hunter/forever-hunter/wiki/Forever-Hunter-Patch-Notes'))return {ok:true,status:200,text:async()=>`Pet Scaling and Stats
+Stamina: 1 player Stamina → 2 pet Health
+Armor: Pet gains 30% of player Armor
+Attack Power: Pet gains 10% of the player's highest Attack Power source
+Critical Strike: Pet inherits 100% of the higher of the Hunter's melee or ranged Crit chance
+Pet Focus
+Maximum Focus increased from 100 to 150
+Focus regeneration is now continuous at 10 Focus per second, filling the full 150 Focus pool in 15 sec.`};
+  if(sourceUrl.includes('raw.githubusercontent.com/gunba/wow-forever-sim/forever/docs/check_dispositions.md'))return {ok:true,status:200,text:async()=>`The client PowerType row for Focus in build 69977 supplies a concrete 10 Focus/second in combat, and Hunter scaling 415429 adds 50 maximum Focus to the base 100.`};
   const slug=decodeURIComponent(sourceUrl.split('/').at(-1));
   const profile=baseline.get(slug);
   assert.ok(profile,'Only configured Dalton profiles are requested');
