@@ -136,7 +136,8 @@ async function optionalBlizzardIndex({namespace,build,fetchImpl=fetch,archiveMed
 }
 
 export async function syncReputationCatalog({namespace,force=false,fetchImpl=fetch,archiveMedia=true}={}){
-  const build=buildFromNamespace(namespace);
+  const build=REPUTATION_BUILD;
+  const blizzardDataBuild=buildFromNamespace(namespace);
   const master=await ensureSeedMaster({build,fetchImpl,archiveMedia});
   const indexResult=await optionalBlizzardIndex({namespace,build,fetchImpl,archiveMedia});
   const all=await loadAllCatalogRecords('faction').catch(()=>({}));
@@ -150,7 +151,8 @@ export async function syncReputationCatalog({namespace,force=false,fetchImpl=fet
     matched:indexResult.matched,
     complete:masterCount>=EXPECTED,
     source:indexResult.source,
-    build
+    build,
+    blizzardDataBuild
   };
 }
 
@@ -159,7 +161,8 @@ export async function ensureReputationCatalog(options={}){
   catch(error){
     console.warn('Ruf-Masterkatalog konnte nicht vollständig persistiert werden:',String(error.message).slice(0,220));
     const existing=await loadAllCatalogRecords('faction').catch(()=>({}));
-    const build=buildFromNamespace(options.namespace);
+    const build=REPUTATION_BUILD;
+    const blizzardDataBuild=buildFromNamespace(options.namespace);
     const seed=Object.fromEntries(foreverReputationSeed.map(entry=>{
       const record=fallbackRecord(entry,build);
       return [record.id,record];
@@ -172,6 +175,7 @@ export async function ensureReputationCatalog(options={}){
       complete:false,
       source:'fallback',
       build,
+      blizzardDataBuild,
       error:String(error.message)
     };
   }
