@@ -52,8 +52,8 @@ assert.equal(bars.recipe.craftsRequired,10);
 assert.equal(bars.materials[0].item.id,2770);
 assert.equal(bars.materials[0].quantity,10);
 assert.deepEqual(plan.externalMaterials,[
-  {id:2318,name:'Leichtes Leder',quantity:5},
-  {id:2770,name:'Kupfererz',quantity:10}
+  {id:2770,name:'Kupfererz',quantity:10},
+  {id:2318,name:'Leichtes Leder',quantity:5}
 ]);
 
 const variableData={
