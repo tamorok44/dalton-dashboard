@@ -129,6 +129,17 @@ export function buildWorkshopCatalog(data={}){
     byRecipeKey
   };
 }
+export function workshopProfessionSlugs(data={}){
+  const slugs=new Set();
+  for(const character of asArray(data?.characters)){
+    for(const profession of asArray(character?.professions)){
+      const slug=professionSlugFromName(profession?.name);
+      if(slug)slugs.add(slug);
+    }
+  }
+  return [...slugs].sort((a,b)=>a.localeCompare(b,'en'));
+}
+
 export function publicWorkshopCatalog(catalog){
   return {
     generatedAt:catalog?.generatedAt||null,

@@ -12,7 +12,12 @@ import {
   fetchForeverDbItem,
   fetchForeverDbProfession
 } from './foreverdb-api.mjs';
-import {normalizeForeverDbRecipe,hydrateRecipeIndex} from './workshop-foreverdb.mjs';
+import {
+  normalizeForeverDbRecipe,
+  hydrateRecipeIndex,
+  fetchForeverDbRecipeIndex,
+  searchForeverDbRecipesForItem
+} from './workshop-foreverdb.mjs';
 
 const data={
   generatedAt:'2026-11-21T12:00:00.000Z',
@@ -128,13 +133,51 @@ const requests=[];
 const fakeFetch=async url=>{
   requests.push(String(url));
   const parsed=new URL(url);
-  const body=parsed.pathname.includes('/professions/')
-    ?{data:{recipes:[{id:1,name:'Recipe'}]},meta:{total:1}}
-    :parsed.pathname.endsWith('/items/2840')
-      ?{data:{id:2840,name:'Kupferbarren',quality:1,class:7,slot:0,requiredLevel:0},meta:{build:'test'}}
-      :{data:[{id:2840,name:'Kupferbarren'},{id:2770,name:'Kupfererz'}],meta:{total:2}};
+  let body;
+  if(parsed.pathname.includes('/professions/')){
+    const slug=parsed.pathname.split('/').at(-1);
+    const query=parsed.searchParams.get('q');
+    const offset=Number(parsed.searchParams.get('offset')||0);
+    const matchingRecipe={
+      id:3324,
+      name:'Kupfer verhütten',
+      skill:{orange:1,yellow:25,green:47,grey:70},
+      makes:{item:{id:2840,name:'Kupferbarren'},count:1},
+      reagents:[{item:{id:2770,name:'Kupfererz'},count:1}],
+      category:{name:'Verhüttete Barren',parent:{name:'Bergbau'}},
+      learnedFrom:{sources:{alliance:{trainers:[{id:100,name:'Gelman Steinhandschuh',seenInForever:true}]}}}
+    };
+    const recipes=query
+      ?(slug==='mining'&&query==='Kupferbarren'?[matchingRecipe]:[])
+      :slug==='mining'?[matchingRecipe]:
+       slug==='alchemy'?[{...matchingRecipe,id:5000+offset,makes:{item:{id:90000+offset,name:'Alchemietest '+offset},count:1}}]:[];
+    body={data:{recipes},meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
+  }else if(parsed.pathname.endsWith('/items/2840')){
+    body={data:{id:2840,name:'Kupferbarren',quality:1,class:7,slot:0,requiredLevel:0},meta:{build:'test'}};
+  }else{
+    body={data:[{id:2840,name:'Kupferbarren'},{id:2770,name:'Kupfererz'}],meta:{total:2}};
+  }
   return {ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify(body)};
 };
+const beforeScoped=requests.length;
+const scopedIndex=await fetchForeverDbRecipeIndex({
+  professionSlugs:['mining','alchemy'],
+  maxRequests:10,
+  fetchImpl:fakeFetch
+});
+assert.deepEqual(scopedIndex.professionSlugs,['alchemy','mining']);
+assert.equal(scopedIndex.requestCount,3,'Zwei Dalton-Berufe mit einer zweiten Alchemie-Seite benötigen nur drei Requests');
+assert.ok(scopedIndex.byItem.get(2840)?.length===1,'Scoped recipe index retains the mining recipe');
+assert.equal(requests.length-beforeScoped,3);
+
+const beforeTargeted=requests.length;
+const targeted=await searchForeverDbRecipesForItem(2840,'Kupferbarren',{fetchImpl:fakeFetch});
+assert.equal(targeted.requestCount,12,'Gezielte Fremdrezept-Suche fragt jeden Beruf genau einmal ab');
+assert.equal(targeted.recipes.length,1);
+assert.equal(targeted.recipes[0].professionSlug,'mining');
+assert.equal(targeted.recipes[0].craftedItem.id,2840);
+assert.equal(requests.length-beforeTargeted,12);
+
 const remoteSearch=await searchForeverDbItems('Kup',{limit:10,fetchImpl:fakeFetch});
 assert.equal(remoteSearch.items.length,2);
 assert.equal(remoteSearch.items[0].name,'Kupferbarren');
