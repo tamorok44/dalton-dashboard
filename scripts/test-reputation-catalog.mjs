@@ -13,6 +13,10 @@ assert.equal(reputationColors.neutral.hex,'#E6B300');
 for(const key of ['friendly','honored','revered','exalted'])assert.equal(reputationColors[key].hex,'#00991A');
 
 assert.equal(factionSeedByName('Stormwind')?.slug,'stormwind');
+assert.equal(factionSeedByName('Sturmwind')?.slug,'stormwind');
+assert.equal(factionSeedByName('Eisenschmiede')?.slug,'ironforge');
+assert.equal(factionSeedByName('Donnerfels')?.slug,'thunder-bluff');
+assert.equal(factionSeedByName('Unterstadt')?.slug,'undercity');
 assert.equal(factionSeedByName('Gnomeregangnome')?.slug,'gnomeregan-exiles');
 assert.equal(factionSeedByName('Zirkel des Cenarius')?.slug,'cenarion-circle');
 assert.equal(factionSeedByName('Druiden der Nachtklaue')?.slug,'nightclaw-druids');
