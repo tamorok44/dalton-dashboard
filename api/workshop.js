@@ -60,6 +60,54 @@ function publicDetailedItem(item){
     ...(item.iconUrl?{iconUrl:item.iconUrl}:{})
   };
 }
+function publicLearningRecipe(recipe){
+  if(!recipe)return null;
+  return {
+    id:recipe.id??null,
+    name:recipe.name||null,
+    requiredSkill:recipe.requiredSkill??null,
+    learning:{automatic:recipe.learning?.automatic===true}
+  };
+}
+function publicLearningCandidate(candidate){
+  return {
+    slug:candidate?.slug||null,
+    name:candidate?.name||null,
+    player:candidate?.player||null,
+    level:candidate?.level??null,
+    profession:candidate?.profession||null,
+    skill:candidate?.skill??null,
+    skillCap:candidate?.skillCap??null,
+    requiredSkill:candidate?.requiredSkill??null,
+    gap:candidate?.gap??null,
+    status:candidate?.status||null
+  };
+}
+function publicLearningSource(source){
+  if(!source)return null;
+  return {
+    type:source.type||'source',
+    side:source.side||null,
+    id:source.id??null,
+    name:source.name||null,
+    location:source.location?{
+      zone:source.location.zone||null,
+      x:source.location.x??null,
+      y:source.location.y??null,
+      uiMapId:source.location.uiMapId??null,
+      instance:source.location.instance||null
+    }:null,
+    evidence:source.evidence||'unknown',
+    priceCopper:source.priceCopper??null,
+    pricePerItem:source.pricePerItem??null,
+    stack:source.stack??null,
+    limitedStock:source.limitedStock??null,
+    costs:Array.isArray(source.costs)?source.costs.map(cost=>({name:cost?.name||null,quantity:cost?.quantity??null})):[],
+    reputationFaction:source.reputationFaction||null,
+    dropChance:source.dropChance??null,
+    observations:source.observations??null
+  };
+}
 async function archiveWorkshopItemIcon(item){
   if(!item?.id||!item?.sourceIconUrl)return item;
   try{
@@ -161,6 +209,8 @@ export default async function handler(req,res){
       const plan=buildProductionPlan(catalog,itemId,quantity);
       const learningCandidates=remoteRecipe?workshopLearningCandidates(stored.data,remoteRecipe):[];
       const learningSources=remoteRecipe?.learning?.sources||[];
+      const publicCandidates=learningCandidates.map(publicLearningCandidate);
+      const publicSources=learningSources.map(publicLearningSource).filter(Boolean);
       const currentlyCraftable=Boolean(local?.craftable);
       return res.status(200).json({
         item:publicDetailedItem(item),
@@ -171,9 +221,9 @@ export default async function handler(req,res){
         foreverDbConfigured:remoteReady,
         remoteError:remoteErrors.length?remoteErrors.join(' · '):null,
         craftableInGame:currentlyCraftable||Boolean(remoteRecipe),
-        recipe:remoteRecipe,
-        learningCandidates:currentlyCraftable?[]:learningCandidates,
-        learningSources:currentlyCraftable?[]:learningSources,
+        recipe:publicLearningRecipe(remoteRecipe),
+        learningCandidates:currentlyCraftable?[]:publicCandidates,
+        learningSources:currentlyCraftable?[]:publicSources,
         learningSourcesAvailable:!currentlyCraftable&&Boolean(remoteRecipe)&&(remoteRecipe.learning?.automatic===true||learningSources.length>0),
         learningSourcesReason:currentlyCraftable
           ?null
@@ -192,7 +242,6 @@ export default async function handler(req,res){
           generatedAt:recipeIndex?.generatedAt||null,
           cached:recipeIndex?.cached===true,
           complete:recipeIndex?.complete===true,
-          professionSlugs:recipeIndex?.professionSlugs||[],
           requestCount:recipeIndex?.requestCount||0,
           targetedSearchRequests:targetedRecipeSearch?.requestCount||0,
           targetedSearchCached:targetedRecipeSearch?.cached===true
@@ -226,7 +275,6 @@ export default async function handler(req,res){
         cached:recipeIndex?.cached===true,
         complete:recipeIndex?.complete===true,
         recipeCount:recipeIndex?.recipes?.length||0,
-        professionSlugs:recipeIndex?.professionSlugs||[],
         requestCount:recipeIndex?.requestCount||0
       },
       sources:{
