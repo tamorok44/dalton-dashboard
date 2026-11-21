@@ -549,7 +549,7 @@ function cmpSectionRows(id,chars){
     for(const key of keys)push(key,c=>cmpEntry(formatStatValue(key,c.stats?.[key]),c.stats?.[key],'',c.scrapeOk===false||!(c.statsFreshKeys|| (c.statsVerified?Object.keys(c.stats||{}):[])).includes(key)));
   }
   if(id==='equipment'){
-    push('Ø Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.stats?.['Gegenstandsstufe'],c.equippedItemLevel??c.stats?.['Gegenstandsstufe']));
+    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.stats?.['Gegenstandsstufe'],c.equippedItemLevel??c.stats?.['Gegenstandsstufe']));
     const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=equipmentSlotAliases[item.slot]||item.slot;if(!m.has(key)&&item.item)m.set(key,item)}return m});
     for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+' · '+(itemQualityNames[String(it.quality||'').toUpperCase()]||'Qualität unbekannt'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
   }
