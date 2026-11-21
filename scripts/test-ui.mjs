@@ -72,10 +72,13 @@ const orderedNames=list=>ui.sortProfessionsForDisplay(list.map(name=>({name}))).
 assert.deepEqual(orderedNames(['Alchimie','Kräuterkunde','Kochkunst','Angeln','Erste Hilfe']),['Kräuterkunde','Alchimie','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Lederverarbeitung','Kürschnerei','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Kürschnerei','Bergbau','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Bergbau','Angeln','Kochkunst','Erste Hilfe']);
-const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Rüstung','Angriffskraft','Zaubermacht','Ausweichen'],stats:{Gesundheit:202,Mana:535,Stärke:18,Intelligenz:40,Beweglichkeit:26,Ausdauer:23,'Kritische Trefferchance':5.0068,Willenskraft:31,Rüstung:99,Angriffskraft:8,Zaubermacht:0,Ausweichen:5.2468}});
-assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,8);
-assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,7);
-assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %'));
+const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration','Rüstung','Angriffskraft','Zaubermacht','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'],stats:{Gesundheit:202,Mana:535,Stärke:18,Intelligenz:40,Beweglichkeit:26,Ausdauer:23,'Kritische Trefferchance':5.0068,Willenskraft:31,'Waffen-DPS':5.081841,Manaregeneration:38,Rüstung:99,Angriffskraft:8,Zaubermacht:0,Ausweichen:5.2468,Parieren:4.88,Blocken:0,Angriffsgeschwindigkeit:1.961}});
+assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,10);
+assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,10);
+assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %')&&statQa.includes('4,9 %'));
+assert.match(statQa,/Waffen-DPS[\s\S]*?>5,08</);
+assert.match(statQa,/Manaregeneration[\s\S]*?>38</);
+assert.match(statQa,/Angriffsgeschwindigkeit[\s\S]*?>1,96</);
 assert.match(statQa,/Zaubermacht[\s\S]*?>0</);
 assert.match(statQa,/Nahkampf-Krit[\s\S]*?>–</);
 
@@ -157,8 +160,8 @@ assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain d
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
-assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,data.characters.length*8);
-assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,data.characters.length*7);
+assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,data.characters.length*10);
+assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,data.characters.length*10);
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
