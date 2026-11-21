@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from '../hunter-pets.js';
+import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from '../hunter-pets.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
-const executableSource=source.replace("import {hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'');
+const executableSource=source.replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'');
 const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
@@ -17,7 +17,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor};')(document,window,location,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -190,6 +190,13 @@ assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-deri
 assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rule hides inherited calculations');
 assert.ok(!blockedPetPanel.includes('>115 %<'),'Blocked health rule hides the global health factor');
 assert.ok(!blockedPetPanel.includes('Maximaler Fokus'),'Blocked focus rule hides focus mechanics');
+const staleRuleVersion=structuredClone(verifiedPetRules);
+staleRuleVersion.rulebookVersion='2026.11.21.1';
+ui.render(petData,{petRules:staleRuleVersion});
+const staleVersionPanel=ui.hunterPetsPanel(petDolly);
+assert.ok(staleVersionPanel.includes('Regelprüfung unvollständig'),'A stale rulebook version is never trusted by the new frontend');
+assert.ok(!staleVersionPanel.includes('Gesundheit aus Dolly'),'New calculations remain hidden until the matching rulebook version is verified');
+ui.render(petData,{petRules:verifiedPetRules});
 
 ui.render(petData,{petRules:verifiedPetRules});
 assert.equal((petCards.match(/>Begleiter<\/button>/g)||[]).length,1,'Only the hunter gets a companion tab');
