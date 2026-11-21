@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
+import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
 
-export const PET_RULEBOOK_VERSION='2026.11.21.1';
+export const PET_RULEBOOK_VERSION=HUNTER_PET_RULEBOOK_VERSION;
 
 export const PET_RULES=Object.freeze({
   'fox.family.profile':Object.freeze({
@@ -16,10 +17,16 @@ export const PET_RULES=Object.freeze({
     sourceIds:Object.freeze(['blizzardHotfix','bindFox'])
   }),
   'pet.scaling':Object.freeze({
-    version:1,
+    version:2,
     label:'Jägerbegleiter-Skalierung',
     reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling'])
+    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit'])
+  }),
+  'pet.focus':Object.freeze({
+    version:1,
+    label:'Jägerbegleiter-Fokus',
+    reviewedAt:'2026-11-21',
+    sourceIds:Object.freeze(['blizzardHotfix','foreverHunterFocusAudit','foreverSimFocusAudit'])
   }),
   'pet.health.global':Object.freeze({
     version:1,
@@ -48,6 +55,35 @@ const sources=Object.freeze({
       /armor[\s\S]{0,100}?pet\s+gains\s+30\s*%[\s\S]{0,80}?player(?:'s|’s)?\s+armor/i,
       /attack\s+power[\s\S]{0,120}?pet\s+gains\s+10\s*%[\s\S]{0,100}?highest\s+attack\s+power/i,
       /critical\s+strike[\s\S]{0,120}?pet\s+gains\s+100\s*%[\s\S]{0,100}?crit/i
+    ])
+  }),
+  foreverHunterScalingAudit:Object.freeze({
+    label:'Forever Hunter Wiki · Pet Scaling',
+    url:'https://github-wiki-see.page/m/classic-hunter/forever-hunter/wiki/Forever-Hunter-Patch-Notes',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /stamina:\s*1\s+player\s+stamina[\s\S]{0,50}?2\s+pet\s+health/i,
+      /armor:\s*pet\s+gains\s+30\s*%\s+of\s+player\s+armor/i,
+      /attack\s+power:\s*pet\s+gains\s+10\s*%[\s\S]{0,100}?highest\s+attack\s+power\s+source/i,
+      /critical\s+strike:\s*pet\s+inherits\s+100\s*%[\s\S]{0,120}?melee\s+or\s+ranged\s+crit/i
+    ])
+  }),
+  foreverHunterFocusAudit:Object.freeze({
+    label:'Forever Hunter Wiki · Pet Focus',
+    url:'https://github-wiki-see.page/m/classic-hunter/forever-hunter/wiki/Forever-Hunter-Patch-Notes',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /maximum\s+focus\s+increased[\s\S]{0,80}?100[\s\S]{0,80}?150/i,
+      /focus\s+regeneration\s+is\s+now\s+continuous\s+at\s+10\s+focus\s+per\s+second/i
+    ])
+  }),
+  foreverSimFocusAudit:Object.freeze({
+    label:'WoW Forever Sim · Client Focus Audit',
+    url:'https://raw.githubusercontent.com/gunba/wow-forever-sim/forever/docs/check_dispositions.md',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /powertype[\s\S]{0,120}?focus[\s\S]{0,140}?10\s+focus\/second\s+in\s+combat/i,
+      /hunter\s+scaling\s+415429\s+adds\s+50\s+maximum\s+focus\s+to\s+the\s+base\s+100/i
     ])
   }),
   bindFox:Object.freeze({

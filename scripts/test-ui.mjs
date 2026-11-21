@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {hunterPetFamily} from '../hunter-pets.js';
+import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from '../hunter-pets.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
-const executableSource=source.replace("import {hunterPetFamily} from './hunter-pets.js';\n",'');
+const executableSource=source.replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'');
 const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
@@ -17,7 +17,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','hunterPetFamily',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,characterTabsFor};')(document,window,location,hunterPetFamily);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -121,12 +121,23 @@ petDolly.hunterPets={
   }],
   stable:[{name:'Lobo',level:5,active:false,slot:1,family:{id:1,name:'Wolf',enum:'WOLF',slug:'wolf'},iconUrl:'https://render.worldofwarcraft.com/forever-eu/icons/56/132203.jpg'}]
 };
+petDolly.stats={...(petDolly.stats||{}),Ausdauer:30,Rüstung:256,'Kritische Trefferchance':5.0689,Angriffskraft:63};
+petDolly.statsFreshKeys=[...new Set([...(petDolly.statsFreshKeys||[]),'Ausdauer','Rüstung','Kritische Trefferchance','Angriffskraft'])];
+petDolly.talentDetailsVerified=true;
+petDolly.talentDetails=[{
+  id:50,name:'Tierherrschaft',spentPoints:1,talents:[{
+    id:134438,name:'Belastbarkeit-Ausbildung',rank:1,spellId:19583,
+    description:'Erhöht die Gesundheit und Rüstung Eurer Begleiter um 3%.'
+  }]
+}];
+
 const verifiedPetRules={
-  rulebookVersion:'2026.11.21.1',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
+  rulebookVersion:'2026.11.21.2',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
   rules:{
     'fox.family.profile':{status:'verified',version:1},
     'fox.training':{status:'verified',version:1},
-    'pet.scaling':{status:'verified',version:1},
+    'pet.scaling':{status:'verified',version:2},
+    'pet.focus':{status:'verified',version:1},
     'pet.health.global':{status:'verified',version:1}
   }
 };
@@ -141,13 +152,34 @@ assert.ok(petPanel.includes('Tanz des Täuschers')&&petPanel.includes('Ab Beglei
 assert.ok(petPanel.includes('Nicht mit „bereits gelernt“ gleichzusetzen.'),'Trainable ranks are never presented as learned');
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
 assert.ok(petPanel.includes('keine Schätzwerte'),'Unavailable loyalty/training state is explicitly not fabricated');
+const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
+assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
+assert.ok(combat.includes('Rüstung aus Dolly')&&combat.includes('>+76,8<'),'30% of 256 Armor is shown as 76.8 before server rounding');
+assert.ok(combat.includes('Krit aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'100% of current Armory crit is inherited');
+assert.ok(combat.includes('Forever-Gesundheitsfaktor')&&combat.includes('>115 %<'),'Official 115% global pet health factor is shown');
+assert.ok(combat.includes('Belastbarkeit-Ausbildung')&&combat.includes('>Rang 1<')&&combat.includes('um 3%'),'Live Endurance Training rank is shown from Blizzard talent data');
+assert.ok(combat.includes('Maximaler Fokus')&&combat.includes('>150<'),'Verified maximum Focus is shown');
+assert.ok(combat.includes('Fokusregeneration')&&combat.includes('>+10/Sek.<'),'Verified continuous Focus regeneration is shown');
+assert.ok(combat.includes('Angriffskraft aus Dolly')&&combat.includes('Nahkampf-/Fernkampf-Angriffskraft'),'AP inheritance remains blocked without an unambiguous highest AP source');
+assert.ok(combat.includes('keine geschätzten Gesamtwerte')&&combat.includes('Warum fehlen Gesamtleben, Gesamtrüstung und DPS?'),'Combat panel explains the strict calculation boundary');
+const derived=hunterPetCombatProfile(petDolly);
+assert.equal(derived.inherited.health.value,60);
+assert.equal(derived.inherited.armor.value,76.8);
+assert.equal(derived.inherited.crit.value,5.0689);
+assert.equal(derived.focus.maximum,150);
+assert.equal(derived.focus.regenPerSecond,10);
+assert.equal(derived.enduranceTraining.rank,1);
+
 ui.render(petData,{petRules:verifiedPetRules});
 const petCards=nodes.get('#cards').innerHTML;
-assert.ok(petCards.includes('Regelstand bestätigt · 4/4'),'Verified pet rules are visibly identified');
+assert.ok(petCards.includes('Regelstand bestätigt · 5/5'),'Verified pet rules are visibly identified');
 const blockedRules=structuredClone(verifiedPetRules);
 blockedRules.overall='review_required';
 blockedRules.rules['fox.family.profile'].status='review_required';
 blockedRules.rules['fox.training'].status='review_required';
+blockedRules.rules['pet.scaling'].status='review_required';
+blockedRules.rules['pet.focus'].status='review_required';
+blockedRules.rules['pet.health.global'].status='review_required';
 ui.render(petData,{petRules:blockedRules});
 const blockedPetPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(blockedPetPanel.includes('Regeländerung erkannt'),'A detected rule change is shown clearly');
@@ -155,6 +187,17 @@ assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend gesperrt'),'Fa
 assert.ok(blockedPetPanel.includes('Ausbildungsregeln vorübergehend gesperrt'),'Training values fail closed when their rule changes');
 assert.ok(blockedPetPanel.includes('Slydris')&&blockedPetPanel.includes('Stufe 6'),'Blizzard live identity stays visible even when rules are blocked');
 assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-derived family numbers are not rendered');
+assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rule hides inherited calculations');
+assert.ok(!blockedPetPanel.includes('>115 %<'),'Blocked health rule hides the global health factor');
+assert.ok(!blockedPetPanel.includes('Maximaler Fokus'),'Blocked focus rule hides focus mechanics');
+const staleRuleVersion=structuredClone(verifiedPetRules);
+staleRuleVersion.rulebookVersion='2026.11.21.1';
+ui.render(petData,{petRules:staleRuleVersion});
+const staleVersionPanel=ui.hunterPetsPanel(petDolly);
+assert.ok(staleVersionPanel.includes('Regelprüfung noch nicht bestätigt'),'A stale rulebook version is never trusted by the new frontend');
+assert.ok(!staleVersionPanel.includes('Gesundheit aus Dolly'),'New calculations remain hidden until the matching rulebook version is verified');
+ui.render(petData,{petRules:verifiedPetRules});
+
 ui.render(petData,{petRules:verifiedPetRules});
 assert.equal((petCards.match(/>Begleiter<\/button>/g)||[]).length,1,'Only the hunter gets a companion tab');
 assert.ok(ui.characterTabsFor(petDolly).some(tab=>tab.id==='pets'),'Hunter tab model includes companions');
