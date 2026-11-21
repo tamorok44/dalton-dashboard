@@ -505,6 +505,13 @@ assert.ok(!source.includes('compareDifferences'),'Alte Vergleichs-Checkbox ist e
 assert.ok(source.includes("searchMode:'all'")&&source.includes("browseMode:'craftable'"),'Werkstatt hat die vereinbarten unabhängigen Standardfilter');
 assert.ok(source.includes("scope='+encodeURIComponent(mode)"),'Lupe übergibt ihren Filtermodus an die API');
 assert.ok(source.includes("overview?.browseAll")&&source.includes("overview?.browseCraftable"),'Geführte Auswahl kann zwischen Vollkatalog und Herstellbar-Katalog wechseln');
+assert.ok(source.includes("fetch('/api/data-version?t='"),'Offene Dashboards prüfen eine leichte serverseitige Datenversion');
+assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Sichtbare Tabs prüfen den Serverstand regelmäßig');
+assert.ok(source.includes("document.addEventListener('visibilitychange'"),'Rückkehr in einen versteckten Tab löst sofort eine Frischeprüfung aus');
+assert.ok(source.includes("window.addEventListener('focus'"),'Fokus auf das Dashboard löst sofort eine Frischeprüfung aus');
+assert.ok(source.includes("function applyServerPayload(")&&source.includes("invalidateWorkshopData({reloadVisible:true})"),'Ein zentraler Payload-Pfad aktualisiert alle Ansichten und invalidiert abgeleitete Werkstattdaten');
+assert.ok(source.includes("if(!compareView.hidden)renderComparison()"),'Charaktere und Vergleich teilen denselben gerenderten Datenstand');
+assert.ok(source.includes("workshopDataEpoch++"),'Veraltete laufende Werkstattanfragen können nach einem Datenwechsel nicht zurückschreiben');
 assert.ok(css.includes('.segmented-control{')&&css.includes('.segmented-option.is-active'),'Segment-Schalter ist als gemeinsame Dalton-CI-Komponente gestaltet');
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
