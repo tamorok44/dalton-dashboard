@@ -200,9 +200,18 @@ const verifiedPetCatalog={
     slug:'fox',name:'Fuchs',build:'1.60.1.70959',locale:'de-DE',
     source:'ForeverDB deutsche Forever-Clientextraktion',
     abilities:[
-      {id:17253,name:'Beißen Rang 1',requiredLevel:1,sourceUrl:'https://foreverdb.net/de/spell/17253'},
-      {id:1310612,name:'Tanz des Täuschers Rang 1',requiredLevel:20,sourceUrl:'https://foreverdb.net/de/spell/1310612'},
-      {id:23099,name:'Spurt Rang 1',requiredLevel:30,sourceUrl:'https://foreverdb.net/de/spell/23099'}
+      {id:17253,name:'Beißen Rang 1',requiredLevel:1,description:'Den Feind beißen und ihm 7 bis 9 Punkt(e) Schaden zufügen.'},
+      {id:17255,name:'Beißen Rang 2',requiredLevel:8,description:'Den Feind beißen und ihm 16 bis 18 Punkt(e) Schaden zufügen.'},
+      {id:17256,name:'Beißen Rang 3',requiredLevel:16,description:'Den Feind beißen und ihm 24 bis 28 Punkt(e) Schaden zufügen.'},
+      {id:1310612,name:'Tanz des Täuschers Rang 1',requiredLevel:20,description:'Erhöht die Ausweichchance Eures Begleiters 12 Sek. lang um 50%.'},
+      {id:17257,name:'Beißen Rang 4',requiredLevel:24,description:'Den Feind beißen und ihm 31 bis 37 Punkt(e) Schaden zufügen.'},
+      {id:23099,name:'Spurt Rang 1',requiredLevel:30,description:'Erhöht das Bewegungstempo um 40% für 15 Sek..'},
+      {id:17258,name:'Beißen Rang 5',requiredLevel:32},
+      {id:17259,name:'Beißen Rang 6',requiredLevel:40},
+      {id:23109,name:'Spurt Rang 2',requiredLevel:40},
+      {id:17260,name:'Beißen Rang 7',requiredLevel:48},
+      {id:23110,name:'Spurt Rang 3',requiredLevel:50},
+      {id:17261,name:'Beißen Rang 8',requiredLevel:56}
     ]
   }
 };
@@ -231,9 +240,10 @@ assert.ok(petPanel.includes('Schaden')&&petPanel.includes('±0 %')&&petPanel.inc
 
 
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
-assert.ok(petPanel.includes('Beißen Rang 1')&&petPanel.includes('Tanz des Täuschers Rang 1')&&petPanel.includes('Spurt Rang 1'),'German pet ability names come from the source-backed pet catalog');
-assert.ok(petPanel.includes('ab Stufe 1 · für Slydris erreichbar'),'Current pet level is evaluated against the source-backed required level');
-assert.ok(petPanel.includes('ab Stufe 20')&&petPanel.includes('ab Stufe 30'),'Future abilities retain their source-backed level requirements');
+assert.ok(petPanel.includes('JETZT ERLERNBAR')&&petPanel.includes('Beißen Rang 1')&&petPanel.includes('Jetzt erlernbar'),'Current learnable rank is immediately visible');
+assert.ok(petPanel.includes('ALS NÄCHSTES')&&petPanel.includes('Beißen Rang 2')&&petPanel.includes('Ab Stufe 8 · noch 2 Stufen'),'The very next rank is highlighted separately');
+assert.ok(petPanel.includes('Spätere Fähigkeiten und Ränge')&&petPanel.includes('Tanz des Täuschers Rang 1')&&petPanel.includes('Spurt Rang 1'),'Later progression remains accessible without competing with the next unlock');
+assert.ok(!petPanel.includes('deutsche Clientdaten')&&!petPanel.includes('Referenzmodell')&&!petPanel.includes('Clientdaten'),'Technical source/evidence jargon is hidden from normal player view');
 assert.ok(!petPanel.includes('noch nicht aus der Pet-Datenquelle angebunden'),'No unfinished database placeholder is exposed to users');
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
@@ -244,7 +254,7 @@ assert.ok(combat.includes('Belastbarkeit-Ausbildung')&&combat.includes('>Rang 1<
 assert.ok(combat.includes('Maximaler Fokus')&&combat.includes('>150<'),'Verified maximum Focus is shown');
 assert.ok(combat.includes('Fokusregeneration')&&combat.includes('>+10/Sek.<'),'Verified continuous Focus regeneration is shown');
 assert.ok(combat.includes('Angriffskraft aus Dolly')&&combat.includes('Nahkampf-/Fernkampf-Angriffskraft'),'AP inheritance remains blocked without an unambiguous highest AP source');
-assert.ok(combat.includes('Referenzmodell')&&combat.includes('Clientdaten')&&combat.includes('Offiziell'),'Combat values expose their evidence level');
+assert.ok(!combat.includes('Referenzmodell')&&!combat.includes('Clientdaten')&&!combat.includes('Offiziell'),'Combat panel does not expose technical evidence categories');
 assert.ok(combat.includes('Warum fehlen Gesamtleben, Gesamtrüstung und DPS?'),'Combat panel explains the strict calculation boundary');
 const derived=hunterPetCombatProfile(petDolly);
 assert.equal(derived.inherited.health.value,60);
@@ -256,9 +266,8 @@ assert.equal(derived.enduranceTraining.rank,1);
 
 ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
 const petCards=nodes.get('#cards').innerHTML;
-assert.ok(petCards.includes('Quellenstand aktuell · 5/5'),'Current source status is visibly identified');
-assert.ok(petCards.includes('1× Referenzmodell')&&petCards.includes('3× Clientdaten')&&petCards.includes('1× Offiziell'),'Evidence mix is summarized without implying equal certainty');
-assert.ok(petCards.includes('Regelstatus-Protokoll'),'Rule transition history is visible in the companion tab');
+assert.ok(!petCards.includes('Quellenstand aktuell'),'Normal player view hides technical source status');
+assert.ok(!petCards.includes('Referenzmodell')&&!petCards.includes('Clientdaten')&&!petCards.includes('Offiziell')&&!petCards.includes('Regelstatus-Protokoll'),'Normal player view hides evidence and rule-history jargon');
 const blockedRules=structuredClone(verifiedPetRules);
 blockedRules.overall='review_required';
 blockedRules.rules['fox.family.profile'].status='review_required';
@@ -268,9 +277,9 @@ blockedRules.rules['pet.focus'].status='review_required';
 blockedRules.rules['pet.health.global'].status='review_required';
 ui.render(petData,{petRules:blockedRules,petCatalog:verifiedPetCatalog});
 const blockedPetPanel=ui.hunterPetsPanel(petDolly);
-assert.ok(blockedPetPanel.includes('Regeländerung erkannt'),'A detected rule change is shown clearly');
-assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend gesperrt'),'Family values fail closed when their rule changes');
-assert.ok(blockedPetPanel.includes('Ausbildungsdaten vorübergehend gesperrt'),'Training values fail closed when their rule changes');
+assert.ok(blockedPetPanel.includes('Einige Begleiterwerte werden gerade geprüft'),'A detected rule change is shown in player-friendly language');
+assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend nicht verfügbar'),'Family values fail closed when their rule changes');
+assert.ok(blockedPetPanel.includes('Ausbildungsdaten vorübergehend nicht verfügbar'),'Training values fail closed when their rule changes');
 assert.ok(blockedPetPanel.includes('Slydris')&&blockedPetPanel.includes('Stufe 6'),'Blizzard live identity stays visible even when rules are blocked');
 assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-derived family numbers are not rendered');
 assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rule hides inherited calculations');
@@ -280,7 +289,7 @@ const staleRuleVersion=structuredClone(verifiedPetRules);
 staleRuleVersion.rulebookVersion='2026.11.21.2';
 ui.render(petData,{petRules:staleRuleVersion,petCatalog:verifiedPetCatalog});
 const staleVersionPanel=ui.hunterPetsPanel(petDolly);
-assert.ok(staleVersionPanel.includes('Regelprüfung noch nicht bestätigt'),'A stale rulebook version is never trusted by the new frontend');
+assert.ok(staleVersionPanel.includes('Einige Begleiterwerte sind vorübergehend nicht verfügbar'),'A stale rulebook version is never trusted by the new frontend');
 assert.ok(!staleVersionPanel.includes('Gesundheit aus Dolly'),'New calculations remain hidden until the matching rulebook version is verified');
 ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
 
