@@ -44,4 +44,4 @@ Es werden keine erfundenen oder KI-generierten Embleme als offizielle Fraktionsw
 
 Der Ruf-Masterkatalog ist charakterunabhängig. Er enthält alle im aktuellen Forever-Client bekannten Ruf-Fraktionen und wird über stabile Blizzard-Fraktions-IDs mit den Charakterständen verbunden. Der aktuelle Referenzbestand umfasst 54 Fraktionen im Forever-Build 1.60.1.70959; 14 davon sind neu in Forever.
 
-Die konkrete Buildnummer wird bei der Synchronisierung aus dem Blizzard-`static-...-forever-eu`-Namespace übernommen. Ein neuer Forever-Build darf einen neuen Katalogstand erzeugen, ohne historische Charakterzustände umzudeuten.
+Die Master-Buildnummer stammt aus dem verifizierten Forever-Clientbestand. Ein Blizzard-`static-...-forever-eu`-Namespace ist eine separate API-Version und darf die Master-Buildnummer nicht überschreiben oder zurücksetzen. Ein neuer verifizierter Forever-Clientbuild darf einen neuen Katalogstand erzeugen, ohne historische Charakterzustände umzudeuten.
