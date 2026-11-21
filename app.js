@@ -298,7 +298,10 @@ function petRuleHistory(){
     const date=Number.isFinite(Date.parse(event.at||''))?new Date(event.at).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'}):'unbekannt';
     if(event.type==='rulebook_version')return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>Regelwerk aktualisiert</strong><span>'+esc(event.fromRulebookVersion||'–')+' → '+esc(event.toRulebookVersion||'–')+'</span></div></div>';
     if(event.type==='rulebook_initialized')return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>Regelwerk initialisiert</strong><span>'+esc(event.rulebookVersion||'–')+'</span></div></div>';
-    const evidence=event.toEvidence?'<span class="pet-rule-event-evidence">'+esc(event.toEvidence.replaceAll('_',' '))+'</span>':'';
+    const evidenceLabels={official:'Offiziell',client:'Clientdaten',measured:'Gemessen',reference_model:'Referenzmodell',provisional:'Vorläufig'};
+    const evidence=event.toEvidence
+      ?'<span class="pet-rule-event-evidence">'+esc((event.fromEvidence?((evidenceLabels[event.fromEvidence]||event.fromEvidence)+' → '):'')+(evidenceLabels[event.toEvidence]||event.toEvidence))+'</span>'
+      :'';
     return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>'+esc(event.label||event.ruleId||'Regel')+'</strong><span>'+esc(petRuleStatusLabel(event.fromStatus))+' → '+esc(petRuleStatusLabel(event.toStatus))+evidence+'</span></div></div>';
   }).join('');
   return '<details class="pet-rule-history"><summary>Regelstatus-Protokoll · '+events.length+' letzte Änderungen</summary><div class="pet-rule-events">'+rows+'</div></details>';
