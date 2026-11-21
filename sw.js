@@ -1,5 +1,5 @@
-const CACHE="daltons-petrules-v32";
-const ASSETS=["/","/styles.css?v=petrules-20261121b","/app.js?v=petrules-20261121b","/hunter-pets.js","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=wow-colors-20261121a","/scene-dolly.svg?v=wow-colors-20261121a","/scene-chucky.svg?v=wow-colors-20261121a","/scene-viola.svg?v=wow-colors-20261121a"];
+const CACHE="daltons-petcombat-v33";
+const ASSETS=["/","/styles.css?v=petcombat-20261121c","/app.js?v=petcombat-20261121c","/hunter-pets.js","/icon.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=wow-colors-20261121a","/scene-dolly.svg?v=wow-colors-20261121a","/scene-chucky.svg?v=wow-colors-20261121a","/scene-viola.svg?v=wow-colors-20261121a"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
