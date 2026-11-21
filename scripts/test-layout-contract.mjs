@@ -22,7 +22,7 @@ for(const name of viewNames){
 assert.match(css,/\.main-view\s*\{[^}]*min-width\s*:\s*0[^}]*max-width\s*:\s*100%/s,'main-view constrains every top-level view');
 assert.match(css,/\.main-view\s*>\s*\*\s*\{[^}]*min-width\s*:\s*0[^}]*max-width\s*:\s*100%/s,'direct view content also remains shrinkable');
 
-const forbiddenSelectors=['body','main','.main-view','#charactersView','#compareView'];
+const forbiddenSelectors=['body','main','.main-view',...viewNames.map(name=>'#'+name+'View')];
 for(const selector of forbiddenSelectors){
   const escaped=selector.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&');
   const rule=new RegExp(escaped+'[^{}]*\\{[^}]*overflow-x\\s*:\\s*(?:auto|scroll)','i');
