@@ -428,12 +428,11 @@ function hunterPetsPanel(c){
   const familyAllowed=Boolean(active&&family&&familyRuleId&&petRuleVerified(familyRuleId));
   const trainingAllowed=Boolean(active&&family&&trainingRuleId&&petRuleVerified(trainingRuleId));
   const familyProfile=active&&family
-    ?(familyAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(family.name)+'</h4></div><span class="pet-source">'+petEvidenceBadge(familyRuleId)+'</span></div>'+
+    ?(familyAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(active.family?.name||'Begleiterfamilie')+'</h4></div><span class="pet-source">'+petEvidenceBadge(familyRuleId)+'</span></div>'+
       '<div class="pet-family-stats">'+
         '<div><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
         '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
         '<div><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
-        '<div><small>Futter</small><strong>'+esc(family.diet.join(' · '))+'</strong></div>'+
       '</div></div>'
       :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
     :'';
@@ -542,7 +541,7 @@ function equipmentPanel(c,open=false){
     const icon=safeIcon?'<img class="equip-icon" src="'+esc(iconUrl)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
     const quality=String(item.quality||'').toUpperCase();
     const qualityClass=itemQualityClasses[quality]||'quality-unknown';
-    const qualityTitle=typeof item.qualityName==='string'&&item.qualityName.trim()?' title="'+esc('Qualität: '+item.qualityName)+'"':'';
+    const qualityTitle='';
     return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(item.slot||'Ausrüstungsplatz')+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
   }).join('');
   const verified=c.equipmentVerified&&c.scrapeOk!==false?'':' · letzter bekannter Stand';
@@ -789,7 +788,7 @@ function cmpSectionRows(id,chars){
     for(const slotType of equipmentSlotOrder){
       const label=slots.map(m=>m.get(slotType)?.slot).find(Boolean);
       if(!label)continue;
-      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+(it.qualityName?' · '+it.qualityName:''),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
     }
   }
   if(id==='talents'){
