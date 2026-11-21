@@ -41,16 +41,18 @@ for(const e of examples){
   assert.equal(parts.length,4,'Exactly four skill segments for all ranks');
   assert.deepEqual(parts.map(p=>p.width),e.widths,'Precise fixed 75-point segments');
   assert.equal(parts.filter(p=>p.state==='is-unlocked').length,e.unlocked,'Cap must control unlocked segments');
-  assert.match(html,new RegExp('class="profession-rank">'+e.rank+'</span>'));
+  assert.ok(!html.includes('profession-rank'),'No self-translated profession rank is invented');
   assert.equal((html.match(new RegExp('>'+e.current+'\\/'+e.max+'<','g'))||[]).length,1);
   assert.match(html,/aria-valuemax="300"/);
   assert.match(html,/role="progressbar"/);
 }
 const invalid=ui.professionRows([{name:'Angeln',current:20,max:0}]);
 assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
-assert.match(invalid,/Rang unbekannt/);
+assert.ok(!invalid.includes('Rang unbekannt'));
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
-assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
+assert.equal((ui.professionScale().match(/<span>/g)||[]).length,4);
+const apiTier=ui.professionRows([{name:'Angeln',current:37,max:75,tierName:'Klassisch'}]);
+assert.match(apiTier,/class="profession-rank">Klassisch<\/span>/,'A Blizzard-provided localized tier name may be shown unchanged');
 const redundantRecipe=ui.recipeRows([{
   name:'Manabrunnen',
   craftedItem:{name:'Manabrunnen'},
