@@ -26,14 +26,14 @@ const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSIO
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
   .map(m=>({state:m[1],width:Number(m[2])}));
 const examples=[
-  {current:37,max:75,rank:'Lehrling',widths:[49.33,0,0,0],unlocked:1},
-  {current:75,max:75,rank:'Lehrling',widths:[100,0,0,0],unlocked:1},
-  {current:75,max:150,rank:'Geselle',widths:[100,0,0,0],unlocked:2},
-  {current:99,max:150,rank:'Geselle',widths:[100,32,0,0],unlocked:2},
-  {current:170,max:225,rank:'Experte',widths:[100,100,26.67,0],unlocked:3},
-  {current:240,max:300,rank:'Fachmann',widths:[100,100,100,20],unlocked:4},
-  {current:0,max:75,rank:'Lehrling',widths:[0,0,0,0],unlocked:1},
-  {current:300,max:300,rank:'Fachmann',widths:[100,100,100,100],unlocked:4}
+  {current:37,max:75,widths:[49.33,0,0,0],unlocked:1},
+  {current:75,max:75,widths:[100,0,0,0],unlocked:1},
+  {current:75,max:150,widths:[100,0,0,0],unlocked:2},
+  {current:99,max:150,widths:[100,32,0,0],unlocked:2},
+  {current:170,max:225,widths:[100,100,26.67,0],unlocked:3},
+  {current:240,max:300,widths:[100,100,100,20],unlocked:4},
+  {current:0,max:75,widths:[0,0,0,0],unlocked:1},
+  {current:300,max:300,widths:[100,100,100,100],unlocked:4}
 ];
 for(const e of examples){
   const html=ui.professionRows([{name:'Angeln',current:e.current,max:e.max}]);
@@ -41,16 +41,15 @@ for(const e of examples){
   assert.equal(parts.length,4,'Exactly four skill segments for all ranks');
   assert.deepEqual(parts.map(p=>p.width),e.widths,'Precise fixed 75-point segments');
   assert.equal(parts.filter(p=>p.state==='is-unlocked').length,e.unlocked,'Cap must control unlocked segments');
-  assert.match(html,new RegExp('class="profession-rank">'+e.rank+'</span>'));
   assert.equal((html.match(new RegExp('>'+e.current+'\\/'+e.max+'<','g'))||[]).length,1);
   assert.match(html,/aria-valuemax="300"/);
   assert.match(html,/role="progressbar"/);
 }
 const invalid=ui.professionRows([{name:'Angeln',current:20,max:0}]);
 assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
-assert.match(invalid,/Rang unbekannt/);
+assert.ok(!invalid.includes('Lehrling')&&!invalid.includes('Geselle')&&!invalid.includes('Experte')&&!invalid.includes('Fachmann'));
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
-assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
+assert.equal((ui.professionScale().match(/<span>/g)||[]).length,4);
 const redundantRecipe=ui.recipeRows([{
   name:'Manabrunnen',
   craftedItem:{name:'Manabrunnen'},
