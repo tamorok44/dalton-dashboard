@@ -1,3 +1,4 @@
+import {professionSlugFromName} from './workshop-foreverdb.mjs';
 function asArray(value){return Array.isArray(value)?value:[]}
 function finiteNumber(value){const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
@@ -222,4 +223,88 @@ export function buildProductionPlan(catalog,itemId,quantity=1){
     tree,
     externalMaterials:[...totals.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'))
   };
+}
+
+
+function cleanedForeverCategoryPath(recipe,professionName,fallbackPath=[]){
+  const professionSlug=recipe?.professionSlug;
+  const blocked=new Set([
+    String(professionName||'').toLocaleLowerCase('de-DE'),
+    String(professionSlug||'').toLocaleLowerCase('de-DE'),
+    String(recipe?.profession||'').toLocaleLowerCase('de-DE')
+  ].filter(Boolean));
+  const remote=asArray(recipe?.categoryPath).map(String).map(value=>value.trim()).filter(Boolean)
+    .filter(value=>!blocked.has(value.toLocaleLowerCase('de-DE')));
+  const root=asArray(fallbackPath)[0]||'Sonstiges';
+  return remote.length?[root,...remote]:asArray(fallbackPath).length?fallbackPath:[root];
+}
+function preferredForeverRecipe(recipes=[],localRecipeId=null){
+  return [...recipes].sort((a,b)=>{
+    const am=localRecipeId&&Number(a?.id)===Number(localRecipeId)?0:1;
+    const bm=localRecipeId&&Number(b?.id)===Number(localRecipeId)?0:1;
+    const as=a?.speculation===true?1:0,bs=b?.speculation===true?1:0;
+    return am-bm||as-bs||(Number(a?.requiredSkill)||9999)-(Number(b?.requiredSkill)||9999)||(Number(a?.id)||0)-(Number(b?.id)||0);
+  })[0]||null;
+}
+export function enrichWorkshopCatalogWithForeverDb(catalog,index){
+  if(!catalog||!index?.byItem)return catalog;
+  for(const item of asArray(catalog.items)){
+    const remoteRecipes=index.byItem.get(Number(item.id))||[];
+    if(!remoteRecipes.length)continue;
+    const localRecipe=asArray(item.recipeKeys).map(key=>catalog.byRecipeKey.get(key)).find(Boolean);
+    const remote=preferredForeverRecipe(remoteRecipes,localRecipe?.id);
+    if(!remote)continue;
+    item.categoryPath=cleanedForeverCategoryPath(remote,localRecipe?.profession,item.categoryPath);
+    item.categorySource='foreverdb-client';
+    item.foreverDbRecipeId=remote.id??null;
+    item.requiredSkill=remote.requiredSkill??null;
+    for(const key of asArray(item.recipeKeys)){
+      const recipe=catalog.byRecipeKey.get(key);
+      if(!recipe)continue;
+      const match=preferredForeverRecipe(remoteRecipes,recipe.id);
+      if(!match)continue;
+      recipe.categoryPath=cleanedForeverCategoryPath(match,recipe.profession,recipe.categoryPath);
+      recipe.categorySource='foreverdb-client';
+      recipe.requiredSkill=match.requiredSkill??null;
+      recipe.learning=match.learning||null;
+      recipe.foreverDbRecipeId=match.id??null;
+    }
+  }
+  return catalog;
+}
+export function foreverRecipesForItem(index,itemId){
+  return index?.byItem?.get(Number(itemId))||[];
+}
+export function preferredForeverRecipeForItem(index,itemId){
+  return preferredForeverRecipe(foreverRecipesForItem(index,itemId));
+}
+export function workshopLearningCandidates(data,recipe){
+  if(!recipe)return [];
+  const required=finiteNumber(recipe.requiredSkill);
+  const candidates=[];
+  for(const character of asArray(data?.characters)){
+    for(const profession of asArray(character?.professions)){
+      const slug=professionSlugFromName(profession?.name);
+      if(!slug||slug!==recipe.professionSlug)continue;
+      const skill=finiteNumber(profession?.current),cap=finiteNumber(profession?.max);
+      const gap=required===null||skill===null?null:Math.max(0,Math.ceil(required-skill));
+      candidates.push({
+        slug:character?.slug||null,
+        name:character?.name||character?.slug||'Dalton',
+        player:character?.player||null,
+        level:finiteNumber(character?.level),
+        profession:profession?.name||recipe.profession||recipe.professionSlug,
+        professionSlug:slug,
+        skill,
+        skillCap:cap,
+        requiredSkill:required,
+        gap,
+        status:required===null||skill===null?'profession-match':gap===0?'can-learn-now':'skill-gap'
+      });
+    }
+  }
+  return candidates.sort((a,b)=>{
+    const order={'can-learn-now':0,'skill-gap':1,'profession-match':2};
+    return (order[a.status]??9)-(order[b.status]??9)||(a.gap??9999)-(b.gap??9999)||a.name.localeCompare(b.name,'de');
+  });
 }
