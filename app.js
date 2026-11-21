@@ -204,9 +204,14 @@ function safeFactionCrest(url){
 }
 const reputationFallbackCrest='<svg viewBox="0 0 32 36" aria-hidden="true"><path d="M16 2.5 27 6.8v9.4c0 8.1-4.4 13.8-11 17.3C9.4 30 5 24.3 5 16.2V6.8L16 2.5Z"/><path d="M16 8v18M10.5 13.5h11"/></svg>';
 function factionVisual(rep){
-  const record=displayedReputationCatalog?.records?.[String(rep?.id)]||null;
-  const url=safeFactionCrest(record?.media?.crestStoredUrl)||safeFactionCrest(record?.media?.crestSourceUrl);
-  const kind=record?.crestKind||'generic';
+  const records=displayedReputationCatalog?.records||{};
+  const record=records[String(rep?.id)]||null;
+  const master=record?.slug?records['slug:'+record.slug]||null:null;
+  const url=safeFactionCrest(record?.media?.crestStoredUrl)
+    ||safeFactionCrest(master?.media?.crestStoredUrl)
+    ||safeFactionCrest(record?.media?.crestSourceUrl)
+    ||safeFactionCrest(master?.media?.crestSourceUrl);
+  const kind=record?.crestKind||master?.crestKind||'generic';
   const title=kind==='specific'?'Fraktionswappen':kind==='side-fallback'?'Fraktionszugehörigkeit':kind==='neutral-fallback'?'Neutrale Fraktion':'Fraktion';
   return '<span class="reputation-crest is-'+esc(kind)+'" title="'+esc(title)+'">'+
     (url?'<img src="'+esc(url)+'" alt="" loading="lazy" decoding="async">':reputationFallbackCrest)+'</span>';
