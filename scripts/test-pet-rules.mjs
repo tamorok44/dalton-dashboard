@@ -30,7 +30,21 @@ const pages={
     Focus regeneration is now continuous at 10 Focus per second, filling the full 150 Focus pool in 15 sec.</main>`,
   'raw.githubusercontent.com/gunba/wow-forever-sim/forever/docs/check_dispositions.md':`
     The client PowerType row for Focus in build 69977 supplies a concrete 10 Focus/second in combat,
-    and Hunter scaling 415429 adds 50 maximum Focus to the base 100.`
+    and Hunter scaling 415429 adds 50 maximum Focus to the base 100.`,
+  'statrat.info/classes/hunter/levelling/':`
+    Fox Damage (physical) ×1.00 Health ×1.00 Base armour ×1.05.
+    Family passives · Forever client 70374. Physical damage and base armour.`,
+  'efficient.games/wowf/hunter-pets':`
+    WoW Forever 1.60.1 (build 70959).
+    Bite Rank 1 Pet level 1 · 1 training point. Rank 2 Pet level 8 · 4 training points.
+    Trickster's Dance Rank 1 Pet level 20 · 10 training points.
+    Dash Rank 1 Pet level 30 · 15 for Boar, Cat, Fox, Hyena, Tallstrider, Wolf.`,
+  'mobalytics.gg/wow-forever/classes/hunter-leveling-1-60-vareion':`
+    Pets now scale with your player character:
+    100% of your Crit strike
+    10% of your highest Attack Power source
+    30% of your Armor
+    1 Hunter Stamina = 2 Pet Health.`
 };
 function fetchFrom(currentPages,failPart=null){
   return async url=>{
@@ -49,6 +63,12 @@ assert.equal(Object.keys(first.rules).length,5);
 assert.ok(Object.values(first.rules).every(rule=>rule.status==='verified'));
 assert.ok(Object.values(first.sources).every(source=>source.status==='verified'));
 assert.equal(first.sources.bindFox.build,'1.60.1.70959');
+assert.equal(first.rules['pet.scaling'].evidence,'reference_model');
+assert.equal(first.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
+assert.equal(first.rules['pet.focus'].evidence,'client');
+assert.equal(first.rules['pet.health.global'].evidence,'official');
+assert.equal(first.rules['fox.family.profile'].evidence,'client');
+assert.equal(first.sources.efficientPets.build,'1.60.1.70959');
 
 const same=await verifyPetRulebook({fetchImpl:fetchFrom(pages),previousState:first,now:new Date('2026-11-22T04:07:00.000Z')});
 assert.equal(same.overall,'verified','Unchanged rule evidence stays verified');
@@ -89,4 +109,7 @@ assert.equal(focusUnavailable.rules['pet.scaling'].status,'verified','Scaling re
 const client=publicPetRuleState(first);
 assert.equal(client.overall,'verified');
 assert.ok(!('digest' in client.sources.blizzardHotfix),'Internal fingerprints are never exposed to the browser');
+assert.equal(client.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
+assert.equal(client.rules['pet.focus'].evidenceLabel,'Clientdaten');
+assert.equal(client.rules['pet.health.global'].evidenceLabel,'Offiziell');
 console.log('Pet-Regelwerk: Skalierung, Fokus, Buildwechsel, Hotfix-Änderung und Fail-closed-Verhalten: OK');
