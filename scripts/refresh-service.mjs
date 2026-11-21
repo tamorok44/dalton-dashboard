@@ -6,6 +6,7 @@ import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fet
 import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
 import {loadQuestCatalog,loadQuestCatalogByIds,saveQuestCatalog} from './quest-catalog-store.mjs';
 import {collectCatalogRecords,saveCatalogRecords} from './game-catalog-store.mjs';
+import {ensureReputationCatalog,loadPublicReputationCatalog} from './reputation-catalog-store.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -22,6 +23,7 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   if(blizzardApiConfigured()){
     try{
       const slugs=latest.characters.map(c=>c.slug);
+      const reputationCatalogPromise=ensureReputationCatalog({force:false,archiveMedia:true});
       const detailsSnapshot=await fetchForeverSnapshot(slugs,{
         locale:'de_DE',
         endpointNames:['professions','specializations','reputations','quests','completedQuests']
@@ -51,6 +53,7 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
         .map(detail=>['quest:'+Number(detail.id),detail.title]));
       const localizedNames={...otherLocalizedNames,...questLocalizedNames};
       latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails,localizedNames);
+      await reputationCatalogPromise;
     }catch(error){
       console.warn('Erweiterte Forever-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,180));
     }
@@ -88,5 +91,9 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   try{questCatalog=await loadQuestCatalogByIds(activeQuestIds,{locale:'de_DE'})}catch(error){
     console.warn('Quest-Katalog konnte für die Antwort nicht geladen werden:',String(error.message).slice(0,140));
   }
-  return {success,data:archived,questCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
+  let reputationCatalog={build:null,expected:0,records:{}};
+  try{reputationCatalog=await loadPublicReputationCatalog()}catch(error){
+    console.warn('Ruf-Katalog konnte für die Antwort nicht geladen werden:',String(error.message).slice(0,140));
+  }
+  return {success,data:archived,questCatalog,reputationCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
 }
