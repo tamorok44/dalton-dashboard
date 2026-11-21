@@ -488,7 +488,124 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  </article>`).join("");
  installPortraitFallbacks();
  installCharacterTabs();
+ if(!compareView.hidden)renderComparison();
 }
+
+/* Shared Redis payload powers both views; comparison never fetches or persists separately. */
+const comparisonState={selected:new Set(),expanded:new Set(['stats','equipment','talents','quests','professions','reputation']),mode:'all'};
+const comparisonSections=[['stats','Charakterwerte'],['equipment','Ausrüstung'],['talents','Talente'],['quests','Quests'],['professions','Berufe'],['reputation','Ruf']];
+const compareRoot=document.querySelector('#compareContent');
+const charactersView=document.querySelector('#charactersView');
+const compareView=document.querySelector('#compareView');
+function setMainView(view){
+  const compare=view==='compare';
+  charactersView.hidden=compare;compareView.hidden=!compare;
+  document.querySelectorAll('[data-view-link]').forEach(a=>{
+    const on=a.dataset.viewLink===view;a.classList.toggle('is-active',on);
+    if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+  if(compare)renderComparison();
+}
+function syncMainView(){setMainView(location.hash==='#vergleich'?'compare':'characters')}
+window.addEventListener('hashchange',syncMainView);
+function cmpNumber(v){if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null}
+function cmpEntry(value,score=null,extra='',stale=false){
+  return {value:value===null||value===undefined||value===''?'–':String(value),score:cmpNumber(score),extra,stale};
+}
+function cmpTableRow(label,values,chars,{direction=1,comparable=true}={}){
+  const scores=values.map(v=>v?.score).filter(v=>v!==null&&v!==undefined&&Number.isFinite(v));
+  const min=scores.length?Math.min(...scores):null,max=scores.length?Math.max(...scores):null;
+  const diff=comparable&&scores.length>=2&&max!==min;
+  return '<tr><th scope="row">'+esc(label)+'</th>'+values.map(v=>{
+    const missing=!v||v.value==='–';
+    const state=!diff||missing||v.score===null?'':(v.score===max?(direction===1?'best':'worst'):v.score===min?(direction===1?'worst':'best'):'middle');
+    return '<td class="'+(state?'compare-'+state:'')+'">'+
+      '<span class="compare-value">'+esc(v?.value??'–')+'</span>'+
+      (v?.extra?'<small>'+esc(v.extra)+'</small>':'')+
+      (v?.stale?'<small class="stale-value">Letzter Stand</small>':'')+
+      '</td>';
+  }).join('')+'</tr>';
+}
+function cmpSectionRows(id,chars){
+  const rows=[];
+  const push=(label,fn,opts={})=>rows.push(cmpTableRow(label,chars.map(fn),chars,opts));
+  if(id==='stats'){
+    push('Level',c=>cmpEntry(c.level,c.level));
+    push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience));
+    const keys=[...new Set([...mainStatNames,...detailStatNames,...chars.flatMap(c=>Object.keys(c.stats||{}))])];
+    for(const key of keys)push(key,c=>cmpEntry(formatStatValue(key,c.stats?.[key]),c.stats?.[key],'',c.scrapeOk===false||!(c.statsFreshKeys|| (c.statsVerified?Object.keys(c.stats||{}):[])).includes(key)));
+  }
+  if(id==='equipment'){
+    push('Ø Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.stats?.['Gegenstandsstufe'],c.equippedItemLevel??c.stats?.['Gegenstandsstufe']));
+    const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=equipmentSlotAliases[item.slot]||item.slot;if(!m.has(key)&&item.item)m.set(key,item)}return m});
+    for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+' · '+(itemQualityNames[String(it.quality||'').toUpperCase()]||'Qualität unbekannt'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+  }
+  if(id==='talents'){
+    push('Talentverteilung',c=>cmpEntry(c.talents||'Nicht verfügbar',null,'',c.talentsVerified===false));
+    const trees=[...new Set(chars.flatMap(c=>(c.talentDetails||[]).map(t=>t.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+    for(const tree of trees){
+      push('Talentbaum: '+tree,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree);return t?cmpEntry(t.spentPoints+' Punkte',t.spentPoints,'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false});
+      const talents=[...new Set(chars.flatMap(c=>((c.talentDetails||[]).find(t=>t.name===tree)?.talents||[]).map(t=>t.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+      for(const name of talents)push('↳ '+name,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree)?.talents?.find(x=>x.name===name);return t?cmpEntry('Rang '+(t.rank??'–'),t.rank,t.description||'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false});
+    }
+  }
+  if(id==='quests'){
+    push('Aktive Quests',c=>cmpEntry(Array.isArray(c.activeQuests)?c.activeQuests.length:'–',Array.isArray(c.activeQuests)?c.activeQuests.length:null,'',c.questsVerified===false),{comparable:false});
+    push('Bekannte abgeschlossene Quests',c=>cmpEntry(Array.isArray(c.completedQuestIds)?c.completedQuestIds.length:'–',null,'',c.completedQuestsVerified!==true),{comparable:false});
+    const ids=new Map();
+    for(const c of chars)for(const q of c.activeQuests||[])if(Number.isInteger(Number(q.id)))ids.set(Number(q.id),displayedQuestCatalog?.[q.id]?.title||q.name||'Quest '+q.id);
+    for(const [id,name] of [...ids].sort((a,b)=>a[1].localeCompare(b[1],'de')))push(name,c=>{
+      if((c.activeQuests||[]).some(q=>Number(q.id)===id))return cmpEntry('Offen',null,'',c.questsVerified===false);
+      if((c.completedQuestIds||[]).some(q=>Number(q)===id))return cmpEntry('Abgeschlossen',null,'',c.completedQuestsVerified!==true);
+      return cmpEntry(c.questsVerified===true&&c.completedQuestsVerified===true?'Nicht aktiv':'Unbekannt',null,'',true);
+    },{comparable:false});
+  }
+  if(id==='professions'){
+    const names=[...new Set(chars.flatMap(c=>(c.professions||[]).map(p=>p.name)))];
+    const ordered=sortProfessionsForDisplay(names.map(name=>({name}))).map(p=>p.name);
+    for(const name of ordered){
+      push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,professionRank(Number(p.max)),p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)});
+      const recipes=[...new Set(chars.flatMap(c=>((c.professions||[]).find(p=>p.name===name)?.knownRecipes||[]).map(r=>r.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+      for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false});
+    }
+  }
+  if(id==='reputation'){
+    const names=[...new Set(chars.flatMap(c=>(c.reputations||[]).map(r=>r.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+    for(const name of names)push(name,c=>{const r=(c.reputations||[]).find(x=>x.name===name);if(!r)return cmpEntry('–',null,'',c.reputationsVerified!==true);
+      const st=r.standing||{},stage=reputationStageIndex(st),v=cmpNumber(st.value),max=cmpNumber(st.max);
+      const score=stage<0?null:stage*100000+(v!==null&&max>0?v/max*1000:0);
+      return cmpEntry((st.name||'Unbekannt')+' · '+(v??'–')+'/'+(max??'–'),score,'',c.reputationsVerified===false);
+    });
+  }
+  return rows;
+}
+function renderComparison(){
+  if(!compareRoot||!displayedData)return;
+  const all=[...(displayedData.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  const selected=all.filter(c=>comparisonState.selected.has(c.slug));
+  const choices='<fieldset class="compare-choices"><legend>Charaktere auswählen · '+selected.length+' von '+all.length+'</legend>'+all.map(c=>
+    '<label class="compare-choice"><input type="checkbox" data-compare-character="'+esc(c.slug)+'" '+(comparisonState.selected.has(c.slug)?'checked':'')+'><span>'+esc(c.name)+'</span></label>'
+  ).join('')+'</fieldset>';
+  const content=selected.length<2?'<p class="compare-empty">Bitte mindestens zwei Charaktere auswählen, um den Vergleich zu starten.</p>':
+    '<div class="compare-toolbar"><span>'+selected.length+' Charaktere · alphabetisch geordnet</span><label><input type="checkbox" id="compareDifferences" '+(comparisonState.mode==='differences'?'checked':'')+'> Nur Unterschiede</label></div>'+
+    '<div class="compare-scroll" tabindex="0" aria-label="Vergleichstabelle horizontal scrollen"><table class="compare-table"><thead><tr><th scope="col">Merkmal</th>'+selected.map(c=>'<th scope="col"><span class="compare-character-name">'+esc(c.name)+'</span><small>'+esc(c.class||'')+' · Level '+esc(c.level??'–')+'</small></th>').join('')+'</tr></thead><tbody>'+
+    comparisonSections.map(([id,label])=>{
+      const rows=cmpSectionRows(id,selected);
+      const visible=comparisonState.mode==='differences'?rows.filter(row=>{const cells=[...row.matchAll(/<span class="compare-value">([^<]*)<\/span>/g)].map(m=>m[1]);return new Set(cells).size>1;}):rows;
+      return '<tr class="compare-section-heading"><th colspan="'+(selected.length+1)+'"><button type="button" data-compare-section="'+id+'" aria-expanded="'+comparisonState.expanded.has(id)+'">'+(comparisonState.expanded.has(id)?'▾ ':'▸ ')+esc(label)+' · '+visible.length+'</button></th></tr>'+
+        (comparisonState.expanded.has(id)?visible.join(''):'');
+    }).join('')+'</tbody></table></div><p class="compare-legend"><span class="compare-best">Bester Wert</span><span class="compare-middle">Zwischenwert</span><span class="compare-worst">Niedrigster Wert</span><span>Gleich / nicht bewertbar: neutral</span></p>';
+  compareRoot.innerHTML=choices+content;
+  compareRoot.querySelectorAll('[data-compare-character]').forEach(input=>input.addEventListener('change',()=>{
+    if(input.checked)comparisonState.selected.add(input.dataset.compareCharacter);else comparisonState.selected.delete(input.dataset.compareCharacter);
+    renderComparison();
+  }));
+  compareRoot.querySelectorAll('[data-compare-section]').forEach(btn=>btn.addEventListener('click',()=>{
+    const id=btn.dataset.compareSection;if(comparisonState.expanded.has(id))comparisonState.expanded.delete(id);else comparisonState.expanded.add(id);renderComparison();
+  }));
+  compareRoot.querySelector('#compareDifferences')?.addEventListener('change',e=>{comparisonState.mode=e.target.checked?'differences':'all';renderComparison()});
+}
+
 let lastGeneratedAt=null;
 async function load(){
   status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
@@ -526,5 +643,6 @@ async function refreshLive(){
 button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
+syncMainView();
 // Live-Aufrufe hier nur per Button; ein täglicher Server-Snapshot archiviert zusätzlich den vollständigen Blizzard-Datenstand.
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
