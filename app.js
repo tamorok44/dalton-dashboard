@@ -586,7 +586,7 @@ const activeCharacterTabs=new Map();
 let displayedQuestCatalog={};
 let displayedReputationCatalog={build:null,expected:0,records:{}};
 function characterTabsFor(c){
-  if(c.class!=='Jäger')return baseCharacterTabs;
+  if(!isHunter(c))return baseCharacterTabs;
   const tabs=[...baseCharacterTabs];
   tabs.splice(3,0,{id:'pets',label:'Begleiter'});
   return tabs;
