@@ -15,7 +15,7 @@ assert.equal(result[0].icon,'https://foreverspec.com/icons/7731373.webp');
 assert.equal(result[1].level,10);
 assert.throws(()=>extractGermanGear('<html></html>',[]),/keine auslesbare Ausrüstung/);
 const officialGear=gear({gear:[
-  {name:'Worn Leather Vest',slot:{type:'CHEST'},level:{value:9},quality:{type:'POOR',name:'Poor'}},
+  {id:1001,name:'Worn Leather Vest',slot:{type:'CHEST'},level:{value:9},quality:{type:'POOR',name:'Poor'}},
   {name:'Training Sword of the Gorilla',slot:{type:'MAIN_HAND'},level:{value:10},quality:{type:'UNCOMMON',name:'Uncommon'}},
   {name:'Ancient Heirloom',slot:{type:'FINGER_1'},level:{value:1},quality:{type:'COMMON',name:'Common'}},
   {name:'Item without quality',slot:{type:'RANGED'},level:{value:3}}
@@ -23,6 +23,8 @@ const officialGear=gear({gear:[
 assert.deepEqual(officialGear.map(x=>x.quality),['POOR','UNCOMMON','COMMON',undefined]);
 assert.deepEqual(officialGear.map(x=>x.slot),['Brust','Waffenhand','Ring 1','Distanzwaffe']);
 assert.deepEqual(officialGear.map(x=>x.level),[9,10,1,3]);
+assert.equal(officialGear[0].id,1001,'Official item ID is retained');
+assert.equal(result[0].id,7731373,'ForeverSpec item ID is retained');
 console.log('ForeverSpec and Blizzard gear quality extractors: OK');
 
 
@@ -56,7 +58,7 @@ const fakeCharacter=(locale)=>{
   specs:[],
  };
  if(missingSpecs)delete c.specs;
- if(gearAvailable)c.gear=[{name:locale==='de-de'?germanName:englishName,slot:{type:'CHEST'},level:{value:12},quality:{type:qualityType},media:{content:{assets:[{key:'icon',value:itemIcon}]}}}];
+ if(gearAvailable)c.gear=[{id:9001,name:locale==='de-de'?germanName:englishName,slot:{type:'CHEST'},level:{value:12},quality:{type:qualityType},media:{content:{assets:[{key:'icon',value:itemIcon}]}}}];
  return c;
 };
 const htmlFor=locale=>'<script>var characterProfileInitialState = '+JSON.stringify({character:fakeCharacter(locale)})+';</script>';
@@ -82,7 +84,7 @@ globalThis.fetch=async (url,options={})=>{
    stableFetches++;
    return {ok:true,status:200,text:async()=>JSON.stringify({pets:{
      active:[{
-       active:true,family:{id:319,name:'Fuchs',enum:'FOX',slug:'fox'},
+       id:7001,creature:{id:8001},active:true,family:{id:319,name:'Fuchs',enum:'FOX',slug:'fox'},
        icon:{url:'https://render.worldofwarcraft.com/forever-eu/icons/56/458223.jpg'},
        level:6,name:'Slydris',
        render:{url:'https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-139280.jpg'},
@@ -105,6 +107,7 @@ try{
  assert.equal(c.equipment[0].quality,'RARE');
  assert.equal(c.equipment[0].sourceName,'New Chest');
  assert.equal(c.equipment[0].level,12);
+ assert.equal(c.equipment[0].id,9001,'Equipment keeps the stable item ID');
  assert.equal(c.equipmentLanguage,'de');
  assert.equal(c.imageUrl,originalMedia);
  assert.equal(c.imageVerified,true);
@@ -125,6 +128,9 @@ try{
  assert.equal(c.hunterPets.active[0].family.name,'Fuchs');
  assert.equal(c.hunterPets.active[0].level,6);
  assert.equal(c.hunterPets.active[0].summoned,true);
+ assert.equal(c.hunterPets.active[0].id,7001);
+ assert.equal(c.hunterPets.active[0].creatureId,8001);
+ assert.equal(c.hunterPets.active[0].displayId,139280,'Pet render display ID is retained as media identity fallback');
  assert.equal(c.hunterPets.stable.length,0);
  // No redundant localized request when Blizzard equipment has not changed.
  const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;
