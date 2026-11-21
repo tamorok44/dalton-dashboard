@@ -390,10 +390,10 @@ function hunterPetsPanel(c){
   const trainingAllowed=Boolean(active&&family&&trainingRuleId&&petRuleVerified(trainingRuleId));
   const familyProfile=active&&family
     ?(familyAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(active.family?.name||'Begleiterfamilie')+'</h4></div></div>'+
-      '<div class="pet-family-stats">'+
-        '<div><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
-        '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
-        '<div><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
+      '<div class="pet-family-stats stat-grid">'+
+        '<div class="stat-tile stat-tile-detail pet-family-stat"><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
+        '<div class="stat-tile stat-tile-detail pet-family-stat"><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
+        '<div class="stat-tile stat-tile-detail pet-family-stat"><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
       '</div></div>'
       :petRuleUnavailable('Familienprofil vorübergehend nicht verfügbar'))
     :'';
@@ -423,17 +423,19 @@ function hunterPetsPanel(c){
     const stateLabel=state==='now'?'Jetzt erlernbar':state==='next'
       ?('Ab Stufe '+required+(remaining>0?' · noch '+remaining+' '+(remaining===1?'Stufe':'Stufen'):''))
       :('Ab Stufe '+required);
-    return '<div class="pet-training-card is-'+state+'"><div class="pet-training-card-head"><strong>'+esc(ability.name)+'</strong><span>'+esc(stateLabel)+'</span></div>'+
+    const groupLabel=state==='now'?'JETZT ERLERNBAR':state==='next'?'ALS NÄCHSTES':'SPÄTER';
+    return '<div class="stat-tile pet-training-card is-'+state+'"><span class="pet-training-status">'+esc(groupLabel)+'</span>'+
+      '<div class="pet-training-card-head"><strong>'+esc(ability.name)+'</strong><span>'+esc(stateLabel)+'</span></div>'+
       (ability.description?'<p>'+esc(ability.description)+'</p>':'')+'</div>';
   };
   const currentHtml=currentAbilities.length
-    ?'<div class="pet-training-group is-now"><span class="pet-training-label">JETZT ERLERNBAR</span>'+currentAbilities.map(ability=>abilityCard(ability,'now')).join('')+'</div>'
-    :'<div class="pet-training-group is-now"><span class="pet-training-label">JETZT ERLERNBAR</span><p class="knowledge-empty">Auf dieser Stufe ist keine neue Fähigkeit verfügbar.</p></div>';
+    ?'<div class="pet-training-group is-now">'+currentAbilities.map(ability=>abilityCard(ability,'now')).join('')+'</div>'
+    :'<div class="pet-training-group is-now"><div class="stat-tile pet-training-empty"><small>JETZT ERLERNBAR</small><span>Auf dieser Stufe ist keine neue Fähigkeit verfügbar.</span></div></div>';
   const nextHtml=nextAbilities.length
-    ?'<div class="pet-training-group is-next"><span class="pet-training-label">ALS NÄCHSTES</span>'+nextAbilities.map(ability=>abilityCard(ability,'next')).join('')+'</div>'
+    ?'<div class="pet-training-group is-next">'+nextAbilities.map(ability=>abilityCard(ability,'next')).join('')+'</div>'
     :'';
   const laterHtml=laterAbilities.length
-    ?'<details class="pet-training-later"><summary>Spätere Fähigkeiten und Ränge · '+laterAbilities.length+'</summary><div class="pet-training-later-list">'+laterAbilities.map(ability=>abilityCard(ability,'later')).join('')+'</div></details>'
+    ?'<details class="details pet-training-later"><summary>Spätere Fähigkeiten und Ränge · '+laterAbilities.length+'</summary><div class="pet-training-later-list">'+laterAbilities.map(ability=>abilityCard(ability,'later')).join('')+'</div></details>'
     :'';
   const training=active&&family
     ?(trainingAllowed&&localizedAbilities.length
