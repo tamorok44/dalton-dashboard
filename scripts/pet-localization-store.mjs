@@ -39,11 +39,17 @@ export function parseGermanPetFamilyPage(html='',slug=''){
   const ids=[...source.matchAll(/href=["']\/de\/spell\/(\d+)["']/gi)].map(match=>Number(match[1])).filter(Number.isInteger);
   const build=/Build\s+(1\.60\.1\.\d+)/i.exec(text(source))?.[1]||null;
   const heading=/<h1\b[^>]*>([\s\S]*?)<\/h1>/i.exec(source)?.[1];
+  const requiredLevels={};
+  for(const match of source.matchAll(/<li\b[^>]*>([\s\S]*?href=["']\/de\/spell\/(\d+)["'][\s\S]*?)<\/li>/gi)){
+    const level=/ab\s+(?:Begleiter|Haustier)stufe\s*(\d+)/i.exec(text(match[1]))?.[1];
+    if(level)requiredLevels[Number(match[2])]=Number(level);
+  }
   return {
     slug:safeSlug(slug),
     name:heading?text(heading).replace(/:\s*Jägerbegleiterfamilie$/i,'').trim():null,
     build,
-    spellIds:[...new Set(ids)]
+    spellIds:[...new Set(ids)],
+    requiredLevels
   };
 }
 export function parseGermanPetSpellPage(html='',id){
@@ -65,7 +71,10 @@ async function fetchGermanPetFamily(slug,{fetchImpl=fetch}={}){
   const family=parseGermanPetFamilyPage(familyHtml,slug);
   if(!family.slug||!family.spellIds.length)throw new Error('Keine deutschen Pet-Spell-IDs gefunden');
   const abilities=(await Promise.all(family.spellIds.slice(0,20).map(async id=>{
-    try{return parseGermanPetSpellPage(await fetchHtml(spellUrl(id),fetchImpl),id)}
+    try{
+      const spell=parseGermanPetSpellPage(await fetchHtml(spellUrl(id),fetchImpl),id);
+      return {...spell,requiredLevel:spell.requiredLevel||family.requiredLevels?.[id]||null};
+    }
     catch(error){
       console.warn('Deutscher Pet-Spell '+id+' konnte nicht geladen werden:',String(error.message).slice(0,120));
       return null;
