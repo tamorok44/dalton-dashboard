@@ -269,6 +269,31 @@ function petAbilityCard(ability,petLevel){
     '<small>Nicht mit „bereits gelernt“ gleichzusetzen.</small>'+
   '</div>';
 }
+let displayedPetRules=null;
+function petRuleStatus(ruleId){
+  return displayedPetRules?.rules?.[ruleId]?.status||'source_unavailable';
+}
+function petRuleVerified(ruleId){return petRuleStatus(ruleId)==='verified'}
+function petRuleBanner(){
+  const state=displayedPetRules;
+  if(!state){
+    return '<div class="pet-rule-banner is-unverified"><strong>Regelprüfung noch nicht bestätigt</strong><span>Regelbasierte Werte bleiben ausgeblendet, bis der Server die Forever-Quellen geprüft hat.</span></div>';
+  }
+  const rules=Object.values(state.rules||{});
+  const verified=rules.filter(rule=>rule.status==='verified').length;
+  const checked=Number.isFinite(Date.parse(state.checkedAt||''))
+    ?new Date(state.checkedAt).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'})
+    :'unbekannt';
+  if(state.overall==='verified'){
+    return '<div class="pet-rule-banner is-verified"><strong>Regelstand bestätigt · '+verified+'/'+rules.length+'</strong><span>Geprüft '+esc(checked)+' · Regelwerk '+esc(state.rulebookVersion||'–')+'</span></div>';
+  }
+  const review=rules.some(rule=>rule.status==='review_required');
+  return '<div class="pet-rule-banner '+(review?'is-review':'is-unverified')+'"><strong>'+(review?'Regeländerung erkannt':'Regelprüfung unvollständig')+'</strong><span>Regelbasierte Werte sind vorsorglich ausgeblendet. Blizzard-Livedaten zu Slydris und Stall bleiben davon unberührt. · Geprüft '+esc(checked)+'</span></div>';
+}
+function petRuleUnavailable(title){
+  return '<div class="pet-rule-blocked"><strong>'+esc(title)+'</strong><span>Vorübergehend nicht angezeigt, weil die zugrunde liegende Forever-Regel nicht als aktuell bestätigt ist.</span></div>';
+}
+
 function hunterPetMiniCard(pet){
   const icon=petIconPattern.test(pet?.iconUrl||'')?'<img src="'+esc(pet.iconUrl)+'" alt="" loading="lazy">':'<span class="pet-mini-placeholder" aria-hidden="true">•</span>';
   return '<div class="pet-mini">'+icon+'<div><strong>'+esc(pet?.name||'Begleiter')+'</strong>'+
@@ -306,25 +331,35 @@ function hunterPetsPanel(c){
       (badges?'<div class="pet-badges">'+badges+'</div>':'')+
       '<div class="pet-level-gap"><strong>'+esc(validPetLevel?'Stufe '+petLevel:'Stufe unbekannt')+'</strong><span>'+esc(gapCopy)+'</span></div>'+
     '</div></div>':'<p class="knowledge-empty">Kein aktiver Begleiter gemeldet.</p>';
-  const familyProfile=active&&family?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(family.name)+'</h4></div><span class="pet-source">Forever-Spieldaten</span></div>'+
-    '<div class="pet-family-stats">'+
-      '<div><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
-      '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
-      '<div><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
-      '<div><small>Futter</small><strong>'+esc(family.diet.join(' · '))+'</strong></div>'+
-    '</div></div>':'';
-  const training=active&&family?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Was '+esc(active.name)+' auf seiner Stufe trainieren kann</h4></div><span class="pet-source">Keine Lernstand-Schätzung</span></div>'+
-    '<div class="pet-abilities">'+family.abilities.map(ability=>petAbilityCard(ability,validPetLevel?petLevel:0)).join('')+'</div>'+
-    '<p class="pet-note">Die Stufen zeigen, was für einen Fuchs grundsätzlich trainierbar ist. Blizzard veröffentlicht online nicht, welche Ränge '+esc(active.name)+' tatsächlich gelernt hat.</p></div>':'';
+  const familyRuleId=family?.ruleIds?.profile;
+  const trainingRuleId=family?.ruleIds?.training;
+  const familyAllowed=Boolean(active&&family&&familyRuleId&&petRuleVerified(familyRuleId));
+  const trainingAllowed=Boolean(active&&family&&trainingRuleId&&petRuleVerified(trainingRuleId));
+  const familyProfile=active&&family
+    ?(familyAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(family.name)+'</h4></div><span class="pet-source">Regelwerk bestätigt</span></div>'+
+      '<div class="pet-family-stats">'+
+        '<div><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
+        '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
+        '<div><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
+        '<div><small>Futter</small><strong>'+esc(family.diet.join(' · '))+'</strong></div>'+
+      '</div></div>'
+      :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
+    :'';
+  const training=active&&family
+    ?(trainingAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Was '+esc(active.name)+' auf seiner Stufe trainieren kann</h4></div><span class="pet-source">Regelwerk bestätigt · keine Lernstand-Schätzung</span></div>'+
+      '<div class="pet-abilities">'+family.abilities.map(ability=>petAbilityCard(ability,validPetLevel?petLevel:0)).join('')+'</div>'+
+      '<p class="pet-note">Die Stufen zeigen, was für einen Fuchs grundsätzlich trainierbar ist. Blizzard veröffentlicht online nicht, welche Ränge '+esc(active.name)+' tatsächlich gelernt hat.</p></div>'
+      :petRuleUnavailable('Ausbildungsregeln vorübergehend gesperrt'))
+    :'';
   const care=active?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">PFLEGE & SPIELMECHANIK</span><h4>Wichtig im Spiel</h4></div></div>'+
     '<div class="pet-tips">'+
-      (family?'<div><strong>Füttern</strong><span>'+esc(family.diet.join(' · '))+' bereithalten. Zufriedenheit beeinflusst den Schaden des Begleiters.</span></div>':'')+
+      (familyAllowed?'<div><strong>Füttern</strong><span>'+esc(family.diet.join(' · '))+' bereithalten. Zufriedenheit beeinflusst den Schaden des Begleiters.</span></div>':'')+
       '<div><strong>Knurren</strong><span>Solo meist automatisch aktiv lassen. In Gruppen mit einem Tank automatisches Knurren ausschalten.</span></div>'+
       '<div><strong>Treue & Ausbildungspunkte</strong><span>Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und das tatsächlich gelernte Pet-Zauberbuch sind Forever-Clientwerte. Blizzard veröffentlicht sie derzeit nicht in der Online-Armory; deshalb zeigt das Dashboard keine Schätzwerte.</span></div>'+
     '</div></div>':'';
   const stable='<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">STALL</span><h4>Weitere gezähmte Begleiter · '+stableList.length+'</h4></div><span class="pet-source">'+(verified?'Blizzard live':'letzter Stand')+'</span></div>'+
     (stableList.length?'<div class="pet-stable-list">'+stableList.map(hunterPetMiniCard).join('')+'</div>':'<p class="knowledge-empty">Noch kein weiterer Begleiter eingestallt.</p>')+'</div>';
-  return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+hero+familyProfile+training+care+stable+'</div>';
+  return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+petRuleBanner()+hero+familyProfile+training+care+stable+'</div>';
 }
 
 function shortCharacterName(character){
@@ -557,9 +592,10 @@ function lastActivity(c){
  }
  return 'Zuletzt im Spiel: von Blizzard nicht angegeben';
 }
-function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog}={}){
+function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog,petRules=displayedPetRules}={}){
  displayedData=data;
  displayedQuestCatalog=questCatalog||{};
+ displayedPetRules=petRules||null;
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
  const questStatus=questGroupStatus(chars);
@@ -730,7 +766,7 @@ async function load(){
     const result=await r.json();
     const data=result.data;
     if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
-      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{}});
+      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{},petRules:result.petRules||null});
     }
   }catch(e){if(!displayedData){
       try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
@@ -749,7 +785,7 @@ async function refreshLive(){
     if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
-    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{}});
+    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{},petRules:response.petRules||null});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
