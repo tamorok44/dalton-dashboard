@@ -112,7 +112,7 @@ Maximum Focus increased from 100 to 150
 Focus regeneration is now continuous at 10 Focus per second, filling the full 150 Focus pool in 15 sec.`};
   if(sourceUrl.includes('raw.githubusercontent.com/gunba/wow-forever-sim/forever/docs/check_dispositions.md'))return {ok:true,status:200,text:async()=>`The client PowerType row for Focus in build 69977 supplies a concrete 10 Focus/second in combat, and Hunter scaling 415429 adds 50 maximum Focus to the base 100.`};
   if(sourceUrl.includes('statrat.info/classes/hunter/levelling/'))return {ok:true,status:200,text:async()=>`Fox Damage (physical) ×1.00 Health ×1.00 Base armour ×1.05. Family passives · Forever client 70374. Physical damage and base armour.`};
-  if(sourceUrl.includes('efficient.games/wowf/hunter-pets'))return {ok:true,status:200,text:async()=>`WoW Forever 1.60.1 (build 70959). Bite Rank 1 Pet level 1 · 1 training point. Rank 2 Pet level 8 · 4 training points. Trickster's Dance Rank 1 Pet level 20 · 10 training points. Dash Rank 1 Pet level 30 · 15 for Boar, Cat, Fox, Hyena, Tallstrider, Wolf.`};
+  if(sourceUrl.includes('efficient.games/wowf/hunter-pets'))return {ok:true,status:200,text:async()=>`WoW Forever 1.60.1 (build 70959). Bite Rank 1 1 1 Charged 1 in play Bite Rank 2 8 4 Charged 4 in play. Trickster's Dance Rank 1 20 10. Dash Rank 1 30 15 for Boar, Cat, Fox, Hyena, Tallstrider, Wolf.`};
   if(sourceUrl.includes('mobalytics.gg/wow-forever/classes/hunter-leveling-1-60-vareion'))return {ok:true,status:200,text:async()=>`100% of your Crit strike 10% of your highest Attack Power source 30% of your Armor 1 Hunter Stamina = 2 Pet Health.`};
   const slug=decodeURIComponent(sourceUrl.split('/').at(-1));
   const profile=baseline.get(slug);
