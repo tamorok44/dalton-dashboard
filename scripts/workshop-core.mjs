@@ -307,7 +307,7 @@ export function workshopLearningCandidates(data,recipe){
         name:character?.name||character?.slug||'Dalton',
         player:character?.player||null,
         level:finiteNumber(character?.level),
-        profession:profession?.name||recipe.profession||recipe.professionSlug,
+        profession:profession?.name||null,
         professionSlug:slug,
         skill,
         skillCap:cap,
