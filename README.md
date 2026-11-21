@@ -27,7 +27,7 @@ Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.
   - die offizielle Blizzard-Forever-Hotfixseite,
   - Wowheads Forever-Hunter-Skalierungsregeln,
   - Bind on Forever für Fuchsfamilie und Ausbildungsstufen,
-  - WoW-Forever.gg als zweite Quelle für Familienmodifikatoren.
+  - 60.tools als zweite unabhängige Quelle für Familienmodifikatoren.
 - Quellen werden nicht automatisch „neu angelernt“. Der erste geprüfte Stand einer Regelwerk-Version wird als Baseline gespeichert. Ändert sich ein relevanter Text, ein beobachteter Forever-Build oder fehlt eine erwartete Regel-Aussage, erhält die betroffene Regel `review_required`.
 - Ist eine benötigte Quelle nicht erreichbar, erhält die betroffene Regel `source_unavailable`.
 - Bei `review_required` oder `source_unavailable` gilt **fail closed**: Der betreffende regelbasierte Wert wird im Dashboard ausgeblendet. Es wird niemals mit einer möglicherweise veralteten Formel weitergerechnet.
