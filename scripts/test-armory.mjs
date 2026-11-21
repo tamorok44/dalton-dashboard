@@ -19,9 +19,11 @@ assert.deepEqual(direct.map(x=>x.slotType),['CHEST','MAIN_HAND']);
 assert.deepEqual(direct.map(x=>x.qualityName),['Schlecht','Ungewöhnlich']);
 assert.equal(direct[0].id,1001);
 
-const statMarkup='<div class="CharacterStat-media color-stat-STAMINA Media"><div class="Media-text"><span>23</span><div class="CharacterStat-name">Ausdauer</div></div></div>'+
-  '<div class="CharacterStat-media color-stat-CRITICALSTRIKE Media"><div class="Media-text"><span>5%</span><div class="CharacterStat-name">Kritische Trefferchance</div></div></div>';
-assert.deepEqual(extractGermanStatLabels(statMarkup),{STAMINA:'Ausdauer',CRITICALSTRIKE:'Kritische Trefferchance'});
+const statLocaleScript="<script>window.localeStrings={"+
+  "'character.stats.stamina.name': \"Ausdauer\","+
+  "'character.stats.critical-strike.name': \"Kritische Trefferchance\""+
+  "};</script>";
+assert.deepEqual(extractGermanStatLabels(statLocaleScript),{STAMINA:'Ausdauer',CRITICALSTRIKE:'Kritische Trefferchance'});
 
 const originalFetch=globalThis.fetch;
 process.env.BLIZZARD_CLIENT_ID='test-client';
@@ -78,10 +80,11 @@ const htmlFor=()=>{
     quality:{type:qualityType,name:qualityName},
     media:{content:{assets:[{key:'icon',value:itemIcon}]}}
   }];
-  const statHtml=Object.entries(labels).map(([enumKey,name])=>
-    '<div class="CharacterStat-media color-stat-'+enumKey+' Media"><div class="Media-text"><span>0</span><div class="CharacterStat-name">'+name+'</div></div></div>'
-  ).join('');
-  return '<script>var characterProfileInitialState = '+JSON.stringify({character:c})+';</script>'+statHtml;
+  const localeKeyByEnum={HEALTH:'health',MANA:'mana',STRENGTH:'strength',AGILITY:'agility',STAMINA:'stamina',INTELLECT:'intellect',ARMOR:'armor',ATTACKPOWER:'attack-power',SPELLPOWER:'spell-power',DODGE:'dodge',ITEMLEVEL:'item-level',CRITICALSTRIKE:'critical-strike',SPIRIT:'spirit'};
+  const statLocale=Object.entries(labels).map(([enumKey,name])=>
+    "'character.stats."+localeKeyByEnum[enumKey]+".name': "+JSON.stringify(name)
+  ).join(',');
+  return '<script>var characterProfileInitialState = '+JSON.stringify({character:c})+';</script><script>window.localeStrings={'+statLocale+'};</script>';
 };
 
 globalThis.fetch=async (url,options={})=>{
