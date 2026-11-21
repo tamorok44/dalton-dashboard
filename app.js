@@ -705,7 +705,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   </div>
   ${renderPortrait(c)}
   <p class="status activity-note">${lastActivity(c)}</p>
-  <div class="meta"><span class="pill">${esc(c.class||'Klasse nicht verfügbar')}</span><span class="pill">${esc(c.race||'Volk nicht verfügbar')}</span><span class="pill">${esc(c.faction||'Fraktion nicht verfügbar')} · EU-${esc(c.ruleset?.name||'Regelwerk nicht verfügbar')}</span></div>
+  <div class="meta"><span class="pill">${esc(c.gameStringsVerified===true?c.class:'Klasse nicht verfügbar')}</span><span class="pill">${esc(c.gameStringsVerified===true?c.race:'Volk nicht verfügbar')}</span><span class="pill">${esc(c.gameStringsVerified===true?c.faction:'Fraktion nicht verfügbar')} · EU-${esc(c.ruleset?.name||'Regelwerk nicht verfügbar')}</span></div>
   ${c.scrapeOk===false?'<p class="status profile-warning">⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand</p>':''}
   ${experienceProgress(c)}
   ${characterTabsNav(c)}
