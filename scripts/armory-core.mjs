@@ -86,7 +86,7 @@ function professions(c) {
   return list.map(p=>({name:typeof p.name==='string'?p.name:null,current:p.tiers?.[0]?.skillPoints,max:p.tiers?.[0]?.maxSkillPoints,unverified:false}))
     .filter(p=>p.name&&Number.isFinite(p.current)&&Number.isFinite(p.max)&&p.max>0);
 }
-function stats(c) {
+function statDetails(c) {
   const raw=c.stats||{};
   const groups=[
     ...(Array.isArray(raw.groups)?raw.groups:[]),
@@ -94,26 +94,17 @@ function stats(c) {
     {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
     {stats:Array.isArray(raw.overview)?raw.overview:[]}
   ];
-  const result={};
+  const byEnum=new Map();
   for(const group of groups)for(const stat of group.stats||[]) {
     const value=stat?.value?.value;
+    const enumKey=typeof stat?.enum==='string'?stat.enum:null;
     const name=[stat?.name,stat?.display_name,stat?.label,stat?.localized_name].find(v=>typeof v==='string'&&v.trim());
-    if(name&&Number.isFinite(value))result[name.trim()]=value;
+    if(enumKey&&name&&Number.isFinite(value))byEnum.set(enumKey,{enum:enumKey,name:name.trim(),value});
   }
-  return result;
+  return [...byEnum.values()];
 }
-
-function statEnums(c){
-  const raw=c.stats||{};
-  const groups=[
-    ...(Array.isArray(raw.groups)?raw.groups:[]),
-    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
-    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
-    {stats:Array.isArray(raw.overview)?raw.overview:[]}
-  ];
-  return new Set(groups.flatMap(group=>group.stats||[])
-    .filter(stat=>Number.isFinite(stat?.value?.value)&&typeof stat?.enum==='string')
-    .map(stat=>stat.enum));
+function stats(c) {
+  return Object.fromEntries(statDetails(c).map(stat=>[stat.name,stat.value]));
 }
 function gear(c) {
   const raw=c.gear;
@@ -122,6 +113,7 @@ function gear(c) {
     if(!entry||typeof entry!=='object')return null;
     const name=entry.name||entry.item?.name;
     const id=Number(entry.id??entry.item?.id);
+    const slotType=typeof entry.slot?.type==='string'&&entry.slot.type.trim()?entry.slot.type.trim():null;
     const slot=typeof entry.slot?.name==='string'&&entry.slot.name.trim()?entry.slot.name.trim():null;
     const icon=entry.media?.content?.assets?.find(a=>a.key==='icon')?.value;
     const level=entry.level?.value;
@@ -133,6 +125,7 @@ function gear(c) {
     return typeof name==='string'&&slot?{
       ...(Number.isInteger(id)&&id>0?{id}:{}),
       slot:String(slot),
+      ...(slotType?{slotType}:{}),
       item:name,
       icon:typeof icon==='string'?icon:undefined,
       level:Number.isFinite(level)?level:undefined,
@@ -296,7 +289,7 @@ for(const old of characters){
     // Never silently remove a profession when Blizzard returns a partial result.
     const currentProfessions=[...knownProfessions.values()];
     const professionsVerified=ps.length>0&&currentProfessions.every(p=>!p.unverified);
-    const st=stats(c),statKeys=statEnums(c),eq=gear(c),ta=talents(c);
+    const currentStatDetails=statDetails(c),st=Object.fromEntries(currentStatDetails.map(stat=>[stat.name,stat.value])),statKeys=new Set(currentStatDetails.map(stat=>stat.enum)),eq=gear(c),ta=talents(c);
     const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
     let localizedGear=null,localizationError,localizedSource;
     // Fast path: don't re-fetch localized gear if the officially verified
@@ -348,6 +341,7 @@ for(const old of characters){
       hunterPetsCheckedAt,
       hunterPetsError,
       stats:{...(old.stats||{}),...st},
+      statDetails:currentStatDetails,
       // Provenance of each stat; old fallback values are never called fresh.
       statsFreshKeys:Object.keys(st),
       equipment,
