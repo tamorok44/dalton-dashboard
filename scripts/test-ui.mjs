@@ -195,6 +195,17 @@ petDolly.talentDetails=[{
   }]
 }];
 
+const verifiedPetCatalog={
+  fox:{
+    slug:'fox',name:'Fuchs',build:'1.60.1.70959',locale:'de-DE',
+    source:'ForeverDB deutsche Forever-Clientextraktion',
+    abilities:[
+      {id:17253,name:'Beißen Rang 1',requiredLevel:1,sourceUrl:'https://foreverdb.net/de/spell/17253'},
+      {id:1310612,name:'Tanz des Täuschers Rang 1',requiredLevel:20,sourceUrl:'https://foreverdb.net/de/spell/1310612'},
+      {id:23099,name:'Spurt Rang 1',requiredLevel:30,sourceUrl:'https://foreverdb.net/de/spell/23099'}
+    ]
+  }
+};
 const verifiedPetRules={
   rulebookVersion:'2026.11.21.3',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
   rules:{
@@ -209,7 +220,7 @@ const verifiedPetRules={
     {at:'2026-11-21T04:07:00.000Z',type:'rule_state',ruleId:'pet.scaling',label:'Jägerbegleiter-Skalierung',fromStatus:'verified',toStatus:'verified',fromEvidence:'client',toEvidence:'reference_model'}
   ]
 };
-ui.render(petData,{petRules:verifiedPetRules});
+ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
 const petPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(petPanel.includes('Slydris')&&petPanel.includes('Fuchs')&&petPanel.includes('Stufe 6'),'Live pet identity is rendered');
 assert.ok(petPanel.includes('5 Stufen')&&petPanel.includes('hinter Dolly'),'Pet-to-hunter level gap is explained');
@@ -220,8 +231,10 @@ assert.ok(petPanel.includes('Schaden')&&petPanel.includes('±0 %')&&petPanel.inc
 
 
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
-assert.ok(petPanel.includes('nichts eigenständig übersetzt'),'Unsourced pet ability strings are deliberately withheld');
-assert.ok(!petPanel.includes('Beißen')&&!petPanel.includes('Tanz des Täuschers'),'Manually maintained pet ability translations are not shown');
+assert.ok(petPanel.includes('Beißen Rang 1')&&petPanel.includes('Tanz des Täuschers Rang 1')&&petPanel.includes('Spurt Rang 1'),'German pet ability names come from the source-backed pet catalog');
+assert.ok(petPanel.includes('ab Stufe 1 · für Slydris erreichbar'),'Current pet level is evaluated against the source-backed required level');
+assert.ok(petPanel.includes('ab Stufe 20')&&petPanel.includes('ab Stufe 30'),'Future abilities retain their source-backed level requirements');
+assert.ok(!petPanel.includes('noch nicht aus der Pet-Datenquelle angebunden'),'No unfinished database placeholder is exposed to users');
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
 assert.ok(combat.includes('Rüstung aus Dolly')&&combat.includes('>+76,8<'),'30% of 256 Armor is shown as 76.8 before server rounding');
@@ -241,7 +254,7 @@ assert.equal(derived.focus.maximum,150);
 assert.equal(derived.focus.regenPerSecond,10);
 assert.equal(derived.enduranceTraining.rank,1);
 
-ui.render(petData,{petRules:verifiedPetRules});
+ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
 const petCards=nodes.get('#cards').innerHTML;
 assert.ok(petCards.includes('Quellenstand aktuell · 5/5'),'Current source status is visibly identified');
 assert.ok(petCards.includes('1× Referenzmodell')&&petCards.includes('3× Clientdaten')&&petCards.includes('1× Offiziell'),'Evidence mix is summarized without implying equal certainty');
@@ -253,7 +266,7 @@ blockedRules.rules['fox.training'].status='review_required';
 blockedRules.rules['pet.scaling'].status='review_required';
 blockedRules.rules['pet.focus'].status='review_required';
 blockedRules.rules['pet.health.global'].status='review_required';
-ui.render(petData,{petRules:blockedRules});
+ui.render(petData,{petRules:blockedRules,petCatalog:verifiedPetCatalog});
 const blockedPetPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(blockedPetPanel.includes('Regeländerung erkannt'),'A detected rule change is shown clearly');
 assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend gesperrt'),'Family values fail closed when their rule changes');
@@ -265,13 +278,13 @@ assert.ok(!blockedPetPanel.includes('>115 %<'),'Blocked health rule hides the gl
 assert.ok(!blockedPetPanel.includes('Maximaler Fokus'),'Blocked focus rule hides focus mechanics');
 const staleRuleVersion=structuredClone(verifiedPetRules);
 staleRuleVersion.rulebookVersion='2026.11.21.2';
-ui.render(petData,{petRules:staleRuleVersion});
+ui.render(petData,{petRules:staleRuleVersion,petCatalog:verifiedPetCatalog});
 const staleVersionPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(staleVersionPanel.includes('Regelprüfung noch nicht bestätigt'),'A stale rulebook version is never trusted by the new frontend');
 assert.ok(!staleVersionPanel.includes('Gesundheit aus Dolly'),'New calculations remain hidden until the matching rulebook version is verified');
-ui.render(petData,{petRules:verifiedPetRules});
+ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
 
-ui.render(petData,{petRules:verifiedPetRules});
+ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
 assert.equal((petCards.match(/>Begleiter<\/button>/g)||[]).length,1,'Only the hunter gets a companion tab');
 assert.ok(ui.characterTabsFor(petDolly).some(tab=>tab.id==='pets'),'Hunter tab model includes companions');
 assert.ok(!ui.characterTabsFor(petData.characters.find(c=>c.slug==='cole-dalton')).some(tab=>tab.id==='pets'),'Non-hunters do not get a companion tab');
