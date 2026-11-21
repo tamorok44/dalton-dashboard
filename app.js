@@ -746,16 +746,24 @@ const comparisonSections=[['stats','Charakterwerte'],['equipment','Ausrüstung']
 const compareRoot=document.querySelector('#compareContent');
 const charactersView=document.querySelector('#charactersView');
 const compareView=document.querySelector('#compareView');
+const workshopRoot=document.querySelector('#workshopContent');
+const workshopView=document.querySelector('#workshopView');
 function setMainView(view){
-  const compare=view==='compare';
-  charactersView.hidden=compare;compareView.hidden=!compare;
+  const compare=view==='compare',workshop=view==='workshop';
+  charactersView.hidden=compare||workshop;
+  compareView.hidden=!compare;
+  workshopView.hidden=!workshop;
   document.querySelectorAll('[data-view-link]').forEach(a=>{
     const on=a.dataset.viewLink===view;a.classList.toggle('is-active',on);
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   });
   if(compare)renderComparison();
+  if(workshop)loadWorkshopOverview();
 }
-function syncMainView(){setMainView(location.hash==='#vergleich'?'compare':'characters')}
+function syncMainView(){
+  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':'characters';
+  setMainView(view);
+}
 window.addEventListener('hashchange',syncMainView);
 function cmpNumber(v){if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null}
 function cmpEntry(value,score=null,extra='',stale=false){
@@ -871,6 +879,237 @@ function renderComparison(){
     const id=btn.dataset.compareSection;if(comparisonState.expanded.has(id))comparisonState.expanded.delete(id);else comparisonState.expanded.add(id);renderComparison();
   }));
   compareRoot.querySelector('#compareDifferences')?.addEventListener('change',e=>{comparisonState.mode=e.target.checked?'differences':'all';renderComparison()});
+}
+
+const workshopState={
+  overview:null,
+  loading:false,
+  error:null,
+  query:'',
+  suggestions:[],
+  searchFullCatalog:false,
+  selected:null,
+  quantity:1,
+  browsePath:[]
+};
+let workshopSearchTimer=null;
+function workshopNodeAtPath(tree,path=[]){
+  let node=tree||{};
+  for(const segment of path){
+    if(!node||!node[segment])break;
+    node=node[segment];
+  }
+  return node||{};
+}
+function workshopCategoryKeys(node){
+  return Object.keys(node||{}).filter(key=>key!=='_items').sort((a,b)=>a.localeCompare(b,'de'));
+}
+function workshopBrowseHtml(){
+  const tree=workshopState.overview?.browse||{};
+  let node=tree,html='',path=[];
+  for(let depth=0;depth<5;depth++){
+    const keys=workshopCategoryKeys(node);
+    if(!keys.length)break;
+    const chosen=workshopState.browsePath[depth]&&keys.includes(workshopState.browsePath[depth])?workshopState.browsePath[depth]:'';
+    const label=depth===0?'Kategorie':depth===1?'Unterkategorie':'Typ '+depth;
+    html+='<label class="workshop-field"><span>'+esc(label)+'</span><select data-workshop-browse-level="'+depth+'"><option value="">Bitte wählen …</option>'+
+      keys.map(key=>'<option value="'+esc(key)+'"'+(chosen===key?' selected':'')+'>'+esc(key)+'</option>').join('')+'</select></label>';
+    if(!chosen)break;
+    path.push(chosen);node=node[chosen]||{};
+  }
+  const items=Array.isArray(node?._items)?node._items:[];
+  if(items.length){
+    html+='<label class="workshop-field"><span>Gegenstand</span><select id="workshopBrowseItem"><option value="">Bitte wählen …</option>'+
+      items.map(item=>'<option value="'+esc(item.id)+'">'+esc(item.name)+'</option>').join('')+'</select></label>';
+  }
+  return html||'<p class="workshop-muted">Noch keine herstellbaren Gegenstände kategorisiert.</p>';
+}
+function workshopCrafterText(crafters=[]){
+  if(!crafters.length)return 'Keiner der Daltons kann diesen Gegenstand aktuell herstellen.';
+  return crafters.map(c=>c.name+(c.profession?' · '+c.profession:'')+(Number.isFinite(Number(c.skill))?' '+c.skill+'/'+(c.skillCap??'–'):'')).join(' · ');
+}
+function workshopCopper(value){
+  const n=Math.max(0,Math.round(Number(value)||0));
+  const gold=Math.floor(n/10000),silver=Math.floor((n%10000)/100),copper=n%100;
+  return [gold?gold+' G':'',silver?silver+' S':'',copper||(!gold&&!silver)?copper+' K':''].filter(Boolean).join(' ');
+}
+function workshopLearningCandidatesHtml(result){
+  const list=Array.isArray(result.learningCandidates)?result.learningCandidates:[];
+  if(!list.length)return '<p class="workshop-muted">Keiner der Daltons besitzt aktuell den passenden Beruf.</p>';
+  return '<div class="workshop-learning-candidates">'+list.map(candidate=>{
+    const status=candidate.status==='can-learn-now'
+      ?'<span class="workshop-learning-state is-ready">Beruf/Skill reicht jetzt</span>'
+      :candidate.status==='skill-gap'
+        ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+'</span>'
+        :'<span class="workshop-learning-state">Passender Beruf</span>';
+    const skill=Number.isFinite(Number(candidate.skill))
+      ?esc(candidate.skill)+'/'+esc(candidate.skillCap??'–')
+      :'Skill unbekannt';
+    const requirement=Number.isFinite(Number(candidate.requiredSkill))?' · benötigt '+esc(candidate.requiredSkill):'';
+    return '<div class="workshop-learning-candidate"><div><strong>'+esc(candidate.name)+'</strong><span>'+esc(candidate.profession)+' · '+skill+requirement+'</span></div>'+status+'</div>';
+  }).join('')+'</div>';
+}
+const workshopSourceTypeLabels={trainer:'Lehrer',vendor:'Händler',quest:'Quest',drop:'Beute',object:'Objekt',item:'Rezeptgegenstand',source:'Quelle'};
+const workshopSideLabels={alliance:'Allianz',horde:'Horde',neutral:'Neutral/sonstige'};
+function workshopSourceHtml(source){
+  const location=source.location||{};
+  const coords=Number.isFinite(Number(location.x))&&Number.isFinite(Number(location.y))
+    ?Number(location.x).toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+Number(location.y).toLocaleString('de-DE',{maximumFractionDigits:1})
+    :'';
+  const where=[location.zone,coords,location.instance].filter(Boolean).join(' · ');
+  const details=[
+    source.side?workshopSideLabels[source.side]||source.side:'',
+    where,
+    Number.isFinite(Number(source.priceCopper))?workshopCopper(source.priceCopper):'',
+    Number.isFinite(Number(source.limitedStock))?'Vorrat '+source.limitedStock:'',
+    source.reputationFaction?'Ruf: '+source.reputationFaction:''
+  ].filter(Boolean).join(' · ');
+  const evidence=source.evidence==='forever-confirmed'
+    ?'<span class="workshop-source-evidence is-confirmed">In Forever bestätigt</span>'
+    :source.evidence==='classic-unconfirmed'
+      ?'<span class="workshop-source-evidence is-classic">Classic-Daten · nicht bestätigt</span>'
+      :'<span class="workshop-source-evidence">Status unbekannt</span>';
+  return '<div class="workshop-source-card"><div class="workshop-source-main"><span class="workshop-source-type">'+esc(workshopSourceTypeLabels[source.type]||source.type||'Quelle')+'</span><strong>'+esc(source.name||'Unbekannte Quelle')+'</strong>'+evidence+'</div>'+
+    (details?'<span class="workshop-source-details">'+esc(details)+'</span>':'')+'</div>';
+}
+function workshopLearningHtml(result){
+  const recipe=result.recipe;
+  if(!recipe)return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4><p>'+esc(result.learningSourcesReason||'Für diesen Gegenstand ist kein Herstellungsrezept bekannt.')+'</p></section>';
+  const requirement=Number.isFinite(Number(recipe.requiredSkill))?' · benötigt '+esc(recipe.profession)+' '+esc(recipe.requiredSkill):' · '+esc(recipe.profession||'Beruf');
+  const sources=Array.isArray(result.learningSources)?result.learningSources:[];
+  const confirmed=sources.filter(source=>source.evidence==='forever-confirmed');
+  const other=sources.filter(source=>source.evidence!=='forever-confirmed');
+  const sourceHtml=recipe.learning?.automatic===true
+    ?'<div class="workshop-learning-auto">Automatisch gelernt'+requirement+'</div>'
+    :sources.length
+      ?'<div class="workshop-source-groups">'+
+        (confirmed.length?'<div><h5>In WoW Forever bestätigt · '+confirmed.length+'</h5>'+confirmed.map(workshopSourceHtml).join('')+'</div>':'')+
+        (other.length?'<details class="workshop-source-unconfirmed"><summary>Weitere Quellen · '+other.length+'</summary>'+other.map(workshopSourceHtml).join('')+'</details>':'')+
+        '</div>'
+      :'<p>'+esc(result.learningSourcesReason||'ForeverDB kennt derzeit keine konkrete Bezugsquelle.')+'</p>';
+  return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4>'+
+    '<p class="workshop-recipe-line"><strong>'+esc(recipe.name||result.item?.name||'Rezept')+'</strong>'+requirement+'</p>'+
+    workshopLearningCandidatesHtml(result)+
+    '<div class="workshop-learning-sources"><h5>Bezugsquellen</h5>'+sourceHtml+'</div></section>';
+}
+function workshopTreeHtml(node,depth=0){
+  if(!node?.item)return '';
+  const craftable=node.status==='craftable'&&node.recipe;
+  const status=craftable
+    ?'<span class="workshop-node-status is-craftable">Herstellbar · '+esc(workshopCrafterText(node.recipe.crafters||[]))+'</span>'
+    :'<span class="workshop-node-status is-obtain">Muss beschafft werden</span>';
+  const recipe=craftable
+    ?'<div class="workshop-node-meta"><span>'+esc(node.recipe.profession||'Beruf')+'</span><span>'+esc(node.recipe.craftsRequired)+'× Herstellung</span>'+
+      (node.recipe.yieldPerCraft?.variable?'<span>Ausbeute '+esc(node.recipe.yieldPerCraft.min)+'–'+esc(node.recipe.yieldPerCraft.max)+'</span>':'')+'</div>'
+    :'';
+  const children=(node.materials||[]).map(child=>workshopTreeHtml(child,depth+1)).join('');
+  return '<div class="workshop-tree-node" style="--workshop-depth:'+depth+'"><div class="workshop-node-card">'+
+    '<div class="workshop-node-title"><strong>'+esc(node.quantity)+'× '+esc(node.item.name)+'</strong>'+status+'</div>'+recipe+'</div>'+
+    (children?'<div class="workshop-tree-children">'+children+'</div>':'')+'</div>';
+}
+function workshopResultHtml(){
+  const result=workshopState.selected;
+  if(!result)return '<div class="workshop-placeholder"><strong>Noch kein Gegenstand ausgewählt.</strong><span>Nutze die Suche oder taste dich über die Kategorien vor.</span></div>';
+  const item=result.item||{};
+  const tree=result.plan?.tree;
+  const topCrafters=tree?.recipe?.crafters||item.crafters||[];
+  const craftable=tree?.status==='craftable';
+  const base=(result.plan?.externalMaterials||[]);
+  return '<article class="workshop-result">'+
+    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3>'+esc(item.name||('Item '+item.id))+'</h3>'+
+    '<p>'+esc(workshopCrafterText(topCrafters))+'</p></div>'+
+    (craftable?'<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label>':'')+'</div>'+
+    (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
+    (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+base.map(material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
+    (!craftable?workshopLearningHtml(result):'')+
+    (result.source==='foreverdb'?'<p class="workshop-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
+    '</article>';
+}
+function renderWorkshop(){
+  if(!workshopRoot)return;
+  if(workshopState.loading&&!workshopState.overview){
+    workshopRoot.innerHTML='<p class="compare-empty">Werkstatt wird geladen …</p>';return;
+  }
+  if(workshopState.error&&!workshopState.overview){
+    workshopRoot.innerHTML='<p class="error">'+esc(workshopState.error)+'</p>';return;
+  }
+  const overview=workshopState.overview||{};
+  const suggestions=workshopState.suggestions.length
+    ?'<div class="workshop-suggestions" role="listbox">'+workshopState.suggestions.map(item=>
+      '<button type="button" data-workshop-suggestion="'+esc(item.id)+'"><span><strong>'+esc(item.name)+'</strong>'+
+      '<small>'+(item.craftable?'✓ '+esc((item.crafters||[]).map(c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
+    ).join('')+'</div>':'';
+  const catalogNote=overview.recipeCatalog?.connected
+    ?'<span class="workshop-source-ok">ForeverDB verbunden · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte im Katalog</span>'
+    :overview.foreverDbConfigured
+      ?'<span class="workshop-source-note">ForeverDB-Key vorhanden · Rezeptkatalog derzeit nicht erreichbar</span>'
+      :'<span class="workshop-source-note">Aktuell Blizzard-Werkstattdaten · ForeverDB noch nicht verbunden</span>';
+  workshopRoot.innerHTML=
+    '<div class="workshop-shell">'+
+      '<section class="workshop-search-panel"><div class="workshop-search-head"><div><span class="workshop-kicker">DIREKTER WEG</span><h3>Gegenstand suchen</h3></div>'+catalogNote+'</div>'+
+        '<div class="workshop-search-wrap"><span class="workshop-search-icon" aria-hidden="true">⌕</span><input id="workshopSearch" type="search" autocomplete="off" placeholder="z. B. Kupferbarren" value="'+esc(workshopState.query)+'" aria-label="Gegenstand suchen">'+suggestions+'</div>'+
+      '</section>'+
+      '<section class="workshop-browse-panel"><div><span class="workshop-kicker">GEFÜHRTE AUSWAHL</span><h3>Herstellbare Gegenstände durchstöbern</h3><p>Hier erscheinen ausschließlich Gegenstände, die mindestens ein Dalton aktuell herstellen kann.</p></div><div class="workshop-browse-fields">'+workshopBrowseHtml()+'</div></section>'+
+      workshopResultHtml()+
+      ((overview.recipeCatalog?.connected||workshopState.selected?.source==='foreverdb')?'<p class="workshop-global-credit">ForeverDB-Daten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
+    '</div>';
+  const search=workshopRoot.querySelector('#workshopSearch');
+  search?.addEventListener('input',()=>{
+    workshopState.query=search.value;
+    clearTimeout(workshopSearchTimer);
+    if(workshopState.query.trim().length<2){workshopState.suggestions=[];renderWorkshop();return;}
+    workshopSearchTimer=setTimeout(()=>searchWorkshop(workshopState.query),180);
+  });
+  workshopRoot.querySelectorAll('[data-workshop-suggestion]').forEach(button=>button.addEventListener('click',()=>selectWorkshopItem(Number(button.dataset.workshopSuggestion))));
+  workshopRoot.querySelectorAll('[data-workshop-browse-level]').forEach(select=>select.addEventListener('change',()=>{
+    const level=Number(select.dataset.workshopBrowseLevel);
+    workshopState.browsePath=[...workshopState.browsePath.slice(0,level),select.value].filter(Boolean);
+    renderWorkshop();
+  }));
+  workshopRoot.querySelector('#workshopBrowseItem')?.addEventListener('change',event=>{
+    const id=Number(event.target.value);if(Number.isInteger(id)&&id>0)selectWorkshopItem(id);
+  });
+  workshopRoot.querySelector('#workshopQuantity')?.addEventListener('change',event=>{
+    const quantity=Math.max(1,Math.min(9999,Math.ceil(Number(event.target.value)||1)));
+    workshopState.quantity=quantity;
+    if(workshopState.selected?.item?.id)selectWorkshopItem(workshopState.selected.item.id,{preserveQuery:true});
+  });
+}
+async function workshopFetch(url){
+  const response=await fetch(url,{cache:'no-store'});
+  if(!response.ok)throw new Error('Werkstatt HTTP '+response.status);
+  return response.json();
+}
+async function loadWorkshopOverview(){
+  if(workshopState.overview||workshopState.loading)return;
+  workshopState.loading=true;workshopState.error=null;renderWorkshop();
+  try{workshopState.overview=await workshopFetch('/api/workshop?t='+Date.now())}
+  catch(error){workshopState.error='Werkstattdaten konnten nicht geladen werden.'}
+  finally{workshopState.loading=false;renderWorkshop()}
+}
+async function searchWorkshop(query){
+  const current=query.trim();
+  if(current.length<2)return;
+  try{
+    const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&t='+Date.now());
+    if(workshopState.query.trim()!==current)return;
+    workshopState.suggestions=result.suggestions||[];
+    workshopState.searchFullCatalog=result.fullCatalog===true;
+  }catch{workshopState.suggestions=[]}
+  renderWorkshop();
+  const input=workshopRoot?.querySelector('#workshopSearch');if(input){input.focus();input.setSelectionRange?.(input.value.length,input.value.length)}
+}
+async function selectWorkshopItem(itemId,{preserveQuery=false}={}){
+  if(!Number.isInteger(itemId)||itemId<=0)return;
+  try{
+    const result=await workshopFetch('/api/workshop?item='+itemId+'&quantity='+workshopState.quantity+'&t='+Date.now());
+    workshopState.selected=result;
+    workshopState.suggestions=[];
+    if(!preserveQuery)workshopState.query=result.item?.name||workshopState.query;
+  }catch{
+    workshopState.selected=null;workshopState.error='Gegenstand konnte nicht geladen werden.';
+  }
+  renderWorkshop();
 }
 
 let lastGeneratedAt=null;
