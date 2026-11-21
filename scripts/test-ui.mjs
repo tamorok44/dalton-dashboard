@@ -194,7 +194,7 @@ const staleRuleVersion=structuredClone(verifiedPetRules);
 staleRuleVersion.rulebookVersion='2026.11.21.1';
 ui.render(petData,{petRules:staleRuleVersion});
 const staleVersionPanel=ui.hunterPetsPanel(petDolly);
-assert.ok(staleVersionPanel.includes('Regelprüfung unvollständig'),'A stale rulebook version is never trusted by the new frontend');
+assert.ok(staleVersionPanel.includes('Regelprüfung noch nicht bestätigt'),'A stale rulebook version is never trusted by the new frontend');
 assert.ok(!staleVersionPanel.includes('Gesundheit aus Dolly'),'New calculations remain hidden until the matching rulebook version is verified');
 ui.render(petData,{petRules:verifiedPetRules});
 
