@@ -49,12 +49,12 @@ const enriched=enrichWithForeverDetails(source,snapshot,{
     reagents:[{id:2447,name:'Friedensblume',quantity:1}]
   }
 },{
-  'profession:171':'Alchemie',
+  'profession:171':'Alchimie',
   'faction:72':'Sturmwind',
   'quest:9001':'Ein großes Abenteuer'
 });
 const cole=enriched.characters[0];
-assert.equal(cole.professions[0].name,'Alchemie');
+assert.equal(cole.professions[0].name,'Alchemie','Official Blizzard player terminology overrides conflicting technical de_DE profession label');
 assert.equal(cole.professions[0].knownRecipes[0].name,'Schwaches Trollblutelixier');
 assert.equal(cole.professions[0].knownRecipes[0].reagents[0].name,'Friedensblume');
 assert.equal(cole.talentDetails[0].talents[0].name,'Verbesserter Frostblitz');
