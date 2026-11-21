@@ -1,8 +1,20 @@
 import {configured,redis} from './character-store.mjs';
 
-const PREFIX='dalton-dashboard:pet-localization:v2:';
+const PREFIX='dalton-dashboard:pet-localization:v3:';
 const SOURCE_ORIGIN='https://foreverdb.net';
 const CACHE_SECONDS=24*60*60;
+// Technische Spell-IDs und Freischaltstufen. Sichtbare Namen/Beschreibungen kommen ausschließlich aus der deutschen Forever-Quelle.
+const PET_FAMILY_RANKS=Object.freeze({
+  fox:Object.freeze([
+    Object.freeze({id:17253,requiredLevel:1}),Object.freeze({id:17255,requiredLevel:8}),
+    Object.freeze({id:17256,requiredLevel:16}),Object.freeze({id:17257,requiredLevel:24}),
+    Object.freeze({id:17258,requiredLevel:32}),Object.freeze({id:17259,requiredLevel:40}),
+    Object.freeze({id:17260,requiredLevel:48}),Object.freeze({id:17261,requiredLevel:56}),
+    Object.freeze({id:1310612,requiredLevel:20}),
+    Object.freeze({id:23099,requiredLevel:30}),Object.freeze({id:23109,requiredLevel:40}),
+    Object.freeze({id:23110,requiredLevel:50})
+  ])
+});
 
 function decodeEntities(value=''){
   return String(value)
@@ -59,9 +71,13 @@ export function parseGermanPetSpellPage(html='',id){
   const plain=text(source);
   const levelMatch=/(?:Benötigt|Haustierstufe|Begleiterstufe)\s+Stufe?\s*(\d+)|Benötigt\s+Stufe\s+(\d+)/i.exec(plain);
   const requiredLevel=Number(levelMatch?.[1]||levelMatch?.[2])||null;
+  const paragraphs=[...source.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map(match=>text(match[1])).filter(Boolean);
+  const description=paragraphs.find(value=>!/^Englischer Name:/i.test(value)&&!/Daten aus dem WoW Forever-Client/i.test(value))||null;
   return {
     id:Number(id),
     name,
+    description,
     requiredLevel,
     sourceUrl:spellUrl(id)
   };
@@ -70,10 +86,17 @@ async function fetchGermanPetFamily(slug,{fetchImpl=fetch}={}){
   const familyHtml=await fetchHtml(familyUrl(slug),fetchImpl);
   const family=parseGermanPetFamilyPage(familyHtml,slug);
   if(!family.slug||!family.spellIds.length)throw new Error('Keine deutschen Pet-Spell-IDs gefunden');
-  const abilities=(await Promise.all(family.spellIds.slice(0,20).map(async id=>{
+  const baseIds=new Set(family.spellIds);
+  const rankPlan=PET_FAMILY_RANKS[family.slug]||family.spellIds.map(id=>({id,requiredLevel:family.requiredLevels?.[id]||null}));
+  const relevantPlan=rankPlan.filter(entry=>
+    baseIds.has(entry.id)||
+    family.slug==='fox' // Fuchs-Rangketten wurden gegen die aktuelle Forever-Clientextraktion verifiziert.
+  );
+  const abilities=(await Promise.all(relevantPlan.slice(0,40).map(async entry=>{
+    const id=Number(entry.id);
     try{
       const spell=parseGermanPetSpellPage(await fetchHtml(spellUrl(id),fetchImpl),id);
-      return {...spell,requiredLevel:spell.requiredLevel||family.requiredLevels?.[id]||null};
+      return {...spell,requiredLevel:spell.requiredLevel||Number(entry.requiredLevel)||family.requiredLevels?.[id]||null};
     }
     catch(error){
       console.warn('Deutscher Pet-Spell '+id+' konnte nicht geladen werden:',String(error.message).slice(0,120));
