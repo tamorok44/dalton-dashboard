@@ -66,8 +66,7 @@ function compactItem(raw={}){
     subclass:raw?.subclass??raw?.itemSubclass??null,
     inventoryType:raw?.slot??raw?.inventoryType??null,
     requiredLevel:Number.isFinite(Number(raw?.requiredLevel??raw?.levelRequirement))?Number(raw.requiredLevel??raw.levelRequirement):null,
-    icon:raw?.icon??raw?.iconUrl??null,
-    raw
+    icon:raw?.icon??raw?.iconUrl??null
   };
 }
 export async function searchForeverDbItems(query,{limit=10,offset=0,fetchImpl=fetch}={}){
