@@ -68,7 +68,7 @@ assert.equal(first.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
 assert.equal(first.rules['pet.focus'].evidence,'client');
 assert.equal(first.rules['pet.health.global'].evidence,'official');
 assert.equal(first.rules['fox.family.profile'].evidence,'client');
-assert.equal(first.sources.efficientPets.build,'1.60.1.70959');
+assert.equal(first.sources.efficientPets.build,'70959');
 
 const same=await verifyPetRulebook({fetchImpl:fetchFrom(pages),previousState:first,now:new Date('2026-11-22T04:07:00.000Z')});
 assert.equal(same.overall,'verified','Unchanged rule evidence stays verified');
