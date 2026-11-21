@@ -105,14 +105,18 @@ const repQa={reputationsVerified:true,reputations:[
 ui.render({generatedAt:'2026-11-21T12:00:00.000Z',characters:[{...data.characters[0],slug:'rep-qa',name:'Rep QA',reputations:repQa.reputations,reputationsVerified:true}]},{
   reputationCatalog:{build:'1.60.1.70959',expected:54,records:{
     '72':{id:'72',slug:'stormwind',crestKind:'specific',media:{crestSourceUrl:'https://warcraft.wiki.gg/images/Stormwind.png'}},
-    '47':{id:'47',slug:'ironforge',crestKind:'specific',media:{crestSourceUrl:'https://warcraft.wiki.gg/images/Ironforge.png'}}
+    '47':{id:'47',slug:'ironforge',crestKind:'specific',media:{crestSourceUrl:'https://warcraft.wiki.gg/images/Ironforge.png'}},
+    'slug:stormwind':{id:'slug:stormwind',slug:'stormwind',crestKind:'specific',media:{
+      crestSourceUrl:'https://warcraft.wiki.gg/images/Stormwind.png',
+      crestStoredUrl:'https://hmpnfqv0suhayene.public.blob.vercel-storage.com/media/faction/stormwind.png'
+    }}
   }}
 });
 const repHtml=nodes.get('#cards').innerHTML;
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#00991A'),'Friendly status uses canonical Blizzard green');
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#E6B300'),'Neutral status uses canonical Blizzard yellow');
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#BF4500'),'Unfriendly status uses canonical Blizzard orange');
-assert.ok(repHtml.includes('https://warcraft.wiki.gg/images/Stormwind.png'),'Specific faction crest is rendered');
+assert.ok(repHtml.includes('https://hmpnfqv0suhayene.public.blob.vercel-storage.com/media/faction/stormwind.png'),'Archived faction crest is preferred over the external source');
 assert.equal((repHtml.match(/class="reputation-segment /g)||[]).length,24,'Three reputation rows retain eight segments each');
 assert.ok(repHtml.includes('is-current" style="--rep-color:#00991A'),'Current reputation segment is explicitly marked');
 assert.ok(repHtml.includes('style="--rep-color:#CC4D38;--rep-light:#E07A68;--rep-dark:#7D2D21"'),'Hostile stages use canonical Blizzard red');
