@@ -288,7 +288,7 @@ function petRuleBanner(){
     return '<div class="pet-rule-banner is-verified"><strong>Regelstand bestätigt · '+verified+'/'+rules.length+'</strong><span>Geprüft '+esc(checked)+' · Regelwerk '+esc(state.rulebookVersion||'–')+'</span></div>';
   }
   const review=rules.some(rule=>rule.status==='review_required');
-  return '<div class="pet-rule-banner '+(review?'is-review':'is-unverified')+'"><strong>'+(review?'Regeländerung erkannt':'Regelprüfung unvollständig')+'</strong><span>Regelbasierte Werte sind vorsorglich ausgeblendet. Blizzard-Livedaten zu Slydris und Stall bleiben davon unberührt. · Geprüft '+esc(checked)+'</span></div>';
+  return '<div class="pet-rule-banner '+(review?'is-review':'is-unverified')+'"><strong>'+(review?'Regeländerung erkannt':'Regelprüfung unvollständig')+'</strong><span>Betroffene regelbasierte Werte sind vorsorglich ausgeblendet. Blizzard-Livedaten zu Slydris und Stall bleiben davon unberührt. · Geprüft '+esc(checked)+'</span></div>';
 }
 function petRuleUnavailable(title){
   return '<div class="pet-rule-blocked"><strong>'+esc(title)+'</strong><span>Vorübergehend nicht angezeigt, weil die zugrunde liegende Forever-Regel nicht als aktuell bestätigt ist.</span></div>';
