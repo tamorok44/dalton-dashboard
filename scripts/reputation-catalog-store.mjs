@@ -4,9 +4,9 @@ import {loadMediaRecord,saveMediaRecord} from './media-registry.mjs';
 import {REPUTATION_BUILD,foreverReputationSeed,factionCrestFor,factionCrestKindFor,factionSeedByName} from '../reputation-data.js';
 
 const EXPECTED=foreverReputationSeed.length;
-function buildFromNamespace(namespace=''){
+function staticBuildFromNamespace(namespace=''){
   const match=String(namespace).match(/^static-([a-z0-9._]+)-forever-eu$/i);
-  return match?.[1]?.replace(/_/g,'.')||REPUTATION_BUILD;
+  return match?.[1]?.replace(/_/g,'.')||null;
 }
 
 function imageStoreConfigured(){
@@ -136,7 +136,8 @@ async function optionalBlizzardIndex({namespace,build,fetchImpl=fetch,archiveMed
 }
 
 export async function syncReputationCatalog({namespace,force=false,fetchImpl=fetch,archiveMedia=true}={}){
-  const build=buildFromNamespace(namespace);
+  const build=REPUTATION_BUILD;
+  const blizzardStaticBuild=staticBuildFromNamespace(namespace);
   const master=await ensureSeedMaster({build,fetchImpl,archiveMedia});
   const indexResult=await optionalBlizzardIndex({namespace,build,fetchImpl,archiveMedia});
   const all=await loadAllCatalogRecords('faction').catch(()=>({}));
@@ -150,7 +151,8 @@ export async function syncReputationCatalog({namespace,force=false,fetchImpl=fet
     matched:indexResult.matched,
     complete:masterCount>=EXPECTED,
     source:indexResult.source,
-    build
+    build,
+    blizzardStaticBuild
   };
 }
 
@@ -159,7 +161,7 @@ export async function ensureReputationCatalog(options={}){
   catch(error){
     console.warn('Ruf-Masterkatalog konnte nicht vollständig persistiert werden:',String(error.message).slice(0,220));
     const existing=await loadAllCatalogRecords('faction').catch(()=>({}));
-    const build=buildFromNamespace(options.namespace);
+    const build=REPUTATION_BUILD;
     const seed=Object.fromEntries(foreverReputationSeed.map(entry=>{
       const record=fallbackRecord(entry,build);
       return [record.id,record];
@@ -172,6 +174,7 @@ export async function ensureReputationCatalog(options={}){
       complete:false,
       source:'fallback',
       build,
+      blizzardStaticBuild:staticBuildFromNamespace(options.namespace),
       error:String(error.message)
     };
   }
@@ -184,7 +187,8 @@ export async function loadPublicReputationCatalog(){
   ]);
   const values=Object.values(records);
   return {
-    build:meta?.faction?.build||REPUTATION_BUILD,
+    build:REPUTATION_BUILD,
+    storedBuild:meta?.faction?.build||null,
     expected:EXPECTED,
     masterCount:values.filter(record=>String(record?.id||'').startsWith('slug:')).length,
     numericCount:values.filter(record=>/^\d+$/.test(String(record?.id||''))).length,
