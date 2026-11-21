@@ -286,44 +286,13 @@ function petRuleStatus(ruleId){
   return displayedPetRules?.rules?.[ruleId]?.status||'source_unavailable';
 }
 function petRuleVerified(ruleId){return petRuleStatus(ruleId)==='verified'}
-function petRule(ruleId){
-  if(displayedPetRules?.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION)return null;
-  return displayedPetRules?.rules?.[ruleId]||null;
-}
-function petEvidenceLabel(ruleId){return petRule(ruleId)?.evidenceLabel||'Unbestätigt'}
-function petEvidenceBadge(){return ''}
-function petRuleStatusLabel(status){
-  return status==='verified'?'aktuell':status==='review_required'?'gesperrt · Prüfung nötig':status==='source_unavailable'?'Quelle nicht erreichbar':'unbekannt';
-}
-function petRuleHistory(){
-  const state=displayedPetRules;
-  if(!state||state.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION)return '';
-  const events=[...(Array.isArray(state.history)?state.history:[])].slice(-8).reverse();
-  if(!events.length)return '';
-  const rows=events.map(event=>{
-    const date=Number.isFinite(Date.parse(event.at||''))?new Date(event.at).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'}):'unbekannt';
-    if(event.type==='rulebook_version')return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>Regelwerk aktualisiert</strong><span>'+esc(event.fromRulebookVersion||'–')+' → '+esc(event.toRulebookVersion||'–')+'</span></div></div>';
-    if(event.type==='rulebook_initialized')return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>Regelwerk initialisiert</strong><span>'+esc(event.rulebookVersion||'–')+'</span></div></div>';
-    const evidenceLabels={official:'Offiziell',client:'Clientdaten',measured:'Gemessen',reference_model:'Referenzmodell',provisional:'Vorläufig'};
-    const evidence=event.toEvidence
-      ?'<span class="pet-rule-event-evidence">'+esc((event.fromEvidence?((evidenceLabels[event.fromEvidence]||event.fromEvidence)+' → '):'')+(evidenceLabels[event.toEvidence]||event.toEvidence))+'</span>'
-      :'';
-    return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>'+esc(event.label||event.ruleId||'Regel')+'</strong><span>'+esc(petRuleStatusLabel(event.fromStatus))+' → '+esc(petRuleStatusLabel(event.toStatus))+evidence+'</span></div></div>';
-  }).join('');
-  return '<details class="pet-rule-history"><summary>Regelstatus-Protokoll · '+events.length+' letzte Änderungen</summary><div class="pet-rule-events">'+rows+'</div></details>';
-}
 function petRuleBanner(){
   const state=displayedPetRules;
   if(!state||state.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION){
     return '<div class="pet-rule-banner is-unverified"><strong>Einige Begleiterwerte sind vorübergehend nicht verfügbar</strong><span>Berechnete Werte werden erst wieder angezeigt, sobald ihre Grundlage bestätigt ist.</span></div>';
   }
-  const rules=Object.values(state.rules||{});
-  const verified=rules.filter(rule=>rule.status==='verified').length;
-  const checked=Number.isFinite(Date.parse(state.checkedAt||''))
-    ?new Date(state.checkedAt).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'})
-    :'unbekannt';
   if(state.overall==='verified')return '';
-  const review=rules.some(rule=>rule.status==='review_required');
+  const review=Object.values(state.rules||{}).some(rule=>rule.status==='review_required');
   return '<div class="pet-rule-banner '+(review?'is-review':'is-unverified')+'"><strong>'+(review?'Einige Begleiterwerte werden gerade geprüft':'Einige Begleiterwerte sind vorübergehend nicht verfügbar')+'</strong><span>Betroffene berechnete Werte sind vorsorglich ausgeblendet. Slydris und der Stall bleiben davon unberührt.</span></div>';
 }
 function petRuleUnavailable(title){
@@ -360,7 +329,7 @@ function hunterPetCombatPanel(c,active){
   const inheritedBlock=scalingAllowed
     ?'<div class="pet-combat-grid">'+inheritedRows.join('')+
       '<div class="pet-combat-stat is-unavailable"><small>Angriffskraft aus Dolly</small><strong>–</strong><span>'+esc(inherited.attackPower?.reason||'Der benötigte Ausgangswert ist online nicht eindeutig verfügbar.')+'</span></div></div>'
-    :petRuleUnavailable('Vererbte Kampfwerte vorübergehend gesperrt');
+    :petRuleUnavailable('Vererbte Kampfwerte vorübergehend nicht verfügbar');
 
   const modifiers=[];
   if(healthRuleAllowed){
@@ -378,7 +347,7 @@ function hunterPetCombatPanel(c,active){
   return '<div class="pet-subsection pet-combat">'+
     '<div class="pet-subsection-head"><div><span class="pet-overline">KAMPFPROFIL</span><h4>Werte & Beiträge</h4></div></div>'+
     '<div class="pet-combat-group"><span class="pet-combat-label">Von Dolly geerbt</span>'+inheritedBlock+'</div>'+
-    (modifiersBlock?'<div class="pet-combat-group"><span class="pet-combat-label">Aktive Regeln & Talente</span>'+modifiersBlock+'</div>':'')+
+    (modifiersBlock?'<div class="pet-combat-group"><span class="pet-combat-label">Weitere Werte & Talente</span>'+modifiersBlock+'</div>':'')+
     '<div class="pet-combat-caveat"><strong>Warum fehlen Gesamtleben, Gesamtrüstung und DPS?</strong><span>Blizzard veröffentlicht Slydris’ Grundwerte, aktuell trainierte passive Ränge, Zufriedenheit und die höhere Nah-/Fernkampf-Angriffskraft nicht vollständig online. Diese Größen werden deshalb nicht hochgerechnet.</span></div>'+
   '</div>';
 }
@@ -410,7 +379,7 @@ function hunterPetsPanel(c){
     active.name+' liegt '+Math.abs(gap)+' '+(Math.abs(gap)===1?'Stufe':'Stufen')+' vor dem Jäger.';
   const hero=active?'<div class="pet-hero">'+
     '<div class="pet-render">'+(render?'<img src="'+esc(render)+'" alt="'+esc('Begleiter '+active.name)+'" loading="lazy" decoding="async">':'<span>Kein Renderbild verfügbar</span>')+'</div>'+
-    '<div class="pet-identity"><span class="pet-overline">JÄGERBEGLEITER · BLIZZARD LIVE</span><h4>'+esc(active.name)+'</h4>'+
+    '<div class="pet-identity"><span class="pet-overline">JÄGERBEGLEITER</span><h4>'+esc(active.name)+'</h4>'+
       '<p>'+esc(active.family?.name||'Familie unbekannt')+(validPetLevel?' · Stufe '+esc(petLevel):'')+'</p>'+
       (badges?'<div class="pet-badges">'+badges+'</div>':'')+
       '<div class="pet-level-gap"><strong>'+esc(validPetLevel?'Stufe '+petLevel:'Stufe unbekannt')+'</strong><span>'+esc(gapCopy)+'</span></div>'+
@@ -426,7 +395,7 @@ function hunterPetsPanel(c){
         '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
         '<div><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
       '</div></div>'
-      :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
+      :petRuleUnavailable('Familienprofil vorübergehend nicht verfügbar'))
     :'';
   const localizedFamily=active?.family?.slug?displayedPetCatalog?.[active.family.slug]||null:null;
   const localizedAbilities=Array.isArray(localizedFamily?.abilities)
