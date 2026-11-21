@@ -25,7 +25,7 @@ assert.equal(imageStoreConfigured(),true,'Existing token-based stores are still 
 if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
 if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
 else delete process.env.BLOB_READ_WRITE_TOKEN;
-let saved=null;
+let saved=null,petRulesSaved=null;
 let history=[];
 let lock=null,cooldown=false,lockReleases=0;
 
@@ -70,11 +70,12 @@ globalThis.fetch=async (url,options={})=>{
   if(String(url).startsWith('https://test-redis.example.com')){
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
-    if(op==='GET')return {ok:true,json:async()=>({result:saved})};
+    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:saved})};
     if(op==='SET'){
       let result='OK';
       if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
       else if(key==='dalton-dashboard:refresh:manual:cooldown'){if(cooldown)result=null;else cooldown=true}
+      else if(key==='dalton-dashboard:pet-rules:v1')petRulesSaved=value;
       else saved=value;
       return {ok:true,json:async()=>({result})};
     }
@@ -90,7 +91,18 @@ globalThis.fetch=async (url,options={})=>{
     }
     throw Error('Unexpected Redis command');
   }
-  const slug=decodeURIComponent(String(url).split('/').at(-1));
+  const sourceUrl=String(url);
+  if(sourceUrl.includes('worldofwarcraft.blizzard.com/en-us/news/24315281'))return {ok:true,status:200,text:async()=>'<li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li>'};
+  if(sourceUrl.includes('wowhead.com/forever/guide/classes/hunter/survival'))return {ok:true,status:200,text:async()=>`Stamina: Every 1 player Stamina gives the pet 2 Health.
+Armor: Pet gains 30% of the player's Armor.
+Attack Power: Pet gains 10% of the player's highest Attack Power source.
+Critical Strike: Pet gains 100% of the player's Crit chance.`};
+  if(sourceUrl.includes('bindonforever.com/pets/fox'))return {ok:true,status:200,text:async()=>`build 1.60.1.70959 Fox is the one new family in WoW Forever client family 319.
+Trickster's Dance gives 50% dodge and 30% faster attacks for 12 s. Pet level 20.
+Bite Rank 1 1 Rank 2 8 Rank 3 16 Rank 4 24 Rank 5 32 Rank 6 40 Rank 7 48 Rank 8 56.
+Dash Rank 1 30 Rank 2 40 Rank 3 50. Fox pets eat meat.`};
+  if(sourceUrl.includes('wow-forever.gg/pets'))return {ok:true,status:200,text:async()=>`build 1.60.1.70959 Fox New in Forever Damage 0% Armor +5% Health 0% Eats meat. Fox Trickster's Dance Dash Bite.`};
+  const slug=decodeURIComponent(sourceUrl.split('/').at(-1));
   const profile=baseline.get(slug);
   assert.ok(profile,'Only configured Dalton profiles are requested');
   requests++;inFlight++;peak=Math.max(peak,inFlight);
@@ -117,6 +129,8 @@ try{
   assert.equal(result.payload.success,4);
   assert.equal(result.payload.persisted,true);
   assert.ok(saved,'Redis contains a durable snapshot');
+  assert.ok(petRulesSaved,'Redis contains a durable Pet rule state');
+  assert.equal(result.payload.petRules.overall,'verified','Rule guard is checked before the profile refresh');
   assert.ok(result.payload.changes>0,'Manual refresh reports meaningful changes');
   assert.equal(history.length,1,'Manual refresh appends one change batch');
   assert.equal(result.payload.data.characters.length,4);
