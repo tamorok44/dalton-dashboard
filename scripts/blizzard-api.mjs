@@ -180,7 +180,7 @@ export async function fetchForeverReputationIndex({namespace,fetchImpl=fetch,loc
   })).filter(entry=>Number.isInteger(entry.id)&&entry.id>0&&entry.name);
 }
 
-export async function fetchForeverProfile(slug,{fetchImpl=fetch,locale='en_GB'}={}){
+export async function fetchForeverProfile(slug,{fetchImpl=fetch,locale='de_DE'}={}){
   if(!/^[a-z0-9-]+$/i.test(slug))throw new Error('Ungültiger Charakter-Slug');
   const {token}=await accessToken(fetchImpl);
   const response=await fetchImpl(endpointUrl(slug,'',locale),{
