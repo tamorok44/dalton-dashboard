@@ -20,4 +20,8 @@ const keys=new Set(records.map(r=>r.type+':'+r.id));
 for(const expected of ['item:100','faction:72','profession:171','recipe:200','item:201','item:202','quest:300','talent:400','spell:401','pet:500','pet-family:600']){
   assert.ok(keys.has(expected),'Katalog enthält '+expected);
 }
+const stormwind=records.find(record=>record.type==='faction'&&record.id==='72');
+assert.equal(stormwind.slug,'stormwind','German observed faction names map onto the stable master slug');
+assert.equal(stormwind.crestKind,'specific');
+assert.match(stormwind.media.crestSourceUrl,/Stormwind\.png$/);
 console.log('Game catalog: stable IDs, deduplication and media identity: OK');
