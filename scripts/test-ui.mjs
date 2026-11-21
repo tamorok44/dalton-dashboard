@@ -332,8 +332,11 @@ assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain d
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
-assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,data.characters.length*10);
-assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,data.characters.length*10);
+const testMainStatEnums=new Set(['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ATTACKDPS','MANAREGEN']);
+const expectedMainStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>testMainStatEnums.has(entry.enum)).length,0);
+const expectedDetailStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>!testMainStatEnums.has(entry.enum)).length,0);
+assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,expectedMainStats);
+assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,expectedDetailStats);
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
