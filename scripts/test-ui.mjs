@@ -523,4 +523,4 @@ assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text remov
 assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
 assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');
 
-console.log('UI QA: synchronized tabs, simplified XP, 8+7 stats, profession order, quest details, rarity and gear: OK');
+console.log('UI QA: per-character tabs, hunter companion, simplified XP, stats, profession order, quest details, rarity and gear: OK');
