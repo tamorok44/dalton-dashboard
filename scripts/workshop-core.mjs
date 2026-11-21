@@ -159,16 +159,16 @@ export function searchWorkshopItems(catalog,query,{limit=10,craftableOnly=false}
   });
   return candidates.slice(0,Math.max(1,Math.min(50,Number(limit)||10))).map(({item})=>item);
 }
-export function workshopBrowseTree(catalog){
+export function workshopBrowseTreeForItems(items,{craftableOnly=false}={}){
   const root={};
-  for(const item of asArray(catalog?.items).filter(item=>item.craftable)){
+  for(const item of asArray(items).filter(item=>!craftableOnly||item.craftable)){
     const path=asArray(item.categoryPath).filter(Boolean);
     let node=root;
     for(const segment of path){
       node[segment]??={_items:[]};
       node=node[segment];
     }
-    node._items.push({id:item.id,name:item.name,crafters:item.crafters});
+    node._items.push({id:item.id,name:item.name,craftable:item.craftable===true,crafters:item.crafters||[]});
   }
   function sortNode(node){
     const sorted={};
@@ -177,6 +177,9 @@ export function workshopBrowseTree(catalog){
     return sorted;
   }
   return sortNode(root);
+}
+export function workshopBrowseTree(catalog){
+  return workshopBrowseTreeForItems(catalog?.items,{craftableOnly:true});
 }
 function preferredRecipe(catalog,item){
   return asArray(item?.recipeKeys).map(key=>catalog?.byRecipeKey?.get(key)).filter(Boolean)
@@ -259,6 +262,39 @@ function preferredForeverRecipe(recipes=[],localRecipeId=null){
     const as=a?.speculation===true?1:0,bs=b?.speculation===true?1:0;
     return am-bm||as-bs||(Number(a?.requiredSkill)||9999)-(Number(b?.requiredSkill)||9999)||(Number(a?.id)||0)-(Number(b?.id)||0);
   })[0]||null;
+}
+export function workshopItemsFromRecipeIndex(localCatalog,index){
+  const items=new Map();
+  for(const recipe of asArray(index?.recipes)){
+    const id=integer(recipe?.craftedItem?.id);
+    if(!id)continue;
+    const local=localCatalog?.byItemId?.get(id)||null;
+    const name=text(local?.name)||text(recipe?.craftedItem?.name);
+    if(!name)continue;
+    const fallback=fallbackCategoryPath({
+      professionName:'',
+      itemName:name,
+      recipeName:text(recipe?.name)
+    });
+    const categoryPath=cleanedForeverCategoryPath(recipe,fallback);
+    const current=items.get(id);
+    if(!current){
+      items.set(id,{
+        id,
+        name,
+        craftable:local?.craftable===true,
+        crafters:asArray(local?.crafters),
+        categoryPath,
+        categorySource:'foreverdb-master'
+      });
+      continue;
+    }
+    if(local?.craftable){
+      current.craftable=true;
+      current.crafters=asArray(local.crafters);
+    }
+  }
+  return [...items.values()].sort((a,b)=>a.name.localeCompare(b.name,'de')||a.id-b.id);
 }
 export function enrichWorkshopCatalogWithForeverDb(catalog,index){
   if(!catalog||!index?.byItem)return catalog;

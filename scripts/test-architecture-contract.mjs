@@ -21,7 +21,7 @@ const rel=file=>path.relative(root,file).replaceAll('\\','/');
 const sourceByFile=new Map(prodFiles.map(file=>[rel(file),fs.readFileSync(file,'utf8')]));
 
 const policy=fs.readFileSync(path.join(root,'docs','architecture-contracts.md'),'utf8');
-for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Merge-Gates']){
+for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Merge-Gates']){
   assert.ok(policy.includes(required),'Architecture policy is missing required section: '+required);
 }
 
@@ -68,6 +68,16 @@ assert.ok(!workshopApi.includes('recipe:remoteRecipe'),
 assert.ok(!workshopApi.includes('professionSlugs:recipeIndex'),
   'Technical external profession slugs must stay server-side');
 const browserSource=sourceByFile.get('app.js')||'';
+assert.ok(browserSource.includes('function segmentedControl('),'Shared segmented control component is required for binary view filters');
+for(const id of ['compare-mode','workshop-search-mode','workshop-browse-mode']){
+  assert.ok(browserSource.includes("'"+id+"'"),'Missing required shared segmented filter: '+id);
+}
+assert.ok(!browserSource.includes('compareDifferences'),'Legacy compare checkbox filter must not return');
+const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
+assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
+for(const markup of checkboxMarkup){
+  assert.ok(markup.includes('data-compare-character'),'Checkboxes are reserved for true multi-selection; use segmentedControl() for binary filters: '+markup);
+}
 for(const host of ['render.worldofwarcraft.com','foreverdb.net/icons/','foreverspec.com/icons/']){
   assert.ok(!browserSource.includes(host),'Browser code must not hard-code external game image hosts: '+host);
 }

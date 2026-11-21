@@ -6,11 +6,16 @@ import {
   serializableRecipeIndex,
   hydrateRecipeIndex
 } from './workshop-foreverdb.mjs';
-import {searchForeverDbItems} from './foreverdb-api.mjs';
+import {PROFESSION_SLUGS,fetchForeverDbMeta,searchForeverDbItems} from './foreverdb-api.mjs';
 
 const RECIPE_TTL_SECONDS=12*60*60;
 const SEARCH_TTL_SECONDS=24*60*60;
 const ITEM_RECIPE_TTL_SECONDS=24*60*60;
+const META_TTL_SECONDS=10*60;
+const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v1';
+const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v1';
+const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
+const MASTER_REFRESH_CHUNK=3;
 
 function now(){return Date.now()}
 function fresh(value,maxAgeMs){
@@ -21,7 +26,7 @@ function digest(value){
   return createHash('sha1').update(String(value)).digest('hex');
 }
 function normalizedSlugs(slugs=[]){
-  return [...new Set((Array.isArray(slugs)?slugs:[]).filter(Boolean))].sort();
+  return [...new Set((Array.isArray(slugs)?slugs:[]).filter(slug=>PROFESSION_SLUGS.has(slug)))].sort();
 }
 function recipeKey(slugs){
   return 'dalton-dashboard:workshop:foreverdb:recipes:v2:'+digest(normalizedSlugs(slugs).join('|'));
@@ -32,15 +37,76 @@ function searchKey(query){
 function itemRecipeKey(itemId,itemName){
   return 'dalton-dashboard:workshop:foreverdb:item-recipes:v2:'+Number(itemId)+':'+digest(String(itemName||'').trim().toLocaleLowerCase('en'));
 }
+function recipeIdentity(recipe={}){
+  return [
+    recipe.professionSlug||'unknown',
+    recipe.id??'none',
+    recipe.craftedItem?.id??'none'
+  ].join('|');
+}
+export function mergeRecipeIndexes(...values){
+  const indexes=values.filter(Boolean);
+  const recipes=[];
+  const seen=new Set();
+  const professionSlugs=new Set();
+  let build=null;
+  let requestCount=0;
+  for(const index of indexes){
+    if(!build&&index?.build)build=index.build;
+    requestCount+=Number(index?.requestCount)||0;
+    for(const slug of normalizedSlugs(index?.professionSlugs||[]))professionSlugs.add(slug);
+    for(const recipe of Array.isArray(index?.recipes)?index.recipes:[]){
+      const key=recipeIdentity(recipe);
+      if(seen.has(key))continue;
+      seen.add(key);
+      recipes.push(recipe);
+      if(recipe?.professionSlug&&PROFESSION_SLUGS.has(recipe.professionSlug))professionSlugs.add(recipe.professionSlug);
+    }
+  }
+  return hydrateRecipeIndex({
+    generatedAt:new Date().toISOString(),
+    build,
+    requestCount,
+    complete:professionSlugs.size===PROFESSION_SLUGS.size,
+    professionSlugs:[...professionSlugs].sort(),
+    recipes
+  });
+}
+export function missingMasterProfessionSlugs(index){
+  const done=new Set(normalizedSlugs(index?.professionSlugs||[]));
+  return [...PROFESSION_SLUGS].filter(slug=>!done.has(slug)).sort();
+}
+export function nextMasterProfessionChunk(index,size=MASTER_REFRESH_CHUNK){
+  return missingMasterProfessionSlugs(index).slice(0,Math.max(1,Number(size)||MASTER_REFRESH_CHUNK));
+}
+async function loadJson(key){
+  if(!redisConfigured())return null;
+  const raw=await redis(['GET',key]);
+  if(!raw)return null;
+  try{return JSON.parse(raw)}catch{return null}
+}
+async function saveJson(key,value,{ttl=null}={}){
+  if(!redisConfigured())return;
+  const args=['SET',key,JSON.stringify(value)];
+  if(ttl)args.push('EX',String(ttl));
+  await redis(args);
+}
+async function deleteKey(key){
+  if(redisConfigured())await redis(['DEL',key]);
+}
+async function cachedForeverDbMeta({fetchImpl=fetch}={}){
+  const cached=await loadJson(META_KEY);
+  if(cached&&fresh(cached,META_TTL_SECONDS*1000))return {...cached,cached:true};
+  const meta=await fetchForeverDbMeta({fetchImpl});
+  const value={...meta,generatedAt:new Date().toISOString()};
+  await saveJson(META_KEY,value,{ttl:META_TTL_SECONDS});
+  return {...value,cached:false};
+}
 export async function loadCachedRecipeIndex(professionSlugs=[]){
   if(!redisConfigured())return null;
   const slugs=normalizedSlugs(professionSlugs);
-  const raw=await redis(['GET',recipeKey(slugs)]);
-  if(!raw)return null;
-  try{
-    const parsed=JSON.parse(raw);
-    return hydrateRecipeIndex(parsed);
-  }catch{return null}
+  const parsed=await loadJson(recipeKey(slugs));
+  return parsed?hydrateRecipeIndex(parsed):null;
 }
 export async function getForeverDbRecipeIndex({professionSlugs=[],force=false,fetchImpl=fetch}={}){
   const slugs=normalizedSlugs(professionSlugs);
@@ -48,9 +114,119 @@ export async function getForeverDbRecipeIndex({professionSlugs=[],force=false,fe
   if(!force&&cached&&fresh(cached,RECIPE_TTL_SECONDS*1000))return {...cached,cached:true};
   const index=await fetchForeverDbRecipeIndex({fetchImpl,professionSlugs:slugs});
   if(redisConfigured()){
-    await redis(['SET',recipeKey(slugs),JSON.stringify(serializableRecipeIndex(index)),'EX',RECIPE_TTL_SECONDS]);
+    await saveJson(recipeKey(slugs),serializableRecipeIndex(index),{ttl:RECIPE_TTL_SECONDS});
   }
   return {...index,cached:false};
+}
+async function loadMaster(){
+  const parsed=await loadJson(MASTER_KEY);
+  return parsed?hydrateRecipeIndex(parsed):null;
+}
+async function loadDraft(){
+  const parsed=await loadJson(MASTER_DRAFT_KEY);
+  return parsed?hydrateRecipeIndex(parsed):null;
+}
+async function persistMaster(index){
+  const serial=serializableRecipeIndex({...index,complete:true});
+  await saveJson(MASTER_KEY,serial);
+  await deleteKey(MASTER_DRAFT_KEY);
+  return hydrateRecipeIndex(serial);
+}
+async function persistDraft(index){
+  const serial=serializableRecipeIndex({...index,complete:false});
+  await saveJson(MASTER_DRAFT_KEY,serial,{ttl:24*60*60});
+  return hydrateRecipeIndex(serial);
+}
+async function seedDraftFromExistingScope(seedProfessionSlugs=[]){
+  const seed=await loadCachedRecipeIndex(seedProfessionSlugs);
+  if(!seed)return null;
+  return hydrateRecipeIndex({
+    ...serializableRecipeIndex(seed),
+    complete:false,
+    generatedAt:new Date().toISOString()
+  });
+}
+export async function getForeverDbMasterRecipeIndex({
+  seedProfessionSlugs=[],
+  fetchImpl=fetch,
+  advance=true
+}={}){
+  const meta=await cachedForeverDbMeta({fetchImpl});
+  let master=await loadMaster();
+  if(master?.complete&&(!meta.build||!master.build||master.build===meta.build)){
+    return {...master,cached:true,refreshing:false,masterComplete:true};
+  }
+
+  let draft=await loadDraft();
+  if(draft&&meta.build&&draft.build&&draft.build!==meta.build){
+    draft=null;
+    await deleteKey(MASTER_DRAFT_KEY);
+  }
+
+  if(!draft){
+    const seed=await seedDraftFromExistingScope(seedProfessionSlugs);
+    if(seed&&(!meta.build||!seed.build||seed.build===meta.build))draft=seed;
+    else draft=hydrateRecipeIndex({
+      generatedAt:new Date().toISOString(),
+      build:meta.build||null,
+      requestCount:0,
+      complete:false,
+      professionSlugs:[],
+      recipes:[]
+    });
+  }
+
+  if(meta.build&&!draft.build)draft.build=meta.build;
+  if(!advance){
+    const active=master?.complete?master:draft;
+    return {...active,cached:Boolean(master?.complete),refreshing:!active?.complete,masterComplete:Boolean(master?.complete)};
+  }
+
+  let missing=missingMasterProfessionSlugs(draft);
+  if(missing.length){
+    let chunk=missing;
+    if(!draft.professionSlugs?.length)chunk=missing.slice(0,MASTER_REFRESH_CHUNK);
+    else if(missing.length>4)chunk=missing.slice(0,MASTER_REFRESH_CHUNK);
+    try{
+      const fetched=await fetchForeverDbRecipeIndex({
+        fetchImpl,
+        professionSlugs:chunk,
+        maxRequests:28
+      });
+      draft=mergeRecipeIndexes(draft,fetched);
+      if(meta.build)draft.build=meta.build;
+      missing=missingMasterProfessionSlugs(draft);
+    }catch(error){
+      if(!/sichere Request-Budget/.test(String(error.message)))throw error;
+      const fallbackChunk=nextMasterProfessionChunk(draft,MASTER_REFRESH_CHUNK);
+      const fetched=await fetchForeverDbRecipeIndex({
+        fetchImpl,
+        professionSlugs:fallbackChunk,
+        maxRequests:28
+      });
+      draft=mergeRecipeIndexes(draft,fetched);
+      if(meta.build)draft.build=meta.build;
+      missing=missingMasterProfessionSlugs(draft);
+    }
+  }
+
+  if(!missing.length){
+    draft.complete=true;
+    const persisted=await persistMaster(draft);
+    return {...persisted,cached:false,refreshing:false,masterComplete:true};
+  }
+
+  await persistDraft(draft);
+  if(master?.complete){
+    return {...master,cached:true,refreshing:true,masterComplete:true,refreshProgress:{
+      completed:normalizedSlugs(draft.professionSlugs).length,
+      total:PROFESSION_SLUGS.size
+    }};
+  }
+  return {...draft,cached:false,refreshing:true,masterComplete:false,refreshProgress:{
+    completed:normalizedSlugs(draft.professionSlugs).length,
+    total:PROFESSION_SLUGS.size
+  }};
 }
 export async function cachedForeverDbRecipeSearch(itemId,itemName,{fetchImpl=fetch}={}){
   const id=Number(itemId);

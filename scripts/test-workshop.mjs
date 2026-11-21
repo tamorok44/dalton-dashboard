@@ -4,13 +4,17 @@ import {
   searchWorkshopItems,
   workshopBrowseTree,
   buildProductionPlan,
+  workshopBrowseTreeForItems,
+  workshopItemsFromRecipeIndex,
   enrichWorkshopCatalogWithForeverDb,
   workshopLearningCandidates
 } from './workshop-core.mjs';
 import {
   searchForeverDbItems,
   fetchForeverDbItem,
-  fetchForeverDbProfession
+  fetchForeverDbProfession,
+  fetchForeverDbMeta,
+  PROFESSION_SLUGS
 } from './foreverdb-api.mjs';
 import {
   normalizeForeverDbRecipe,
@@ -18,6 +22,11 @@ import {
   fetchForeverDbRecipeIndex,
   searchForeverDbRecipesForItem
 } from './workshop-foreverdb.mjs';
+import {
+  mergeRecipeIndexes,
+  missingMasterProfessionSlugs,
+  nextMasterProfessionChunk
+} from './workshop-store.mjs';
 
 const data={
   generatedAt:'2026-11-21T12:00:00.000Z',
@@ -146,6 +155,41 @@ assert.deepEqual(categoryCatalog.byItemId.get(2302).categoryPath,['Ausrüstung &
 assert.deepEqual(categoryCatalog.byItemId.get(1251).categoryPath,['Verbrauchsgüter','Verbände'],
   'Verbände werden über die eigene UI-Taxonomie deutsch gruppiert');
 
+const fullMasterSeed=hydrateRecipeIndex({
+  generatedAt:data.generatedAt,
+  build:'1.60.1.70959',
+  complete:false,
+  professionSlugs:['alchemy','cooking','engineering','first-aid','fishing','herbalism','leatherworking','mining'],
+  recipes:[remoteRecipe]
+});
+const missingBefore=missingMasterProfessionSlugs(fullMasterSeed);
+assert.equal(missingBefore.length,4,'Acht vorhandene Dalton-Berufe lassen genau vier Master-Berufe offen');
+assert.deepEqual(nextMasterProfessionChunk(fullMasterSeed,3),missingBefore.slice(0,3));
+const syntheticMissing=missingBefore.map((slug,index)=>({
+  ...remoteRecipe,
+  id:8000+index,
+  professionSlug:slug,
+  craftedItem:{id:88000+index,name:'Master-Test '+index}
+}));
+const fullMaster=mergeRecipeIndexes(fullMasterSeed,hydrateRecipeIndex({
+  generatedAt:data.generatedAt,
+  build:'1.60.1.70959',
+  complete:true,
+  professionSlugs:missingBefore,
+  recipes:syntheticMissing
+}));
+assert.equal(fullMaster.professionSlugs.length,PROFESSION_SLUGS.size,'Master umfasst alle 12 Berufe');
+assert.equal(fullMaster.complete,true);
+assert.deepEqual(missingMasterProfessionSlugs(fullMaster),[]);
+
+const masterItems=workshopItemsFromRecipeIndex(catalog,fullMaster);
+assert.ok(masterItems.some(item=>item.id===2840&&item.craftable),'Bekanntes Dalton-Rezept bleibt als herstellbar markiert');
+assert.ok(masterItems.some(item=>item.id===88000&&!item.craftable),'Vollkatalog enthält auch nicht durch die Daltons herstellbare Rezepte');
+const fullBrowseText=JSON.stringify(workshopBrowseTreeForItems(masterItems));
+assert.ok(fullBrowseText.includes('Master-Test 0'),'Geführte Auswahl kann den vollständigen Masterkatalog anzeigen');
+const craftableBrowseText=JSON.stringify(workshopBrowseTreeForItems(masterItems,{craftableOnly:true}));
+assert.ok(!craftableBrowseText.includes('Master-Test 0'),'Herstellbar-Filter blendet nicht craftbare Mastereinträge aus');
+
 const candidates=workshopLearningCandidates({
   characters:[
     {slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',level:10,professions:[{id:186,name:'Bergbau',current:46,max:75}]},
@@ -164,7 +208,9 @@ const fakeFetch=async url=>{
   requests.push(String(url));
   const parsed=new URL(url);
   let body;
-  if(parsed.pathname.includes('/professions/')){
+  if(parsed.pathname.endsWith('/meta')){
+    body={data:{build:'1.60.1.70959'},meta:{}};
+  }else if(parsed.pathname.includes('/professions/')){
     const slug=parsed.pathname.split('/').at(-1);
     const query=parsed.searchParams.get('q');
     const offset=Number(parsed.searchParams.get('offset')||0);
@@ -207,6 +253,9 @@ assert.equal(targeted.recipes.length,1);
 assert.equal(targeted.recipes[0].professionSlug,'mining');
 assert.equal(targeted.recipes[0].craftedItem.id,2840);
 assert.equal(requests.length-beforeTargeted,12);
+
+const remoteMeta=await fetchForeverDbMeta({fetchImpl:fakeFetch});
+assert.equal(remoteMeta.build,'1.60.1.70959');
 
 const remoteSearch=await searchForeverDbItems('Kup',{limit:10,fetchImpl:fakeFetch});
 assert.equal(remoteSearch.items.length,2);

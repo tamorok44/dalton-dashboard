@@ -741,6 +741,11 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
 }
 
 /* Shared Redis payload powers both views; comparison never fetches or persists separately. */
+function segmentedControl(id,value,options,label){
+  return '<div class="segmented-control" data-segmented-control="'+esc(id)+'" role="radiogroup" aria-label="'+esc(label)+'">'+
+    options.map(([optionValue,optionLabel])=>'<button type="button" class="segmented-option '+(value===optionValue?'is-active':'')+'" data-segmented-value="'+esc(optionValue)+'" role="radio" aria-checked="'+(value===optionValue?'true':'false')+'">'+esc(optionLabel)+'</button>').join('')+
+    '</div>';
+}
 const comparisonState={selected:new Set(),expanded:new Set(['stats','equipment','talents','quests','professions','reputation']),mode:'all'};
 const comparisonSections=[['stats','Charakterwerte'],['equipment','Ausrüstung'],['talents','Talente'],['quests','Quests'],['professions','Berufe'],['reputation','Ruf']];
 const compareRoot=document.querySelector('#compareContent');
@@ -862,7 +867,7 @@ function renderComparison(){
     '<label class="compare-choice"><input type="checkbox" data-compare-character="'+esc(c.slug)+'" '+(comparisonState.selected.has(c.slug)?'checked':'')+'><span>'+esc(c.name)+'</span></label>'
   ).join('')+'</fieldset>';
   const content=selected.length<2?'<p class="compare-empty">Bitte mindestens zwei Charaktere auswählen, um den Vergleich zu starten.</p>':
-    '<div class="compare-toolbar"><span>'+selected.length+' Charaktere · alphabetisch geordnet</span><label><input type="checkbox" id="compareDifferences" '+(comparisonState.mode==='differences'?'checked':'')+'> Nur Unterschiede</label></div>'+
+    '<div class="compare-toolbar"><span>'+selected.length+' Charaktere · alphabetisch geordnet</span>'+segmentedControl('compare-mode',comparisonState.mode,[['all','Alle Werte'],['differences','Nur Unterschiede']],'Vergleichsansicht')+'</div>'+
     '<div class="compare-scroll" tabindex="0" aria-label="Vergleichstabelle horizontal scrollen"><table class="compare-table"><thead><tr><th scope="col">Merkmal</th>'+selected.map(c=>'<th scope="col"><span class="compare-character-name">'+esc(c.name)+'</span><small>'+esc(c.class||'')+' · Level '+esc(c.level??'–')+'</small></th>').join('')+'</tr></thead><tbody>'+
     comparisonSections.map(([id,label])=>{
       const rows=cmpSectionRows(id,selected);
@@ -878,7 +883,10 @@ function renderComparison(){
   compareRoot.querySelectorAll('[data-compare-section]').forEach(btn=>btn.addEventListener('click',()=>{
     const id=btn.dataset.compareSection;if(comparisonState.expanded.has(id))comparisonState.expanded.delete(id);else comparisonState.expanded.add(id);renderComparison();
   }));
-  compareRoot.querySelector('#compareDifferences')?.addEventListener('change',e=>{comparisonState.mode=e.target.checked?'differences':'all';renderComparison()});
+  compareRoot.querySelectorAll('[data-segmented-control="compare-mode"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{
+    comparisonState.mode=button.dataset.segmentedValue==='differences'?'differences':'all';
+    renderComparison();
+  }));
 }
 
 const workshopState={
@@ -887,7 +895,8 @@ const workshopState={
   error:null,
   query:'',
   suggestions:[],
-  searchFullCatalog:false,
+  searchMode:'all',
+  browseMode:'craftable',
   selected:null,
   quantity:1,
   browsePath:[]
@@ -905,7 +914,9 @@ function workshopCategoryKeys(node){
   return Object.keys(node||{}).filter(key=>key!=='_items').sort((a,b)=>a.localeCompare(b,'de'));
 }
 function workshopBrowseHtml(){
-  const tree=workshopState.overview?.browse||{};
+  const tree=workshopState.browseMode==='all'
+    ?workshopState.overview?.browseAll||{}
+    :workshopState.overview?.browseCraftable||{};
   let node=tree,html='',path=[];
   for(let depth=0;depth<5;depth++){
     const keys=workshopCategoryKeys(node);
@@ -922,7 +933,7 @@ function workshopBrowseHtml(){
     html+='<label class="workshop-field"><span>Gegenstand</span><select id="workshopBrowseItem"><option value="">Bitte wählen …</option>'+
       items.map(item=>'<option value="'+esc(item.id)+'">'+esc(item.name)+'</option>').join('')+'</select></label>';
   }
-  return html||'<p class="workshop-muted">Noch keine herstellbaren Gegenstände kategorisiert.</p>';
+  return html||'<p class="workshop-muted">'+(workshopState.browseMode==='all'?'Noch keine Gegenstände im vollständigen Rezeptkatalog verfügbar.':'Noch keine aktuell herstellbaren Gegenstände kategorisiert.')+'</p>';
 }
 function workshopCrafterText(crafters=[]){
   if(!crafters.length)return 'Keiner der Daltons kann diesen Gegenstand aktuell herstellen.';
@@ -1044,19 +1055,36 @@ function renderWorkshop(){
       '<small>'+(item.craftable?'✓ '+esc((item.crafters||[]).map(c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
     ).join('')+'</div>':'';
   const catalogNote=overview.recipeCatalog?.connected
-    ?'<span class="workshop-source-ok">ForeverDB verbunden · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte der Dalton-Berufe</span>'
+    ?overview.recipeCatalog.complete
+      ?'<span class="workshop-source-ok">ForeverDB verbunden · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte · '+esc(overview.recipeCatalog.professionCount||12)+' Berufe</span>'
+      :'<span class="workshop-source-note">Vollkatalog wird aufgebaut · '+esc(overview.recipeCatalog.refreshProgress?.completed||overview.recipeCatalog.professionCount||0)+'/'+esc(overview.recipeCatalog.refreshProgress?.total||12)+' Berufe</span>'
     :overview.foreverDbConfigured
       ?'<span class="workshop-source-note">ForeverDB-Key vorhanden · Rezeptkatalog derzeit nicht erreichbar</span>'
       :'<span class="workshop-source-note">Aktuell Blizzard-Werkstattdaten · ForeverDB noch nicht verbunden</span>';
   workshopRoot.innerHTML=
     '<div class="workshop-shell">'+
       '<section class="workshop-search-panel"><div class="workshop-search-head"><div><span class="workshop-kicker">DIREKTER WEG</span><h3>Gegenstand suchen</h3></div>'+catalogNote+'</div>'+
+        '<div class="view-filter-row"><span>Anzeige</span>'+segmentedControl('workshop-search-mode',workshopState.searchMode,[['all','Alle'],['craftable','Herstellbar']],'Suchbereich')+'</div>'+
         '<div class="workshop-search-wrap"><span class="workshop-search-icon" aria-hidden="true">⌕</span><input id="workshopSearch" type="search" autocomplete="off" placeholder="z. B. Kupferbarren" value="'+esc(workshopState.query)+'" aria-label="Gegenstand suchen">'+suggestions+'</div>'+
       '</section>'+
-      '<section class="workshop-browse-panel"><div><span class="workshop-kicker">GEFÜHRTE AUSWAHL</span><h3>Herstellbare Gegenstände durchstöbern</h3><p>Hier erscheinen ausschließlich Gegenstände, die mindestens ein Dalton aktuell herstellen kann.</p></div><div class="workshop-browse-fields">'+workshopBrowseHtml()+'</div></section>'+
+      '<section class="workshop-browse-panel"><div><span class="workshop-kicker">GEFÜHRTE AUSWAHL</span><h3>Gegenstände durchstöbern</h3><p>'+(workshopState.browseMode==='craftable'?'Nur Gegenstände, die mindestens ein Dalton aktuell herstellen kann.':'Alle herstellbaren Gegenstände aus dem vollständigen Rezeptkatalog.')+'</p><div class="view-filter-row"><span>Anzeige</span>'+segmentedControl('workshop-browse-mode',workshopState.browseMode,[['all','Alle'],['craftable','Herstellbar']],'Dropdown-Katalog')+'</div></div><div class="workshop-browse-fields">'+workshopBrowseHtml()+'</div></section>'+
       workshopResultHtml()+
       ((overview.recipeCatalog?.connected||workshopState.selected?.source==='foreverdb')?'<p class="workshop-global-credit">ForeverDB-Daten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</div>';
+  workshopRoot.querySelectorAll('[data-segmented-control="workshop-search-mode"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{
+    const next=button.dataset.segmentedValue==='craftable'?'craftable':'all';
+    if(next===workshopState.searchMode)return;
+    workshopState.searchMode=next;
+    workshopState.suggestions=[];
+    const query=workshopState.query;
+    renderWorkshop();
+    if(query.trim().length>=2)searchWorkshop(query);
+  }));
+  workshopRoot.querySelectorAll('[data-segmented-control="workshop-browse-mode"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{
+    workshopState.browseMode=button.dataset.segmentedValue==='all'?'all':'craftable';
+    workshopState.browsePath=[];
+    renderWorkshop();
+  }));
   const search=workshopRoot.querySelector('#workshopSearch');
   search?.addEventListener('input',()=>{
     workshopState.query=search.value;
@@ -1095,10 +1123,10 @@ async function searchWorkshop(query){
   const current=query.trim();
   if(current.length<2)return;
   try{
-    const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&t='+Date.now());
-    if(workshopState.query.trim()!==current)return;
+    const mode=workshopState.searchMode;
+    const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&scope='+encodeURIComponent(mode)+'&t='+Date.now());
+    if(workshopState.query.trim()!==current||workshopState.searchMode!==mode)return;
     workshopState.suggestions=result.suggestions||[];
-    workshopState.searchFullCatalog=result.fullCatalog===true;
   }catch{workshopState.suggestions=[]}
   renderWorkshop();
   const input=workshopRoot?.querySelector('#workshopSearch');if(input){input.focus();input.setSelectionRange?.(input.value.length,input.value.length)}

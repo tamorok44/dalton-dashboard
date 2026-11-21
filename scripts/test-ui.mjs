@@ -497,6 +497,15 @@ assert.ok(heroHtml.includes('data-view-link="workshop"'),'Werkstatt ist dritter 
 assert.ok(heroHtml.includes('id="workshopView" class="main-view workshop-view"'),'Werkstatt nutzt verbindlichen main-view-Vertrag');
 assert.ok(source.includes("location.hash==='#werkstatt'?'workshop'"),'Werkstatt hat eigene Hash-Route');
 assert.ok(source.includes("workshopFetch('/api/workshop"),'Werkstatt nutzt serverseitige API');
+assert.ok(source.includes("function segmentedControl("),'Binäre Ansichtsfilter verwenden die gemeinsame Segment-Komponente');
+assert.ok(source.includes("segmentedControl('compare-mode'"),'Vergleich nutzt den gemeinsamen Segment-Schalter');
+assert.ok(source.includes("segmentedControl('workshop-search-mode'"),'Werkstatt-Lupe nutzt den gemeinsamen Segment-Schalter');
+assert.ok(source.includes("segmentedControl('workshop-browse-mode'"),'Werkstatt-Dropdown nutzt den gemeinsamen Segment-Schalter');
+assert.ok(!source.includes('compareDifferences'),'Alte Vergleichs-Checkbox ist entfernt');
+assert.ok(source.includes("searchMode:'all'")&&source.includes("browseMode:'craftable'"),'Werkstatt hat die vereinbarten unabhängigen Standardfilter');
+assert.ok(source.includes("scope='+encodeURIComponent(mode)"),'Lupe übergibt ihren Filtermodus an die API');
+assert.ok(source.includes("overview?.browseAll")&&source.includes("overview?.browseCraftable"),'Geführte Auswahl kann zwischen Vollkatalog und Herstellbar-Katalog wechseln');
+assert.ok(css.includes('.segmented-control{')&&css.includes('.segmented-option.is-active'),'Segment-Schalter ist als gemeinsame Dalton-CI-Komponente gestaltet');
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
 assert.ok(heroHtml.includes('Noch keine Legenden, aber schon gesucht.'),'Hero uses grammatically correct comma');
