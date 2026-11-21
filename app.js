@@ -1107,6 +1107,7 @@ function renderWorkshop(){
     if(workshopState.selected?.item?.id)selectWorkshopItem(workshopState.selected.item.id,{preserveQuery:true});
   });
 }
+let workshopDataEpoch=0;
 async function workshopFetch(url){
   const response=await fetch(url,{cache:'no-store'});
   if(!response.ok)throw new Error('Werkstatt HTTP '+response.status);
@@ -1114,51 +1115,138 @@ async function workshopFetch(url){
 }
 async function loadWorkshopOverview(){
   if(workshopState.overview||workshopState.loading)return;
+  const epoch=workshopDataEpoch;
   workshopState.loading=true;workshopState.error=null;renderWorkshop();
-  try{workshopState.overview=await workshopFetch('/api/workshop?t='+Date.now())}
-  catch(error){workshopState.error='Werkstattdaten konnten nicht geladen werden.'}
-  finally{workshopState.loading=false;renderWorkshop()}
+  try{
+    const overview=await workshopFetch('/api/workshop?t='+Date.now());
+    if(epoch!==workshopDataEpoch)return;
+    workshopState.overview=overview;
+  }catch(error){
+    if(epoch===workshopDataEpoch)workshopState.error='Werkstattdaten konnten nicht geladen werden.';
+  }finally{
+    if(epoch===workshopDataEpoch){workshopState.loading=false;renderWorkshop()}
+  }
 }
 async function searchWorkshop(query){
   const current=query.trim();
   if(current.length<2)return;
+  const epoch=workshopDataEpoch;
   try{
     const mode=workshopState.searchMode;
     const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&scope='+encodeURIComponent(mode)+'&t='+Date.now());
-    if(workshopState.query.trim()!==current||workshopState.searchMode!==mode)return;
+    if(epoch!==workshopDataEpoch||workshopState.query.trim()!==current||workshopState.searchMode!==mode)return;
     workshopState.suggestions=result.suggestions||[];
-  }catch{workshopState.suggestions=[]}
+  }catch{
+    if(epoch===workshopDataEpoch)workshopState.suggestions=[];
+  }
+  if(epoch!==workshopDataEpoch)return;
   renderWorkshop();
   const input=workshopRoot?.querySelector('#workshopSearch');if(input){input.focus();input.setSelectionRange?.(input.value.length,input.value.length)}
 }
 async function selectWorkshopItem(itemId,{preserveQuery=false}={}){
   if(!Number.isInteger(itemId)||itemId<=0)return;
+  const epoch=workshopDataEpoch;
   try{
     const result=await workshopFetch('/api/workshop?item='+itemId+'&quantity='+workshopState.quantity+'&t='+Date.now());
+    if(epoch!==workshopDataEpoch)return;
     workshopState.selected=result;
     workshopState.suggestions=[];
     if(!preserveQuery)workshopState.query=result.item?.name||workshopState.query;
   }catch{
+    if(epoch!==workshopDataEpoch)return;
     workshopState.selected=null;workshopState.error='Gegenstand konnte nicht geladen werden.';
   }
-  renderWorkshop();
+  if(epoch===workshopDataEpoch)renderWorkshop();
+}
+function invalidateWorkshopData({reloadVisible=true}={}){
+  const selectedId=Number(workshopState.selected?.item?.id);
+  workshopDataEpoch++;
+  workshopState.overview=null;
+  workshopState.loading=false;
+  workshopState.error=null;
+  workshopState.suggestions=[];
+  workshopState.selected=null;
+  if(!workshopView.hidden){
+    renderWorkshop();
+    if(reloadVisible){
+      loadWorkshopOverview();
+      if(Number.isInteger(selectedId)&&selectedId>0)selectWorkshopItem(selectedId,{preserveQuery:true});
+    }
+  }
 }
 
 let lastGeneratedAt=null;
-async function load(){
-  status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
-  try{
-    const r=await fetch('/api/characters?t='+Date.now(),{cache:"no-store"});
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const result=await r.json();
-    const data=result.data;
-    if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
-      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{},petRules:result.petRules||null,reputationCatalog:result.reputationCatalog||{},petCatalog:result.petCatalog||{}});
+let lastDataVersion=null;
+let dataLoadPromise=null;
+let versionCheckPromise=null;
+function payloadDataVersion(payload={}){
+  if(typeof payload?.dataVersion?.version==='string'&&payload.dataVersion.version)return payload.dataVersion.version;
+  return ['data-v1',payload?.data?.generatedAt||'',payload?.petRules?.checkedAt||'',payload?.petRules?.rulebookVersion||'',payload?.petRules?.overall||''].join('|');
+}
+function applyServerPayload(payload,{live=false,success=null,force=false}={}){
+  const data=payload?.data;
+  if(!data||!Array.isArray(data.characters))return false;
+  const nextVersion=payloadDataVersion(payload);
+  const nextGeneratedAt=typeof data.generatedAt==='string'?data.generatedAt:null;
+  const characterDataChanged=nextGeneratedAt!==lastGeneratedAt;
+  if(!force&&lastDataVersion&&nextVersion===lastDataVersion)return false;
+  lastDataVersion=nextVersion;
+  lastGeneratedAt=nextGeneratedAt;
+  render(data,{
+    live,
+    success,
+    questCatalog:payload.questCatalog||{},
+    petRules:payload.petRules||null,
+    reputationCatalog:payload.reputationCatalog||{},
+    petCatalog:payload.petCatalog||{}
+  });
+  if(characterDataChanged)invalidateWorkshopData({reloadVisible:true});
+  return true;
+}
+async function load({silent=false,force=false}={}){
+  if(dataLoadPromise)return dataLoadPromise;
+  dataLoadPromise=(async()=>{
+    if(!silent)status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
+    try{
+      const r=await fetch('/api/characters?t='+Date.now(),{cache:"no-store"});
+      if(!r.ok)throw new Error("HTTP "+r.status);
+      const result=await r.json();
+      applyServerPayload(result,{force});
+      return true;
+    }catch(e){
+      if(!displayedData&&!silent){
+        try{
+          const fallback=await fetch('/data/characters.json',{cache:'no-store'});
+          if(!fallback.ok)throw Error('Fallback');
+          const fallbackData=await fallback.json();
+          lastGeneratedAt=fallbackData.generatedAt||null;
+          render(fallbackData);
+          status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';
+        }catch{
+          status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>';
+        }
+      }
+      return false;
     }
-  }catch(e){if(!displayedData){
-      try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
-      catch{status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>'}
-    }}
+  })();
+  try{return await dataLoadPromise}finally{dataLoadPromise=null}
+}
+async function checkForNewData(){
+  if(document.visibilityState==='hidden'||button.disabled||versionCheckPromise)return false;
+  versionCheckPromise=(async()=>{
+    try{
+      const response=await fetch('/api/data-version?t='+Date.now(),{cache:'no-store'});
+      if(!response.ok)return false;
+      const version=await response.json();
+      if(!version?.version)return false;
+      if(!lastDataVersion||version.version!==lastDataVersion){
+        await load({silent:true,force:true});
+        return true;
+      }
+      return false;
+    }catch{return false}
+  })();
+  try{return await versionCheckPromise}finally{versionCheckPromise=null}
 }
 async function refreshLive(){
   if(button.disabled)return;
@@ -1169,10 +1257,13 @@ async function refreshLive(){
     const r=await fetch('/api/refresh?t='+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error('HTTP '+r.status);
     const response=await r.json();
-    if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
+    if(response.pending){
+      status.textContent='Eine andere Aktualisierung läuft bereits. Der neue Serverstand wird automatisch übernommen, sobald er gespeichert ist.';
+      setTimeout(()=>checkForNewData(),5000);
+      return;
+    }
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
-    lastGeneratedAt=response.data.generatedAt;
-    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{},petRules:response.petRules||null,reputationCatalog:response.reputationCatalog||{},petCatalog:response.petCatalog||{}});
+    applyServerPayload(response,{live:true,success:response.success,force:true});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
@@ -1182,5 +1273,12 @@ button.innerHTML='<span aria-hidden="true">↻</span> Aktualisieren';
 button.addEventListener('click',refreshLive);
 load();
 syncMainView();
-// Live-Aufrufe hier nur per Button; ein täglicher Server-Snapshot archiviert zusätzlich den vollständigen Blizzard-Datenstand.
+
+const DATA_FRESHNESS_INTERVAL_MS=60*1000;
+setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()},DATA_FRESHNESS_INTERVAL_MS);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForNewData()});
+window.addEventListener('focus',()=>checkForNewData());
+window.addEventListener('pageshow',()=>checkForNewData());
+window.addEventListener('online',()=>checkForNewData());
+// Nur die leichte Datenversion wird automatisch geprüft; echte Blizzard-Liveabrufe bleiben Button/Cron vorbehalten.
 if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});

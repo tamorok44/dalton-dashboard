@@ -505,6 +505,13 @@ assert.ok(!source.includes('compareDifferences'),'Alte Vergleichs-Checkbox ist e
 assert.ok(source.includes("searchMode:'all'")&&source.includes("browseMode:'craftable'"),'Werkstatt hat die vereinbarten unabhängigen Standardfilter');
 assert.ok(source.includes("scope='+encodeURIComponent(mode)"),'Lupe übergibt ihren Filtermodus an die API');
 assert.ok(source.includes("overview?.browseAll")&&source.includes("overview?.browseCraftable"),'Geführte Auswahl kann zwischen Vollkatalog und Herstellbar-Katalog wechseln');
+assert.ok(source.includes("fetch('/api/data-version?t='"),'Offene Dashboards prüfen eine leichte serverseitige Datenversion');
+assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Sichtbare Tabs prüfen den Serverstand regelmäßig');
+assert.ok(source.includes("document.addEventListener('visibilitychange'"),'Rückkehr in einen versteckten Tab löst sofort eine Frischeprüfung aus');
+assert.ok(source.includes("window.addEventListener('focus'"),'Fokus auf das Dashboard löst sofort eine Frischeprüfung aus');
+assert.ok(source.includes("function applyServerPayload(")&&source.includes("invalidateWorkshopData({reloadVisible:true})"),'Ein zentraler Payload-Pfad aktualisiert alle Ansichten und invalidiert abgeleitete Werkstattdaten');
+assert.ok(source.includes("if(!compareView.hidden)renderComparison()"),'Charaktere und Vergleich teilen denselben gerenderten Datenstand');
+assert.ok(source.includes("workshopDataEpoch++"),'Veraltete laufende Werkstattanfragen können nach einem Datenwechsel nicht zurückschreiben');
 assert.ok(css.includes('.segmented-control{')&&css.includes('.segmented-option.is-active'),'Segment-Schalter ist als gemeinsame Dalton-CI-Komponente gestaltet');
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
@@ -556,7 +563,8 @@ const dailySnapshot=read('api/daily-snapshot.js');
 assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs)'),'Daily rule verification runs before the Blizzard snapshot');
 assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf("refreshAndPersist({lockToken:refreshLock,source:'daily'})"),'Daily rule verification runs before the persistent character refresh');
 assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf("refreshAndPersist({lockToken,source:req.method==='GET'?'manual':'scheduled'})"),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
-assert.ok(!source.includes('setInterval('),'No periodic background refresh in client');
+assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Only the lightweight stored-data version is checked periodically');
+assert.ok(!/setInterval\([\s\S]{0,300}refreshLive/.test(source),'Periodic checks must never trigger Blizzard live refreshes');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
 
 

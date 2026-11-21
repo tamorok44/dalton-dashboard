@@ -21,7 +21,7 @@ const rel=file=>path.relative(root,file).replaceAll('\\','/');
 const sourceByFile=new Map(prodFiles.map(file=>[rel(file),fs.readFileSync(file,'utf8')]));
 
 const policy=fs.readFileSync(path.join(root,'docs','architecture-contracts.md'),'utf8');
-for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Merge-Gates']){
+for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Datenfrische / Frontend-Synchronisierung','Merge-Gates']){
   assert.ok(policy.includes(required),'Architecture policy is missing required section: '+required);
 }
 
@@ -73,6 +73,14 @@ for(const id of ['compare-mode','workshop-search-mode','workshop-browse-mode']){
   assert.ok(browserSource.includes("'"+id+"'"),'Missing required shared segmented filter: '+id);
 }
 assert.ok(!browserSource.includes('compareDifferences'),'Legacy compare checkbox filter must not return');
+for(const token of ['checkForNewData','/api/data-version','visibilitychange','pageshow','invalidateWorkshopData','DATA_FRESHNESS_INTERVAL_MS']){
+  assert.ok(browserSource.includes(token),'Global data freshness contract missing frontend token: '+token);
+}
+assert.ok(sourceByFile.has('api/data-version.js'),'Lightweight data-version endpoint is required');
+assert.ok(sourceByFile.has('scripts/data-version.mjs'),'Central data-version module is required');
+assert.ok((sourceByFile.get('api/refresh.js')||'').includes('dataVersion'),'Manual refresh must return the global data version');
+assert.ok((sourceByFile.get('api/characters.js')||'').includes('dataVersion'),'Stored-data API must return the global data version');
+assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefreshLockWithRetry'),'Daily refresh must retry a temporarily occupied refresh lock');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
 assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
 for(const markup of checkboxMarkup){
