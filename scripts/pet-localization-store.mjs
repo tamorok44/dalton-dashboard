@@ -36,6 +36,10 @@ function safeSlug(value=''){
   const slug=String(value).toLowerCase().trim();
   return /^[a-z0-9-]{1,80}$/.test(slug)?slug:null;
 }
+export function petRankPlanForFamily(slug){
+  const plan=PET_FAMILY_RANKS[safeSlug(slug)]||[];
+  return plan.map(entry=>({...entry}));
+}
 function familyUrl(slug){return SOURCE_ORIGIN+'/de/pets/'+encodeURIComponent(slug)}
 function spellUrl(id){return SOURCE_ORIGIN+'/de/spell/'+Number(id)}
 async function fetchHtml(url,fetchImpl=fetch){
