@@ -2,6 +2,7 @@ import {configured,acquireRefreshLock,releaseRefreshLock,manualCooldown} from '.
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
 import {ensurePetRuleState} from '../scripts/pet-rule-store.mjs';
 import {publicPetRuleState} from '../scripts/pet-rulebook.mjs';
+import {buildDataVersion} from '../scripts/data-version.mjs';
 export const config={maxDuration:60};
 let pending=null;
 export default async function handler(req,res){
@@ -31,7 +32,9 @@ export default async function handler(req,res){
       });
     const result=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
-    return res.status(200).json({...result,petRules:publicPetRuleState(petRuleState)});
+    const petRules=publicPetRuleState(petRuleState);
+    const dataVersion=buildDataVersion({data:result.data,petRules});
+    return res.status(200).json({...result,petRules,dataVersion});
   }catch(error){
     console.error('Live-Abruf oder Speichern fehlgeschlagen:',error);
     return res.status(503).json({error:'Aktualisierung konnte nicht dauerhaft gespeichert werden'});
