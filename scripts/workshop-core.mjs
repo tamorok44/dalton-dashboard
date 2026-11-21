@@ -18,6 +18,9 @@ function recipeYield(quantity={}){
 }
 function fallbackCategoryPath({professionName,itemName,recipeName}){
   const value=normalizeSearch(itemName+' '+recipeName);
+  if(/lager|camp|brunnen|leitstein|stuhl|zelt|feuer/.test(value))return ['Lager & Spezial','Lagerobjekte'];
+  if(/rüstungsset|rustungsset|armor kit|waffenöl|waffenol|weapon oil|wetzstein|schleifstein|weightstone|zielfernrohr|scope/.test(value))return ['Verbesserungen'];
+  if(/stiefel|armschiene|weste|brust|umhang|handschuh|gürtel|gurtel|hose|bein|schulter|helm|schild|schwert|axt|kolben|dolch|stab|bogen|gewehr|waffe/.test(value))return ['Ausrüstung & Gegenstände','Herstellbare Ausrüstung'];
   if(/barren|\bbar\b/.test(value))return ['Materialien & Komponenten','Metalle','Barren'];
   if(/verband/.test(value))return ['Verbrauchsgüter','Verbände'];
   if(/trank|potion/.test(value))return ['Verbrauchsgüter','Tränke'];
@@ -25,7 +28,6 @@ function fallbackCategoryPath({professionName,itemName,recipeName}){
   if(/gegenmittel|gegengift|anti-venom|heilmittel|schlammpackung|tourniquet|abschnürbinde/.test(value))return ['Verbrauchsgüter','Heilmittel'];
   if(professionName==='Kochkunst')return ['Verbrauchsgüter','Nahrung'];
   if(/farbstoff|säure|saeure|öl|oel|pulver|faden|stoff|leder|erz|stein|rohr|gehäuse|gehaeuse|teil/.test(value))return ['Materialien & Komponenten','Zwischenprodukte'];
-  if(/lager|camp|brunnen|leitstein|stuhl|zelt|feuer/.test(value))return ['Lager & Spezial','Lagerobjekte'];
   if(['Ingenieurskunst'].includes(professionName))return ['Geräte & Komponenten','Ingenieurskunst'];
   if(['Lederverarbeitung','Schneiderei','Schmiedekunst'].includes(professionName))return ['Ausrüstung & Gegenstände','Herstellbare Ausrüstung'];
   if(['Alchimie','Erste Hilfe'].includes(professionName))return ['Verbrauchsgüter','Sonstiges'];
@@ -237,16 +239,62 @@ export function buildProductionPlan(catalog,itemId,quantity=1){
 }
 
 
+const foreverCategoryLabels=new Map(Object.entries({
+  'armor kits':'Rüstungssets',
+  'leather bracers':'Lederarmschienen',
+  'leather boots':'Lederstiefel',
+  'leather chestguards':'Lederbrust',
+  'cloaks':'Umhänge',
+  'smelted bars':'Verhüttete Barren',
+  'reagents':'Reagenzien',
+  'bandages':'Verbände',
+  'healing potions':'Heiltränke',
+  'recovery potions':'Erholungstränke',
+  'potions':'Tränke',
+  'elixirs':'Elixiere',
+  'flasks':'Fläschchen',
+  'brews':'Gebräue',
+  'weapon oils':'Waffenöle',
+  'minor transmutations':'Geringe Transmutationen',
+  'major transmutations':'Große Transmutationen',
+  'everyday meals':'Alltägliche Mahlzeiten',
+  'agility food':'Beweglichkeitsnahrung',
+  'attack power food':'Angriffskraftnahrung',
+  'intellect food':'Intelligenznahrung',
+  'spell damage food':'Zauberschadensnahrung',
+  'stamina food':'Ausdauernahrung',
+  'strength food':'Stärkenahrung',
+  'miscellaneous cuisines':'Sonstige Gerichte',
+  'camping':'Lager'
+}));
+function categoryIdentity(value){
+  return normalizeSearch(value).replace(/[^a-z0-9]+/g,'');
+}
+function translatedForeverCategory(value){
+  const key=normalizeSearch(value);
+  return foreverCategoryLabels.get(key)||String(value).trim();
+}
+function rootForForeverCategories(categories=[],fallbackRoot='Sonstiges'){
+  const value=normalizeSearch(categories.join(' '));
+  if(/camping|lager/.test(value))return 'Lager & Spezial';
+  if(/armor kits|rüstungsset|weapon oils|waffenol|sharpen|weightstone|scope|enchant/.test(value))return 'Verbesserungen';
+  if(/boots|bracers|chest|cloak|gloves|belt|pants|leggings|shoulder|helm|head|shield|sword|axe|mace|dagger|staff|wand|gun|bow|weapon|armor/.test(value))return 'Ausrüstung & Gegenstände';
+  if(/bar|reagent|component|part|metal|stone|leather|cloth|thread|dye|acid/.test(value))return 'Materialien & Komponenten';
+  if(/potion|elixir|flask|brew|food|meal|cuisine|bandage/.test(value))return 'Verbrauchsgüter';
+  return fallbackRoot;
+}
 function cleanedForeverCategoryPath(recipe,professionName,fallbackPath=[]){
   const professionSlug=recipe?.professionSlug;
   const blocked=new Set([
-    String(professionName||'').toLocaleLowerCase('de-DE'),
-    String(professionSlug||'').toLocaleLowerCase('de-DE'),
-    String(recipe?.profession||'').toLocaleLowerCase('de-DE')
-  ].filter(Boolean));
-  const remote=asArray(recipe?.categoryPath).map(String).map(value=>value.trim()).filter(Boolean)
-    .filter(value=>!blocked.has(value.toLocaleLowerCase('de-DE')));
-  const root=asArray(fallbackPath)[0]||'Sonstiges';
+    professionName,
+    professionSlug,
+    recipe?.profession
+  ].filter(Boolean).map(categoryIdentity));
+  const remoteRaw=asArray(recipe?.categoryPath).map(String).map(value=>value.trim()).filter(Boolean)
+    .filter(value=>!blocked.has(categoryIdentity(value)));
+  const fallbackRoot=asArray(fallbackPath)[0]||'Sonstiges';
+  const root=rootForForeverCategories(remoteRaw,fallbackRoot);
+  const remote=remoteRaw.map(translatedForeverCategory);
   return remote.length?[root,...remote]:asArray(fallbackPath).length?fallbackPath:[root];
 }
 function preferredForeverRecipe(recipes=[],localRecipeId=null){
