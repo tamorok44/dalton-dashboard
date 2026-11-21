@@ -91,11 +91,37 @@ export async function saveCatalogRecords(records=[],{build=null,source='runtime'
   }
   let saved=0;
   for(const [type,list] of groups){
+    const ids=list.map(record=>record.id);
+    const existingValues=await redis(['HMGET',CATALOG_PREFIX+type,...ids]);
     const args=['HSET',CATALOG_PREFIX+type];
-    for(const record of list)args.push(record.id,JSON.stringify({...record,...(build?{build}:{}),source:record.source||source}));
+    list.forEach((record,index)=>{
+      let existing={};
+      const raw=Array.isArray(existingValues)?existingValues[index]:null;
+      if(raw){try{existing=JSON.parse(raw)||{}}catch{}}
+      const merged={
+        ...existing,
+        ...record,
+        media:{...(existing.media||{}),...(record.media||{})},
+        ...(build?{build}:{...((existing.build)?{build:existing.build}:{})}),
+        source:record.source||source||existing.source
+      };
+      if(!Object.keys(merged.media).length)delete merged.media;
+      args.push(record.id,JSON.stringify(merged));
+    });
     await redis(args);
     saved+=list.length;
-    await redis(['HSET',CATALOG_META,type,JSON.stringify({updatedAt:new Date().toISOString(),build:build||null,source,count:list.length})]);
+    let priorMeta={};
+    try{
+      const rawMeta=await redis(['HGET',CATALOG_META,type]);
+      if(rawMeta)priorMeta=JSON.parse(rawMeta)||{};
+    }catch{}
+    const total=Number(await redis(['HLEN',CATALOG_PREFIX+type]))||list.length;
+    await redis(['HSET',CATALOG_META,type,JSON.stringify({
+      updatedAt:new Date().toISOString(),
+      build:build||priorMeta.build||null,
+      source,
+      count:total
+    })]);
   }
   return {saved};
 }
