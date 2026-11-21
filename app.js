@@ -1,3 +1,4 @@
+import {hunterPetFamily} from './hunter-pets.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
@@ -243,6 +244,89 @@ function experienceProgress(c){
   '</div>';
 }
 
+const petRenderPattern=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/npcs\/zoom\/creature-display-\d+\.jpg$/;
+const petIconPattern=/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg$/;
+function signedPercent(value){
+  const n=Number(value);
+  if(!Number.isFinite(n))return '–';
+  if(n===0)return '±0 %';
+  return (n>0?'+':'')+new Intl.NumberFormat('de-DE',{maximumFractionDigits:1}).format(n)+' %';
+}
+function petAbilityCard(ability,petLevel){
+  const ranks=[...(ability?.ranks||[])].sort((a,b)=>a.level-b.level);
+  const available=ranks.filter(rank=>Number(rank.level)<=petLevel).at(-1)||null;
+  const next=ranks.find(rank=>Number(rank.level)>petLevel)||null;
+  const first=ranks[0]||null;
+  const state=available?'is-available':'is-locked';
+  const status=available
+    ?'Bis Rang '+available.rank+' trainierbar'+(next?' · nächster Rang ab Stufe '+next.level:' · höchster Rang erreicht')
+    :(first?'Ab Begleiterstufe '+first.level+' trainierbar':'Ausbildungsstufe unbekannt');
+  return '<div class="pet-ability '+state+'">'+
+    '<div class="pet-ability-head"><div><strong>'+esc(ability.name)+'</strong><span>'+esc(ability.kind||'Fähigkeit')+'</span></div>'+
+      '<span class="pet-ability-status">'+(available?'Verfügbar':'Gesperrt')+'</span></div>'+
+    '<p>'+esc(status)+'</p>'+
+    (ability.description?'<p class="pet-ability-description">'+esc(ability.description)+(ability.cooldown?' · Abklingzeit '+esc(ability.cooldown):'')+'</p>':'')+
+    '<small>Nicht mit „bereits gelernt“ gleichzusetzen.</small>'+
+  '</div>';
+}
+function hunterPetMiniCard(pet){
+  const icon=petIconPattern.test(pet?.iconUrl||'')?'<img src="'+esc(pet.iconUrl)+'" alt="" loading="lazy">':'<span class="pet-mini-placeholder" aria-hidden="true">•</span>';
+  return '<div class="pet-mini">'+icon+'<div><strong>'+esc(pet?.name||'Begleiter')+'</strong>'+
+    '<span>'+esc(pet?.family?.name||'Familie unbekannt')+(Number.isInteger(Number(pet?.level))?' · Stufe '+esc(pet.level):'')+'</span></div></div>';
+}
+function hunterPetsPanel(c){
+  const group=c.hunterPets&&typeof c.hunterPets==='object'?c.hunterPets:{active:[],stable:[]};
+  const activeList=Array.isArray(group.active)?group.active:[];
+  const stableList=Array.isArray(group.stable)?group.stable:[];
+  const active=activeList.find(pet=>pet?.active===true)||activeList[0]||null;
+  const verified=c.hunterPetsVerified===true&&c.scrapeOk!==false;
+  const staleLabel=verified?'':' · letzter bestätigter Stand';
+  if(!active&&!stableList.length){
+    return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+
+      '<p class="knowledge-empty">'+(c.hunterPetsCheckedAt?'Blizzard meldet derzeit keinen Jägerbegleiter und keinen belegten Stallplatz.':'Der Blizzard-Stall wurde für diesen gespeicherten Stand noch nicht abgerufen. Beim nächsten Aktualisieren wird er automatisch geladen.')+'</p></div>';
+  }
+  const petLevel=Number(active?.level),characterLevel=Number(c.level);
+  const validPetLevel=Number.isInteger(petLevel);
+  const validCharacterLevel=Number.isInteger(characterLevel);
+  const gap=validPetLevel&&validCharacterLevel?characterLevel-petLevel:null;
+  const family=active?hunterPetFamily(active.family?.slug):null;
+  const render=petRenderPattern.test(active?.imageUrl||'')?active.imageUrl:null;
+  const badges=[
+    active?.active?'<span>Aktiver Begleiter</span>':'',
+    active?.summoned===true?'<span>Derzeit gerufen</span>':''
+  ].filter(Boolean).join('');
+  const gapCopy=gap===null?'Stufenabstand nicht berechenbar':
+    gap>0?active.name+' liegt '+gap+' '+(gap===1?'Stufe':'Stufen')+' hinter '+c.name.replace(/\s+Dalton$/,'')+'. Mitkämpfen lassen, damit der Begleiter aufholt.':
+    gap===0?active.name+' ist auf derselben Stufe wie '+c.name.replace(/\s+Dalton$/,'')+'.':
+    active.name+' liegt '+Math.abs(gap)+' '+(Math.abs(gap)===1?'Stufe':'Stufen')+' vor dem Jäger.';
+  const hero=active?'<div class="pet-hero">'+
+    '<div class="pet-render">'+(render?'<img src="'+esc(render)+'" alt="'+esc('Begleiter '+active.name)+'" loading="lazy" decoding="async">':'<span>Kein Renderbild verfügbar</span>')+'</div>'+
+    '<div class="pet-identity"><span class="pet-overline">JÄGERBEGLEITER · BLIZZARD LIVE</span><h4>'+esc(active.name)+'</h4>'+
+      '<p>'+esc(active.family?.name||'Familie unbekannt')+(validPetLevel?' · Stufe '+esc(petLevel):'')+'</p>'+
+      (badges?'<div class="pet-badges">'+badges+'</div>':'')+
+      '<div class="pet-level-gap"><strong>'+esc(validPetLevel?'Stufe '+petLevel:'Stufe unbekannt')+'</strong><span>'+esc(gapCopy)+'</span></div>'+
+    '</div></div>':'<p class="knowledge-empty">Kein aktiver Begleiter gemeldet.</p>';
+  const familyProfile=active&&family?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(family.name)+'</h4></div><span class="pet-source">Forever-Spieldaten</span></div>'+
+    '<div class="pet-family-stats">'+
+      '<div><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
+      '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
+      '<div><small>Leben</small><strong>'+esc(signedPercent(family.modifiers.health))+'</strong></div>'+
+      '<div><small>Futter</small><strong>'+esc(family.diet.join(' · '))+'</strong></div>'+
+    '</div></div>':'';
+  const training=active&&family?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Was '+esc(active.name)+' auf seiner Stufe trainieren kann</h4></div><span class="pet-source">Keine Lernstand-Schätzung</span></div>'+
+    '<div class="pet-abilities">'+family.abilities.map(ability=>petAbilityCard(ability,validPetLevel?petLevel:0)).join('')+'</div>'+
+    '<p class="pet-note">Die Stufen zeigen, was für einen Fuchs grundsätzlich trainierbar ist. Blizzard veröffentlicht online nicht, welche Ränge '+esc(active.name)+' tatsächlich gelernt hat.</p></div>':'';
+  const care=active?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">PFLEGE & SPIELMECHANIK</span><h4>Wichtig im Spiel</h4></div></div>'+
+    '<div class="pet-tips">'+
+      (family?'<div><strong>Füttern</strong><span>'+esc(family.diet.join(' · '))+' bereithalten. Zufriedenheit beeinflusst den Schaden des Begleiters.</span></div>':'')+
+      '<div><strong>Knurren</strong><span>Solo meist automatisch aktiv lassen. In Gruppen mit einem Tank automatisches Knurren ausschalten.</span></div>'+
+      '<div><strong>Treue & Ausbildungspunkte</strong><span>Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und das tatsächlich gelernte Pet-Zauberbuch sind Forever-Clientwerte. Blizzard veröffentlicht sie derzeit nicht in der Online-Armory; deshalb zeigt das Dashboard keine Schätzwerte.</span></div>'+
+    '</div></div>':'';
+  const stable='<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">STALL</span><h4>Weitere gezähmte Begleiter · '+stableList.length+'</h4></div><span class="pet-source">'+(verified?'Blizzard live':'letzter Stand')+'</span></div>'+
+    (stableList.length?'<div class="pet-stable-list">'+stableList.map(hunterPetMiniCard).join('')+'</div>':'<p class="knowledge-empty">Noch kein weiterer Begleiter eingestallt.</p>')+'</div>';
+  return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+hero+familyProfile+training+care+stable+'</div>';
+}
+
 function shortCharacterName(character){
   const name=String(character?.name||character?.player||'').trim();
   return name.replace(/\s+Dalton$/i,'')||'Unbekannt';
@@ -373,7 +457,7 @@ function installPortraitFallbacks(){
   }));
 }
 
-const characterTabs=[
+const baseCharacterTabs=[
   {id:'stats',label:'Charakterwerte'},
   {id:'equipment',label:'Ausrüstung'},
   {id:'talents',label:'Talente'},
@@ -381,32 +465,48 @@ const characterTabs=[
   {id:'professions',label:'Berufe'},
   {id:'reputation',label:'Ruf'}
 ];
-let activeCharacterTab='stats';
+const activeCharacterTabs=new Map();
 let displayedQuestCatalog={};
+function characterTabsFor(c){
+  if(c.class!=='Jäger')return baseCharacterTabs;
+  const tabs=[...baseCharacterTabs];
+  tabs.splice(3,0,{id:'pets',label:'Begleiter'});
+  return tabs;
+}
+function activeCharacterTabFor(c){
+  const tabs=characterTabsFor(c);
+  const desired=activeCharacterTabs.get(c.slug)||'stats';
+  return tabs.some(tab=>tab.id===desired)?desired:'stats';
+}
 function characterTabsNav(c){
-  return '<div class="character-tabs" role="tablist" aria-label="Details von '+esc(c.name)+'">'+characterTabs.map(tab=>{
-    const selected=tab.id===activeCharacterTab;
-    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-tab="'+tab.id+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
+  const active=activeCharacterTabFor(c);
+  return '<div class="character-tabs" role="tablist" aria-label="Details von '+esc(c.name)+'">'+characterTabsFor(c).map(tab=>{
+    const selected=tab.id===active;
+    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-slug="'+esc(c.slug)+'" data-character-tab="'+tab.id+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
   }).join('')+'</div>';
 }
 function characterTabPanel(c,id,content){
-  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" data-character-panel="'+id+'"'+(id===activeCharacterTab?'':' hidden')+'>'+content+'</section>';
+  const active=activeCharacterTabFor(c);
+  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?'':' hidden')+'>'+content+'</section>';
 }
-function setActiveCharacterTab(tab){
-  if(!characterTabs.some(item=>item.id===tab))return;
-  activeCharacterTab=tab;
+function setActiveCharacterTab(slug,tab){
+  const character=displayedData?.characters?.find(item=>item.slug===slug);
+  if(!character||!characterTabsFor(character).some(item=>item.id===tab))return;
+  activeCharacterTabs.set(slug,tab);
   cards.querySelectorAll('[data-character-tab]').forEach(button=>{
+    if(button.dataset.characterSlug!==slug)return;
     const selected=button.dataset.characterTab===tab;
     button.classList.toggle('is-active',selected);
     button.setAttribute('aria-selected',String(selected));
   });
   cards.querySelectorAll('[data-character-panel]').forEach(panel=>{
+    if(panel.dataset.characterSlug!==slug)return;
     panel.hidden=panel.dataset.characterPanel!==tab;
   });
 }
 function installCharacterTabs(){
   cards.querySelectorAll('button[data-character-tab]').forEach(button=>
-    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterTab))
+    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab))
   );
 }
 
@@ -442,6 +542,7 @@ function keepNewestProfiles(data){
       professions:mergedProfessions,
       equipment:c.equipmentVerified===false&&prior.equipment?prior.equipment:c.equipment,
       talents:c.talentsVerified===false&&prior.talents!=null?prior.talents:c.talents,
+      hunterPets:c.hunterPetsVerified===false&&prior.hunterPets?prior.hunterPets:c.hunterPets,
       imageUrl:keepPreviousImage?prior.imageUrl:c.imageUrl,
       avatarUrl:keepPreviousImage?prior.avatarUrl:c.avatarUrl,
       imageCheckedAt:keepPreviousImage?prior.imageCheckedAt:c.imageCheckedAt
@@ -492,6 +593,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
     ${characterTabPanel(c,'talents',talentPanel(c))}
+    ${c.class==='Jäger'?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
     ${characterTabPanel(c,'reputation',reputationPanel(c))}
     ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}

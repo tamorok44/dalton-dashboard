@@ -42,7 +42,7 @@ const fakeOld={
   imageUrl:'https://render.worldofwarcraft.com/forever-eu/character/12/1234-main-raw.png'
 };
 let englishName='New Chest', germanName='Neues Wams',qualityType='RARE',deAvailable=true,gearAvailable=true,partialStats=false,partialProfessions=false,missingSpecs=false;
-let germanFetches=0,englishFetches=0,foreverSpecFetches=0,oauthFetches=0,apiFetches=0,apiAvailable=true;
+let germanFetches=0,englishFetches=0,foreverSpecFetches=0,oauthFetches=0,apiFetches=0,stableFetches=0,apiAvailable=true;
 const fakeCharacter=(locale)=>{
  const c={
   slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
@@ -78,6 +78,19 @@ globalThis.fetch=async (url,options={})=>{
      ruleset:{id:1,name:'PvP'}
    })};
  }
+ if(u.endsWith('/collections/stable.json')){
+   stableFetches++;
+   return {ok:true,status:200,text:async()=>JSON.stringify({pets:{
+     active:[{
+       active:true,family:{id:319,name:'Fuchs',enum:'FOX',slug:'fox'},
+       icon:{url:'https://render.worldofwarcraft.com/forever-eu/icons/56/458223.jpg'},
+       level:6,name:'Slydris',
+       render:{url:'https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-139280.jpg'},
+       slot:0,summoned:true,collected:true
+     }],
+     stable:[]
+   }})};
+ }
  if(u.includes('foreverspec.com')){foreverSpecFetches++;return {ok:false,status:503}}
  if(u.includes('/de-de/')){germanFetches++;return deAvailable?{ok:true,text:async()=>htmlFor('de-de')}:{ok:false,status:503}}
  if(u.includes('/en-gb/')){englishFetches++;return {ok:true,text:async()=>htmlFor('en-gb')}}
@@ -106,6 +119,13 @@ try{
  assert.equal(c.ruleset.name,'PvP');
  assert.equal(c.apiProfileVerified,true);
  assert.equal(c.source,'Blizzard API + Armory');
+ assert.equal(c.hunterPetsVerified,true);
+ assert.equal(c.hunterPets.active.length,1);
+ assert.equal(c.hunterPets.active[0].name,'Slydris');
+ assert.equal(c.hunterPets.active[0].family.name,'Fuchs');
+ assert.equal(c.hunterPets.active[0].level,6);
+ assert.equal(c.hunterPets.active[0].summoned,true);
+ assert.equal(c.hunterPets.stable.length,0);
  // No redundant localized request when Blizzard equipment has not changed.
  const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;
  r=await refreshCharacters([c]);c=r.data.characters[0];
@@ -153,5 +173,6 @@ try{
  assert.ok(apiFetches>=6,'Official Forever profile is checked on every refresh');
  assert.equal(oauthFetches,1,'OAuth token is reused instead of requested for every profile refresh');
  assert.ok(englishFetches>=6);
- console.log('Blizzard refresh: updated gear, professions, stale stats provenance, talents and request efficiency: OK');
+ assert.ok(stableFetches>=6,'Hunter stable JSON is refreshed together with the character');
+ console.log('Blizzard refresh: updated gear, professions, hunter stable, stale stats provenance, talents and request efficiency: OK');
 }finally{globalThis.fetch=originalFetch}

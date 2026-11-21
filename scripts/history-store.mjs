@@ -76,6 +76,23 @@ function completedQuestMap(list=[]){
 function stableStats(stats={}){
   return Object.fromEntries(Object.entries(stats).sort(([a],[b])=>a.localeCompare(b,'de')));
 }
+function hunterPetMap(group={}){
+  const normalize=list=>[...(Array.isArray(list)?list:[])]
+    .sort((a,b)=>(Number(a?.slot)||0)-(Number(b?.slot)||0)||String(a?.name||'').localeCompare(String(b?.name||''),'de'))
+    .map(pet=>({
+      name:pet?.name??null,
+      level:pet?.level??null,
+      familyId:pet?.family?.id??null,
+      family:pet?.family?.name??null,
+      familySlug:pet?.family?.slug??null,
+      active:pet?.active===true,
+      summoned:pet?.summoned??null,
+      slot:pet?.slot??null,
+      iconUrl:pet?.iconUrl??null,
+      imageUrl:pet?.imageUrl??null
+    }));
+  return {active:normalize(group?.active),stable:normalize(group?.stable)};
+}
 export function historyProjection(c={}){
   return {
     level:c.level??null,
@@ -98,6 +115,7 @@ export function historyProjection(c={}){
     completedQuests:completedQuestMap(c.completedQuestIds||[]),
     stats:stableStats(c.stats),
     equipment:equipmentMap(c.equipment),
+    hunterPets:hunterPetMap(c.hunterPets),
     imageUrl:c.imageUrl??null,
     avatarUrl:c.avatarUrl??null
   };

@@ -10,6 +10,7 @@ Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funk
 - Redis-basierte Sperre (`SET NX EX`) schützt gegen parallele Serverinstanzen. Ein per Lua validierter Schreibvorgang verhindert Überschreiben nach abgelaufener Sperre. Eine laufende Aktualisierung erhält HTTP 202 (manuell) oder 200 (QStash).
 - Teilfehler behalten den letzten Datenstand des betroffenen Charakters. Bei einem vollständigen Blizzard-Ausfall wird kein neuer Stand gespeichert.
 - Vercel Blob speichert optional Porträts, Avatare und Ausrüstungs-Icons. Neue Icons werden schrittweise archiviert. Die Originale bleiben als Fallback erhalten. Alle Blob-Adressen werden in Redis gespeichert.
+- Jägerprofile laden zusätzlich Blizzards öffentliche Forever-Stall-JSON (`collections/stable.json`). Aktiver Begleiter, Stallplätze, Name, Familie, Stufe und Blizzard-Render werden persistent gespeichert und bei Änderungen historisiert. Treue, Zufriedenheit, Ausbildungspunkte und tatsächlich gelernte Pet-Ränge werden nicht geschätzt, weil Blizzard diese Clientwerte online nicht veröffentlicht.
 - Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
 ## Noch nötige Einrichtung vor Produktionsstart

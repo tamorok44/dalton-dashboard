@@ -2,11 +2,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+import {hunterPetFamily} from '../hunter-pets.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
-const start=source.indexOf('button.innerHTML=');
+const executableSource=source.replace("import {hunterPetFamily} from './hunter-pets.js';\n",'');
+const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
 const document={querySelector(selector){
@@ -15,7 +17,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location',source.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document,window,location);
+const ui=new Function('document','window','location','hunterPetFamily',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,characterTabsFor};')(document,window,location,hunterPetFamily);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -106,6 +108,35 @@ assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: <strong>20.1
 assert.ok(nodes.get('#cards').innerHTML.includes('Allianz · EU-PvP'),
   'Faction and ruleset are rendered from API-backed character metadata');
 
+const petData=structuredClone(data);
+const petDolly=petData.characters.find(c=>c.slug==='dolly-dalton');
+petDolly.hunterPetsVerified=true;
+petDolly.hunterPetsCheckedAt='2026-11-21T09:32:58.000Z';
+petDolly.hunterPets={
+  active:[{
+    name:'Slydris',level:6,active:true,summoned:true,slot:0,
+    family:{id:319,name:'Fuchs',enum:'FOX',slug:'fox'},
+    iconUrl:'https://render.worldofwarcraft.com/forever-eu/icons/56/458223.jpg',
+    imageUrl:'https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-139280.jpg'
+  }],
+  stable:[{name:'Lobo',level:5,active:false,slot:1,family:{id:1,name:'Wolf',enum:'WOLF',slug:'wolf'},iconUrl:'https://render.worldofwarcraft.com/forever-eu/icons/56/132203.jpg'}]
+};
+const petPanel=ui.hunterPetsPanel(petDolly);
+assert.ok(petPanel.includes('Slydris')&&petPanel.includes('Fuchs')&&petPanel.includes('Stufe 6'),'Live pet identity is rendered');
+assert.ok(petPanel.includes('5 Stufen')&&petPanel.includes('hinter Dolly'),'Pet-to-hunter level gap is explained');
+assert.ok(petPanel.includes('Schaden')&&petPanel.includes('±0 %')&&petPanel.includes('+5 %'),'Fox family modifiers are shown');
+assert.ok(petPanel.includes('Fleisch'),'Fox diet is shown');
+assert.ok(petPanel.includes('Beißen')&&petPanel.includes('nächster Rang ab Stufe 8'),'Training guidance is level-aware');
+assert.ok(petPanel.includes('Tanz des Täuschers')&&petPanel.includes('Ab Begleiterstufe 20'),'Fox-exclusive ability is shown as future unlock');
+assert.ok(petPanel.includes('Nicht mit „bereits gelernt“ gleichzusetzen.'),'Trainable ranks are never presented as learned');
+assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
+assert.ok(petPanel.includes('keine Schätzwerte'),'Unavailable loyalty/training state is explicitly not fabricated');
+ui.render(petData);
+const petCards=nodes.get('#cards').innerHTML;
+assert.equal((petCards.match(/>Begleiter<\/button>/g)||[]).length,1,'Only the hunter gets a companion tab');
+assert.ok(ui.characterTabsFor(petDolly).some(tab=>tab.id==='pets'),'Hunter tab model includes companions');
+assert.ok(!ui.characterTabsFor(petData.characters.find(c=>c.slug==='cole-dalton')).some(tab=>tab.id==='pets'),'Non-hunters do not get a companion tab');
+
 const questData=structuredClone(data);
 const questBySlug=new Map(questData.characters.map(character=>[character.slug,character]));
 for(const character of questData.characters){
@@ -167,10 +198,11 @@ assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,dat
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
-assert.equal((cards.match(/data-character-tab=/g)||[]).length,data.characters.length*6,'Every character has all six detail tabs');
-assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one synchronized tab is initially active per character');
-assert.equal((cards.match(/data-character-panel=/g)||[]).length,data.characters.length*6,'All tab panels remain available without showing them at once');
-assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterTab)"),'A tab click switches the same category across all character cards');
+const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(character.class==='Jäger'?1:0),0);
+assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
+assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
+assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
+assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab)"),'A tab click changes only the selected character card');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
 const wowClassColors={mage:'#3fc7eb',hunter:'#aad372',druid:'#ff7c0a'};
@@ -491,4 +523,4 @@ assert.ok(!css.includes('font-size:.43rem'),'Ultra-small phone header text remov
 assert.ok(!css.includes('font-weight:850')&&!css.includes('font-weight:900'),'Excessively heavy weight variants removed');
 assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Informationsschrift'),'Typography mapping is documented');
 
-console.log('UI QA: synchronized tabs, simplified XP, 8+7 stats, profession order, quest details, rarity and gear: OK');
+console.log('UI QA: per-character tabs, hunter companion, simplified XP, stats, profession order, quest details, rarity and gear: OK');
