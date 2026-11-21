@@ -1,5 +1,6 @@
 const REGION='eu';
 const PROFILE_NAMESPACE='profile-forever-eu';
+const STATIC_NAMESPACE='static-forever-eu';
 const API_BASE='https://'+REGION+'.api.blizzard.com';
 const TOKEN_URL='https://oauth.battle.net/token';
 let cachedToken=null;
@@ -154,6 +155,29 @@ function endpointUrl(slug,suffix,locale){
   url.searchParams.set('namespace',PROFILE_NAMESPACE);
   url.searchParams.set('locale',locale);
   return url;
+}
+
+function gameDataUrl(path,locale='de_DE'){
+  const url=new URL(API_BASE+path);
+  url.searchParams.set('namespace',STATIC_NAMESPACE);
+  url.searchParams.set('locale',locale);
+  return url;
+}
+
+export async function fetchForeverReputationIndex({fetchImpl=fetch,locale='de_DE'}={}){
+  const {token}=await accessToken(fetchImpl);
+  const response=await fetchImpl(gameDataUrl('/data/wow/reputation-faction/index',locale),{
+    headers:{authorization:'Bearer '+token,accept:'application/json'},
+    signal:AbortSignal.timeout(15000)
+  });
+  const body=await parseResponse(response);
+  if(!response.ok)throw new Error('Blizzard Forever reputation index HTTP '+response.status);
+  const list=Array.isArray(body?.factions)?body.factions:Array.isArray(body?.reputation_factions)?body.reputation_factions:[];
+  return list.map(entry=>({
+    id:Number(entry?.id)||Number(entry?.faction?.id)||null,
+    name:entry?.name||entry?.faction?.name||null,
+    href:entry?.key?.href||entry?.faction?.key?.href||null
+  })).filter(entry=>Number.isInteger(entry.id)&&entry.id>0&&entry.name);
 }
 
 export async function fetchForeverProfile(slug,{fetchImpl=fetch,locale='en_GB'}={}){
