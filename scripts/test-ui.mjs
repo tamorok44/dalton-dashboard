@@ -10,10 +10,12 @@ const start=source.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
 const document={querySelector(selector){
-  if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',querySelectorAll:()=>[],addEventListener(){}});
+  if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',hidden:selector==='#compareView',querySelectorAll:()=>[],querySelector:()=>null,addEventListener(){}});
   return nodes.get(selector);
 }};
-const ui=new Function('document',source.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document);
+const window={addEventListener(){}};
+const location={hash:''};
+const ui=new Function('document','window','location',source.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab};')(document,window,location);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
