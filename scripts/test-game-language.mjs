@@ -37,6 +37,9 @@ const refresh=fs.readFileSync(new URL('./refresh-service.mjs',import.meta.url),'
 const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
 const pets=fs.readFileSync(new URL('../hunter-pets.js',import.meta.url),'utf8');
 const reputation=fs.readFileSync(new URL('../reputation-data.js',import.meta.url),'utf8');
+const terminology=fs.readFileSync(new URL('./player-terminology.mjs',import.meta.url),'utf8');
+const details=fs.readFileSync(new URL('./forever-details.mjs',import.meta.url),'utf8');
+const store=fs.readFileSync(new URL('./character-store.mjs',import.meta.url),'utf8');
 
 for(const forbidden of ['const classNames','const professionNames','const statNames','const treeNames','const itemQualityNames']){
   assert.ok(!armory.includes(forbidden)&&!app.includes(forbidden),'No manual game-string translation table: '+forbidden);
@@ -51,6 +54,11 @@ for(const forbidden of ['Beißen','Tanz des Täuschers',"diet:Object.freeze(['Fl
   assert.ok(!pets.includes(forbidden),'Unsourced pet game string removed from frontend model: '+forbidden);
 }
 assert.ok(!reputation.includes("name:'Hasserfüllt'")&&!reputation.includes("name:'Freundlich'"),'Reputation stage names are not manually maintained');
+assert.ok(terminology.includes("171:Object.freeze({name:'Alchemie'})"),'Profession 171 uses verified official German Blizzard player terminology');
+assert.ok(!terminology.includes("name:'Alchimie'"),'Technical Alchimie label must not be the verified visible profession term');
+assert.ok(terminology.includes('worldofwarcraft.blizzard.com/de-de/'),'Verified terminology must cite official German Blizzard sources');
+assert.ok(details.includes("preferredGermanGameName('profession',professionId,technicalName)"),'Profession enrichment must prefer verified player terminology over technical localized labels');
+assert.ok(store.includes('normalizeVerifiedPlayerTerminology'),'Stored and fallback character data must be normalized through the verified terminology master');
 assert.match(armory,/fetchCharacter\(slug,locale="de-de"\)/);
 assert.match(armory,/fetchForeverProfile\(old\.slug,\{locale:'de_DE'\}\)/);
 assert.match(api,/fetchForeverProfile\(slug,\{fetchImpl=fetch,locale='de_DE'\}/);

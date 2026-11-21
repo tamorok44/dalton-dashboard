@@ -44,6 +44,13 @@ for(const [file,source] of sourceByFile){
   assert.ok(!manualCategoryTranslation.test(source),file+' contains a manual recipe/category translation table');
 }
 assert.ok(!sourceByFile.get('app.js')?.includes('recipe.professionSlug'),'Frontend must never render an untranslated profession slug');
+assert.ok(sourceByFile.has('scripts/player-terminology.mjs'),'Verified player terminology master is required');
+const terminologySource=sourceByFile.get('scripts/player-terminology.mjs')||'';
+assert.ok(terminologySource.includes("171:Object.freeze({name:'Alchemie'})"),'Official German player term for profession 171 must be Alchemie');
+assert.ok(terminologySource.includes('worldofwarcraft.blizzard.com/de-de/'),'Player terminology master must cite official German Blizzard sources');
+assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes('preferredGermanGameName'),'Technical localized strings must pass through verified player terminology priority');
+assert.ok((sourceByFile.get('scripts/character-store.mjs')||'').includes('normalizeVerifiedPlayerTerminology'),'Persisted character data must be normalized at the central store boundary');
+assert.ok(policy.includes('offizielle deutsche Blizzard-Spieler-/UI-Terminologie'),'Language policy must define player-facing source priority');
 
 // MEDIA CONTRACT
 const directRegistryUsers=[...sourceByFile.entries()]

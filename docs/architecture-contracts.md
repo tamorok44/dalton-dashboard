@@ -17,8 +17,10 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 
 ## 2. Sprache / WoW-Begriffe
 
-- Sichtbare WoW-Bezeichnungen kommen aus verifizierten deutschen Client-/API-Daten.
-- Keine manuell gepflegten Englisch→Deutsch-Übersetzungstabellen für Klassen, Berufe, Items, Rezepte, Kategorien, Fähigkeiten, Rufstufen usw.
+- Sichtbare WoW-Bezeichnungen kommen aus verifizierten deutschen Blizzard-/Forever-Quellen.
+- Bei widersprüchlichen deutschen Quellen gilt für sichtbare Spielerbegriffe die Priorität: **offizielle deutsche Blizzard-Spieler-/UI-Terminologie → lokalisierte Blizzard-Game-Data-/Clientbezeichnung → keine selbst erfundene Übersetzung**.
+- Quellenbelegte Terminologie-Master sind ausschließlich über stabile Spiel-IDs erlaubt. Jeder Eintrag benötigt offizielle Quelle, Locale und Verifizierungsdatum; freie Englisch→Deutsch-Übersetzungstabellen bleiben verboten.
+- Der aktuelle Berufs-Master liegt in `scripts/player-terminology.mjs` und ist durch die offiziellen deutschen WoW-Forever-Berufsseiten belegt. Beispiel: Beruf-ID `171` wird sichtbar als **„Alchemie“** geführt, auch wenn technische Client-/Game-Data-Felder „Alchimie“ liefern.
 - Technische IDs und Slugs dürfen intern verwendet werden, aber nicht als sichtbarer Ersatztext.
 - Wenn eine deutsche Bezeichnung nicht verifiziert vorliegt, wird sie neutral weggelassen bzw. als nicht verfügbar behandelt.
 - Eigene UI-Begriffe wie „Werkstatt“, „Menge“, „Bezugsquellen“ oder die funktionale Werkstatt-Taxonomie sind erlaubt, solange sie nicht als Übersetzung eines Quellbegriffs ausgegeben werden.
