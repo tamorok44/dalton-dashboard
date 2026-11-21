@@ -436,9 +436,11 @@ function hunterPetsPanel(c){
       '</div></div>'
       :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
     :'';
-  const training=active&&family&&trainingAllowed
-    ?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Deutsche Spielstrings noch nicht aus der Pet-Datenquelle angebunden</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+'</span></div>'+
-      '<p class="pet-note">Trainierbare Fähigkeiten werden erst wieder angezeigt, wenn Name und Beschreibung aus einer verifizierten deutschen Forever-Datenquelle stammen. Es wird nichts eigenständig übersetzt.</p></div>'
+  const training=active&&family
+    ?(trainingAllowed
+      ?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Deutsche Spielstrings noch nicht aus der Pet-Datenquelle angebunden</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+'</span></div>'+
+        '<p class="pet-note">Trainierbare Fähigkeiten werden erst wieder angezeigt, wenn Name und Beschreibung aus einer verifizierten deutschen Forever-Datenquelle stammen. Es wird nichts eigenständig übersetzt.</p></div>'
+      :petRuleUnavailable('Ausbildungsdaten vorübergehend gesperrt'))
     :'';
   const care=active?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">PFLEGE & SPIELMECHANIK</span><h4>Quellengebundene Hinweise</h4></div></div>'+
     '<div class="pet-tips">'+
