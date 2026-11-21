@@ -210,7 +210,7 @@ const sharedBarTypography='.profession-overlay,.reputation-overlay,.experience-o
 assert.ok(css.includes(sharedBarTypography),'Profession, reputation and XP overlays share one typography rule');
 const sharedBarStart=css.indexOf(sharedBarTypography);
 const sharedBarBlock=css.slice(sharedBarStart,css.indexOf('}',sharedBarStart)+1);
-assert.ok(sharedBarBlock.includes('font:800 .94rem/1 var(--display)'),'All three progress bars use the same font family, weight, size and line height');
+assert.ok(sharedBarBlock.includes('font:var(--weight-bar) var(--type-bar)/1.2 var(--body)'),'All three progress bars use the same centralized CI typography tokens');
 assert.ok(sharedBarBlock.includes('letter-spacing:.025em'),'All three progress bars use the same letter spacing');
 assert.ok(sharedBarBlock.includes('font-variant-numeric:tabular-nums'),'All three progress bars align numbers consistently');
 assert.ok(sharedBarBlock.includes('1px 0 #04101b,-1px 0 #04101b'),'All three progress bars use the same text shadow');
