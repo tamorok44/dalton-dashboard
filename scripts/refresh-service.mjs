@@ -29,9 +29,8 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
       });
       const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
       const localizedRefs=collectLocalizedRefs(detailsSnapshot);
-      const factionNamespace=localizedRefs.find(ref=>ref.type==='faction')?.href
-        ?new URL(localizedRefs.find(ref=>ref.type==='faction').href).searchParams.get('namespace')
-        :null;
+      const staticRef=localizedRefs.find(ref=>typeof ref?.href==='string'&&ref.href.includes('namespace=static-'));
+      const factionNamespace=staticRef?.href?new URL(staticRef.href).searchParams.get('namespace'):null;
       const reputationCatalogPromise=factionNamespace
         ?ensureReputationCatalog({namespace:factionNamespace,force:false,archiveMedia:true})
         :Promise.resolve(null);
