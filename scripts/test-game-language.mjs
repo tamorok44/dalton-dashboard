@@ -1,5 +1,35 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+function productiveFiles(dir){
+  const out=[];
+  for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+    if(entry.isDirectory()){
+      if(!['.git','node_modules','.vercel'].includes(entry.name))out.push(...productiveFiles(path.join(dir,entry.name)));
+    }else if(/\.(?:js|mjs)$/.test(entry.name)&&!/^test-/.test(entry.name)){
+      out.push(path.join(dir,entry.name));
+    }
+  }
+  return out;
+}
+const productiveSources=productiveFiles(root).map(file=>({
+  file:path.relative(root,file).replaceAll('\\','/'),
+  source:fs.readFileSync(file,'utf8')
+}));
+const globallyForbiddenTranslations=[
+  'foreverCategoryLabels',
+  'translatedForeverCategory',
+  'PROFESSION_NAMES',
+  'PROFESSION_SLUG_BY_NAME'
+];
+for(const {file,source} of productiveSources){
+  for(const token of globallyForbiddenTranslations){
+    assert.ok(!source.includes(token),file+' contains forbidden manual game translation: '+token);
+  }
+}
 
 const armory=fs.readFileSync(new URL('./armory-core.mjs',import.meta.url),'utf8');
 const api=fs.readFileSync(new URL('./blizzard-api.mjs',import.meta.url),'utf8');
