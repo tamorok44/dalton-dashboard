@@ -69,6 +69,14 @@ function compactItem(raw={}){
     icon:raw?.icon??raw?.iconUrl??null
   };
 }
+export async function fetchForeverDbMeta({fetchImpl=fetch}={}){
+  const payload=await request('/meta',{fetchImpl});
+  const data=payload?.data??payload??{};
+  return {
+    build:data?.build||data?.gameBuild||data?.clientBuild||payload?.meta?.build||payload?.meta?.gameBuild||payload?.meta?.clientBuild||null,
+    rawMeta:payload?.meta||null
+  };
+}
 export async function searchForeverDbItems(query,{limit=10,offset=0,fetchImpl=fetch}={}){
   const q=String(query??'').trim();
   if(!q)return {items:[],meta:null};
