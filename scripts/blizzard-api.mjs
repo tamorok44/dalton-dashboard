@@ -1,6 +1,5 @@
 const REGION='eu';
 const PROFILE_NAMESPACE='profile-forever-eu';
-const STATIC_NAMESPACE='static-forever-eu';
 const API_BASE='https://'+REGION+'.api.blizzard.com';
 const TOKEN_URL='https://oauth.battle.net/token';
 let cachedToken=null;
@@ -157,16 +156,17 @@ function endpointUrl(slug,suffix,locale){
   return url;
 }
 
-function gameDataUrl(path,locale='de_DE'){
+function gameDataUrl(path,namespace,locale='de_DE'){
+  if(typeof namespace!=='string'||!/^static-[a-z0-9._]+-forever-eu$/i.test(namespace))throw new Error('Ungültiger Forever-Game-Data-Namespace');
   const url=new URL(API_BASE+path);
-  url.searchParams.set('namespace',STATIC_NAMESPACE);
+  url.searchParams.set('namespace',namespace);
   url.searchParams.set('locale',locale);
   return url;
 }
 
-export async function fetchForeverReputationIndex({fetchImpl=fetch,locale='de_DE'}={}){
+export async function fetchForeverReputationIndex({namespace,fetchImpl=fetch,locale='de_DE'}={}){
   const {token}=await accessToken(fetchImpl);
-  const response=await fetchImpl(gameDataUrl('/data/wow/reputation-faction/index',locale),{
+  const response=await fetchImpl(gameDataUrl('/data/wow/reputation-faction/index',namespace,locale),{
     headers:{authorization:'Bearer '+token,accept:'application/json'},
     signal:AbortSignal.timeout(15000)
   });
