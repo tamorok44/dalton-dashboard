@@ -1,5 +1,6 @@
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
+import {normalizeVerifiedPlayerTerminology} from './player-terminology.mjs';
 const require=createRequire(import.meta.url);
 const initial=require('../data/characters.json');
 const KEY='dalton-dashboard:characters:v1';
@@ -24,12 +25,12 @@ export async function redis(command){
 }
 export function configured(){return Boolean((process.env.KV_REST_API_URL||process.env.UPSTASH_REDIS_REST_URL)&&(process.env.KV_REST_API_TOKEN||process.env.UPSTASH_REDIS_REST_TOKEN))}
 export async function loadCharacters(){
-  if(!configured())return {data:initial,fallback:true};
+  if(!configured())return {data:normalizeVerifiedPlayerTerminology(initial),fallback:true};
   const value=await redis(['GET',KEY]);
-  if(!value)return {data:initial,fallback:true};
+  if(!value)return {data:normalizeVerifiedPlayerTerminology(initial),fallback:true};
   const data=JSON.parse(value);
   if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Gespeicherter Datensatz ist ungültig');
-  return {data,fallback:false};
+  return {data:normalizeVerifiedPlayerTerminology(data),fallback:false};
 }
 export async function acquireRefreshLock(){
   const token=randomUUID();
@@ -47,7 +48,8 @@ export async function saveCharacters(data,lockToken){
   if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Ungültige Charakterdaten');
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
   const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('SET', KEYS[2], ARGV[2]) else return redis.error_reply('REFRESH_LOCK_LOST') end";
-  await redis(['EVAL',lua,2,LOCK,KEY,lockToken,JSON.stringify(data)]);
+  const normalized=normalizeVerifiedPlayerTerminology(data);
+  await redis(['EVAL',lua,2,LOCK,KEY,lockToken,JSON.stringify(normalized)]);
 }
 export function mergeProfiles(previous,latest){
   const bySlug=new Map((previous.characters||[]).map(c=>[c.slug,c]));
