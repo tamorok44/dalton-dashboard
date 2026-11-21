@@ -896,6 +896,70 @@ function workshopCrafterText(crafters=[]){
   if(!crafters.length)return 'Keiner der Daltons kann diesen Gegenstand aktuell herstellen.';
   return crafters.map(c=>c.name+(c.profession?' · '+c.profession:'')+(Number.isFinite(Number(c.skill))?' '+c.skill+'/'+(c.skillCap??'–'):'')).join(' · ');
 }
+function workshopCopper(value){
+  const n=Math.max(0,Math.round(Number(value)||0));
+  const gold=Math.floor(n/10000),silver=Math.floor((n%10000)/100),copper=n%100;
+  return [gold?gold+' G':'',silver?silver+' S':'',copper||(!gold&&!silver)?copper+' K':''].filter(Boolean).join(' ');
+}
+function workshopLearningCandidatesHtml(result){
+  const list=Array.isArray(result.learningCandidates)?result.learningCandidates:[];
+  if(!list.length)return '<p class="workshop-muted">Keiner der Daltons besitzt aktuell den passenden Beruf.</p>';
+  return '<div class="workshop-learning-candidates">'+list.map(candidate=>{
+    const status=candidate.status==='can-learn-now'
+      ?'<span class="workshop-learning-state is-ready">Beruf/Skill reicht jetzt</span>'
+      :candidate.status==='skill-gap'
+        ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+'</span>'
+        :'<span class="workshop-learning-state">Passender Beruf</span>';
+    const skill=Number.isFinite(Number(candidate.skill))
+      ?esc(candidate.skill)+'/'+esc(candidate.skillCap??'–')
+      :'Skill unbekannt';
+    const requirement=Number.isFinite(Number(candidate.requiredSkill))?' · benötigt '+esc(candidate.requiredSkill):'';
+    return '<div class="workshop-learning-candidate"><div><strong>'+esc(candidate.name)+'</strong><span>'+esc(candidate.profession)+' · '+skill+requirement+'</span></div>'+status+'</div>';
+  }).join('')+'</div>';
+}
+const workshopSourceTypeLabels={trainer:'Lehrer',vendor:'Händler',quest:'Quest',drop:'Beute',object:'Objekt',item:'Rezeptgegenstand',source:'Quelle'};
+const workshopSideLabels={alliance:'Allianz',horde:'Horde',neutral:'Neutral/sonstige'};
+function workshopSourceHtml(source){
+  const location=source.location||{};
+  const coords=Number.isFinite(Number(location.x))&&Number.isFinite(Number(location.y))
+    ?Number(location.x).toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+Number(location.y).toLocaleString('de-DE',{maximumFractionDigits:1})
+    :'';
+  const where=[location.zone,coords,location.instance].filter(Boolean).join(' · ');
+  const details=[
+    source.side?workshopSideLabels[source.side]||source.side:'',
+    where,
+    Number.isFinite(Number(source.priceCopper))?workshopCopper(source.priceCopper):'',
+    Number.isFinite(Number(source.limitedStock))?'Vorrat '+source.limitedStock:'',
+    source.reputationFaction?'Ruf: '+source.reputationFaction:''
+  ].filter(Boolean).join(' · ');
+  const evidence=source.evidence==='forever-confirmed'
+    ?'<span class="workshop-source-evidence is-confirmed">In Forever bestätigt</span>'
+    :source.evidence==='classic-unconfirmed'
+      ?'<span class="workshop-source-evidence is-classic">Classic-Daten · nicht bestätigt</span>'
+      :'<span class="workshop-source-evidence">Status unbekannt</span>';
+  return '<div class="workshop-source-card"><div class="workshop-source-main"><span class="workshop-source-type">'+esc(workshopSourceTypeLabels[source.type]||source.type||'Quelle')+'</span><strong>'+esc(source.name||'Unbekannte Quelle')+'</strong>'+evidence+'</div>'+
+    (details?'<span class="workshop-source-details">'+esc(details)+'</span>':'')+'</div>';
+}
+function workshopLearningHtml(result){
+  const recipe=result.recipe;
+  if(!recipe)return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4><p>'+esc(result.learningSourcesReason||'Für diesen Gegenstand ist kein Herstellungsrezept bekannt.')+'</p></section>';
+  const requirement=Number.isFinite(Number(recipe.requiredSkill))?' · benötigt '+esc(recipe.profession)+' '+esc(recipe.requiredSkill):' · '+esc(recipe.profession||'Beruf');
+  const sources=Array.isArray(result.learningSources)?result.learningSources:[];
+  const confirmed=sources.filter(source=>source.evidence==='forever-confirmed');
+  const other=sources.filter(source=>source.evidence!=='forever-confirmed');
+  const sourceHtml=recipe.learning?.automatic===true
+    ?'<div class="workshop-learning-auto">Automatisch gelernt'+requirement+'</div>'
+    :sources.length
+      ?'<div class="workshop-source-groups">'+
+        (confirmed.length?'<div><h5>In WoW Forever bestätigt · '+confirmed.length+'</h5>'+confirmed.map(workshopSourceHtml).join('')+'</div>':'')+
+        (other.length?'<details class="workshop-source-unconfirmed"><summary>Weitere Quellen · '+other.length+'</summary>'+other.map(workshopSourceHtml).join('')+'</details>':'')+
+        '</div>'
+      :'<p>'+esc(result.learningSourcesReason||'ForeverDB kennt derzeit keine konkrete Bezugsquelle.')+'</p>';
+  return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4>'+
+    '<p class="workshop-recipe-line"><strong>'+esc(recipe.name||result.item?.name||'Rezept')+'</strong>'+requirement+'</p>'+
+    workshopLearningCandidatesHtml(result)+
+    '<div class="workshop-learning-sources"><h5>Bezugsquellen</h5>'+sourceHtml+'</div></section>';
+}
 function workshopTreeHtml(node,depth=0){
   if(!node?.item)return '';
   const craftable=node.status==='craftable'&&node.recipe;
@@ -922,11 +986,11 @@ function workshopResultHtml(){
   return '<article class="workshop-result">'+
     '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3>'+esc(item.name||('Item '+item.id))+'</h3>'+
     '<p>'+esc(workshopCrafterText(topCrafters))+'</p></div>'+
-    '<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label></div>'+
-    (tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
-    (base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+base.map(material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
-    (!craftable?'<section class="workshop-learning"><h4>Wer könnte es lernen?</h4><p>'+esc(result.learningSourcesReason||'Die Lernquellen werden noch aufgebaut.')+'</p></section>':'')+
-    (result.source==='foreverdb'?'<p class="workshop-credit">Gegenstandsdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
+    (craftable?'<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label>':'')+'</div>'+
+    (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
+    (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+base.map(material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
+    (!craftable?workshopLearningHtml(result):'')+
+    (result.source==='foreverdb'?'<p class="workshop-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</article>';
 }
 function renderWorkshop(){
@@ -943,9 +1007,11 @@ function renderWorkshop(){
       '<button type="button" data-workshop-suggestion="'+esc(item.id)+'"><span><strong>'+esc(item.name)+'</strong>'+
       '<small>'+(item.craftable?'✓ '+esc((item.crafters||[]).map(c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
     ).join('')+'</div>':'';
-  const catalogNote=overview.foreverDbConfigured
-    ?'<span class="workshop-source-ok">Vollkatalog über ForeverDB verbunden</span>'
-    :'<span class="workshop-source-note">Aktuell Blizzard-Werkstattdaten · ForeverDB-Vollkatalog noch nicht verbunden</span>';
+  const catalogNote=overview.recipeCatalog?.connected
+    ?'<span class="workshop-source-ok">ForeverDB verbunden · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte im Katalog</span>'
+    :overview.foreverDbConfigured
+      ?'<span class="workshop-source-note">ForeverDB-Key vorhanden · Rezeptkatalog derzeit nicht erreichbar</span>'
+      :'<span class="workshop-source-note">Aktuell Blizzard-Werkstattdaten · ForeverDB noch nicht verbunden</span>';
   workshopRoot.innerHTML=
     '<div class="workshop-shell">'+
       '<section class="workshop-search-panel"><div class="workshop-search-head"><div><span class="workshop-kicker">DIREKTER WEG</span><h3>Gegenstand suchen</h3></div>'+catalogNote+'</div>'+
@@ -953,6 +1019,7 @@ function renderWorkshop(){
       '</section>'+
       '<section class="workshop-browse-panel"><div><span class="workshop-kicker">GEFÜHRTE AUSWAHL</span><h3>Herstellbare Gegenstände durchstöbern</h3><p>Hier erscheinen ausschließlich Gegenstände, die mindestens ein Dalton aktuell herstellen kann.</p></div><div class="workshop-browse-fields">'+workshopBrowseHtml()+'</div></section>'+
       workshopResultHtml()+
+      ((overview.recipeCatalog?.connected||workshopState.selected?.source==='foreverdb')?'<p class="workshop-global-credit">ForeverDB-Daten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</div>';
   const search=workshopRoot.querySelector('#workshopSearch');
   search?.addEventListener('input',()=>{
