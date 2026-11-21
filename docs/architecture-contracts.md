@@ -55,6 +55,7 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Charakterdaten bestimmen nur den Filter `Herstellbar` und die Crafter-Zuordnung; sie begrenzen niemals den Masterkatalog.
 - Der Master wird persistent gespeichert. Bei Buildwechseln wird er rate-limit-sicher in Teilmengen erneuert; bis zum vollständigen neuen Stand bleibt der letzte vollständige Master aktiv.
 - Die Lupe durchsucht standardmäßig alle Gegenstände. Die geführte Auswahl zeigt standardmäßig nur aktuell durch die Daltons herstellbare Gegenstände. Beide Ansichten können jeweils auf den anderen Modus umgeschaltet werden.
+- Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID. Beim Wechsel auf einen anderen Gegenstand wird die Menge auf `1` zurückgesetzt. Beim selben Gegenstand, bei Filterwechseln und beim automatischen Neuladen desselben Gegenstands nach einem Datenupdate bleibt die Menge erhalten.
 
 ## 7. Datenfrische / Frontend-Synchronisierung
 

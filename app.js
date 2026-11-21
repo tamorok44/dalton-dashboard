@@ -1104,7 +1104,7 @@ function renderWorkshop(){
   workshopRoot.querySelector('#workshopQuantity')?.addEventListener('change',event=>{
     const quantity=Math.max(1,Math.min(9999,Math.ceil(Number(event.target.value)||1)));
     workshopState.quantity=quantity;
-    if(workshopState.selected?.item?.id)selectWorkshopItem(workshopState.selected.item.id,{preserveQuery:true});
+    if(workshopState.selected?.item?.id)selectWorkshopItem(workshopState.selected.item.id,{preserveQuery:true,preserveQuantity:true});
   });
 }
 let workshopDataEpoch=0;
@@ -1143,11 +1143,15 @@ async function searchWorkshop(query){
   renderWorkshop();
   const input=workshopRoot?.querySelector('#workshopSearch');if(input){input.focus();input.setSelectionRange?.(input.value.length,input.value.length)}
 }
-async function selectWorkshopItem(itemId,{preserveQuery=false}={}){
+async function selectWorkshopItem(itemId,{preserveQuery=false,preserveQuantity=false}={}){
   if(!Number.isInteger(itemId)||itemId<=0)return;
+  const currentItemId=Number(workshopState.selected?.item?.id);
+  const changedItem=currentItemId!==itemId;
+  if(changedItem&&!preserveQuantity)workshopState.quantity=1;
+  const quantity=workshopState.quantity;
   const epoch=workshopDataEpoch;
   try{
-    const result=await workshopFetch('/api/workshop?item='+itemId+'&quantity='+workshopState.quantity+'&t='+Date.now());
+    const result=await workshopFetch('/api/workshop?item='+itemId+'&quantity='+quantity+'&t='+Date.now());
     if(epoch!==workshopDataEpoch)return;
     workshopState.selected=result;
     workshopState.suggestions=[];
@@ -1170,7 +1174,7 @@ function invalidateWorkshopData({reloadVisible=true}={}){
     renderWorkshop();
     if(reloadVisible){
       loadWorkshopOverview();
-      if(Number.isInteger(selectedId)&&selectedId>0)selectWorkshopItem(selectedId,{preserveQuery:true});
+      if(Number.isInteger(selectedId)&&selectedId>0)selectWorkshopItem(selectedId,{preserveQuery:true,preserveQuantity:true});
     }
   }
 }
