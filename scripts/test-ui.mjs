@@ -135,6 +135,8 @@ assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: von Blizzard
 const loginData=structuredClone(data);
 const loginCole=loginData.characters.find(c=>c.slug==='cole-dalton');
 loginCole.lastLoginAt='2026-11-20T10:11:12.000Z';
+loginCole.gameStringsVerified=true;
+loginCole.gameStringsLocale='de_DE';
 loginCole.faction='Allianz';
 loginCole.ruleset={id:1,name:'PvP'};
 ui.render(loginData);
