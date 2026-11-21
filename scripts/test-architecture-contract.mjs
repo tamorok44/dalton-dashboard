@@ -20,6 +20,11 @@ const prodFiles=walk(root);
 const rel=file=>path.relative(root,file).replaceAll('\\','/');
 const sourceByFile=new Map(prodFiles.map(file=>[rel(file),fs.readFileSync(file,'utf8')]));
 
+const policy=fs.readFileSync(path.join(root,'docs','architecture-contracts.md'),'utf8');
+for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Merge-Gates']){
+  assert.ok(policy.includes(required),'Architecture policy is missing required section: '+required);
+}
+
 // LANGUAGE CONTRACT
 const forbiddenTranslationSymbols=[
   'foreverCategoryLabels',
