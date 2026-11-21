@@ -39,6 +39,8 @@ function normalizeHunterPet(pet){
   if(!pet||typeof pet!=='object')return null;
   const name=typeof pet.name==='string'?pet.name.trim():'';
   const level=Number(pet.level),slot=Number(pet.slot);
+  const id=Number(pet.id),creatureId=Number(pet.creature?.id??pet.creature_id);
+  const displayId=Number(pet.displayId??pet.display_id??String(pet.render?.url||'').match(/creature-display-(\d+)\.jpg$/)?.[1]);
   const family=pet.family&&typeof pet.family==='object'?{
     id:Number.isInteger(Number(pet.family.id))?Number(pet.family.id):undefined,
     name:typeof pet.family.name==='string'?pet.family.name:undefined,
@@ -50,6 +52,9 @@ function normalizeHunterPet(pet){
   if(!name)return null;
   return {
     name,
+    ...(Number.isInteger(id)&&id>0?{id}:{}),
+    ...(Number.isInteger(creatureId)&&creatureId>0?{creatureId}:{}),
+    ...(Number.isInteger(displayId)&&displayId>0?{displayId}:{}),
     ...(Number.isInteger(level)?{level}:{}),
     ...(family?{family}:{}),
     active:pet.active===true,
@@ -109,6 +114,7 @@ function gear(c) {
   return entries.map(entry=>{
     if(!entry||typeof entry!=='object')return null;
     const name=entry.name||entry.item?.name;
+    const id=Number(entry.id??entry.item?.id);
     const slotType=entry.slot?.type||entry.slot?.name||entry.slot;
     const slot=slotNames[slotType]||entry.slot?.name||slotType;
     const icon=entry.media?.content?.assets?.find(a=>a.key==='icon')?.value;
@@ -118,7 +124,7 @@ function gear(c) {
     const qualityType=typeof rawQuality==='string'?rawQuality:rawQuality?.type;
     const allowedQualities=['POOR','COMMON','UNCOMMON','RARE','EPIC','LEGENDARY','ARTIFACT','HEIRLOOM'];
     const quality=typeof qualityType==='string'&&allowedQualities.includes(qualityType.toUpperCase())?qualityType.toUpperCase():undefined;
-    return typeof name==='string'&&slot?{slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined,...(quality?{quality}:{})}:null;
+    return typeof name==='string'&&slot?{...(Number.isInteger(id)&&id>0?{id}:{}),slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined,...(quality?{quality}:{})}:null;
   }).filter(Boolean);
 }
 const treeNames={'Feral Combat':'Wilder Kampf',Balance:'Gleichgewicht',Restoration:'Wiederherstellung',Arcane:'Arkan',Fire:'Feuer',Frost:'Frost','Beast Mastery':'Tierherrschaft',Marksmanship:'Treffsicherheit',Survival:'Überleben'};
@@ -158,7 +164,7 @@ function extractGermanGear(html,baseGear){
    const desc=htmlText(section.match(/<(?:div|span)\b[^>]*\bclass\s*=\s*["'][^"']*\bslot-level\b[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|span)>/i)?.[1]);
    const slot=slotKey(desc.replace(/^\d+\s*[·•\-–]\s*/,'').trim()||names[attribute(tag,'data-itemtype').toLowerCase()]);
    const level=Number(attribute(tag,'data-itemlevel'))||Number(desc.match(/^\d+/)?.[0])||undefined;
-   if(name&&slot&&!/^leer$/i.test(name))gear.push({slot,item:name,icon:'https://foreverspec.com/icons/'+id+'.webp',level});
+   if(name&&slot&&!/^leer$/i.test(name))gear.push({id:Number(id),slot,item:name,icon:'https://foreverspec.com/icons/'+id+'.webp',level});
  }
  if(!gear.length){
    for(const script of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)){
