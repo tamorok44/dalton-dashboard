@@ -280,6 +280,7 @@ function petAbilityCard(ability,petLevel){
   '</div>';
 }
 let displayedPetRules=null;
+let displayedPetCatalog={};
 function petRuleStatus(ruleId){
   if(displayedPetRules?.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION)return 'source_unavailable';
   return displayedPetRules?.rules?.[ruleId]?.status||'source_unavailable';
@@ -436,11 +437,24 @@ function hunterPetsPanel(c){
       '</div></div>'
       :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
     :'';
+  const localizedFamily=active?.family?.slug?displayedPetCatalog?.[active.family.slug]||null:null;
+  const localizedAbilities=Array.isArray(localizedFamily?.abilities)
+    ?localizedFamily.abilities.filter(ability=>ability?.name).sort((a,b)=>(Number(a.requiredLevel)||999)-(Number(b.requiredLevel)||999)||Number(a.id)-Number(b.id))
+    :[];
   const training=active&&family
-    ?(trainingAllowed
-      ?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Deutsche Spielstrings noch nicht aus der Pet-Datenquelle angebunden</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+'</span></div>'+
-        '<p class="pet-note">Trainierbare Fähigkeiten werden erst wieder angezeigt, wenn Name und Beschreibung aus einer verifizierten deutschen Forever-Datenquelle stammen. Es wird nichts eigenständig übersetzt.</p></div>'
-      :petRuleUnavailable('Ausbildungsdaten vorübergehend gesperrt'))
+    ?(trainingAllowed&&localizedAbilities.length
+      ?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Fähigkeiten</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+' · deutsche Clientdaten</span></div>'+
+        '<div class="pet-training-list">'+localizedAbilities.map(ability=>{
+          const required=Number(ability.requiredLevel);
+          const reachable=Number.isInteger(required)&&Number.isInteger(petLevel)?petLevel>=required:null;
+          const status=Number.isInteger(required)
+            ?(reachable?'ab Stufe '+required+' · für '+active.name+' erreichbar':'ab Stufe '+required)
+            :'Stufe nicht veröffentlicht';
+          return '<div class="pet-training-item"><div><strong>'+esc(ability.name)+'</strong><span>'+esc(status)+'</span></div>'+
+            (ability.sourceUrl?'<a href="'+esc(ability.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Quelle</a>':'')+'</div>';
+        }).join('')+'</div>'+
+        '<p class="pet-note">Namen und Stufen stammen aus der deutschen Forever-Clientextraktion. Ob Slydris eine Fähigkeit bereits tatsächlich gelernt hat, veröffentlicht Blizzard online nicht.</p></div>'
+      :trainingAllowed?'':petRuleUnavailable('Ausbildungsdaten vorübergehend gesperrt'))
     :'';
   const care=active?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">PFLEGE & SPIELMECHANIK</span><h4>Quellengebundene Hinweise</h4></div></div>'+
     '<div class="pet-tips">'+
@@ -686,11 +700,12 @@ function lastActivity(c){
  }
  return 'Zuletzt im Spiel: von Blizzard nicht angegeben';
 }
-function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog,petRules=displayedPetRules,reputationCatalog=displayedReputationCatalog}={}){
+function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog,petRules=displayedPetRules,reputationCatalog=displayedReputationCatalog,petCatalog=displayedPetCatalog}={}){
  displayedData=data;
  displayedQuestCatalog=questCatalog||{};
  displayedPetRules=petRules||null;
  displayedReputationCatalog=reputationCatalog||{build:null,expected:0,records:{}};
+ displayedPetCatalog=petCatalog||{};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
  const questStatus=questGroupStatus(chars);
@@ -879,7 +894,7 @@ async function load(){
     const result=await r.json();
     const data=result.data;
     if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
-      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{},petRules:result.petRules||null,reputationCatalog:result.reputationCatalog||{}});
+      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{},petRules:result.petRules||null,reputationCatalog:result.reputationCatalog||{},petCatalog:result.petCatalog||{}});
     }
   }catch(e){if(!displayedData){
       try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
@@ -898,7 +913,7 @@ async function refreshLive(){
     if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
-    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{},petRules:response.petRules||null,reputationCatalog:response.reputationCatalog||{}});
+    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{},petRules:response.petRules||null,reputationCatalog:response.reputationCatalog||{},petCatalog:response.petCatalog||{}});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}

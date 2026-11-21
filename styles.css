@@ -817,6 +817,16 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   letter-spacing:.03em;text-transform:uppercase
 }
 .pet-family-stats strong{display:block;margin-top:3px;color:#f2d7ab;font:var(--weight-label) var(--type-body)/1.35 var(--body);overflow-wrap:anywhere}
+.pet-training-list{display:grid;gap:7px}
+.pet-training-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px;
+  border:1px solid #5f513c;border-radius:5px;background:linear-gradient(180deg,#211d18,#171512)
+}
+.pet-training-item>div{min-width:0;display:grid;gap:2px}
+.pet-training-item strong{color:#f1d6ab;font-size:var(--type-small);overflow-wrap:anywhere}
+.pet-training-item span{color:#b7aa93;font-size:var(--type-caption)}
+.pet-training-item a{flex:0 0 auto;color:#d4b46f;font-size:var(--type-caption);text-decoration:none}
+.pet-training-item a:hover{text-decoration:underline}
 .pet-abilities{display:grid;gap:8px}
 .pet-ability{
   padding:9px 10px;border:1px solid rgba(124,105,79,.40);border-left:3px solid #555355;border-radius:3px;

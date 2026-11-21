@@ -2,6 +2,7 @@ import {loadCharacters} from '../scripts/character-store.mjs';
 import {loadQuestCatalogByIds} from '../scripts/quest-catalog-store.mjs';
 import {loadPublicPetRuleState} from '../scripts/pet-rule-store.mjs';
 import {loadPublicReputationCatalog} from '../scripts/reputation-catalog-store.mjs';
+import {loadGermanPetLocalizations} from '../scripts/pet-localization-store.mjs';
 export default async function handler(req,res){
   res.setHeader('Cache-Control','public, no-store');
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
@@ -23,7 +24,15 @@ export default async function handler(req,res){
     try{reputationCatalog=await loadPublicReputationCatalog()}catch(error){
       console.warn('Ruf-Katalog konnte nicht geladen werden:',String(error.message).slice(0,140));
     }
-    return res.status(200).json({...result,questCatalog,petRules,reputationCatalog});
+    const petFamilySlugs=[...new Set((result.data?.characters||[]).flatMap(character=>
+      [...(character.hunterPets?.active||[]),...(character.hunterPets?.stable||[])]
+        .map(pet=>pet?.family?.slug).filter(Boolean)
+    ))];
+    let petCatalog={};
+    try{petCatalog=await loadGermanPetLocalizations(petFamilySlugs)}catch(error){
+      console.warn('Deutsche Pet-Daten konnten nicht geladen werden:',String(error.message).slice(0,140));
+    }
+    return res.status(200).json({...result,questCatalog,petRules,reputationCatalog,petCatalog});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);
     return res.status(503).json({error:'Gespeicherte Charakterdaten derzeit nicht erreichbar'});
