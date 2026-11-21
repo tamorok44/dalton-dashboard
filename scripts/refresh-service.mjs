@@ -7,6 +7,7 @@ import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} fr
 import {loadQuestCatalog,loadQuestCatalogByIds,saveQuestCatalog} from './quest-catalog-store.mjs';
 import {collectCatalogRecords,saveCatalogRecords} from './game-catalog-store.mjs';
 import {ensureReputationCatalog,loadPublicReputationCatalog} from './reputation-catalog-store.mjs';
+import {ensureGermanPetLocalizations,loadGermanPetLocalizations} from './pet-localization-store.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -68,6 +69,17 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
     }
   }
 
+  const petFamilySlugs=[...new Set(latest.characters.flatMap(character=>
+    [...(character.hunterPets?.active||[]),...(character.hunterPets?.stable||[])]
+      .map(pet=>pet?.family?.slug).filter(Boolean)
+  ))];
+  let petCatalog={};
+  if(petFamilySlugs.length){
+    try{petCatalog=await ensureGermanPetLocalizations(petFamilySlugs)}catch(error){
+      console.warn('Deutsche Pet-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,160));
+    }
+  }
+
   const merged=mergeProfiles(previous,latest);
   await saveCharacters(merged,lockToken);
   let changeLog={count:0,id:null};
@@ -104,5 +116,8 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   try{reputationCatalog=await loadPublicReputationCatalog()}catch(error){
     console.warn('Ruf-Katalog konnte für die Antwort nicht geladen werden:',String(error.message).slice(0,140));
   }
-  return {success,data:archived,questCatalog,reputationCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
+  if(!Object.keys(petCatalog).length&&petFamilySlugs.length){
+    try{petCatalog=await loadGermanPetLocalizations(petFamilySlugs)}catch{}
+  }
+  return {success,data:archived,questCatalog,reputationCatalog,petCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
 }
