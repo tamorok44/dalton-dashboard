@@ -20,9 +20,9 @@ function portraitBadge(scene){
     '<span class="portrait-badge-copy"><span class="portrait-badge-firstname">'+esc(scene.firstName)+'</span>'+
     '<span class="portrait-badge-epithet">'+esc(scene.epithet)+'</span></span></span>';
 }
-const mainStatNames=['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft'];
-const detailStatNames=['Rüstung','Angriffskraft','Zaubermacht','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen'];
-const percentStatNames=new Set(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen']);
+const mainStatNames=['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration'];
+const detailStatNames=['Rüstung','Angriffskraft','Zaubermacht','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'];
+const percentStatNames=new Set(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen','Parieren','Blocken']);
 const statIcons={
   'Gesundheit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.2 3.5 8.9A4.4 4.4 0 0 1 12 6.7a4.4 4.4 0 0 1 8.5 2.2c0 6.3-8.5 11.6-8.5 11.6Z"/></svg>',
   'Mana':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v4l-4.6 8.1A3.9 3.9 0 0 0 8.8 21h6.4a3.9 3.9 0 0 0 3.4-5.9L14 7V3"/><path d="M7.8 15h8.4"/></svg>',
@@ -31,7 +31,9 @@ const statIcons={
   'Beweglichkeit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 10.8c1.3-1 4.3-1 5.6 0 1.8 1.4 3.2 4.1 1.7 6.2-1.2 1.7-3.1.4-4.5.4s-3.3 1.3-4.5-.4c-1.5-2.1-.1-4.8 1.7-6.2Z"/><circle cx="6.4" cy="8" r="1.6"/><circle cx="10.1" cy="5.3" r="1.6"/><circle cx="13.9" cy="5.3" r="1.6"/><circle cx="17.6" cy="8" r="1.6"/></svg>',
   'Ausdauer':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19 6v5.2c0 4.4-2.7 7.9-7 10-4.3-2.1-7-5.6-7-10V6l7-3.2Z"/><path d="M12 7v8M8 11h8"/></svg>',
   'Kritische Trefferchance':'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>',
-  'Willenskraft':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>'
+  'Willenskraft':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>',
+  'Waffen-DPS':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 3.2 6.1-1.1-1.1 6.1-9.1 9.1"/><path d="m8.9 13.6 1.5 1.5"/><path d="m7.2 15.3-3.9 3.9 1.5 1.5 3.9-3.9"/><path d="M14 7.3 16.7 10"/></svg>',
+  'Manaregeneration':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5S6.5 8.6 6.5 13a5.5 5.5 0 0 0 8.7 4.5"/><path d="M14.2 11.2a4.2 4.2 0 1 1-.1 7.6"/><path d="m12.8 16.4 1.3 2.4 2.4-1.3"/></svg>'
 };
 function formatStatValue(name,value){
   if(value==null||value==='')return '–';
@@ -46,13 +48,24 @@ function statTile(name,value,stale=false,icon=false){
     '<span class="stat-copy"><small>'+esc(name)+(stale?' <span class="stale-value" title="Nicht im letzten Blizzard-Abruf bestätigt">· letzter Stand</span>':'')+'</small>'+
     '<strong>'+esc(formatStatValue(name,value))+'</strong></span></div>';
 }
+const characterStatExcludedNames=new Set(['Gegenstandsstufe']);
+function characterStatNames(chars=[]){
+  const ordered=[...mainStatNames,...detailStatNames],seen=new Set(ordered);
+  for(const character of chars){
+    for(const name of Object.keys(character?.stats||{})){
+      if(characterStatExcludedNames.has(name)||seen.has(name))continue;
+      seen.add(name);ordered.push(name);
+    }
+  }
+  return ordered;
+}
 function statsPanel(c,open=false){
   const s=c.stats||{};
   const currentKeys=Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:(c.statsVerified?Object.keys(s):[]);
   const verified=new Set(c.scrapeOk===false?[]:currentKeys);
   const isStale=name=>Object.hasOwn(s,name)&&!verified.has(name);
   const main=mainStatNames.map(name=>statTile(name,s[name],isStale(name),true)).join('');
-  const rest=detailStatNames.map(name=>statTile(name,s[name],isStale(name),false)).join('');
+  const rest=characterStatNames([c]).filter(name=>!mainStatNames.includes(name)).map(name=>statTile(name,s[name],isStale(name),false)).join('');
   return '<div class="section character-stats"><h3>Charakterwerte'+(c.scrapeOk!==false&&c.statsVerified?'':' · teilweise letzter Stand')+'</h3>'+
     '<div class="stat-grid stat-grid-main">'+main+'</div>'+
     '<details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'>'+
@@ -532,7 +545,7 @@ function cmpSectionRows(id,chars){
   if(id==='stats'){
     push('Level',c=>cmpEntry(c.level,c.level));
     push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience));
-    const keys=[...new Set([...mainStatNames,...detailStatNames,...chars.flatMap(c=>Object.keys(c.stats||{}))])];
+    const keys=characterStatNames(chars);
     for(const key of keys)push(key,c=>cmpEntry(formatStatValue(key,c.stats?.[key]),c.stats?.[key],'',c.scrapeOk===false||!(c.statsFreshKeys|| (c.statsVerified?Object.keys(c.stats||{}):[])).includes(key)));
   }
   if(id==='equipment'){
