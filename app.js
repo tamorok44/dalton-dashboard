@@ -766,13 +766,31 @@ function cmpSectionRows(id,chars){
   if(id==='stats'){
     push('Level',c=>cmpEntry(c.level,c.level));
     push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience));
-    const keys=characterStatNames(chars);
-    for(const key of keys)push(key,c=>cmpEntry(formatStatValue(key,c.stats?.[key]),c.stats?.[key],'',c.scrapeOk===false||!(c.statsFreshKeys|| (c.statsVerified?Object.keys(c.stats||{}):[])).includes(key)));
+    const namesByEnum=new Map();
+    for(const c of chars)for(const entry of Array.isArray(c.statsDetails)?c.statsDetails:[]){
+      if(entry?.enum&&entry?.name&&!namesByEnum.has(entry.enum))namesByEnum.set(entry.enum,entry.name);
+    }
+    const orderedEnums=[
+      ...mainStatEnums.filter(key=>namesByEnum.has(key)),
+      ...[...namesByEnum.keys()].filter(key=>!mainStatEnums.includes(key))
+    ];
+    for(const enumKey of orderedEnums){
+      const label=namesByEnum.get(enumKey);
+      push(label,c=>{
+        const detail=(c.statsDetails||[]).find(entry=>entry?.enum===enumKey);
+        const value=c.statsByEnum?.[enumKey];
+        return cmpEntry(detail?formatStatValue({...detail,value}):'–',value,'',c.scrapeOk===false||!(c.statsFreshEnums||[]).includes(enumKey));
+      });
+    }
   }
   if(id==='equipment'){
-    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.stats?.['Gegenstandsstufe'],c.equippedItemLevel??c.stats?.['Gegenstandsstufe']));
-    const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=equipmentSlotAliases[item.slot]||item.slot;if(!m.has(key)&&item.item)m.set(key,item)}return m});
-    for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+(it.qualityName?' · '+it.qualityName:''),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL));
+    const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=item?.slotType;if(key&&!m.has(key)&&item.item)m.set(key,item)}return m});
+    for(const slotType of equipmentSlotOrder){
+      const label=slots.map(m=>m.get(slotType)?.slot).find(Boolean);
+      if(!label)continue;
+      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+(it.qualityName?' · '+it.qualityName:''),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+    }
   }
   if(id==='talents'){
     push('Talentverteilung',c=>cmpEntry(c.talents||'Nicht verfügbar',null,'',c.talentsVerified===false));
@@ -798,7 +816,7 @@ function cmpSectionRows(id,chars){
     const names=[...new Set(chars.flatMap(c=>(c.professions||[]).map(p=>p.name)))];
     const ordered=sortProfessionsForDisplay(names.map(name=>({name}))).map(p=>p.name);
     for(const name of ordered){
-      push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,professionRank(Number(p.max)),p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)});
+      push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,'',p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)});
       const recipes=[...new Set(chars.flatMap(c=>((c.professions||[]).find(p=>p.name===name)?.knownRecipes||[]).map(r=>r.name)))].sort((a,b)=>a.localeCompare(b,'de'));
       for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false});
     }
