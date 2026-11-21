@@ -738,6 +738,8 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 :root{--compare-positive:#94d8a5;--compare-negative:#f29b91;--compare-intermediate:#e9bd76}
 [hidden]{display:none!important}
 .main-navigation{display:flex;gap:8px;margin:19px 0 24px;padding:5px;border:1px solid var(--line);border-radius:7px;background:rgba(14,20,27,.88)}
+.main-view{min-width:0;max-width:100%}
+.main-view>*{min-width:0;max-width:100%}
 .main-nav-link{flex:1;text-align:center;text-decoration:none;padding:12px 16px;border:1px solid transparent;border-radius:5px;color:var(--paper);font:var(--weight-label) var(--type-body)/1.3 var(--body)}
 .main-nav-link:hover{border-color:var(--line);color:var(--cream)}
 .main-nav-link.is-active{border-color:var(--gold-deep);background:linear-gradient(115deg,rgba(83,57,34,.8),rgba(38,39,43,.95));color:var(--cream);box-shadow:inset 0 -2px 0 var(--gold)}
