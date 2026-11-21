@@ -20,6 +20,39 @@ function characterGender(character) {
   }
   return null;
 }
+
+function htmlPlainText(value=''){
+  return String(value).replace(/<[^>]*>/g,' ').replace(/&(#x[\da-f]+|#\d+|amp|quot|apos|lt|gt|nbsp|auml|ouml|uuml|Auml|Ouml|Uuml|szlig);/gi,(_,e)=>{
+    const d={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',auml:'ä',ouml:'ö',uuml:'ü',Auml:'Ä',Ouml:'Ö',Uuml:'Ü',szlig:'ß'};
+    return e.startsWith('#x')?String.fromCodePoint(parseInt(e.slice(2),16)):e.startsWith('#')?String.fromCodePoint(parseInt(e.slice(1),10)):d[e]||'&'+e+';';
+  }).replace(/\s+/g,' ').trim();
+}
+export function extractGermanStatLabels(html=''){
+  const labels={};
+  const re=/CharacterStat-media\s+color-stat-([A-Z0-9_]+)[\s\S]{0,9000}?<div\b[^>]*class=["'][^"']*CharacterStat-name[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi;
+  for(const match of String(html).matchAll(re)){
+    const enumKey=match[1],name=htmlPlainText(match[2]);
+    if(enumKey&&name&&!labels[enumKey])labels[enumKey]=name;
+  }
+  return labels;
+}
+function applyGermanStatLabels(character,html){
+  const labels=extractGermanStatLabels(html);
+  if(!Object.keys(labels).length)return character;
+  const raw=character?.stats;
+  if(!raw||typeof raw!=='object')return character;
+  const candidates=[
+    ...(Array.isArray(raw.groups)?raw.groups:[]),
+    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
+    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
+    {stats:Array.isArray(raw.overview)?raw.overview:[]}
+  ];
+  for(const group of candidates)for(const stat of group.stats||[]){
+    const enumKey=typeof stat?.enum==='string'?stat.enum:null;
+    if(enumKey&&labels[enumKey])stat.name=labels[enumKey];
+  }
+  return character;
+}
 async function fetchCharacter(slug,locale="de-de") {
   const url='https://worldofwarcraft.blizzard.com/'+locale+'/forever/eu/armory/character/'+encodeURIComponent(slug);
   const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(20000) });
@@ -29,7 +62,7 @@ async function fetchCharacter(slug,locale="de-de") {
   if(!match)throw new Error('Offizieller Charakterdatensatz nicht gefunden');
   const character=JSON.parse(match[1]).character;
   if(!character || character.slug?.toLowerCase()!==slug.toLowerCase())throw new Error('Charakterkennung passt nicht zum angefragten Profil');
-  return character;
+  return locale==='de-de'?applyGermanStatLabels(character,html):character;
 }
 
 function normalizeHunterPet(pet){
