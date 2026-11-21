@@ -3,34 +3,52 @@ import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
 
 export const PET_RULEBOOK_VERSION=HUNTER_PET_RULEBOOK_VERSION;
 
+export const PET_EVIDENCE=Object.freeze({
+  official:Object.freeze({label:'Offiziell',rank:5,description:'Direkt durch Blizzard dokumentiert.'}),
+  client:Object.freeze({label:'Clientdaten',rank:4,description:'Aus aktuellen Forever-Clientdaten ableitbar.'}),
+  measured:Object.freeze({label:'Gemessen',rank:3,description:'Durch reproduzierbare Ingame-Messungen bestätigt.'}),
+  reference_model:Object.freeze({label:'Referenzmodell',rank:2,description:'Aktuelles, mehrfach gestütztes Modell; Serverkoeffizient nicht direkt veröffentlicht.'}),
+  provisional:Object.freeze({label:'Vorläufig',rank:1,description:'Plausible Arbeitsannahme mit noch unzureichender Messbasis.'})
+});
+
 export const PET_RULES=Object.freeze({
   'fox.family.profile':Object.freeze({
-    version:1,
+    version:2,
     label:'Fuchs-Familienprofil',
+    evidence:'client',
+    evidenceNote:'Familienpassiv und Modifikatoren stammen aus aktuellen Forever-Clientdaten.',
     reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets'])
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets','statRatFox'])
   }),
   'fox.training':Object.freeze({
-    version:1,
+    version:2,
     label:'Fuchs-Ausbildungsstufen',
+    evidence:'client',
+    evidenceNote:'Stufen, Fokuswerte und bekannte Trainingskosten werden aus aktuellen Forever-Spiel-/Clientdaten geführt.',
     reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox'])
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','efficientPets'])
   }),
   'pet.scaling':Object.freeze({
-    version:2,
+    version:3,
     label:'Jägerbegleiter-Skalierung',
+    evidence:'reference_model',
+    evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit sind aktueller Forever-Konsens; die Serverkoeffizienten sind im Client-Auraexport nicht direkt enthalten.',
     reviewedAt:'2026-11-21',
     sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit'])
   }),
   'pet.focus':Object.freeze({
-    version:1,
+    version:2,
     label:'Jägerbegleiter-Fokus',
+    evidence:'client',
+    evidenceNote:'10 Fokus/Sekunde und +50 maximales Fokus auf die Basis 100 sind im aktuellen Forever-Clientdaten-Audit nachvollziehbar.',
     reviewedAt:'2026-11-21',
     sourceIds:Object.freeze(['blizzardHotfix','foreverHunterFocusAudit','foreverSimFocusAudit'])
   }),
   'pet.health.global':Object.freeze({
-    version:1,
+    version:2,
     label:'Globaler Begleiter-Gesundheitsfaktor',
+    evidence:'official',
+    evidenceNote:'Blizzard-Hotfix: Pet-Gesundheit von irrtümlich 150 % auf 115 % des normalen Werts korrigiert.',
     reviewedAt:'2026-11-21',
     validFrom:'2026-11-10',
     sourceIds:Object.freeze(['blizzardHotfix'])
@@ -108,6 +126,26 @@ const sources=Object.freeze({
     semanticPatterns:Object.freeze([
       /fox[\s\S]{0,180}?0\s*%[\s\S]{0,100}?\+5\s*%[\s\S]{0,100}?0\s*%[\s\S]{0,140}?meat[\s\S]{0,180}?trickster(?:'|’)?s\s+dance/i
     ])
+  }),
+  statRatFox:Object.freeze({
+    label:'StatRat · Forever Fox Client Passive',
+    url:'https://statrat.info/classes/hunter/levelling/',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /fox[\s\S]{0,220}?damage\s*\(physical\)[\s\S]{0,100}?×1\.00[\s\S]{0,100}?health[\s\S]{0,100}?×1\.00[\s\S]{0,120}?base\s+armour[\s\S]{0,100}?×1\.05/i,
+      /family\s+passives[\s\S]{0,120}?forever\s+client\s+70374/i
+    ])
+  }),
+  efficientPets:Object.freeze({
+    label:'Efficient Games · Forever Pet Training',
+    url:'https://efficient.games/wowf/hunter-pets',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /bite\s+rank\s+1\s+1\s+1[\s\S]{0,80}?bite\s+rank\s+2\s+8\s+4/i,
+      /trickster(?:'|’)?s\s+dance\s+rank\s+1\s+20\s+10/i,
+      /dash\s+rank\s+1\s+30\s+15\s+for\s+boar,\s*cat,\s*fox/i
+    ]),
+    buildPattern:/1\.60\.1\s*\(build\s+(\d+)\)/i
   })
 });
 
@@ -214,6 +252,9 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
     const status=worstStatus(statuses);
     return [id,{
       id,label:rule.label,version:rule.version,status,
+      evidence:rule.evidence||'provisional',
+      evidenceLabel:PET_EVIDENCE[rule.evidence||'provisional']?.label||'Vorläufig',
+      evidenceNote:rule.evidenceNote||null,
       reviewedAt:rule.reviewedAt,validFrom:rule.validFrom||null,
       sourceIds:[...rule.sourceIds]
     }];
@@ -234,10 +275,13 @@ export function publicPetRuleState(state){
     checkedAt:state.checkedAt||null,
     overall:state.overall||'source_unavailable',
     rules:Object.fromEntries(Object.entries(state.rules||{}).map(([id,rule])=>[id,{
-      id,label:rule.label,version:rule.version,status:rule.status,reviewedAt:rule.reviewedAt,validFrom:rule.validFrom||null
+      id,label:rule.label,version:rule.version,status:rule.status,
+      evidence:rule.evidence||'provisional',evidenceLabel:rule.evidenceLabel||PET_EVIDENCE[rule.evidence||'provisional']?.label||'Vorläufig',
+      evidenceNote:rule.evidenceNote||null,reviewedAt:rule.reviewedAt,validFrom:rule.validFrom||null
     }])),
     sources:Object.fromEntries(Object.entries(state.sources||{}).map(([id,source])=>[id,{
       id,label:source.label,url:source.url,status:source.status,build:source.build||null,reason:source.reason||null
-    }]))
+    }])),
+    history:Array.isArray(state.history)?state.history.slice(-40):[]
   };
 }
