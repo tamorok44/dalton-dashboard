@@ -4,13 +4,16 @@ import {
   publicWorkshopCatalog,
   searchWorkshopItems,
   workshopBrowseTree,
-  buildProductionPlan
+  buildProductionPlan,
+  enrichWorkshopCatalogWithForeverDb,
+  preferredForeverRecipeForItem,
+  workshopLearningCandidates
 } from '../scripts/workshop-core.mjs';
 import {
   foreverDbConfigured,
-  searchForeverDbItems,
   fetchForeverDbItem
 } from '../scripts/foreverdb-api.mjs';
+import {getForeverDbRecipeIndex,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -75,7 +78,7 @@ export default async function handler(req,res){
       let remoteError=null;
       if(remoteReady){
         try{
-          const remote=await searchForeverDbItems(q,{limit:100});
+          const remote=await cachedForeverDbItemSearch(q,{limit:100});
           suggestions=remote.items.map(item=>mergeRemoteItem(item,catalog.byItemId.get(item.id)));
           source='foreverdb';
         }catch(error){
@@ -100,10 +103,16 @@ export default async function handler(req,res){
       let item=publicItem(local);
       let source='blizzard-known';
       let remoteError=null;
+      let recipeIndex=null;
       if(remoteReady){
         try{
-          const remote=await fetchForeverDbItem(itemId);
-          item=mergeRemoteItem(remote.item,local);
+          const [remote,index]=await Promise.all([
+            fetchForeverDbItem(itemId),
+            getForeverDbRecipeIndex()
+          ]);
+          recipeIndex=index;
+          enrichWorkshopCatalogWithForeverDb(catalog,index);
+          item=mergeRemoteItem(remote.item,catalog.byItemId.get(itemId)||local);
           source='foreverdb';
         }catch(error){
           remoteError=String(error.message).slice(0,180);
@@ -111,6 +120,10 @@ export default async function handler(req,res){
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
       const plan=buildProductionPlan(catalog,itemId,quantity);
+      const remoteRecipe=recipeIndex?preferredForeverRecipeForItem(recipeIndex,itemId):null;
+      const learningCandidates=remoteRecipe?workshopLearningCandidates(stored.data,remoteRecipe):[];
+      const learningSources=remoteRecipe?.learning?.sources||[];
+      const currentlyCraftable=Boolean(local?.craftable);
       return res.status(200).json({
         item,
         quantity,
@@ -119,13 +132,41 @@ export default async function handler(req,res){
         fullCatalog:source==='foreverdb',
         foreverDbConfigured:remoteReady,
         remoteError,
-        learningSourcesAvailable:false,
-        learningSourcesReason:remoteReady
-          ?'Rezeptkatalog-Synchronisierung wird in der nächsten Werkstattstufe aktiviert.'
-          :'ForeverDB API-Key ist noch nicht konfiguriert.'
+        craftableInGame:Boolean(remoteRecipe),
+        recipe:remoteRecipe,
+        learningCandidates:currentlyCraftable?[]:learningCandidates,
+        learningSources:currentlyCraftable?[]:learningSources,
+        learningSourcesAvailable:!currentlyCraftable&&Boolean(remoteRecipe)&&(remoteRecipe.learning?.automatic===true||learningSources.length>0),
+        learningSourcesReason:currentlyCraftable
+          ?null
+          :!remoteReady
+            ?'ForeverDB API-Key ist noch nicht konfiguriert.'
+            :!remoteRecipe
+              ?'Für diesen Gegenstand ist im ForeverDB-Rezeptindex kein Herstellungsrezept bekannt.'
+              :remoteRecipe.learning?.automatic===true
+                ?'Das Rezept wird automatisch gelernt.'
+                :learningSources.length
+                  ?null
+                  :'ForeverDB kennt für dieses Rezept derzeit keine konkrete Bezugsquelle.',
+        recipeCatalog:{
+          connected:Boolean(recipeIndex),
+          build:recipeIndex?.build||null,
+          generatedAt:recipeIndex?.generatedAt||null,
+          cached:recipeIndex?.cached===true,
+          complete:recipeIndex?.complete===true
+        }
       });
     }
 
+    let recipeIndex=null,remoteError=null;
+    if(remoteReady){
+      try{
+        recipeIndex=await getForeverDbRecipeIndex();
+        enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
+      }catch(error){
+        remoteError=String(error.message).slice(0,180);
+      }
+    }
     const publicCatalog=publicWorkshopCatalog(catalog);
     return res.status(200).json({
       generatedAt:publicCatalog.generatedAt,
@@ -134,9 +175,19 @@ export default async function handler(req,res){
       browse:workshopBrowseTree(catalog),
       craftableItems:publicCatalog.items.filter(item=>item.craftable).map(publicItem),
       foreverDbConfigured:remoteReady,
-      fullCatalog:remoteReady,
+      fullCatalog:Boolean(recipeIndex?.complete),
+      remoteError,
+      recipeCatalog:{
+        connected:Boolean(recipeIndex),
+        build:recipeIndex?.build||null,
+        generatedAt:recipeIndex?.generatedAt||null,
+        cached:recipeIndex?.cached===true,
+        complete:recipeIndex?.complete===true,
+        recipeCount:recipeIndex?.recipes?.length||0
+      },
       sources:{
         knownRecipes:'Blizzard Forever API',
+        categories:recipeIndex?'ForeverDB.net':null,
         fullCatalog:remoteReady?'ForeverDB.net':null
       }
     });
