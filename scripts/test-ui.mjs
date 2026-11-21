@@ -121,6 +121,16 @@ petDolly.hunterPets={
   }],
   stable:[{name:'Lobo',level:5,active:false,slot:1,family:{id:1,name:'Wolf',enum:'WOLF',slug:'wolf'},iconUrl:'https://render.worldofwarcraft.com/forever-eu/icons/56/132203.jpg'}]
 };
+const verifiedPetRules={
+  rulebookVersion:'2026.11.21.1',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
+  rules:{
+    'fox.family.profile':{status:'verified',version:1},
+    'fox.training':{status:'verified',version:1},
+    'pet.scaling':{status:'verified',version:1},
+    'pet.health.global':{status:'verified',version:1}
+  }
+};
+ui.render(petData,{petRules:verifiedPetRules});
 const petPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(petPanel.includes('Slydris')&&petPanel.includes('Fuchs')&&petPanel.includes('Stufe 6'),'Live pet identity is rendered');
 assert.ok(petPanel.includes('5 Stufen')&&petPanel.includes('hinter Dolly'),'Pet-to-hunter level gap is explained');
@@ -131,8 +141,21 @@ assert.ok(petPanel.includes('Tanz des Täuschers')&&petPanel.includes('Ab Beglei
 assert.ok(petPanel.includes('Nicht mit „bereits gelernt“ gleichzusetzen.'),'Trainable ranks are never presented as learned');
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
 assert.ok(petPanel.includes('keine Schätzwerte'),'Unavailable loyalty/training state is explicitly not fabricated');
-ui.render(petData);
+ui.render(petData,{petRules:verifiedPetRules});
 const petCards=nodes.get('#cards').innerHTML;
+assert.ok(petCards.includes('Regelstand bestätigt · 4/4'),'Verified pet rules are visibly identified');
+const blockedRules=structuredClone(verifiedPetRules);
+blockedRules.overall='review_required';
+blockedRules.rules['fox.family.profile'].status='review_required';
+blockedRules.rules['fox.training'].status='review_required';
+ui.render(petData,{petRules:blockedRules});
+const blockedPetPanel=ui.hunterPetsPanel(petDolly);
+assert.ok(blockedPetPanel.includes('Regeländerung erkannt'),'A detected rule change is shown clearly');
+assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend gesperrt'),'Family values fail closed when their rule changes');
+assert.ok(blockedPetPanel.includes('Ausbildungsregeln vorübergehend gesperrt'),'Training values fail closed when their rule changes');
+assert.ok(blockedPetPanel.includes('Slydris')&&blockedPetPanel.includes('Stufe 6'),'Blizzard live identity stays visible even when rules are blocked');
+assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-derived family numbers are not rendered');
+ui.render(petData,{petRules:verifiedPetRules});
 assert.equal((petCards.match(/>Begleiter<\/button>/g)||[]).length,1,'Only the hunter gets a companion tab');
 assert.ok(ui.characterTabsFor(petDolly).some(tab=>tab.id==='pets'),'Hunter tab model includes companions');
 assert.ok(!ui.characterTabsFor(petData.characters.find(c=>c.slug==='cole-dalton')).some(tab=>tab.id==='pets'),'Non-hunters do not get a companion tab');
@@ -363,6 +386,10 @@ assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button 
 assert.ok(refreshService.includes('refreshCharacters([c])'),'Shared refresh service fetches Blizzard character profiles');
 assert.ok(refreshApi.includes("source:req.method==='GET'?'manual':'scheduled'"),'Manual and scheduled refresh sources stay distinguishable');
 assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"'),'Exactly one Hobby-compatible daily Vercel cron is configured');
+const dailySnapshot=read('api/daily-snapshot.js');
+assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs)'),'Daily rule verification runs before the Blizzard snapshot');
+assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf("refreshAndPersist({lockToken:refreshLock,source:'daily'})"),'Daily rule verification runs before the persistent character refresh');
+assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf("refreshAndPersist({lockToken,source:req.method==='GET'?'manual':'scheduled'})"),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
 assert.ok(!source.includes('setInterval('),'No periodic background refresh in client');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
 
