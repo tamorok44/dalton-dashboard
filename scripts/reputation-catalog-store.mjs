@@ -1,7 +1,7 @@
 import {fetchForeverReputationIndex} from './blizzard-api.mjs';
 import {archiveCatalogSnapshot,loadAllCatalogRecords,loadCatalogMeta,saveCatalogRecords} from './game-catalog-store.mjs';
 import {loadMediaRecord,saveMediaRecord} from './media-registry.mjs';
-import {REPUTATION_BUILD,foreverReputationSeed,factionCrestFor,factionCrests,factionSeedByName} from '../reputation-data.js';
+import {REPUTATION_BUILD,foreverReputationSeed,factionCrestFor,factionCrestKindFor,factionSeedByName} from '../reputation-data.js';
 
 const EXPECTED=foreverReputationSeed.length;
 function buildFromNamespace(namespace=''){
@@ -54,9 +54,6 @@ async function archiveCrest(record,cache,fetchImpl=fetch){
   return record;
 }
 
-function crestKind(seed){
-  return Object.hasOwn(factionCrests,seed.slug)?'specific':seed.side==='neutral'?'neutral-fallback':'side-fallback';
-}
 function fallbackRecord(seed,build=REPUTATION_BUILD){
   return {
     type:'faction',
@@ -65,7 +62,7 @@ function fallbackRecord(seed,build=REPUTATION_BUILD){
     slug:seed.slug,
     side:seed.side,
     forever:Boolean(seed.forever),
-    crestKind:crestKind(seed),
+    crestKind:factionCrestKindFor(seed),
     build,
     source:'ForeverDB build '+build,
     media:{crestSourceUrl:factionCrestFor(seed)}
@@ -84,7 +81,7 @@ function mergeIndex(index=[],build=REPUTATION_BUILD){
       slug:seed.slug,
       side:seed.side,
       forever:Boolean(seed.forever),
-      crestKind:crestKind(seed),
+      crestKind:factionCrestKindFor(seed),
       href:entry.href||null,
       build,
       source:'Blizzard Forever + ForeverDB build '+build,
@@ -95,53 +92,88 @@ function mergeIndex(index=[],build=REPUTATION_BUILD){
   return {records:[...matched.values()],missing,unmatched};
 }
 
-export async function syncReputationCatalog({namespace,force=false,fetchImpl=fetch,archiveMedia=true}={}){
-  const build=buildFromNamespace(namespace);
-  if(!force){
-    try{
-      const meta=await loadCatalogMeta();
-      const factionMeta=meta?.faction;
-      const existing=await loadAllCatalogRecords('faction');
-      const numeric=Object.values(existing).filter(record=>/^\d+$/.test(String(record?.id||''))&&record?.slug);
-      if(factionMeta?.build===build&&numeric.length>=EXPECTED){
-        return {records:existing,expected:EXPECTED,matched:numeric.length,complete:numeric.length>=EXPECTED,source:'cache'};
-      }
-    }catch{}
+async function ensureSeedMaster({build=REPUTATION_BUILD,fetchImpl=fetch,archiveMedia=true}={}){
+  const existing=await loadAllCatalogRecords('faction').catch(()=>({}));
+  const existingMaster=Object.values(existing).filter(record=>String(record?.id||'').startsWith('slug:'));
+  if(existingMaster.length>=EXPECTED&&existingMaster.every(record=>record.build===build)){
+    return existingMaster;
   }
 
-  const index=await fetchForeverReputationIndex({namespace,fetchImpl,locale:'en_GB'});
-  const merged=mergeIndex(index,build);
-  if(merged.records.length!==EXPECTED){
-    throw new Error('Forever-Rufindex unvollständig: '+merged.records.length+'/'+EXPECTED+
-      (merged.missing.length?' · fehlt '+merged.missing.map(x=>x.slug).join(', '):''));
-  }
+  const bare=foreverReputationSeed.map(seed=>fallbackRecord(seed,build));
+  await saveCatalogRecords(bare,{build,source:'ForeverDB verified master'});
 
-  const cache=new Map();
-  const records=[];
-  for(const record of merged.records){
-    records.push(archiveMedia?await archiveCrest(record,cache,fetchImpl):record);
+  let finalRecords=bare;
+  if(archiveMedia){
+    const cache=new Map();
+    finalRecords=await Promise.all(bare.map(record=>archiveCrest(record,cache,fetchImpl)));
+    await saveCatalogRecords(finalRecords,{build,source:'ForeverDB verified master'});
   }
-  await saveCatalogRecords(records,{build,source:'Blizzard Forever + ForeverDB'});
-  try{await archiveCatalogSnapshot('faction',records,{build})}catch(error){
+  try{await archiveCatalogSnapshot('faction',finalRecords,{build})}catch(error){
     console.warn('Ruf-Katalogsnapshot konnte nicht archiviert werden:',String(error.message).slice(0,140));
   }
+  return finalRecords;
+}
+
+async function optionalBlizzardIndex({namespace,build,fetchImpl=fetch,archiveMedia=true}={}){
+  if(!namespace)return {matched:0,source:'not-available'};
+  try{
+    const index=await fetchForeverReputationIndex({namespace,fetchImpl,locale:'en_GB'});
+    const merged=mergeIndex(index,build);
+    if(merged.records.length!==EXPECTED){
+      console.warn('Blizzard-Forever-Rufindex nur teilweise nutzbar: '+merged.records.length+'/'+EXPECTED);
+      return {matched:merged.records.length,source:'partial-index'};
+    }
+    const cache=new Map();
+    const records=archiveMedia
+      ?await Promise.all(merged.records.map(record=>archiveCrest(record,cache,fetchImpl)))
+      :merged.records;
+    await saveCatalogRecords(records,{build,source:'Blizzard Forever + ForeverDB'});
+    return {matched:records.length,source:'blizzard-index'};
+  }catch(error){
+    console.warn('Blizzard-Forever-Rufindex optional nicht verfügbar:',String(error.message).slice(0,180));
+    return {matched:0,source:'index-unavailable'};
+  }
+}
+
+export async function syncReputationCatalog({namespace,force=false,fetchImpl=fetch,archiveMedia=true}={}){
+  const build=buildFromNamespace(namespace);
+  const master=await ensureSeedMaster({build,fetchImpl,archiveMedia});
+  const indexResult=await optionalBlizzardIndex({namespace,build,fetchImpl,archiveMedia});
+  const all=await loadAllCatalogRecords('faction').catch(()=>({}));
+  const masterCount=Object.values(all).filter(record=>String(record?.id||'').startsWith('slug:')).length;
+  const numericCount=Object.values(all).filter(record=>/^\d+$/.test(String(record?.id||''))).length;
   return {
-    records:Object.fromEntries(records.map(record=>[String(record.id),record])),
+    records:all,
     expected:EXPECTED,
-    matched:records.length,
-    complete:true,
-    source:'blizzard-index'
+    masterCount,
+    numericCount,
+    matched:indexResult.matched,
+    complete:masterCount>=EXPECTED,
+    source:indexResult.source,
+    build
   };
 }
 
 export async function ensureReputationCatalog(options={}){
   try{return await syncReputationCatalog(options)}
   catch(error){
-    console.warn('Vollständiger Rufkatalog konnte nicht synchronisiert werden:',String(error.message).slice(0,220));
+    console.warn('Ruf-Masterkatalog konnte nicht vollständig persistiert werden:',String(error.message).slice(0,220));
     const existing=await loadAllCatalogRecords('faction').catch(()=>({}));
-    if(Object.keys(existing).length)return {records:existing,expected:EXPECTED,matched:Object.keys(existing).length,complete:false,source:'stored-fallback',error:String(error.message)};
-    const seed=Object.fromEntries(foreverReputationSeed.map(entry=>[entry.slug,fallbackRecord(entry,buildFromNamespace(options.namespace))]));
-    return {records:seed,expected:EXPECTED,matched:0,complete:false,source:'seed-fallback',error:String(error.message)};
+    const build=buildFromNamespace(options.namespace);
+    const seed=Object.fromEntries(foreverReputationSeed.map(entry=>{
+      const record=fallbackRecord(entry,build);
+      return [record.id,record];
+    }));
+    return {
+      records:Object.keys(existing).length?existing:seed,
+      expected:EXPECTED,
+      masterCount:Object.values(existing).filter(record=>String(record?.id||'').startsWith('slug:')).length,
+      numericCount:Object.values(existing).filter(record=>/^\d+$/.test(String(record?.id||''))).length,
+      complete:false,
+      source:'fallback',
+      build,
+      error:String(error.message)
+    };
   }
 }
 
@@ -150,9 +182,12 @@ export async function loadPublicReputationCatalog(){
     loadAllCatalogRecords('faction').catch(()=>({})),
     loadCatalogMeta().catch(()=>({}))
   ]);
+  const values=Object.values(records);
   return {
     build:meta?.faction?.build||REPUTATION_BUILD,
     expected:EXPECTED,
+    masterCount:values.filter(record=>String(record?.id||'').startsWith('slug:')).length,
+    numericCount:values.filter(record=>/^\d+$/.test(String(record?.id||''))).length,
     records
   };
 }

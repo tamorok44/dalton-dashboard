@@ -159,3 +159,8 @@ export function factionCrestFor(seed){
   if(!seed)return factionFallbackCrests.neutral;
   return factionCrests[seed.slug]||factionFallbackCrests[seed.side]||factionFallbackCrests.neutral;
 }
+export function factionCrestKindFor(seed){
+  if(!seed)return 'neutral-fallback';
+  if(Object.hasOwn(factionCrests,seed.slug))return 'specific';
+  return seed.side==='neutral'?'neutral-fallback':'side-fallback';
+}
