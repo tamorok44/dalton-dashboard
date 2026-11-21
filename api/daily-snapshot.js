@@ -8,6 +8,16 @@ import {publicPetRuleState} from '../scripts/pet-rulebook.mjs';
 
 export const config={maxDuration:60};
 
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function acquireRefreshLockWithRetry({attempts=3,delayMs=2500}={}){
+  for(let attempt=0;attempt<attempts;attempt++){
+    const token=await acquireRefreshLock();
+    if(token)return token;
+    if(attempt<attempts-1)await sleep(delayMs);
+  }
+  return null;
+}
+
 export function berlinClock(date=new Date()){
   const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{
     timeZone:'Europe/Berlin',
@@ -45,7 +55,8 @@ export default async function handler(req,res){
     await registerDailySnapshot(meta);
 
     let refresh={pending:true,reason:'refresh_lock_unavailable'};
-    const refreshLock=await acquireRefreshLock();
+    const beforeRefreshGeneratedAt=(await loadCharacters()).data?.generatedAt||null;
+    const refreshLock=await acquireRefreshLockWithRetry();
     if(refreshLock){
       try{
         const result=await refreshAndPersist({lockToken:refreshLock,source:'daily'});
@@ -53,6 +64,11 @@ export default async function handler(req,res){
       }finally{
         await releaseRefreshLock(refreshLock);
       }
+    }else{
+      const afterRefreshGeneratedAt=(await loadCharacters()).data?.generatedAt||null;
+      const concurrentCompleted=Number.isFinite(Date.parse(afterRefreshGeneratedAt||''))&&
+        (!Number.isFinite(Date.parse(beforeRefreshGeneratedAt||''))||Date.parse(afterRefreshGeneratedAt)>Date.parse(beforeRefreshGeneratedAt));
+      if(concurrentCompleted)refresh={success:1,changes:null,persisted:true,reason:'concurrent_refresh_completed'};
     }
     return res.status(200).json({saved:true,snapshot:meta,refresh,petRules:publicPetRuleState(petRuleState)});
   }catch(error){
