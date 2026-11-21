@@ -108,7 +108,7 @@ try{
  let c=r.data.characters[0];
  assert.equal(c.equipment[0].item,'Neues Wams');
  assert.equal(c.equipment[0].quality,'RARE');
- assert.equal(c.equipment[0].sourceName,'New Chest');
+ assert.equal(c.equipment[0].sourceName,'Neues Wams');
  assert.equal(c.equipment[0].level,12);
  assert.equal(c.equipment[0].id,9001,'Equipment keeps the stable item ID');
  assert.equal(c.equipmentLanguage,'de');
@@ -145,17 +145,17 @@ try{
  assert.equal(germanFetches,priorGerman+1,'The German Blizzard Armory remains the primary source');
  assert.equal(c.equipment[0].item,'Neues Wams');
  assert.equal(c.imageCheckedAt,priorImageChecked,'Unchanged character portrait retains cache key');
- // Trotz gleichem Icon und Level: geänderter offizieller Gegenstandsname wird aktuell.
+ // Fällt die deutsche Blizzard-Quelle aus, bleibt der letzte bestätigte deutsche Stand erhalten.
  deAvailable=false;englishName='Fresh Chest';qualityType='EPIC';
  r=await refreshCharacters([c]);c=r.data.characters[0];
- assert.equal(r.success,1);
- assert.equal(c.equipment[0].item,'Fresh Chest');
- assert.equal(c.equipment[0].quality,'EPIC');
- assert.equal(c.equipmentLanguage,'en');
- assert.equal(c.equipmentVerified,true);
- // Und bei erneut funktionierender Übersetzung wieder aktuelle deutsche Bezeichnung.
+ assert.equal(r.success,0);
+ assert.equal(c.equipment[0].item,'Neues Wams');
+ assert.equal(c.equipmentLanguage,'de');
+ assert.equal(c.scrapeOk,false);
+ // Sobald die deutsche Quelle wieder verfügbar ist, wird ausschließlich deren neuer String übernommen.
  deAvailable=true;germanName='Frisches Wams';
  r=await refreshCharacters([c]);c=r.data.characters[0];
+ assert.equal(r.success,1);
  assert.equal(c.equipment[0].item,'Frisches Wams');
  assert.equal(c.equipment[0].quality,'EPIC');
  assert.equal(c.equipmentLanguage,'de');
