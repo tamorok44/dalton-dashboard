@@ -15,10 +15,10 @@ assert.equal(result[0].icon,'https://foreverspec.com/icons/7731373.webp');
 assert.equal(result[1].level,10);
 assert.throws(()=>extractGermanGear('<html></html>',[]),/keine auslesbare Ausrüstung/);
 const officialGear=gear({gear:[
-  {id:1001,name:'Worn Leather Vest',slot:{type:'CHEST'},level:{value:9},quality:{type:'POOR',name:'Poor'}},
-  {name:'Training Sword of the Gorilla',slot:{type:'MAIN_HAND'},level:{value:10},quality:{type:'UNCOMMON',name:'Uncommon'}},
-  {name:'Ancient Heirloom',slot:{type:'FINGER_1'},level:{value:1},quality:{type:'COMMON',name:'Common'}},
-  {name:'Item without quality',slot:{type:'RANGED'},level:{value:3}}
+  {id:1001,name:'Abgenutzte Lederweste',slot:{type:'CHEST',name:'Brust'},level:{value:9},quality:{type:'POOR',name:'Schlecht'}},
+  {name:'Ausbildungsschwert des Gorillas',slot:{type:'MAIN_HAND',name:'Waffenhand'},level:{value:10},quality:{type:'UNCOMMON',name:'Ungewöhnlich'}},
+  {name:'Uraltes Erbstück',slot:{type:'FINGER_1',name:'Ring 1'},level:{value:1},quality:{type:'COMMON',name:'Gewöhnlich'}},
+  {name:'Gegenstand ohne Qualität',slot:{type:'RANGED',name:'Distanzwaffe'},level:{value:3}}
 ]});
 assert.deepEqual(officialGear.map(x=>x.quality),['POOR','UNCOMMON','COMMON',undefined]);
 assert.deepEqual(officialGear.map(x=>x.slot),['Brust','Waffenhand','Ring 1','Distanzwaffe']);
@@ -37,7 +37,7 @@ process.env.BLIZZARD_CLIENT_SECRET='test-secret';
 const originalMedia='https://render.worldofwarcraft.com/forever-eu/character/12/34567-main-raw.png';
 const itemIcon='https://render.worldofwarcraft.com/forever-eu/icons/56/222.jpg';
 const fakeOld={
-  slug:'qa-dalton',name:'QA Dalton',level:10,class:'Jäger',
+  slug:'qa-dalton',name:'QA Dalton',level:10,class:'Jäger',classId:3,
   equipmentLanguage:'de',
   equipment:[{slot:'Brust',item:'Altes Wams',sourceName:'Old Chest',icon:'https://render.worldofwarcraft.com/forever-eu/icons/56/111.jpg',level:7,quality:'COMMON',localized:true}],
   professions:[{name:'Bergbau',current:4,max:75}],stats:{Gesundheit:42,Mana:100},
@@ -46,19 +46,21 @@ const fakeOld={
 let englishName='New Chest', germanName='Neues Wams',qualityType='RARE',deAvailable=true,gearAvailable=true,partialStats=false,partialProfessions=false,missingSpecs=false;
 let germanFetches=0,englishFetches=0,foreverSpecFetches=0,oauthFetches=0,apiFetches=0,stableFetches=0,apiAvailable=true;
 const fakeCharacter=(locale)=>{
+ const de=locale==='de-de';
+ const statLabels={HEALTH:'Gesundheit',MANA:'Mana',STRENGTH:'Stärke',AGILITY:'Beweglichkeit',STAMINA:'Ausdauer',INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',SPELLPOWER:'Zaubermacht',DODGE:'Ausweichen',ITEMLEVEL:'Gegenstandsstufe',CRITICALSTRIKE:'Kritische Trefferchance',SPIRIT:'Willenskraft'};
  const c={
-  slug:'qa-dalton',level:12,class:{name:'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
+  slug:'qa-dalton',level:12,class:{id:3,type:'HUNTER',name:de?'Jäger':'Hunter'},professions:partialProfessions?{primaries:[]}:{primaries:[{name:de?'Bergbau':'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
   stats:partialStats
-    ?{groups:[{stats:[{enum:'HEALTH',value:{value:100}}]}]}
+    ?{groups:[{stats:[{enum:'HEALTH',name:de?'Gesundheit':'Health',value:{value:100}}]}]}
     :{groups:[
-       {stats:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL'].map((name,i)=>({enum:name,value:{value:100+i}}))},
-       {stats:[{enum:'CRITICALSTRIKE',value:{value:5.25}}]}
-     ],overview:[{enum:'SPIRIT',value:{value:31}}]},
+       {stats:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL'].map((key,i)=>({enum:key,name:de?statLabels[key]:key,value:{value:100+i}}))},
+       {stats:[{enum:'CRITICALSTRIKE',name:de?statLabels.CRITICALSTRIKE:'Critical Strike',value:{value:5.25}}]}
+     ],overview:[{enum:'SPIRIT',name:de?statLabels.SPIRIT:'Spirit',value:{value:31}}]},
   media:{'main-raw':{url:originalMedia},avatar:{url:'https://render.worldofwarcraft.com/forever-eu/character/12/34567-avatar.jpg'}},
   specs:[],
  };
  if(missingSpecs)delete c.specs;
- if(gearAvailable)c.gear=[{id:9001,name:locale==='de-de'?germanName:englishName,slot:{type:'CHEST'},level:{value:12},quality:{type:qualityType},media:{content:{assets:[{key:'icon',value:itemIcon}]}}}];
+ if(gearAvailable)c.gear=[{id:9001,name:de?germanName:englishName,slot:{type:'CHEST',name:de?'Brust':'Chest'},level:{value:12},quality:{type:qualityType,name:de?'Episch':'Epic'},media:{content:{assets:[{key:'icon',value:itemIcon}]}}}];
  return c;
 };
 const htmlFor=locale=>'<script>var characterProfileInitialState = '+JSON.stringify({character:fakeCharacter(locale)})+';</script>';
@@ -72,11 +74,12 @@ globalThis.fetch=async (url,options={})=>{
  if(u.startsWith('https://eu.api.blizzard.com/profile/wow/character/qa-dalton')){
    apiFetches++;
    if(!apiAvailable)return {ok:false,status:503,text:async()=>JSON.stringify({detail:'Unavailable'})};
+   const de=new URL(u).searchParams.get('locale')==='de_DE';
    return {ok:true,status:200,text:async()=>JSON.stringify({
      id:123456,name:'QA',surname:'Dalton',level:12,experience:4321,achievement_points:25,
      last_login_timestamp:1795176000000,average_item_level:12,equipped_item_level:12,
-     gender:{type:'MALE',name:'Male'},faction:{type:'ALLIANCE',name:'Alliance'},
-     race:{id:95,name:'High Order Skyborne'},character_class:{id:3,name:'Hunter'},
+     gender:{type:'MALE',name:de?'Männlich':'Male'},faction:{type:'ALLIANCE',name:de?'Allianz':'Alliance'},
+     race:{id:95,name:de?'Himmelsgeborene des Hohen Ordens':'High Order Skyborne'},character_class:{id:3,name:de?'Jäger':'Hunter'},
      ruleset:{id:1,name:'PvP'}
    })};
  }
@@ -118,6 +121,9 @@ try{
  assert.equal(c.experience,4321);
  assert.equal(c.achievementPoints,25);
  assert.equal(c.lastLoginAt,new Date(1795176000000).toISOString());
+ assert.equal(c.class,'Jäger');
+ assert.equal(c.classId,3);
+ assert.equal(c.race,'Himmelsgeborene des Hohen Ordens');
  assert.equal(c.faction,'Allianz');
  assert.equal(c.ruleset.name,'PvP');
  assert.equal(c.apiProfileVerified,true);
@@ -136,7 +142,7 @@ try{
  const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;
  r=await refreshCharacters([c]);c=r.data.characters[0];
  assert.equal(germanFetches,priorGerman,'Unchanged equipment skips costly localization');
- assert.equal(englishFetches,priorEnglish+1,'Still fetches authoritative Blizzard profile');
+ assert.equal(germanFetches,priorGerman+1,'The German Blizzard Armory remains the primary source');
  assert.equal(c.equipment[0].item,'Neues Wams');
  assert.equal(c.imageCheckedAt,priorImageChecked,'Unchanged character portrait retains cache key');
  // Trotz gleichem Icon und Level: geänderter offizieller Gegenstandsname wird aktuell.
@@ -178,7 +184,7 @@ try{
  assert.equal(c.lastLoginAt,confirmedLogin,'Last verified API login survives a temporary API outage');
  assert.ok(apiFetches>=6,'Official Forever profile is checked on every refresh');
  assert.equal(oauthFetches,1,'OAuth token is reused instead of requested for every profile refresh');
- assert.ok(englishFetches>=6);
+ assert.equal(englishFetches,0,'No English Armory request is needed for visible game strings');
  assert.ok(stableFetches>=6,'Hunter stable JSON is refreshed together with the character');
  console.log('Blizzard refresh: updated gear, professions, hunter stable, stale stats provenance, talents and request efficiency: OK');
 }finally{globalThis.fetch=originalFetch}
