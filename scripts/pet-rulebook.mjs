@@ -1,6 +1,7 @@
 import {createHash} from 'node:crypto';
+import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
 
-export const PET_RULEBOOK_VERSION='2026.11.21.2';
+export const PET_RULEBOOK_VERSION=HUNTER_PET_RULEBOOK_VERSION;
 
 export const PET_RULES=Object.freeze({
   'fox.family.profile':Object.freeze({
