@@ -116,6 +116,36 @@ assert.deepEqual(catalog.byItemId.get(2840).categoryPath,['Materialien & Kompone
   'Beruf wird nicht als Browse-Einstieg verwendet; Forever-Kategorie verfeinert die Gegenstandsgruppe');
 assert.equal(catalog.byItemId.get(2840).categorySource,'foreverdb-client');
 
+const categoryData={
+  generatedAt:data.generatedAt,
+  characters:[{
+    slug:'dolly-dalton',name:'Dolly Dalton',player:'Max',professions:[
+      {id:165,name:'Lederverarbeitung',current:10,max:75,knownRecipes:[{
+        id:2160,name:'Handgenähte Lederstiefel',craftedItem:{id:2302,name:'Handgenähte Lederstiefel'},craftedQuantity:{value:1},reagents:[{id:2318,name:'Leichtes Leder',quantity:2}]
+      }]},
+      {id:129,name:'Erste Hilfe',current:20,max:75,knownRecipes:[{
+        id:1838,name:'Leinenverband',craftedItem:{id:1251,name:'Leinenverband'},craftedQuantity:{value:1},reagents:[{id:2589,name:'Leinenstoff',quantity:1}]
+      }]}
+    ]
+  }]
+};
+const categoryCatalog=buildWorkshopCatalog(categoryData);
+const categoryRecipes=[
+  normalizeForeverDbRecipe({
+    id:2160,name:'Handgenähte Lederstiefel',makes:{item:{id:2302,name:'Handgenähte Lederstiefel'},count:1},
+    category:{name:'Leather Boots',parent:{name:'Leatherworking'}}
+  },'leatherworking'),
+  normalizeForeverDbRecipe({
+    id:1838,name:'Leinenverband',makes:{item:{id:1251,name:'Leinenverband'},count:1},
+    category:{name:'Bandages',parent:{name:'First Aid'}}
+  },'first-aid')
+].filter(Boolean);
+enrichWorkshopCatalogWithForeverDb(categoryCatalog,hydrateRecipeIndex({generatedAt:data.generatedAt,complete:true,recipes:categoryRecipes}));
+assert.deepEqual(categoryCatalog.byItemId.get(2302).categoryPath,['Ausrüstung & Gegenstände','Lederstiefel'],
+  'Lederstiefel werden trotz Materialwort Leder als Ausrüstung einsortiert');
+assert.deepEqual(categoryCatalog.byItemId.get(1251).categoryPath,['Verbrauchsgüter','Verbände'],
+  'First Aid wird als Berufs-Parent entfernt und die Client-Kategorie deutsch angezeigt');
+
 const candidates=workshopLearningCandidates({
   characters:[
     {slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',level:10,professions:[{name:'Bergbau',current:46,max:75}]},
