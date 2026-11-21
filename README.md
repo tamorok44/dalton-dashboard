@@ -2,6 +2,8 @@
 
 Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funktionen, Upstash Redis und Vercel Blob.
 
+Verbindliche UI- und Responsive-Regeln für bestehende und neue Hauptreiter stehen in `UI_CI.md`. Der CI-Test `scripts/test-layout-contract.mjs` verhindert seitenweiten horizontalen Mobile-Overflow und erlaubt horizontales Scrollen nur in ausdrücklich freigegebenen Innencontainern.
+
 ## Persistenter Betrieb
 
 - `GET /api/characters` liest den letzten vollständigen Datensatz aus Redis, beim erstmaligen Start aus `data/characters.json`.
