@@ -16,10 +16,9 @@ const pages={
     Bite Rank 1 1 Rank 2 8 Rank 3 16 Rank 4 24 Rank 5 32 Rank 6 40 Rank 7 48 Rank 8 56.
     Dash Rank 1 30 Rank 2 40 Rank 3 50.
     Fox pets eat meat.</main>`,
-  'wow-forever.gg':`
-    <main>Game data from build 1.60.1.70959.
-    Fox New in Forever Damage 0% Armor +5% Health 0% Eats meat.
-    Fox Trickster's Dance Dash Bite.</main>`
+  '60.tools':`
+    <main>Family Damage Armor Health Diet Its own abilities
+    Fox 0% +5% 0% Meat Trickster's Dance.</main>`
 };
 function fetchFrom(currentPages,failHost=null){
   return async url=>{
