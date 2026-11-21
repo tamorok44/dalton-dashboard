@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {extractGermanGear,gear,refreshCharacters} from './armory-core.mjs';
+import {extractGermanGear,extractGermanStatLabels,gear,refreshCharacters} from './armory-core.mjs';
 
 const html=`<!doctype html><title>Cole Dalton - ForeverSpec</title>
 <div class="arm-panel"><div class="a-slot side-l" data-itemtype="back" data-itemid="7731373" data-itemlevel="8">
@@ -18,6 +18,10 @@ assert.deepEqual(direct.map(x=>x.slot),['Brust','Waffenhand']);
 assert.deepEqual(direct.map(x=>x.slotType),['CHEST','MAIN_HAND']);
 assert.deepEqual(direct.map(x=>x.qualityName),['Schlecht','Ungewöhnlich']);
 assert.equal(direct[0].id,1001);
+
+const statMarkup='<div class="CharacterStat-media color-stat-STAMINA Media"><div class="Media-text"><span>23</span><div class="CharacterStat-name">Ausdauer</div></div></div>'+
+  '<div class="CharacterStat-media color-stat-CRITICALSTRIKE Media"><div class="Media-text"><span>5%</span><div class="CharacterStat-name">Kritische Trefferchance</div></div></div>';
+assert.deepEqual(extractGermanStatLabels(statMarkup),{STAMINA:'Ausdauer',CRITICALSTRIKE:'Kritische Trefferchance'});
 
 const originalFetch=globalThis.fetch;
 process.env.BLIZZARD_CLIENT_ID='test-client';
@@ -60,9 +64,9 @@ const fakeCharacter=()=>({
     ?{groups:[{stats:[{enum:'HEALTH',name:'Gesundheit',value:{value:100}}]}]}
     :{groups:[
       {stats:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL']
-        .map((key,i)=>({enum:key,name:labels[key],value:{value:100+i}}))},
-      {stats:[{enum:'CRITICALSTRIKE',name:'Kritische Trefferchance',value:{value:5.25}}]}
-    ],overview:[{enum:'SPIRIT',name:'Willenskraft',value:{value:31}}]},
+        .map((key,i)=>({enum:key,value:{value:100+i}}))},
+      {stats:[{enum:'CRITICALSTRIKE',value:{value:5.25}}]}
+    ],overview:[{enum:'SPIRIT',value:{value:31}}]},
   media:{'main-raw':{url:originalMedia},avatar:{url:'https://render.worldofwarcraft.com/forever-eu/character/12/34567-avatar.jpg'}},
   specs:missingSpecs?undefined:[]
 });
@@ -74,7 +78,10 @@ const htmlFor=()=>{
     quality:{type:qualityType,name:qualityName},
     media:{content:{assets:[{key:'icon',value:itemIcon}]}}
   }];
-  return '<script>var characterProfileInitialState = '+JSON.stringify({character:c})+';</script>';
+  const statHtml=Object.entries(labels).map(([enumKey,name])=>
+    '<div class="CharacterStat-media color-stat-'+enumKey+' Media"><div class="Media-text"><span>0</span><div class="CharacterStat-name">'+name+'</div></div></div>'
+  ).join('');
+  return '<script>var characterProfileInitialState = '+JSON.stringify({character:c})+';</script>'+statHtml;
 };
 
 globalThis.fetch=async (url,options={})=>{
