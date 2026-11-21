@@ -4,7 +4,10 @@ import {loadMediaRecord,saveMediaRecord} from './media-registry.mjs';
 import {REPUTATION_BUILD,foreverReputationSeed,factionCrestFor,factionCrests,factionSeedByName} from '../reputation-data.js';
 
 const EXPECTED=foreverReputationSeed.length;
-const SOURCE='Blizzard static-forever-eu + ForeverDB build '+REPUTATION_BUILD;
+function buildFromNamespace(namespace=''){
+  const match=String(namespace).match(/^static-([a-z0-9._]+)-forever-eu$/i);
+  return match?.[1]?.replace(/_/g,'.')||REPUTATION_BUILD;
+}
 
 function imageStoreConfigured(){
   return Boolean(process.env.BLOB_STORE_ID||process.env.BLOB_READ_WRITE_TOKEN);
@@ -54,7 +57,7 @@ async function archiveCrest(record,cache,fetchImpl=fetch){
 function crestKind(seed){
   return Object.hasOwn(factionCrests,seed.slug)?'specific':seed.side==='neutral'?'neutral-fallback':'side-fallback';
 }
-function fallbackRecord(seed){
+function fallbackRecord(seed,build=REPUTATION_BUILD){
   return {
     type:'faction',
     id:'slug:'+seed.slug,
@@ -63,12 +66,12 @@ function fallbackRecord(seed){
     side:seed.side,
     forever:Boolean(seed.forever),
     crestKind:crestKind(seed),
-    build:REPUTATION_BUILD,
-    source:SOURCE,
+    build,
+    source:'ForeverDB build '+build,
     media:{crestSourceUrl:factionCrestFor(seed)}
   };
 }
-function mergeIndex(index=[]){
+function mergeIndex(index=[],build=REPUTATION_BUILD){
   const matched=new Map();
   const unmatched=[];
   for(const entry of index){
@@ -83,8 +86,8 @@ function mergeIndex(index=[]){
       forever:Boolean(seed.forever),
       crestKind:crestKind(seed),
       href:entry.href||null,
-      build:REPUTATION_BUILD,
-      source:SOURCE,
+      build,
+      source:'Blizzard Forever + ForeverDB build '+build,
       media:{crestSourceUrl:factionCrestFor(seed)}
     });
   }
@@ -92,21 +95,22 @@ function mergeIndex(index=[]){
   return {records:[...matched.values()],missing,unmatched};
 }
 
-export async function syncReputationCatalog({force=false,fetchImpl=fetch,archiveMedia=true}={}){
+export async function syncReputationCatalog({namespace,force=false,fetchImpl=fetch,archiveMedia=true}={}){
+  const build=buildFromNamespace(namespace);
   if(!force){
     try{
       const meta=await loadCatalogMeta();
       const factionMeta=meta?.faction;
       const existing=await loadAllCatalogRecords('faction');
       const numeric=Object.values(existing).filter(record=>/^\d+$/.test(String(record?.id||''))&&record?.slug);
-      if(factionMeta?.build===REPUTATION_BUILD&&numeric.length>=EXPECTED){
+      if(factionMeta?.build===build&&numeric.length>=EXPECTED){
         return {records:existing,expected:EXPECTED,matched:numeric.length,complete:numeric.length>=EXPECTED,source:'cache'};
       }
     }catch{}
   }
 
-  const index=await fetchForeverReputationIndex({fetchImpl,locale:'en_GB'});
-  const merged=mergeIndex(index);
+  const index=await fetchForeverReputationIndex({namespace,fetchImpl,locale:'en_GB'});
+  const merged=mergeIndex(index,build);
   if(merged.records.length!==EXPECTED){
     throw new Error('Forever-Rufindex unvollständig: '+merged.records.length+'/'+EXPECTED+
       (merged.missing.length?' · fehlt '+merged.missing.map(x=>x.slug).join(', '):''));
@@ -117,8 +121,8 @@ export async function syncReputationCatalog({force=false,fetchImpl=fetch,archive
   for(const record of merged.records){
     records.push(archiveMedia?await archiveCrest(record,cache,fetchImpl):record);
   }
-  await saveCatalogRecords(records,{build:REPUTATION_BUILD,source:SOURCE});
-  try{await archiveCatalogSnapshot('faction',records,{build:REPUTATION_BUILD})}catch(error){
+  await saveCatalogRecords(records,{build,source:'Blizzard Forever + ForeverDB'});
+  try{await archiveCatalogSnapshot('faction',records,{build})}catch(error){
     console.warn('Ruf-Katalogsnapshot konnte nicht archiviert werden:',String(error.message).slice(0,140));
   }
   return {
@@ -136,15 +140,18 @@ export async function ensureReputationCatalog(options={}){
     console.warn('Vollständiger Rufkatalog konnte nicht synchronisiert werden:',String(error.message).slice(0,220));
     const existing=await loadAllCatalogRecords('faction').catch(()=>({}));
     if(Object.keys(existing).length)return {records:existing,expected:EXPECTED,matched:Object.keys(existing).length,complete:false,source:'stored-fallback',error:String(error.message)};
-    const seed=Object.fromEntries(foreverReputationSeed.map(entry=>[entry.slug,fallbackRecord(entry)]));
+    const seed=Object.fromEntries(foreverReputationSeed.map(entry=>[entry.slug,fallbackRecord(entry,buildFromNamespace(options.namespace))]));
     return {records:seed,expected:EXPECTED,matched:0,complete:false,source:'seed-fallback',error:String(error.message)};
   }
 }
 
 export async function loadPublicReputationCatalog(){
-  const records=await loadAllCatalogRecords('faction').catch(()=>({}));
+  const [records,meta]=await Promise.all([
+    loadAllCatalogRecords('faction').catch(()=>({})),
+    loadCatalogMeta().catch(()=>({}))
+  ]);
   return {
-    build:REPUTATION_BUILD,
+    build:meta?.faction?.build||REPUTATION_BUILD,
     expected:EXPECTED,
     records
   };
