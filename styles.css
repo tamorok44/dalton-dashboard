@@ -817,16 +817,37 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   letter-spacing:.03em;text-transform:uppercase
 }
 .pet-family-stats strong{display:block;margin-top:3px;color:#f2d7ab;font:var(--weight-label) var(--type-body)/1.35 var(--body);overflow-wrap:anywhere}
-.pet-training-list{display:grid;gap:7px}
-.pet-training-item{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px;
-  border:1px solid #5f513c;border-radius:5px;background:linear-gradient(180deg,#211d18,#171512)
+.pet-training-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.pet-training-group{min-width:0}
+.pet-training-label{
+  display:block;margin:0 0 5px;color:#b7aa93;font:var(--weight-label) var(--type-caption)/1.35 var(--body);
+  letter-spacing:var(--tracking-label);text-transform:uppercase
 }
-.pet-training-item>div{min-width:0;display:grid;gap:2px}
-.pet-training-item strong{color:#f1d6ab;font-size:var(--type-small);overflow-wrap:anywhere}
-.pet-training-item span{color:#b7aa93;font-size:var(--type-caption)}
-.pet-training-item a{flex:0 0 auto;color:#d4b46f;font-size:var(--type-caption);text-decoration:none}
-.pet-training-item a:hover{text-decoration:underline}
+.pet-training-group.is-now .pet-training-label{color:var(--class)}
+.pet-training-group.is-next .pet-training-label{color:#e8bd70}
+.pet-training-card{
+  min-height:100%;padding:10px 11px;border:1px solid #5f513c;border-left:3px solid #62594e;border-radius:4px;
+  background:linear-gradient(180deg,#211d18,#171512)
+}
+.pet-training-card.is-now{
+  border-left-color:var(--class);
+  background:linear-gradient(110deg,rgba(40,58,45,.42),rgba(12,18,25,.58))
+}
+.pet-training-card.is-next{
+  border-left-color:#d1a04e;
+  background:linear-gradient(110deg,rgba(76,55,24,.42),rgba(12,18,25,.58))
+}
+.pet-training-card-head{display:grid;gap:3px}
+.pet-training-card-head strong{color:#f2dec0;font-size:var(--type-body);line-height:1.35}
+.pet-training-card-head span{color:#c7b9a2;font:var(--weight-label) var(--type-caption)/1.35 var(--body)}
+.pet-training-card.is-now .pet-training-card-head span{color:#e9f7dc}
+.pet-training-card.is-next .pet-training-card-head span{color:#f0ce91}
+.pet-training-card p{margin:7px 0 0;color:#c4b8a6;font-size:var(--type-small);line-height:1.45}
+.pet-training-later{margin-top:9px;border-top:1px dotted rgba(208,186,148,.18);padding-top:8px}
+.pet-training-later summary{cursor:pointer;color:#b7aa93;font-size:var(--type-small)}
+.pet-training-later-list{display:grid;gap:7px;margin-top:8px}
+.pet-training-card.is-later{min-height:0;padding:8px 10px}
+.pet-training-card.is-later p{display:none}
 .pet-abilities{display:grid;gap:8px}
 .pet-ability{
   padding:9px 10px;border:1px solid rgba(124,105,79,.40);border-left:3px solid #555355;border-radius:3px;
@@ -871,6 +892,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   .pet-render img{min-height:180px}
   .pet-level-gap{grid-template-columns:1fr}
   .pet-family-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pet-training-overview{grid-template-columns:1fr}
   .pet-subsection-head{display:grid}
   .pet-source{text-align:left}
   .pet-tips>div{grid-template-columns:1fr;gap:3px}
