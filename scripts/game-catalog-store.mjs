@@ -1,4 +1,5 @@
 import {configured,redis} from './character-store.mjs';
+import {factionSeedByName,factionCrestFor,factionCrestKindFor} from '../reputation-data.js';
 
 const CATALOG_PREFIX='dalton-dashboard:game-catalog:v1:';
 const CATALOG_META='dalton-dashboard:game-catalog:meta:v1';
@@ -51,7 +52,16 @@ export function collectCatalogRecords(data={}){
       if(item?.id)add({type:'item',id:item.id,name:item.item,sourceName:item.sourceName,quality:item.quality,source:'Blizzard Forever',media:{iconSourceUrl:item.icon,iconStoredUrl:item.storedIcon}});
     }
     for(const reputation of Array.isArray(character.reputations)?character.reputations:[]){
-      if(reputation?.id)add({type:'faction',id:reputation.id,name:reputation.name,source:'Blizzard Forever'});
+      if(!reputation?.id)continue;
+      const seed=factionSeedByName(reputation.name);
+      add({
+        type:'faction',id:reputation.id,name:reputation.name,source:'Blizzard Forever',
+        ...(seed?{
+          slug:seed.slug,side:seed.side,forever:Boolean(seed.forever),
+          crestKind:factionCrestKindFor(seed),
+          media:{crestSourceUrl:factionCrestFor(seed)}
+        }:{})
+      });
     }
     for(const profession of Array.isArray(character.professions)?character.professions:[]){
       if(profession?.id)add({type:'profession',id:profession.id,name:profession.name,source:'Blizzard Forever'});
