@@ -58,6 +58,15 @@ assert.ok(sourceByFile.get('api/workshop.js')?.includes('item:publicDetailedItem
   'Workshop responses must pass selected items through the public media-safe projection');
 assert.ok(!/icon\s*:\s*remote\.icon/.test(sourceByFile.get('api/workshop.js')||''),
   'Raw ForeverDB icon URLs must never be returned directly');
+const workshopApi=sourceByFile.get('api/workshop.js')||'';
+assert.ok(workshopApi.includes('recipe:publicLearningRecipe(remoteRecipe)'),
+  'Workshop must project remote recipes before sending them to the browser');
+assert.ok(workshopApi.includes('learningSources:currentlyCraftable?[]:publicSources'),
+  'Workshop must project remote learning sources before sending them to the browser');
+assert.ok(!workshopApi.includes('recipe:remoteRecipe'),
+  'Raw ForeverDB recipe objects must never reach the browser');
+assert.ok(!workshopApi.includes('professionSlugs:recipeIndex'),
+  'Technical external profession slugs must stay server-side');
 const browserSource=sourceByFile.get('app.js')||'';
 for(const host of ['render.worldofwarcraft.com','foreverdb.net/icons/','foreverspec.com/icons/']){
   assert.ok(!browserSource.includes(host),'Browser code must not hard-code external game image hosts: '+host);
