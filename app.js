@@ -22,52 +22,51 @@ function portraitBadge(scene){
     '<span class="portrait-badge-copy"><span class="portrait-badge-firstname">'+esc(scene.firstName)+'</span>'+
     '<span class="portrait-badge-epithet">'+esc(scene.epithet)+'</span></span></span>';
 }
-const mainStatNames=['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration'];
-const detailStatNames=['Rüstung','Angriffskraft','Zaubermacht','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'];
-const percentStatNames=new Set(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen','Parieren','Blocken']);
+const mainStatEnums=['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ATTACKDPS','MANAREGEN'];
+const detailStatEnums=['ARMOR','ATTACKPOWER','SPELLPOWER','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK','ATTACKSPEED'];
+const percentStatEnums=new Set(['CRITICALSTRIKE','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK']);
 const statIcons={
-  'Gesundheit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.2 3.5 8.9A4.4 4.4 0 0 1 12 6.7a4.4 4.4 0 0 1 8.5 2.2c0 6.3-8.5 11.6-8.5 11.6Z"/></svg>',
-  'Mana':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v4l-4.6 8.1A3.9 3.9 0 0 0 8.8 21h6.4a3.9 3.9 0 0 0 3.4-5.9L14 7V3"/><path d="M7.8 15h8.4"/></svg>',
-  'Stärke':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg>',
-  'Intelligenz':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M8.2 14.7A6 6 0 1 1 15.8 14.7c-1.1.8-1.5 1.6-1.6 2.3h-4.4c-.1-.7-.5-1.5-1.6-2.3Z"/></svg>',
-  'Beweglichkeit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 10.8c1.3-1 4.3-1 5.6 0 1.8 1.4 3.2 4.1 1.7 6.2-1.2 1.7-3.1.4-4.5.4s-3.3 1.3-4.5-.4c-1.5-2.1-.1-4.8 1.7-6.2Z"/><circle cx="6.4" cy="8" r="1.6"/><circle cx="10.1" cy="5.3" r="1.6"/><circle cx="13.9" cy="5.3" r="1.6"/><circle cx="17.6" cy="8" r="1.6"/></svg>',
-  'Ausdauer':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19 6v5.2c0 4.4-2.7 7.9-7 10-4.3-2.1-7-5.6-7-10V6l7-3.2Z"/><path d="M12 7v8M8 11h8"/></svg>',
-  'Kritische Trefferchance':'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>',
-  'Willenskraft':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>',
-  'Waffen-DPS':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 3.2 6.1-1.1-1.1 6.1-9.1 9.1"/><path d="m8.9 13.6 1.5 1.5"/><path d="m7.2 15.3-3.9 3.9 1.5 1.5 3.9-3.9"/><path d="M14 7.3 16.7 10"/></svg>',
-  'Manaregeneration':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5S6.5 8.6 6.5 13a5.5 5.5 0 0 0 8.7 4.5"/><path d="M14.2 11.2a4.2 4.2 0 1 1-.1 7.6"/><path d="m12.8 16.4 1.3 2.4 2.4-1.3"/></svg>'
+  HEALTH:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.2 3.5 8.9A4.4 4.4 0 0 1 12 6.7a4.4 4.4 0 0 1 8.5 2.2c0 6.3-8.5 11.6-8.5 11.6Z"/></svg>',
+  MANA:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v4l-4.6 8.1A3.9 3.9 0 0 0 8.8 21h6.4a3.9 3.9 0 0 0 3.4-5.9L14 7V3"/><path d="M7.8 15h8.4"/></svg>',
+  STRENGTH:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg>',
+  INTELLECT:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M8.2 14.7A6 6 0 1 1 15.8 14.7c-1.1.8-1.5 1.6-1.6 2.3h-4.4c-.1-.7-.5-1.5-1.6-2.3Z"/></svg>',
+  AGILITY:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 10.8c1.3-1 4.3-1 5.6 0 1.8 1.4 3.2 4.1 1.7 6.2-1.2 1.7-3.1.4-4.5.4s-3.3 1.3-4.5-.4c-1.5-2.1-.1-4.8 1.7-6.2Z"/><circle cx="6.4" cy="8" r="1.6"/><circle cx="10.1" cy="5.3" r="1.6"/><circle cx="13.9" cy="5.3" r="1.6"/><circle cx="17.6" cy="8" r="1.6"/></svg>',
+  STAMINA:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19 6v5.2c0 4.4-2.7 7.9-7 10-4.3-2.1-7-5.6-7-10V6l7-3.2Z"/><path d="M12 7v8M8 11h8"/></svg>',
+  CRITICALSTRIKE:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>',
+  SPIRIT:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>',
+  ATTACKDPS:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 3.2 6.1-1.1-1.1 6.1-9.1 9.1"/><path d="m8.9 13.6 1.5 1.5"/><path d="m7.2 15.3-3.9 3.9 1.5 1.5 3.9-3.9"/><path d="M14 7.3 16.7 10"/></svg>',
+  MANAREGEN:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5S6.5 8.6 6.5 13a5.5 5.5 0 0 0 8.7 4.5"/><path d="M14.2 11.2a4.2 4.2 0 1 1-.1 7.6"/><path d="m12.8 16.4 1.3 2.4 2.4-1.3"/></svg>'
 };
-function formatStatValue(name,value){
+function formatStatValue(stat){
+  const value=stat?.value;
   if(value==null||value==='')return '–';
   const n=Number(value);
   if(!Number.isFinite(n))return String(value);
-  if(percentStatNames.has(name))return new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n)+' %';
+  if(percentStatEnums.has(stat?.enum))return new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n)+' %';
   return new Intl.NumberFormat('de-DE',{maximumFractionDigits:2}).format(n);
 }
-function statTile(name,value,stale=false,icon=false){
+function statTile(stat,stale=false,icon=false){
+  const name=stat?.name||'';
   return '<div class="stat-tile '+(icon?'stat-tile-main':'stat-tile-detail')+'">'+
-    (icon?'<span class="stat-icon">'+(statIcons[name]||'')+'</span>':'')+
+    (icon?'<span class="stat-icon">'+(statIcons[stat?.enum]||'')+'</span>':'')+
     '<span class="stat-copy"><small>'+esc(name)+(stale?' <span class="stale-value" title="Nicht im letzten Blizzard-Abruf bestätigt">· letzter Stand</span>':'')+'</small>'+
-    '<strong>'+esc(formatStatValue(name,value))+'</strong></span></div>';
+    '<strong>'+esc(formatStatValue(stat))+'</strong></span></div>';
 }
-const characterStatExcludedNames=new Set(['Gegenstandsstufe']);
-function characterStatNames(chars=[]){
-  const ordered=[...mainStatNames,...detailStatNames],seen=new Set(ordered);
-  for(const character of chars){
-    for(const name of Object.keys(character?.stats||{})){
-      if(characterStatExcludedNames.has(name)||seen.has(name))continue;
-      seen.add(name);ordered.push(name);
-    }
-  }
-  return ordered;
+function visibleStatDetails(c){
+  if(Array.isArray(c?.statDetails)&&c.statDetails.length)return c.statDetails.filter(stat=>stat?.name&&Number.isFinite(Number(stat?.value)));
+  return Object.entries(c?.stats||{}).map(([name,value])=>({enum:null,name,value}));
 }
 function statsPanel(c,open=false){
-  const s=c.stats||{};
-  const currentKeys=Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:(c.statsVerified?Object.keys(s):[]);
-  const verified=new Set(c.scrapeOk===false?[]:currentKeys);
-  const isStale=name=>Object.hasOwn(s,name)&&!verified.has(name);
-  const main=mainStatNames.map(name=>statTile(name,s[name],isStale(name),true)).join('');
-  const rest=characterStatNames([c]).filter(name=>!mainStatNames.includes(name)).map(name=>statTile(name,s[name],isStale(name),false)).join('');
+  const details=visibleStatDetails(c);
+  const byEnum=new Map(details.filter(stat=>stat.enum).map(stat=>[stat.enum,stat]));
+  const freshNames=new Set(Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:details.map(stat=>stat.name));
+  const isStale=stat=>c.scrapeOk===false||!freshNames.has(stat.name);
+  const main=mainStatEnums.map(key=>byEnum.get(key)).filter(Boolean).map(stat=>statTile(stat,isStale(stat),true)).join('');
+  const ordered=new Set([...mainStatEnums,...detailStatEnums]);
+  const rest=[
+    ...detailStatEnums.map(key=>byEnum.get(key)).filter(Boolean),
+    ...details.filter(stat=>!stat.enum||!ordered.has(stat.enum))
+  ].map(stat=>statTile(stat,isStale(stat),false)).join('');
   return '<div class="section character-stats"><h3>Charakterwerte'+(c.scrapeOk!==false&&c.statsVerified?'':' · teilweise letzter Stand')+'</h3>'+
     '<div class="stat-grid stat-grid-main">'+main+'</div>'+
     '<details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'>'+
@@ -536,42 +535,32 @@ function questsPanel(c,group,questCatalog={},openDetails=new Set()){
   return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div></div>';
 }
 
-// Feste Slot-Reihenfolge: links oben nach unten, dann Ringe/Schmuck und Waffen.
-// Alle Charaktere verwenden dieselben 19 Plätze, auch wenn sie leer sind.
-const equipmentSlotOrder=[
-  'Kopf','Hals','Schultern','Rücken','Brust','Hemd','Wappenrock','Handgelenke',
-  'Hände','Taille','Beine','Füße','Ring 1','Ring 2','Schmuck 1','Schmuck 2',
-  'Waffenhand','Nebenhand','Distanzwaffe'
+// Technical slot IDs define layout order; the visible label always comes from Blizzard's German source.
+const equipmentSlotTypes=[
+  'HEAD','NECK','SHOULDER','BACK','CHEST','SHIRT','TABARD','WRIST','HANDS','WAIST','LEGS','FEET',
+  'FINGER_1','FINGER_2','TRINKET_1','TRINKET_2','MAIN_HAND','OFF_HAND','RANGED'
 ];
-const equipmentSlotAliases={
-  'Füsse':'Füße','Distanz':'Distanzwaffe','Fernkampf':'Distanzwaffe',
-  'Ring':'Ring 1','Finger':'Ring 1','Finger 1':'Ring 1','Finger 2':'Ring 2',
-  'Schmuck':'Schmuck 1','Trinket 1':'Schmuck 1','Trinket 2':'Schmuck 2',
-  'Schildhand':'Nebenhand','Nebenwaffe':'Nebenhand','Offhand':'Nebenhand'
-};
 function equipmentPanel(c,open=false){
-  const available=new Map();
-  for(const item of c.equipment||[]){
-    const slot=equipmentSlotAliases[item.slot]||item.slot;
-    if(equipmentSlotOrder.includes(slot)&&item.item&&!available.has(slot))available.set(slot,item);
-  }
-  const rows=equipmentSlotOrder.map(slot=>{
-    const item=available.get(slot);
-    if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
+  const items=[...(c.equipment||[])].filter(item=>item?.item&&item?.slot);
+  items.sort((a,b)=>{
+    const ai=equipmentSlotTypes.indexOf(a.slotType),bi=equipmentSlotTypes.indexOf(b.slotType);
+    return (ai<0?999:ai)-(bi<0?999:bi);
+  });
+  const rows=items.map(item=>{
     const iconUrl=item.storedIcon||item.icon;
     const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(iconUrl||'')||validBlob(iconUrl);
     const icon=safeIcon?'<img class="equip-icon" src="'+esc(iconUrl)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
     const quality=String(item.quality||'').toUpperCase();
     const qualityClass=itemQualityClasses[quality]||'quality-unknown';
-    const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
-    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(slot)+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
+    const qualityTitle=item.qualityName?' title="'+esc('Qualität: '+item.qualityName)+'"':'';
+    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(item.slot)+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
   }).join('');
   const verified=c.equipmentVerified&&c.scrapeOk!==false?'':' · letzter bekannter Stand';
-  const languageNote=c.equipmentLanguage==='en'?' · Namen derzeit auf Englisch':c.equipmentLanguage==='gemischt'?' · teilweise englische Namen':'';
+  const languageNote=c.equipmentLanguage==='de'?'':' · letzter bestätigter deutscher Stand';
   const itemLevel=Number.isFinite(Number(c.equippedItemLevel))?Number(c.equippedItemLevel):null;
   const overview=itemLevel===null?'':'<div class="equipment-overview"><small>Gegenstandsstufe</small><strong>'+esc(itemLevel)+'</strong></div>';
   return '<div class="section equipment-section"><h3>Ausrüstung</h3>'+overview+
-    '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details></div>';
+    '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+items.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details></div>';
 }
 
 const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/|\/media\/)/.test(x.pathname)}catch{return false}};
