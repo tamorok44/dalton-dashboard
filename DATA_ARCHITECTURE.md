@@ -75,13 +75,13 @@ Aktiver Begleiter und Stall behalten vorhandene Blizzard-IDs, Creature-ID und Di
 
 ### Ruf, Quests, Rezepte und weitere Bereiche
 
-Ruf ist als erster vollständiger Masterkatalog umgesetzt: Blizzard liefert die stabilen Fraktions-IDs aus dem buildgebundenen Forever-Game-Data-Namespace, ForeverDB dient als Vollständigkeits- und Build-Gegenprüfung. Der Katalog muss den vollständigen Forever-Bestand enthalten und bleibt unabhängig davon, welche Fraktionen die Daltons bereits entdeckt haben.
+Ruf ist als erster vollständiger Masterkatalog umgesetzt. Der vollständige Fraktionsbestand und sein Forever-Clientbuild stammen aus der verifizierten Clientextraktion von ForeverDB. Blizzard liefert bei beobachteten Charakter-Rufständen die stabilen numerischen Fraktions-IDs; diese werden per normalisiertem Fraktionsnamen/Slug mit dem Masterkatalog verknüpft. Ein Blizzard-`static-...-forever-eu`-Namespace kann zeitlich hinter dem aktuellen Forever-Clientbuild liegen und ist deshalb nur eine separate API-Version, nicht die Buildquelle des Masterkatalogs.
 
 Ruf-Fraktionen, Quests, Berufe, Rezepte, Items, Talente und Spells werden beim Refresh bereits als Katalogobjekte registriert. Vollständige Forever-Masterkataloge werden über dieselbe Struktur ergänzt, sobald die jeweilige vollständige Quelle/API verfügbar und verifiziert ist.
 
 ## Build-Versionierung
 
-Vollständige Masterkataloge sind an einen Forever-Build zu binden. Bei unverändertem Build muss kein vollständiger Katalog neu geschrieben werden. Bei einem Buildwechsel kann ein neuer Blob-Snapshot angelegt und der aktive Katalog gezielt aktualisiert werden.
+Vollständige Masterkataloge sind an den verifizierten Forever-Clientbuild zu binden. Der Blizzard-Game-Data-Namespace wird separat betrachtet und darf diesen Build nicht überschreiben. Bei unverändertem Clientbuild muss kein vollständiger Katalog neu geschrieben werden. Bei einem verifizierten Buildwechsel kann ein neuer Blob-Snapshot angelegt und der aktive Katalog gezielt aktualisiert werden.
 
 ## Historisierung
 
