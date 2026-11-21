@@ -36,9 +36,9 @@ const pages={
     Family passives · Forever client 70374. Physical damage and base armour.`,
   'efficient.games/wowf/hunter-pets':`
     WoW Forever 1.60.1 (build 70959).
-    Bite Rank 1 Pet level 1 · 1 training point. Rank 2 Pet level 8 · 4 training points.
-    Trickster's Dance Rank 1 Pet level 20 · 10 training points.
-    Dash Rank 1 Pet level 30 · 15 for Boar, Cat, Fox, Hyena, Tallstrider, Wolf.`,
+    Bite Rank 1 1 1 Charged 1 in play Bite Rank 2 8 4 Charged 4 in play.
+    Trickster's Dance Rank 1 20 10.
+    Dash Rank 1 30 15 for Boar, Cat, Fox, Hyena, Tallstrider, Wolf.`,
   'mobalytics.gg/wow-forever/classes/hunter-leveling-1-60-vareion':`
     Pets now scale with your player character:
     100% of your Crit strike
