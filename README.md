@@ -13,6 +13,9 @@ Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funk
 - Vercel Blob archiviert tägliche Voll-Snapshots sowie optional Porträts, Avatare und Ausrüstungs-Icons.
 - Jägerprofile laden zusätzlich Blizzards öffentliche Forever-Stall-JSON (`collections/stable.json`). Aktiver Begleiter, Stallplätze, Name, Familie, Stufe und Blizzard-Render werden persistent gespeichert und bei Änderungen historisiert.
 - Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und tatsächlich gelernte Pet-Ränge werden nicht geschätzt, weil Blizzard diese Clientwerte derzeit nicht in der Online-Armory veröffentlicht.
+- Das Begleiter-Kampfprofil zeigt nur vollständig verifizierbare Beiträge aus aktuellen Blizzard-Charakterwerten: Gesundheit aus Ausdauer, Rüstung aus Jägerrüstung und Krit aus dem aktuellen Armory-Kritwert. Gesamtleben, Gesamtrüstung, Pet-DPS und AP-Vererbung bleiben bewusst unberechnet, solange dafür nicht alle Ausgangswerte eindeutig online vorliegen.
+- Live ausgelesene Jägertalente wie **Belastbarkeit-Ausbildung** werden als eigener Modifikator angezeigt, aber nicht in einen Gesamtwert eingerechnet, solange Reihenfolge und fehlende Pet-Grundwerte nicht vollständig verifiziert sind.
+- Forever-Fokuswerte werden als eigene Regel überwacht: 150 maximaler Fokus und 10 Fokus/Sekunde kontinuierliche Regeneration.
 - Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
 ## Pet-Regelwerk und Fail-closed-Prinzip
@@ -26,6 +29,8 @@ Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.
 - Das Regelwerk beobachtet aktuell:
   - die offizielle Blizzard-Forever-Hotfixseite,
   - Wowheads Forever-Hunter-Skalierungsregeln,
+  - die Forever-Hunter-Community-Dokumentation als zweite Skalierungs- und Fokusquelle,
+  - einen separaten Clientdaten-Audit des WoW-Forever-Simulators für Fokus,
   - Bind on Forever für Fuchsfamilie und Ausbildungsstufen,
   - 60.tools als zweite unabhängige Quelle für Familienmodifikatoren.
 - Quellen werden nicht automatisch „neu angelernt“. Der erste geprüfte Stand einer Regelwerk-Version wird als Baseline gespeichert. Ändert sich ein relevanter Text, ein beobachteter Forever-Build oder fehlt eine erwartete Regel-Aussage, erhält die betroffene Regel `review_required`.
