@@ -3,6 +3,7 @@ import {loadQuestCatalogByIds} from '../scripts/quest-catalog-store.mjs';
 import {loadPublicPetRuleState} from '../scripts/pet-rule-store.mjs';
 import {loadPublicReputationCatalog} from '../scripts/reputation-catalog-store.mjs';
 import {loadGermanPetLocalizations} from '../scripts/pet-localization-store.mjs';
+import {buildDataVersion} from '../scripts/data-version.mjs';
 export default async function handler(req,res){
   res.setHeader('Cache-Control','public, no-store');
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
@@ -32,7 +33,8 @@ export default async function handler(req,res){
     try{petCatalog=await loadGermanPetLocalizations(petFamilySlugs)}catch(error){
       console.warn('Deutsche Pet-Daten konnten nicht geladen werden:',String(error.message).slice(0,140));
     }
-    return res.status(200).json({...result,questCatalog,petRules,reputationCatalog,petCatalog});
+    const dataVersion=buildDataVersion({data:result.data,petRules});
+    return res.status(200).json({...result,questCatalog,petRules,reputationCatalog,petCatalog,dataVersion});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);
     return res.status(503).json({error:'Gespeicherte Charakterdaten derzeit nicht erreichbar'});
