@@ -1,28 +1,63 @@
 # Die Daltons – WoW Forever Dashboard
 
-Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funktionen, Upstash Redis und optional Vercel Blob.
+Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funktionen, Upstash Redis und Vercel Blob.
 
 ## Persistenter Betrieb
 
 - `GET /api/characters` liest den letzten vollständigen Datensatz aus Redis, beim erstmaligen Start aus `data/characters.json`.
 - Ein Klick auf **Aktualisieren** löst `GET /api/refresh` aus und speichert erfolgreich abgerufene Daten dauerhaft. Der manuelle Abruf ist global auf einmal pro Minute begrenzt.
-- Die GitHub-Aktion `.github/workflows/refresh-characters.yml` ruft **alle 30 Minuten** `GET /api/refresh` auf, unabhängig vom manuellen Aktualisieren. Sie benötigt keine zusätzlichen Konten oder Zugangsdaten und führt **kein Deployment** aus. GitHub-Zeitpläne können verzögert ausfallen. Der bereits vorhandene geschützte `POST`-Endpunkt bleibt für eine eventuelle spätere QStash-Umstellung verfügbar.
-- Redis-basierte Sperre (`SET NX EX`) schützt gegen parallele Serverinstanzen. Ein per Lua validierter Schreibvorgang verhindert Überschreiben nach abgelaufener Sperre. Eine laufende Aktualisierung erhält HTTP 202 (manuell) oder 200 (QStash).
-- Teilfehler behalten den letzten Datenstand des betroffenen Charakters. Bei einem vollständigen Blizzard-Ausfall wird kein neuer Stand gespeichert.
-- Vercel Blob speichert optional Porträts, Avatare und Ausrüstungs-Icons. Neue Icons werden schrittweise archiviert. Die Originale bleiben als Fallback erhalten. Alle Blob-Adressen werden in Redis gespeichert.
-- Jägerprofile laden zusätzlich Blizzards öffentliche Forever-Stall-JSON (`collections/stable.json`). Aktiver Begleiter, Stallplätze, Name, Familie, Stufe und Blizzard-Render werden persistent gespeichert und bei Änderungen historisiert. Treue, Zufriedenheit, Ausbildungspunkte und tatsächlich gelernte Pet-Ränge werden nicht geschätzt, weil Blizzard diese Clientwerte online nicht veröffentlicht.
+- Es gibt **keinen 30-Minuten-Deployment- oder GitHub-Datenabruf**. Code-Pushes führen nur die Tests aus. Datenaktualisierung und Website-Deployment sind getrennt.
+- Der einzige planmäßige Serverlauf ist der Vercel-Cron in `vercel.json`: `7 4 * * *` (04:07 UTC, also 05:07 Uhr Berlin im Winter und 06:07 Uhr im Sommer). Er erstellt den täglichen Roh-Snapshot und aktualisiert danach die persistenten Charakterdaten.
+- Redis-basierte Sperren schützen gegen parallele Serverinstanzen und verhindern veraltete Überschreibungen.
+- Teilfehler behalten den letzten Datenstand des betroffenen Charakters. Bei einem vollständigen Blizzard-Ausfall wird kein neuer Charakterstand gespeichert.
+- Vercel Blob archiviert tägliche Voll-Snapshots sowie optional Porträts, Avatare und Ausrüstungs-Icons.
+- Jägerprofile laden zusätzlich Blizzards öffentliche Forever-Stall-JSON (`collections/stable.json`). Aktiver Begleiter, Stallplätze, Name, Familie, Stufe und Blizzard-Render werden persistent gespeichert und bei Änderungen historisiert.
+- Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und tatsächlich gelernte Pet-Ränge werden nicht geschätzt, weil Blizzard diese Clientwerte derzeit nicht in der Online-Armory veröffentlicht.
 - Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
-## Noch nötige Einrichtung vor Produktionsstart
+## Pet-Regelwerk und Fail-closed-Prinzip
 
-1. In Vercel prüfen, dass beim Projekt `dalton-dashboard` die Variablen `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` und `BLOB_STORE_ID` für **Production** vorhanden sind. Alternativ funktionieren für Redis `KV_REST_API_URL` / `KV_REST_API_TOKEN`. Vercel Blob verwendet bei neuen Projekt-Verbindungen standardmässig kurzlebige OIDC-Anmeldedaten mit `BLOB_STORE_ID` (kein `BLOB_READ_WRITE_TOKEN` nötig). Ältere Token-basierte Blob-Verbindungen bleiben ebenfalls unterstützt.
-2. Eine **zusätzliche** Vercel-Umgebungsvariable `CRON_SECRET` für Production mit einem langen zufälligen Passwort einrichten. Geheimnisse nur im Vercel-Dashboard eingeben.
-3. Nach grünem GitHub-Test die Änderungen einmalig nach Production deployen, `/api/characters` aufrufen und anschliessend den Aktualisieren-Button testen. Datenstand nach Neuladen prüfen.
-4. Nach dem Merge in `main` ist der GitHub-Actions-Zeitplan `7,37 * * * *` (UTC) automatisch aktiv. Unter **Actions → Dalton-Profile automatisch aktualisieren** den ersten Lauf ansehen und unter `/api/characters` den neuen Zeitstempel prüfen.
-5. **Keinen zweiten QStash-Zeitplan** einrichten, solange dieser GitHub-Actions-Zeitplan aktiv ist.
+Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.
 
-**Wichtig:** Der Zeitplan aktualisiert Redis/Blob und niemals das GitHub-Repository. Der erste planmäßige Abruf startet erst nach dem Merge (die Produktionswebsite muss dafür bereits deployed sein). Der öffentliche GET-Endpunkt nutzt die bestehende globale Redis-Drosselung und verteilte Sperre.
+- **Blizzard-Livedaten** wie Name, Stufe, Familie, Aktiv-/Stallstatus und Bilder bleiben unabhängig vom Regelwächter sichtbar.
+- **Regelwerte** wie Familienmodifikatoren, Ausbildungsstufen oder künftige Berechnungsformeln besitzen eine eigene Regel-ID, Version, Quellen und ein Prüfdatum.
+- Der tägliche Ablauf ist verbindlich: **Pet-Regeln prüfen → Roh-Snapshot erstellen → Charaktere/API aktualisieren → nur bestätigte Regeln verwenden → speichern**.
+- Der manuelle Refresh verwendet einen höchstens 20 Stunden alten Regelstand. Fehlt er oder ist er älter, wird die Regelprüfung ebenfalls **vor** dem Blizzard-Profilabruf ausgeführt.
+- Das Regelwerk beobachtet aktuell:
+  - die offizielle Blizzard-Forever-Hotfixseite,
+  - Wowheads Forever-Hunter-Skalierungsregeln,
+  - Bind on Forever für Fuchsfamilie und Ausbildungsstufen,
+  - WoW-Forever.gg als zweite Quelle für Familienmodifikatoren.
+- Quellen werden nicht automatisch „neu angelernt“. Der erste geprüfte Stand einer Regelwerk-Version wird als Baseline gespeichert. Ändert sich ein relevanter Text, ein beobachteter Forever-Build oder fehlt eine erwartete Regel-Aussage, erhält die betroffene Regel `review_required`.
+- Ist eine benötigte Quelle nicht erreichbar, erhält die betroffene Regel `source_unavailable`.
+- Bei `review_required` oder `source_unavailable` gilt **fail closed**: Der betreffende regelbasierte Wert wird im Dashboard ausgeblendet. Es wird niemals mit einer möglicherweise veralteten Formel weitergerechnet.
+- Eine bestätigte Änderung wird erst durch eine bewusst neue Regelwerk-Version im Repository freigegeben. Historische Regelversionen werden dadurch nicht stillschweigend überschrieben.
+- Eine serverseitige, nicht veröffentlichte Blizzard-Änderung kann technisch nicht vor ihrer Beobachtbarkeit garantiert erkannt werden. Das System minimiert dieses Restrisiko, indem es keine unbestätigten Ableitungen anzeigt.
+
+## Zeitplan
+
+Der Vercel-Cron läuft einmal täglich um `04:07 UTC`.
+
+1. Prüfen, ob der Tageslauf bereits gespeichert wurde.
+2. Pet-Regelwerk gegen die aktuellen Quellen prüfen und den Status in Redis speichern.
+3. Vollständigen Blizzard-Forever-Snapshot in Blob archivieren.
+4. Live-Profile aller Daltons einschließlich Jägerstall aktualisieren.
+5. Nur weiterhin verifizierte Regelwerte im Frontend freigeben.
+6. Änderungen der Charakterdaten historisieren.
+
+Der Cron aktualisiert Redis/Blob und **niemals** das GitHub-Repository. GitHub Actions führt bei Pushes und Pull Requests ausschließlich `npm test` aus.
+
+## Produktionsvoraussetzungen
+
+In Vercel sind für Production erforderlich:
+
+- `UPSTASH_REDIS_REST_URL` und `UPSTASH_REDIS_REST_TOKEN` oder die entsprechenden `KV_REST_API_*` Variablen,
+- `BLOB_STORE_ID` beziehungsweise bei älteren Verbindungen `BLOB_READ_WRITE_TOKEN`,
+- `CRON_SECRET`,
+- `BLIZZARD_CLIENT_ID` und `BLIZZARD_CLIENT_SECRET`.
+
+Geheimnisse gehören ausschließlich in Vercel-Umgebungsvariablen und niemals ins Repository.
 
 ## Entwicklung
 
-`npm test`: Syntax-, Parser-, UI- und API-Tests. Der Draft-PR löst GitHub Actions aus.
+`npm test` prüft Syntax, Parser, UI, Blizzard-Datenformate, Persistenz, Historisierung und das Pet-Regelwerk einschließlich Buildwechsel, neuen Pet-Hotfixes, Quellenausfällen und Fail-closed-Verhalten.
