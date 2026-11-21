@@ -32,7 +32,7 @@ export function normalizeCatalogRecord(record={}){
     }
     if(Object.keys(media).length)normalized.media=media;
   }
-  for(const key of ['quality','familyId','spellId','craftedItemId']){
+  for(const key of ['quality','familyId','spellId','craftedItemId','slug','side','forever','crestKind','href']){
     if(record[key]!==undefined&&record[key]!==null)normalized[key]=record[key];
   }
   return normalized;
@@ -109,6 +109,20 @@ export async function loadCatalogRecords(type,ids=[]){
     if(!raw)return;
     try{out[id]=JSON.parse(raw)}catch{}
   });
+  return out;
+}
+
+export async function loadAllCatalogRecords(type){
+  const t=cleanType(type);
+  if(!t||!configured())return {};
+  const values=await redis(['HGETALL',CATALOG_PREFIX+t]);
+  if(!Array.isArray(values))return {};
+  const out={};
+  for(let i=0;i<values.length;i+=2){
+    const id=values[i],raw=values[i+1];
+    if(!id||!raw)continue;
+    try{out[id]=JSON.parse(raw)}catch{}
+  }
   return out;
 }
 export async function loadCatalogMeta(){
