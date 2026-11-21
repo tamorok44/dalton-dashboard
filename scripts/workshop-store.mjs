@@ -29,8 +29,8 @@ function recipeKey(slugs){
 function searchKey(query){
   return 'dalton-dashboard:workshop:foreverdb:search:v1:'+digest(String(query).trim().toLocaleLowerCase('de-DE'));
 }
-function itemRecipeKey(itemId){
-  return 'dalton-dashboard:workshop:foreverdb:item-recipes:v1:'+Number(itemId);
+function itemRecipeKey(itemId,itemName){
+  return 'dalton-dashboard:workshop:foreverdb:item-recipes:v2:'+Number(itemId)+':'+digest(String(itemName||'').trim().toLocaleLowerCase('en'));
 }
 export async function loadCachedRecipeIndex(professionSlugs=[]){
   if(!redisConfigured())return null;
@@ -56,7 +56,7 @@ export async function cachedForeverDbRecipeSearch(itemId,itemName,{fetchImpl=fet
   const id=Number(itemId);
   if(!Number.isInteger(id)||id<=0)return {recipes:[],generatedAt:new Date().toISOString(),cached:false,requestCount:0};
   if(redisConfigured()){
-    const key=itemRecipeKey(id);
+    const key=itemRecipeKey(id,itemName);
     const raw=await redis(['GET',key]);
     if(raw){
       try{
