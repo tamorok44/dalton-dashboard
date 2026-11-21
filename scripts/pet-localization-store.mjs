@@ -1,6 +1,6 @@
 import {configured,redis} from './character-store.mjs';
 
-const PREFIX='dalton-dashboard:pet-localization:v1:';
+const PREFIX='dalton-dashboard:pet-localization:v2:';
 const SOURCE_ORIGIN='https://foreverdb.net';
 const CACHE_SECONDS=24*60*60;
 
