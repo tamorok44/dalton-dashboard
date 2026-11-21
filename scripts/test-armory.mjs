@@ -138,11 +138,10 @@ try{
  assert.equal(c.hunterPets.active[0].creatureId,8001);
  assert.equal(c.hunterPets.active[0].displayId,139280,'Pet render display ID is retained as media identity fallback');
  assert.equal(c.hunterPets.stable.length,0);
- // No redundant localized request when Blizzard equipment has not changed.
+ // The German Armory remains the authoritative visible source on every refresh.
  const priorGerman=germanFetches,priorEnglish=englishFetches,priorImageChecked=c.imageCheckedAt;
  r=await refreshCharacters([c]);c=r.data.characters[0];
- assert.equal(germanFetches,priorGerman,'Unchanged equipment skips costly localization');
- assert.equal(germanFetches,priorGerman+1,'The German Blizzard Armory remains the primary source');
+ assert.equal(germanFetches,priorGerman+1,'The German Blizzard Armory is fetched as the primary visible source');
  assert.equal(c.equipment[0].item,'Neues Wams');
  assert.equal(c.imageCheckedAt,priorImageChecked,'Unchanged character portrait retains cache key');
  // Fällt die deutsche Blizzard-Quelle aus, bleibt der letzte bestätigte deutsche Stand erhalten.
