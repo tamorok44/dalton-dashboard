@@ -9,7 +9,7 @@
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <link rel="preload" media="(min-width: 741px)" href="/skyborne-horizon.svg?v=mainstreet-20261120c" as="image" type="image/svg+xml">
   <link rel="preload" media="(max-width: 740px)" href="/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c" as="image" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css?v=comparefix-20261121e">
+  <link rel="stylesheet" href="/styles.css?v=layoutcontract-20261121f">
   <title>Die Daltons · Noch keine Legenden, aber schon gesucht.</title>
 </head>
 <body>
@@ -51,7 +51,7 @@
     </section>
 
     <nav class="main-navigation" aria-label="Hauptnavigation"><a class="main-nav-link is-active" href="#charaktere" data-view-link="characters" aria-current="page">Charaktere</a><a class="main-nav-link" href="#vergleich" data-view-link="compare">Vergleich</a></nav>
-    <div id="charactersView">
+    <div id="charactersView" class="main-view">
     <section id="summary" class="summary" aria-label="Gruppenübersicht"></section>
     <p id="status" class="status" role="status">Die Steckbriefe werden geladen …</p>
     <div class="roster-heading">
@@ -65,12 +65,12 @@
     </div>
     <section id="cards" class="grid" aria-live="polite"></section>
     </div>
-    <section id="compareView" class="compare-view" hidden aria-label="Charaktervergleich"><div class="roster-heading"><div class="roster-rule" aria-hidden="true"></div><div class="roster-title"><span class="roster-kicker">DIE BANDE IM DIREKTEN VERGLEICH</span><h2>Charaktervergleich</h2><p>Wähle zwei bis vier Daltons. Alle Werte, eine gemeinsame Übersicht.</p></div><div class="roster-rule" aria-hidden="true"></div></div><div id="compareContent"></div></section>
+    <section id="compareView" class="main-view compare-view" hidden aria-label="Charaktervergleich"><div class="roster-heading"><div class="roster-rule" aria-hidden="true"></div><div class="roster-title"><span class="roster-kicker">DIE BANDE IM DIREKTEN VERGLEICH</span><h2>Charaktervergleich</h2><p>Wähle zwei bis vier Daltons. Alle Werte, eine gemeinsame Übersicht.</p></div><div class="roster-rule" aria-hidden="true"></div></div><div id="compareContent"></div></section>
   </main>
   <footer>
     <strong>Die Daltons</strong> <span>· World of Warcraft: Forever</span>
     <p>Datenquelle: offizielle Blizzard-Forever-API und Blizzard-Armory sowie verifizierte deutsche Forever-Clientdaten. Spielbegriffe werden ausschließlich aus deutschen Quelldaten übernommen. Ausrüstung und Porträts können sich erst nach dem Ausloggen aktualisieren.</p>
   </footer>
-  <script type="module" src="/app.js?v=comparefix-20261121e"></script>
+  <script type="module" src="/app.js?v=layoutcontract-20261121f"></script>
 </body>
 </html>
