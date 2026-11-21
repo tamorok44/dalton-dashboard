@@ -2,7 +2,9 @@ import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunte
 import {reputationStages,reputationColors} from './reputation-data.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
+const classColorsById={8:'mage',3:'hunter',11:'druid'};
+const classColor=c=>classColorsById[Number(c?.classId)]||'other';
+const isHunter=c=>Number(c?.classId)===3;
 const portraitScenes={
   'cole-dalton':{className:'scene-cole',firstName:'Cole',epithet:'Der Runenreiter',icon:'rune'},
   'dolly-dalton':{className:'scene-dolly',firstName:'Dolly',epithet:'Das Adlerauge',icon:'crosshair'},
@@ -22,74 +24,56 @@ function portraitBadge(scene){
     '<span class="portrait-badge-copy"><span class="portrait-badge-firstname">'+esc(scene.firstName)+'</span>'+
     '<span class="portrait-badge-epithet">'+esc(scene.epithet)+'</span></span></span>';
 }
-const mainStatNames=['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration'];
-const detailStatNames=['Rüstung','Angriffskraft','Zaubermacht','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'];
-const percentStatNames=new Set(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Ausweichen','Parieren','Blocken']);
-const statIcons={
-  'Gesundheit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.2 3.5 8.9A4.4 4.4 0 0 1 12 6.7a4.4 4.4 0 0 1 8.5 2.2c0 6.3-8.5 11.6-8.5 11.6Z"/></svg>',
-  'Mana':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v4l-4.6 8.1A3.9 3.9 0 0 0 8.8 21h6.4a3.9 3.9 0 0 0 3.4-5.9L14 7V3"/><path d="M7.8 15h8.4"/></svg>',
-  'Stärke':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg>',
-  'Intelligenz':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M8.2 14.7A6 6 0 1 1 15.8 14.7c-1.1.8-1.5 1.6-1.6 2.3h-4.4c-.1-.7-.5-1.5-1.6-2.3Z"/></svg>',
-  'Beweglichkeit':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 10.8c1.3-1 4.3-1 5.6 0 1.8 1.4 3.2 4.1 1.7 6.2-1.2 1.7-3.1.4-4.5.4s-3.3 1.3-4.5-.4c-1.5-2.1-.1-4.8 1.7-6.2Z"/><circle cx="6.4" cy="8" r="1.6"/><circle cx="10.1" cy="5.3" r="1.6"/><circle cx="13.9" cy="5.3" r="1.6"/><circle cx="17.6" cy="8" r="1.6"/></svg>',
-  'Ausdauer':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19 6v5.2c0 4.4-2.7 7.9-7 10-4.3-2.1-7-5.6-7-10V6l7-3.2Z"/><path d="M12 7v8M8 11h8"/></svg>',
-  'Kritische Trefferchance':'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>',
-  'Willenskraft':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>',
-  'Waffen-DPS':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 3.2 6.1-1.1-1.1 6.1-9.1 9.1"/><path d="m8.9 13.6 1.5 1.5"/><path d="m7.2 15.3-3.9 3.9 1.5 1.5 3.9-3.9"/><path d="M14 7.3 16.7 10"/></svg>',
-  'Manaregeneration':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5S6.5 8.6 6.5 13a5.5 5.5 0 0 0 8.7 4.5"/><path d="M14.2 11.2a4.2 4.2 0 1 1-.1 7.6"/><path d="m12.8 16.4 1.3 2.4 2.4-1.3"/></svg>'
+const mainStatEnums=['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ATTACKDPS','MANAREGEN'];
+const percentStatEnums=new Set(['CRITICALSTRIKE','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK']);
+const statIconsByEnum={
+  HEALTH:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5S3.5 15.2 3.5 8.9A4.4 4.4 0 0 1 12 6.7a4.4 4.4 0 0 1 8.5 2.2c0 6.3-8.5 11.6-8.5 11.6Z"/></svg>',
+  MANA:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8M10 3v4l-4.6 8.1A3.9 3.9 0 0 0 8.8 21h6.4a3.9 3.9 0 0 0 3.4-5.9L14 7V3"/><path d="M7.8 15h8.4"/></svg>',
+  STRENGTH:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg>',
+  INTELLECT:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M8.2 14.7A6 6 0 1 1 15.8 14.7c-1.1.8-1.5 1.6-1.6 2.3h-4.4c-.1-.7-.5-1.5-1.6-2.3Z"/></svg>',
+  AGILITY:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 10.8c1.3-1 4.3-1 5.6 0 1.8 1.4 3.2 4.1 1.7 6.2-1.2 1.7-3.1.4-4.5.4s-3.3 1.3-4.5-.4c-1.5-2.1-.1-4.8 1.7-6.2Z"/><circle cx="6.4" cy="8" r="1.6"/><circle cx="10.1" cy="5.3" r="1.6"/><circle cx="13.9" cy="5.3" r="1.6"/><circle cx="17.6" cy="8" r="1.6"/></svg>',
+  STAMINA:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 19 6v5.2c0 4.4-2.7 7.9-7 10-4.3-2.1-7-5.6-7-10V6l7-3.2Z"/><path d="M12 7v8M8 11h8"/></svg>',
+  CRITICALSTRIKE:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg>',
+  SPIRIT:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2Z"/><path d="m18.5 15 .8 2.7 2.7.8-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8.8-2.7Z"/></svg>',
+  ATTACKDPS:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 3.2 6.1-1.1-1.1 6.1-9.1 9.1"/><path d="m8.9 13.6 1.5 1.5"/><path d="m7.2 15.3-3.9 3.9 1.5 1.5 3.9-3.9"/><path d="M14 7.3 16.7 10"/></svg>',
+  MANAREGEN:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5S6.5 8.6 6.5 13a5.5 5.5 0 0 0 8.7 4.5"/><path d="M14.2 11.2a4.2 4.2 0 1 1-.1 7.6"/><path d="m12.8 16.4 1.3 2.4 2.4-1.3"/></svg>'
 };
-function formatStatValue(name,value){
-  if(value==null||value==='')return '–';
-  const n=Number(value);
-  if(!Number.isFinite(n))return String(value);
-  if(percentStatNames.has(name))return new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n)+' %';
+function formatStatValue(entry){
+  const n=Number(entry?.value);
+  if(!Number.isFinite(n))return '–';
+  if(percentStatEnums.has(entry?.enum))return new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n)+' %';
   return new Intl.NumberFormat('de-DE',{maximumFractionDigits:2}).format(n);
 }
-function statTile(name,value,stale=false,icon=false){
+function statTile(entry,stale=false,icon=false){
+  const name=entry?.name;
+  if(typeof name!=='string'||!name.trim())return '';
   return '<div class="stat-tile '+(icon?'stat-tile-main':'stat-tile-detail')+'">'+
-    (icon?'<span class="stat-icon">'+(statIcons[name]||'')+'</span>':'')+
+    (icon?'<span class="stat-icon">'+(statIconsByEnum[entry.enum]||'')+'</span>':'')+
     '<span class="stat-copy"><small>'+esc(name)+(stale?' <span class="stale-value" title="Nicht im letzten Blizzard-Abruf bestätigt">· letzter Stand</span>':'')+'</small>'+
-    '<strong>'+esc(formatStatValue(name,value))+'</strong></span></div>';
-}
-const characterStatExcludedNames=new Set(['Gegenstandsstufe']);
-function characterStatNames(chars=[]){
-  const ordered=[...mainStatNames,...detailStatNames],seen=new Set(ordered);
-  for(const character of chars){
-    for(const name of Object.keys(character?.stats||{})){
-      if(characterStatExcludedNames.has(name)||seen.has(name))continue;
-      seen.add(name);ordered.push(name);
-    }
-  }
-  return ordered;
+    '<strong>'+esc(formatStatValue(entry))+'</strong></span></div>';
 }
 function statsPanel(c,open=false){
-  const s=c.stats||{};
-  const currentKeys=Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:(c.statsVerified?Object.keys(s):[]);
-  const verified=new Set(c.scrapeOk===false?[]:currentKeys);
-  const isStale=name=>Object.hasOwn(s,name)&&!verified.has(name);
-  const main=mainStatNames.map(name=>statTile(name,s[name],isStale(name),true)).join('');
-  const rest=characterStatNames([c]).filter(name=>!mainStatNames.includes(name)).map(name=>statTile(name,s[name],isStale(name),false)).join('');
+  const details=Array.isArray(c.statsDetails)?c.statsDetails.filter(entry=>entry?.name&&entry?.enum):[];
+  const fresh=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:[]);
+  const byEnum=new Map(details.map(entry=>[entry.enum,entry]));
+  const main=mainStatEnums.map(key=>byEnum.get(key)).filter(Boolean);
+  const rest=details.filter(entry=>!mainStatEnums.includes(entry.enum));
+  const mainHtml=main.map(entry=>statTile(entry,!fresh.has(entry.enum),true)).join('');
+  const restHtml=rest.map(entry=>statTile(entry,!fresh.has(entry.enum),false)).join('');
+  if(!details.length)return '<div class="section character-stats"><h3>Charakterwerte</h3><p class="knowledge-empty">Deutsche Blizzard-Bezeichnungen sind für diesen Stand nicht bestätigt.</p></div>';
   return '<div class="section character-stats"><h3>Charakterwerte'+(c.scrapeOk!==false&&c.statsVerified?'':' · teilweise letzter Stand')+'</h3>'+
-    '<div class="stat-grid stat-grid-main">'+main+'</div>'+
-    '<details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'>'+
-      '<summary>Weitere Charakterwerte anzeigen</summary><div class="stat-grid stat-grid-detail">'+rest+'</div></details></div>';
+    '<div class="stat-grid stat-grid-main">'+mainHtml+'</div>'+
+    (restHtml?'<details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'>'+
+      '<summary>Weitere Charakterwerte anzeigen</summary><div class="stat-grid stat-grid-detail">'+restHtml+'</div></details>':'')+'</div>';
 }
-const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhnlich',RARE:'Selten',EPIC:'Episch',LEGENDARY:'Legendär',ARTIFACT:'Artefakt',HEIRLOOM:'Erbstück'};
 const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
 
 const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
 // WoW Classic/Forever: ein gemeinsamer Maßstab von 0 bis 300, vier Stufen zu je 75.
-const professionStages=[
-  {end:75,rank:'Lehrling'},
-  {end:150,rank:'Geselle'},
-  {end:225,rank:'Experte'},
-  {end:300,rank:'Fachmann'}
-];
-function professionRank(max){
-  return professionStages.find(stage=>stage.end===max)?.rank||'Rang unbekannt';
-}
+const professionStages=[75,150,225,300];
 function professionScale(){
   return '<div class="profession-scale" aria-label="Berufsskala: 75, 150, 225, 300">'+
-    professionStages.map(stage=>'<span title="'+esc(stage.rank)+'">'+stage.end+'</span>').join('')+
+    professionStages.map(end=>'<span>'+end+'</span>').join('')+
     '</div>';
 }
 function knowledgeLabel(name){
@@ -139,10 +123,9 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
     const current=p.current==null?NaN:Number(p.current),max=p.max==null?NaN:Number(p.max);
     const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
     const currentSkill=valid?Math.max(0,current):0;
-    const rank=valid?professionRank(max):'Rang unbekannt';
     const fraction=valid?Math.round(current)+'/'+Math.round(max):'–/–';
     const label=String(p.name||'Beruf')+(p.unverified||previousOnly?' · letzter Stand':'');
-    const stageSegments=professionStages.map((stage,index)=>{
+    const stageSegments=professionStages.map((end,index)=>{
       const from=index*75,unlocked=valid&&max>from;
       const pct=valid?Math.max(0,Math.min(100,((currentSkill-from)/75)*100)):0;
       return '<span class="profession-segment '+(unlocked?'is-unlocked':'is-locked')+'">'+
@@ -156,8 +139,8 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
       :'';
     return '<div class="profession">'+
       '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span>'+
-      '<span class="profession-rank">'+esc(rank)+'</span></div>'+
-      '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction+' · '+rank:'kein bestätigter Stand')+'">'+
+      '</div>'+
+      '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction:'kein bestätigter Stand')+'">'+
       stageSegments+
       '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
       '</div>'+knowledge+'</div>';
@@ -186,8 +169,6 @@ function talentPanel(c){
 }
 
 function reputationStageIndex(standing={}){
-  const byName=reputationStages.findIndex(stage=>stage.name===standing.name);
-  if(byName>=0)return byName;
   const tier=Number(standing.tier);
   return Number.isInteger(tier)&&tier>=0&&tier<reputationStages.length?tier:-1;
 }
@@ -230,7 +211,7 @@ function reputationPanel(c){
       const color=reputationColor(stage);
       const classes=['reputation-segment',i<=index?'is-reached':'is-future',i===index?'is-current':''].filter(Boolean).join(' ');
       const style='--rep-color:'+color.hex+';--rep-light:'+color.light+';--rep-dark:'+color.dark;
-      return '<span class="'+classes+'" style="'+style+'" title="'+esc(stage.name+(i===index?' · aktuell':''))+'">'+
+      return '<span class="'+classes+'" style="'+style+'" title="'+esc('Rufstufe '+(i+1)+(i===index&&standing.name?' · '+standing.name:''))+'">'+
         '<span class="reputation-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
     }).join('');
     const fraction=valid?Math.round(value)+'/'+Math.round(max):'–/–';
@@ -375,13 +356,13 @@ function hunterPetCombatPanel(c,active){
   const inherited=profile.inherited||{};
   const inheritedRows=[];
   if(scalingAllowed&&inherited.health){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Gesundheit aus Dolly</small><strong>+'+esc(petNumber(inherited.health.value))+'</strong>'+petEvidenceBadge('pet.scaling')+'<span>'+esc(petNumber(inherited.health.input))+' Ausdauer × 2</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.health.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.health.value))+'</strong>'+petEvidenceBadge('pet.scaling')+'<span>'+esc(petNumber(inherited.health.input))+(inherited.health.inputName?' '+esc(inherited.health.inputName):'')+' × 2</span></div>');
   }
   if(scalingAllowed&&inherited.armor){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Rüstung aus Dolly</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong>'+petEvidenceBadge('pet.scaling')+'<span>'+esc(petNumber(inherited.armor.input))+' Rüstung × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.armor.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong>'+petEvidenceBadge('pet.scaling')+'<span>'+esc(petNumber(inherited.armor.input))+(inherited.armor.inputName?' '+esc(inherited.armor.inputName):'')+' × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
   }
   if(scalingAllowed&&inherited.crit){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Krit aus Dolly</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong>'+petEvidenceBadge('pet.scaling')+'<span>100 % des aktuellen Blizzard-Armory-Kritwerts</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.crit.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong>'+petEvidenceBadge('pet.scaling')+'<span>100 % des aktuellen Blizzard-Armory-Werts'+(inherited.crit.inputName?' · '+esc(inherited.crit.inputName):'')+'</span></div>');
   }
   const inheritedBlock=scalingAllowed
     ?'<div class="pet-combat-grid">'+inheritedRows.join('')+
@@ -456,17 +437,13 @@ function hunterPetsPanel(c){
       '</div></div>'
       :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
     :'';
-  const training=active&&family
-    ?(trainingAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Was '+esc(active.name)+' auf seiner Stufe trainieren kann</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+' · keine Lernstand-Schätzung</span></div>'+
-      '<div class="pet-abilities">'+family.abilities.map(ability=>petAbilityCard(ability,validPetLevel?petLevel:0)).join('')+'</div>'+
-      '<p class="pet-note">Die Stufen zeigen, was für einen Fuchs grundsätzlich trainierbar ist. Blizzard veröffentlicht online nicht, welche Ränge '+esc(active.name)+' tatsächlich gelernt hat.</p></div>'
-      :petRuleUnavailable('Ausbildungsregeln vorübergehend gesperrt'))
+  const training=active&&family&&trainingAllowed
+    ?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Deutsche Spielstrings noch nicht aus der Pet-Datenquelle angebunden</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+'</span></div>'+
+      '<p class="pet-note">Trainierbare Fähigkeiten werden erst wieder angezeigt, wenn Name und Beschreibung aus einer verifizierten deutschen Forever-Datenquelle stammen. Es wird nichts eigenständig übersetzt.</p></div>'
     :'';
-  const care=active?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">PFLEGE & SPIELMECHANIK</span><h4>Wichtig im Spiel</h4></div></div>'+
+  const care=active?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">PFLEGE & SPIELMECHANIK</span><h4>Quellengebundene Hinweise</h4></div></div>'+
     '<div class="pet-tips">'+
-      (familyAllowed?'<div><strong>Füttern</strong><span>'+esc(family.diet.join(' · '))+' bereithalten. Zufriedenheit beeinflusst den Schaden des Begleiters.</span></div>':'')+
-      '<div><strong>Knurren</strong><span>Solo meist automatisch aktiv lassen. In Gruppen mit einem Tank automatisches Knurren ausschalten.</span></div>'+
-      '<div><strong>Treue & Ausbildungspunkte</strong><span>Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und das tatsächlich gelernte Pet-Zauberbuch sind Forever-Clientwerte. Blizzard veröffentlicht sie derzeit nicht in der Online-Armory; deshalb zeigt das Dashboard keine Schätzwerte.</span></div>'+
+      '<div><strong>Treue & Ausbildungspunkte</strong><span>Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und das tatsächlich gelernte Pet-Zauberbuch sind Forever-Clientwerte. Blizzard veröffentlicht sie derzeit nicht in der Online-Armory; deshalb zeigt das Dashboard keine Schätzwerte oder selbst übersetzten Fähigkeitsnamen.</span></div>'+
     '</div></div>':'';
   const stable='<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">STALL</span><h4>Weitere gezähmte Begleiter · '+stableList.length+'</h4></div><span class="pet-source">'+(verified?'Blizzard live':'letzter Stand')+'</span></div>'+
     (stableList.length?'<div class="pet-stable-list">'+stableList.map(hunterPetMiniCard).join('')+'</div>':'<p class="knowledge-empty">Noch kein weiterer Begleiter eingestallt.</p>')+'</div>';
@@ -545,42 +522,34 @@ function questsPanel(c,group,questCatalog={},openDetails=new Set()){
   return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div></div>';
 }
 
-// Feste Slot-Reihenfolge: links oben nach unten, dann Ringe/Schmuck und Waffen.
-// Alle Charaktere verwenden dieselben 19 Plätze, auch wenn sie leer sind.
+// Technische Slot-IDs steuern nur die Reihenfolge. Sichtbare Slotnamen kommen ausschließlich aus der deutschen Blizzard-Quelle.
 const equipmentSlotOrder=[
-  'Kopf','Hals','Schultern','Rücken','Brust','Hemd','Wappenrock','Handgelenke',
-  'Hände','Taille','Beine','Füße','Ring 1','Ring 2','Schmuck 1','Schmuck 2',
-  'Waffenhand','Nebenhand','Distanzwaffe'
+  'HEAD','NECK','SHOULDER','BACK','CHEST','SHIRT','TABARD','WRIST',
+  'HANDS','WAIST','LEGS','FEET','FINGER_1','FINGER_2','TRINKET_1','TRINKET_2',
+  'MAIN_HAND','OFF_HAND','RANGED'
 ];
-const equipmentSlotAliases={
-  'Füsse':'Füße','Distanz':'Distanzwaffe','Fernkampf':'Distanzwaffe',
-  'Ring':'Ring 1','Finger':'Ring 1','Finger 1':'Ring 1','Finger 2':'Ring 2',
-  'Schmuck':'Schmuck 1','Trinket 1':'Schmuck 1','Trinket 2':'Schmuck 2',
-  'Schildhand':'Nebenhand','Nebenwaffe':'Nebenhand','Offhand':'Nebenhand'
-};
 function equipmentPanel(c,open=false){
   const available=new Map();
   for(const item of c.equipment||[]){
-    const slot=equipmentSlotAliases[item.slot]||item.slot;
-    if(equipmentSlotOrder.includes(slot)&&item.item&&!available.has(slot))available.set(slot,item);
+    const slotType=String(item?.slotType||'');
+    if(equipmentSlotOrder.includes(slotType)&&item.item&&!available.has(slotType))available.set(slotType,item);
   }
-  const rows=equipmentSlotOrder.map(slot=>{
-    const item=available.get(slot);
-    if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>'+esc(slot)+'</b><span>Leer</span></div></div>';
+  const rows=equipmentSlotOrder.map(slotType=>{
+    const item=available.get(slotType);
+    if(!item)return '<div class="equip equip-empty"><span class="equip-placeholder" aria-hidden="true">–</span><div><b>Ausrüstungsplatz</b><span>Leer</span></div></div>';
     const iconUrl=item.storedIcon||item.icon;
     const safeIcon=/^(https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg|https:\/\/foreverspec\.com\/icons\/\d+\.webp)$/.test(iconUrl||'')||validBlob(iconUrl);
     const icon=safeIcon?'<img class="equip-icon" src="'+esc(iconUrl)+'" alt="" loading="lazy">':'<span class="equip-placeholder" aria-hidden="true">—</span>';
     const quality=String(item.quality||'').toUpperCase();
     const qualityClass=itemQualityClasses[quality]||'quality-unknown';
-    const qualityTitle=itemQualityNames[quality]?' title="'+esc('Qualität: '+itemQualityNames[quality])+'"':'';
-    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(slot)+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
+    const qualityTitle=typeof item.qualityName==='string'&&item.qualityName.trim()?' title="'+esc('Qualität: '+item.qualityName)+'"':'';
+    return '<div class="equip equip-filled">'+icon+'<div><b>'+esc(item.slot||'Ausrüstungsplatz')+'</b><span class="equip-name '+qualityClass+'"'+qualityTitle+'>'+esc(item.item)+'</span>'+(item.level?' <small>· Gegenstandsstufe '+esc(item.level)+'</small>':'')+'</div></div>';
   }).join('');
   const verified=c.equipmentVerified&&c.scrapeOk!==false?'':' · letzter bekannter Stand';
-  const languageNote=c.equipmentLanguage==='en'?' · Namen derzeit auf Englisch':c.equipmentLanguage==='gemischt'?' · teilweise englische Namen':'';
   const itemLevel=Number.isFinite(Number(c.equippedItemLevel))?Number(c.equippedItemLevel):null;
   const overview=itemLevel===null?'':'<div class="equipment-overview"><small>Gegenstandsstufe</small><strong>'+esc(itemLevel)+'</strong></div>';
   return '<div class="section equipment-section"><h3>Ausrüstung</h3>'+overview+
-    '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details></div>';
+    '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+'</summary><div class="equipment">'+rows+'</div></details></div>';
 }
 
 const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/|\/media\/)/.test(x.pathname)}catch{return false}};
@@ -726,7 +695,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
    ? freshCount<total?`${freshCount} von ${total} Profilen aktuell abgerufen. Für die übrigen werden ältere Daten angezeigt.`
                      :`Alle ${total} Blizzard-Profile erfolgreich aktualisiert.`
    :"Gespeicherter Stand. Für aktuelle Daten oben auf „Aktualisieren“ klicken.";
- cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColors[c.class]||'other'}">
+ cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColor(c)}">
   <div class="cardhead">
     <div class="card-intro">
       <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
@@ -737,13 +706,13 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   </div>
   ${renderPortrait(c)}
   <p class="status activity-note">${lastActivity(c)}</p>
-  <div class="meta"><span class="pill">${esc(c.class)}</span><span class="pill">${esc(c.race||"Himmelsgeborene")}</span><span class="pill">${esc(c.faction||'Allianz')} · EU-${esc(c.ruleset?.name||'PvP')}</span></div>
+  <div class="meta"><span class="pill">${esc(c.class||'Klasse nicht verfügbar')}</span><span class="pill">${esc(c.race||'Volk nicht verfügbar')}</span><span class="pill">${esc(c.faction||'Fraktion nicht verfügbar')} · EU-${esc(c.ruleset?.name||'Regelwerk nicht verfügbar')}</span></div>
   ${c.scrapeOk===false?'<p class="status profile-warning">⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand</p>':''}
   ${experienceProgress(c)}
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
     ${characterTabPanel(c,'talents',talentPanel(c))}
-    ${c.class==='Jäger'?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
+    ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
     ${characterTabPanel(c,'reputation',reputationPanel(c))}
     ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}
@@ -803,7 +772,7 @@ function cmpSectionRows(id,chars){
   if(id==='equipment'){
     push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.stats?.['Gegenstandsstufe'],c.equippedItemLevel??c.stats?.['Gegenstandsstufe']));
     const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=equipmentSlotAliases[item.slot]||item.slot;if(!m.has(key)&&item.item)m.set(key,item)}return m});
-    for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+' · '+(itemQualityNames[String(it.quality||'').toUpperCase()]||'Qualität unbekannt'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+    for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+(it.qualityName?' · '+it.qualityName:''),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
   }
   if(id==='talents'){
     push('Talentverteilung',c=>cmpEntry(c.talents||'Nicht verfügbar',null,'',c.talentsVerified===false));
