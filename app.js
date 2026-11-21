@@ -1,4 +1,4 @@
-import {hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';
+import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
@@ -271,6 +271,7 @@ function petAbilityCard(ability,petLevel){
 }
 let displayedPetRules=null;
 function petRuleStatus(ruleId){
+  if(displayedPetRules?.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION)return 'source_unavailable';
   return displayedPetRules?.rules?.[ruleId]?.status||'source_unavailable';
 }
 function petRuleVerified(ruleId){return petRuleStatus(ruleId)==='verified'}
