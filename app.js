@@ -649,6 +649,15 @@ function keepNewestProfiles(data){
     for(const [key,value] of Object.entries(prior.stats||{})){
       if(!liveStats.has(key))mergedStats[key]=value;
     }
+    const liveStatEnums=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:
+      c.statsVerified?Object.keys(c.statsByEnum||{}):[]);
+    const mergedStatsByEnum={...c.statsByEnum};
+    for(const [key,value] of Object.entries(prior.statsByEnum||{})){
+      if(!liveStatEnums.has(key))mergedStatsByEnum[key]=value;
+    }
+    const detailByEnum=new Map((prior.statsDetails||[]).filter(x=>x?.enum).map(x=>[x.enum,x]));
+    for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);
+    const mergedStatsDetails=[...detailByEnum.values()];
     const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));
     const mergedProfessions=(c.professions||[]).map(p=>{
       const previous=priorSkills.get(p.name);
@@ -657,6 +666,8 @@ function keepNewestProfiles(data){
     const keepPreviousImage=c.imageVerified===false&&prior.imageUrl;
     return {...c,
       stats:mergedStats,
+      statsByEnum:mergedStatsByEnum,
+      statsDetails:mergedStatsDetails,
       professions:mergedProfessions,
       equipment:c.equipmentVerified===false&&prior.equipment?prior.equipment:c.equipment,
       talents:c.talentsVerified===false&&prior.talents!=null?prior.talents:c.talents,
