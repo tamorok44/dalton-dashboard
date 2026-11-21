@@ -335,6 +335,8 @@ for(const old of characters){
       race:sourceRace||old.race,
       gender:characterGender(apiProfile)||characterGender(c)||old.gender||null,
       faction:sourceFaction||old.faction,
+      gameStringsVerified:Boolean(sourceClass&&sourceRace&&sourceFaction),
+      gameStringsLocale:'de_DE',
       blizzardCharacterId:Number.isInteger(Number(apiProfile?.id))?Number(apiProfile.id):old.blizzardCharacterId,
       experience:Number.isInteger(Number(apiProfile?.experience))?Number(apiProfile.experience):old.experience,
       achievementPoints:Number.isInteger(Number(apiProfile?.achievement_points))?Number(apiProfile.achievement_points):old.achievementPoints,
