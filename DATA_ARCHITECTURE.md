@@ -75,6 +75,8 @@ Aktiver Begleiter und Stall behalten vorhandene Blizzard-IDs, Creature-ID und Di
 
 ### Ruf, Quests, Rezepte und weitere Bereiche
 
+Ruf ist als erster vollständiger Masterkatalog umgesetzt: Blizzard liefert die stabilen Fraktions-IDs aus dem buildgebundenen Forever-Game-Data-Namespace, ForeverDB dient als Vollständigkeits- und Build-Gegenprüfung. Der Katalog muss den vollständigen Forever-Bestand enthalten und bleibt unabhängig davon, welche Fraktionen die Daltons bereits entdeckt haben.
+
 Ruf-Fraktionen, Quests, Berufe, Rezepte, Items, Talente und Spells werden beim Refresh bereits als Katalogobjekte registriert. Vollständige Forever-Masterkataloge werden über dieselbe Struktur ergänzt, sobald die jeweilige vollständige Quelle/API verfügbar und verifiziert ist.
 
 ## Build-Versionierung

@@ -1,4 +1,5 @@
 import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';
+import {reputationStages,reputationColors} from './reputation-data.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
@@ -184,15 +185,31 @@ function talentPanel(c){
   return '<div class="section talents-section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="talent-trees">'+body+'</div></div>';
 }
 
-const reputationStages=[
-  {name:'Hasserfüllt',weight:1},{name:'Feindselig',weight:1},{name:'Unfreundlich',weight:1},{name:'Neutral',weight:1},
-  {name:'Freundlich',weight:2},{name:'Wohlwollend',weight:4},{name:'Respektvoll',weight:7},{name:'Ehrfürchtig',weight:.333}
-];
 function reputationStageIndex(standing={}){
   const byName=reputationStages.findIndex(stage=>stage.name===standing.name);
   if(byName>=0)return byName;
   const tier=Number(standing.tier);
   return Number.isInteger(tier)&&tier>=0&&tier<reputationStages.length?tier:-1;
+}
+function reputationColor(stage){
+  return reputationColors[stage?.key]||{hex:'#B59A70',light:'#D7C39D',dark:'#66533B'};
+}
+function safeFactionCrest(url){
+  if(typeof url!=='string')return null;
+  if(validBlob(url))return url;
+  try{
+    const parsed=new URL(url);
+    return parsed.protocol==='https:'&&parsed.hostname==='warcraft.wiki.gg'&&parsed.pathname.startsWith('/images/')?url:null;
+  }catch{return null}
+}
+const reputationFallbackCrest='<svg viewBox="0 0 32 36" aria-hidden="true"><path d="M16 2.5 27 6.8v9.4c0 8.1-4.4 13.8-11 17.3C9.4 30 5 24.3 5 16.2V6.8L16 2.5Z"/><path d="M16 8v18M10.5 13.5h11"/></svg>';
+function factionVisual(rep){
+  const record=displayedReputationCatalog?.records?.[String(rep?.id)]||null;
+  const url=safeFactionCrest(record?.media?.crestStoredUrl)||safeFactionCrest(record?.media?.crestSourceUrl);
+  const kind=record?.crestKind||'generic';
+  const title=kind==='specific'?'Fraktionswappen':kind==='side-fallback'?'Fraktionszugehörigkeit':kind==='neutral-fallback'?'Neutrale Fraktion':'Fraktion';
+  return '<span class="reputation-crest is-'+esc(kind)+'" title="'+esc(title)+'">'+
+    (url?'<img src="'+esc(url)+'" alt="" loading="lazy" decoding="async">':reputationFallbackCrest)+'</span>';
 }
 function reputationPanel(c){
   const list=Array.isArray(c.reputations)?c.reputations:[];
@@ -200,16 +217,23 @@ function reputationPanel(c){
   const columns='repeat(4,minmax(0,1fr)) 2fr 4fr 7fr minmax(7px,.333fr)';
   const rows=list.map(rep=>{
     const standing=rep.standing||{},index=reputationStageIndex(standing);
+    const currentStage=index>=0?reputationStages[index]:null;
+    const currentColor=reputationColor(currentStage);
     const value=Number(standing.value),max=Number(standing.max);
     const valid=Number.isFinite(value)&&Number.isFinite(max)&&max>0;
     const segments=reputationStages.map((stage,i)=>{
       const pct=index<0?0:i<index?100:i===index&&valid?Math.max(0,Math.min(100,value/max*100)):0;
-      return '<span class="reputation-segment '+(i<=index?'is-reached':'is-future')+'" title="'+esc(stage.name)+'">'+
+      const color=reputationColor(stage);
+      const classes=['reputation-segment',i<=index?'is-reached':'is-future',i===index?'is-current':''].filter(Boolean).join(' ');
+      const style='--rep-color:'+color.hex+';--rep-light:'+color.light+';--rep-dark:'+color.dark;
+      return '<span class="'+classes+'" style="'+style+'" title="'+esc(stage.name+(i===index?' · aktuell':''))+'">'+
         '<span class="reputation-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
     }).join('');
     const fraction=valid?Math.round(value)+'/'+Math.round(max):'–/–';
+    const standingStyle='--rep-color:'+currentColor.hex+';--rep-light:'+currentColor.light+';--rep-dark:'+currentColor.dark;
     return '<div class="reputation">'+
-      '<div class="reputation-head"><span>'+esc(rep.name)+'</span><strong>'+esc(standing.name||'Unbekannt')+'</strong></div>'+
+      '<div class="reputation-head"><span class="reputation-faction">'+factionVisual(rep)+'<span>'+esc(rep.name)+'</span></span>'+
+      '<strong class="reputation-standing" style="'+standingStyle+'">'+esc(standing.name||'Unbekannt')+'</strong></div>'+
       '<div class="reputation-track" style="grid-template-columns:'+columns+'" role="progressbar" aria-label="'+esc(rep.name)+'" aria-valuemin="0" aria-valuemax="'+esc(valid?max:0)+'" aria-valuenow="'+esc(valid?Math.round(value):0)+'" aria-valuetext="'+esc(fraction+' · '+(standing.name||'Unbekannt'))+'">'+
         segments+'<span class="reputation-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
       '</div></div>';
@@ -586,6 +610,7 @@ const baseCharacterTabs=[
 ];
 const activeCharacterTabs=new Map();
 let displayedQuestCatalog={};
+let displayedReputationCatalog={build:null,expected:0,records:{}};
 function characterTabsFor(c){
   if(c.class!=='Jäger')return baseCharacterTabs;
   const tabs=[...baseCharacterTabs];
@@ -676,10 +701,11 @@ function lastActivity(c){
  }
  return 'Zuletzt im Spiel: von Blizzard nicht angegeben';
 }
-function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog,petRules=displayedPetRules}={}){
+function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog,petRules=displayedPetRules,reputationCatalog=displayedReputationCatalog}={}){
  displayedData=data;
  displayedQuestCatalog=questCatalog||{};
  displayedPetRules=petRules||null;
+ displayedReputationCatalog=reputationCatalog||{build:null,expected:0,records:{}};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
  const questStatus=questGroupStatus(chars);
@@ -850,7 +876,7 @@ async function load(){
     const result=await r.json();
     const data=result.data;
     if(!lastGeneratedAt||Date.parse(data.generatedAt)>Date.parse(lastGeneratedAt)){
-      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{},petRules:result.petRules||null});
+      lastGeneratedAt=data.generatedAt;render(data,{questCatalog:result.questCatalog||{},petRules:result.petRules||null,reputationCatalog:result.reputationCatalog||{}});
     }
   }catch(e){if(!displayedData){
       try{const fallback=await fetch('/data/characters.json',{cache:'no-store'});if(!fallback.ok)throw Error('Fallback');render(await fallback.json());status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';}
@@ -869,7 +895,7 @@ async function refreshLive(){
     if(response.pending){status.textContent='Eine andere Aktualisierung läuft bereits. Der zuletzt gespeicherte Datenstand bleibt sichtbar.';return;}
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     lastGeneratedAt=response.data.generatedAt;
-    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{},petRules:response.petRules||null});
+    render(response.data,{live:true,success:response.success,questCatalog:response.questCatalog||{},petRules:response.petRules||null,reputationCatalog:response.reputationCatalog||{}});
   }catch(e){
     status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}

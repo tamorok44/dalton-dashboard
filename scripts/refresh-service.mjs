@@ -6,6 +6,7 @@ import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fet
 import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
 import {loadQuestCatalog,loadQuestCatalogByIds,saveQuestCatalog} from './quest-catalog-store.mjs';
 import {collectCatalogRecords,saveCatalogRecords} from './game-catalog-store.mjs';
+import {ensureReputationCatalog,loadPublicReputationCatalog} from './reputation-catalog-store.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -28,6 +29,12 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
       });
       const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
       const localizedRefs=collectLocalizedRefs(detailsSnapshot);
+      const factionNamespace=localizedRefs.find(ref=>ref.type==='faction')?.href
+        ?new URL(localizedRefs.find(ref=>ref.type==='faction').href).searchParams.get('namespace')
+        :null;
+      const reputationCatalogPromise=factionNamespace
+        ?ensureReputationCatalog({namespace:factionNamespace,force:false,archiveMedia:true})
+        :Promise.resolve(null);
       const questRefs=localizedRefs.filter(ref=>ref.type==='quest');
       const otherLocalizedRefs=localizedRefs.filter(ref=>ref.type!=='quest');
       let questCatalog=await loadQuestCatalog(questRefs,{locale:'de_DE'});
@@ -51,6 +58,7 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
         .map(detail=>['quest:'+Number(detail.id),detail.title]));
       const localizedNames={...otherLocalizedNames,...questLocalizedNames};
       latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails,localizedNames);
+      await reputationCatalogPromise;
     }catch(error){
       console.warn('Erweiterte Forever-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,180));
     }
@@ -88,5 +96,9 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   try{questCatalog=await loadQuestCatalogByIds(activeQuestIds,{locale:'de_DE'})}catch(error){
     console.warn('Quest-Katalog konnte für die Antwort nicht geladen werden:',String(error.message).slice(0,140));
   }
-  return {success,data:archived,questCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
+  let reputationCatalog={build:null,expected:0,records:{}};
+  try{reputationCatalog=await loadPublicReputationCatalog()}catch(error){
+    console.warn('Ruf-Katalog konnte für die Antwort nicht geladen werden:',String(error.message).slice(0,140));
+  }
+  return {success,data:archived,questCatalog,reputationCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
 }

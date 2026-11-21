@@ -3,11 +3,14 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from '../hunter-pets.js';
+import {reputationStages,reputationColors} from '../reputation-data.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
-const executableSource=source.replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'');
+const executableSource=source
+  .replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'')
+  .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'');
 const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
@@ -17,7 +20,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -93,6 +96,28 @@ assert.ok(!chuckyXp.includes('Gesamt-XP'),'Cumulative XP thresholds are delibera
 assert.ok(chuckyXp.includes('Level 10')&&chuckyXp.includes('Level 11'),'Current and next level frame the bar');
 assert.equal(ui.totalXpAtLevel(10),27600);
 assert.equal(ui.totalXpAtLevel(11),35200);
+
+const repQa={reputationsVerified:true,reputations:[
+  {id:72,name:'Stormwind',standing:{tier:4,name:'Freundlich',value:100,max:6000}},
+  {id:47,name:'Ironforge',standing:{tier:3,name:'Neutral',value:2000,max:3000}},
+  {id:609,name:'Zirkel des Cenarius',standing:{tier:2,name:'Unfreundlich',value:1200,max:3000}}
+]};
+ui.render({generatedAt:'2026-11-21T12:00:00.000Z',characters:[{...data.characters[0],slug:'rep-qa',name:'Rep QA',reputations:repQa.reputations,reputationsVerified:true}]},{
+  reputationCatalog:{build:'1.60.1.70959',expected:54,records:{
+    '72':{id:'72',slug:'stormwind',crestKind:'specific',media:{crestSourceUrl:'https://warcraft.wiki.gg/images/Stormwind.png'}},
+    '47':{id:'47',slug:'ironforge',crestKind:'specific',media:{crestSourceUrl:'https://warcraft.wiki.gg/images/Ironforge.png'}}
+  }}
+});
+const repHtml=nodes.get('#cards').innerHTML;
+assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#00991A'),'Friendly status uses canonical Blizzard green');
+assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#E6B300'),'Neutral status uses canonical Blizzard yellow');
+assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#BF4500'),'Unfriendly status uses canonical Blizzard orange');
+assert.ok(repHtml.includes('https://warcraft.wiki.gg/images/Stormwind.png'),'Specific faction crest is rendered');
+assert.equal((repHtml.match(/class="reputation-segment /g)||[]).length,24,'Three reputation rows retain eight segments each');
+assert.ok(repHtml.includes('is-current" style="--rep-color:#00991A'),'Current reputation segment is explicitly marked');
+assert.ok(repHtml.includes('style="--rep-color:#CC4D38;--rep-light:#E07A68;--rep-dark:#7D2D21"'),'Hostile stages use canonical Blizzard red');
+assert.ok(css.includes('.reputation-crest{'),'Faction crest styling exists');
+assert.ok(css.includes('.reputation-segment.is-current{'),'Current reputation segment gets a visible outline');
 
 ui.render(data);
 assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: von Blizzard nicht angegeben'),

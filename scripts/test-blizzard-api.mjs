@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {FOREVER_CHARACTER_ENDPOINTS,describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames,fetchForeverQuestDetails} from './blizzard-api.mjs';
+import {FOREVER_CHARACTER_ENDPOINTS,describeShape,probeForeverCharacter,fetchForeverSnapshot,fetchForeverLocalizedNames,fetchForeverQuestDetails,fetchForeverReputationIndex} from './blizzard-api.mjs';
 
 process.env.BLIZZARD_CLIENT_ID='test-client';
 process.env.BLIZZARD_CLIENT_SECRET='test-secret';
@@ -108,4 +108,26 @@ assert.equal(questDetails[92709].area,'Testgebiet');
 assert.equal(questDetails[92709].minimumLevel,10);
 assert.equal(questDetails[92709].namespace,'static-1.60.1_70399-forever-eu');
 assert.equal(questDetails[92709].locale,'de_DE');
+
+const reputationIndexFetch=async (url,options={})=>{
+  assert.equal(options.headers.authorization,'Bearer secret-access-token');
+  const parsed=new URL(String(url));
+  assert.equal(parsed.pathname,'/data/wow/reputation-faction/index');
+  assert.equal(parsed.searchParams.get('locale'),'en_GB');
+  assert.equal(parsed.searchParams.get('namespace'),'static-1.60.1_70959-forever-eu');
+  return fakeResponse(200,{factions:[
+    {id:72,name:'Stormwind',key:{href:'https://eu.api.blizzard.com/data/wow/reputation-faction/72?namespace=static-1.60.1_70959-forever-eu'}},
+    {id:47,name:'Ironforge',key:{href:'https://eu.api.blizzard.com/data/wow/reputation-faction/47?namespace=static-1.60.1_70959-forever-eu'}}
+  ]});
+};
+const reputationIndex=await fetchForeverReputationIndex({
+  namespace:'static-1.60.1_70959-forever-eu',
+  fetchImpl:reputationIndexFetch,
+  locale:'en_GB'
+});
+assert.deepEqual(reputationIndex.map(x=>[x.id,x.name]),[[72,'Stormwind'],[47,'Ironforge']]);
+await assert.rejects(
+  ()=>fetchForeverReputationIndex({namespace:'static-forever-eu',fetchImpl:reputationIndexFetch}),
+  /Ungültiger Forever-Game-Data-Namespace/
+);
 console.log('Blizzard Forever API client, schema inventory and raw snapshots: OK');
