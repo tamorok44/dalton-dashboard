@@ -6,8 +6,6 @@ import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 const require=createRequire(import.meta.url);
 const snapshot=require('../data/characters.json');
 const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
-const classEnglish={'Druide':'Druid','Magier':'Mage','Jäger':'Hunter'};
-const professionEnglish={'Alchemie':'Alchemy','Kräuterkunde':'Herbalism','Bergbau':'Mining','Kürschnerei':'Skinning','Lederverarbeitung':'Leatherworking','Angeln':'Fishing','Kochkunst':'Cooking','Erste Hilfe':'First Aid'};
 const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
 process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
@@ -42,24 +40,24 @@ function fakeResponse(req){
 function armoryHtml(old){
   const character={
     slug:old.slug,level:old.level+2,
-    class:{name:classEnglish[old.class]},
+    class:{id:old.class==='Jäger'?3:old.class==='Magier'?8:11,name:old.class},
     gender:old.gender,professions:{
       primaries:old.professions.slice(0,2).map(p=>({
-        name:professionEnglish[p.name],
+        name:p.name,
         tiers:[{skillPoints:p.current+2,maxSkillPoints:p.max}]
       })),
       secondaries:old.professions.slice(2).map(p=>({
-        name:professionEnglish[p.name],
+        name:p.name,
         tiers:[{skillPoints:p.current+2,maxSkillPoints:p.max}]
       }))
     },
     stats:{groups:[{stats:[
-      ['HEALTH',old.stats.Gesundheit+50],['MANA',old.stats.Mana+50],
-      ['STRENGTH',old.stats.Stärke],['AGILITY',old.stats.Beweglichkeit],
-      ['STAMINA',old.stats.Ausdauer],['INTELLECT',old.stats.Intelligenz],
-      ['ARMOR',old.stats.Rüstung+5],['ATTACKPOWER',old.stats.Angriffskraft],
-      ['ITEMLEVEL',old.stats.Gegenstandsstufe]
-    ].map(([key,value])=>({enum:key,value:{value}}))}]},
+      ['HEALTH','Gesundheit',old.stats.Gesundheit+50],['MANA','Mana',old.stats.Mana+50],
+      ['STRENGTH','Stärke',old.stats.Stärke],['AGILITY','Beweglichkeit',old.stats.Beweglichkeit],
+      ['STAMINA','Ausdauer',old.stats.Ausdauer],['INTELLECT','Intelligenz',old.stats.Intelligenz],
+      ['ARMOR','Rüstung',old.stats.Rüstung+5],['ATTACKPOWER','Angriffskraft',old.stats.Angriffskraft],
+      ['ITEMLEVEL','Gegenstandsstufe',old.stats.Gegenstandsstufe]
+    ].map(([key,name,value])=>({enum:key,name,value:{value}}))}]},
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
   };
