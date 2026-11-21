@@ -29,7 +29,7 @@ export async function archiveImages(data,previous){
     else if(bucket==='portrait')newPortraits++;
     else newRenders++;
 
-    const task=limited(()=>resolveMediaAsset({entityType,entityId,role,sourceUrl:url}))
+    const task=limited(()=>resolveMediaAsset({entityType,entityId,role,sourceUrl:url,refreshOnSourceChange:true}))
       .catch(e=>{console.warn('Bildarchivierung fehlgeschlagen:',String(e.message).slice(0,130));return undefined});
     cache.set(cacheKey,task);
     return task;
