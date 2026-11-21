@@ -33,7 +33,8 @@ export async function resolveMediaAsset({
   sourceUrl,
   priorStoredUrl=null,
   fetchImpl=fetch,
-  putImpl=null
+  putImpl=null,
+  refreshOnSourceChange=false
 }={}){
   const type=safePart(entityType),id=safePart(entityId),kind=safePart(role);
   if(!type||!id||!kind||!sourceImageAllowed(sourceUrl))return null;
@@ -50,7 +51,7 @@ export async function resolveMediaAsset({
 
   try{
     const known=await loadMediaRecord(type,id,kind);
-    if(known?.sourceUrl===sourceUrl&&known?.storedUrl)return known.storedUrl;
+    if(known?.storedUrl&&(!refreshOnSourceChange||known.sourceUrl===sourceUrl))return known.storedUrl;
   }catch(error){
     console.warn('Medienregister konnte nicht gelesen werden:',String(error.message).slice(0,100));
   }
