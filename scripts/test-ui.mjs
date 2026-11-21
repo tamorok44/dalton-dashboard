@@ -236,7 +236,7 @@ ui.render(petData,{petRules:blockedRules});
 const blockedPetPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(blockedPetPanel.includes('Regeländerung erkannt'),'A detected rule change is shown clearly');
 assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend gesperrt'),'Family values fail closed when their rule changes');
-assert.ok(blockedPetPanel.includes('Ausbildungsregeln vorübergehend gesperrt'),'Training values fail closed when their rule changes');
+assert.ok(blockedPetPanel.includes('Ausbildungsdaten vorübergehend gesperrt'),'Training values fail closed when their rule changes');
 assert.ok(blockedPetPanel.includes('Slydris')&&blockedPetPanel.includes('Stufe 6'),'Blizzard live identity stays visible even when rules are blocked');
 assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-derived family numbers are not rendered');
 assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rule hides inherited calculations');
