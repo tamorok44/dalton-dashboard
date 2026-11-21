@@ -148,7 +148,7 @@ const fakeFetch=async url=>{
       learnedFrom:{sources:{alliance:{trainers:[{id:100,name:'Gelman Steinhandschuh',seenInForever:true}]}}}
     };
     const recipes=query
-      ?(slug==='mining'&&query==='Kupferbarren'?[matchingRecipe]:[])
+      ?(slug==='mining'&&query==='Copper Bar'?[matchingRecipe]:[])
       :slug==='mining'?[matchingRecipe]:
        slug==='alchemy'?[{...matchingRecipe,id:5000+offset,makes:{item:{id:90000+offset,name:'Alchemietest '+offset},count:1}}]:[];
     body={data:{recipes},meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
@@ -171,7 +171,7 @@ assert.ok(scopedIndex.byItem.get(2840)?.length===1,'Scoped recipe index retains 
 assert.equal(requests.length-beforeScoped,3);
 
 const beforeTargeted=requests.length;
-const targeted=await searchForeverDbRecipesForItem(2840,'Kupferbarren',{fetchImpl:fakeFetch});
+const targeted=await searchForeverDbRecipesForItem(2840,'Copper Bar',{fetchImpl:fakeFetch});
 assert.equal(targeted.requestCount,12,'Gezielte Fremdrezept-Suche fragt jeden Beruf genau einmal ab');
 assert.equal(targeted.recipes.length,1);
 assert.equal(targeted.recipes[0].professionSlug,'mining');
