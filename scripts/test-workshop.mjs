@@ -3,13 +3,16 @@ import {
   buildWorkshopCatalog,
   searchWorkshopItems,
   workshopBrowseTree,
-  buildProductionPlan
+  buildProductionPlan,
+  enrichWorkshopCatalogWithForeverDb,
+  workshopLearningCandidates
 } from './workshop-core.mjs';
 import {
   searchForeverDbItems,
   fetchForeverDbItem,
   fetchForeverDbProfession
 } from './foreverdb-api.mjs';
+import {normalizeForeverDbRecipe,hydrateRecipeIndex} from './workshop-foreverdb.mjs';
 
 const data={
   generatedAt:'2026-11-21T12:00:00.000Z',
@@ -69,6 +72,55 @@ const variable=buildProductionPlan(buildWorkshopCatalog(variableData),99002,5);
 assert.equal(variable.tree.recipe.craftsRequired,3,'Variable Ausbeute plant konservativ mit der garantierten Mindestausbeute');
 assert.deepEqual(variable.tree.recipe.outputRange,{min:6,max:12});
 assert.equal(variable.externalMaterials[0].quantity,3);
+
+
+const remoteRecipe=normalizeForeverDbRecipe({
+  id:3324,
+  name:'Kupfer verhütten',
+  skill:{orange:1,yellow:25,green:47,grey:70,orangeSource:'client'},
+  makes:{item:{id:2840,name:'Kupferbarren'},count:1},
+  reagents:[{item:{id:2770,name:'Kupfererz'},count:1}],
+  category:{name:'Verhüttete Barren',parent:{name:'Bergbau'}},
+  learnedFrom:{sources:{
+    alliance:{
+      trainers:[
+        {id:100,name:'Gelman Steinhandschuh',location:{zone:'Sturmwind',uiMapId:84,x:59.2,y:37.8},seenInForever:true,trainerCost:10,trainerCostSource:'forever'},
+        {id:101,name:'Geofram Felszehe',location:{zone:'Eisenschmiede',x:50.3,y:26},seenInForever:true,trainerCost:10}
+      ],
+      vendors:[
+        {id:200,name:'Testhändler',location:{zone:'Sturmwind',x:60,y:40},seenInForever:false,price:250,limitedStock:1}
+      ]
+    },
+    drops:[
+      {creature:{id:300,name:'Testkreatur'},location:{zone:'Westfall'},seenInForever:true,players:4}
+    ]
+  }}
+},'mining');
+assert.equal(remoteRecipe.craftedItem.id,2840);
+assert.equal(remoteRecipe.requiredSkill,1);
+assert.deepEqual(remoteRecipe.categoryPath,['Bergbau','Verhüttete Barren']);
+assert.equal(remoteRecipe.learning.sources.length,4,'Alle bekannten Quellen bleiben erhalten');
+assert.equal(remoteRecipe.learning.sources.filter(source=>source.evidence==='forever-confirmed').length,3);
+assert.equal(remoteRecipe.learning.sources.filter(source=>source.evidence==='classic-unconfirmed').length,1);
+assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='vendor'&&source.limitedStock===1));
+assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='drop'&&source.name==='Testkreatur'));
+
+const index=hydrateRecipeIndex({generatedAt:data.generatedAt,complete:true,recipes:[remoteRecipe]});
+enrichWorkshopCatalogWithForeverDb(catalog,index);
+assert.deepEqual(catalog.byItemId.get(2840).categoryPath,['Materialien & Komponenten','Verhüttete Barren'],
+  'Beruf wird nicht als Browse-Einstieg verwendet; Forever-Kategorie verfeinert die Gegenstandsgruppe');
+assert.equal(catalog.byItemId.get(2840).categorySource,'foreverdb-client');
+
+const candidates=workshopLearningCandidates({
+  characters:[
+    {slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',level:10,professions:[{name:'Bergbau',current:46,max:75}]},
+    {slug:'cole-dalton',name:'Cole Dalton',player:'Christian',level:11,professions:[{name:'Alchimie',current:58,max:75}]}
+  ]
+},{...remoteRecipe,requiredSkill:50});
+assert.equal(candidates.length,1);
+assert.equal(candidates[0].name,'Chucky Dalton');
+assert.equal(candidates[0].gap,4);
+assert.equal(candidates[0].status,'skill-gap');
 
 const previousKey=process.env.FOREVERDB_API_KEY;
 process.env.FOREVERDB_API_KEY='test-key';
