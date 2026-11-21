@@ -2,7 +2,7 @@ import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunte
 import {reputationStages,reputationColors} from './reputation-data.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-const classColors={'Magier':'mage','Jäger':'hunter','Druide':'druid'};
+const classColorsById={8:'mage',3:'hunter',11:'druid'};
 const portraitScenes={
   'cole-dalton':{className:'scene-cole',firstName:'Cole',epithet:'Der Runenreiter',icon:'rune'},
   'dolly-dalton':{className:'scene-dolly',firstName:'Dolly',epithet:'Das Adlerauge',icon:'crosshair'},
@@ -73,23 +73,14 @@ function statsPanel(c,open=false){
     '<details class="details attributes" data-detail-key="'+esc(c.slug)+':stats"'+(open?' open':'')+'>'+
       '<summary>Weitere Charakterwerte anzeigen</summary><div class="stat-grid stat-grid-detail">'+rest+'</div></details></div>';
 }
-const itemQualityNames={POOR:'Schlecht',COMMON:'Gewöhnlich',UNCOMMON:'Ungewöhnlich',RARE:'Selten',EPIC:'Episch',LEGENDARY:'Legendär',ARTIFACT:'Artefakt',HEIRLOOM:'Erbstück'};
 const itemQualityClasses={POOR:'quality-poor',COMMON:'quality-common',UNCOMMON:'quality-uncommon',RARE:'quality-rare',EPIC:'quality-epic',LEGENDARY:'quality-legendary',ARTIFACT:'quality-artifact',HEIRLOOM:'quality-heirloom'};
 
 const row=(a,b)=>`<div class="row"><span>${esc(a)}</span><strong>${esc(b)}</strong></div>`;
 // WoW Classic/Forever: ein gemeinsamer Maßstab von 0 bis 300, vier Stufen zu je 75.
-const professionStages=[
-  {end:75,rank:'Lehrling'},
-  {end:150,rank:'Geselle'},
-  {end:225,rank:'Experte'},
-  {end:300,rank:'Fachmann'}
-];
-function professionRank(max){
-  return professionStages.find(stage=>stage.end===max)?.rank||'Rang unbekannt';
-}
+const professionStages=[75,150,225,300];
 function professionScale(){
   return '<div class="profession-scale" aria-label="Berufsskala: 75, 150, 225, 300">'+
-    professionStages.map(stage=>'<span title="'+esc(stage.rank)+'">'+stage.end+'</span>').join('')+
+    professionStages.map(end=>'<span>'+end+'</span>').join('')+
     '</div>';
 }
 function knowledgeLabel(name){
@@ -139,7 +130,7 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
     const current=p.current==null?NaN:Number(p.current),max=p.max==null?NaN:Number(p.max);
     const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
     const currentSkill=valid?Math.max(0,current):0;
-    const rank=valid?professionRank(max):'Rang unbekannt';
+    const rank=typeof p.tierName==='string'&&p.tierName.trim()?p.tierName.trim():'';
     const fraction=valid?Math.round(current)+'/'+Math.round(max):'–/–';
     const label=String(p.name||'Beruf')+(p.unverified||previousOnly?' · letzter Stand':'');
     const stageSegments=professionStages.map((stage,index)=>{
@@ -156,8 +147,8 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
       :'';
     return '<div class="profession">'+
       '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span>'+
-      '<span class="profession-rank">'+esc(rank)+'</span></div>'+
-      '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction+' · '+rank:'kein bestätigter Stand')+'">'+
+      (rank?'<span class="profession-rank">'+esc(rank)+'</span>':'')+'</div>'+
+      '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction+(rank?' · '+rank:''):'kein bestätigter Stand')+'">'+
       stageSegments+
       '<span class="profession-overlay" aria-hidden="true">'+esc(fraction)+'</span>'+
       '</div>'+knowledge+'</div>';
@@ -616,7 +607,7 @@ const activeCharacterTabs=new Map();
 let displayedQuestCatalog={};
 let displayedReputationCatalog={build:null,expected:0,records:{}};
 function characterTabsFor(c){
-  if(c.class!=='Jäger')return baseCharacterTabs;
+  if(Number(c.classId)!==3)return baseCharacterTabs;
   const tabs=[...baseCharacterTabs];
   tabs.splice(3,0,{id:'pets',label:'Begleiter'});
   return tabs;
@@ -726,7 +717,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
    ? freshCount<total?`${freshCount} von ${total} Profilen aktuell abgerufen. Für die übrigen werden ältere Daten angezeigt.`
                      :`Alle ${total} Blizzard-Profile erfolgreich aktualisiert.`
    :"Gespeicherter Stand. Für aktuelle Daten oben auf „Aktualisieren“ klicken.";
- cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColors[c.class]||'other'}">
+ cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColorsById[Number(c.classId)]||'other'}">
   <div class="cardhead">
     <div class="card-intro">
       <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
@@ -743,7 +734,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
     ${characterTabPanel(c,'talents',talentPanel(c))}
-    ${c.class==='Jäger'?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
+    ${Number(c.classId)===3?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
     ${characterTabPanel(c,'reputation',reputationPanel(c))}
     ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}
@@ -803,7 +794,7 @@ function cmpSectionRows(id,chars){
   if(id==='equipment'){
     push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.stats?.['Gegenstandsstufe'],c.equippedItemLevel??c.stats?.['Gegenstandsstufe']));
     const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=equipmentSlotAliases[item.slot]||item.slot;if(!m.has(key)&&item.item)m.set(key,item)}return m});
-    for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+' · '+(itemQualityNames[String(it.quality||'').toUpperCase()]||'Qualität unbekannt'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+    for(const slot of equipmentSlotOrder)push(slot,(c,i)=>{const it=slots[i].get(slot);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–')+(it.qualityName?' · '+it.qualityName:''),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
   }
   if(id==='talents'){
     push('Talentverteilung',c=>cmpEntry(c.talents||'Nicht verfügbar',null,'',c.talentsVerified===false));
