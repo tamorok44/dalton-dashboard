@@ -27,10 +27,30 @@ function htmlPlainText(value=''){
     return e.startsWith('#x')?String.fromCodePoint(parseInt(e.slice(2),16)):e.startsWith('#')?String.fromCodePoint(parseInt(e.slice(1),10)):d[e]||'&'+e+';';
   }).replace(/\s+/g,' ').trim();
 }
+const statLocaleKeys=Object.freeze({
+  HEALTH:'health',MANA:'mana',STRENGTH:'strength',INTELLECT:'intellect',AGILITY:'agility',STAMINA:'stamina',
+  CRITICALSTRIKE:'critical-strike',SPIRIT:'spirit',ARMOR:'armor',ATTACKPOWER:'attack-power',SPELLPOWER:'spell-power',
+  MELEECRIT:'melee-crit',RANGEDCRIT:'ranged-crit',SPELLCRIT:'spell-crit',DODGE:'dodge',PARRY:'parry',BLOCK:'block',
+  ATTACKDPS:'attack-dps',ATTACKSPEED:'attack-speed',MANAREGEN:'mana-regen',ITEMLEVEL:'item-level',DEFENSE:'defense'
+});
+function decodeJsQuoted(value=''){
+  try{return JSON.parse('"'+value.replace(/"/g,'\\"')+'"')}catch{return String(value).replace(/\\(["'\\])/g,'$1')}
+}
 export function extractGermanStatLabels(html=''){
+  const source=String(html);
+  const localizedByKey={};
+  const localeRe=/'character\.stats\.([a-z0-9-]+)\.name'\s*:\s*"((?:\\.|[^"\\])*)"/gi;
+  for(const match of source.matchAll(localeRe)){
+    const key=match[1].toLowerCase(),name=decodeJsQuoted(match[2]).trim();
+    if(key&&name&&!localizedByKey[key])localizedByKey[key]=name;
+  }
   const labels={};
-  const re=/CharacterStat-media\s+color-stat-([A-Z0-9_]+)[\s\S]{0,9000}?<div\b[^>]*class=["'][^"']*CharacterStat-name[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi;
-  for(const match of String(html).matchAll(re)){
+  for(const [enumKey,localeKey] of Object.entries(statLocaleKeys)){
+    if(localizedByKey[localeKey])labels[enumKey]=localizedByKey[localeKey];
+  }
+  // Fallback for a future Blizzard markup change where the rendered stat DOM is already in the response.
+  const renderedRe=/CharacterStat-media\s+color-stat-([A-Z0-9_]+)[\s\S]{0,9000}?<div\b[^>]*class=["'][^"']*CharacterStat-name[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi;
+  for(const match of source.matchAll(renderedRe)){
     const enumKey=match[1],name=htmlPlainText(match[2]);
     if(enumKey&&name&&!labels[enumKey])labels[enumKey]=name;
   }
