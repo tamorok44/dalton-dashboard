@@ -20,7 +20,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotTypes,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -81,7 +81,15 @@ const orderedNames=list=>ui.sortProfessionsForDisplay(list.map(name=>({name}))).
 assert.deepEqual(orderedNames(['Alchimie','Kräuterkunde','Kochkunst','Angeln','Erste Hilfe']),['Kräuterkunde','Alchimie','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Lederverarbeitung','Kürschnerei','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Kürschnerei','Bergbau','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Bergbau','Angeln','Kochkunst','Erste Hilfe']);
-const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration','Rüstung','Angriffskraft','Zaubermacht','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'],stats:{Gesundheit:202,Mana:535,Stärke:18,Intelligenz:40,Beweglichkeit:26,Ausdauer:23,'Kritische Trefferchance':5.0068,Willenskraft:31,'Waffen-DPS':5.081841,Manaregeneration:38,Rüstung:99,Angriffskraft:8,Zaubermacht:0,Ausweichen:5.2468,Parieren:4.88,Blocken:0,Angriffsgeschwindigkeit:1.961}});
+const qaStats=[
+  ['HEALTH','Gesundheit',202],['MANA','Mana',535],['STRENGTH','Stärke',18],['INTELLECT','Intelligenz',40],
+  ['AGILITY','Beweglichkeit',26],['STAMINA','Ausdauer',23],['CRITICALSTRIKE','Kritische Trefferchance',5.0068],
+  ['SPIRIT','Willenskraft',31],['ATTACKDPS','Waffen-DPS',5.081841],['MANAREGEN','Manaregeneration',38],
+  ['ARMOR','Rüstung',99],['ATTACKPOWER','Angriffskraft',8],['SPELLPOWER','Zaubermacht',0],
+  ['MELEECRIT','Nahkampf-Krit',4.88],['RANGEDCRIT','Fernkampf-Krit',5.2468],['SPELLCRIT','Zauber-Krit',5.0068],
+  ['DODGE','Ausweichen',5.2468],['PARRY','Parieren',4.88],['BLOCK','Blocken',0],['ATTACKSPEED','Angriffsgeschwindigkeit',1.961]
+].map(([enumKey,name,value])=>({enum:enumKey,name,value}));
+const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:qaStats.map(x=>x.name),statDetails:qaStats});
 assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,10);
 assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,10);
 assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %')&&statQa.includes('4,9 %'));
@@ -89,7 +97,7 @@ assert.match(statQa,/Waffen-DPS[\s\S]*?>5,08</);
 assert.match(statQa,/Manaregeneration[\s\S]*?>38</);
 assert.match(statQa,/Angriffsgeschwindigkeit[\s\S]*?>1,96</);
 assert.match(statQa,/Zaubermacht[\s\S]*?>0</);
-assert.match(statQa,/Nahkampf-Krit[\s\S]*?>–</);
+assert.match(statQa,/Nahkampf-Krit[\s\S]*?>4,9 %</);
 
 const chuckyXp=ui.experienceProgress({level:10,experience:5143});
 assert.ok(chuckyXp.includes('5.143 / 7.600 XP'),'Chucky XP is shown as progress within level 10');
@@ -354,7 +362,7 @@ assert.ok(sharedBarBlock.includes('1px 0 #04101b,-1px 0 #04101b'),'All three pro
 
 assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
 assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
-assert.equal(ui.equipmentSlotOrder.length,19);
+assert.equal(ui.equipmentSlotTypes.length,19);
 for(const [slug,klass] of Object.entries({
   'cole-dalton':'scene-cole','dolly-dalton':'scene-dolly','chucky-dalton':'scene-chucky','viola-dalton':'scene-viola'
 })){
@@ -486,6 +494,9 @@ assert.ok(source.includes('class="equipment-overview"'),'Equipped item level bel
 assert.ok(!source.includes("mainStatNames=['Gesundheit','Mana','Rüstung','Gegenstandsstufe']"),'Item level is no longer a character-stat tile');
 assert.ok(!source.includes("Ø Gegenstandsstufe"),'Average item level is not shown in the frontend');
 assert.ok(!source.includes("Angelegte Gegenstandsstufe"),'Redundant equipped label is removed');
+for(const forbidden of ['const classNames =','const professionNames =','const statNames =','const treeNames=','const slotNames=','const itemQualityNames=']){
+  assert.ok(!source.includes(forbidden),'Visible game strings must not come from a self-maintained translation table: '+forbidden);
+}
 assert.ok(css.includes('rotate(16deg)') && !css.includes('rotate(8deg)'));
 assert.ok(css.includes('margin:27px auto 0') && css.includes('margin-top:23px'));
 assert.ok(css.includes('main{margin-top:22px}'));
