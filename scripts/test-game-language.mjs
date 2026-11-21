@@ -11,6 +11,9 @@ const reputation=fs.readFileSync(new URL('../reputation-data.js',import.meta.url
 for(const forbidden of ['const classNames','const professionNames','const statNames','const treeNames','const itemQualityNames']){
   assert.ok(!armory.includes(forbidden)&&!app.includes(forbidden),'No manual game-string translation table: '+forbidden);
 }
+for(const forbidden of ["const slotKey=","head:'Kopf'","ranged:'Distanzwaffe'","'Füsse':'Füße'"]){
+  assert.ok(!armory.includes(forbidden),'No manual equipment-slot translation fallback: '+forbidden);
+}
 for(const forbidden of ['Lehrling','Geselle','Experte','Fachmann']){
   assert.ok(!app.includes(forbidden),'Profession rank is not manually translated: '+forbidden);
 }
