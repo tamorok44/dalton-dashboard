@@ -364,6 +364,10 @@ const expectedDetailStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).f
 assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,expectedMainStats);
 assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,expectedDetailStats);
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
+assert.ok(css.includes('.roster-title{flex:1 1 auto;min-width:0}'),'Shared roster title can shrink on narrow screens');
+assert.ok(css.includes('#compareContent{min-width:0;max-width:100%}'),'Comparison content is constrained to the viewport');
+assert.ok(css.includes('.compare-scroll{width:100%;min-width:0;max-width:100%;overflow-x:auto'),'Only the comparison table scroller may overflow horizontally');
+assert.ok(css.includes('.roster-rule{display:none}'),'Decorative roster rules are removed on narrow screens');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
 assert.ok(ui.characterTabsFor({slug:'dolly-test',classId:3,class:'Jägerin'}).some(tab=>tab.id==='pets'),

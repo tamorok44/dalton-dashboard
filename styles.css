@@ -142,9 +142,9 @@ main>.status{padding-left:5px}
 .roster-heading{display:flex;align-items:center;text-align:center;gap:22px;margin:41px 0 26px}
 .roster-rule{height:1px;flex:1;background:linear-gradient(90deg,transparent,#b48e5a 75%,#e1bc7d)}
 .roster-rule:last-child{transform:rotate(180deg)}
-.roster-title{flex:0 0 auto}
+.roster-title{flex:1 1 auto;min-width:0}
 .roster-kicker{color:#84cbd0;letter-spacing:var(--tracking-label);font-size:var(--type-caption);font-weight:700}
-.roster-title h2{font:800 clamp(1.9rem,3.8vw,3.35rem)/1.15 var(--display);text-transform:uppercase;letter-spacing:.08em;color:#f2d39f;margin:5px 0;text-shadow:0 2px 0 #2c2016,0 6px 13px #060910}
+.roster-title h2{font:800 clamp(1.9rem,3.8vw,3.35rem)/1.15 var(--display);text-transform:uppercase;letter-spacing:.08em;color:#f2d39f;margin:5px 0;text-shadow:0 2px 0 #2c2016,0 6px 13px #060910;overflow-wrap:anywhere}
 .roster-title p{margin:0;color:#bcb6a8;font-family:var(--body);font-size:var(--type-body);font-style:normal;font-weight:400;line-height:1.5}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;align-items:start;margin-bottom:24px}
 .card{
@@ -309,6 +309,14 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   .roster-kicker{letter-spacing:var(--tracking-label);font-size:var(--type-caption)}
 }
 @media(max-width:520px){
+  .roster-heading{display:block;min-width:0}
+  .roster-rule{display:none}
+  .roster-title{width:100%;min-width:0}
+  .roster-title h2{font-size:clamp(1.5rem,7.5vw,1.85rem);letter-spacing:.045em;overflow-wrap:anywhere}
+  .roster-title p{max-width:100%;overflow-wrap:anywhere}
+  .compare-view,#compareContent,.compare-choices{min-width:0;max-width:100%}
+  .compare-choices{box-sizing:border-box}
+  .compare-choices legend{max-width:calc(100% - 18px)}
   .hero{min-height:525px}
   .hero-content{min-height:513px;width:calc(100% - 41px)}
   .hero-frame{inset:10px 9px 9px}
@@ -733,16 +741,17 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .main-nav-link{flex:1;text-align:center;text-decoration:none;padding:12px 16px;border:1px solid transparent;border-radius:5px;color:var(--paper);font:var(--weight-label) var(--type-body)/1.3 var(--body)}
 .main-nav-link:hover{border-color:var(--line);color:var(--cream)}
 .main-nav-link.is-active{border-color:var(--gold-deep);background:linear-gradient(115deg,rgba(83,57,34,.8),rgba(38,39,43,.95));color:var(--cream);box-shadow:inset 0 -2px 0 var(--gold)}
-.compare-view{min-height:350px}
-.compare-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:20px 0;padding:17px;border:1px solid var(--line);border-radius:7px;background:rgba(25,30,35,.9)}
-.compare-choices legend{padding:0 8px;color:var(--gold);font:var(--weight-label) var(--type-small) var(--body)}
+.compare-view{min-width:0;max-width:100%;min-height:350px;overflow:visible}
+#compareContent{min-width:0;max-width:100%}
+.compare-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;min-width:0;max-width:100%;margin:20px 0;padding:17px;border:1px solid var(--line);border-radius:7px;background:rgba(25,30,35,.9)}
+.compare-choices legend{max-width:calc(100% - 16px);padding:0 8px;color:var(--gold);font:var(--weight-label) var(--type-small) var(--body);white-space:normal;overflow-wrap:anywhere}
 .compare-choice{display:flex;align-items:center;gap:10px;min-width:0;padding:12px 10px;border:1px solid rgba(217,163,92,.28);border-radius:5px;background:rgba(4,12,18,.28);cursor:pointer;color:var(--cream);font:var(--weight-label) var(--type-small) var(--body)}
 .compare-choice:has(input:checked){border-color:var(--gold);background:rgba(160,115,60,.18)}
 .compare-choice input,.compare-toolbar input{accent-color:var(--gold);width:16px;height:16px;flex:none}
 .compare-empty{padding:30px 16px;text-align:center;color:var(--paper);border:1px dashed var(--line);border-radius:7px}
 .compare-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0;color:var(--paper);font-size:var(--type-small)}
 .compare-toolbar label{display:flex;align-items:center;gap:7px;cursor:pointer}
-.compare-scroll{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:7px;background:rgba(10,17,28,.9);scrollbar-width:thin}
+.compare-scroll{width:100%;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid var(--line);border-radius:7px;background:rgba(10,17,28,.9);scrollbar-width:thin}
 .compare-table{width:100%;min-width:570px;border-collapse:separate;border-spacing:0;table-layout:fixed;font-variant-numeric:tabular-nums}
 .compare-table th,.compare-table td{padding:11px 10px;border-bottom:1px solid rgba(217,163,92,.17);vertical-align:top;overflow-wrap:anywhere}
 .compare-table thead th{position:sticky;top:0;z-index:3;background:#30251e;color:var(--cream);text-align:center;font:var(--weight-label) var(--type-small) var(--body)}
@@ -762,7 +771,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .compare-legend span{padding:5px 8px;border:1px solid rgba(217,163,92,.2);border-radius:4px}
 .compare-legend .compare-best{color:var(--compare-positive)}.compare-legend .compare-worst{color:var(--compare-negative)}.compare-legend .compare-middle{color:var(--compare-intermediate)}
 @media(max-width:740px){.compare-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.compare-table{min-width:620px}.compare-table th,.compare-table td{padding:9px 7px}.compare-table thead th:first-child{width:27%}}
-@media(max-width:390px){.compare-choices{gap:6px;padding:11px}.compare-choice{padding:9px 6px;gap:5px}}
+@media(max-width:390px){.compare-choices{grid-template-columns:1fr;gap:6px;padding:11px}.compare-choice{padding:9px 8px;gap:7px}}
 
 
 /* Jägerbegleiter: dieselbe Dalton-CI, Hunter-Grün nur als Klassenakzent. */
