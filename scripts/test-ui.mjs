@@ -340,6 +340,10 @@ assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,exp
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
+assert.ok(ui.characterTabsFor({slug:'dolly-test',classId:3,class:'Jägerin'}).some(tab=>tab.id==='pets'),
+  'Hunter companion tab is keyed by class ID and remains visible for Blizzard de-DE class name Jägerin');
+assert.ok(!ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='pets'),
+  'Non-hunters do not receive the companion tab');
 const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(Number(character.classId)===3?1:0),0);
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
