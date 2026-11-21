@@ -2,34 +2,10 @@ export const HUNTER_PET_RULEBOOK_VERSION='2026.11.21.3';
 // Versioniertes Forever-Jägerwissen. Live-Zustand eines konkreten Tiers kommt ausschließlich von Blizzard.
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({
-    name:'Fuchs',
+    // Nur mechanische IDs/Werte. Sichtbare Namen, Fähigkeiten, Futterarten und Beschreibungen
+    // werden erst aus einer verifizierten deutschen Forever-Datenquelle eingeblendet.
     ruleIds:Object.freeze({profile:'fox.family.profile',training:'fox.training'}),
-    modifiers:Object.freeze({damage:0,armor:5,health:0}),
-    diet:Object.freeze(['Fleisch']),
-    abilities:Object.freeze([
-      Object.freeze({
-        name:'Beißen',
-        kind:'Angriff',
-        ranks:Object.freeze([
-          {rank:1,level:1,trainingPoints:1},{rank:2,level:8,trainingPoints:4},{rank:3,level:16,trainingPoints:7},{rank:4,level:24,trainingPoints:10},
-          {rank:5,level:32,trainingPoints:13},{rank:6,level:40,trainingPoints:17},{rank:7,level:48,trainingPoints:21},{rank:8,level:56,trainingPoints:25}
-        ])
-      }),
-      Object.freeze({
-        name:'Tanz des Täuschers',
-        kind:'Fuchsfähigkeit',
-        special:true,
-        ranks:Object.freeze([{rank:1,level:20,trainingPoints:10}]),
-        description:'+50 % Ausweichchance und 30 % schnellere Angriffe für 12 Sek.',
-        cooldown:'3 Min.'
-      }),
-      Object.freeze({
-        name:'Spurt',
-        kind:'Bewegung',
-        ranks:Object.freeze([{rank:1,level:30,trainingPoints:15},{rank:2,level:40,trainingPoints:20},{rank:3,level:50,trainingPoints:25}])
-      })
-    ]),
-    sourceNote:'Regelwerte werden nur bei bestätigtem zentralem Pet-Regelwerk angezeigt'
+    modifiers:Object.freeze({damage:0,armor:5,health:0})
   })
 });
 
