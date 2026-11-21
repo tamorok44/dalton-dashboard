@@ -101,7 +101,7 @@ Critical Strike: Pet gains 100% of the player's Crit chance.`};
 Trickster's Dance gives 50% dodge and 30% faster attacks for 12 s. Pet level 20.
 Bite Rank 1 1 Rank 2 8 Rank 3 16 Rank 4 24 Rank 5 32 Rank 6 40 Rank 7 48 Rank 8 56.
 Dash Rank 1 30 Rank 2 40 Rank 3 50. Fox pets eat meat.`};
-  if(sourceUrl.includes('wow-forever.gg/pets'))return {ok:true,status:200,text:async()=>`build 1.60.1.70959 Fox New in Forever Damage 0% Armor +5% Health 0% Eats meat. Fox Trickster's Dance Dash Bite.`};
+  if(sourceUrl.includes('60.tools/guides/hunter-pets'))return {ok:true,status:200,text:async()=>`Family Damage Armor Health Diet Its own abilities Fox 0% +5% 0% Meat Trickster's Dance.`};
   const slug=decodeURIComponent(sourceUrl.split('/').at(-1));
   const profile=baseline.get(slug);
   assert.ok(profile,'Only configured Dalton profiles are requested');
