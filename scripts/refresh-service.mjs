@@ -34,9 +34,11 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
         ...localizedRefs
       ].find(ref=>typeof ref?.href==='string'&&ref.href.includes('namespace=static-'));
       const factionNamespace=staticRef?.href?new URL(staticRef.href).searchParams.get('namespace'):null;
-      const reputationCatalogPromise=factionNamespace
-        ?ensureReputationCatalog({namespace:factionNamespace,force:false,archiveMedia:true})
-        :Promise.resolve(null);
+      const reputationCatalogPromise=ensureReputationCatalog({
+        namespace:factionNamespace||undefined,
+        force:false,
+        archiveMedia
+      });
       const questRefs=localizedRefs.filter(ref=>ref.type==='quest');
       const otherLocalizedRefs=localizedRefs.filter(ref=>ref.type!=='quest');
       let questCatalog=await loadQuestCatalog(questRefs,{locale:'de_DE'});
