@@ -563,7 +563,8 @@ const dailySnapshot=read('api/daily-snapshot.js');
 assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs)'),'Daily rule verification runs before the Blizzard snapshot');
 assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf("refreshAndPersist({lockToken:refreshLock,source:'daily'})"),'Daily rule verification runs before the persistent character refresh');
 assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf("refreshAndPersist({lockToken,source:req.method==='GET'?'manual':'scheduled'})"),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
-assert.ok(!source.includes('setInterval('),'No periodic background refresh in client');
+assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Only the lightweight stored-data version is checked periodically');
+assert.ok(!/setInterval\([\s\S]{0,300}refreshLive/.test(source),'Periodic checks must never trigger Blizzard live refreshes');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
 
 
