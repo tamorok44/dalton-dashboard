@@ -1,8 +1,5 @@
 import {blizzardApiConfigured,fetchForeverProfile} from './blizzard-api.mjs';
-const classNames = { Druid: 'Druide', Mage: 'Magier', Hunter: 'Jäger', Priest: 'Priester', Warlock: 'Hexenmeister', Paladin: 'Paladin', Warrior: 'Krieger', Rogue: 'Schurke', Shaman: 'Schamane' };
-const professionNames = { Alchemy:'Alchemie', Herbalism:'Kräuterkunde', Mining:'Bergbau', Skinning:'Kürschnerei', Leatherworking:'Lederverarbeitung', Blacksmithing:'Schmiedekunst', Engineering:'Ingenieurskunst', Tailoring:'Schneiderei', Enchanting:'Verzauberkunst', Cooking:'Kochkunst', Fishing:'Angeln', 'First Aid':'Erste Hilfe' };
-const statNames = { HEALTH:'Gesundheit', MANA:'Mana', STRENGTH:'Stärke', AGILITY:'Beweglichkeit', STAMINA:'Ausdauer', INTELLECT:'Intelligenz', SPIRIT:'Willenskraft', ARMOR:'Rüstung', ATTACKPOWER:'Angriffskraft', SPELLPOWER:'Zaubermacht', CRITICALSTRIKE:'Kritische Trefferchance', MELEECRIT:'Nahkampf-Krit', RANGEDCRIT:'Fernkampf-Krit', SPELLCRIT:'Zauber-Krit', DODGE:'Ausweichen', PARRY:'Parieren', BLOCK:'Blocken', ATTACKDPS:'Waffen-DPS', ATTACKSPEED:'Angriffsgeschwindigkeit', MANAREGEN:'Manaregeneration', ITEMLEVEL:'Gegenstandsstufe', DEFENSE:'Verteidigung' };
-const statOrder = ['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ARMOR','ATTACKPOWER','SPELLPOWER','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK','ATTACKDPS','ATTACKSPEED','MANAREGEN','ITEMLEVEL','DEFENSE'];
+const statEnumOrder = ['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ARMOR','ATTACKPOWER','SPELLPOWER','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK','ATTACKDPS','ATTACKSPEED','MANAREGEN','ITEMLEVEL','DEFENSE'];
 const renderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/;
 const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/;
 const petIconPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg$/;
@@ -23,7 +20,60 @@ function characterGender(character) {
   }
   return null;
 }
-async function fetchCharacter(slug,locale="en-gb") {
+
+function htmlPlainText(value=''){
+  return String(value).replace(/<[^>]*>/g,' ').replace(/&(#x[\da-f]+|#\d+|amp|quot|apos|lt|gt|nbsp|auml|ouml|uuml|Auml|Ouml|Uuml|szlig);/gi,(_,e)=>{
+    const d={amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',auml:'ä',ouml:'ö',uuml:'ü',Auml:'Ä',Ouml:'Ö',Uuml:'Ü',szlig:'ß'};
+    return e.startsWith('#x')?String.fromCodePoint(parseInt(e.slice(2),16)):e.startsWith('#')?String.fromCodePoint(parseInt(e.slice(1),10)):d[e]||'&'+e+';';
+  }).replace(/\s+/g,' ').trim();
+}
+const statLocaleKeys=Object.freeze({
+  HEALTH:'health',MANA:'mana',STRENGTH:'strength',INTELLECT:'intellect',AGILITY:'agility',STAMINA:'stamina',
+  CRITICALSTRIKE:'critical-strike',SPIRIT:'spirit',ARMOR:'armor',ATTACKPOWER:'attack-power',SPELLPOWER:'spell-power',
+  MELEECRIT:'melee-crit',RANGEDCRIT:'ranged-crit',SPELLCRIT:'spell-crit',DODGE:'dodge',PARRY:'parry',BLOCK:'block',
+  ATTACKDPS:'attack-dps',ATTACKSPEED:'attack-speed',MANAREGEN:'mana-regen',ITEMLEVEL:'item-level',DEFENSE:'defense'
+});
+function decodeJsQuoted(value=''){
+  try{return JSON.parse('"'+value.replace(/"/g,'\\"')+'"')}catch{return String(value).replace(/\\(["'\\])/g,'$1')}
+}
+export function extractGermanStatLabels(html=''){
+  const source=String(html);
+  const localizedByKey={};
+  const localeRe=/'character\.stats\.([a-z0-9-]+)\.name'\s*:\s*"((?:\\.|[^"\\])*)"/gi;
+  for(const match of source.matchAll(localeRe)){
+    const key=match[1].toLowerCase(),name=decodeJsQuoted(match[2]).trim();
+    if(key&&name&&!localizedByKey[key])localizedByKey[key]=name;
+  }
+  const labels={};
+  for(const [enumKey,localeKey] of Object.entries(statLocaleKeys)){
+    if(localizedByKey[localeKey])labels[enumKey]=localizedByKey[localeKey];
+  }
+  // Fallback for a future Blizzard markup change where the rendered stat DOM is already in the response.
+  const renderedRe=/CharacterStat-media\s+color-stat-([A-Z0-9_]+)[\s\S]{0,9000}?<div\b[^>]*class=["'][^"']*CharacterStat-name[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi;
+  for(const match of source.matchAll(renderedRe)){
+    const enumKey=match[1],name=htmlPlainText(match[2]);
+    if(enumKey&&name&&!labels[enumKey])labels[enumKey]=name;
+  }
+  return labels;
+}
+function applyGermanStatLabels(character,html){
+  const labels=extractGermanStatLabels(html);
+  if(!Object.keys(labels).length)return character;
+  const raw=character?.stats;
+  if(!raw||typeof raw!=='object')return character;
+  const candidates=[
+    ...(Array.isArray(raw.groups)?raw.groups:[]),
+    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
+    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
+    {stats:Array.isArray(raw.overview)?raw.overview:[]}
+  ];
+  for(const group of candidates)for(const stat of group.stats||[]){
+    const enumKey=typeof stat?.enum==='string'?stat.enum:null;
+    if(enumKey&&labels[enumKey])stat.name=labels[enumKey];
+  }
+  return character;
+}
+async function fetchCharacter(slug,locale="de-de") {
   const url='https://worldofwarcraft.blizzard.com/'+locale+'/forever/eu/armory/character/'+encodeURIComponent(slug);
   const response=await fetch(url, { headers:{ 'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'accept':'text/html', 'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9' }, signal:AbortSignal.timeout(20000) });
   if(!response.ok) throw new Error('Blizzard HTTP '+response.status);
@@ -32,7 +82,7 @@ async function fetchCharacter(slug,locale="en-gb") {
   if(!match)throw new Error('Offizieller Charakterdatensatz nicht gefunden');
   const character=JSON.parse(match[1]).character;
   if(!character || character.slug?.toLowerCase()!==slug.toLowerCase())throw new Error('Charakterkennung passt nicht zum angefragten Profil');
-  return character;
+  return locale==='de-de'?applyGermanStatLabels(character,html):character;
 }
 
 function normalizeHunterPet(pet){
@@ -87,8 +137,15 @@ async function fetchHunterStable(slug,locale="de-de"){
 }
 function professions(c) {
   const list=[...(c.professions?.primaries||[]),...(c.professions?.secondaries||[])];
-  return list.map(p=>({name:professionNames[p.name]||p.name,current:p.tiers?.[0]?.skillPoints,max:p.tiers?.[0]?.maxSkillPoints,unverified:false}))
-    .filter(p=>p.name&&Number.isFinite(p.current)&&Number.isFinite(p.max)&&p.max>0);
+  return list.map(p=>({
+    sourceName:typeof p?.name==='string'?p.name:null,
+    current:p.tiers?.[0]?.skillPoints,
+    max:p.tiers?.[0]?.maxSkillPoints
+  })).filter(p=>Number.isFinite(p.current)&&Number.isFinite(p.max)&&p.max>0);
+}
+function localizedStatLabel(stat){
+  const candidates=[stat?.name,stat?.label,stat?.displayName,stat?.display_name,stat?.localizedName,stat?.localized_name];
+  return candidates.find(value=>typeof value==='string'&&value.trim())?.trim()||null;
 }
 function stats(c) {
   const raw=c.stats||{};
@@ -98,44 +155,62 @@ function stats(c) {
     {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
     {stats:Array.isArray(raw.overview)?raw.overview:[]}
   ];
-  const values=new Map();
+  const byEnum=new Map();
   for(const group of groups)for(const stat of group.stats||[]) {
-    const n=stat?.value?.value;
-    if(stat?.enum&&Number.isFinite(n))values.set(stat.enum,n);
+    const n=Number(stat?.value?.value);
+    const enumKey=typeof stat?.enum==='string'?stat.enum:null;
+    if(!enumKey||!Number.isFinite(n))continue;
+    const prior=byEnum.get(enumKey)||{};
+    byEnum.set(enumKey,{enum:enumKey,value:n,name:localizedStatLabel(stat)||prior.name||null});
   }
-  const result={};
-  for(const key of statOrder)if(values.has(key))result[statNames[key]]=values.get(key);
-  return result;
+  const ordered=[
+    ...statEnumOrder.filter(key=>byEnum.has(key)).map(key=>byEnum.get(key)),
+    ...[...byEnum.values()].filter(entry=>!statEnumOrder.includes(entry.enum))
+  ];
+  const details=ordered.filter(entry=>entry.name);
+  return {
+    display:Object.fromEntries(details.map(entry=>[entry.name,entry.value])),
+    byEnum:Object.fromEntries(ordered.map(entry=>[entry.enum,entry.value])),
+    details
+  };
 }
-const slotNames={HEAD:'Kopf',NECK:'Hals',SHOULDER:'Schultern',BACK:'Rücken',CHEST:'Brust',SHIRT:'Hemd',WRIST:'Handgelenke',HANDS:'Hände',WAIST:'Taille',LEGS:'Beine',FEET:'Füße',FINGER_1:'Ring 1',FINGER_2:'Ring 2',FINGER:'Ring',TRINKET_1:'Schmuck 1',TRINKET_2:'Schmuck 2',MAIN_HAND:'Waffenhand',OFF_HAND:'Nebenhand',RANGED:'Distanzwaffe',TABARD:'Wappenrock'};
 function gear(c) {
   const raw=c.gear;
   const entries=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
   return entries.map(entry=>{
     if(!entry||typeof entry!=='object')return null;
-    const name=entry.name||entry.item?.name;
+    const name=typeof (entry.name||entry.item?.name)==='string'?(entry.name||entry.item?.name).trim():'';
     const id=Number(entry.id??entry.item?.id);
-    const slotType=entry.slot?.type||entry.slot?.name||entry.slot;
-    const slot=slotNames[slotType]||entry.slot?.name||slotType;
+    const slotType=typeof entry.slot?.type==='string'?entry.slot.type:typeof entry.slot==='string'?entry.slot:null;
+    const slot=typeof entry.slot?.name==='string'&&entry.slot.name.trim()?entry.slot.name.trim():null;
     const icon=entry.media?.content?.assets?.find(a=>a.key==='icon')?.value;
-    const level=entry.level?.value;
-    // Blizzard übermittelt die originale Gegenstandsqualität, z.B. {type:"UNCOMMON",name:"Uncommon"}.
+    const level=Number(entry.level?.value);
     const rawQuality=entry.quality??entry.item?.quality;
     const qualityType=typeof rawQuality==='string'?rawQuality:rawQuality?.type;
+    const qualityName=typeof rawQuality?.name==='string'&&rawQuality.name.trim()?rawQuality.name.trim():null;
     const allowedQualities=['POOR','COMMON','UNCOMMON','RARE','EPIC','LEGENDARY','ARTIFACT','HEIRLOOM'];
     const quality=typeof qualityType==='string'&&allowedQualities.includes(qualityType.toUpperCase())?qualityType.toUpperCase():undefined;
-    return typeof name==='string'&&slot?{...(Number.isInteger(id)&&id>0?{id}:{}),slot:String(slot),item:name,icon:typeof icon==='string'?icon:undefined,level:Number.isFinite(level)?level:undefined,...(quality?{quality}:{})}:null;
+    if(!name||!slot)return null;
+    return {
+      ...(Number.isInteger(id)&&id>0?{id}:{}),
+      ...(slotType?{slotType}:{}),
+      slot,
+      item:name,
+      icon:typeof icon==='string'?icon:undefined,
+      level:Number.isFinite(level)?level:undefined,
+      ...(quality?{quality}:{}),
+      ...(qualityName?{qualityName}:{})
+    };
   }).filter(Boolean);
 }
-const treeNames={'Feral Combat':'Wilder Kampf',Balance:'Gleichgewicht',Restoration:'Wiederherstellung',Arcane:'Arkan',Fire:'Feuer',Frost:'Frost','Beast Mastery':'Tierherrschaft',Marksmanship:'Treffsicherheit',Survival:'Überleben'};
 function talents(c) {
   const s=c.specs;
   const trees=Array.isArray(s)?s:Array.isArray(s?.specializations)?s.specializations:Array.isArray(s?.specs)?s.specs:null;
   if(trees===null)return null;
   if(trees.length===0)return 'noch keine verteilt';
-  const entries=trees.filter(t=>Number.isFinite(Number(t.spentPoints))&&Number(t.spentPoints)>0);
+  const entries=trees.filter(t=>Number.isFinite(Number(t.spentPoints))&&Number(t.spentPoints)>0&&typeof t?.name==='string'&&t.name.trim());
   if(entries.length===0)return 'noch keine verteilt';
-  return entries.map(t=>(treeNames[t.name]||t.name||t.id||'Talente')+': '+Number(t.spentPoints)).join(' · ');
+  return entries.map(t=>t.name.trim()+': '+Number(t.spentPoints)).join(' · ');
 }
 function timestamp(v){
   if(typeof v==='string' && !/^\d+(?:\.\d+)?$/.test(v)){const parsed=Date.parse(v);return Number.isFinite(parsed)?new Date(parsed).toISOString():undefined;}
@@ -233,20 +308,24 @@ for(const old of characters){
     const apiCheckedAt=new Date().toISOString();
     let apiProfileError;
     const apiProfilePromise=blizzardApiConfigured()
-      ?fetchForeverProfile(old.slug).catch(error=>{
+      ?fetchForeverProfile(old.slug,{locale:'de_DE'}).catch(error=>{
         apiProfileError=String(error.message).slice(0,160);
-        console.warn(old.name+': Blizzard Forever API: '+apiProfileError);
+        console.warn(old.name+': Blizzard Forever API de_DE: '+apiProfileError);
         return null;
       })
       :Promise.resolve(null);
-    const c=await fetchCharacter(old.slug);
+
+    // Sichtbare WoW-Spielbegriffe stammen aus der deutschen Forever-Armory.
+    const c=await fetchCharacter(old.slug,'de-de');
     const apiProfile=await apiProfilePromise;
-    const sourceClassName=apiProfile?.character_class?.name||c.class?.name;
+    const classId=Number(apiProfile?.character_class?.id??c.class?.id??old.classId);
+    const isHunter=classId===3;
+
     let hunterPets=old.hunterPets||{active:[],stable:[]};
     let hunterPetsVerified=old.hunterPetsVerified===true;
     let hunterPetsError=old.hunterPetsError;
     let hunterPetsCheckedAt=old.hunterPetsCheckedAt;
-    if(sourceClassName==='Hunter'){
+    if(isHunter){
       hunterPetsCheckedAt=new Date().toISOString();
       try{
         hunterPets=await fetchHunterStable(old.slug,'de-de');
@@ -255,7 +334,7 @@ for(const old of characters){
       }catch(error){
         hunterPetsVerified=false;
         hunterPetsError=String(error.message).slice(0,160);
-        console.warn(old.name+': Blizzard-Stall: '+hunterPetsError);
+        console.warn(old.name+': Blizzard-Stall de-DE: '+hunterPetsError);
       }
     }else{
       hunterPets={active:[],stable:[]};
@@ -263,79 +342,54 @@ for(const old of characters){
       hunterPetsError=undefined;
       hunterPetsCheckedAt=undefined;
     }
+
     const apiLevel=Number(apiProfile?.level);
     const level=Number.isInteger(apiLevel)?apiLevel:Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
+
+    // Die Armory zeigt Berufsnamen selbst im deutschen Web teilweise englisch.
+    // Deshalb aktualisiert nur der nachgelagerte de_DE-Game-Data-Abruf sichtbare Berufsnamen.
     const ps=professions(c);
-    const knownProfessions=new Map((old.professions||[]).map(p=>[p.name,{...p,unverified:true}]));
-    for(const p of ps){
-      const prior=knownProfessions.get(p.name);
-      knownProfessions.set(p.name,{
-        ...p,
-        ...(prior?.id?{id:prior.id}:{}),
-        ...(prior?.tierId?{tierId:prior.tierId}:{}),
-        ...(prior?.tierName?{tierName:prior.tierName}:{}),
-        ...(Array.isArray(prior?.knownRecipes)?{knownRecipes:prior.knownRecipes}:{})
-      });
-    }
-    // Never silently remove a profession when Blizzard returns a partial result.
-    const currentProfessions=[...knownProfessions.values()];
-    const professionsVerified=ps.length>0&&currentProfessions.every(p=>!p.unverified);
+    const currentProfessions=(old.professions||[]).map(p=>({...p,unverified:true}));
+    const professionsVerified=false;
+
     const st=stats(c),eq=gear(c),ta=talents(c);
     const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
-    let localizedGear=null,localizationError,localizedSource;
-    // Fast path: don't re-fetch localized gear if the officially verified
-    // equipment is unchanged. This is the common case for skill/level updates.
-    const previousBySlot=new Map((old.equipment||[]).map(x=>[normalizedSlot(x.slot),x]));
-    const translationsReusable=old.equipmentLanguage==='de'&&hasOfficialGear&&eq.length>0&&eq.length===(old.equipment||[]).length&&
-      eq.every(item=>{
-        const prior=previousBySlot.get(normalizedSlot(item.slot));
-        return prior?.sourceName===item.item&&prior.level===item.level&&
-          Boolean(iconId(prior.icon))&&iconId(prior.icon)===iconId(item.icon);
-      });
-    if(hasOfficialGear&&eq.length&&!translationsReusable){
-      // Offizielles deutsches Blizzard-Profil zuerst: weniger Verzögerung,
-      // keine Abhängigkeit von der häufig unzugänglichen ForeverSpec-Seite.
-      try{
-        const germanProfile=await fetchCharacter(old.slug,'de-de');
-        const deGear=gear(germanProfile);
-        if(!equipmentMatches(eq,deGear))throw new Error('Deutsche Blizzard-Ausrüstung weicht vom aktuellen englischen Profil ab');
-        localizedGear=deGear;
-        localizedSource='Blizzard Armory (de-DE)';
-      }catch(deErr){
-        localizationError=String(deErr.message).slice(0,160);
-        console.warn(old.name+': Blizzard de-DE: '+localizationError);
-        try{
-          const fromForeverSpec=await germanGearFor(old.slug,old.name,eq);
-          if(!equipmentMatches(eq,fromForeverSpec))throw new Error('ForeverSpec-Ausrüstung weicht vom aktuellen Blizzard-Profil ab');
-          localizedGear=fromForeverSpec;
-          localizedSource='ForeverSpec';
-        }catch(fsErr){console.warn(old.name+': ForeverSpec: '+String(fsErr.message).slice(0,160))}
-      }
-    }
-    const equipment= !hasOfficialGear ? old.equipment||[] :
-      localizedGear ? localizedGear.map(x=>{
-        const source=eq.find(e=>normalizedSlot(e.slot)===normalizedSlot(x.slot));
-        return {...x,quality:source?.quality||x.quality,sourceName:source?.item,localized:true};
-      }) : preserveCurrentTranslations(eq,old.equipment);
-    const localizedCount=equipment.filter(x=>x.localized).length;
-    const equipmentLanguage= !hasOfficialGear ? old.equipmentLanguage||'de':
-      equipment.length===0||localizedCount===equipment.length?'de':
-      localizedCount===0?'en':'gemischt';
-    const equipmentSource= !hasOfficialGear ? old.equipmentSource||'Letzter bestätigter Stand':
-      localizedGear ? localizedSource:translationsReusable?(old.equipmentSource||'Blizzard Armory, bestätigte Übersetzungen'):'Blizzard Armory (en-GB), aktuelle Gegenstände';
-    const requiredStats=['Gesundheit','Mana','Stärke','Beweglichkeit','Ausdauer','Intelligenz','Kritische Trefferchance','Willenskraft','Rüstung','Angriffskraft','Zaubermacht','Ausweichen','Gegenstandsstufe'];
-    const statsVerified=requiredStats.every(k=>Number.isFinite(st[k]));
+    const equipment=hasOfficialGear
+      ?eq.map(item=>({...item,localized:true}))
+      :(old.equipment||[]);
+    const equipmentLanguage=hasOfficialGear?'de':old.equipmentLanguage||'de';
+    const equipmentSource=hasOfficialGear?'Blizzard Armory (de-DE)':old.equipmentSource||'Letzter bestätigter deutscher Stand';
+    const requiredStatEnums=['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','CRITICALSTRIKE','SPIRIT'];
+    const statsVerified=requiredStatEnums.every(key=>Number.isFinite(Number(st.byEnum[key])));
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;
     const now=new Date().toISOString();
+
+    const sourceClass=typeof c.class?.name==='string'&&c.class.name.trim()?c.class.name.trim():
+      typeof apiProfile?.character_class?.name==='string'&&apiProfile.character_class.name.trim()?apiProfile.character_class.name.trim():null;
+    const sourceRace=typeof c.race?.name==='string'&&c.race.name.trim()?c.race.name.trim():
+      typeof apiProfile?.race?.name==='string'&&apiProfile.race.name.trim()?apiProfile.race.name.trim():null;
+    const sourceFaction=typeof c.faction?.name==='string'&&c.faction.name.trim()?c.faction.name.trim():
+      typeof apiProfile?.faction?.name==='string'&&apiProfile.faction.name.trim()?apiProfile.faction.name.trim():null;
+    const statsDetailsByEnum=new Map((Array.isArray(old.statsDetails)?old.statsDetails:[])
+      .filter(entry=>entry?.enum).map(entry=>[entry.enum,{...entry}]));
+    for(const entry of st.details)statsDetailsByEnum.set(entry.enum,{...statsDetailsByEnum.get(entry.enum),...entry});
+    const statsDetails=[
+      ...statEnumOrder.filter(key=>statsDetailsByEnum.has(key)).map(key=>statsDetailsByEnum.get(key)),
+      ...[...statsDetailsByEnum.values()].filter(entry=>!statEnumOrder.includes(entry.enum))
+    ];
+
     const next={
       ...old,
       level,
-      class:classNames[sourceClassName]||old.class,
-      race:String(apiProfile?.race?.name||c.race?.name||'').includes('Skyborne')?'Himmelsgeborene':old.race,
+      classId:Number.isInteger(classId)&&classId>0?classId:old.classId,
+      class:sourceClass||old.class,
+      race:sourceRace||old.race,
       gender:characterGender(apiProfile)||characterGender(c)||old.gender||null,
-      faction:apiProfile?.faction?.name==='Alliance'?'Allianz':apiProfile?.faction?.name||old.faction||'Allianz',
+      faction:sourceFaction||old.faction,
+      gameStringsVerified:Boolean(sourceClass&&sourceRace&&sourceFaction),
+      gameStringsLocale:'de_DE',
       blizzardCharacterId:Number.isInteger(Number(apiProfile?.id))?Number(apiProfile.id):old.blizzardCharacterId,
       experience:Number.isInteger(Number(apiProfile?.experience))?Number(apiProfile.experience):old.experience,
       achievementPoints:Number.isInteger(Number(apiProfile?.achievement_points))?Number(apiProfile.achievement_points):old.achievementPoints,
@@ -349,13 +403,15 @@ for(const old of characters){
       hunterPetsVerified,
       hunterPetsCheckedAt,
       hunterPetsError,
-      stats:{...(old.stats||{}),...st},
-      // Provenance of each stat; old fallback values are never called fresh.
-      statsFreshKeys:Object.keys(st),
+      stats:{...(old.stats||{}),...st.display},
+      statsByEnum:{...(old.statsByEnum||{}),...st.byEnum},
+      statsDetails,
+      statsFreshKeys:Object.keys(st.display),
+      statsFreshEnums:Object.keys(st.byEnum),
       equipment,
       equipmentLanguage,
       equipmentSource,
-      equipmentError:localizationError,
+      equipmentError:undefined,
       equipmentVerified:hasOfficialGear,
       talents:ta===null?(old.talents||'nicht verfügbar'):ta,
       talentDetailsVerified:false,
@@ -364,7 +420,6 @@ for(const old of characters){
       completedQuestsVerified:false,
       imageUrl:renderPattern.test(img||'')?img:old.imageUrl,
       avatarUrl:avatarPattern.test(avatar||'')?avatar:old.avatarUrl,
-      // Keep the same render URL and cache key until Blizzard changes it.
       imageCheckedAt:renderPattern.test(img||'')&&
         (img!==old.imageUrl||(timestamp(c.lastUpdatedTimestamp)&&timestamp(c.lastUpdatedTimestamp)!==old.sourceUpdatedAt))
         ?now:old.imageCheckedAt,
@@ -380,15 +435,15 @@ for(const old of characters){
       scrapeOk:true,
       scrapeError:undefined,
       dataStatus:'live',
-      source:apiProfile?'Blizzard API + Armory':'Blizzard Armory'
+      source:apiProfile?'Blizzard API de_DE + Armory de-DE':'Blizzard Armory de-DE'
     };
     updated.push(next);
     success++;
     const petCount=(next.hunterPets?.active?.length||0)+(next.hunterPets?.stable?.length||0);
-    console.log(old.name+': Level '+level+', Berufe '+ps.length+', Stats '+Object.keys(st).length+', Ausrüstung '+eq.length+', Talente '+String(ta)+', Begleiter '+petCount+', Bild '+Boolean(next.imageUrl));
+    console.log(old.name+': Level '+level+', Armory-Berufe '+ps.length+', Stats '+Object.keys(st.byEnum).length+', Ausrüstung '+eq.length+', Talente '+String(ta)+', Begleiter '+petCount+', Bild '+Boolean(next.imageUrl));
   }catch(e){
     updated.push({...old,scrapeOk:false,scrapeError:String(e.message).slice(0,180)});
-    console.error(old.name+': '+e.message+' – letzter Stand bleibt erhalten');
+    console.error(old.name+': '+e.message+' – letzter bestätigter deutscher Stand bleibt erhalten');
   }
 }
 return {success,data:{generatedAt:new Date().toISOString(),characters:updated.sort((a,b)=>a.name.localeCompare(b.name,'de'))}};

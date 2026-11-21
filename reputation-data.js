@@ -5,25 +5,25 @@
 export const REPUTATION_BUILD='1.60.1.70959';
 
 export const reputationColors=Object.freeze({
-  hated:Object.freeze({name:'Hasserfüllt',hex:'#CC4D38',light:'#E07A68',dark:'#7D2D21'}),
-  hostile:Object.freeze({name:'Feindselig',hex:'#CC4D38',light:'#E07A68',dark:'#7D2D21'}),
-  unfriendly:Object.freeze({name:'Unfreundlich',hex:'#BF4500',light:'#E27531',dark:'#743000'}),
-  neutral:Object.freeze({name:'Neutral',hex:'#E6B300',light:'#F3D45D',dark:'#8B6900'}),
-  friendly:Object.freeze({name:'Freundlich',hex:'#00991A',light:'#54C565',dark:'#005E11'}),
-  honored:Object.freeze({name:'Wohlwollend',hex:'#00991A',light:'#54C565',dark:'#005E11'}),
-  revered:Object.freeze({name:'Respektvoll',hex:'#00991A',light:'#54C565',dark:'#005E11'}),
-  exalted:Object.freeze({name:'Ehrfürchtig',hex:'#00991A',light:'#54C565',dark:'#005E11'})
+  hated:Object.freeze({hex:'#CC4D38',light:'#E07A68',dark:'#7D2D21'}),
+  hostile:Object.freeze({hex:'#CC4D38',light:'#E07A68',dark:'#7D2D21'}),
+  unfriendly:Object.freeze({hex:'#BF4500',light:'#E27531',dark:'#743000'}),
+  neutral:Object.freeze({hex:'#E6B300',light:'#F3D45D',dark:'#8B6900'}),
+  friendly:Object.freeze({hex:'#00991A',light:'#54C565',dark:'#005E11'}),
+  honored:Object.freeze({hex:'#00991A',light:'#54C565',dark:'#005E11'}),
+  revered:Object.freeze({hex:'#00991A',light:'#54C565',dark:'#005E11'}),
+  exalted:Object.freeze({hex:'#00991A',light:'#54C565',dark:'#005E11'})
 });
 
 export const reputationStages=Object.freeze([
-  Object.freeze({key:'hated',name:'Hasserfüllt',weight:1}),
-  Object.freeze({key:'hostile',name:'Feindselig',weight:1}),
-  Object.freeze({key:'unfriendly',name:'Unfreundlich',weight:1}),
-  Object.freeze({key:'neutral',name:'Neutral',weight:1}),
-  Object.freeze({key:'friendly',name:'Freundlich',weight:2}),
-  Object.freeze({key:'honored',name:'Wohlwollend',weight:4}),
-  Object.freeze({key:'revered',name:'Respektvoll',weight:7}),
-  Object.freeze({key:'exalted',name:'Ehrfürchtig',weight:.333})
+  Object.freeze({key:'hated',weight:1}),
+  Object.freeze({key:'hostile',weight:1}),
+  Object.freeze({key:'unfriendly',weight:1}),
+  Object.freeze({key:'neutral',weight:1}),
+  Object.freeze({key:'friendly',weight:2}),
+  Object.freeze({key:'honored',weight:4}),
+  Object.freeze({key:'revered',weight:7}),
+  Object.freeze({key:'exalted',weight:.333})
 ]);
 
 const WIKI='https://warcraft.wiki.gg/images/';

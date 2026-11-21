@@ -2,34 +2,10 @@ export const HUNTER_PET_RULEBOOK_VERSION='2026.11.21.3';
 // Versioniertes Forever-Jägerwissen. Live-Zustand eines konkreten Tiers kommt ausschließlich von Blizzard.
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({
-    name:'Fuchs',
+    // Nur mechanische IDs/Werte. Sichtbare Namen, Fähigkeiten, Futterarten und Beschreibungen
+    // werden erst aus einer verifizierten deutschen Forever-Datenquelle eingeblendet.
     ruleIds:Object.freeze({profile:'fox.family.profile',training:'fox.training'}),
-    modifiers:Object.freeze({damage:0,armor:5,health:0}),
-    diet:Object.freeze(['Fleisch']),
-    abilities:Object.freeze([
-      Object.freeze({
-        name:'Beißen',
-        kind:'Angriff',
-        ranks:Object.freeze([
-          {rank:1,level:1,trainingPoints:1},{rank:2,level:8,trainingPoints:4},{rank:3,level:16,trainingPoints:7},{rank:4,level:24,trainingPoints:10},
-          {rank:5,level:32,trainingPoints:13},{rank:6,level:40,trainingPoints:17},{rank:7,level:48,trainingPoints:21},{rank:8,level:56,trainingPoints:25}
-        ])
-      }),
-      Object.freeze({
-        name:'Tanz des Täuschers',
-        kind:'Fuchsfähigkeit',
-        special:true,
-        ranks:Object.freeze([{rank:1,level:20,trainingPoints:10}]),
-        description:'+50 % Ausweichchance und 30 % schnellere Angriffe für 12 Sek.',
-        cooldown:'3 Min.'
-      }),
-      Object.freeze({
-        name:'Spurt',
-        kind:'Bewegung',
-        ranks:Object.freeze([{rank:1,level:30,trainingPoints:15},{rank:2,level:40,trainingPoints:20},{rank:3,level:50,trainingPoints:25}])
-      })
-    ]),
-    sourceNote:'Regelwerte werden nur bei bestätigtem zentralem Pet-Regelwerk angezeigt'
+    modifiers:Object.freeze({damage:0,armor:5,health:0})
   })
 });
 
@@ -48,22 +24,25 @@ export const hunterPetMechanics=Object.freeze({
   globalHealth:Object.freeze({ruleId:'pet.health.global',factor:1.15,percent:115,version:1})
 });
 
-function freshCharacterStat(character,name){
-  const stats=character?.stats||{};
-  const fresh=new Set(Array.isArray(character?.statsFreshKeys)?character.statsFreshKeys:
+function freshCharacterStat(character,enumKey){
+  const stats=character?.statsByEnum||{};
+  const fresh=new Set(Array.isArray(character?.statsFreshEnums)?character.statsFreshEnums:
     character?.statsVerified===true?Object.keys(stats):[]);
-  const value=Number(stats[name]);
-  return fresh.has(name)&&Number.isFinite(value)?value:null;
+  const value=Number(stats[enumKey]);
+  if(!fresh.has(enumKey)||!Number.isFinite(value))return null;
+  const localizedName=(Array.isArray(character?.statsDetails)?character.statsDetails:[])
+    .find(entry=>entry?.enum===enumKey&&typeof entry?.name==='string')?.name||null;
+  return {value,name:localizedName};
 }
 function enduranceTraining(character){
   if(character?.talentDetailsVerified!==true)return null;
   for(const tree of Array.isArray(character?.talentDetails)?character.talentDetails:[]){
     for(const talent of Array.isArray(tree?.talents)?tree.talents:[]){
-      if(Number(talent?.spellId)===19583||String(talent?.name||'').toLowerCase()==='belastbarkeit-ausbildung'){
+      if(Number(talent?.spellId)===19583){
         const rank=Number(talent.rank);
         return {
           rank:Number.isInteger(rank)&&rank>0?rank:null,
-          name:talent.name||'Belastbarkeit-Ausbildung',
+          name:typeof talent.name==='string'?talent.name:null,
           description:talent.description||null,
           spellId:Number(talent.spellId)||19583
         };
@@ -74,31 +53,33 @@ function enduranceTraining(character){
 }
 
 export function hunterPetCombatProfile(character){
-  const stamina=freshCharacterStat(character,'Ausdauer');
-  const armor=freshCharacterStat(character,'Rüstung');
-  const crit=freshCharacterStat(character,'Kritische Trefferchance');
+  const stamina=freshCharacterStat(character,'STAMINA');
+  const armor=freshCharacterStat(character,'ARMOR');
+  const crit=freshCharacterStat(character,'CRITICALSTRIKE');
+  const healthName=(Array.isArray(character?.statsDetails)?character.statsDetails:[])
+    .find(entry=>entry?.enum==='HEALTH'&&typeof entry?.name==='string')?.name||null;
   return {
     inherited:{
       health:stamina===null?null:{
         ruleId:hunterPetMechanics.inherited.healthPerHunterStamina.ruleId,
-        inputName:'Ausdauer',input:stamina,
+        inputName:stamina.name,input:stamina.value,
         factor:hunterPetMechanics.inherited.healthPerHunterStamina.factor,
-        value:stamina*hunterPetMechanics.inherited.healthPerHunterStamina.factor,
-        unit:'Gesundheit'
+        value:stamina.value*hunterPetMechanics.inherited.healthPerHunterStamina.factor,
+        unitName:healthName
       },
       armor:armor===null?null:{
         ruleId:hunterPetMechanics.inherited.armorFromHunter.ruleId,
-        inputName:'Rüstung',input:armor,
+        inputName:armor.name,input:armor.value,
         factor:hunterPetMechanics.inherited.armorFromHunter.factor,
-        value:armor*hunterPetMechanics.inherited.armorFromHunter.factor,
-        unit:'Rüstung'
+        value:armor.value*hunterPetMechanics.inherited.armorFromHunter.factor,
+        unitName:armor.name
       },
       crit:crit===null?null:{
         ruleId:hunterPetMechanics.inherited.critFromHunter.ruleId,
-        inputName:'Kritische Trefferchance',input:crit,
+        inputName:crit.name,input:crit.value,
         factor:hunterPetMechanics.inherited.critFromHunter.factor,
-        value:crit*hunterPetMechanics.inherited.critFromHunter.factor,
-        unit:'Prozentpunkte'
+        value:crit.value*hunterPetMechanics.inherited.critFromHunter.factor,
+        unitName:crit.name
       },
       attackPower:{
         ruleId:'pet.scaling',

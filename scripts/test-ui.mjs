@@ -8,6 +8,27 @@ import {reputationStages,reputationColors} from '../reputation-data.js';
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
+// Legacy JSON fixture is normalized into the new source-backed shape only for UI unit tests.
+const testClassIds={'Magier':8,'Jäger':3,'Druide':11};
+const testStatEnums={
+  Gesundheit:'HEALTH',Mana:'MANA','Stärke':'STRENGTH','Intelligenz':'INTELLECT','Beweglichkeit':'AGILITY','Ausdauer':'STAMINA',
+  'Kritische Trefferchance':'CRITICALSTRIKE','Willenskraft':'SPIRIT','Waffen-DPS':'ATTACKDPS','Manaregeneration':'MANAREGEN',
+  'Rüstung':'ARMOR','Angriffskraft':'ATTACKPOWER','Zaubermacht':'SPELLPOWER','Nahkampf-Krit':'MELEECRIT','Fernkampf-Krit':'RANGEDCRIT',
+  'Zauber-Krit':'SPELLCRIT','Ausweichen':'DODGE','Parieren':'PARRY','Blocken':'BLOCK','Angriffsgeschwindigkeit':'ATTACKSPEED','Gegenstandsstufe':'ITEMLEVEL'
+};
+const testSlotTypes={
+  Kopf:'HEAD',Hals:'NECK',Schultern:'SHOULDER',Rücken:'BACK',Brust:'CHEST',Hemd:'SHIRT',Wappenrock:'TABARD',Handgelenke:'WRIST',
+  Hände:'HANDS',Taille:'WAIST',Beine:'LEGS',Füße:'FEET','Ring 1':'FINGER_1','Ring 2':'FINGER_2','Schmuck 1':'TRINKET_1','Schmuck 2':'TRINKET_2',
+  Waffenhand:'MAIN_HAND',Nebenhand:'OFF_HAND',Distanzwaffe:'RANGED'
+};
+for(const c of data.characters){
+  c.classId=testClassIds[c.class]||null;
+  c.gameStringsVerified=true;c.gameStringsLocale='de_DE';
+  c.statsDetails=Object.entries(c.stats||{}).filter(([name])=>testStatEnums[name]).map(([name,value])=>({enum:testStatEnums[name],name,value}));
+  c.statsByEnum=Object.fromEntries(c.statsDetails.map(entry=>[entry.enum,entry.value]));
+  c.statsFreshEnums=[...c.statsDetails.map(entry=>entry.enum)];
+  for(const item of c.equipment||[])item.slotType=testSlotTypes[item.slot]||item.slotType;
+}
 const executableSource=source
   .replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'')
   .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'');
@@ -26,14 +47,14 @@ const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSIO
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
   .map(m=>({state:m[1],width:Number(m[2])}));
 const examples=[
-  {current:37,max:75,rank:'Lehrling',widths:[49.33,0,0,0],unlocked:1},
-  {current:75,max:75,rank:'Lehrling',widths:[100,0,0,0],unlocked:1},
-  {current:75,max:150,rank:'Geselle',widths:[100,0,0,0],unlocked:2},
-  {current:99,max:150,rank:'Geselle',widths:[100,32,0,0],unlocked:2},
-  {current:170,max:225,rank:'Experte',widths:[100,100,26.67,0],unlocked:3},
-  {current:240,max:300,rank:'Fachmann',widths:[100,100,100,20],unlocked:4},
-  {current:0,max:75,rank:'Lehrling',widths:[0,0,0,0],unlocked:1},
-  {current:300,max:300,rank:'Fachmann',widths:[100,100,100,100],unlocked:4}
+  {current:37,max:75,widths:[49.33,0,0,0],unlocked:1},
+  {current:75,max:75,widths:[100,0,0,0],unlocked:1},
+  {current:75,max:150,widths:[100,0,0,0],unlocked:2},
+  {current:99,max:150,widths:[100,32,0,0],unlocked:2},
+  {current:170,max:225,widths:[100,100,26.67,0],unlocked:3},
+  {current:240,max:300,widths:[100,100,100,20],unlocked:4},
+  {current:0,max:75,widths:[0,0,0,0],unlocked:1},
+  {current:300,max:300,widths:[100,100,100,100],unlocked:4}
 ];
 for(const e of examples){
   const html=ui.professionRows([{name:'Angeln',current:e.current,max:e.max}]);
@@ -41,16 +62,15 @@ for(const e of examples){
   assert.equal(parts.length,4,'Exactly four skill segments for all ranks');
   assert.deepEqual(parts.map(p=>p.width),e.widths,'Precise fixed 75-point segments');
   assert.equal(parts.filter(p=>p.state==='is-unlocked').length,e.unlocked,'Cap must control unlocked segments');
-  assert.match(html,new RegExp('class="profession-rank">'+e.rank+'</span>'));
   assert.equal((html.match(new RegExp('>'+e.current+'\\/'+e.max+'<','g'))||[]).length,1);
   assert.match(html,/aria-valuemax="300"/);
   assert.match(html,/role="progressbar"/);
 }
 const invalid=ui.professionRows([{name:'Angeln',current:20,max:0}]);
 assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
-assert.match(invalid,/Rang unbekannt/);
+assert.ok(!invalid.includes('Lehrling')&&!invalid.includes('Geselle')&&!invalid.includes('Experte')&&!invalid.includes('Fachmann'));
 assert.ok(!ui.professionRows([{name:'<script>',current:1,max:2}]).includes('<script>'));
-assert.equal((ui.professionScale().match(/<span title=/g)||[]).length,4);
+assert.equal((ui.professionScale().match(/<span>/g)||[]).length,4);
 const redundantRecipe=ui.recipeRows([{
   name:'Manabrunnen',
   craftedItem:{name:'Manabrunnen'},
@@ -79,15 +99,22 @@ const orderedNames=list=>ui.sortProfessionsForDisplay(list.map(name=>({name}))).
 assert.deepEqual(orderedNames(['Alchimie','Kräuterkunde','Kochkunst','Angeln','Erste Hilfe']),['Kräuterkunde','Alchimie','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Lederverarbeitung','Kürschnerei','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Kürschnerei','Bergbau','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Bergbau','Angeln','Kochkunst','Erste Hilfe']);
-const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration','Rüstung','Angriffskraft','Zaubermacht','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'],stats:{Gesundheit:202,Mana:535,Stärke:18,Intelligenz:40,Beweglichkeit:26,Ausdauer:23,'Kritische Trefferchance':5.0068,Willenskraft:31,'Waffen-DPS':5.081841,Manaregeneration:38,Rüstung:99,Angriffskraft:8,Zaubermacht:0,Ausweichen:5.2468,Parieren:4.88,Blocken:0,Angriffsgeschwindigkeit:1.961}});
+const statDetails=[
+  ['HEALTH','Gesundheit',202],['MANA','Mana',535],['STRENGTH','Stärke',18],['INTELLECT','Intelligenz',40],
+  ['AGILITY','Beweglichkeit',26],['STAMINA','Ausdauer',23],['CRITICALSTRIKE','Kritische Trefferchance',5.0068],
+  ['SPIRIT','Willenskraft',31],['ATTACKDPS','Waffen-DPS',5.081841],['MANAREGEN','Manaregeneration',38],
+  ['ARMOR','Rüstung',99],['ATTACKPOWER','Angriffskraft',8],['SPELLPOWER','Zaubermacht',0],
+  ['DODGE','Ausweichen',5.2468],['PARRY','Parieren',4.88],['BLOCK','Blocken',0],['ATTACKSPEED','Angriffsgeschwindigkeit',1.961]
+].map(([enumKey,name,value])=>({enum:enumKey,name,value}));
+const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshEnums:statDetails.map(x=>x.enum),statsDetails:statDetails});
 assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,10);
-assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,10);
+assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,7);
 assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %')&&statQa.includes('4,9 %'));
 assert.match(statQa,/Waffen-DPS[\s\S]*?>5,08</);
 assert.match(statQa,/Manaregeneration[\s\S]*?>38</);
 assert.match(statQa,/Angriffsgeschwindigkeit[\s\S]*?>1,96</);
 assert.match(statQa,/Zaubermacht[\s\S]*?>0</);
-assert.match(statQa,/Nahkampf-Krit[\s\S]*?>–</);
+assert.ok(!statQa.includes('Nahkampf-Krit'),'Unsourced stat labels are not invented');
 
 const chuckyXp=ui.experienceProgress({level:10,experience:5143});
 assert.ok(chuckyXp.includes('5.143 / 7.600 XP'),'Chucky XP is shown as progress within level 10');
@@ -129,6 +156,8 @@ assert.ok(nodes.get('#cards').innerHTML.includes('Zuletzt im Spiel: von Blizzard
 const loginData=structuredClone(data);
 const loginCole=loginData.characters.find(c=>c.slug==='cole-dalton');
 loginCole.lastLoginAt='2026-11-20T10:11:12.000Z';
+loginCole.gameStringsVerified=true;
+loginCole.gameStringsLocale='de_DE';
 loginCole.faction='Allianz';
 loginCole.ruleset={id:1,name:'PvP'};
 ui.render(loginData);
@@ -139,6 +168,7 @@ assert.ok(nodes.get('#cards').innerHTML.includes('Allianz · EU-PvP'),
 
 const petData=structuredClone(data);
 const petDolly=petData.characters.find(c=>c.slug==='dolly-dalton');
+petDolly.classId=3;
 petDolly.hunterPetsVerified=true;
 petDolly.hunterPetsCheckedAt='2026-11-21T09:32:58.000Z';
 petDolly.hunterPets={
@@ -150,8 +180,13 @@ petDolly.hunterPets={
   }],
   stable:[{name:'Lobo',level:5,active:false,slot:1,family:{id:1,name:'Wolf',enum:'WOLF',slug:'wolf'},iconUrl:'https://render.worldofwarcraft.com/forever-eu/icons/56/132203.jpg'}]
 };
-petDolly.stats={...(petDolly.stats||{}),Ausdauer:30,Rüstung:256,'Kritische Trefferchance':5.0689,Angriffskraft:63};
-petDolly.statsFreshKeys=[...new Set([...(petDolly.statsFreshKeys||[]),'Ausdauer','Rüstung','Kritische Trefferchance','Angriffskraft'])];
+petDolly.statsByEnum={...(petDolly.statsByEnum||{}),STAMINA:30,ARMOR:256,CRITICALSTRIKE:5.0689,ATTACKPOWER:63,HEALTH:500};
+petDolly.statsFreshEnums=['STAMINA','ARMOR','CRITICALSTRIKE','ATTACKPOWER','HEALTH'];
+petDolly.statsDetails=[
+  {enum:'STAMINA',name:'Ausdauer',value:30},{enum:'ARMOR',name:'Rüstung',value:256},
+  {enum:'CRITICALSTRIKE',name:'Kritische Trefferchance',value:5.0689},{enum:'ATTACKPOWER',name:'Angriffskraft',value:63},
+  {enum:'HEALTH',name:'Gesundheit',value:500}
+];
 petDolly.talentDetailsVerified=true;
 petDolly.talentDetails=[{
   id:50,name:'Tierherrschaft',spentPoints:1,talents:[{
@@ -179,17 +214,18 @@ const petPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(petPanel.includes('Slydris')&&petPanel.includes('Fuchs')&&petPanel.includes('Stufe 6'),'Live pet identity is rendered');
 assert.ok(petPanel.includes('5 Stufen')&&petPanel.includes('hinter Dolly'),'Pet-to-hunter level gap is explained');
 assert.ok(petPanel.includes('Schaden')&&petPanel.includes('±0 %')&&petPanel.includes('+5 %'),'Fox family modifiers are shown');
-assert.ok(petPanel.includes('Fleisch'),'Fox diet is shown');
-assert.ok(petPanel.includes('Beißen')&&petPanel.includes('nächster Rang ab Stufe 8'),'Training guidance is level-aware');
-assert.ok(petPanel.includes('1 TP')&&petPanel.includes('4 TP'),'Known training-point costs are shown without inventing the current free-point balance');
-assert.ok(petPanel.includes('Tanz des Täuschers')&&petPanel.includes('Ab Begleiterstufe 20'),'Fox-exclusive ability is shown as future unlock');
-assert.ok(petPanel.includes('Nicht mit „bereits gelernt“ gleichzusetzen.'),'Trainable ranks are never presented as learned');
+
+
+
+
+
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
-assert.ok(petPanel.includes('keine Schätzwerte'),'Unavailable loyalty/training state is explicitly not fabricated');
+assert.ok(petPanel.includes('nichts eigenständig übersetzt'),'Unsourced pet ability strings are deliberately withheld');
+assert.ok(!petPanel.includes('Beißen')&&!petPanel.includes('Tanz des Täuschers'),'Manually maintained pet ability translations are not shown');
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
 assert.ok(combat.includes('Rüstung aus Dolly')&&combat.includes('>+76,8<'),'30% of 256 Armor is shown as 76.8 before server rounding');
-assert.ok(combat.includes('Krit aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'100% of current Armory crit is inherited');
+assert.ok(combat.includes('Kritische Trefferchance aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'Source-backed crit label is used for pet inheritance');
 assert.ok(combat.includes('Forever-Gesundheitsfaktor')&&combat.includes('>115 %<'),'Official 115% global pet health factor is shown');
 assert.ok(combat.includes('Belastbarkeit-Ausbildung')&&combat.includes('>Rang 1<')&&combat.includes('um 3%'),'Live Endurance Training rank is shown from Blizzard talent data');
 assert.ok(combat.includes('Maximaler Fokus')&&combat.includes('>150<'),'Verified maximum Focus is shown');
@@ -221,7 +257,7 @@ ui.render(petData,{petRules:blockedRules});
 const blockedPetPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(blockedPetPanel.includes('Regeländerung erkannt'),'A detected rule change is shown clearly');
 assert.ok(blockedPetPanel.includes('Familienprofil vorübergehend gesperrt'),'Family values fail closed when their rule changes');
-assert.ok(blockedPetPanel.includes('Ausbildungsregeln vorübergehend gesperrt'),'Training values fail closed when their rule changes');
+assert.ok(blockedPetPanel.includes('Ausbildungsdaten vorübergehend gesperrt'),'Training values fail closed when their rule changes');
 assert.ok(blockedPetPanel.includes('Slydris')&&blockedPetPanel.includes('Stufe 6'),'Blizzard live identity stays visible even when rules are blocked');
 assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-derived family numbers are not rendered');
 assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rule hides inherited calculations');
@@ -296,12 +332,15 @@ assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain d
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
 assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
-assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,data.characters.length*10);
-assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,data.characters.length*10);
-assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
+const testMainStatEnums=new Set(['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ATTACKDPS','MANAREGEN']);
+const expectedMainStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>testMainStatEnums.has(entry.enum)).length,0);
+const expectedDetailStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>!testMainStatEnums.has(entry.enum)).length,0);
+assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,expectedMainStats);
+assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,expectedDetailStats);
+assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
-const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(character.class==='Jäger'?1:0),0);
+const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(Number(character.classId)===3?1:0),0);
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
@@ -524,7 +563,9 @@ cole.level=oldLevel+7;
 const alchemy=cole.professions.find(p=>p.name==='Alchemie');
 alchemy.current=74;alchemy.max=150;
 cole.stats.Gesundheit=987;
-cole.statsFreshKeys=['Gesundheit'];cole.statsVerified=false;
+cole.statsByEnum.HEALTH=987;
+cole.statsDetails.find(entry=>entry.enum==='HEALTH').value=987;
+cole.statsFreshKeys=['Gesundheit'];cole.statsFreshEnums=['HEALTH'];cole.statsVerified=false;
 cole.equipment[0].item='QA neuer Stab aus der Armory';
 cole.talents='Arkan: 7';
 cole.talentsVerified=true;
@@ -539,7 +580,6 @@ assert.ok(changedCards.includes('Arkan: 7'),'Live talent distribution changes');
 assert.ok(changedCards.includes('987'),'Live health changes');
 assert.ok(changedCards.includes('Mana <span class="stale-value"'),'Missing stat clearly marked stale');
 assert.ok(changedCards.includes('74/150'),'Live skill numerator and rank cap');
-assert.ok(changedCards.includes('Geselle'),'Live training rank changes');
 assert.ok(changedSummary.includes(Math.min(...changedLevels)+'–'+Math.max(...changedLevels)),'Group min/max are recomputed');
 assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLevels.length).toFixed(1)),'Group average is recomputed');
 assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
@@ -548,6 +588,8 @@ assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not
 /* A second click with a partial Blizzard response must keep the latest known
    in-session skill, mana, equipment and talent values, not the old snapshot. */
 cole.stats.Mana=680;
+cole.statsByEnum.MANA=680;
+cole.statsDetails.find(entry=>entry.enum==='MANA').value=680;
 ui.render(changed,{live:true,success:4});
 const partial=structuredClone(data);
 const partialCole=partial.characters.find(c=>c.slug==='cole-dalton');
@@ -555,7 +597,10 @@ partialCole.level=cole.level;
 partialCole.scrapeOk=true;
 partialCole.scrapedAt='2026-11-20T16:00:00.000Z';
 partialCole.stats.Gesundheit=991;
+partialCole.statsByEnum.HEALTH=991;
+partialCole.statsDetails.find(entry=>entry.enum==='HEALTH').value=991;
 partialCole.statsFreshKeys=['Gesundheit'];
+partialCole.statsFreshEnums=['HEALTH'];
 partialCole.statsVerified=false;
 partialCole.professions.find(p=>p.name==='Alchemie').unverified=true;
 partialCole.equipmentVerified=false;
@@ -564,8 +609,8 @@ partialCole.talents='unbestätigt';
 partialCole.imageVerified=false;
 const partialMerged=ui.keepNewestProfiles(partial);
 const updatedCole=partialMerged.characters.find(c=>c.slug==='cole-dalton');
-assert.equal(updatedCole.stats.Gesundheit,991,'New confirmed health value wins');
-assert.equal(updatedCole.stats.Mana,680,'Latest in-session fallback is retained');
+assert.equal(updatedCole.statsByEnum.HEALTH,991,'New confirmed health value wins');
+assert.equal(updatedCole.statsByEnum.MANA,680,'Latest in-session fallback is retained');
 assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').current,74,'Earlier live skill is not replaced by snapshot');
 assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').unverified,true,'Fallback skill stays visibly unverified');
 assert.equal(updatedCole.equipment[0].item,'QA neuer Stab aus der Armory','Equipment fallback uses last in-session set');

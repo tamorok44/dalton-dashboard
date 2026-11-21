@@ -6,8 +6,11 @@ import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 const require=createRequire(import.meta.url);
 const snapshot=require('../data/characters.json');
 const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
-const classEnglish={'Druide':'Druid','Magier':'Mage','Jäger':'Hunter'};
-const professionEnglish={'Alchemie':'Alchemy','Kräuterkunde':'Herbalism','Bergbau':'Mining','Kürschnerei':'Skinning','Lederverarbeitung':'Leatherworking','Angeln':'Fishing','Kochkunst':'Cooking','Erste Hilfe':'First Aid'};
+const classIds={'Druide':11,'Magier':8,'Jäger':3};
+const statLabels={
+  HEALTH:'Gesundheit',MANA:'Mana',STRENGTH:'Stärke',AGILITY:'Beweglichkeit',STAMINA:'Ausdauer',
+  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe'
+};
 const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
 process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
@@ -42,24 +45,19 @@ function fakeResponse(req){
 function armoryHtml(old){
   const character={
     slug:old.slug,level:old.level+2,
-    class:{name:classEnglish[old.class]},
-    gender:old.gender,professions:{
-      primaries:old.professions.slice(0,2).map(p=>({
-        name:professionEnglish[p.name],
-        tiers:[{skillPoints:p.current+2,maxSkillPoints:p.max}]
-      })),
-      secondaries:old.professions.slice(2).map(p=>({
-        name:professionEnglish[p.name],
-        tiers:[{skillPoints:p.current+2,maxSkillPoints:p.max}]
-      }))
-    },
+    class:{id:classIds[old.class],name:old.class},
+    race:{name:old.race},
+    faction:{name:old.faction},
+    gender:old.gender,
+    // German Armory profession labels may still be English; they must not replace de_DE Game-Data names.
+    professions:{primaries:[{name:'Mining',tiers:[{skillPoints:61,maxSkillPoints:75}]}]},
     stats:{groups:[{stats:[
       ['HEALTH',old.stats.Gesundheit+50],['MANA',old.stats.Mana+50],
       ['STRENGTH',old.stats.Stärke],['AGILITY',old.stats.Beweglichkeit],
       ['STAMINA',old.stats.Ausdauer],['INTELLECT',old.stats.Intelligenz],
       ['ARMOR',old.stats.Rüstung+5],['ATTACKPOWER',old.stats.Angriffskraft],
       ['ITEMLEVEL',old.stats.Gegenstandsstufe]
-    ].map(([key,value])=>({enum:key,value:{value}}))}]},
+    ].map(([key,value])=>({enum:key,name:statLabels[key],value:{value}}))}]},
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
   };
@@ -154,8 +152,11 @@ try{
   for(const c of result.payload.data.characters){
     const old=baseline.get(c.slug);
     assert.equal(c.level,old.level+2,'Latest level is returned');
-    assert.equal(c.professions[0].current,old.professions[0].current+2,'Latest skill is returned');
-    assert.equal(c.stats.Gesundheit,old.stats.Gesundheit+50,'Latest health is returned');
+    assert.equal(c.professions[0].current,old.professions[0].current,'Without de_DE Game Data the last verified profession name/value is retained');
+    assert.equal(c.professions[0].unverified,true,'Armory profession labels are never self-translated into visible data');
+    assert.equal(c.stats.Gesundheit,old.stats.Gesundheit+50,'Latest source-backed German health value is returned');
+    assert.equal(c.class,old.class,'German Armory class string is preserved verbatim');
+    assert.equal(c.classId,classIds[old.class]);
     assert.equal(c.scrapeOk,true);
   }
   assert.equal(result.headers['Cache-Control'],'private, no-store');
@@ -196,7 +197,7 @@ try{
   const throttled=fakeResponse();
   await handler({method:'GET'},throttled);
   assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
-  console.log('Manual API: parallel fetch, latest level/skills/stats, partial/total failure, cache controls: OK');
+  console.log('Manual API: parallel German Armory fetch, source-backed stats, profession fail-closed behavior and outages: OK');
 }finally{
   globalThis.fetch=originalFetch;
 }
