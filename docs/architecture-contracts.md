@@ -39,7 +39,22 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Neue Reiter verwenden die semantischen Typografie-Tokens (`--type-*`, `--weight-*`, `--body`, `--display`).
 - Horizontaler Seiten-Scroll ist verboten. Zusätzliche innere horizontale Scrollbereiche benötigen eine explizite Freigabe im Layout-Contract.
 
-## 5. Merge-Gates
+## 5. Interaktionskontrollen
+
+- Binäre Ansichts- und Filterzustände verwenden immer die gemeinsame Segment-Schalter-Komponente `segmentedControl()`.
+- Checkboxen sind ausschließlich für echte Mehrfachauswahlen vorgesehen, bei denen mehrere Optionen gleichzeitig aktiv sein können.
+- Neue Reiter dürfen für dieselbe Filterart kein eigenes Bedienmuster erfinden.
+- Standardzustände müssen fachlich begründet und im Code explizit gesetzt sein. Für die Werkstatt gilt: Lupe = `Alle`, geführte Auswahl = `Herstellbar`.
+- Schalterzustände verschiedener Werkstatt-Einstiege bleiben unabhängig voneinander.
+
+## 6. Werkstatt-Masterkatalog
+
+- ForeverDB-Rezepte aller 12 Berufe bilden einen charakterunabhängigen Masterkatalog.
+- Charakterdaten bestimmen nur den Filter `Herstellbar` und die Crafter-Zuordnung; sie begrenzen niemals den Masterkatalog.
+- Der Master wird persistent gespeichert. Bei Buildwechseln wird er rate-limit-sicher in Teilmengen erneuert; bis zum vollständigen neuen Stand bleibt der letzte vollständige Master aktiv.
+- Die Lupe durchsucht standardmäßig alle Gegenstände. Die geführte Auswahl zeigt standardmäßig nur aktuell durch die Daltons herstellbare Gegenstände. Beide Ansichten können jeweils auf den anderen Modus umgeschaltet werden.
+
+## 7. Merge-Gates
 
 Jeder PR muss `npm test` bestehen. Dabei sind insbesondere verbindlich:
 
