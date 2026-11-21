@@ -975,7 +975,11 @@ function workshopSourceHtml(source){
 function workshopLearningHtml(result){
   const recipe=result.recipe;
   if(!recipe)return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4><p>'+esc(result.learningSourcesReason||'Für diesen Gegenstand ist kein Herstellungsrezept bekannt.')+'</p></section>';
-  const requirement=Number.isFinite(Number(recipe.requiredSkill))?' · benötigt '+esc(recipe.profession)+' '+esc(recipe.requiredSkill):' · '+esc(recipe.profession||'Beruf');
+  const candidates=Array.isArray(result.learningCandidates)?result.learningCandidates:[];
+  const verifiedProfession=candidates.find(candidate=>candidate.profession)?.profession||null;
+  const requirement=Number.isFinite(Number(recipe.requiredSkill))
+    ?' · benötigt '+(verifiedProfession?esc(verifiedProfession)+' ':'Berufsfertigkeit ')+esc(recipe.requiredSkill)
+    :verifiedProfession?' · '+esc(verifiedProfession):'';
   const sources=Array.isArray(result.learningSources)?result.learningSources:[];
   const confirmed=sources.filter(source=>source.evidence==='forever-confirmed');
   const other=sources.filter(source=>source.evidence!=='forever-confirmed');

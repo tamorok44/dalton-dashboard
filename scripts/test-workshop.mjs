@@ -112,8 +112,8 @@ assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='drop'&&sourc
 
 const index=hydrateRecipeIndex({generatedAt:data.generatedAt,complete:true,recipes:[remoteRecipe]});
 enrichWorkshopCatalogWithForeverDb(catalog,index);
-assert.deepEqual(catalog.byItemId.get(2840).categoryPath,['Materialien & Komponenten','Verhüttete Barren'],
-  'Beruf wird nicht als Browse-Einstieg verwendet; Forever-Kategorie verfeinert die Gegenstandsgruppe');
+assert.deepEqual(catalog.byItemId.get(2840).categoryPath,['Materialien & Komponenten','Materialien'],
+  'Externe Kategorien beeinflussen nur die eigene UI-Taxonomie und werden nicht manuell übersetzt');
 assert.equal(catalog.byItemId.get(2840).categorySource,'foreverdb-client');
 
 const categoryData={
@@ -141,15 +141,15 @@ const categoryRecipes=[
   },'first-aid')
 ].filter(Boolean);
 enrichWorkshopCatalogWithForeverDb(categoryCatalog,hydrateRecipeIndex({generatedAt:data.generatedAt,complete:true,recipes:categoryRecipes}));
-assert.deepEqual(categoryCatalog.byItemId.get(2302).categoryPath,['Ausrüstung & Gegenstände','Lederstiefel'],
-  'Lederstiefel werden trotz Materialwort Leder als Ausrüstung einsortiert');
+assert.deepEqual(categoryCatalog.byItemId.get(2302).categoryPath,['Ausrüstung & Gegenstände','Ausrüstung'],
+  'Ausrüstung bleibt in einer eigenen deutschen UI-Taxonomie statt externen Kategorien zu übersetzen');
 assert.deepEqual(categoryCatalog.byItemId.get(1251).categoryPath,['Verbrauchsgüter','Verbände'],
-  'First Aid wird als Berufs-Parent entfernt und die Client-Kategorie deutsch angezeigt');
+  'Verbände werden über die eigene UI-Taxonomie deutsch gruppiert');
 
 const candidates=workshopLearningCandidates({
   characters:[
-    {slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',level:10,professions:[{name:'Bergbau',current:46,max:75}]},
-    {slug:'cole-dalton',name:'Cole Dalton',player:'Christian',level:11,professions:[{name:'Alchimie',current:58,max:75}]}
+    {slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',level:10,professions:[{id:186,name:'Bergbau',current:46,max:75}]},
+    {slug:'cole-dalton',name:'Cole Dalton',player:'Christian',level:11,professions:[{id:171,name:'Alchimie',current:58,max:75}]}
   ]
 },{...remoteRecipe,requiredSkill:50});
 assert.equal(candidates.length,1);

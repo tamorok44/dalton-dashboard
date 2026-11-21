@@ -15,6 +15,7 @@ import {
   fetchForeverDbItem
 } from '../scripts/foreverdb-api.mjs';
 import {getForeverDbRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
+import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -37,18 +38,42 @@ function mergeRemoteItem(remote,local){
   return {
     id:remote.id,
     name:remote.name,
-    englishName:remote.englishName||null,
-    quality:remote.quality??null,
-    itemClass:remote.itemClass??null,
-    subclass:remote.subclass??null,
-    inventoryType:remote.inventoryType??null,
+    sourceSearchName:remote.englishName||remote.name||null,
+    sourceIconUrl:remote.icon||null,
     requiredLevel:remote.requiredLevel??null,
-    icon:remote.icon??null,
     craftable:local?.craftable===true,
     crafters:local?.crafters||[],
     categoryPath:local?.categoryPath||[],
     categorySource:local?.categorySource||null
   };
+}
+function publicDetailedItem(item){
+  if(!item)return null;
+  return {
+    id:item.id,
+    name:item.name,
+    requiredLevel:item.requiredLevel??null,
+    craftable:item.craftable===true,
+    crafters:Array.isArray(item.crafters)?item.crafters:[],
+    categoryPath:Array.isArray(item.categoryPath)?item.categoryPath:[],
+    categorySource:item.categorySource||null,
+    ...(item.iconUrl?{iconUrl:item.iconUrl}:{})
+  };
+}
+async function archiveWorkshopItemIcon(item){
+  if(!item?.id||!item?.sourceIconUrl)return item;
+  try{
+    const iconUrl=await resolveMediaAsset({
+      entityType:'item',
+      entityId:item.id,
+      role:'icon',
+      sourceUrl:item.sourceIconUrl
+    });
+    return {...item,iconUrl:iconUrl||null};
+  }catch(error){
+    console.warn('Werkstatt-Icon konnte nicht archiviert werden:',String(error.message).slice(0,120));
+    return item;
+  }
 }
 function sortSuggestions(list,query){
   const needle=normalize(query);
@@ -81,7 +106,7 @@ export default async function handler(req,res){
       if(remoteReady){
         try{
           const remote=await cachedForeverDbItemSearch(q,{limit:100});
-          suggestions=remote.items.map(item=>mergeRemoteItem(item,catalog.byItemId.get(item.id)));
+          suggestions=remote.items.map(item=>publicItem(mergeRemoteItem(item,catalog.byItemId.get(item.id))));
           source='foreverdb';
         }catch(error){
           remoteError=String(error.message).slice(0,180);
@@ -114,7 +139,7 @@ export default async function handler(req,res){
           ]);
           recipeIndex=index;
           enrichWorkshopCatalogWithForeverDb(catalog,index);
-          item=mergeRemoteItem(remote.item,catalog.byItemId.get(itemId)||local);
+          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote.item,catalog.byItemId.get(itemId)||local));
           source='foreverdb';
           remoteRecipe=preferredForeverRecipeForItem(index,itemId);
         }catch(error){
@@ -122,7 +147,7 @@ export default async function handler(req,res){
         }
         if(!local?.craftable&&!remoteRecipe&&item?.name){
           try{
-            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.englishName||item.name);
+            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.sourceSearchName||item.name);
             if(targetedRecipeSearch.recipes?.length){
               const targetedIndex={byItem:new Map([[itemId,targetedRecipeSearch.recipes]])};
               remoteRecipe=preferredForeverRecipeForItem(targetedIndex,itemId);
@@ -138,7 +163,7 @@ export default async function handler(req,res){
       const learningSources=remoteRecipe?.learning?.sources||[];
       const currentlyCraftable=Boolean(local?.craftable);
       return res.status(200).json({
-        item,
+        item:publicDetailedItem(item),
         quantity,
         plan,
         source,

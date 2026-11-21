@@ -1,4 +1,4 @@
-import {professionSlugFromName} from './workshop-foreverdb.mjs';
+import {professionSlugFromRecord} from './workshop-foreverdb.mjs';
 function asArray(value){return Array.isArray(value)?value:[]}
 function finiteNumber(value){const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
@@ -20,17 +20,14 @@ function fallbackCategoryPath({professionName,itemName,recipeName}){
   const value=normalizeSearch(itemName+' '+recipeName);
   if(/lager|camp|brunnen|leitstein|stuhl|zelt|feuer/.test(value))return ['Lager & Spezial','Lagerobjekte'];
   if(/rüstungsset|rustungsset|armor kit|waffenöl|waffenol|weapon oil|wetzstein|schleifstein|weightstone|zielfernrohr|scope/.test(value))return ['Verbesserungen'];
-  if(/stiefel|armschiene|weste|brust|umhang|handschuh|gürtel|gurtel|hose|bein|schulter|helm|schild|schwert|axt|kolben|dolch|stab|bogen|gewehr|waffe/.test(value))return ['Ausrüstung & Gegenstände','Herstellbare Ausrüstung'];
-  if(/barren|\bbar\b/.test(value))return ['Materialien & Komponenten','Metalle','Barren'];
+  if(/stiefel|armschiene|weste|brust|umhang|handschuh|gürtel|gurtel|hose|bein|schulter|helm|schild|schwert|axt|kolben|dolch|stab|bogen|gewehr|waffe/.test(value))return ['Ausrüstung & Gegenstände','Ausrüstung'];
+  if(/barren|\bbar\b|farbstoff|säure|saeure|öl|oel|pulver|faden|stoff|leder|erz|stein|rohr|gehäuse|gehaeuse|teil/.test(value))return ['Materialien & Komponenten','Materialien'];
   if(/verband/.test(value))return ['Verbrauchsgüter','Verbände'];
-  if(/trank|potion/.test(value))return ['Verbrauchsgüter','Tränke'];
-  if(/elixier|elixir/.test(value))return ['Verbrauchsgüter','Elixiere'];
+  if(/trank|potion|elixier|elixir/.test(value))return ['Verbrauchsgüter','Tränke'];
   if(/gegenmittel|gegengift|anti-venom|heilmittel|schlammpackung|tourniquet|abschnürbinde/.test(value))return ['Verbrauchsgüter','Heilmittel'];
   if(professionName==='Kochkunst')return ['Verbrauchsgüter','Nahrung'];
-  if(/farbstoff|säure|saeure|öl|oel|pulver|faden|stoff|leder|erz|stein|rohr|gehäuse|gehaeuse|teil/.test(value))return ['Materialien & Komponenten','Zwischenprodukte'];
-  if(['Ingenieurskunst'].includes(professionName))return ['Geräte & Komponenten','Ingenieurskunst'];
-  if(['Lederverarbeitung','Schneiderei','Schmiedekunst'].includes(professionName))return ['Ausrüstung & Gegenstände','Herstellbare Ausrüstung'];
-  if(['Alchimie','Erste Hilfe'].includes(professionName))return ['Verbrauchsgüter','Sonstiges'];
+  if(professionName==='Ingenieurskunst')return ['Geräte & Komponenten'];
+  if(['Alchimie','Erste Hilfe'].includes(professionName))return ['Verbrauchsgüter'];
   return ['Sonstiges'];
 }
 function crafterRecord(character,profession){
@@ -135,7 +132,7 @@ export function workshopProfessionSlugs(data={}){
   const slugs=new Set();
   for(const character of asArray(data?.characters)){
     for(const profession of asArray(character?.professions)){
-      const slug=professionSlugFromName(profession?.name);
+      const slug=professionSlugFromRecord(profession);
       if(slug)slugs.add(slug);
     }
   }
@@ -239,63 +236,21 @@ export function buildProductionPlan(catalog,itemId,quantity=1){
 }
 
 
-const foreverCategoryLabels=new Map(Object.entries({
-  'armor kits':'Rüstungssets',
-  'leather bracers':'Lederarmschienen',
-  'leather boots':'Lederstiefel',
-  'leather chestguards':'Lederbrust',
-  'cloaks':'Umhänge',
-  'smelted bars':'Verhüttete Barren',
-  'reagents':'Reagenzien',
-  'bandages':'Verbände',
-  'healing potions':'Heiltränke',
-  'recovery potions':'Erholungstränke',
-  'potions':'Tränke',
-  'elixirs':'Elixiere',
-  'flasks':'Fläschchen',
-  'brews':'Gebräue',
-  'weapon oils':'Waffenöle',
-  'minor transmutations':'Geringe Transmutationen',
-  'major transmutations':'Große Transmutationen',
-  'everyday meals':'Alltägliche Mahlzeiten',
-  'agility food':'Beweglichkeitsnahrung',
-  'attack power food':'Angriffskraftnahrung',
-  'intellect food':'Intelligenznahrung',
-  'spell damage food':'Zauberschadensnahrung',
-  'stamina food':'Ausdauernahrung',
-  'strength food':'Stärkenahrung',
-  'miscellaneous cuisines':'Sonstige Gerichte',
-  'camping':'Lager'
-}));
-function categoryIdentity(value){
-  return normalizeSearch(value).replace(/[^a-z0-9]+/g,'');
-}
-function translatedForeverCategory(value){
-  const key=normalizeSearch(value);
-  return foreverCategoryLabels.get(key)||String(value).trim();
-}
 function rootForForeverCategories(categories=[],fallbackRoot='Sonstiges'){
   const value=normalizeSearch(categories.join(' '));
-  if(/camping|lager/.test(value))return 'Lager & Spezial';
-  if(/armor kits|rüstungsset|weapon oils|waffenol|sharpen|weightstone|scope|enchant/.test(value))return 'Verbesserungen';
+  if(/camping|camp/.test(value))return 'Lager & Spezial';
+  if(/armor kits|weapon oils|sharpen|weightstone|scope|enchant/.test(value))return 'Verbesserungen';
   if(/boots|bracers|chest|cloak|gloves|belt|pants|leggings|shoulder|helm|head|shield|sword|axe|mace|dagger|staff|wand|gun|bow|weapon|armor/.test(value))return 'Ausrüstung & Gegenstände';
   if(/bar|reagent|component|part|metal|stone|leather|cloth|thread|dye|acid/.test(value))return 'Materialien & Komponenten';
   if(/potion|elixir|flask|brew|food|meal|cuisine|bandage/.test(value))return 'Verbrauchsgüter';
   return fallbackRoot;
 }
-function cleanedForeverCategoryPath(recipe,professionName,fallbackPath=[]){
-  const professionSlug=recipe?.professionSlug;
-  const blocked=new Set([
-    professionName,
-    professionSlug,
-    recipe?.profession
-  ].filter(Boolean).map(categoryIdentity));
-  const remoteRaw=asArray(recipe?.categoryPath).map(String).map(value=>value.trim()).filter(Boolean)
-    .filter(value=>!blocked.has(categoryIdentity(value)));
-  const fallbackRoot=asArray(fallbackPath)[0]||'Sonstiges';
-  const root=rootForForeverCategories(remoteRaw,fallbackRoot);
-  const remote=remoteRaw.map(translatedForeverCategory);
-  return remote.length?[root,...remote]:asArray(fallbackPath).length?fallbackPath:[root];
+function cleanedForeverCategoryPath(recipe,fallbackPath=[]){
+  const fallback=asArray(fallbackPath).filter(Boolean);
+  const fallbackRoot=fallback[0]||'Sonstiges';
+  const root=rootForForeverCategories(asArray(recipe?.categoryPath),fallbackRoot);
+  const detail=fallback[1]||null;
+  return detail?[root,detail]:[root];
 }
 function preferredForeverRecipe(recipes=[],localRecipeId=null){
   return [...recipes].sort((a,b)=>{
@@ -313,7 +268,7 @@ export function enrichWorkshopCatalogWithForeverDb(catalog,index){
     const localRecipe=asArray(item.recipeKeys).map(key=>catalog.byRecipeKey.get(key)).find(Boolean);
     const remote=preferredForeverRecipe(remoteRecipes,localRecipe?.id);
     if(!remote)continue;
-    item.categoryPath=cleanedForeverCategoryPath(remote,localRecipe?.profession,item.categoryPath);
+    item.categoryPath=cleanedForeverCategoryPath(remote,item.categoryPath);
     item.categorySource='foreverdb-client';
     item.foreverDbRecipeId=remote.id??null;
     item.requiredSkill=remote.requiredSkill??null;
@@ -322,7 +277,7 @@ export function enrichWorkshopCatalogWithForeverDb(catalog,index){
       if(!recipe)continue;
       const match=preferredForeverRecipe(remoteRecipes,recipe.id);
       if(!match)continue;
-      recipe.categoryPath=cleanedForeverCategoryPath(match,recipe.profession,recipe.categoryPath);
+      recipe.categoryPath=cleanedForeverCategoryPath(match,recipe.categoryPath);
       recipe.categorySource='foreverdb-client';
       recipe.requiredSkill=match.requiredSkill??null;
       recipe.learning=match.learning||null;
@@ -343,7 +298,7 @@ export function workshopLearningCandidates(data,recipe){
   const candidates=[];
   for(const character of asArray(data?.characters)){
     for(const profession of asArray(character?.professions)){
-      const slug=professionSlugFromName(profession?.name);
+      const slug=professionSlugFromRecord(profession);
       if(!slug||slug!==recipe.professionSlug)continue;
       const skill=finiteNumber(profession?.current),cap=finiteNumber(profession?.max);
       const gap=required===null||skill===null?null:Math.max(0,Math.ceil(required-skill));
@@ -352,7 +307,7 @@ export function workshopLearningCandidates(data,recipe){
         name:character?.name||character?.slug||'Dalton',
         player:character?.player||null,
         level:finiteNumber(character?.level),
-        profession:profession?.name||recipe.profession||recipe.professionSlug,
+        profession:profession?.name||null,
         professionSlug:slug,
         skill,
         skillCap:cap,

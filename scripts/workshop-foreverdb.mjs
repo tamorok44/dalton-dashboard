@@ -1,23 +1,19 @@
 import {PROFESSION_SLUGS,fetchForeverDbProfession} from './foreverdb-api.mjs';
 
-const PROFESSION_NAMES={
-  alchemy:'Alchimie',
-  blacksmithing:'Schmiedekunst',
-  enchanting:'Verzauberkunst',
-  engineering:'Ingenieurskunst',
-  leatherworking:'Lederverarbeitung',
-  tailoring:'Schneiderei',
-  herbalism:'Kräuterkunde',
-  mining:'Bergbau',
-  skinning:'Kürschnerei',
-  cooking:'Kochkunst',
-  'first-aid':'Erste Hilfe',
-  fishing:'Angeln'
-};
-const PROFESSION_SLUG_BY_NAME=new Map(Object.entries(PROFESSION_NAMES).flatMap(([slug,name])=>[
-  [name.toLocaleLowerCase('de-DE'),slug],
-  [slug.toLocaleLowerCase('de-DE'),slug]
-]));
+const PROFESSION_SLUG_BY_ID=new Map([
+  [171,'alchemy'],
+  [164,'blacksmithing'],
+  [333,'enchanting'],
+  [202,'engineering'],
+  [165,'leatherworking'],
+  [197,'tailoring'],
+  [182,'herbalism'],
+  [186,'mining'],
+  [393,'skinning'],
+  [185,'cooking'],
+  [129,'first-aid'],
+  [356,'fishing']
+]);
 
 function asArray(value){return Array.isArray(value)?value:[]}
 function object(value){return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}
@@ -259,7 +255,6 @@ export function normalizeForeverDbRecipe(raw={},professionSlug){
     id:firstInteger(raw.id,raw.recipeId,raw.spellId),
     name:firstText(raw.name,raw.recipeName,makes.item.name)||makes.item.name||('Rezept '+makes.item.id),
     professionSlug,
-    profession:PROFESSION_NAMES[professionSlug]||professionSlug,
     craftedItem:makes.item,
     craftedQuantity:{min:makes.min,max:makes.max,variable:makes.variable},
     reagents:normalizeReagents(raw),
@@ -358,7 +353,6 @@ export function hydrateRecipeIndex(value={}){
   }
   return {...value,recipes,byItem};
 }
-export function professionSlugFromName(name){
-  return PROFESSION_SLUG_BY_NAME.get(String(name??'').toLocaleLowerCase('de-DE'))||null;
+export function professionSlugFromRecord(profession={}){
+  return PROFESSION_SLUG_BY_ID.get(Number(profession?.id))||null;
 }
-export {PROFESSION_NAMES};
