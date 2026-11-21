@@ -146,7 +146,7 @@ const sources=Object.freeze({
       /trickster(?:'|’)?s\s+dance[\s\S]{0,180}?rank\s+1[\s\S]{0,80}?20[\s\S]{0,80}?10/i,
       /dash[\s\S]{0,220}?rank\s+1[\s\S]{0,80}?30[\s\S]{0,100}?15\s+for\s+boar,\s*cat,\s*fox/i
     ]),
-    buildPattern:/build\s+(1\.60\.1\.\d+)/i
+    buildPattern:/1\.60\.1\s*\(build\s+(\d+)\)/i
   }),
   mobalyticsScaling:Object.freeze({
     label:'Mobalytics · Forever Hunter Scaling',
