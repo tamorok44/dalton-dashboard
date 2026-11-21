@@ -3,6 +3,38 @@ import {PET_RULEBOOK_VERSION,publicPetRuleState,verifyPetRulebook} from './pet-r
 
 const KEY='dalton-dashboard:pet-rules:v1';
 
+function appendHistory(previous,next){
+  const history=Array.isArray(previous?.history)?previous.history.slice(-80):[];
+  const at=next.checkedAt||new Date().toISOString();
+  if(!previous){
+    history.push({at,type:'rulebook_initialized',rulebookVersion:next.rulebookVersion,message:'Pet-Regelwerk initialisiert'});
+  }else if(previous.rulebookVersion!==next.rulebookVersion){
+    history.push({
+      at,type:'rulebook_version',
+      fromRulebookVersion:previous.rulebookVersion||null,toRulebookVersion:next.rulebookVersion,
+      message:'Neue Pet-Regelwerk-Version aktiviert'
+    });
+  }
+  const ids=new Set([...Object.keys(previous?.rules||{}),...Object.keys(next?.rules||{})]);
+  for(const id of ids){
+    const before=previous?.rules?.[id]||null;
+    const after=next?.rules?.[id]||null;
+    if(!after)continue;
+    const changed=!before||
+      before.status!==after.status||
+      before.version!==after.version||
+      before.evidence!==after.evidence;
+    if(!changed)continue;
+    history.push({
+      at,type:'rule_state',ruleId:id,label:after.label||before?.label||id,
+      fromStatus:before?.status||null,toStatus:after.status||null,
+      fromVersion:before?.version??null,toVersion:after.version??null,
+      fromEvidence:before?.evidence||null,toEvidence:after.evidence||null
+    });
+  }
+  return history.slice(-100);
+}
+
 export async function loadPetRuleState(){
   if(!configured())return null;
   const raw=await redis(['GET',KEY]);
@@ -24,6 +56,7 @@ export async function ensurePetRuleState({fetchImpl=fetch,force=false,now=new Da
   const previous=await loadPetRuleState();
   if(!force&&petRuleStateFresh(previous,{now,maxAgeMs}))return previous;
   const next=await verifyPetRulebook({fetchImpl,previousState:previous,now});
+  next.history=appendHistory(previous,next);
   await savePetRuleState(next);
   return next;
 }
