@@ -243,6 +243,10 @@ assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Beglei
 assert.ok(petPanel.includes('JETZT ERLERNBAR')&&petPanel.includes('Beißen Rang 1')&&petPanel.includes('Jetzt erlernbar'),'Current learnable rank is immediately visible');
 assert.ok(petPanel.includes('ALS NÄCHSTES')&&petPanel.includes('Beißen Rang 2')&&petPanel.includes('Ab Stufe 8 · noch 2 Stufen'),'The very next rank is highlighted separately');
 assert.ok(petPanel.includes('Spätere Fähigkeiten und Ränge')&&petPanel.includes('Tanz des Täuschers Rang 1')&&petPanel.includes('Spurt Rang 1'),'Later progression remains accessible without competing with the next unlock');
+assert.ok(petPanel.includes('class="details pet-training-later"'),'Later pet progression reuses the dashboard details/summary component');
+assert.ok(petPanel.includes('class="stat-tile stat-tile-detail pet-family-stat"'),'Pet family values reuse the character stat-tile component');
+assert.ok(petPanel.includes('class="stat-tile pet-training-card is-now"')&&petPanel.includes('class="stat-tile pet-training-card is-next"'),'Current and next pet abilities use dashboard stat-card styling');
+assert.ok(!petPanel.includes('pet-training-label'),'Pet status labels no longer float outside their cards');
 assert.ok(!petPanel.includes('deutsche Clientdaten')&&!petPanel.includes('Referenzmodell')&&!petPanel.includes('Clientdaten'),'Technical source/evidence jargon is hidden from normal player view');
 assert.ok(!petPanel.includes('noch nicht aus der Pet-Datenquelle angebunden'),'No unfinished database placeholder is exposed to users');
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
