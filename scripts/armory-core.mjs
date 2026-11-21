@@ -5,6 +5,8 @@ const statNames = { HEALTH:'Gesundheit', MANA:'Mana', STRENGTH:'Stärke', AGILIT
 const statOrder = ['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ARMOR','ATTACKPOWER','SPELLPOWER','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK','ATTACKDPS','ATTACKSPEED','MANAREGEN','ITEMLEVEL','DEFENSE'];
 const renderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/;
 const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/;
+const petIconPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/icons\/\d+\/\d+\.jpg$/;
+const petRenderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/npcs\/zoom\/creature-display-\d+\.jpg$/;
 
 function characterGender(character) {
   const fields=[
@@ -31,6 +33,52 @@ async function fetchCharacter(slug,locale="en-gb") {
   const character=JSON.parse(match[1]).character;
   if(!character || character.slug?.toLowerCase()!==slug.toLowerCase())throw new Error('Charakterkennung passt nicht zum angefragten Profil');
   return character;
+}
+
+function normalizeHunterPet(pet){
+  if(!pet||typeof pet!=='object')return null;
+  const name=typeof pet.name==='string'?pet.name.trim():'';
+  const level=Number(pet.level),slot=Number(pet.slot);
+  const family=pet.family&&typeof pet.family==='object'?{
+    id:Number.isInteger(Number(pet.family.id))?Number(pet.family.id):undefined,
+    name:typeof pet.family.name==='string'?pet.family.name:undefined,
+    enum:typeof pet.family.enum==='string'?pet.family.enum:undefined,
+    slug:typeof pet.family.slug==='string'?pet.family.slug:undefined
+  }:undefined;
+  const iconUrl=pet.icon?.url;
+  const imageUrl=pet.render?.url;
+  if(!name)return null;
+  return {
+    name,
+    ...(Number.isInteger(level)?{level}:{}),
+    ...(family?{family}:{}),
+    active:pet.active===true,
+    ...(pet.summoned===true||pet.summoned===false?{summoned:pet.summoned}:{}),
+    ...(Number.isInteger(slot)?{slot}:{}),
+    ...(petIconPattern.test(iconUrl||'')?{iconUrl}:{}),
+    ...(petRenderPattern.test(imageUrl||'')?{imageUrl}:{}),
+    source:'Blizzard Stable'
+  };
+}
+async function fetchHunterStable(slug,locale="de-de"){
+  const url='https://worldofwarcraft.blizzard.com/'+locale+'/forever/eu/armory/character/'+encodeURIComponent(slug)+'/collections/stable.json';
+  const response=await fetch(url,{
+    headers:{
+      'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      'accept':'application/json,text/plain,*/*',
+      'accept-language':locale==='de-de'?'de-DE,de;q=0.9':'en-GB,en;q=0.9'
+    },
+    signal:AbortSignal.timeout(15000)
+  });
+  if(!response.ok)throw new Error('Blizzard-Stall HTTP '+response.status);
+  const payload=JSON.parse(await response.text());
+  if(!payload?.pets||!Array.isArray(payload.pets.active)||!Array.isArray(payload.pets.stable)){
+    throw new Error('Blizzard-Stall lieferte kein gültiges Pet-Objekt');
+  }
+  return {
+    active:payload.pets.active.map(normalizeHunterPet).filter(Boolean),
+    stable:payload.pets.stable.map(normalizeHunterPet).filter(Boolean)
+  };
 }
 function professions(c) {
   const list=[...(c.professions?.primaries||[]),...(c.professions?.secondaries||[])];
@@ -187,6 +235,28 @@ for(const old of characters){
       :Promise.resolve(null);
     const c=await fetchCharacter(old.slug);
     const apiProfile=await apiProfilePromise;
+    const sourceClassName=apiProfile?.character_class?.name||c.class?.name;
+    let hunterPets=old.hunterPets||{active:[],stable:[]};
+    let hunterPetsVerified=old.hunterPetsVerified===true;
+    let hunterPetsError=old.hunterPetsError;
+    let hunterPetsCheckedAt=old.hunterPetsCheckedAt;
+    if(sourceClassName==='Hunter'){
+      hunterPetsCheckedAt=new Date().toISOString();
+      try{
+        hunterPets=await fetchHunterStable(old.slug,'de-de');
+        hunterPetsVerified=true;
+        hunterPetsError=undefined;
+      }catch(error){
+        hunterPetsVerified=false;
+        hunterPetsError=String(error.message).slice(0,160);
+        console.warn(old.name+': Blizzard-Stall: '+hunterPetsError);
+      }
+    }else{
+      hunterPets={active:[],stable:[]};
+      hunterPetsVerified=false;
+      hunterPetsError=undefined;
+      hunterPetsCheckedAt=undefined;
+    }
     const apiLevel=Number(apiProfile?.level);
     const level=Number.isInteger(apiLevel)?apiLevel:Number(c.level);
     if(!Number.isInteger(level)||level<10||level>60)throw new Error('Unplausibles Level');
@@ -256,7 +326,7 @@ for(const old of characters){
     const next={
       ...old,
       level,
-      class:classNames[apiProfile?.character_class?.name||c.class?.name]||old.class,
+      class:classNames[sourceClassName]||old.class,
       race:String(apiProfile?.race?.name||c.race?.name||'').includes('Skyborne')?'Himmelsgeborene':old.race,
       gender:characterGender(apiProfile)||characterGender(c)||old.gender||null,
       faction:apiProfile?.faction?.name==='Alliance'?'Allianz':apiProfile?.faction?.name||old.faction||'Allianz',
@@ -269,6 +339,10 @@ for(const old of characters){
       professions:currentProfessions,
       professionsVerified,
       professionDetailsVerified:false,
+      hunterPets,
+      hunterPetsVerified,
+      hunterPetsCheckedAt,
+      hunterPetsError,
       stats:{...(old.stats||{}),...st},
       // Provenance of each stat; old fallback values are never called fresh.
       statsFreshKeys:Object.keys(st),
@@ -304,7 +378,8 @@ for(const old of characters){
     };
     updated.push(next);
     success++;
-    console.log(old.name+': Level '+level+', Berufe '+ps.length+', Stats '+Object.keys(st).length+', Ausrüstung '+eq.length+', Talente '+String(ta)+', Bild '+Boolean(next.imageUrl));
+    const petCount=(next.hunterPets?.active?.length||0)+(next.hunterPets?.stable?.length||0);
+    console.log(old.name+': Level '+level+', Berufe '+ps.length+', Stats '+Object.keys(st).length+', Ausrüstung '+eq.length+', Talente '+String(ta)+', Begleiter '+petCount+', Bild '+Boolean(next.imageUrl));
   }catch(e){
     updated.push({...old,scrapeOk:false,scrapeError:String(e.message).slice(0,180)});
     console.error(old.name+': '+e.message+' – letzter Stand bleibt erhalten');
