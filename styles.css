@@ -18,6 +18,14 @@
   --wow-quality-legendary:#ff8000;
   --wow-quality-artifact:#e6cc80;
   --wow-quality-heirloom:#00ccff;
+  --wow-reputation-red:#cc4d38;
+  --wow-reputation-orange:#bf4500;
+  --wow-reputation-yellow:#e6b300;
+  --wow-reputation-green:#00991a;
+  /* Component defaults; concrete reputation rows override these from reputation-data.js. */
+  --rep-color:var(--wow-reputation-yellow);
+  --rep-light:#f3d45d;
+  --rep-dark:#8b6900;
   --display: "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
   --body:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   /* Dalton typography CI: use semantic roles, never arbitrary sizes in new components. */
