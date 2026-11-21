@@ -5,6 +5,7 @@ import {
   searchWorkshopItems,
   workshopBrowseTree,
   buildProductionPlan,
+  workshopProfessionSlugs,
   enrichWorkshopCatalogWithForeverDb,
   preferredForeverRecipeForItem,
   workshopLearningCandidates
@@ -13,7 +14,7 @@ import {
   foreverDbConfigured,
   fetchForeverDbItem
 } from '../scripts/foreverdb-api.mjs';
-import {getForeverDbRecipeIndex,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
+import {getForeverDbRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -71,6 +72,7 @@ export default async function handler(req,res){
     const itemId=Number(url.searchParams.get('item'));
     const quantity=Math.max(1,Math.min(9999,Math.ceil(Number(url.searchParams.get('quantity'))||1)));
     const remoteReady=foreverDbConfigured();
+    const daltonProfessionSlugs=workshopProfessionSlugs(stored.data);
 
     if(q){
       let suggestions=[];
@@ -102,25 +104,36 @@ export default async function handler(req,res){
       const local=catalog.byItemId.get(itemId)||null;
       let item=publicItem(local);
       let source='blizzard-known';
-      let remoteError=null;
-      let recipeIndex=null;
+      const remoteErrors=[];
+      let recipeIndex=null,remoteRecipe=null,targetedRecipeSearch=null;
       if(remoteReady){
         try{
           const [remote,index]=await Promise.all([
             fetchForeverDbItem(itemId),
-            getForeverDbRecipeIndex()
+            getForeverDbRecipeIndex({professionSlugs:daltonProfessionSlugs})
           ]);
           recipeIndex=index;
           enrichWorkshopCatalogWithForeverDb(catalog,index);
           item=mergeRemoteItem(remote.item,catalog.byItemId.get(itemId)||local);
           source='foreverdb';
+          remoteRecipe=preferredForeverRecipeForItem(index,itemId);
         }catch(error){
-          remoteError=String(error.message).slice(0,180);
+          remoteErrors.push(String(error.message).slice(0,180));
+        }
+        if(!local?.craftable&&!remoteRecipe&&item?.name){
+          try{
+            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.name);
+            if(targetedRecipeSearch.recipes?.length){
+              const targetedIndex={byItem:new Map([[itemId,targetedRecipeSearch.recipes]])};
+              remoteRecipe=preferredForeverRecipeForItem(targetedIndex,itemId);
+            }
+          }catch(error){
+            remoteErrors.push(String(error.message).slice(0,180));
+          }
         }
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
       const plan=buildProductionPlan(catalog,itemId,quantity);
-      const remoteRecipe=recipeIndex?preferredForeverRecipeForItem(recipeIndex,itemId):null;
       const learningCandidates=remoteRecipe?workshopLearningCandidates(stored.data,remoteRecipe):[];
       const learningSources=remoteRecipe?.learning?.sources||[];
       const currentlyCraftable=Boolean(local?.craftable);
@@ -131,8 +144,8 @@ export default async function handler(req,res){
         source,
         fullCatalog:source==='foreverdb',
         foreverDbConfigured:remoteReady,
-        remoteError,
-        craftableInGame:Boolean(remoteRecipe),
+        remoteError:remoteErrors.length?remoteErrors.join(' · '):null,
+        craftableInGame:currentlyCraftable||Boolean(remoteRecipe),
         recipe:remoteRecipe,
         learningCandidates:currentlyCraftable?[]:learningCandidates,
         learningSources:currentlyCraftable?[]:learningSources,
@@ -142,7 +155,7 @@ export default async function handler(req,res){
           :!remoteReady
             ?'ForeverDB API-Key ist noch nicht konfiguriert.'
             :!remoteRecipe
-              ?'Für diesen Gegenstand ist im ForeverDB-Rezeptindex kein Herstellungsrezept bekannt.'
+              ?'ForeverDB kennt für diesen Gegenstand derzeit kein Herstellungsrezept.'
               :remoteRecipe.learning?.automatic===true
                 ?'Das Rezept wird automatisch gelernt.'
                 :learningSources.length
@@ -153,7 +166,11 @@ export default async function handler(req,res){
           build:recipeIndex?.build||null,
           generatedAt:recipeIndex?.generatedAt||null,
           cached:recipeIndex?.cached===true,
-          complete:recipeIndex?.complete===true
+          complete:recipeIndex?.complete===true,
+          professionSlugs:recipeIndex?.professionSlugs||[],
+          requestCount:recipeIndex?.requestCount||0,
+          targetedSearchRequests:targetedRecipeSearch?.requestCount||0,
+          targetedSearchCached:targetedRecipeSearch?.cached===true
         }
       });
     }
@@ -161,7 +178,7 @@ export default async function handler(req,res){
     let recipeIndex=null,remoteError=null;
     if(remoteReady){
       try{
-        recipeIndex=await getForeverDbRecipeIndex();
+        recipeIndex=await getForeverDbRecipeIndex({professionSlugs:daltonProfessionSlugs});
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
       }catch(error){
         remoteError=String(error.message).slice(0,180);
@@ -175,7 +192,7 @@ export default async function handler(req,res){
       browse:workshopBrowseTree(catalog),
       craftableItems:publicCatalog.items.filter(item=>item.craftable).map(publicItem),
       foreverDbConfigured:remoteReady,
-      fullCatalog:Boolean(recipeIndex?.complete),
+      fullCatalog:remoteReady,
       remoteError,
       recipeCatalog:{
         connected:Boolean(recipeIndex),
@@ -183,7 +200,9 @@ export default async function handler(req,res){
         generatedAt:recipeIndex?.generatedAt||null,
         cached:recipeIndex?.cached===true,
         complete:recipeIndex?.complete===true,
-        recipeCount:recipeIndex?.recipes?.length||0
+        recipeCount:recipeIndex?.recipes?.length||0,
+        professionSlugs:recipeIndex?.professionSlugs||[],
+        requestCount:recipeIndex?.requestCount||0
       },
       sources:{
         knownRecipes:'Blizzard Forever API',
