@@ -324,7 +324,7 @@ function hunterPetCombatPanel(c,active){
     inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.armor.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong><span>'+esc(petNumber(inherited.armor.input))+(inherited.armor.inputName?' '+esc(inherited.armor.inputName):'')+' × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
   }
   if(scalingAllowed&&inherited.crit){
-    inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.crit.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong>''<span>100 % des aktuellen Blizzard-Armory-Werts'+(inherited.crit.inputName?' · '+esc(inherited.crit.inputName):'')+'</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.crit.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong><span>100 % des aktuellen Blizzard-Armory-Werts'+(inherited.crit.inputName?' · '+esc(inherited.crit.inputName):'')+'</span></div>');
   }
   const inheritedBlock=scalingAllowed
     ?'<div class="pet-combat-grid">'+inheritedRows.join('')+
@@ -333,14 +333,14 @@ function hunterPetCombatPanel(c,active){
 
   const modifiers=[];
   if(healthRuleAllowed){
-    modifiers.push('<div class="pet-combat-stat"><small>Forever-Gesundheitsfaktor</small><strong>'+esc(profile.globalHealth.percent)+' %</strong>''<span>Aktueller Pet-Gesundheitsstand seit 10.11.2026</span></div>');
+    modifiers.push('<div class="pet-combat-stat"><small>Forever-Gesundheitsfaktor</small><strong>'+esc(profile.globalHealth.percent)+' %</strong><span>Aktueller Pet-Gesundheitsstand seit 10.11.2026</span></div>');
   }
   if(profile.enduranceTraining){
     modifiers.push('<div class="pet-combat-stat"><small>'+esc(profile.enduranceTraining.name)+'</small><strong>Rang '+esc(profile.enduranceTraining.rank??'–')+'</strong><span>'+esc(profile.enduranceTraining.description||'Blizzard-Live-Talent')+'</span></div>');
   }
   if(focusAllowed){
     modifiers.push('<div class="pet-combat-stat"><small>Maximaler Fokus</small><strong>'+esc(profile.focus.maximum)+'</strong><span>Forever-Petressource</span></div>');
-    modifiers.push('<div class="pet-combat-stat"><small>Fokusregeneration</small><strong>+'+esc(profile.focus.regenPerSecond)+'/Sek.</strong>''<span>kontinuierlich · voller Pool in 15 Sek.</span></div>');
+    modifiers.push('<div class="pet-combat-stat"><small>Fokusregeneration</small><strong>+'+esc(profile.focus.regenPerSecond)+'/Sek.</strong><span>kontinuierlich · voller Pool in 15 Sek.</span></div>');
   }
   const modifiersBlock=modifiers.length?'<div class="pet-combat-grid">'+modifiers.join('')+'</div>':'';
 
