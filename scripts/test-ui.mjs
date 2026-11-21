@@ -79,15 +79,22 @@ const orderedNames=list=>ui.sortProfessionsForDisplay(list.map(name=>({name}))).
 assert.deepEqual(orderedNames(['Alchimie','Kräuterkunde','Kochkunst','Angeln','Erste Hilfe']),['Kräuterkunde','Alchimie','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Lederverarbeitung','Kürschnerei','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe']);
 assert.deepEqual(orderedNames(['Kürschnerei','Bergbau','Kochkunst','Angeln','Erste Hilfe']),['Kürschnerei','Bergbau','Angeln','Kochkunst','Erste Hilfe']);
-const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshKeys:['Gesundheit','Mana','Stärke','Intelligenz','Beweglichkeit','Ausdauer','Kritische Trefferchance','Willenskraft','Waffen-DPS','Manaregeneration','Rüstung','Angriffskraft','Zaubermacht','Ausweichen','Parieren','Blocken','Angriffsgeschwindigkeit'],stats:{Gesundheit:202,Mana:535,Stärke:18,Intelligenz:40,Beweglichkeit:26,Ausdauer:23,'Kritische Trefferchance':5.0068,Willenskraft:31,'Waffen-DPS':5.081841,Manaregeneration:38,Rüstung:99,Angriffskraft:8,Zaubermacht:0,Ausweichen:5.2468,Parieren:4.88,Blocken:0,Angriffsgeschwindigkeit:1.961}});
+const statDetails=[
+  ['HEALTH','Gesundheit',202],['MANA','Mana',535],['STRENGTH','Stärke',18],['INTELLECT','Intelligenz',40],
+  ['AGILITY','Beweglichkeit',26],['STAMINA','Ausdauer',23],['CRITICALSTRIKE','Kritische Trefferchance',5.0068],
+  ['SPIRIT','Willenskraft',31],['ATTACKDPS','Waffen-DPS',5.081841],['MANAREGEN','Manaregeneration',38],
+  ['ARMOR','Rüstung',99],['ATTACKPOWER','Angriffskraft',8],['SPELLPOWER','Zaubermacht',0],
+  ['DODGE','Ausweichen',5.2468],['PARRY','Parieren',4.88],['BLOCK','Blocken',0],['ATTACKSPEED','Angriffsgeschwindigkeit',1.961]
+].map(([enumKey,name,value])=>({enum:enumKey,name,value}));
+const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshEnums:statDetails.map(x=>x.enum),statsDetails:statDetails});
 assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,10);
-assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,10);
+assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,7);
 assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %')&&statQa.includes('4,9 %'));
 assert.match(statQa,/Waffen-DPS[\s\S]*?>5,08</);
 assert.match(statQa,/Manaregeneration[\s\S]*?>38</);
 assert.match(statQa,/Angriffsgeschwindigkeit[\s\S]*?>1,96</);
 assert.match(statQa,/Zaubermacht[\s\S]*?>0</);
-assert.match(statQa,/Nahkampf-Krit[\s\S]*?>–</);
+assert.ok(!statQa.includes('Nahkampf-Krit'),'Unsourced stat labels are not invented');
 
 const chuckyXp=ui.experienceProgress({level:10,experience:5143});
 assert.ok(chuckyXp.includes('5.143 / 7.600 XP'),'Chucky XP is shown as progress within level 10');
@@ -139,6 +146,7 @@ assert.ok(nodes.get('#cards').innerHTML.includes('Allianz · EU-PvP'),
 
 const petData=structuredClone(data);
 const petDolly=petData.characters.find(c=>c.slug==='dolly-dalton');
+petDolly.classId=3;
 petDolly.hunterPetsVerified=true;
 petDolly.hunterPetsCheckedAt='2026-11-21T09:32:58.000Z';
 petDolly.hunterPets={
@@ -150,8 +158,13 @@ petDolly.hunterPets={
   }],
   stable:[{name:'Lobo',level:5,active:false,slot:1,family:{id:1,name:'Wolf',enum:'WOLF',slug:'wolf'},iconUrl:'https://render.worldofwarcraft.com/forever-eu/icons/56/132203.jpg'}]
 };
-petDolly.stats={...(petDolly.stats||{}),Ausdauer:30,Rüstung:256,'Kritische Trefferchance':5.0689,Angriffskraft:63};
-petDolly.statsFreshKeys=[...new Set([...(petDolly.statsFreshKeys||[]),'Ausdauer','Rüstung','Kritische Trefferchance','Angriffskraft'])];
+petDolly.statsByEnum={...(petDolly.statsByEnum||{}),STAMINA:30,ARMOR:256,CRITICALSTRIKE:5.0689,ATTACKPOWER:63,HEALTH:500};
+petDolly.statsFreshEnums=['STAMINA','ARMOR','CRITICALSTRIKE','ATTACKPOWER','HEALTH'];
+petDolly.statsDetails=[
+  {enum:'STAMINA',name:'Ausdauer',value:30},{enum:'ARMOR',name:'Rüstung',value:256},
+  {enum:'CRITICALSTRIKE',name:'Kritische Trefferchance',value:5.0689},{enum:'ATTACKPOWER',name:'Angriffskraft',value:63},
+  {enum:'HEALTH',name:'Gesundheit',value:500}
+];
 petDolly.talentDetailsVerified=true;
 petDolly.talentDetails=[{
   id:50,name:'Tierherrschaft',spentPoints:1,talents:[{
@@ -179,17 +192,18 @@ const petPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(petPanel.includes('Slydris')&&petPanel.includes('Fuchs')&&petPanel.includes('Stufe 6'),'Live pet identity is rendered');
 assert.ok(petPanel.includes('5 Stufen')&&petPanel.includes('hinter Dolly'),'Pet-to-hunter level gap is explained');
 assert.ok(petPanel.includes('Schaden')&&petPanel.includes('±0 %')&&petPanel.includes('+5 %'),'Fox family modifiers are shown');
-assert.ok(petPanel.includes('Fleisch'),'Fox diet is shown');
-assert.ok(petPanel.includes('Beißen')&&petPanel.includes('nächster Rang ab Stufe 8'),'Training guidance is level-aware');
-assert.ok(petPanel.includes('1 TP')&&petPanel.includes('4 TP'),'Known training-point costs are shown without inventing the current free-point balance');
-assert.ok(petPanel.includes('Tanz des Täuschers')&&petPanel.includes('Ab Begleiterstufe 20'),'Fox-exclusive ability is shown as future unlock');
-assert.ok(petPanel.includes('Nicht mit „bereits gelernt“ gleichzusetzen.'),'Trainable ranks are never presented as learned');
+
+
+
+
+
 assert.ok(petPanel.includes('Lobo')&&petPanel.includes('Weitere gezähmte Begleiter · 1'),'Stable pets are rendered separately');
-assert.ok(petPanel.includes('keine Schätzwerte'),'Unavailable loyalty/training state is explicitly not fabricated');
+assert.ok(petPanel.includes('nichts eigenständig übersetzt'),'Unsourced pet ability strings are deliberately withheld');
+assert.ok(!petPanel.includes('Beißen')&&!petPanel.includes('Tanz des Täuschers'),'Manually maintained pet ability translations are not shown');
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
 assert.ok(combat.includes('Rüstung aus Dolly')&&combat.includes('>+76,8<'),'30% of 256 Armor is shown as 76.8 before server rounding');
-assert.ok(combat.includes('Krit aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'100% of current Armory crit is inherited');
+assert.ok(combat.includes('Kritische Trefferchance aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'Source-backed crit label is used for pet inheritance');
 assert.ok(combat.includes('Forever-Gesundheitsfaktor')&&combat.includes('>115 %<'),'Official 115% global pet health factor is shown');
 assert.ok(combat.includes('Belastbarkeit-Ausbildung')&&combat.includes('>Rang 1<')&&combat.includes('um 3%'),'Live Endurance Training rank is shown from Blizzard talent data');
 assert.ok(combat.includes('Maximaler Fokus')&&combat.includes('>150<'),'Verified maximum Focus is shown');
@@ -301,7 +315,7 @@ assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,dat
 assert.equal((cards.match(/class="profession-rank"/g)||[]).length,20,'Every profession has a visible training rank');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
-const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(character.class==='Jäger'?1:0),0);
+const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(Number(character.classId)===3?1:0),0);
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
