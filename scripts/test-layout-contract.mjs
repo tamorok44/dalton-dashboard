@@ -12,7 +12,7 @@ assert.ok(viewNames.length>=2,'Main navigation exposes its view targets');
 
 for(const name of viewNames){
   const id=name+'View';
-  const tagPattern=new RegExp('<[^>]+id=["\\']'+id+'["\\'][^>]*>','i');
+  const tagPattern=new RegExp("<[^>]+id=[\\\"']"+id+"[\\\"'][^>]*>",'i');
   const tag=html.match(tagPattern)?.[0]||'';
   assert.ok(tag,'Navigation target #'+id+' exists');
   const classes=tag.match(/class=["']([^"']*)["']/i)?.[1]?.split(/\s+/).filter(Boolean)||[];
