@@ -7,7 +7,7 @@ export const PET_RULES=Object.freeze({
     version:1,
     label:'Fuchs-Familienprofil',
     reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox','wowForeverPets'])
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets'])
   }),
   'fox.training':Object.freeze({
     version:1,
@@ -65,16 +65,13 @@ const sources=Object.freeze({
     ]),
     buildPattern:/build\s+(1\.60\.1\.\d+)/i
   }),
-  wowForeverPets:Object.freeze({
-    label:'WoW Forever Pet Families',
-    url:'https://wow-forever.gg/pets/',
+  sixtyToolsPets:Object.freeze({
+    label:'60.tools · WoW Forever Hunter Pets',
+    url:'https://www.60.tools/guides/hunter-pets',
     mode:'markers',
     semanticPatterns:Object.freeze([
-      /fox[\s\S]{0,180}?damage\s+0\s*%[\s\S]{0,100}?armor\s+\+?5\s*%[\s\S]{0,100}?health\s+0\s*%/i,
-      /fox[\s\S]{0,260}?eats\s+meat/i,
-      /fox[\s\S]{0,320}?trickster(?:'|’)?s\s+dance[\s\S]{0,120}?dash[\s\S]{0,120}?bite/i
-    ]),
-    buildPattern:/build\s+(1\.60\.1\.\d+)/i
+      /fox[\s\S]{0,180}?0\s*%[\s\S]{0,100}?\+5\s*%[\s\S]{0,100}?0\s*%[\s\S]{0,140}?meat[\s\S]{0,180}?trickster(?:'|’)?s\s+dance/i
+    ])
   })
 });
 
