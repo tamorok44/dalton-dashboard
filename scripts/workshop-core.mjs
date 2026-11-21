@@ -18,7 +18,7 @@ function recipeYield(quantity={}){
 }
 function fallbackCategoryPath({professionName,itemName,recipeName}){
   const value=normalizeSearch(itemName+' '+recipeName);
-  if(/\b(barren|bar)\b/.test(value))return ['Materialien & Komponenten','Metalle','Barren'];
+  if(/barren|\bbar\b/.test(value))return ['Materialien & Komponenten','Metalle','Barren'];
   if(/verband/.test(value))return ['Verbrauchsgüter','Verbände'];
   if(/trank|potion/.test(value))return ['Verbrauchsgüter','Tränke'];
   if(/elixier|elixir/.test(value))return ['Verbrauchsgüter','Elixiere'];
