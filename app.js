@@ -329,7 +329,8 @@ function petRuleUnavailable(title){
 }
 
 function hunterPetMiniCard(pet){
-  const icon=petIconPattern.test(pet?.iconUrl||'')?'<img src="'+esc(pet.iconUrl)+'" alt="" loading="lazy">':'<span class="pet-mini-placeholder" aria-hidden="true">•</span>';
+  const iconUrl=validBlob(pet?.storedIconUrl)?pet.storedIconUrl:petIconPattern.test(pet?.iconUrl||'')?pet.iconUrl:null;
+  const icon=iconUrl?'<img src="'+esc(iconUrl)+'" alt="" loading="lazy">':'<span class="pet-mini-placeholder" aria-hidden="true">•</span>';
   return '<div class="pet-mini">'+icon+'<div><strong>'+esc(pet?.name||'Begleiter')+'</strong>'+
     '<span>'+esc(pet?.family?.name||'Familie unbekannt')+(Number.isInteger(Number(pet?.level))?' · Stufe '+esc(pet.level):'')+'</span></div></div>';
 }
@@ -397,7 +398,7 @@ function hunterPetsPanel(c){
   const validCharacterLevel=Number.isInteger(characterLevel);
   const gap=validPetLevel&&validCharacterLevel?characterLevel-petLevel:null;
   const family=active?hunterPetFamily(active.family?.slug):null;
-  const render=petRenderPattern.test(active?.imageUrl||'')?active.imageUrl:null;
+  const render=validBlob(active?.storedImageUrl)?active.storedImageUrl:petRenderPattern.test(active?.imageUrl||'')?active.imageUrl:null;
   const badges=[
     active?.active?'<span>Aktiver Begleiter</span>':'',
     active?.summoned===true?'<span>Derzeit gerufen</span>':''
@@ -554,7 +555,7 @@ function equipmentPanel(c,open=false){
     '<details class="details" data-detail-key="'+esc(c.slug)+':equipment"'+(open?' open':'')+'><summary>Ausrüstung anzeigen · '+available.size+'/'+equipmentSlotOrder.length+' belegt'+verified+languageNote+'</summary><div class="equipment">'+rows+'</div></details></div>';
 }
 
-const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/)/.test(x.pathname)}catch{return false}};
+const validBlob=u=>{try{const x=new URL(u);return x.protocol==='https:'&&x.hostname.endsWith('.public.blob.vercel-storage.com')&&/^(?:\/portraits\/|\/equipment\/|\/media\/)/.test(x.pathname)}catch{return false}};
 const validRender = u => /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/.test(u||"");
 function renderPortrait(c){
   const configuredScene=portraitScenes[c.slug]||null;
