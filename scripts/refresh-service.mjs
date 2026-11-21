@@ -5,6 +5,7 @@ import {appendChangeBatch} from './history-store.mjs';
 import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fetchForeverLocalizedNames,fetchForeverQuestDetails} from './blizzard-api.mjs';
 import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
 import {loadQuestCatalog,loadQuestCatalogByIds,saveQuestCatalog} from './quest-catalog-store.mjs';
+import {collectCatalogRecords,saveCatalogRecords} from './game-catalog-store.mjs';
 
 export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
@@ -73,6 +74,13 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
       archived=merged;
     }
   }
+  try{
+    const catalogRecords=collectCatalogRecords(archived);
+    await saveCatalogRecords(catalogRecords,{source:'character-refresh'});
+  }catch(error){
+    console.warn('Spielobjekt-Katalog konnte nicht vollständig aktualisiert werden:',String(error.message).slice(0,160));
+  }
+
   const activeQuestIds=[...new Set(archived.characters.flatMap(character=>
     (Array.isArray(character.activeQuests)?character.activeQuests:[]).map(quest=>Number(quest?.id)).filter(Number.isInteger)
   ))];
