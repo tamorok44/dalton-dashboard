@@ -102,6 +102,19 @@ function stats(c) {
   }
   return result;
 }
+
+function statEnums(c){
+  const raw=c.stats||{};
+  const groups=[
+    ...(Array.isArray(raw.groups)?raw.groups:[]),
+    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
+    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
+    {stats:Array.isArray(raw.overview)?raw.overview:[]}
+  ];
+  return new Set(groups.flatMap(group=>group.stats||[])
+    .filter(stat=>Number.isFinite(stat?.value?.value)&&typeof stat?.enum==='string')
+    .map(stat=>stat.enum));
+}
 function gear(c) {
   const raw=c.gear;
   const entries=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
@@ -283,7 +296,7 @@ for(const old of characters){
     // Never silently remove a profession when Blizzard returns a partial result.
     const currentProfessions=[...knownProfessions.values()];
     const professionsVerified=ps.length>0&&currentProfessions.every(p=>!p.unverified);
-    const st=stats(c),eq=gear(c),ta=talents(c);
+    const st=stats(c),statKeys=statEnums(c),eq=gear(c),ta=talents(c);
     const hasOfficialGear=Array.isArray(c.gear)||(c.gear!==null&&typeof c.gear==='object');
     let localizedGear=null,localizationError,localizedSource;
     // Fast path: don't re-fetch localized gear if the officially verified
@@ -308,7 +321,8 @@ for(const old of characters){
       localizedCount===0?'en':'gemischt';
     const equipmentSource= !hasOfficialGear ? old.equipmentSource||'Letzter bestätigter Stand':
       localizedGear ? localizedSource:translationsReusable?(old.equipmentSource||'Blizzard Armory (de-DE)'):(old.equipmentSource||'Letzter bestätigter deutscher Stand');
-    const statsVerified=Object.keys(st).length>0;
+    const requiredStatEnums=['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','CRITICALSTRIKE','SPIRIT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL'];
+    const statsVerified=requiredStatEnums.every(key=>statKeys.has(key));
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;
     const now=new Date().toISOString();
