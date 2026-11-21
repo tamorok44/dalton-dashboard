@@ -146,17 +146,6 @@ const sources=Object.freeze({
       /dash\s+rank\s+1\s+30\s+15\s+for\s+boar,\s*cat,\s*fox/i
     ]),
     buildPattern:/1\.60\.1\s*\(build\s+(\d+)\)/i
-  }),
-  mobalyticsScaling:Object.freeze({
-    label:'Mobalytics · Forever Hunter Scaling',
-    url:'https://mobalytics.gg/wow-forever/classes/hunter-leveling-1-60-vareion',
-    mode:'markers',
-    semanticPatterns:Object.freeze([
-      /100\s*%\s+of\s+your\s+crit/i,
-      /10\s*%\s+of\s+your\s+highest\s+attack\s+power\s+source/i,
-      /30\s*%\s+of\s+your\s+armor/i,
-      /1\s+hunter\s+stamina\s*=\s*2\s+pet\s+health/i
-    ])
   })
 });
 
