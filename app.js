@@ -258,9 +258,10 @@ function petAbilityCard(ability,petLevel){
   const next=ranks.find(rank=>Number(rank.level)>petLevel)||null;
   const first=ranks[0]||null;
   const state=available?'is-available':'is-locked';
+  const tp=rank=>Number.isFinite(Number(rank?.trainingPoints))?' · '+Number(rank.trainingPoints)+' TP':'';
   const status=available
-    ?'Bis Rang '+available.rank+' trainierbar'+(next?' · nächster Rang ab Stufe '+next.level:' · höchster Rang erreicht')
-    :(first?'Ab Begleiterstufe '+first.level+' trainierbar':'Ausbildungsstufe unbekannt');
+    ?'Bis Rang '+available.rank+' trainierbar'+tp(available)+(next?' · nächster Rang ab Stufe '+next.level+tp(next):' · höchster Rang erreicht')
+    :(first?'Ab Begleiterstufe '+first.level+' trainierbar'+tp(first):'Ausbildungsstufe unbekannt');
   return '<div class="pet-ability '+state+'">'+
     '<div class="pet-ability-head"><div><strong>'+esc(ability.name)+'</strong><span>'+esc(ability.kind||'Fähigkeit')+'</span></div>'+
       '<span class="pet-ability-status">'+(available?'Verfügbar':'Gesperrt')+'</span></div>'+
@@ -275,6 +276,33 @@ function petRuleStatus(ruleId){
   return displayedPetRules?.rules?.[ruleId]?.status||'source_unavailable';
 }
 function petRuleVerified(ruleId){return petRuleStatus(ruleId)==='verified'}
+function petRule(ruleId){
+  if(displayedPetRules?.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION)return null;
+  return displayedPetRules?.rules?.[ruleId]||null;
+}
+function petEvidenceLabel(ruleId){return petRule(ruleId)?.evidenceLabel||'Unbestätigt'}
+function petEvidenceBadge(ruleId){
+  const rule=petRule(ruleId);
+  const evidence=rule?.evidence||'provisional';
+  return '<span class="pet-evidence-badge is-'+esc(evidence)+'" title="'+esc(rule?.evidenceNote||'Evidenzstufe nicht beschrieben')+'">'+esc(rule?.evidenceLabel||'Vorläufig')+'</span>';
+}
+function petRuleStatusLabel(status){
+  return status==='verified'?'aktuell':status==='review_required'?'gesperrt · Prüfung nötig':status==='source_unavailable'?'Quelle nicht erreichbar':'unbekannt';
+}
+function petRuleHistory(){
+  const state=displayedPetRules;
+  if(!state||state.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION)return '';
+  const events=[...(Array.isArray(state.history)?state.history:[])].slice(-8).reverse();
+  if(!events.length)return '';
+  const rows=events.map(event=>{
+    const date=Number.isFinite(Date.parse(event.at||''))?new Date(event.at).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'}):'unbekannt';
+    if(event.type==='rulebook_version')return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>Regelwerk aktualisiert</strong><span>'+esc(event.fromRulebookVersion||'–')+' → '+esc(event.toRulebookVersion||'–')+'</span></div></div>';
+    if(event.type==='rulebook_initialized')return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>Regelwerk initialisiert</strong><span>'+esc(event.rulebookVersion||'–')+'</span></div></div>';
+    const evidence=event.toEvidence?'<span class="pet-rule-event-evidence">'+esc(event.toEvidence.replaceAll('_',' '))+'</span>':'';
+    return '<div class="pet-rule-event"><time>'+esc(date)+'</time><div><strong>'+esc(event.label||event.ruleId||'Regel')+'</strong><span>'+esc(petRuleStatusLabel(event.fromStatus))+' → '+esc(petRuleStatusLabel(event.toStatus))+evidence+'</span></div></div>';
+  }).join('');
+  return '<details class="pet-rule-history"><summary>Regelstatus-Protokoll · '+events.length+' letzte Änderungen</summary><div class="pet-rule-events">'+rows+'</div></details>';
+}
 function petRuleBanner(){
   const state=displayedPetRules;
   if(!state||state.rulebookVersion!==HUNTER_PET_RULEBOOK_VERSION){
@@ -286,7 +314,9 @@ function petRuleBanner(){
     ?new Date(state.checkedAt).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'})
     :'unbekannt';
   if(state.overall==='verified'){
-    return '<div class="pet-rule-banner is-verified"><strong>Regelstand bestätigt · '+verified+'/'+rules.length+'</strong><span>Geprüft '+esc(checked)+' · Regelwerk '+esc(state.rulebookVersion||'–')+'</span></div>';
+    const counts=rules.reduce((map,rule)=>{const key=rule.evidenceLabel||'Vorläufig';map[key]=(map[key]||0)+1;return map},{});
+    const evidence=Object.entries(counts).map(([label,count])=>count+'× '+label).join(' · ');
+    return '<div class="pet-rule-banner is-verified"><strong>Quellenstand aktuell · '+verified+'/'+rules.length+'</strong><span>Geprüft '+esc(checked)+' · '+esc(evidence)+' · Regelwerk '+esc(state.rulebookVersion||'–')+'</span></div>';
   }
   const review=rules.some(rule=>rule.status==='review_required');
   return '<div class="pet-rule-banner '+(review?'is-review':'is-unverified')+'"><strong>'+(review?'Regeländerung erkannt':'Regelprüfung unvollständig')+'</strong><span>Betroffene regelbasierte Werte sind vorsorglich ausgeblendet. Blizzard-Livedaten zu Slydris und Stall bleiben davon unberührt. · Geprüft '+esc(checked)+'</span></div>';
@@ -313,13 +343,13 @@ function hunterPetCombatPanel(c,active){
   const inherited=profile.inherited||{};
   const inheritedRows=[];
   if(scalingAllowed&&inherited.health){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Gesundheit aus Dolly</small><strong>+'+esc(petNumber(inherited.health.value))+'</strong><span>'+esc(petNumber(inherited.health.input))+' Ausdauer × 2</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>Gesundheit aus Dolly</small><strong>+'+esc(petNumber(inherited.health.value))+'</strong>'+petEvidenceBadge('pet.scaling')+'<span>'+esc(petNumber(inherited.health.input))+' Ausdauer × 2</span></div>');
   }
   if(scalingAllowed&&inherited.armor){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Rüstung aus Dolly</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong><span>'+esc(petNumber(inherited.armor.input))+' Rüstung × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>Rüstung aus Dolly</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong>'+petEvidenceBadge('pet.scaling')+'<span>'+esc(petNumber(inherited.armor.input))+' Rüstung × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
   }
   if(scalingAllowed&&inherited.crit){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Krit aus Dolly</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong><span>100 % des aktuellen Blizzard-Armory-Kritwerts</span></div>');
+    inheritedRows.push('<div class="pet-combat-stat"><small>Krit aus Dolly</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong>'+petEvidenceBadge('pet.scaling')+'<span>100 % des aktuellen Blizzard-Armory-Kritwerts</span></div>');
   }
   const inheritedBlock=scalingAllowed
     ?'<div class="pet-combat-grid">'+inheritedRows.join('')+
@@ -328,20 +358,20 @@ function hunterPetCombatPanel(c,active){
 
   const modifiers=[];
   if(healthRuleAllowed){
-    modifiers.push('<div class="pet-combat-stat"><small>Forever-Gesundheitsfaktor</small><strong>'+esc(profile.globalHealth.percent)+' %</strong><span>Offizieller aktueller Pet-Gesundheitsstand seit 10.11.2026</span></div>');
+    modifiers.push('<div class="pet-combat-stat"><small>Forever-Gesundheitsfaktor</small><strong>'+esc(profile.globalHealth.percent)+' %</strong>'+petEvidenceBadge('pet.health.global')+'<span>Aktueller Pet-Gesundheitsstand seit 10.11.2026</span></div>');
   }
   if(profile.enduranceTraining){
     modifiers.push('<div class="pet-combat-stat"><small>'+esc(profile.enduranceTraining.name)+'</small><strong>Rang '+esc(profile.enduranceTraining.rank??'–')+'</strong><span>'+esc(profile.enduranceTraining.description||'Blizzard-Live-Talent')+'</span></div>');
   }
   if(focusAllowed){
-    modifiers.push('<div class="pet-combat-stat"><small>Maximaler Fokus</small><strong>'+esc(profile.focus.maximum)+'</strong><span>Forever-Petressource</span></div>');
-    modifiers.push('<div class="pet-combat-stat"><small>Fokusregeneration</small><strong>+'+esc(profile.focus.regenPerSecond)+'/Sek.</strong><span>kontinuierlich · voller Pool in 15 Sek.</span></div>');
+    modifiers.push('<div class="pet-combat-stat"><small>Maximaler Fokus</small><strong>'+esc(profile.focus.maximum)+'</strong>'+petEvidenceBadge('pet.focus')+'<span>Forever-Petressource</span></div>');
+    modifiers.push('<div class="pet-combat-stat"><small>Fokusregeneration</small><strong>+'+esc(profile.focus.regenPerSecond)+'/Sek.</strong>'+petEvidenceBadge('pet.focus')+'<span>kontinuierlich · voller Pool in 15 Sek.</span></div>');
   }
   const modifiersBlock=modifiers.length?'<div class="pet-combat-grid">'+modifiers.join('')+'</div>':'';
 
   return '<div class="pet-subsection pet-combat">'+
-    '<div class="pet-subsection-head"><div><span class="pet-overline">KAMPFPROFIL</span><h4>Verifizierte Werte & Beiträge</h4></div><span class="pet-source">Livewerte + Regelwerk</span></div>'+
-    '<p class="pet-combat-intro">Diese Zahlen sind bewusst keine geschätzten Gesamtwerte. Angezeigt werden nur exakt belegbare Beiträge und aktive Modifikatoren.</p>'+
+    '<div class="pet-subsection-head"><div><span class="pet-overline">KAMPFPROFIL</span><h4>Belegte Werte & Beiträge</h4></div><span class="pet-source">Livewerte + Evidenzstufen</span></div>'+
+    '<p class="pet-combat-intro">Jeder regelbasierte Wert zeigt jetzt seine Evidenzstufe. Referenzmodell bedeutet: aktuell breit gestützt und rechnerisch reproduzierbar, aber der Serverkoeffizient ist nicht direkt veröffentlicht.</p>'+
     '<div class="pet-combat-group"><span class="pet-combat-label">Von Dolly geerbt</span>'+inheritedBlock+'</div>'+
     (modifiersBlock?'<div class="pet-combat-group"><span class="pet-combat-label">Aktive Regeln & Talente</span>'+modifiersBlock+'</div>':'')+
     '<div class="pet-combat-caveat"><strong>Warum fehlen Gesamtleben, Gesamtrüstung und DPS?</strong><span>Blizzard veröffentlicht Slydris’ Grundwerte, aktuell trainierte passive Ränge, Zufriedenheit und die höhere Nah-/Fernkampf-Angriffskraft nicht vollständig online. Diese Größen werden deshalb nicht hochgerechnet.</span></div>'+
@@ -385,7 +415,7 @@ function hunterPetsPanel(c){
   const familyAllowed=Boolean(active&&family&&familyRuleId&&petRuleVerified(familyRuleId));
   const trainingAllowed=Boolean(active&&family&&trainingRuleId&&petRuleVerified(trainingRuleId));
   const familyProfile=active&&family
-    ?(familyAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(family.name)+'</h4></div><span class="pet-source">Regelwerk bestätigt</span></div>'+
+    ?(familyAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">FAMILIENPROFIL</span><h4>'+esc(family.name)+'</h4></div><span class="pet-source">'+petEvidenceBadge(familyRuleId)+'</span></div>'+
       '<div class="pet-family-stats">'+
         '<div><small>Schaden</small><strong>'+esc(signedPercent(family.modifiers.damage))+'</strong></div>'+
         '<div><small>Rüstung</small><strong>'+esc(signedPercent(family.modifiers.armor))+'</strong></div>'+
@@ -395,7 +425,7 @@ function hunterPetsPanel(c){
       :petRuleUnavailable('Familienprofil vorübergehend gesperrt'))
     :'';
   const training=active&&family
-    ?(trainingAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Was '+esc(active.name)+' auf seiner Stufe trainieren kann</h4></div><span class="pet-source">Regelwerk bestätigt · keine Lernstand-Schätzung</span></div>'+
+    ?(trainingAllowed?'<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">AUSBILDUNG</span><h4>Was '+esc(active.name)+' auf seiner Stufe trainieren kann</h4></div><span class="pet-source">'+petEvidenceBadge(trainingRuleId)+' · keine Lernstand-Schätzung</span></div>'+
       '<div class="pet-abilities">'+family.abilities.map(ability=>petAbilityCard(ability,validPetLevel?petLevel:0)).join('')+'</div>'+
       '<p class="pet-note">Die Stufen zeigen, was für einen Fuchs grundsätzlich trainierbar ist. Blizzard veröffentlicht online nicht, welche Ränge '+esc(active.name)+' tatsächlich gelernt hat.</p></div>'
       :petRuleUnavailable('Ausbildungsregeln vorübergehend gesperrt'))
@@ -409,7 +439,7 @@ function hunterPetsPanel(c){
   const stable='<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">STALL</span><h4>Weitere gezähmte Begleiter · '+stableList.length+'</h4></div><span class="pet-source">'+(verified?'Blizzard live':'letzter Stand')+'</span></div>'+
     (stableList.length?'<div class="pet-stable-list">'+stableList.map(hunterPetMiniCard).join('')+'</div>':'<p class="knowledge-empty">Noch kein weiterer Begleiter eingestallt.</p>')+'</div>';
   const combat=active?hunterPetCombatPanel(c,active):'';
-  return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+petRuleBanner()+hero+combat+familyProfile+training+care+stable+'</div>';
+  return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+petRuleBanner()+hero+combat+familyProfile+training+care+stable+petRuleHistory()+'</div>';
 }
 
 function shortCharacterName(character){
