@@ -1076,8 +1076,9 @@ function renderWorkshop(){
     if(next===workshopState.searchMode)return;
     workshopState.searchMode=next;
     workshopState.suggestions=[];
-    if(workshopState.query.trim().length>=2)searchWorkshop(workshopState.query);
-    else renderWorkshop();
+    const query=workshopState.query;
+    renderWorkshop();
+    if(query.trim().length>=2)searchWorkshop(query);
   }));
   workshopRoot.querySelectorAll('[data-segmented-control="workshop-browse-mode"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{
     workshopState.browseMode=button.dataset.segmentedValue==='all'?'all':'craftable';
