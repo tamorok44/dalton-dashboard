@@ -11,6 +11,7 @@ function equipmentMap(list=[]){
     .filter(item=>item?.slot)
     .sort((a,b)=>String(a.slot).localeCompare(String(b.slot),'de'))
     .map(item=>[item.slot,{
+      id:item.id??null,
       item:item.item??null,
       sourceName:item.sourceName??null,
       level:item.level??null,
@@ -80,6 +81,9 @@ function hunterPetMap(group={}){
   const normalize=list=>[...(Array.isArray(list)?list:[])]
     .sort((a,b)=>(Number(a?.slot)||0)-(Number(b?.slot)||0)||String(a?.name||'').localeCompare(String(b?.name||''),'de'))
     .map(pet=>({
+      id:pet?.id??null,
+      creatureId:pet?.creatureId??null,
+      displayId:pet?.displayId??null,
       name:pet?.name??null,
       level:pet?.level??null,
       familyId:pet?.family?.id??null,
