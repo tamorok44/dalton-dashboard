@@ -257,7 +257,9 @@ export async function cachedForeverDbClassMaster(classId,{build=null,fetchImpl=f
     if(raw){
       try{
         const parsed=JSON.parse(raw);
-        if(parsed?.classMaster?.slug===slug)return {...parsed.classMaster,cached:true};
+        if(parsed?.classMaster?.slug===slug&&Array.isArray(parsed.classMaster.abilities)&&parsed.classMaster.abilities.length){
+          return {...parsed.classMaster,cached:true};
+        }
       }catch{}
     }
   }
