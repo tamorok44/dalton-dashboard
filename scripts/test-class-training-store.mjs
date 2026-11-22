@@ -58,4 +58,17 @@ assert.equal(nested.abilities[0].ranks[0].sources[0].id,4217);
 assert.equal(nested.abilities[0].ranks[0].sources[0].priceCopper,80);
 assert.equal(nested.abilities[0].ranks[0].sources[0].priceSource,'forever-observed');
 
+const fallback=normalizeForeverDbClass({
+  name:'Magier',
+  abilities:[{
+    name:'Frostblitz',type:'Ausbilder',
+    ranks:[{spellId:205,rank:'Rang 2',learnedLevel:8}]
+  }]
+},'mage');
+assert.equal(fallback.trainers.length,3,'Fehlt ein Lehrerobjekt in der Klassen-API, nutzt der Master die zentral bestätigten Zephras-Lehrer');
+assert.equal(fallback.trainers[0].evidence,'forever-confirmed');
+assert.equal(fallback.abilities[0].ranks[0].sources.length,3);
+assert.equal(fallback.abilities[0].ranks[0].sources[0].location.zone,'Zephras Isle');
+assert.equal(fallback.abilities[0].ranks[0].requiredLevel,8,'ForeverDB-Feld learnedLevel wird als Lernlevel erkannt');
+
 console.log('Klassenmaster: Lehrerfähigkeiten, Ränge, Level, Quellen und Preis-Provenienz: OK');
