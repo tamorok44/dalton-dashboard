@@ -431,20 +431,9 @@ function choosePreferredSources(actions,zone){
       return text(a.name).localeCompare(text(b.name),'de');
     });
     const offers=sorted.map(sourceSummary);
+    const {sources:_sources,zoneSources:_zoneSources,...publicAction}=action;
     return {
-      key:action.key,
-      type:action.type,
-      category:action.category,
-      id:action.id??null,
-      name:action.name,
-      profession:action.profession||null,
-      professionId:action.professionId??null,
-      requiredSkill:action.requiredSkill??null,
-      requiredSkillSource:action.requiredSkillSource||null,
-      currentSkill:action.currentSkill??null,
-      requiredLevel:action.requiredLevel??null,
-      requiredLevelSource:action.requiredLevelSource||null,
-      currentLevel:action.currentLevel??null,
+      ...publicAction,
       source:offers[0],
       alternatives:offers.slice(1),
       offerCount:offers.length,
