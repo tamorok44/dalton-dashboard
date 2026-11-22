@@ -14,6 +14,7 @@ import {
   fetchForeverDbItem,
   fetchForeverDbProfession,
   fetchForeverDbMeta,
+  fetchForeverDbSpell,
   PROFESSION_SLUGS
 } from './foreverdb-api.mjs';
 import {
@@ -190,16 +191,31 @@ assert.ok(fullBrowseText.includes('Master-Test 0'),'Geführte Auswahl kann den v
 const craftableBrowseText=JSON.stringify(workshopBrowseTreeForItems(masterItems,{craftableOnly:true}));
 assert.ok(!craftableBrowseText.includes('Master-Test 0'),'Herstellbar-Filter blendet nicht craftbare Mastereinträge aus');
 
-const candidates=workshopLearningCandidates({
+const learningData={
   characters:[
     {slug:'chucky-dalton',name:'Chucky Dalton',player:'Valentin',level:10,professions:[{id:186,name:'Bergbau',current:46,max:75}]},
     {slug:'cole-dalton',name:'Cole Dalton',player:'Christian',level:11,professions:[{id:171,name:'Alchimie',current:58,max:75}]}
   ]
-},{...remoteRecipe,requiredSkill:50});
+};
+const candidates=workshopLearningCandidates(learningData,{
+  ...remoteRecipe,requiredSkill:50,requiredCharacterLevel:0,learningRequirementsVerified:true
+});
 assert.equal(candidates.length,1);
 assert.equal(candidates[0].name,'Chucky Dalton');
 assert.equal(candidates[0].gap,4);
 assert.equal(candidates[0].status,'skill-gap');
+
+const levelBlocked=workshopLearningCandidates(learningData,{
+  ...remoteRecipe,requiredSkill:40,requiredCharacterLevel:20,learningRequirementsVerified:true
+});
+assert.equal(levelBlocked[0].gap,0,'Berufsskill reicht im Level-Regressionsfall bereits aus');
+assert.equal(levelBlocked[0].levelGap,10);
+assert.equal(levelBlocked[0].status,'level-gap','Charakterlevel verhindert trotz ausreichendem Berufsskill den Lernstatus');
+
+const unverifiedLearning=workshopLearningCandidates(learningData,{
+  ...remoteRecipe,requiredSkill:40,requiredCharacterLevel:null,learningRequirementsVerified:false
+});
+assert.equal(unverifiedLearning[0].status,'requirements-unconfirmed','Unbestätigte Lernvoraussetzungen dürfen nie als jetzt lernbar gelten');
 
 const previousKey=process.env.FOREVERDB_API_KEY;
 process.env.FOREVERDB_API_KEY='test-key';
@@ -230,6 +246,8 @@ const fakeFetch=async url=>{
     body={data:{recipes},meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
   }else if(parsed.pathname.endsWith('/items/2840')){
     body={data:{id:2840,name:'Kupferbarren',quality:1,class:7,slot:0,requiredLevel:0},meta:{build:'test'}};
+  }else if(parsed.pathname.endsWith('/spells/3324')){
+    body={data:{id:3324,name:'Kupfer verhütten',rank:'',requiredLevel:10,baseCost:100},meta:{build:'test'}};
   }else{
     body={data:[{id:2840,name:'Kupferbarren'},{id:2770,name:'Kupfererz'}],meta:{total:2}};
   }
@@ -265,6 +283,11 @@ const remoteItem=await fetchForeverDbItem(2840,{fetchImpl:fakeFetch});
 assert.equal(remoteItem.item.id,2840);
 const profession=await fetchForeverDbProfession('mining',{fetchImpl:fakeFetch});
 assert.equal(profession.recipes.length,1);
+const remoteSpell=await fetchForeverDbSpell(3324,{fetchImpl:fakeFetch});
+assert.equal(remoteSpell.spell.id,3324);
+assert.equal(remoteSpell.spell.requiredLevel,10);
+assert.equal(remoteSpell.spell.baseCostCopper,100);
+
 assert.ok(requests.every(url=>new URL(url).searchParams.get('lang')==='de'),'ForeverDB wird mit deutschen Clientnamen abgefragt');
 if(previousKey===undefined)delete process.env.FOREVERDB_API_KEY;else process.env.FOREVERDB_API_KEY=previousKey;
 
