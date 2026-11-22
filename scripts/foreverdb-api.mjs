@@ -102,4 +102,49 @@ export async function fetchForeverDbProfession(slug,{query='',limit=100,offset=0
     meta:payload?.meta||null
   };
 }
+
+function compactSpell(raw={}){
+  const requiredLevel=Number(raw?.requiredLevel??raw?.required_level??raw?.levelRequirement??raw?.level_requirement??0);
+  const baseCost=Number(raw?.baseCost??raw?.base_cost??raw?.cost??raw?.trainingCost??raw?.training_cost);
+  return {
+    id:Number.isInteger(Number(raw?.id))?Number(raw.id):null,
+    name:raw?.name||raw?.nameLocalized||raw?.localizedName||null,
+    rank:raw?.rank||raw?.rankName||raw?.rank_name||null,
+    requiredLevel:Number.isFinite(requiredLevel)&&requiredLevel>=0?requiredLevel:null,
+    baseCostCopper:Number.isFinite(baseCost)&&baseCost>=0?Math.round(baseCost):null,
+    icon:raw?.icon??raw?.iconUrl??null
+  };
+}
+export async function fetchForeverDbSpell(id,{fetchImpl=fetch}={}){
+  const numeric=Number(id);
+  if(!Number.isInteger(numeric)||numeric<=0)throw new Error('Ungültige ForeverDB Spell-ID');
+  const payload=await request('/spells/'+numeric,{fetchImpl});
+  const raw=payload?.data??payload;
+  return {spell:compactSpell(raw),meta:payload?.meta||null};
+}
+export async function fetchForeverDbClass(name,{fetchImpl=fetch}={}){
+  const slug=String(name??'').trim().toLocaleLowerCase('en-US');
+  if(!/^[a-z][a-z-]{2,30}$/.test(slug))throw new Error('Ungültige ForeverDB Klassenkennung');
+  const payload=await request('/classes/'+encodeURIComponent(slug),{fetchImpl});
+  return {data:payload?.data??payload,meta:payload?.meta||null};
+}
+function compactVendor(raw={}){
+  const displayId=Number(raw?.displayId??raw?.display_id??raw?.creatureDisplayId??raw?.creature_display_id??raw?.display?.id);
+  const renderUrl=raw?.render?.url??raw?.renderUrl??raw?.render_url??raw?.imageUrl??raw?.image_url??null;
+  return {
+    id:Number.isInteger(Number(raw?.id))?Number(raw.id):null,
+    name:raw?.name||raw?.nameLocalized||raw?.localizedName||null,
+    title:raw?.title||null,
+    displayId:Number.isInteger(displayId)&&displayId>0?displayId:null,
+    renderUrl:typeof renderUrl==='string'&&renderUrl.startsWith('https://')?renderUrl:null
+  };
+}
+export async function fetchForeverDbVendor(id,{fetchImpl=fetch}={}){
+  const numeric=Number(id);
+  if(!Number.isInteger(numeric)||numeric<=0)throw new Error('Ungültige ForeverDB Händler-ID');
+  const payload=await request('/vendors/'+numeric,{fetchImpl});
+  const raw=payload?.data??payload;
+  return {vendor:compactVendor(raw),meta:payload?.meta||null};
+}
+
 export {PROFESSION_SLUGS};

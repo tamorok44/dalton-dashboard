@@ -53,20 +53,26 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 ## 6. Werkstatt-Masterkatalog
 
 - ForeverDB-Rezepte aller 12 Berufe bilden einen charakterunabhängigen Masterkatalog.
+- Die Werkstatt darf „Jetzt lernbar“ nur ausgeben, wenn neben Beruf und Skill auch die Lernvoraussetzung des konkreten Rezept-Spells verifiziert ist und eine vorhandene Charakterlevel-Anforderung erfüllt wird. Das Gegenstands-Nutzungslevel darf dafür nicht verwendet werden.
 - Charakterdaten bestimmen nur den Filter `Herstellbar` und die Crafter-Zuordnung; sie begrenzen niemals den Masterkatalog.
 - Der Master wird persistent gespeichert. Bei Buildwechseln wird er rate-limit-sicher in Teilmengen erneuert; bis zum vollständigen neuen Stand bleibt der letzte vollständige Master aktiv.
 - Die Lupe durchsucht standardmäßig alle Gegenstände. Die geführte Auswahl zeigt standardmäßig nur aktuell durch die Daltons herstellbare Gegenstände. Beide Ansichten können jeweils auf den anderen Modus umgeschaltet werden.
 - Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID. Beim Wechsel auf einen anderen Gegenstand wird die Menge auf `1` zurückgesetzt. Beim selben Gegenstand, bei Filterwechseln und beim automatischen Neuladen desselben Gegenstands nach einem Datenupdate bleibt die Menge erhalten.
 
-## 7. Berufsplaner
+## 7. Ortsplaner
 
-- Der Berufsplaner verwendet den bestehenden persistenten ForeverDB-Rezeptmaster und die aktuellen Blizzard-Charakterdaten. Für diese Funktion wird keine zusätzliche externe Datenquelle eingeführt.
-- Ein Rezept gilt als „jetzt kaufbar und lernbar“ nur, wenn der Charakter den passenden Beruf besitzt, die aktuelle Berufsfertigkeit mindestens der Rezeptanforderung entspricht und das Rezept in seinen bekannten Rezepten noch nicht vorhanden ist.
-- In der Kaufliste erscheinen ausschließlich Händlerquellen mit `evidence = forever-confirmed` und einem bestätigten Ort. Classic-unbestätigte oder unbekannte Quellen sowie Lehrerquellen werden nicht als kaufbare Händlerangebote ausgegeben.
-- Ortsnamen, Rezeptnamen, Händlernamen und Spielbegriffe werden aus den verifizierten Quelldaten übernommen; keine sichtbaren Orts- oder Händlernamen werden selbst übersetzt.
-- Mehrere Angebote desselben Rezepts dürfen gebündelt werden. Die bevorzugte Händlerzuordnung priorisiert eine geringere Zahl an Verkaufsstellen; bestätigte Alternativen bleiben sichtbar.
-- Die Rezeptauswahl ist eine echte Mehrfachauswahl und darf deshalb Checkboxen verwenden. Die Einkaufsliste gruppiert ausgewählte Rezepte nach Händler und summiert ausschließlich bekannte Preise. Fehlende Preise werden ausdrücklich ausgewiesen und niemals als 0 in eine vermeintlich vollständige Gesamtsumme eingerechnet.
-- Ändert sich der Charakterdatenstand, wird der Berufsplaner invalidiert und neu berechnet; eine bestehende Einkaufsauswahl wird verworfen, weil bekannte Rezepte und Skillstände sich geändert haben können.
+- Der Ortsplaner ersetzt den bisherigen Berufsplaner. Er verwendet die aktuellen Blizzard-Charakterdaten und gemeinsame persistente ForeverDB-Master; er führt **keine eigene Kopie** von Rezepten, Fähigkeiten oder NPC-Stammdaten.
+- Oben werden Charakter und Ort gewählt. Darunter stehen die echten Mehrfachfilter **Klassenfähigkeiten**, **Berufsrezepte**, **Berufslehrer** und **Begleiterfähigkeiten** standardmäßig aktiviert zur Verfügung.
+- Der Ortsplaner zeigt ausschließlich Erledigungen, die der gewählte Charakter **jetzt** am gewählten Ort durchführen kann. Zukünftige Level-, Skill- oder sonstige Fortschrittshinweise gehören nicht in diese Ansicht.
+- Eine Rezept-Erledigung ist nur zulässig, wenn der Charakter den passenden Beruf besitzt, das Rezept nach dem verifizierten Charakterstand noch nicht kennt, der erforderliche Berufsskill erfüllt ist **und die Lernvoraussetzung des Rezept-Spells bestätigt wurde**. Eine vorhandene Charakterlevel-Anforderung muss erfüllt sein. Das Nutzungslevel des hergestellten Gegenstands ist dafür niemals ein Ersatz.
+- Für NPC-Quellen werden nur `evidence = forever-confirmed`, ein bestätigter Ort und die passende Fraktion akzeptiert. Classic-unbestätigte oder unbekannte Quellen bleiben aus dem Ortsplaner heraus.
+- Berufslehrer-Leistungen werden nur aufgenommen, wenn die konkrete Leistung, ihre Voraussetzungen und ihre konkrete Lehrerquelle belegt sind. Ein allgemeiner Berufslehrer darf nicht ohne Rang-/Leistungsbezug als Beweis dienen.
+- Klassen- und Begleiterfähigkeiten werden nur aufgenommen, wenn sowohl der persönliche Zustand „noch nicht gelernt“ als auch der konkrete Erwerbsweg am NPC zuverlässig belegt sind. Level allein darf niemals als Beweis dafür dienen, dass eine Fähigkeit noch fehlt.
+- Mehrere bestätigte Anlaufstellen derselben Erledigung dürfen gebündelt werden. Die bevorzugte NPC-Zuordnung priorisiert eine geringere Zahl an Stationen; bestätigte Alternativen bleiben sichtbar.
+- Kategorien und einzelne Erledigungen sind echte Mehrfachauswahlen und dürfen deshalb Checkboxen verwenden. Die Erledigungsliste gruppiert nach NPC und summiert ausschließlich bekannte Preise. Fehlende Preise werden ausdrücklich ausgewiesen und niemals als `0` in eine vollständige Gesamtsumme eingerechnet.
+- NPC-Bilder verwenden ausschließlich die gemeinsame Medienlogik `entityType + entityId + role`. Ein Avatar wird nur bei einer stabil und zweifelsfrei dem NPC zugeordneten Forever-Renderquelle archiviert; andernfalls bleibt er weg.
+- Sichtbare Spielbegriffe und Orte folgen Abschnitt 2. ForeverDB-Daten werden sichtbar als Quelle verlinkt.
+- Ändert sich der Charakterdatenstand, wird der Ortsplaner invalidiert und neu berechnet; die bestehende Erledigungsauswahl wird verworfen, weil Lernstand, Skill, Level oder Begleiterstatus sich geändert haben können.
 
 ## 8. Datenfrische / Frontend-Synchronisierung
 
@@ -74,7 +80,7 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Ein erfolgreicher manueller Refresh muss den neuen Stand sofort in derselben Browser-Sitzung anwenden.
 - Ein serverseitiger Morgen-/Cron-Refresh muss auch in bereits geöffneten Tabs automatisch erkannt werden. Dafür wird nur eine leichte Datenversion periodisch geprüft; ein vollständiger Datensatz wird ausschließlich bei Versionsänderung nachgeladen.
 - Beim Zurückkehren in einen Tab (`visibilitychange`, `focus`, `pageshow`, `online`) wird die Datenversion sofort geprüft.
-- Datenabhängige abgeleitete Ansichten müssen bei geändertem Charakter-`generatedAt` invalidiert werden. Für die Werkstatt betrifft das Overview, Suchergebnisse und ausgewählte Herstellbarkeitsinformationen; für den Berufsplaner die Rezept-/Ortsliste und die Einkaufsauswahl.
+- Datenabhängige abgeleitete Ansichten müssen bei geändertem Charakter-`generatedAt` invalidiert werden. Für die Werkstatt betrifft das Overview, Suchergebnisse und ausgewählte Herstellbarkeitsinformationen; für den Ortsplaner die Orts-/Erledigungsliste und die Erledigungsauswahl.
 - Benutzerzustände wie ausgewählte Vergleichscharaktere, aktive Charakter-Reiter oder Filtereinstellungen bleiben bei Hintergrundaktualisierungen erhalten.
 - Ein Update der Pet-Regeln muss die globale Datenversion ebenfalls ändern, auch wenn sich der Charakter-`generatedAt`-Wert nicht geändert hat.
 

@@ -17,7 +17,7 @@ const PROFESSION_SLUG_BY_ID=new Map([
 
 function asArray(value){return Array.isArray(value)?value:[]}
 function object(value){return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}
-function finite(value){const n=Number(value);return Number.isFinite(n)?n:null}
+function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
 function string(value){return typeof value==='string'&&value.trim()?value.trim():null}
 function first(...values){for(const value of values)if(value!==null&&value!==undefined&&value!=='')return value;return null}
@@ -171,6 +171,8 @@ function normalizeSource(entry,path){
   const sourceLabel=firstText(raw.source,raw.dataSource,raw.origin);
   const dropChance=firstNumber(raw.dropChance,raw.chance,raw.percent);
   const observations=firstNumber(raw.players,raw.seenByPlayers,raw.observations,raw.count);
+  const displayId=firstInteger(raw.displayId,raw.display_id,raw.creatureDisplayId,raw.creature_display_id,raw.display?.id,raw.npc?.displayId,raw.vendor?.displayId,raw.trainer?.displayId);
+  const renderSourceUrl=firstText(raw.render?.url,raw.renderUrl,raw.render_url,raw.imageUrl,raw.image_url,raw.npc?.render?.url,raw.vendor?.render?.url,raw.trainer?.render?.url);
   if(!identity.id&&!identity.name&&!location&&priceCopper===null&&!sourceLabel)return null;
   return {
     type,
@@ -189,7 +191,9 @@ function normalizeSource(entry,path){
     trainerCostSource,
     dropChance,
     observations,
-    sourceLabel
+    sourceLabel,
+    displayId:displayId&&displayId>0?displayId:null,
+    renderSourceUrl:renderSourceUrl&&/^https:\/\//.test(renderSourceUrl)?renderSourceUrl:null
   };
 }
 function collectSources(value,path=[],out=[]){
@@ -245,6 +249,36 @@ function normalizeLearning(raw={}){
     recipeItemsHidden:asArray(first(raw.recipeItemsHidden,raw.recipeItemsNotInClient,learned.recipeItemsHidden)).map(itemRef).filter(Boolean)
   };
 }
+
+function normalizeProfessionRank(raw={}){
+  const entry=object(raw);
+  const nested=object(first(entry.rank,entry.skillRank,entry.skill_rank));
+  const source=Object.keys(nested).length?{...entry,...nested}:entry;
+  const rankSources=dedupeSources(collectSources(first(source.sources,source.trainers,source.learnedFrom?.sources,source.learnedFrom?.trainers),['trainers']));
+  return {
+    id:firstInteger(source.id,source.rankId,source.rank_id,source.spellId,source.spell_id),
+    name:firstText(source.name,source.rankName,source.rank_name,source.label),
+    skillCap:firstNumber(source.skillCap,source.skill_cap,source.maxSkill,source.max_skill,source.maximumSkill,source.cap,source.skill?.max,source.skill?.cap),
+    requiredSkill:firstNumber(source.requiredSkill,source.required_skill,source.minSkill,source.minimumSkill,source.learnAtSkill,source.skillRequired,source.skill?.required),
+    requiredLevel:firstNumber(source.requiredLevel,source.required_level,source.minLevel,source.minimumLevel,source.levelRequirement,source.level_requirement),
+    priceCopper:firstNumber(source.priceCopper,source.price,source.trainerCost,source.trainer_cost,source.cost),
+    sources:rankSources
+  };
+}
+function normalizeProfessionMaster(raw={},professionSlug){
+  const data=object(raw);
+  const ranks=asArray(first(data.ranks,data.skillRanks,data.skill_ranks,data.professionRanks,data.profession_ranks))
+    .map(normalizeProfessionRank)
+    .filter(rank=>rank.name||rank.skillCap!==null);
+  const trainers=dedupeSources(collectSources(first(data.trainers,data.professionTrainers,data.profession_trainers),['trainers']));
+  return {
+    slug:professionSlug,
+    id:firstInteger(data.id,data.professionId,data.profession_id),
+    name:firstText(data.name,data.localizedName,data.nameLocalized),
+    ranks,
+    trainers
+  };
+}
 export function normalizeForeverDbRecipe(raw={},professionSlug){
   const makes=normalizeMakes(raw);
   if(!makes?.item?.id)return null;
@@ -277,13 +311,14 @@ export async function fetchForeverDbRecipeIndex({
   professionSlugs=[...PROFESSION_SLUGS]
 }={}){
   const slugs=[...new Set(asArray(professionSlugs).filter(slug=>PROFESSION_SLUGS.has(slug)))].sort();
-  if(!slugs.length)return {generatedAt:new Date().toISOString(),build:null,requestCount:0,complete:true,professionSlugs:[],recipes:[],byItem:new Map()};
+  if(!slugs.length)return {generatedAt:new Date().toISOString(),build:null,requestCount:0,complete:true,professionSlugs:[],professions:[],recipes:[],byItem:new Map()};
   let requestCount=0;
   const firstPages=await Promise.all(slugs.map(async slug=>{
     requestCount++;
     const page=await fetchForeverDbProfession(slug,{limit:pageSize,offset:0,fetchImpl});
     return {slug,page};
   }));
+  const professions=firstPages.map(({slug,page})=>normalizeProfessionMaster(page.data,slug));
   const all=[];
   const extraJobs=[];
   for(const {slug,page} of firstPages){
@@ -314,6 +349,7 @@ export async function fetchForeverDbRecipeIndex({
     requestCount,
     complete:true,
     professionSlugs:slugs,
+    professions,
     recipes,
     byItem
   };
@@ -340,6 +376,7 @@ export function serializableRecipeIndex(index){
     requestCount:index.requestCount||0,
     complete:index.complete===true,
     professionSlugs:asArray(index.professionSlugs),
+    professions:asArray(index.professions),
     recipes:asArray(index.recipes)
   };
 }
@@ -351,7 +388,7 @@ export function hydrateRecipeIndex(value={}){
     if(!id)continue;
     const list=byItem.get(id)||[];list.push(recipe);byItem.set(id,list);
   }
-  return {...value,recipes,byItem};
+  return {...value,professions:asArray(value.professions),recipes,byItem};
 }
 export function professionSlugFromRecord(profession={}){
   return PROFESSION_SLUG_BY_ID.get(Number(profession?.id))||null;

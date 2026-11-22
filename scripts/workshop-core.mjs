@@ -331,30 +331,48 @@ export function preferredForeverRecipeForItem(index,itemId){
 export function workshopLearningCandidates(data,recipe){
   if(!recipe)return [];
   const required=finiteNumber(recipe.requiredSkill);
+  const requiredLevel=finiteNumber(recipe.requiredCharacterLevel);
+  const requirementsVerified=recipe.learningRequirementsVerified===true;
   const candidates=[];
   for(const character of asArray(data?.characters)){
     for(const profession of asArray(character?.professions)){
       const slug=professionSlugFromRecord(profession);
       if(!slug||slug!==recipe.professionSlug)continue;
       const skill=finiteNumber(profession?.current),cap=finiteNumber(profession?.max);
+      const level=finiteNumber(character?.level);
       const gap=required===null||skill===null?null:Math.max(0,Math.ceil(required-skill));
+      const levelGap=requiredLevel===null||level===null?null:Math.max(0,Math.ceil(requiredLevel-level));
+      let status='requirements-unconfirmed';
+      if(requirementsVerified&&required!==null&&skill!==null&&level!==null&&requiredLevel!==null){
+        if(gap===0&&levelGap===0)status='can-learn-now';
+        else if(gap>0&&levelGap>0)status='skill-and-level-gap';
+        else if(gap>0)status='skill-gap';
+        else if(levelGap>0)status='level-gap';
+      }else if(requirementsVerified&&required!==null&&skill!==null&&requiredLevel===0){
+        status=gap===0?'can-learn-now':'skill-gap';
+      }
       candidates.push({
         slug:character?.slug||null,
         name:character?.name||character?.slug||'Dalton',
         player:character?.player||null,
-        level:finiteNumber(character?.level),
+        level,
         profession:profession?.name||null,
         professionSlug:slug,
         skill,
         skillCap:cap,
         requiredSkill:required,
+        requiredCharacterLevel:requiredLevel,
+        learningRequirementsVerified:requirementsVerified,
         gap,
-        status:required===null||skill===null?'profession-match':gap===0?'can-learn-now':'skill-gap'
+        levelGap,
+        status
       });
     }
   }
   return candidates.sort((a,b)=>{
-    const order={'can-learn-now':0,'skill-gap':1,'profession-match':2};
-    return (order[a.status]??9)-(order[b.status]??9)||(a.gap??9999)-(b.gap??9999)||a.name.localeCompare(b.name,'de');
+    const order={'can-learn-now':0,'skill-gap':1,'level-gap':1,'skill-and-level-gap':2,'requirements-unconfirmed':3};
+    return (order[a.status]??9)-(order[b.status]??9)||
+      (a.gap??0)+(a.levelGap??0)-(b.gap??0)-(b.levelGap??0)||
+      a.name.localeCompare(b.name,'de');
   });
 }

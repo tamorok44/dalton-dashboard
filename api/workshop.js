@@ -16,7 +16,7 @@ import {
   foreverDbConfigured,
   fetchForeverDbItem
 } from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch,cachedForeverDbSpell} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function normalize(value){
@@ -68,6 +68,8 @@ function publicLearningRecipe(recipe){
     id:recipe.id??null,
     name:recipe.name||null,
     requiredSkill:recipe.requiredSkill??null,
+    requiredCharacterLevel:recipe.requiredCharacterLevel??null,
+    learningRequirementsVerified:recipe.learningRequirementsVerified===true,
     learning:{automatic:recipe.learning?.automatic===true}
   };
 }
@@ -81,7 +83,10 @@ function publicLearningCandidate(candidate){
     skill:candidate?.skill??null,
     skillCap:candidate?.skillCap??null,
     requiredSkill:candidate?.requiredSkill??null,
+    requiredCharacterLevel:candidate?.requiredCharacterLevel??null,
+    learningRequirementsVerified:candidate?.learningRequirementsVerified===true,
     gap:candidate?.gap??null,
+    levelGap:candidate?.levelGap??null,
     status:candidate?.status||null
   };
 }
@@ -213,8 +218,24 @@ export default async function handler(req,res){
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
       const plan=buildProductionPlan(catalog,itemId,quantity);
-      const learningCandidates=remoteRecipe?workshopLearningCandidates(stored.data,remoteRecipe):[];
-      const learningSources=remoteRecipe?.learning?.sources||[];
+      let learningRecipe=remoteRecipe;
+      if(remoteRecipe?.id){
+        try{
+          const spell=await cachedForeverDbSpell(remoteRecipe.id,{build:recipeIndex?.build||null});
+          learningRecipe=spell?.id?{
+            ...remoteRecipe,
+            requiredCharacterLevel:Number.isFinite(Number(spell.requiredLevel))?Number(spell.requiredLevel):null,
+            learningRequirementsVerified:Number.isFinite(Number(spell.requiredLevel))
+          }:{...remoteRecipe,learningRequirementsVerified:false};
+        }catch(error){
+          remoteErrors.push('Lernvoraussetzungen: '+String(error.message).slice(0,140));
+          learningRecipe={...remoteRecipe,learningRequirementsVerified:false};
+        }
+      }else if(remoteRecipe){
+        learningRecipe={...remoteRecipe,learningRequirementsVerified:false};
+      }
+      const learningCandidates=learningRecipe?workshopLearningCandidates(stored.data,learningRecipe):[];
+      const learningSources=learningRecipe?.learning?.sources||[];
       const publicCandidates=learningCandidates.map(publicLearningCandidate);
       const publicSources=learningSources.map(publicLearningSource).filter(Boolean);
       const currentlyCraftable=Boolean(local?.craftable);
@@ -227,7 +248,7 @@ export default async function handler(req,res){
         foreverDbConfigured:remoteReady,
         remoteError:remoteErrors.length?remoteErrors.join(' · '):null,
         craftableInGame:currentlyCraftable||Boolean(remoteRecipe),
-        recipe:publicLearningRecipe(remoteRecipe),
+        recipe:publicLearningRecipe(learningRecipe),
         learningCandidates:currentlyCraftable?[]:publicCandidates,
         learningSources:currentlyCraftable?[]:publicSources,
         learningSourcesAvailable:!currentlyCraftable&&Boolean(remoteRecipe)&&(remoteRecipe.learning?.automatic===true||learningSources.length>0),

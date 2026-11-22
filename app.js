@@ -768,10 +768,10 @@ function setMainView(view){
   });
   if(compare)renderComparison();
   if(workshop)loadWorkshopOverview();
-  if(planner)loadProfessionPlanner();
+  if(planner)loadLocationPlanner();
 }
 function syncMainView(){
-  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':location.hash==='#berufsplaner'?'planner':'characters';
+  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':(location.hash==='#ortsplaner'||location.hash==='#berufsplaner')?'planner':'characters';
   setMainView(view);
 }
 window.addEventListener('hashchange',syncMainView);
@@ -954,10 +954,14 @@ function workshopLearningCandidatesHtml(result){
   if(!list.length)return '<p class="workshop-muted">Keiner der Daltons besitzt aktuell den passenden Beruf.</p>';
   return '<div class="workshop-learning-candidates">'+list.map(candidate=>{
     const status=candidate.status==='can-learn-now'
-      ?'<span class="workshop-learning-state is-ready">Beruf/Skill reicht jetzt</span>'
+      ?'<span class="workshop-learning-state is-ready">Jetzt lernbar</span>'
       :candidate.status==='skill-gap'
         ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+'</span>'
-        :'<span class="workshop-learning-state">Passender Beruf</span>';
+        :candidate.status==='level-gap'
+          ?'<span class="workshop-learning-state">Noch nicht lernbar · ab Level '+esc(candidate.requiredCharacterLevel)+'</span>'
+          :candidate.status==='skill-and-level-gap'
+            ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+' · ab Level '+esc(candidate.requiredCharacterLevel)+'</span>'
+            :'<span class="workshop-learning-state">Lernvoraussetzungen nicht vollständig bestätigt</span>';
     const skill=Number.isFinite(Number(candidate.skill))
       ?esc(candidate.skill)+'/'+esc(candidate.skillCap??'–')
       :'Skill unbekannt';
@@ -993,9 +997,13 @@ function workshopLearningHtml(result){
   if(!recipe)return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4><p>'+esc(result.learningSourcesReason||'Für diesen Gegenstand ist kein Herstellungsrezept bekannt.')+'</p></section>';
   const candidates=Array.isArray(result.learningCandidates)?result.learningCandidates:[];
   const verifiedProfession=candidates.find(candidate=>candidate.profession)?.profession||null;
-  const requirement=Number.isFinite(Number(recipe.requiredSkill))
+  const skillRequirement=Number.isFinite(Number(recipe.requiredSkill))
     ?' · benötigt '+(verifiedProfession?esc(verifiedProfession)+' ':'Berufsfertigkeit ')+esc(recipe.requiredSkill)
     :verifiedProfession?' · '+esc(verifiedProfession):'';
+  const levelRequirement=recipe.learningRequirementsVerified===true&&Number.isFinite(Number(recipe.requiredCharacterLevel))&&Number(recipe.requiredCharacterLevel)>0
+    ?' · Charakterlevel '+esc(recipe.requiredCharacterLevel)
+    :'';
+  const requirement=skillRequirement+levelRequirement;
   const sources=Array.isArray(result.learningSources)?result.learningSources:[];
   const confirmed=sources.filter(source=>source.evidence==='forever-confirmed');
   const other=sources.filter(source=>source.evidence!=='forever-confirmed');
@@ -1185,12 +1193,14 @@ function invalidateWorkshopData({reloadVisible=true}={}){
 }
 
 
+const locationCategoryDefaults=['class-abilities','profession-recipes','profession-training','companion-abilities'];
 const plannerState={
   data:null,
   loading:false,
   error:null,
   character:'',
   location:'',
+  categories:new Set(locationCategoryDefaults),
   selected:new Set()
 };
 let plannerEpoch=0;
@@ -1202,69 +1212,85 @@ function plannerCoords(location={}){
   if(!Number.isFinite(x)||!Number.isFinite(y))return '';
   return x.toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+y.toLocaleString('de-DE',{maximumFractionDigits:1});
 }
-function plannerProfessionLine(recipe){
-  const required=Number(recipe?.requiredSkill),current=Number(recipe?.currentSkill);
-  const parts=[recipe?.profession||'Beruf'];
-  if(Number.isFinite(required))parts.push('benötigt '+required);
-  if(Number.isFinite(current))parts.push('aktuell '+current);
+function plannerCategoryLabel(id,data={}){
+  return (data.categories||[]).find(category=>category.id===id)?.label||'Erledigung';
+}
+function plannerVisibleActions(data){
+  return (Array.isArray(data?.actions)?data.actions:[]).filter(action=>plannerState.categories.has(action.category));
+}
+function plannerActionLine(action){
+  const parts=[];
+  if(action.profession)parts.push(action.profession);
+  if(Number.isFinite(Number(action.requiredSkill)))parts.push('Fertigkeit '+action.requiredSkill);
+  if(Number.isFinite(Number(action.requiredLevel))&&Number(action.requiredLevel)>0)parts.push('Level '+action.requiredLevel);
   return parts.join(' · ');
 }
-function plannerAlternativeHtml(recipe){
-  const alternatives=Array.isArray(recipe?.alternatives)?recipe.alternatives:[];
+function plannerAlternativeHtml(action){
+  const alternatives=Array.isArray(action?.alternatives)?action.alternatives:[];
   if(!alternatives.length)return '';
-  return '<details class="planner-alternatives"><summary>Weitere Verkaufsstellen · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
+  return '<details class="planner-alternatives"><summary>Weitere bestätigte Anlaufstellen · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
     alternatives.map(source=>{
       const coords=plannerCoords(source.location);
-      const meta=[source.location?.zone,coords,plannerPrice(source.priceCopper)].filter(Boolean).join(' · ');
-      return '<div class="planner-alternative"><strong>'+esc(source.name||'Händler')+'</strong><span>'+esc(meta)+'</span></div>';
+      const meta=[source.role,source.location?.zone,coords,plannerPrice(source.priceCopper)].filter(Boolean).join(' · ');
+      return '<div class="planner-alternative"><strong>'+esc(source.name||'NPC')+'</strong><span>'+esc(meta)+'</span></div>';
     }).join('')+'</div></details>';
 }
-function plannerSelectedRecipes(data){
-  const selected=plannerState.selected;
-  return (Array.isArray(data?.recipes)?data.recipes:[]).filter(recipe=>selected.has(recipe.key));
+function plannerSelectedActions(data){
+  const visible=new Map(plannerVisibleActions(data).map(action=>[action.key,action]));
+  return [...plannerState.selected].map(key=>visible.get(key)).filter(Boolean);
 }
 function plannerSelectionHtml(data){
-  const selected=plannerSelectedRecipes(data);
-  if(!selected.length)return '<div class="planner-selection is-empty"><strong>Noch nichts auf der Einkaufsliste.</strong><span>Wähle einzelne Rezepte bei den Händlern aus.</span></div>';
-  const byVendor=new Map();
+  const selected=plannerSelectedActions(data);
+  if(!selected.length)return '<div class="planner-selection is-empty"><strong>Noch nichts auf der Erledigungsliste.</strong><span>Wähle die Dinge aus, die du an diesem Ort mitnehmen oder lernen möchtest.</span></div>';
+  const byNpc=new Map();
   let total=0,unknown=0;
-  for(const recipe of selected){
-    const source=recipe.source||{};
-    const key=source.key||source.name||'vendor';
-    let group=byVendor.get(key);
-    if(!group){group={name:source.name||'Händler',location:source.location||{},recipes:[],total:0,unknown:0};byVendor.set(key,group)}
-    group.recipes.push(recipe);
+  for(const action of selected){
+    const source=action.source||{};
+    const key=source.key||source.name||'npc';
+    let group=byNpc.get(key);
+    if(!group){group={name:source.name||'NPC',role:source.role||'',location:source.location||{},actions:[],total:0,unknown:0};byNpc.set(key,group)}
+    group.actions.push(action);
     const price=Number(source.priceCopper);
     if(Number.isFinite(price)){group.total+=price;total+=price}else{group.unknown++;unknown++}
   }
-  const groups=[...byVendor.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
-  return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE EINKAUFSLISTE</span><h3>'+selected.length+' Rezept'+(selected.length===1?'':'e')+' · '+groups.length+' Händler</h3></div><div class="planner-total"><span>'+(unknown?'Bekannte Kosten':'Gesamtkosten')+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(unknown?'<small>'+unknown+' ohne Preisangabe</small>':'')+'</div></div>'+
+  const groups=[...byNpc.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE ERLEDIGUNGSLISTE</span><h3>'+selected.length+' Erledigung'+(selected.length===1?'':'en')+' · '+groups.length+' Station'+(groups.length===1?'':'en')+'</h3></div><div class="planner-total"><span>'+(unknown?'Bekannte Kosten':'Gesamtkosten')+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(unknown?'<small>'+unknown+' ohne bestätigten Preis</small>':'')+'</div></div>'+
     '<div class="planner-route">'+groups.map(group=>{
       const coords=plannerCoords(group.location);
-      const meta=[group.location?.zone,coords].filter(Boolean).join(' · ');
-      return '<article class="planner-route-stop"><div class="planner-route-head"><div><strong>'+esc(group.name)+'</strong>'+(meta?'<span>'+esc(meta)+'</span>':'')+'</div><span>'+group.recipes.length+' Rezept'+(group.recipes.length===1?'':'e')+'</span></div>'+
-        '<div class="planner-route-recipes">'+group.recipes.map(recipe=>'<div><span>'+esc(recipe.name)+'</span><strong>'+esc(plannerPrice(recipe.source?.priceCopper))+'</strong></div>').join('')+'</div>'+
+      const meta=[group.role,group.location?.zone,coords].filter(Boolean).join(' · ');
+      return '<article class="planner-route-stop"><div class="planner-route-head"><div><strong>'+esc(group.name)+'</strong>'+(meta?'<span>'+esc(meta)+'</span>':'')+'</div><span>'+group.actions.length+' Erledigung'+(group.actions.length===1?'':'en')+'</span></div>'+
+        '<div class="planner-route-recipes">'+group.actions.map(action=>'<div><span>'+esc(action.name)+'</span><strong>'+esc(plannerPrice(action.source?.priceCopper))+'</strong></div>').join('')+'</div>'+
         '<div class="planner-route-subtotal"><span>'+(group.unknown?'Bekannte Kosten':'Zwischensumme')+'</span><strong>'+esc(workshopCopper(group.total))+'</strong>'+(group.unknown?'<small>'+group.unknown+' ohne Preis</small>':'')+'</div></article>';
     }).join('')+'</div></section>';
 }
-function plannerVendorHtml(vendor){
-  const location=vendor.location||{};
+function plannerNpcHtml(npc,data,actions){
+  const location=npc.location||{};
   const coords=plannerCoords(location);
-  const meta=[location.zone,coords].filter(Boolean).join(' · ');
-  return '<article class="planner-vendor"><div class="planner-vendor-head"><div><span class="planner-kicker">HÄNDLER</span><h3>'+esc(vendor.name||'Unbekannter Händler')+'</h3>'+(meta?'<p>'+esc(meta)+'</p>':'')+'</div><span class="planner-vendor-count">'+vendor.recipes.length+' Rezept'+(vendor.recipes.length===1?'':'e')+'</span></div>'+
-    '<div class="planner-recipe-list">'+vendor.recipes.map(recipe=>{
-      const checked=plannerState.selected.has(recipe.key);
-      const stock=Number(recipe.source?.limitedStock);
-      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-planner-recipe="'+esc(recipe.key)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><strong>'+esc(recipe.name)+'</strong><small>'+esc(plannerProfessionLine(recipe))+'</small>'+
-        (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(recipe.source?.priceCopper))+'</span></label>'+
-        plannerAlternativeHtml(recipe)+'</div>';
+  const meta=[npc.role,location.zone,coords].filter(Boolean).join(' · ');
+  const avatar=npc.avatarUrl
+    ?'<img class="planner-npc-avatar" src="'+esc(npc.avatarUrl)+'" alt="" width="48" height="48" loading="lazy">'
+    :'';
+  return '<article class="planner-vendor"><div class="planner-vendor-head"><div class="planner-npc-heading">'+avatar+'<div><span class="planner-kicker">'+esc(npc.role||'ANLAUFSTELLE')+'</span><h3>'+esc(npc.name||'Unbekannter NPC')+'</h3>'+(meta?'<p>'+esc(meta)+'</p>':'')+'</div></div><span class="planner-vendor-count">'+actions.length+' Erledigung'+(actions.length===1?'':'en')+'</span></div>'+
+    '<div class="planner-recipe-list">'+actions.map(action=>{
+      const checked=plannerState.selected.has(action.key);
+      const stock=Number(action.source?.limitedStock);
+      const line=plannerActionLine(action);
+      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><strong>'+esc(action.name)+'</strong>'+(line?'<small>'+esc(line)+'</small>':'')+
+        (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(action.source?.priceCopper))+'</span></label>'+
+        plannerAlternativeHtml(action)+'</div>';
     }).join('')+'</div></article>';
 }
-function renderProfessionPlanner(){
+function plannerCategoryFilters(data){
+  const categories=Array.isArray(data?.categories)?data.categories:[];
+  return '<fieldset class="planner-filters"><legend>Was soll berücksichtigt werden?</legend><div class="planner-filter-grid">'+categories.map(category=>
+    '<label class="planner-filter"><input type="checkbox" data-location-category="'+esc(category.id)+'"'+(plannerState.categories.has(category.id)?' checked':'')+'><span><strong>'+esc(category.label)+'</strong><small>'+esc(category.actionCount??0)+' hier verfügbar</small></span></label>'
+  ).join('')+'</div><p>Alle Kategorien sind vorausgewählt. Es erscheinen ausschließlich vollständig bestätigte Erledigungen, die der Charakter jetzt an diesem Ort durchführen kann.</p></fieldset>';
+}
+function renderLocationPlanner(){
   if(!plannerRoot)return;
   const data=plannerState.data||{};
   if(plannerState.loading&&!plannerState.data){
-    plannerRoot.innerHTML='<p class="compare-empty">Berufsplaner wird geladen …</p>';return;
+    plannerRoot.innerHTML='<p class="compare-empty">Ortsplaner wird geladen …</p>';return;
   }
   if(plannerState.error&&!plannerState.data){
     plannerRoot.innerHTML='<p class="error">'+esc(plannerState.error)+'</p>';return;
@@ -1273,32 +1299,41 @@ function renderProfessionPlanner(){
   const locations=Array.isArray(data.locations)?data.locations:[];
   const selectedCharacter=data.selectedCharacter||null;
   const selectedLocation=data.selectedLocation||null;
-  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ZIEL FESTLEGEN</span><h3>Was kann ich hier jetzt noch kaufen?</h3><p>Es erscheinen nur Rezepte, die der gewählte Charakter noch nicht kennt, mit seinem aktuellen Skill bereits lernen kann und die bei einem in WoW Forever bestätigten Händler am gewählten Ort erhältlich sind.</p></div>'+
+  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ORT PLANEN</span><h3>Was kannst du hier erledigen?</h3><p>Wähle Charakter und Ort. Der Ortsplaner zeigt nur bestätigte Dinge, die dort mit dem aktuellen Charakterstand sofort möglich sind.</p></div>'+
     '<div class="planner-fields"><label class="planner-field"><span>Charakter</span><select id="plannerCharacter"><option value="">Charakter wählen …</option>'+
       characters.map(character=>'<option value="'+esc(character.slug)+'"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+
     '</select></label><label class="planner-field"><span>Ort</span><select id="plannerLocation"'+(!plannerState.character?' disabled':'')+'><option value="">Ort wählen …</option>'+
-      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.recipeCount+' Rezept'+(location.recipeCount===1?'':'e')+'</option>').join('')+
+      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.actionCount+' Erledigung'+(location.actionCount===1?'':'en')+'</option>').join('')+
     '</select></label></div></section>';
   let characterSummary='';
   if(selectedCharacter){
-    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+'</h3><p>'+esc((selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · '))+'</p></div>'+
-      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>jetzt kaufbare, noch unbekannte Rezepte</span></div></section>';
+    const professionText=(selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
+    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+'</div>'+
+      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>bestätigte Erledigungen an allen verfügbaren Orten</span></div></section>';
   }
   let body='';
   if(!plannerState.character){
-    body='<div class="planner-placeholder"><strong>Wähle zuerst einen Charakter.</strong><span>Danach zeigt der Planer nur Orte, an denen für dessen aktuelle Berufe und Skillstände etwas verfügbar ist.</span></div>';
+    body='<div class="planner-placeholder"><strong>Wähle zuerst einen Charakter.</strong><span>Danach werden nur Orte angeboten, an denen aktuell mindestens eine bestätigte Erledigung möglich ist.</span></div>';
   }else if(!plannerState.location){
-    body='<div class="planner-placeholder"><strong>Wähle einen Ort.</strong><span>'+esc(data.counts?.availableNow??0)+' passende Rezepte sind aktuell über bestätigte Händler verfügbar.</span></div>';
+    body='<div class="planner-placeholder"><strong>Wähle einen Ort.</strong><span>'+esc(data.counts?.availableNow??0)+' bestätigte Erledigung'+(data.counts?.availableNow===1?'':'en')+' sind für diesen Charakter aktuell verfügbar.</span></div>';
   }else if(!selectedLocation){
     body='<div class="planner-placeholder"><strong>Der gewählte Ort ist für den aktuellen Stand nicht mehr verfügbar.</strong><span>Bitte wähle einen Ort aus der aktualisierten Liste.</span></div>';
-  }else if(!(data.vendors||[]).length){
-    body='<div class="planner-placeholder"><strong>Hier gibt es aktuell nichts Neues zu kaufen.</strong><span>Für den gewählten Charakter ist kein noch unbekanntes und bereits lernbares Rezept bei einem bestätigten Händler dieses Ortes hinterlegt.</span></div>';
   }else{
-    const count=data.counts?.atLocation??0,vendorCount=data.counts?.vendors??0;
-    body='<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+esc(count)+' Rezept'+(count===1?'':'e')+' bei '+esc(vendorCount)+' Händler'+(vendorCount===1?'':'n')+'</h3><p>Die Händlerzuordnung bündelt Angebote möglichst auf wenige Verkaufsstellen. Weitere bestätigte Verkaufsstellen bleiben beim jeweiligen Rezept sichtbar.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
+    const visible=plannerVisibleActions(data);
+    const npcByKey=new Map((data.npcs||[]).map(npc=>[npc.key,npc]));
+    const groups=new Map();
+    for(const action of visible){
+      const key=action.source?.key;
+      if(!key)continue;
+      let list=groups.get(key);if(!list){list=[];groups.set(key,list)}list.push(action);
+    }
+    const npcs=(data.npcs||[]).filter(npc=>groups.has(npc.key));
+    body=plannerCategoryFilters(data)+
+      '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Die Liste ist nach NPC gebündelt. Nicht ausgewählte Kategorien werden vollständig ausgeblendet.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
       plannerSelectionHtml(data)+
-      '<div class="planner-vendors">'+(data.vendors||[]).map(plannerVendorHtml).join('')+'</div>'+
-      '<p class="planner-credit">Bezugsquellen: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a> · nur in Forever bestätigte Händlerangebote</p>';
+      (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npcByKey.get(npc.key)||npc,data,groups.get(npc.key)||[])).join('')+'</div>':
+        '<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
+      '<p class="planner-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a> · angezeigt werden nur in Forever bestätigte und aktuell erfüllbare Angebote.</p>';
   }
   plannerRoot.innerHTML='<div class="planner-shell">'+controls+characterSummary+body+'</div>';
   plannerRoot.querySelector('#plannerCharacter')?.addEventListener('change',event=>{
@@ -1306,38 +1341,43 @@ function renderProfessionPlanner(){
     plannerState.location='';
     plannerState.selected.clear();
     plannerState.data=null;
-    loadProfessionPlanner({force:true});
+    loadLocationPlanner({force:true});
   });
   plannerRoot.querySelector('#plannerLocation')?.addEventListener('change',event=>{
     plannerState.location=event.target.value;
     plannerState.selected.clear();
     plannerState.data=null;
-    loadProfessionPlanner({force:true});
+    loadLocationPlanner({force:true});
   });
-  plannerRoot.querySelectorAll('[data-planner-recipe]').forEach(input=>input.addEventListener('change',()=>{
-    const key=input.dataset.plannerRecipe;
+  plannerRoot.querySelectorAll('[data-location-category]').forEach(input=>input.addEventListener('change',()=>{
+    const id=input.dataset.locationCategory;
+    if(input.checked)plannerState.categories.add(id);else plannerState.categories.delete(id);
+    renderLocationPlanner();
+  }));
+  plannerRoot.querySelectorAll('[data-location-action]').forEach(input=>input.addEventListener('change',()=>{
+    const key=input.dataset.locationAction;
     if(input.checked)plannerState.selected.add(key);else plannerState.selected.delete(key);
-    renderProfessionPlanner();
+    renderLocationPlanner();
   }));
   plannerRoot.querySelector('[data-planner-select-all]')?.addEventListener('click',()=>{
-    for(const recipe of data.recipes||[])plannerState.selected.add(recipe.key);
-    renderProfessionPlanner();
+    for(const action of plannerVisibleActions(data))plannerState.selected.add(action.key);
+    renderLocationPlanner();
   });
   plannerRoot.querySelector('[data-planner-clear]')?.addEventListener('click',()=>{
-    plannerState.selected.clear();renderProfessionPlanner();
+    plannerState.selected.clear();renderLocationPlanner();
   });
 }
-async function loadProfessionPlanner({force=false}={}){
+async function loadLocationPlanner({force=false}={}){
   if(plannerState.data&&!force)return;
   const epoch=++plannerEpoch;
-  plannerState.loading=true;plannerState.error=null;renderProfessionPlanner();
+  plannerState.loading=true;plannerState.error=null;renderLocationPlanner();
   try{
     const params=new URLSearchParams();
     if(plannerState.character)params.set('character',plannerState.character);
     if(plannerState.location)params.set('location',plannerState.location);
     params.set('t',Date.now());
-    const response=await fetch('/api/profession-planner?'+params.toString(),{cache:'no-store'});
-    if(!response.ok)throw new Error('Berufsplaner HTTP '+response.status);
+    const response=await fetch('/api/location-planner?'+params.toString(),{cache:'no-store'});
+    if(!response.ok)throw new Error('Ortsplaner HTTP '+response.status);
     const result=await response.json();
     if(epoch!==plannerEpoch)return;
     plannerState.data=result;
@@ -1348,18 +1388,18 @@ async function loadProfessionPlanner({force=false}={}){
       plannerState.location='';plannerState.selected.clear();
     }
   }catch(error){
-    if(epoch===plannerEpoch)plannerState.error='Berufsplaner konnte nicht geladen werden.';
+    if(epoch===plannerEpoch)plannerState.error='Ortsplaner konnte nicht geladen werden.';
   }finally{
-    if(epoch===plannerEpoch){plannerState.loading=false;renderProfessionPlanner()}
+    if(epoch===plannerEpoch){plannerState.loading=false;renderLocationPlanner()}
   }
 }
-function invalidateProfessionPlannerData({reloadVisible=true}={}){
+function invalidateLocationPlannerData({reloadVisible=true}={}){
   plannerEpoch++;
   plannerState.data=null;
   plannerState.loading=false;
   plannerState.error=null;
   plannerState.selected.clear();
-  if(!plannerView.hidden&&reloadVisible)loadProfessionPlanner({force:true});
+  if(!plannerView.hidden&&reloadVisible)loadLocationPlanner({force:true});
 }
 
 let lastGeneratedAt=null;
@@ -1389,7 +1429,7 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
   });
   if(characterDataChanged){
     invalidateWorkshopData({reloadVisible:true});
-    invalidateProfessionPlannerData({reloadVisible:true});
+    invalidateLocationPlannerData({reloadVisible:true});
   }
   return true;
 }

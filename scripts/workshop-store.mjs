@@ -6,7 +6,7 @@ import {
   serializableRecipeIndex,
   hydrateRecipeIndex
 } from './workshop-foreverdb.mjs';
-import {PROFESSION_SLUGS,fetchForeverDbMeta,searchForeverDbItems} from './foreverdb-api.mjs';
+import {PROFESSION_SLUGS,fetchForeverDbMeta,searchForeverDbItems,fetchForeverDbSpell,fetchForeverDbVendor} from './foreverdb-api.mjs';
 
 const RECIPE_TTL_SECONDS=12*60*60;
 const SEARCH_TTL_SECONDS=24*60*60;
@@ -16,6 +16,8 @@ const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v1';
 const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v1';
 const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
 const MASTER_REFRESH_CHUNK=3;
+const SPELL_CACHE_PREFIX='dalton-dashboard:foreverdb:spell:v1:';
+const VENDOR_CACHE_PREFIX='dalton-dashboard:foreverdb:vendor:v1:';
 
 function now(){return Date.now()}
 function fresh(value,maxAgeMs){
@@ -49,12 +51,16 @@ export function mergeRecipeIndexes(...values){
   const recipes=[];
   const seen=new Set();
   const professionSlugs=new Set();
+  const professions=new Map();
   let build=null;
   let requestCount=0;
   for(const index of indexes){
     if(!build&&index?.build)build=index.build;
     requestCount+=Number(index?.requestCount)||0;
     for(const slug of normalizedSlugs(index?.professionSlugs||[]))professionSlugs.add(slug);
+    for(const profession of Array.isArray(index?.professions)?index.professions:[]){
+      if(profession?.slug)professions.set(profession.slug,{...(professions.get(profession.slug)||{}),...profession});
+    }
     for(const recipe of Array.isArray(index?.recipes)?index.recipes:[]){
       const key=recipeIdentity(recipe);
       if(seen.has(key))continue;
@@ -69,6 +75,7 @@ export function mergeRecipeIndexes(...values){
     requestCount,
     complete:professionSlugs.size===PROFESSION_SLUGS.size,
     professionSlugs:[...professionSlugs].sort(),
+    professions:[...professions.values()].sort((a,b)=>String(a.slug).localeCompare(String(b.slug))),
     recipes
   });
 }
@@ -172,6 +179,7 @@ export async function getForeverDbMasterRecipeIndex({
       requestCount:0,
       complete:false,
       professionSlugs:[],
+      professions:[],
       recipes:[]
     });
   }
@@ -246,6 +254,43 @@ export async function cachedForeverDbRecipeSearch(itemId,itemName,{fetchImpl=fet
   }
   return {...await searchForeverDbRecipesForItem(id,itemName,{fetchImpl}),cached:false};
 }
+
+function buildScopedCacheKey(prefix,id,build){
+  return prefix+String(id)+':'+(build?digest(build):'current');
+}
+export async function cachedForeverDbSpell(spellId,{build=null,fetchImpl=fetch}={}){
+  const id=Number(spellId);
+  if(!Number.isInteger(id)||id<=0)return null;
+  const key=buildScopedCacheKey(SPELL_CACHE_PREFIX,id,build);
+  const cached=await loadJson(key);
+  if(cached?.spell?.id===id)return {...cached.spell,cached:true};
+  const result=await fetchForeverDbSpell(id,{fetchImpl});
+  if(!result?.spell?.id)return null;
+  await saveJson(key,{spell:result.spell,generatedAt:new Date().toISOString(),build});
+  return {...result.spell,cached:false};
+}
+export async function cachedForeverDbSpells(spellIds=[],{build=null,fetchImpl=fetch}={}){
+  const ids=[...new Set((Array.isArray(spellIds)?spellIds:[]).map(Number).filter(id=>Number.isInteger(id)&&id>0))];
+  const entries=await Promise.all(ids.map(async id=>{
+    try{return [id,await cachedForeverDbSpell(id,{build,fetchImpl})]}
+    catch(error){
+      return [id,{error:String(error.message).slice(0,180)}];
+    }
+  }));
+  return Object.fromEntries(entries);
+}
+export async function cachedForeverDbVendor(vendorId,{build=null,fetchImpl=fetch}={}){
+  const id=Number(vendorId);
+  if(!Number.isInteger(id)||id<=0)return null;
+  const key=buildScopedCacheKey(VENDOR_CACHE_PREFIX,id,build);
+  const cached=await loadJson(key);
+  if(cached?.vendor?.id===id)return {...cached.vendor,cached:true};
+  const result=await fetchForeverDbVendor(id,{fetchImpl});
+  if(!result?.vendor?.id)return null;
+  await saveJson(key,{vendor:result.vendor,generatedAt:new Date().toISOString(),build});
+  return {...result.vendor,cached:false};
+}
+
 export async function cachedForeverDbItemSearch(query,{limit=100,fetchImpl=fetch}={}){
   const q=String(query??'').trim();
   if(!q)return {items:[],meta:null,cached:false};
