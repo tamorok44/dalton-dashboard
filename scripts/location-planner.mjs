@@ -27,6 +27,27 @@ function sourcePriceCopper(source={}){
   }
   return null;
 }
+function sourcePriceSource(source={}){
+  if(sourcePriceCopper(source)===null)return null;
+  const value=text(source.priceSource);
+  if(value==='forever-observed'||value==='classic'||value==='unknown')return value;
+  if(source?.type==='vendor'&&source?.evidence==='forever-confirmed')return 'forever-observed';
+  return 'unknown';
+}
+function sourcePriceTier(source={}){
+  if(sourcePriceCopper(source)===null)return 3;
+  const provenance=sourcePriceSource(source);
+  if(provenance==='forever-observed')return 0;
+  if(provenance==='classic')return 1;
+  return 2;
+}
+function compareSourcePrice(a,b){
+  const at=sourcePriceTier(a),bt=sourcePriceTier(b);
+  if(at!==bt)return at-bt;
+  const ap=sourcePriceCopper(a),bp=sourcePriceCopper(b);
+  if(ap!==null&&bp!==null&&ap!==bp)return ap-bp;
+  return 0;
+}
 function sourceZone(source={}){
   const location=source?.location||{};
   return preferredGermanGameName('zone',integer(location.uiMapId),text(location.zone))||text(location.zone);
@@ -231,7 +252,15 @@ function professionTrainingActions(character,recipeIndex){
       requiredLevel,
       requiredLevelSource:directRequiredLevel!==null&&directRequiredLevel>0?'foreverdb':'classic-trainer',
       currentLevel:level,
-      sources:sources.map(source=>({...source,priceCopper:sourcePriceCopper(source)??finite(next.priceCopper)}))
+      sources:sources.map(source=>{
+        const directPrice=sourcePriceCopper(source);
+        const rankPrice=finite(next.priceCopper);
+        return {
+          ...source,
+          priceCopper:directPrice??rankPrice,
+          priceSource:directPrice!==null?sourcePriceSource(source):(rankPrice!==null?(next.priceSource||'unknown'):null)
+        };
+      })
     });
   }
   return actions;
@@ -285,6 +314,7 @@ function sourceSummary(source={}){
       instance:text(location.instance)||null
     },
     priceCopper:sourcePriceCopper(source),
+    priceSource:sourcePriceSource(source),
     limitedStock:stock!==null&&stock>0?stock:null,
     side:source.side||null,
     displayId:integer(source.displayId),
@@ -310,8 +340,7 @@ function mergeActionCandidates(actions){
         sourceByNpc.set(npcKey,source);
         continue;
       }
-      const oldPrice=sourcePriceCopper(previous),newPrice=sourcePriceCopper(source);
-      if((oldPrice===null&&newPrice!==null)||(oldPrice!==null&&newPrice!==null&&newPrice<oldPrice))sourceByNpc.set(npcKey,source);
+      if(compareSourcePrice(source,previous)<0)sourceByNpc.set(npcKey,source);
     }
     merged.sources=[...sourceByNpc.values()];
   }
@@ -332,9 +361,8 @@ function choosePreferredSources(actions,zone){
   }
   return withSources.map(action=>{
     const sorted=[...action.zoneSources].sort((a,b)=>{
-      const ap=sourcePriceCopper(a),bp=sourcePriceCopper(b);
-      if((ap===null)!==(bp===null))return ap===null?1:-1;
-      if(ap!==null&&bp!==null&&ap!==bp)return ap-bp;
+      const priceOrder=compareSourcePrice(a,b);
+      if(priceOrder!==0)return priceOrder;
       const ak=sourceNpcKey(a),bk=sourceNpcKey(b);
       const ac=coverage.get(ak)?.size||0,bc=coverage.get(bk)?.size||0;
       if(ac!==bc)return bc-ac;
@@ -358,7 +386,8 @@ function choosePreferredSources(actions,zone){
       source:offers[0],
       alternatives:offers.slice(1),
       offerCount:offers.length,
-      cheapestKnownPriceCopper:offers.find(source=>source.priceCopper!==null)?.priceCopper??null
+      cheapestKnownPriceCopper:offers.find(source=>source.priceCopper!==null)?.priceCopper??null,
+      priceSource:offers[0]?.priceSource||null
     };
   });
 }
@@ -441,6 +470,9 @@ export function buildLocationPlanner(data={},recipeIndex={},{
   const actions=canonicalLocation?choosePreferredSources(candidates,canonicalLocation):[];
   const npcs=canonicalLocation?groupByNpc(actions):[];
   const knownPrices=actions.filter(action=>action.source.priceCopper!==null).length;
+  const confirmedPrices=actions.filter(action=>action.source.priceCopper!==null&&action.source.priceSource==='forever-observed').length;
+  const classicPrices=actions.filter(action=>action.source.priceCopper!==null&&action.source.priceSource==='classic').length;
+  const unknownPriceSources=actions.filter(action=>action.source.priceCopper!==null&&action.source.priceSource==='unknown').length;
   const categories=CATEGORY_DEFS.map(entry=>({
     ...entry,
     actionCount:actions.filter(action=>action.category===entry.id).length
@@ -459,6 +491,9 @@ export function buildLocationPlanner(data={},recipeIndex={},{
       atLocation:actions.length,
       npcs:npcs.length,
       knownPrices,
+      confirmedPrices,
+      classicPrices,
+      unknownPriceSources,
       unknownPrices:actions.length-knownPrices
     },
     coverage:{
