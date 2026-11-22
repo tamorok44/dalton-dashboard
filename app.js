@@ -1256,7 +1256,7 @@ function plannerVendorHtml(vendor){
       const checked=plannerState.selected.has(recipe.key);
       const stock=Number(recipe.source?.limitedStock);
       return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-planner-recipe="'+esc(recipe.key)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><strong>'+esc(recipe.name)+'</strong><small>'+esc(plannerProfessionLine(recipe))+'</small>'+
-        (Number.isFinite(stock)?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(recipe.source?.priceCopper))+'</span></label>'+
+        (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(recipe.source?.priceCopper))+'</span></label>'+
         plannerAlternativeHtml(recipe)+'</div>';
     }).join('')+'</div></article>';
 }
