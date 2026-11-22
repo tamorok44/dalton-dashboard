@@ -105,8 +105,8 @@ assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCo
   'profession-training':1,
   'companion-abilities':0
 });
-assert.equal(stormwind.counts.knownPrices,5);
-assert.equal(stormwind.counts.unknownPrices,1);
+assert.equal(stormwind.counts.knownPrices,6,'Der Preisstatus zählt eindeutige Lernziele, nicht zusätzliche NPC-Angebote');
+assert.equal(stormwind.counts.unknownPrices,0,'Eine unbekannte Alternative macht ein Lernziel mit bestätigtem günstigstem Preis nicht unbepreist');
 
 const level9Data={...data,characters:[{...baseCharacter,level:9}]};
 const level9=buildLocationPlanner(level9Data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions});
