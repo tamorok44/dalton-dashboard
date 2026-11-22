@@ -1461,7 +1461,7 @@ function renderLocationPlanner(){
     plannerConfirmSwitch();renderLocationPlanner();
   });
 }
-async function loadLocationPlannerasync function loadLocationPlanner({force=false}={}){
+async function loadLocationPlanner({force=false}={}){
   if(plannerState.data&&!force)return;
   const epoch=++plannerEpoch;
   plannerState.loading=true;plannerState.error=null;renderLocationPlanner();
