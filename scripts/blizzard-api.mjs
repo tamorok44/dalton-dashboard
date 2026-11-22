@@ -24,7 +24,9 @@ export const FOREVER_CHARACTER_ENDPOINTS={
   completedQuests:'/quests/completed',
   reputations:'/reputations',
   titles:'/titles',
-  hunterPets:'/hunter-pets'
+  hunterPets:'/hunter-pets',
+  spells:'/spells',
+  spellbook:'/spellbook'
 };
 
 export function blizzardApiConfigured(){
