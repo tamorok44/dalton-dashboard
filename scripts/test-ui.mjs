@@ -651,12 +651,12 @@ assert.ok(updateWorkflow.includes('run: npm test'),'Keep tests on code changes')
 assert.ok(source.includes("button.addEventListener('click',refreshLive)"),'Manual button still calls Blizzard live');
 assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button requests live API');
 assert.ok(refreshService.includes('refreshCharacters([c])'),'Shared refresh service fetches Blizzard character profiles');
-assert.ok(refreshApi.includes("source:req.method==='GET'?'manual':'scheduled'"),'Manual and scheduled refresh sources stay distinguishable');
-assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"'),'Exactly one Hobby-compatible daily Vercel cron is configured');
+assert.ok(refreshApi.includes("runLockedRefresh(lockToken,req.method==='GET'?'manual':'scheduled')"),'Manual and scheduled refresh sources stay distinguishable');
+assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"')&&vercelConfig.includes('"schedule": "37 4 * * *"'),'Primary and idempotent retry Vercel cron are configured');
 const dailySnapshot=read('api/daily-snapshot.js');
 assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs)'),'Daily rule verification runs before the Blizzard snapshot');
-assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf("refreshAndPersist({lockToken:refreshLock,source:'daily'})"),'Daily rule verification runs before the persistent character refresh');
-assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf("refreshAndPersist({lockToken,source:req.method==='GET'?'manual':'scheduled'})"),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
+assert.ok(dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('const refresh=await refreshDailyCharacters()'),'Daily rule verification runs before the persistent character refresh');
+assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf('refreshAndPersist({lockToken,source})'),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
 assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Only the lightweight stored-data version is checked periodically');
 assert.ok(!/setInterval\([\s\S]{0,300}refreshLive/.test(source),'Periodic checks must never trigger Blizzard live refreshes');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
