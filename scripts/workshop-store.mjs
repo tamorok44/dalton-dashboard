@@ -51,12 +51,16 @@ export function mergeRecipeIndexes(...values){
   const recipes=[];
   const seen=new Set();
   const professionSlugs=new Set();
+  const professions=new Map();
   let build=null;
   let requestCount=0;
   for(const index of indexes){
     if(!build&&index?.build)build=index.build;
     requestCount+=Number(index?.requestCount)||0;
     for(const slug of normalizedSlugs(index?.professionSlugs||[]))professionSlugs.add(slug);
+    for(const profession of Array.isArray(index?.professions)?index.professions:[]){
+      if(profession?.slug)professions.set(profession.slug,{...(professions.get(profession.slug)||{}),...profession});
+    }
     for(const recipe of Array.isArray(index?.recipes)?index.recipes:[]){
       const key=recipeIdentity(recipe);
       if(seen.has(key))continue;
@@ -71,6 +75,7 @@ export function mergeRecipeIndexes(...values){
     requestCount,
     complete:professionSlugs.size===PROFESSION_SLUGS.size,
     professionSlugs:[...professionSlugs].sort(),
+    professions:[...professions.values()].sort((a,b)=>String(a.slug).localeCompare(String(b.slug))),
     recipes
   });
 }
@@ -174,6 +179,7 @@ export async function getForeverDbMasterRecipeIndex({
       requestCount:0,
       complete:false,
       professionSlugs:[],
+      professions:[],
       recipes:[]
     });
   }
