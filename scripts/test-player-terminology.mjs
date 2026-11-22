@@ -13,6 +13,21 @@ assert.equal(preferredGermanGameName('profession',171,'Alchimie'),'Alchemie',
   'Official player terminology must override conflicting technical client terminology');
 assert.equal(preferredGermanGameName('profession',171,'Alchemy'),'Alchemie');
 assert.equal(preferredGermanGameName('profession',999999,'Technischer Name'),'Technischer Name');
+assert.equal(verifiedPlayerTerm('zone',1453)?.name,'Sturmwind');
+assert.equal(verifiedPlayerTerm('zone',1455)?.name,'Eisenschmiede');
+assert.equal(verifiedPlayerTerm('zone',1440)?.name,'Eschental');
+assert.equal(preferredGermanGameName('zone',1453,'Stormwind'),'Sturmwind');
+assert.equal(preferredGermanGameName('zone',1455,'Ironforge'),'Eisenschmiede');
+assert.equal(preferredGermanGameName('zone',1440,'Ashenvale'),'Eschental');
+for(const id of [1440,1453,1455]){
+  const zone=verifiedPlayerTerm('zone',id);
+  assert.ok(zone?.sources?.length,'Verified zone term needs an official source');
+  for(const source of zone.sources){
+    const url=new URL(source);
+    assert.equal(url.hostname,'worldofwarcraft.blizzard.com');
+    assert.ok(url.pathname.startsWith('/de-de/'));
+  }
+}
 assert.ok(VERIFIED_PLAYER_TERMINOLOGY.sources.length>=2);
 for(const source of VERIFIED_PLAYER_TERMINOLOGY.sources){
   const url=new URL(source);
