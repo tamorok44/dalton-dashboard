@@ -41,7 +41,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerSelectAllVisible,plannerSelectedActions,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -568,10 +568,16 @@ assert.equal(ui.plannerCheapestKnownOffer(plannerAction)?.key,'npc:2','Günstigs
 ui.plannerSelectAllVisible(plannerData);
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Alle auswählen legt das Lernziel einmal beim günstigsten Anbieter ab');
 assert.equal(ui.plannerState.selected.size,1,'Ein Lernziel erzeugt nur eine Auswahlposition');
+assert.ok(ui.plannerSelectionHtml(plannerData).includes(ui.plannerPrice(80)),'Gesamtliste verwendet den Preis des einmalig gewählten günstigsten Angebots');
+assert.ok(!ui.plannerSelectionHtml(plannerData).includes(ui.plannerPrice(100)),'Teurere Doppelangebote werden nicht zusätzlich in die Gesamtliste summiert');
 assert.equal(ui.plannerRequestOfferSelection(plannerAction.key,'npc:1',true),'conflict','Zweites Angebot desselben Lernziels erzeugt einen Wechselkonflikt');
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Konflikt verändert die bestehende Auswahl noch nicht');
 assert.ok(ui.plannerSwitchHtml(plannerData).includes('Bisherige Auswahl behalten'),'Konflikthinweis bietet explizites Beibehalten an');
 assert.ok(ui.plannerSwitchHtml(plannerData).includes('Zu Teuer wechseln'),'Konflikthinweis bietet expliziten Wechsel an');
+ui.plannerKeepSelection();
+assert.equal(ui.plannerState.pendingSwitch,null,'Bisherige Auswahl behalten schliesst nur den Konflikt');
+assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Bisherige Auswahl behalten lässt den günstigeren Anbieter unverändert');
+assert.equal(ui.plannerRequestOfferSelection(plannerAction.key,'npc:1',true),'conflict');
 assert.equal(ui.plannerConfirmSwitch(),true);
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:1','Bestätigter Wechsel ersetzt die Quelle atomar');
 assert.equal(ui.plannerState.selected.size,1,'Auch nach einem Wechsel existiert nur eine Auswahlposition');
@@ -580,6 +586,22 @@ assert.ok(ui.plannerPriceWarningHtml(plannerAction,plannerAction.alternatives[0]
 ui.plannerSelectAllVisible(plannerData);
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Automatische Auswahl normalisiert eine teurere manuelle Auswahl wieder auf den günstigsten Anbieter');
 assert.equal(ui.plannerSelectedActions(plannerData).length,1,'Gesamtsumme arbeitet mit eindeutigen Lernzielen statt Händlerzeilen');
+const tiedAction={
+  key:'recipe:9002',name:'Preisgleiches Rezept',category:'profession-recipes',
+  source:{key:'npc:4',name:'Gleich A',role:'Händler',location:{zone:'Sturmwind'},priceCopper:50},
+  alternatives:[{key:'npc:5',name:'Gleich B',role:'Händler',location:{zone:'Sturmwind'},priceCopper:50}]
+};
+assert.equal(ui.plannerPriceWarningHtml(tiedAction,tiedAction.alternatives[0]),'','Preisgleichstand erzeugt keine falsche Preiswarnung');
+const rankAction={
+  key:'profession-rank:alchemy:2',name:'Alchemie · Geselle',category:'profession-training',
+  source:{key:'npc:6',name:'Lehrer',role:'Lehrer',location:{zone:'Sturmwind'},priceCopper:500},
+  alternatives:[]
+};
+const twoTargets={actions:[plannerAction,rankAction],categories:plannerData.categories};
+ui.plannerState.selected.clear();
+ui.plannerSelectAllVisible(twoTargets);
+assert.equal(ui.plannerState.selected.size,2,'Tatsächlich verschiedene Lernziele bzw. Ränge bleiben separat auswählbar');
+assert.equal(ui.plannerSelectedActions(twoTargets).length,2,'Getrennte Ränge werden nicht miteinander dedupliziert');
 
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
