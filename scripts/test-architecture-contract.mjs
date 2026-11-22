@@ -130,6 +130,8 @@ assert.ok(policy.includes('Voraussichtliche Gesamtkosten'),'Classic fallback tot
 assert.ok((sourceByFile.get('scripts/workshop-foreverdb.mjs')||'').includes('inheritTrainerPrice'),'Trainer price inheritance must stay centralized in the ForeverDB adapter');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("if(provenance==='forever-observed')return 0"),'Location planner must rank confirmed Forever prices ahead of Classic fallback prices');
 assert.ok((sourceByFile.get('app.js')||'').includes("Classic-Preis · noch nicht in Forever bestätigt"),'Frontend must label Classic fallback prices explicitly');
+assert.ok(policy.includes('Bestätigte aktuelle Forever-Daten sind der Normalfall')&&policy.includes('kein zusätzliches Bestätigungslabel'),'Confirmed Forever data must stay the unlabeled UI default');
+assert.ok(!(sourceByFile.get('app.js')||'').includes("return 'Forever-Preis'"),'Frontend must not add a redundant Forever confirmation label');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('mergeActionCandidates'),'Location planner must deduplicate learning targets centrally');
 assert.ok((sourceByFile.get('app.js')||'').includes('selected:new Map()'),'Location planner UI must keep at most one source per learning target');
 assert.ok((sourceByFile.get('app.js')||'').includes('plannerCheapestKnownOffer'),'Location planner UI must centralize cheapest-offer selection');
