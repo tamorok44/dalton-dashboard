@@ -4,6 +4,21 @@ import {normalizeForeverDbClass,CLASS_BY_ID} from './class-training-store.mjs';
 assert.equal(CLASS_BY_ID[8],'mage');
 assert.equal(CLASS_BY_ID[11],'druid');
 
+const realSchema=normalizeForeverDbClass({
+  id:8,name:'Magier',
+  abilities:[{
+    name:'Feuerball',line:'Fire',learned:'Trainer',newInForever:false,
+    ranks:[{id:133,rank:'Rang 1',learnedLevel:1},{id:143,rank:'Rang 2',learnedLevel:6}]
+  },{
+    name:'Arkane Konzentration',line:'Arcane',learned:'Talent',
+    ranks:[{id:11213,rank:'Rang 1',learnedLevel:15}]
+  }]
+},'mage');
+assert.equal(realSchema.abilities.length,1,'Reales ForeverDB-Feld learned unterscheidet Trainer von Talent/Quest');
+assert.equal(realSchema.abilities[0].school,'Fire');
+assert.deepEqual(realSchema.abilities[0].ranks.map(rank=>rank.id),[133,143]);
+assert.deepEqual(realSchema.abilities[0].ranks.map(rank=>rank.requiredLevel),[1,6]);
+
 const mage=normalizeForeverDbClass({
   id:8,name:'Magier',
   trainers:[

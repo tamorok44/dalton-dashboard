@@ -187,7 +187,7 @@ function normalizeRank(raw={},ability={},classTrainers=[]){
   };
 }
 function trainerAbility(raw={}){
-  const type=lower(firstText(raw.type,raw.kind,typeof raw.learnedFrom==='string'?raw.learnedFrom:null,typeof raw.learned_from==='string'?raw.learned_from:null,raw.learnedFromType,raw.learned_from_type,raw.sourceType,raw.source_type));
+  const type=lower(firstText(raw.type,raw.kind,typeof raw.learned==='string'?raw.learned:null,typeof raw.learnedFrom==='string'?raw.learnedFrom:null,typeof raw.learned_from==='string'?raw.learned_from:null,raw.learnedFromType,raw.learned_from_type,raw.sourceType,raw.source_type));
   if(/talent|quest|book|rune|racial|passive|learned elsewhere/.test(type))return false;
   if(/trainer|class trainer|ausbilder|lehrer/.test(type))return true;
   if(raw.trainer===true||raw.isTrainer===true||raw.is_trainer===true)return true;
@@ -226,8 +226,8 @@ export function normalizeForeverDbClass(raw={},slug){
     return {
       id:integer(first(ability.id,ability.spellId,ability.spell_id,ranks[0]?.id)),
       name:firstText(ability.name,ranks[0]?.name)||'Klassenfähigkeit',
-      school:firstText(ability.school,ability.category,ability.tab)||null,
-      type:firstText(ability.type,ability.kind)||'trainer',
+      school:firstText(ability.school,ability.line,ability.category,ability.tab)||null,
+      type:firstText(ability.type,ability.kind,ability.learned)||'trainer',
       ranks
     };
   }).filter(ability=>ability.ranks.length);
