@@ -1459,10 +1459,15 @@ function renderLocationPlanner(){
   let characterSummary='';
   if(selectedCharacter){
     const professionText=(selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
-    const spellbookStatus=selectedCharacter.knownClassAbilitiesVerified
-      ?'<small>'+esc(selectedCharacter.knownClassAbilityCount??0)+' gelernte Klassenränge automatisch bestätigt</small>'
-      :'<small>Gelernte Klassenränge können aus dem Profil derzeit nicht automatisch bestätigt werden</small>';
-    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+spellbookStatus+'</div>'+
+    const learnedClassAbilities=Array.isArray(selectedCharacter.knownClassAbilities)?selectedCharacter.knownClassAbilities:[];
+    const learnedClassDetails=selectedCharacter.knownClassAbilitiesVerified
+      ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+'</summary><div class="planner-known-ability-list">'+
+        (learnedClassAbilities.length
+          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Zauber '+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+'</span>').join('')
+          :'<span><strong>Noch keine auslesbaren Klassenränge</strong></span>')+
+        '</div></details>'
+      :'<small>Bereits gelernte Klassenränge werden vom Charakterprofil derzeit nicht bereitgestellt.</small>';
+    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+learnedClassDetails+'</div>'+
       '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
   }
   let body='';
