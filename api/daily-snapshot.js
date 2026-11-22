@@ -26,6 +26,29 @@ export function berlinClock(date=new Date()){
   }).formatToParts(date).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
   return {date:parts.year+'-'+parts.month+'-'+parts.day,hour:Number(parts.hour),minute:Number(parts.minute)};
 }
+export function dailyRefreshComplete(snapshotMeta){
+  return snapshotMeta?.refresh?.persisted===true;
+}
+
+async function refreshDailyCharacters(){
+  let refresh={pending:true,reason:'refresh_lock_unavailable',persisted:false};
+  const beforeRefreshGeneratedAt=(await loadCharacters()).data?.generatedAt||null;
+  const refreshLock=await acquireRefreshLockWithRetry();
+  if(refreshLock){
+    try{
+      const result=await refreshAndPersist({lockToken:refreshLock,source:'daily'});
+      refresh={success:result.success,changes:result.changes??null,persisted:result.persisted===true};
+    }finally{
+      await releaseRefreshLock(refreshLock);
+    }
+  }else{
+    const afterRefreshGeneratedAt=(await loadCharacters()).data?.generatedAt||null;
+    const concurrentCompleted=Number.isFinite(Date.parse(afterRefreshGeneratedAt||''))&&
+      (!Number.isFinite(Date.parse(beforeRefreshGeneratedAt||''))||Date.parse(afterRefreshGeneratedAt)>Date.parse(beforeRefreshGeneratedAt));
+    if(concurrentCompleted)refresh={success:1,changes:null,persisted:true,reason:'concurrent_refresh_completed'};
+  }
+  return refresh;
+}
 
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
@@ -39,41 +62,47 @@ export default async function handler(req,res){
   if(!dailySnapshotStoreConfigured())return res.status(503).json({error:'Blob-Speicher fehlt'});
 
   const existing=await getDailySnapshot(local.date);
-  if(existing)return res.status(200).json({skipped:true,reason:'already_saved',snapshot:existing});
+  if(dailyRefreshComplete(existing))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:existing});
 
   const dailyLock=await acquireDailySnapshotLock(local.date);
   if(!dailyLock)return res.status(200).json({pending:true,reason:'daily_snapshot_running'});
   try{
     const secondCheck=await getDailySnapshot(local.date);
-    if(secondCheck)return res.status(200).json({skipped:true,reason:'already_saved',snapshot:secondCheck});
-    // Regelprüfung bewusst vor Snapshot und Profil-Refresh: neue Livewerte dürfen nie mit ungeprüften Pet-Regeln verrechnet werden.
-    const petRuleState=await ensurePetRuleState({force:true});
-    const {data:current}=await loadCharacters();
-    const slugs=current.characters.map(c=>c.slug);
-    const snapshot=await fetchForeverSnapshot(slugs);
-    const meta=await saveDailySnapshot(snapshot,local.date);
-    await registerDailySnapshot(meta);
+    if(dailyRefreshComplete(secondCheck))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:secondCheck});
 
-    let refresh={pending:true,reason:'refresh_lock_unavailable'};
-    const beforeRefreshGeneratedAt=(await loadCharacters()).data?.generatedAt||null;
-    const refreshLock=await acquireRefreshLockWithRetry();
-    if(refreshLock){
-      try{
-        const result=await refreshAndPersist({lockToken:refreshLock,source:'daily'});
-        refresh={success:result.success,changes:result.changes,persisted:result.persisted===true};
-      }finally{
-        await releaseRefreshLock(refreshLock);
-      }
+    let meta=secondCheck||existing||null;
+    let petRuleState;
+    let saved=false;
+    if(!meta){
+      // Regelprüfung bewusst vor Snapshot und Profil-Refresh: neue Livewerte dürfen nie mit ungeprüften Pet-Regeln verrechnet werden.
+      petRuleState=await ensurePetRuleState({force:true});
+      const {data:current}=await loadCharacters();
+      const slugs=current.characters.map(c=>c.slug);
+      const snapshot=await fetchForeverSnapshot(slugs);
+      meta=await saveDailySnapshot(snapshot,local.date);
+      await registerDailySnapshot(meta);
+      saved=true;
     }else{
-      const afterRefreshGeneratedAt=(await loadCharacters()).data?.generatedAt||null;
-      const concurrentCompleted=Number.isFinite(Date.parse(afterRefreshGeneratedAt||''))&&
-        (!Number.isFinite(Date.parse(beforeRefreshGeneratedAt||''))||Date.parse(afterRefreshGeneratedAt)>Date.parse(beforeRefreshGeneratedAt));
-      if(concurrentCompleted)refresh={success:1,changes:null,persisted:true,reason:'concurrent_refresh_completed'};
+      // Ein bereits archivierter Snapshot wird nie erneut geschrieben. Ein unvollständiger Profil-Refresh darf aber wiederholt werden.
+      petRuleState=await ensurePetRuleState({force:false});
     }
-    return res.status(200).json({saved:true,snapshot:meta,refresh,petRules:publicPetRuleState(petRuleState)});
+
+    const refresh=await refreshDailyCharacters();
+    const completedMeta={
+      ...meta,
+      refresh:{...refresh,attemptedAt:new Date().toISOString()}
+    };
+    await registerDailySnapshot(completedMeta);
+    return res.status(200).json({
+      saved,
+      retried:!saved,
+      snapshot:completedMeta,
+      refresh,
+      petRules:publicPetRuleState(petRuleState)
+    });
   }catch(error){
-    console.error('Tages-Snapshot fehlgeschlagen:',error);
-    return res.status(503).json({error:'Tages-Snapshot konnte nicht gespeichert werden'});
+    console.error('Tageslauf fehlgeschlagen:',error);
+    return res.status(503).json({error:'Tageslauf konnte nicht vollständig abgeschlossen werden'});
   }finally{
     try{await releaseDailySnapshotLock(local.date,dailyLock)}catch(error){console.error('Daily-Snapshot-Sperre konnte nicht freigegeben werden:',error)}
   }
