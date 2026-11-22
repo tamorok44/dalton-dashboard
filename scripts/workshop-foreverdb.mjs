@@ -17,7 +17,7 @@ const PROFESSION_SLUG_BY_ID=new Map([
 
 function asArray(value){return Array.isArray(value)?value:[]}
 function object(value){return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}
-function finite(value){const n=Number(value);return Number.isFinite(n)?n:null}
+function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
 function string(value){return typeof value==='string'&&value.trim()?value.trim():null}
 function first(...values){for(const value of values)if(value!==null&&value!==undefined&&value!=='')return value;return null}
