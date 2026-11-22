@@ -954,10 +954,14 @@ function workshopLearningCandidatesHtml(result){
   if(!list.length)return '<p class="workshop-muted">Keiner der Daltons besitzt aktuell den passenden Beruf.</p>';
   return '<div class="workshop-learning-candidates">'+list.map(candidate=>{
     const status=candidate.status==='can-learn-now'
-      ?'<span class="workshop-learning-state is-ready">Beruf/Skill reicht jetzt</span>'
+      ?'<span class="workshop-learning-state is-ready">Jetzt lernbar</span>'
       :candidate.status==='skill-gap'
         ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+'</span>'
-        :'<span class="workshop-learning-state">Passender Beruf</span>';
+        :candidate.status==='level-gap'
+          ?'<span class="workshop-learning-state">Noch nicht lernbar · ab Level '+esc(candidate.requiredCharacterLevel)+'</span>'
+          :candidate.status==='skill-and-level-gap'
+            ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+' · ab Level '+esc(candidate.requiredCharacterLevel)+'</span>'
+            :'<span class="workshop-learning-state">Lernvoraussetzungen nicht vollständig bestätigt</span>';
     const skill=Number.isFinite(Number(candidate.skill))
       ?esc(candidate.skill)+'/'+esc(candidate.skillCap??'–')
       :'Skill unbekannt';
@@ -993,9 +997,13 @@ function workshopLearningHtml(result){
   if(!recipe)return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4><p>'+esc(result.learningSourcesReason||'Für diesen Gegenstand ist kein Herstellungsrezept bekannt.')+'</p></section>';
   const candidates=Array.isArray(result.learningCandidates)?result.learningCandidates:[];
   const verifiedProfession=candidates.find(candidate=>candidate.profession)?.profession||null;
-  const requirement=Number.isFinite(Number(recipe.requiredSkill))
+  const skillRequirement=Number.isFinite(Number(recipe.requiredSkill))
     ?' · benötigt '+(verifiedProfession?esc(verifiedProfession)+' ':'Berufsfertigkeit ')+esc(recipe.requiredSkill)
     :verifiedProfession?' · '+esc(verifiedProfession):'';
+  const levelRequirement=recipe.learningRequirementsVerified===true&&Number.isFinite(Number(recipe.requiredCharacterLevel))&&Number(recipe.requiredCharacterLevel)>0
+    ?' · Charakterlevel '+esc(recipe.requiredCharacterLevel)
+    :'';
+  const requirement=skillRequirement+levelRequirement;
   const sources=Array.isArray(result.learningSources)?result.learningSources:[];
   const confirmed=sources.filter(source=>source.evidence==='forever-confirmed');
   const other=sources.filter(source=>source.evidence!=='forever-confirmed');
