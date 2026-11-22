@@ -107,6 +107,7 @@ assert.ok(policy.includes('Geselle 50, Experte 125'),'Classic profession-rank fa
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.verified===true")&&(sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.availableNow===true"),'Class and companion actions must be explicitly verified and currently available');
 assert.ok(policy.includes('Ein Lernziel besitzt genau eine stabile Erledigungs-ID'),'Location planner must distinguish one learning target from multiple NPC offers');
 assert.ok(policy.includes('ein stilles Opt-out ist verboten'),'Manual vendor switches must require explicit confirmation');
+assert.ok(policy.includes('direkt am neu angeklickten Angebot sichtbar'),'Vendor-switch confirmation must remain visible at the clicked offer in long lists');
 assert.ok(policy.includes('niedrigsten **bestätigten** Preis'),'Automatic location-planner selection must prefer the cheapest confirmed offer');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('mergeActionCandidates'),'Location planner must deduplicate learning targets centrally');
 assert.ok((sourceByFile.get('app.js')||'').includes('selected:new Map()'),'Location planner UI must keep at most one source per learning target');
