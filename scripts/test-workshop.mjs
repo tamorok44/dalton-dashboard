@@ -21,6 +21,7 @@ import {
   normalizeForeverDbRecipe,
   hydrateRecipeIndex,
   fetchForeverDbRecipeIndex,
+  fetchForeverDbProfessionMaster,
   searchForeverDbRecipesForItem
 } from './workshop-foreverdb.mjs';
 import {
@@ -244,7 +245,18 @@ const fakeFetch=async url=>{
       ?(slug==='mining'&&query==='Copper Bar'?[matchingRecipe]:[])
       :slug==='mining'?[matchingRecipe]:
        slug==='alchemy'?[{...matchingRecipe,id:5000+offset,makes:{item:{id:90000+offset,name:'Alchemietest '+offset},count:1}}]:[];
-    body={data:{recipes},meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
+    body={data:{
+      recipes,
+      ...(slug==='mining'?{
+        ranks:[
+          {id:1000,name:'Lehrling',skillCap:75,requiredSkill:1,requiredLevel:5},
+          {id:1001,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:450}
+        ],
+        trainers:[
+          {id:2000,name:'Gelman Steinhandschuh',title:'Gesellenbergmann',zone:'Sturmwind',x:59.2,y:37.8,seenInForever:true}
+        ]
+      }:{})
+    },meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
   }else if(parsed.pathname.endsWith('/items/2840')){
     body={data:{id:2840,name:'Kupferbarren',quality:1,class:7,slot:0,requiredLevel:0},meta:{build:'test'}};
   }else if(parsed.pathname.endsWith('/spells/3324')){
@@ -284,6 +296,12 @@ const remoteItem=await fetchForeverDbItem(2840,{fetchImpl:fakeFetch});
 assert.equal(remoteItem.item.id,2840);
 const profession=await fetchForeverDbProfession('mining',{fetchImpl:fakeFetch});
 assert.equal(profession.recipes.length,1);
+const professionMaster=await fetchForeverDbProfessionMaster('mining',{fetchImpl:fakeFetch});
+assert.equal(professionMaster.profession.slug,'mining');
+assert.equal(professionMaster.profession.ranks[1].requiredLevel,10);
+assert.equal(professionMaster.profession.ranks[1].requiredSkill,50);
+assert.equal(professionMaster.profession.trainers[0].evidence,'forever-confirmed');
+assert.equal(professionMaster.profession.trainers[0].npcTitle,'Gesellenbergmann');
 const remoteSpell=await fetchForeverDbSpell(3324,{fetchImpl:fakeFetch});
 assert.equal(remoteSpell.spell.id,3324);
 assert.equal(remoteSpell.spell.requiredLevel,10);
