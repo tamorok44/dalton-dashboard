@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {configured as redisConfigured,redis} from './character-store.mjs';
 import {
   fetchForeverDbRecipeIndex,
+  fetchForeverDbProfessionMaster,
   searchForeverDbRecipesForItem,
   serializableRecipeIndex,
   hydrateRecipeIndex
@@ -18,6 +19,7 @@ const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
 const MASTER_REFRESH_CHUNK=3;
 const SPELL_CACHE_PREFIX='dalton-dashboard:foreverdb:spell:v1:';
 const VENDOR_CACHE_PREFIX='dalton-dashboard:foreverdb:vendor:v1:';
+const PROFESSION_MASTER_CACHE_PREFIX='dalton-dashboard:foreverdb:profession-master:v1:';
 
 function now(){return Date.now()}
 function fresh(value,maxAgeMs){
@@ -279,6 +281,26 @@ export async function cachedForeverDbSpells(spellIds=[],{build=null,fetchImpl=fe
   }));
   return Object.fromEntries(entries);
 }
+export async function cachedForeverDbProfessionMaster(professionSlug,{build=null,fetchImpl=fetch}={}){
+  const slug=String(professionSlug??'').trim();
+  if(!PROFESSION_SLUGS.has(slug))return null;
+  const key=buildScopedCacheKey(PROFESSION_MASTER_CACHE_PREFIX,slug,build);
+  const cached=await loadJson(key);
+  if(cached?.profession?.slug===slug)return {...cached.profession,cached:true};
+  const result=await fetchForeverDbProfessionMaster(slug,{fetchImpl});
+  if(!result?.profession?.slug)return null;
+  await saveJson(key,{profession:result.profession,generatedAt:new Date().toISOString(),build:build||result.build||null});
+  return {...result.profession,cached:false};
+}
+export async function cachedForeverDbProfessionMasters(professionSlugs=[],{build=null,fetchImpl=fetch}={}){
+  const slugs=[...new Set((Array.isArray(professionSlugs)?professionSlugs:[]).filter(slug=>PROFESSION_SLUGS.has(slug)))];
+  const entries=await Promise.all(slugs.map(async slug=>{
+    try{return [slug,await cachedForeverDbProfessionMaster(slug,{build,fetchImpl})]}
+    catch(error){return [slug,{slug,error:String(error.message).slice(0,180)}]}
+  }));
+  return Object.fromEntries(entries);
+}
+
 export async function cachedForeverDbVendor(vendorId,{build=null,fetchImpl=fetch}={}){
   const id=Number(vendorId);
   if(!Number.isInteger(id)||id<=0)return null;
