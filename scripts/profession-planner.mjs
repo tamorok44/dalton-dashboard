@@ -1,4 +1,5 @@
 import {professionSlugFromRecord} from './workshop-foreverdb.mjs';
+import {preferredGermanGameName} from './player-terminology.mjs';
 
 function asArray(value){return Array.isArray(value)?value:[]}
 function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
@@ -25,7 +26,7 @@ function sourceVendorKey(source={}){
   const location=source?.location||{};
   return 'vendor-name:'+[
     norm(source?.name),
-    norm(location.zone),
+    norm(sourceZone(source)),
     finite(location.x)??'',
     finite(location.y)??''
   ].join('|');
@@ -36,8 +37,12 @@ function sourceAllowedForCharacter(source,character){
   if(source?.side==='alliance'&&/horde/.test(faction))return false;
   return true;
 }
+function sourceZone(source={}){
+  const location=source?.location||{};
+  return preferredGermanGameName('zone',integer(location.uiMapId),text(location.zone))||text(location.zone);
+}
 function sourceAtZone(source,zone){
-  return norm(source?.location?.zone)===norm(zone);
+  return norm(sourceZone(source))===norm(zone);
 }
 function publicProfession(profession={}){
   return {
@@ -124,7 +129,7 @@ function buildLocations(candidates){
   const zones=new Map();
   for(const recipe of candidates){
     for(const source of recipe.sources){
-      const zone=text(source?.location?.zone);
+      const zone=sourceZone(source);
       if(!zone)continue;
       const key=norm(zone);
       let entry=zones.get(key);
@@ -141,19 +146,20 @@ function buildLocations(candidates){
 }
 function sourceSummary(source={}){
   const location=source.location||{};
+  const stock=finite(source.limitedStock);
   return {
     key:sourceVendorKey(source),
     id:integer(source.id),
     name:text(source.name)||'Unbekannter Händler',
     location:{
-      zone:text(location.zone)||null,
+      zone:sourceZone(source)||null,
       x:finite(location.x),
       y:finite(location.y),
       uiMapId:integer(location.uiMapId),
       instance:text(location.instance)||null
     },
     priceCopper:sourcePriceCopper(source),
-    limitedStock:finite(source.limitedStock),
+    limitedStock:stock!==null&&stock>0?stock:null,
     side:source.side||null
   };
 }
