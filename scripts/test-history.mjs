@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {diffMeaningfulChanges,historyProjection} from './history-store.mjs';
-import {berlinClock} from '../api/daily-snapshot.js';
+import {berlinClock,dailyRefreshComplete} from '../api/daily-snapshot.js';
 
 const base={
   generatedAt:'2026-11-20T10:00:00.000Z',
@@ -45,3 +45,11 @@ const winter=berlinClock(new Date('2026-01-15T04:07:00.000Z'));
 const summer=berlinClock(new Date('2026-07-15T04:07:00.000Z'));
 assert.equal(winter.hour,5,'04:07 UTC corresponds to 05:07 in Berlin winter time');
 assert.equal(summer.hour,6,'04:07 UTC corresponds to 06:07 in Berlin summer time');
+const winterRetry=berlinClock(new Date('2026-01-15T04:37:00.000Z'));
+const summerRetry=berlinClock(new Date('2026-07-15T04:37:00.000Z'));
+assert.equal(winterRetry.hour,5,'04:37 UTC remains inside the Berlin winter retry window');
+assert.equal(summerRetry.hour,6,'04:37 UTC remains inside the Berlin summer retry window');
+assert.equal(dailyRefreshComplete(null),false,'Ohne Snapshot-Metadaten ist der Tageslauf nicht vollständig');
+assert.equal(dailyRefreshComplete({date:'2026-11-22'}),false,'Ein gespeicherter Snapshot allein darf einen fehlgeschlagenen Profil-Refresh nicht verdecken');
+assert.equal(dailyRefreshComplete({refresh:{persisted:false}}),false,'Nicht persistierter Refresh bleibt wiederholbar');
+assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),true,'Erst ein persistierter Profil-Refresh schliesst den Tageslauf ab');
