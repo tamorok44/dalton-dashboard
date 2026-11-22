@@ -1407,7 +1407,7 @@ function plannerSwitchHtml(action,source){
     const diff=Math.abs(toPrice-fromPrice);
     if(toPrice>fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' teurer.';
     else if(toPrice<fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' günstiger.';
-    else comparison=' Beide Angebote haben denselben bestätigten Preis.';
+    else comparison=' Beide Angebote haben denselben Preis.';
   }
   return '<section class="planner-switch" role="alert"><div><span class="planner-kicker">BEREITS AUSGEWÄHLT</span><h3>'+esc(action.name)+'</h3><p>Diese Erledigung ist bereits bei <strong>'+esc(from.name||'einem anderen NPC')+'</strong> für '+esc(plannerPriceWithSource(from))+' ausgewählt. Bei <strong>'+esc(to.name||'diesem NPC')+'</strong> kostet sie '+esc(plannerPriceWithSource(to))+'.'+esc(comparison)+'</p></div><div class="planner-switch-actions"><button type="button" data-planner-switch-keep>Bisherige Auswahl behalten</button><button type="button" data-planner-switch-confirm>Zu '+esc(to.name||'diesem NPC')+' wechseln</button></div></section>';
 }
