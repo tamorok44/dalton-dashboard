@@ -27,7 +27,7 @@ const baseCharacter={
 const data={generatedAt:'2026-11-22T12:00:00.000Z',characters:[baseCharacter]};
 const recipes=[
   {id:100,name:'Bekanntes Rezept',professionSlug:'alchemy',requiredSkill:1,craftedItem:{id:500,name:'Bekannt'},learning:{sources:[vendor(1,'Alfred','Stormwind',50)]}},
-  {id:101,name:'Elixier A',professionSlug:'alchemy',requiredSkill:25,craftedItem:{id:501,name:'Elixier A'},learning:{sources:[vendor(1,'Alfred','Stormwind',100)]}},
+  {id:101,name:'Elixier A',professionSlug:'alchemy',requiredSkill:25,craftedItem:{id:501,name:'Elixier A'},learning:{sources:[vendor(1,'Alfred','Stormwind',100),vendor(2,'Bruno','Stormwind',80),vendor(7,'Cäcilia','Stormwind',80),vendor(8,'Dietmar','Stormwind',null)]}},
   {id:102,name:'Elixier B',professionSlug:'alchemy',requiredSkill:40,craftedItem:{id:502,name:'Elixier B'},learning:{sources:[vendor(1,'Alfred','Stormwind',200)]}},
   {id:103,name:'Zu schwer',professionSlug:'alchemy',requiredSkill:60,craftedItem:{id:503,name:'Zu schwer'},learning:{sources:[vendor(1,'Alfred','Stormwind',300)]}},
   {id:104,name:'Eisenschmiede-Rezept',professionSlug:'alchemy',requiredSkill:10,craftedItem:{id:504,name:'Fern'},learning:{sources:[vendor(3,'Clara','Ironforge',80)]}},
@@ -44,7 +44,8 @@ const professionMasters={
       {id:2,name:null,skillCap:150,requiredSkill:null,requiredLevel:null,priceCopper:null,sources:[]}
     ],
     trainers:[
-      trainer(20,"Tel'Athir",'Stormwind',null,{npcTitle:'Journeyman Alchemist'})
+      trainer(20,"Tel'Athir",'Stormwind',1000,{npcTitle:'Journeyman Alchemist'}),
+      trainer(21,'Lilliam','Stormwind',900,{npcTitle:'Journeyman Alchemist'})
     ]
   },
   cooking:{
@@ -75,7 +76,15 @@ assert.equal(stormwind.selectedLocation,'Sturmwind');
 assert.equal(stormwind.counts.atLocation,6);
 assert.equal(stormwind.actions.some(action=>action.id===106),true,'Normale Rezepte benötigen keine erfundene Charakterlevel-Prüfung');
 assert.equal(stormwind.actions.some(action=>action.name==='Nicht belegte Begleiterfähigkeit'),false,'Unbestätigte Begleiteraktionen bleiben unsichtbar');
-assert.equal(stormwind.actions.find(action=>action.id===101)?.source.name,'Alfred');
+const elixirA=stormwind.actions.find(action=>action.id===101);
+assert.equal(stormwind.actions.filter(action=>action.id===101).length,1,'Dasselbe Lernziel bleibt trotz mehrerer Händler genau eine Erledigung');
+assert.equal(elixirA?.source.name,'Bruno','Der niedrigste bestätigte Preis wird als automatische Quelle bevorzugt');
+assert.equal(elixirA?.source.priceCopper,80);
+assert.equal(elixirA?.alternatives.length,3);
+assert.equal(elixirA?.alternatives.some(source=>source.name==='Alfred'&&source.priceCopper===100),true);
+assert.equal(elixirA?.alternatives.some(source=>source.name==='Dietmar'&&source.priceCopper===null),true);
+assert.equal(stormwind.npcs.filter(npc=>npc.actions.some(action=>action.key===elixirA.key)).length,4,'Alle bestätigten Händlerangebote bleiben am jeweiligen NPC sichtbar');
+assert.equal(new Set(stormwind.npcs.flatMap(npc=>npc.actions.filter(action=>action.key===elixirA.key).map(action=>action.source.key))).size,4);
 assert.equal(stormwind.actions.find(action=>action.id===105)?.source.role,'Lehrer');
 assert.equal(stormwind.actions.some(action=>action.type==='profession-training'&&action.profession==='Alchemie'),true,
   'Jetzt mögliche Berufsausbildung wird aufgenommen, wenn Rang, Level und Quelle belegt sind');
@@ -85,8 +94,10 @@ const journeymanAlchemy=stormwind.actions.find(action=>action.type==='profession
 assert.equal(journeymanAlchemy?.requiredLevel,10,
   'Geselle verwendet bei fehlendem API-Level den dokumentierten Classic-Trainerwert 10');
 assert.equal(journeymanAlchemy?.requiredLevelSource,'classic-trainer');
-assert.equal(journeymanAlchemy?.source.name,"Tel'Athir",
-  'Der reale ForeverDB-Fall mit leerem Rangdatensatz und Journeyman-Lehrertitel bleibt lernbar');
+assert.equal(journeymanAlchemy?.source.name,'Lilliam',
+  'Bei mehreren bestätigten Rang-Lehrern wird der günstigste bestätigte Preis bevorzugt');
+assert.equal(journeymanAlchemy?.source.priceCopper,900);
+assert.equal(journeymanAlchemy?.alternatives.some(source=>source.name==="Tel'Athir"&&source.priceCopper===1000),true);
 assert.equal(stormwind.actions.some(action=>action.category==='class-abilities'),true,'Verifizierte externe Klassenaktion kann vom gemeinsamen Resolver aufgenommen werden');
 assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCount])),{
   'class-abilities':1,
@@ -121,4 +132,4 @@ assert.equal(unverified.counts.availableNow,1,
   'Unbestätigter Rezeptstand blendet Rezepte aus; eine unabhängig belegte Berufsausbildung darf weiter ermittelt werden');
 
 assert.throws(()=>buildLocationPlanner(data,index,{characterSlug:'unknown'}),/Charakter nicht gefunden/);
-console.log('Ortsplaner: Rezepte, Berufsausbildung, Level, Quellen, Kategorien und fail-closed Regeln: OK');
+console.log('Ortsplaner: eindeutige Lernziele, Mehranbieterpreise, Berufsausbildung, Quellen und fail-closed Regeln: OK');
