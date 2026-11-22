@@ -18,8 +18,9 @@ Verbindliche UI- und Responsive-Regeln für bestehende und neue Hauptreiter steh
 - Medienassets verwenden ein gemeinsames Register. Ausrüstungsicons und Jägerbegleiter-Bilder werden bei Bedarf einmalig in Vercel Blob archiviert und danach über die Objekt-ID wiederverwendet. Details stehen in `DATA_ARCHITECTURE.md`.
 - Jägerprofile laden zusätzlich Blizzards öffentliche Forever-Stall-JSON (`collections/stable.json`). Aktiver Begleiter, Stallplätze, Name, Familie, Stufe und Blizzard-Render werden persistent gespeichert und bei Änderungen historisiert.
 - Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und tatsächlich gelernte Pet-Ränge werden nicht geschätzt, weil Blizzard diese Clientwerte derzeit nicht in der Online-Armory veröffentlicht.
-- Das Begleiter-Kampfprofil trennt Rechenwert und Evidenzstufe. Gesundheit aus Ausdauer, Rüstung aus Jägerrüstung und Krit aus dem aktuellen Armory-Kritwert folgen derzeit dem aktuellen **Referenzmodell**; die Rechnung ist reproduzierbar, die Serverkoeffizienten selbst sind aber nicht direkt im Client exportiert. Gesamtleben, Gesamtrüstung, Pet-DPS und AP-Vererbung bleiben bewusst unberechnet, solange dafür nicht alle Ausgangswerte eindeutig online vorliegen.
+- Das Begleiter-Kampfprofil trennt Rechenwert und Evidenzstufe. Gesundheit aus Ausdauer, Rüstung aus Jägerrüstung, 10 % der höheren Jäger-AP und die 100-%-Krit-Skalierung bleiben **Referenzmodell**. Der Kritwert wird im Frontend ausdrücklich nur als **vererbte Krit-Komponente** angezeigt: Blizzard bestätigt als Quelle den höheren Nahkampf- oder Fernkampf-Kritwert, nicht aber den numerischen Faktor. Kontrollierte aktuelle Messungen zeigen zudem eine Abweichung der weißen Pet-Autoattacks, daher wird daraus keine effektive Autoattack-Kritchance abgeleitet. Gesamtleben, Gesamtrüstung, Gesamt-AP und Pet-DPS bleiben bewusst unberechnet.
 - Live ausgelesene Jägertalente wie **Belastbarkeit-Ausbildung** werden als eigener Modifikator angezeigt, aber nicht in einen Gesamtwert eingerechnet, solange Reihenfolge und fehlende Pet-Grundwerte nicht vollständig verifiziert sind.
+- Trefferchance und Expertise werden nicht numerisch aus dem Jäger hochgerechnet: Für Trefferchance fehlt ein belastbarer Vererbungsfaktor; Blizzard bestätigt lediglich, dass Begleiter von Expertise profitieren, ohne einen Hunter→Pet-Faktor zu veröffentlichen.
 - Forever-Fokuswerte werden als eigene Regel überwacht: 150 maximaler Fokus und 10 Fokus/Sekunde kontinuierliche Regeneration.
 - Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
@@ -35,9 +36,12 @@ Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.
 - Der manuelle Refresh verwendet einen höchstens 20 Stunden alten Regelstand. Fehlt er oder ist er älter, wird die Regelprüfung ebenfalls **vor** dem Blizzard-Profilabruf ausgeführt.
 - Das Regelwerk beobachtet aktuell:
   - die offizielle Blizzard-Forever-Hotfixseite,
+  - Blizzards Forever-Beta-Entwicklungsnotizen für Krit-Quelllogik und Expertise,
+  - ForeverDB als aktuellen Clientbuild-Prüfanker; geprüfte Baseline am 22.11.2026: **1.60.1.71037**,
   - Wowheads Forever-Hunter-Skalierungsregeln,
   - die Forever-Hunter-Community-Dokumentation als zweite Skalierungs- und Fokusquelle,
   - einen separaten Clientdaten-Audit des WoW-Forever-Simulators für Fokus,
+  - 4evrbugs #556 als reproduzierbare Messquelle für die derzeitige Autoattack-Krit-Abweichung,
   - Bind on Forever für Fuchsfamilie und Ausbildungsstufen,
   - 60.tools und StatRat für clientbasierte Familienmodifikatoren,
   - Efficient Games für Ausbildungsstufen und bekannte Trainingspunktkosten.
