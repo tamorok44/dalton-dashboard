@@ -13,43 +13,67 @@ export const PET_EVIDENCE=Object.freeze({
 
 export const PET_RULES=Object.freeze({
   'fox.family.profile':Object.freeze({
-    version:2,
+    version:3,
     label:'Fuchs-Familienprofil',
     evidence:'client',
-    evidenceNote:'Familienpassiv und Modifikatoren stammen aus aktuellen Forever-Clientdaten.',
-    reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets','statRatFox'])
+    evidenceNote:'Familienpassiv und Modifikatoren stammen aus aktuellen Forever-Clientdaten; ein neuer Forever-Clientbuild erzwingt eine erneute Prüfung.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets','statRatFox','foreverDbBuild'])
   }),
   'fox.training':Object.freeze({
-    version:2,
+    version:3,
     label:'Fuchs-Ausbildungsstufen',
     evidence:'client',
-    evidenceNote:'Stufen, Fokuswerte und bekannte Trainingskosten werden aus aktuellen Forever-Spiel-/Clientdaten geführt.',
-    reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox','efficientPets'])
+    evidenceNote:'Stufen, Fokuswerte und bekannte Trainingskosten werden aus aktuellen Forever-Spiel-/Clientdaten geführt; ein neuer Forever-Clientbuild erzwingt eine erneute Prüfung.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','efficientPets','foreverDbBuild'])
   }),
   'pet.scaling':Object.freeze({
-    version:3,
-    label:'Jägerbegleiter-Skalierung',
+    version:4,
+    label:'Jägerbegleiter-Skalierungskoeffizienten',
     evidence:'reference_model',
-    evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit sind aktueller Forever-Konsens; die Serverkoeffizienten sind im Client-Auraexport nicht direkt enthalten.',
-    reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit'])
+    evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit bleiben Referenzmodell. 100 % Trefferchance oder Expertise werden ausdrücklich nicht angenommen.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild'])
+  }),
+  'pet.crit.inheritance':Object.freeze({
+    version:1,
+    label:'Krit-Vererbungsquelle',
+    evidence:'official',
+    evidenceNote:'Blizzard bestätigt die Vererbung aus dem höheren Nahkampf- oder Fernkampf-Kritwert; der numerische Faktor selbst wird dort nicht veröffentlicht.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['blizzardHotfix','blizzardBetaNotes'])
+  }),
+  'pet.autoswing.crit':Object.freeze({
+    version:1,
+    label:'Autoattack-Krit',
+    evidence:'measured',
+    evidenceNote:'Kontrollierte Community-Messungen zeigen, dass White-Swings die geerbte Krit-Komponente aktuell nicht zuverlässig widerspiegeln. Diese Evidenz dient nur als Warn-/Sperrhinweis, nicht als Berechnungsformel.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['foreverBug556'])
+  }),
+  'pet.expertise':Object.freeze({
+    version:1,
+    label:'Expertise bei Begleitern',
+    evidence:'official',
+    evidenceNote:'Blizzard bestätigt, dass Begleiter korrekt von Expertise profitieren. Ein numerischer Hunter→Pet-Vererbungsfaktor ist nicht dokumentiert.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['blizzardHotfix','blizzardBetaNotes'])
   }),
   'pet.focus':Object.freeze({
-    version:2,
+    version:3,
     label:'Jägerbegleiter-Fokus',
     evidence:'client',
-    evidenceNote:'10 Fokus/Sekunde und +50 maximales Fokus auf die Basis 100 sind im aktuellen Forever-Clientdaten-Audit nachvollziehbar.',
-    reviewedAt:'2026-11-21',
-    sourceIds:Object.freeze(['blizzardHotfix','foreverHunterFocusAudit','foreverSimFocusAudit'])
+    evidenceNote:'10 Fokus/Sekunde und +50 maximales Fokus auf die Basis 100 sind im Forever-Clientdaten-Audit nachvollziehbar; ein neuer Clientbuild erzwingt eine erneute Prüfung.',
+    reviewedAt:'2026-11-22',
+    sourceIds:Object.freeze(['blizzardHotfix','foreverHunterFocusAudit','foreverSimFocusAudit','foreverDbBuild'])
   }),
   'pet.health.global':Object.freeze({
     version:2,
     label:'Globaler Begleiter-Gesundheitsfaktor',
     evidence:'official',
     evidenceNote:'Blizzard-Hotfix: Pet-Gesundheit von irrtümlich 150 % auf 115 % des normalen Werts korrigiert.',
-    reviewedAt:'2026-11-21',
+    reviewedAt:'2026-11-22',
     validFrom:'2026-11-10',
     sourceIds:Object.freeze(['blizzardHotfix'])
   })
@@ -62,6 +86,24 @@ const sources=Object.freeze({
     mode:'hotfix',
     semanticPatterns:Object.freeze([
       /pets?\s+(?:erroneously\s+)?had\s+150\s*%[\s\S]{0,180}?115\s*%/i
+    ])
+  }),
+  blizzardBetaNotes:Object.freeze({
+    label:'Blizzard Forever Beta Development Notes',
+    url:'https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /pets?\s+now\s+correctly\s+benefit\s+from\s+expertise/i,
+      /pets?[\s\S]{0,180}?only\s+ever\s+inheriting[\s\S]{0,180}?melee\s+critical\s+strike[\s\S]{0,220}?whichever\s+is\s+higher,?\s*melee\s+or\s+ranged/i
+    ])
+  }),
+  foreverBug556:Object.freeze({
+    label:'4evrbugs #556 · Pet Autoattack Crit',
+    url:'https://4evrbugs.com/bug/556',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /white\s+swings\s+get\s+none\s+of\s+the\s+crit\s+inherited\s+from\s+the\s+hunter/i,
+      /claw\s+and\s+bite\s+crit\s+at\s+about\s+the\s+hunter(?:'|’)?s\s+crit\s+chance/i
     ])
   }),
   wowheadScaling:Object.freeze({
@@ -103,6 +145,16 @@ const sources=Object.freeze({
       /powertype[\s\S]{0,120}?focus[\s\S]{0,140}?10\s+focus\/second\s+in\s+combat/i,
       /hunter\s+scaling\s+415429\s+adds\s+50\s+maximum\s+focus\s+to\s+the\s+base\s+100/i
     ])
+  }),
+  foreverDbBuild:Object.freeze({
+    label:'ForeverDB · aktueller Clientbuild',
+    url:'https://foreverdb.net/changelog',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /build\s+changelog/i,
+      /build\s+1\.60\.1\.\d+[\s\S]{0,120}?on\s+the\s+site\s+now/i
+    ]),
+    buildPattern:/build\s+(1\.60\.1\.\d+)[\s\S]{0,120}?on\s+the\s+site\s+now/i
   }),
   bindFox:Object.freeze({
     label:'Bind on Forever · Fox',
