@@ -564,8 +564,9 @@ ui.plannerState.pendingSwitch=null;
 assert.equal(ui.plannerKnownCopper(null),null,'Fehlender Preis bleibt unbekannt und wird niemals zu 0 Kupfer');
 assert.equal(ui.plannerKnownCopper(''),null,'Leerer Preis bleibt unbekannt');
 assert.equal(ui.plannerPrice(null),'Preis noch nicht bekannt','Fehlender Preis wird sichtbar als unbekannt ausgewiesen');
-assert.equal(ui.plannerPriceSourceLabel({priceCopper:100,priceSource:'forever-observed'}),'Forever-Preis');
+assert.equal(ui.plannerPriceSourceLabel({priceCopper:100,priceSource:'forever-observed'}),'','Bestätigte Forever-Preise tragen kein Sonderlabel');
 assert.equal(ui.plannerPriceSourceLabel({priceCopper:100,priceSource:'classic'}),'Classic-Preis · noch nicht in Forever bestätigt');
+assert.ok(!ui.plannerNpcHtml({key:'npc:2',name:'Günstig',role:'Händler',location:{zone:'Sturmwind'}},plannerData,[plannerAction]).includes('Forever-Preis'),'Bestätigte Preise bleiben auch in NPC-Karten unlabeled');
 assert.equal(ui.plannerCheapestKnownOffer(plannerAction)?.key,'npc:2','Günstigstes bestätigtes Angebot wird erkannt');
 const mixedTrustAction={
   key:'recipe:trust',name:'Vertrauens-Test',category:'profession-recipes',
