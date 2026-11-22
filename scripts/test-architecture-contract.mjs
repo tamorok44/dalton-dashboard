@@ -113,7 +113,7 @@ assert.ok((sourceByFile.get('app.js')||'').includes('selected:new Map()'),'Locat
 assert.ok((sourceByFile.get('app.js')||'').includes('plannerCheapestKnownOffer'),'Location planner UI must centralize cheapest-offer selection');
 assert.ok(browserSource.includes("fetch('/api/location-planner?'"),'Location planner frontend must use its server-side API');
 assert.ok(browserSource.includes('invalidateLocationPlannerData({reloadVisible:true})'),'Character refresh must invalidate the location planner');
-assert.ok(policy.includes('Kategorien und einzelne Erledigungen sind echte Mehrfachauswahlen'),'Location planner checkbox exception must stay documented');
+assert.ok(policy.includes('Kategorien und Lernziele bleiben echte Mehrfachauswahlen'),'Location planner checkbox exception must stay documented at learning-target level');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("entityType:'npc'"),'NPC portraits must use the central entity-based media resolver');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('resolveMediaAsset'),'NPC portraits must be archived through the central media resolver');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
