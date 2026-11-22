@@ -1,7 +1,7 @@
 import {professionSlugFromRecord} from './workshop-foreverdb.mjs';
 
 function asArray(value){return Array.isArray(value)?value:[]}
-function finite(value){const n=Number(value);return Number.isFinite(n)?n:null}
+function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
 function text(value){return typeof value==='string'?value.trim():''}
 function norm(value){
