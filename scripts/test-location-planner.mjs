@@ -47,8 +47,8 @@ const professionMasters={
       {id:2,name:null,skillCap:150,requiredSkill:null,requiredLevel:null,priceCopper:null,sources:[]}
     ],
     trainers:[
-      trainer(20,"Tel'Athir",'Stormwind',1000,{npcTitle:'Journeyman Alchemist'}),
-      trainer(21,'Lilliam','Stormwind',900,{npcTitle:'Journeyman Alchemist'})
+      trainer(20,"Tel'Athir",'Stormwind',null,{npcTitle:'Journeyman Alchemist'}),
+      trainer(21,'Lilliam','Stormwind',null,{npcTitle:'Journeyman Alchemist'})
     ]
   },
   cooking:{
@@ -104,8 +104,9 @@ assert.equal(journeymanAlchemy?.requiredLevel,10,
 assert.equal(journeymanAlchemy?.requiredLevelSource,'classic-trainer');
 assert.equal(journeymanAlchemy?.source.name,'Lilliam',
   'Bei mehreren bestätigten Rang-Lehrern wird der günstigste bestätigte Preis bevorzugt');
-assert.equal(journeymanAlchemy?.source.priceCopper,900);
-assert.equal(journeymanAlchemy?.alternatives.some(source=>source.name==="Tel'Athir"&&source.priceCopper===1000),true);
+assert.equal(journeymanAlchemy?.source.priceCopper,450,'Fehlender ForeverDB-Rangpreis nutzt ausschließlich den dokumentierten Alchemie-Classic-Fallback');
+assert.equal(journeymanAlchemy?.source.priceSource,'classic');
+assert.equal(journeymanAlchemy?.alternatives.some(source=>source.name==="Tel'Athir"&&source.priceCopper===450&&source.priceSource==='classic'),true);
 assert.equal(stormwind.actions.some(action=>action.category==='class-abilities'),true,'Verifizierte externe Klassenaktion kann vom gemeinsamen Resolver aufgenommen werden');
 assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCount])),{
   'class-abilities':1,
@@ -114,8 +115,8 @@ assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCo
   'companion-abilities':0
 });
 assert.equal(stormwind.counts.knownPrices,6,'Der Preisstatus zählt eindeutige Lernziele, nicht zusätzliche NPC-Angebote');
-assert.equal(stormwind.counts.confirmedPrices,5);
-assert.equal(stormwind.counts.classicPrices,1,'Classic-Preis bleibt nutzbar, wird aber separat von bestätigten Forever-Preisen gezählt');
+assert.equal(stormwind.counts.confirmedPrices,4);
+assert.equal(stormwind.counts.classicPrices,2,'Classic-Preise bleiben nutzbar, werden aber separat von bestätigten Forever-Preisen gezählt');
 assert.equal(stormwind.counts.unknownPriceSources,0);
 assert.equal(stormwind.counts.unknownPrices,0,'Eine unbekannte Alternative macht ein Lernziel mit bestätigtem günstigstem Preis nicht unbepreist');
 

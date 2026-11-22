@@ -212,6 +212,16 @@ function fallbackProfessionRankRequiredLevel(slug,skillCap){
   if(cap===300&&['alchemy','blacksmithing','enchanting','engineering','leatherworking','cooking','first-aid','fishing','skinning'].includes(slug))return 35;
   return null;
 }
+function fallbackProfessionRankPriceCopper(slug,skillCap){
+  const cap=finite(skillCap);
+  // ForeverDB's Alchemy guide explicitly marks these rank costs as Classic trainer data.
+  if(slug==='alchemy'){
+    if(cap===150)return 450;
+    if(cap===225)return 5000;
+    if(cap===300)return 45000;
+  }
+  return null;
+}
 function professionTrainingActions(character,recipeIndex){
   const level=finite(character?.level);
   if(level===null)return [];
@@ -255,10 +265,16 @@ function professionTrainingActions(character,recipeIndex){
       sources:sources.map(source=>{
         const directPrice=sourcePriceCopper(source);
         const rankPrice=finite(next.priceCopper);
+        const classicFallbackPrice=rankPrice===null?fallbackProfessionRankPriceCopper(slug,next.skillCap):null;
+        const inheritedPrice=rankPrice??classicFallbackPrice;
         return {
           ...source,
-          priceCopper:directPrice??rankPrice,
-          priceSource:directPrice!==null?sourcePriceSource(source):(rankPrice!==null?(next.priceSource||'unknown'):null)
+          priceCopper:directPrice??inheritedPrice,
+          priceSource:directPrice!==null
+            ?sourcePriceSource(source)
+            :rankPrice!==null
+              ?(next.priceSource||'unknown')
+              :classicFallbackPrice!==null?'classic':null
         };
       })
     });

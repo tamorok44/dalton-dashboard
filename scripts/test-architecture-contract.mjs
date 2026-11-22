@@ -115,6 +115,8 @@ assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("sourc
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('currentSkill<requiredSkill||level<requiredLevel'),'Location planner must reject profession rank training when skill or character level is not met');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('fallbackProfessionRankRequiredSkill'),'Profession rank skill fallbacks must stay isolated from normal recipe learning');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('fallbackProfessionRankRequiredLevel'),'Profession rank level fallbacks must stay isolated from normal recipe learning');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('fallbackProfessionRankPriceCopper'),'Profession rank price fallbacks must stay isolated from normal recipe learning');
+assert.ok(policy.includes('4 S 50 K (Geselle), 50 S (Experte) und 4 G 50 S (Fachmann)'),'Alchemy Classic rank price fallback must stay explicitly bounded and documented');
 assert.ok(policy.includes('Level-Fallbacks werden nur für die dort konkret dokumentierten Berufs-/Rangkombinationen hinterlegt'),'Profession rank level fallbacks must stay explicitly bounded in the architecture contract');
 assert.ok((sourceByFile.get('scripts/workshop-foreverdb.mjs')||'').includes('sideFromEntry'),'ForeverDB NPC faction fields must be normalized before location planning');
 assert.ok(policy.includes('Geselle 50, Experte 125'),'Classic profession-rank fallback thresholds must stay explicitly bounded in the architecture contract');
