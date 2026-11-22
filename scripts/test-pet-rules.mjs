@@ -106,8 +106,15 @@ for(const id of ['fox.family.profile','fox.training','pet.scaling','pet.crit.inh
 }
 assert.equal(changed.rules['pet.autoswing.crit'].status,'verified','Independent controlled measurement remains available');
 
+const historicalBuildOnly={...pages,
+  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replace('1.60.1.70959','1.60.1.70958')
+};
+const historicalState=await verifyPetRulebook({fetchImpl:fetchFrom(historicalBuildOnly),previousState:first,now:new Date('2026-11-22T06:37:00.000Z')});
+assert.equal(historicalState.sources.foreverDbBuild.status,'verified','Historical changelog rows do not masquerade as a current-build change');
+assert.equal(historicalState.sources.foreverDbBuild.build,'1.60.1.71037');
+
 const changedBuild={...pages,
-  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replace('1.60.1.71037','1.60.1.71038')
+  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('1.60.1.71037','1.60.1.71038')
 };
 const buildState=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild),previousState:first,now:new Date('2026-11-22T07:07:00.000Z')});
 assert.equal(buildState.sources.foreverDbBuild.status,'review_required','A new current client build needs explicit review');
