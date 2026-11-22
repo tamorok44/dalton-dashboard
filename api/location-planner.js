@@ -89,6 +89,7 @@ export default async function handler(req,res){
     const professionMasterValues=Object.values(professionMasters);
     const professionMasterErrors=professionMasterValues.filter(value=>value?.error).length;
     const professionRanks=professionMasterValues.flatMap(value=>Array.isArray(value?.ranks)?value.ranks:[]);
+    const professionTrainers=professionMasterValues.flatMap(value=>Array.isArray(value?.trainers)?value.trainers:[]);
     return res.status(200).json({
       ...planner,
       catalog:{
@@ -102,7 +103,10 @@ export default async function handler(req,res){
         professionMasterErrors,
         professionRankCount:professionRanks.length,
         professionRankWithLevelCount:professionRanks.filter(rank=>Number.isFinite(Number(rank?.requiredLevel))).length,
-        professionRankWithSourceCount:professionRanks.filter(rank=>Array.isArray(rank?.sources)&&rank.sources.length).length
+        professionRankWithSourceCount:professionRanks.filter(rank=>Array.isArray(rank?.sources)&&rank.sources.length).length,
+        professionTrainerCount:professionTrainers.length,
+        professionTrainerConfirmedCount:professionTrainers.filter(source=>source?.evidence==='forever-confirmed').length,
+        professionTrainerWithTitleCount:professionTrainers.filter(source=>source?.npcTitle).length
       },
       source:'ForeverDB.net'
     });
