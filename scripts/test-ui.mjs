@@ -598,7 +598,8 @@ const rankAction={
   source:{key:'npc:6',name:'Lehrer',role:'Lehrer',location:{zone:'Sturmwind'},priceCopper:500},
   alternatives:[]
 };
-const twoTargets={actions:[plannerAction,rankAction],categories:plannerData.categories};
+const twoTargets={actions:[plannerAction,rankAction],categories:[...plannerData.categories,{id:'profession-training',label:'Berufsausbildung'}]};
+ui.plannerState.categories=new Set(['profession-recipes','profession-training']);
 ui.plannerState.selected.clear();
 ui.plannerSelectAllVisible(twoTargets);
 assert.equal(ui.plannerState.selected.size,2,'Tatsächlich verschiedene Lernziele bzw. Ränge bleiben separat auswählbar');
