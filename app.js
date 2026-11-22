@@ -1201,11 +1201,18 @@ const plannerState={
   character:'',
   location:'',
   categories:new Set(locationCategoryDefaults),
-  selected:new Set()
+  selected:new Map(),
+  pendingSwitch:null
 };
 let plannerEpoch=0;
+function plannerKnownCopper(value){
+  if(value===null||value===undefined||value==='')return null;
+  const amount=Number(value);
+  return Number.isFinite(amount)&&amount>=0?amount:null;
+}
 function plannerPrice(copper){
-  return Number.isFinite(Number(copper))?workshopCopper(Number(copper)):'Preis nicht verfügbar';
+  const amount=plannerKnownCopper(copper);
+  return amount===null?'Preis nicht verfügbar':workshopCopper(amount);
 }
 function plannerCoords(location={}){
   const x=Number(location?.x),y=Number(location?.y);
@@ -1218,6 +1225,25 @@ function plannerCategoryLabel(id,data={}){
 function plannerVisibleActions(data){
   return (Array.isArray(data?.actions)?data.actions:[]).filter(action=>plannerState.categories.has(action.category));
 }
+function plannerOffers(action){
+  const seen=new Set(),offers=[];
+  for(const source of [action?.source,...(Array.isArray(action?.alternatives)?action.alternatives:[])]){
+    if(!source?.key||seen.has(source.key))continue;
+    seen.add(source.key);offers.push(source);
+  }
+  return offers;
+}
+function plannerOfferByKey(action,key){
+  return plannerOffers(action).find(source=>source.key===key)||null;
+}
+function plannerCheapestKnownOffer(action){
+  const offers=plannerOffers(action);
+  const known=offers.map(source=>({source,price:plannerKnownCopper(source.priceCopper)})).filter(entry=>entry.price!==null);
+  if(!known.length)return action?.source||offers[0]||null;
+  const minimum=Math.min(...known.map(entry=>entry.price));
+  if(action?.source?.key&&plannerKnownCopper(action.source.priceCopper)===minimum)return action.source;
+  return known.filter(entry=>entry.price===minimum).map(entry=>entry.source).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de'))[0]||null;
+}
 function plannerActionLine(action){
   const parts=[];
   if(action.profession)parts.push(action.profession);
@@ -1225,19 +1251,67 @@ function plannerActionLine(action){
   if(Number.isFinite(Number(action.requiredLevel))&&Number(action.requiredLevel)>0)parts.push('Level '+action.requiredLevel);
   return parts.join(' · ');
 }
-function plannerAlternativeHtml(action){
-  const alternatives=Array.isArray(action?.alternatives)?action.alternatives:[];
+function plannerAlternativeHtml(action,currentSourceKey){
+  const alternatives=plannerOffers(action).filter(source=>source.key!==currentSourceKey);
   if(!alternatives.length)return '';
-  return '<details class="planner-alternatives"><summary>Weitere bestätigte Anlaufstellen · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
+  return '<details class="planner-alternatives"><summary>Auch hier erhältlich · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
     alternatives.map(source=>{
       const coords=plannerCoords(source.location);
       const meta=[source.role,source.location?.zone,coords,plannerPrice(source.priceCopper)].filter(Boolean).join(' · ');
       return '<div class="planner-alternative"><strong>'+esc(source.name||'NPC')+'</strong><span>'+esc(meta)+'</span></div>';
     }).join('')+'</div></details>';
 }
+function plannerPriceWarningHtml(action,source){
+  const selectedPrice=plannerKnownCopper(source?.priceCopper),cheapest=plannerCheapestKnownOffer(action),cheapestPrice=plannerKnownCopper(cheapest?.priceCopper);
+  if(selectedPrice===null||cheapestPrice===null||selectedPrice<=cheapestPrice||cheapest?.key===source?.key)return '';
+  const saving=selectedPrice-cheapestPrice;
+  return '<div class="planner-price-warning"><strong>Günstiger verfügbar</strong><span>Bei '+esc(cheapest.name||'einem anderen NPC')+' kostet diese Erledigung '+esc(plannerPrice(cheapestPrice))+' statt '+esc(plannerPrice(selectedPrice))+' · Ersparnis '+esc(workshopCopper(saving))+'.</span></div>';
+}
+function plannerRequestOfferSelection(actionKey,sourceKey,checked){
+  const current=plannerState.selected.get(actionKey)||null;
+  if(!checked){
+    if(current===sourceKey)plannerState.selected.delete(actionKey);
+    plannerState.pendingSwitch=null;
+    return 'removed';
+  }
+  if(current&&current!==sourceKey){
+    plannerState.pendingSwitch={actionKey,fromSourceKey:current,toSourceKey:sourceKey};
+    return 'conflict';
+  }
+  plannerState.selected.set(actionKey,sourceKey);
+  plannerState.pendingSwitch=null;
+  return 'selected';
+}
+function plannerConfirmSwitch(){
+  const pending=plannerState.pendingSwitch;
+  if(!pending)return false;
+  plannerState.selected.set(pending.actionKey,pending.toSourceKey);
+  plannerState.pendingSwitch=null;
+  return true;
+}
+function plannerKeepSelection(){
+  plannerState.pendingSwitch=null;
+}
+function plannerClearSelection(){
+  plannerState.selected.clear();
+  plannerState.pendingSwitch=null;
+}
+function plannerSelectAllVisible(data){
+  for(const action of plannerVisibleActions(data)){
+    const offer=plannerCheapestKnownOffer(action);
+    if(offer?.key)plannerState.selected.set(action.key,offer.key);
+  }
+  plannerState.pendingSwitch=null;
+}
 function plannerSelectedActions(data){
-  const visible=new Map(plannerVisibleActions(data).map(action=>[action.key,action]));
-  return [...plannerState.selected].map(key=>visible.get(key)).filter(Boolean);
+  const selected=[];
+  for(const action of plannerVisibleActions(data)){
+    const sourceKey=plannerState.selected.get(action.key);
+    if(!sourceKey)continue;
+    const source=plannerOfferByKey(action,sourceKey);
+    if(source)selected.push({...action,source});
+  }
+  return selected;
 }
 function plannerSelectionHtml(data){
   const selected=plannerSelectedActions(data);
@@ -1250,8 +1324,8 @@ function plannerSelectionHtml(data){
     let group=byNpc.get(key);
     if(!group){group={name:source.name||'NPC',role:source.role||'',location:source.location||{},actions:[],total:0,unknown:0};byNpc.set(key,group)}
     group.actions.push(action);
-    const price=Number(source.priceCopper);
-    if(Number.isFinite(price)){group.total+=price;total+=price}else{group.unknown++;unknown++}
+    const price=plannerKnownCopper(source.priceCopper);
+    if(price!==null){group.total+=price;total+=price}else{group.unknown++;unknown++}
   }
   const groups=[...byNpc.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
   return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE ERLEDIGUNGSLISTE</span><h3>'+selected.length+' Erledigung'+(selected.length===1?'':'en')+' · '+groups.length+' Station'+(groups.length===1?'':'en')+'</h3></div><div class="planner-total"><span>'+(unknown?'Bekannte Kosten':'Gesamtkosten')+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(unknown?'<small>'+unknown+' ohne bestätigten Preis</small>':'')+'</div></div>'+
@@ -1263,6 +1337,21 @@ function plannerSelectionHtml(data){
         '<div class="planner-route-subtotal"><span>'+(group.unknown?'Bekannte Kosten':'Zwischensumme')+'</span><strong>'+esc(workshopCopper(group.total))+'</strong>'+(group.unknown?'<small>'+group.unknown+' ohne Preis</small>':'')+'</div></article>';
     }).join('')+'</div></section>';
 }
+function plannerSwitchHtml(action,source){
+  const pending=plannerState.pendingSwitch;
+  if(!pending||pending.actionKey!==action?.key||pending.toSourceKey!==source?.key)return '';
+  const from=plannerOfferByKey(action,pending.fromSourceKey),to=source;
+  if(!from||!to)return '';
+  const fromPrice=plannerKnownCopper(from.priceCopper),toPrice=plannerKnownCopper(to.priceCopper);
+  let comparison='';
+  if(fromPrice!==null&&toPrice!==null){
+    const diff=Math.abs(toPrice-fromPrice);
+    if(toPrice>fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' teurer.';
+    else if(toPrice<fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' günstiger.';
+    else comparison=' Beide Angebote haben denselben bestätigten Preis.';
+  }
+  return '<section class="planner-switch" role="alert"><div><span class="planner-kicker">BEREITS AUSGEWÄHLT</span><h3>'+esc(action.name)+'</h3><p>Diese Erledigung ist bereits bei <strong>'+esc(from.name||'einem anderen NPC')+'</strong> für '+esc(plannerPrice(from.priceCopper))+' ausgewählt. Bei <strong>'+esc(to.name||'diesem NPC')+'</strong> kostet sie '+esc(plannerPrice(to.priceCopper))+'.'+esc(comparison)+'</p></div><div class="planner-switch-actions"><button type="button" data-planner-switch-keep>Bisherige Auswahl behalten</button><button type="button" data-planner-switch-confirm>Zu '+esc(to.name||'diesem NPC')+' wechseln</button></div></section>';
+}
 function plannerNpcHtml(npc,data,actions){
   const location=npc.location||{};
   const coords=plannerCoords(location);
@@ -1272,12 +1361,15 @@ function plannerNpcHtml(npc,data,actions){
     :'';
   return '<article class="planner-vendor"><div class="planner-vendor-head"><div class="planner-npc-heading">'+avatar+'<div><span class="planner-kicker">'+esc(npc.role||'ANLAUFSTELLE')+'</span><h3>'+esc(npc.name||'Unbekannter NPC')+'</h3>'+(meta?'<p>'+esc(meta)+'</p>':'')+'</div></div><span class="planner-vendor-count">'+actions.length+' Erledigung'+(actions.length===1?'':'en')+'</span></div>'+
     '<div class="planner-recipe-list">'+actions.map(action=>{
-      const checked=plannerState.selected.has(action.key);
+      const sourceKey=action.source?.key||npc.key;
+      const checked=plannerState.selected.get(action.key)===sourceKey;
       const stock=Number(action.source?.limitedStock);
       const line=plannerActionLine(action);
-      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><strong>'+esc(action.name)+'</strong>'+(line?'<small>'+esc(line)+'</small>':'')+
+      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><strong>'+esc(action.name)+'</strong>'+(line?'<small>'+esc(line)+'</small>':'')+
         (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(action.source?.priceCopper))+'</span></label>'+
-        plannerAlternativeHtml(action)+'</div>';
+        plannerSwitchHtml(action,action.source)+
+        (checked?plannerPriceWarningHtml(action,action.source):'')+
+        plannerAlternativeHtml(action,sourceKey)+'</div>';
     }).join('')+'</div></article>';
 }
 function plannerCategoryFilters(data){
@@ -1320,18 +1412,15 @@ function renderLocationPlanner(){
     body='<div class="planner-placeholder"><strong>Der gewählte Ort ist für den aktuellen Stand nicht mehr verfügbar.</strong><span>Bitte wähle einen Ort aus der aktualisierten Liste.</span></div>';
   }else{
     const visible=plannerVisibleActions(data);
-    const npcByKey=new Map((data.npcs||[]).map(npc=>[npc.key,npc]));
-    const groups=new Map();
-    for(const action of visible){
-      const key=action.source?.key;
-      if(!key)continue;
-      let list=groups.get(key);if(!list){list=[];groups.set(key,list)}list.push(action);
-    }
-    const npcs=(data.npcs||[]).filter(npc=>groups.has(npc.key));
+    const visibleKeys=new Set(visible.map(action=>action.key));
+    const npcs=(Array.isArray(data.npcs)?data.npcs:[]).map(npc=>({
+      ...npc,
+      actions:(Array.isArray(npc.actions)?npc.actions:[]).filter(action=>visibleKeys.has(action.key))
+    })).filter(npc=>npc.actions.length);
     body=plannerCategoryFilters(data)+
-      '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Die Liste ist nach NPC gebündelt. Nicht ausgewählte Kategorien werden vollständig ausgeblendet.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
+      '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
       plannerSelectionHtml(data)+
-      (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npcByKey.get(npc.key)||npc,data,groups.get(npc.key)||[])).join('')+'</div>':
+      (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
         '<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
       '<p class="planner-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a> · angezeigt werden nur in Forever bestätigte und aktuell erfüllbare Angebote.</p>';
   }
@@ -1339,32 +1428,38 @@ function renderLocationPlanner(){
   plannerRoot.querySelector('#plannerCharacter')?.addEventListener('change',event=>{
     plannerState.character=event.target.value;
     plannerState.location='';
-    plannerState.selected.clear();
+    plannerClearSelection();
     plannerState.data=null;
     loadLocationPlanner({force:true});
   });
   plannerRoot.querySelector('#plannerLocation')?.addEventListener('change',event=>{
     plannerState.location=event.target.value;
-    plannerState.selected.clear();
+    plannerClearSelection();
     plannerState.data=null;
     loadLocationPlanner({force:true});
   });
   plannerRoot.querySelectorAll('[data-location-category]').forEach(input=>input.addEventListener('change',()=>{
     const id=input.dataset.locationCategory;
     if(input.checked)plannerState.categories.add(id);else plannerState.categories.delete(id);
+    plannerState.pendingSwitch=null;
     renderLocationPlanner();
   }));
   plannerRoot.querySelectorAll('[data-location-action]').forEach(input=>input.addEventListener('change',()=>{
-    const key=input.dataset.locationAction;
-    if(input.checked)plannerState.selected.add(key);else plannerState.selected.delete(key);
+    plannerRequestOfferSelection(input.dataset.locationAction,input.dataset.locationSource,input.checked);
     renderLocationPlanner();
   }));
   plannerRoot.querySelector('[data-planner-select-all]')?.addEventListener('click',()=>{
-    for(const action of plannerVisibleActions(data))plannerState.selected.add(action.key);
+    plannerSelectAllVisible(data);
     renderLocationPlanner();
   });
   plannerRoot.querySelector('[data-planner-clear]')?.addEventListener('click',()=>{
-    plannerState.selected.clear();renderLocationPlanner();
+    plannerClearSelection();renderLocationPlanner();
+  });
+  plannerRoot.querySelector('[data-planner-switch-keep]')?.addEventListener('click',()=>{
+    plannerKeepSelection();renderLocationPlanner();
+  });
+  plannerRoot.querySelector('[data-planner-switch-confirm]')?.addEventListener('click',()=>{
+    plannerConfirmSwitch();renderLocationPlanner();
   });
 }
 async function loadLocationPlanner({force=false}={}){
@@ -1382,10 +1477,10 @@ async function loadLocationPlanner({force=false}={}){
     if(epoch!==plannerEpoch)return;
     plannerState.data=result;
     if(plannerState.character&&!result.selectedCharacter){
-      plannerState.character='';plannerState.location='';plannerState.selected.clear();
+      plannerState.character='';plannerState.location='';plannerClearSelection();
     }
     if(plannerState.location&&!result.selectedLocation){
-      plannerState.location='';plannerState.selected.clear();
+      plannerState.location='';plannerClearSelection();
     }
   }catch(error){
     if(epoch===plannerEpoch)plannerState.error='Ortsplaner konnte nicht geladen werden.';
@@ -1398,7 +1493,7 @@ function invalidateLocationPlannerData({reloadVisible=true}={}){
   plannerState.data=null;
   plannerState.loading=false;
   plannerState.error=null;
-  plannerState.selected.clear();
+  plannerClearSelection();
   if(!plannerView.hidden&&reloadVisible)loadLocationPlanner({force:true});
 }
 

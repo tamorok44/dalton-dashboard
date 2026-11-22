@@ -1042,7 +1042,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 
 /* Ortsplaner — ortsbezogene, aktuell ausführbare Erledigungen auf gemeinsamen Masterdaten. */
 .planner-view{min-width:0;max-width:100%;min-height:420px;overflow:visible}
-#plannerContent,.planner-shell,.planner-controls,.planner-character,.planner-filters,.planner-location-summary,.planner-selection,.planner-vendor{min-width:0;max-width:100%}
+#plannerContent,.planner-shell,.planner-controls,.planner-character,.planner-filters,.planner-location-summary,.planner-switch,.planner-selection,.planner-vendor{min-width:0;max-width:100%}
 .planner-shell{display:grid;gap:16px}
 .planner-controls,.planner-character,.planner-filters,.planner-location-summary,.planner-selection,.planner-vendor{
   padding:16px;border:1px solid var(--line);border-radius:7px;
@@ -1083,6 +1083,13 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .planner-list-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;flex:0 0 auto}
 .planner-list-actions button{padding:7px 10px;border:1px solid color-mix(in srgb,var(--gold) 32%,transparent);border-radius:4px;background:color-mix(in srgb,var(--wood) 28%,transparent);color:var(--paper);font:var(--weight-label) var(--type-caption)/1.3 var(--body);cursor:pointer}
 .planner-list-actions button:hover,.planner-list-actions button:focus{border-color:var(--gold);color:var(--cream)}
+.planner-switch{display:grid;gap:12px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--gold) 48%,var(--line));border-radius:7px;background:color-mix(in srgb,var(--gold) 7%,var(--night))}
+.planner-switch h3{margin:2px 0 0;color:var(--cream);font-size:var(--type-h4);overflow-wrap:anywhere}
+.planner-switch p{margin:6px 0 0;color:var(--paper);font-size:var(--type-small);line-height:1.5;overflow-wrap:anywhere}
+.planner-switch-actions{display:flex;flex-wrap:wrap;gap:7px}
+.planner-switch-actions button{padding:7px 10px;border:1px solid color-mix(in srgb,var(--gold) 38%,transparent);border-radius:4px;background:color-mix(in srgb,var(--wood) 28%,transparent);color:var(--paper);font:var(--weight-label) var(--type-caption)/1.3 var(--body);cursor:pointer}
+.planner-switch-actions button:hover,.planner-switch-actions button:focus{border-color:var(--gold);color:var(--cream)}
+.planner-recipe-card>.planner-switch{margin:0 11px 10px}
 .planner-selection{display:grid;gap:12px;border-color:color-mix(in srgb,var(--ok) 30%,var(--line))}
 .planner-selection.is-empty{display:grid;gap:4px;border-style:dashed;color:var(--muted)}
 .planner-selection.is-empty strong{color:var(--paper)}
@@ -1118,6 +1125,9 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .planner-recipe-copy small{color:var(--muted);font-size:var(--type-caption);line-height:1.4;overflow-wrap:anywhere}
 .planner-recipe-copy .planner-stock{color:var(--gold)}
 .planner-recipe-price{align-self:center;color:var(--gold);font:var(--weight-label) var(--type-small)/1.3 var(--body);font-variant-numeric:tabular-nums;white-space:nowrap}
+.planner-price-warning{display:grid;gap:2px;margin:0 11px 10px;padding:8px 9px;border:1px solid color-mix(in srgb,var(--gold) 46%,transparent);border-radius:4px;background:color-mix(in srgb,var(--gold) 8%,var(--ink))}
+.planner-price-warning strong{color:var(--gold);font-size:var(--type-caption)}
+.planner-price-warning span{color:var(--paper);font-size:var(--type-caption);line-height:1.45;overflow-wrap:anywhere}
 .planner-alternatives{border-top:1px dashed color-mix(in srgb,var(--gold-deep) 28%,transparent)}
 .planner-alternatives summary{cursor:pointer;padding:7px 11px;color:var(--muted);font:var(--weight-label) var(--type-caption)/1.35 var(--body)}
 .planner-alternative-list{display:grid;gap:5px;padding:0 11px 9px}
