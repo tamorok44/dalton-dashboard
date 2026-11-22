@@ -94,8 +94,8 @@ assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCo
   'profession-training':1,
   'companion-abilities':0
 });
-assert.equal(stormwind.counts.knownPrices,6);
-assert.equal(stormwind.counts.unknownPrices,0);
+assert.equal(stormwind.counts.knownPrices,5);
+assert.equal(stormwind.counts.unknownPrices,1);
 
 const level9Data={...data,characters:[{...baseCharacter,level:9}]};
 const level9=buildLocationPlanner(level9Data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions});
