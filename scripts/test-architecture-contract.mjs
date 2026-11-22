@@ -112,6 +112,11 @@ assert.ok(sourceByFile.has('scripts/location-planner.mjs'),'Location planner cor
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Location planner must reuse the persistent Workshop recipe master');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must use a build-scoped profession-training master without rebuilding the recipe catalog');
 assert.ok(sourceByFile.has('scripts/class-training-store.mjs'),'Central class-training master is required');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('companionTrainingAbility'),'Hunter Beast Training must stay outside class training');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('cachedGermanClassSpells'),'Visible class spell localization must use the centralized German spell cache');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes("zone:'Insel Zephras'"),'Class trainer fallback must use the canonical German Zephras location');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("'Klassenfähigkeit #'"),'Missing spell localization must use neutral German ID fallback, never English technical text');
+assert.ok(policy.includes('Jäger-Begleitertraining')&&policy.includes('keine Klassenfähigkeit'),'Architecture contract must keep pet training out of class abilities');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbClassMaster'),'Location planner must load the shared build-scoped class master');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('classTrainingActions'),'Location planner must derive class training centrally instead of injecting ad-hoc rows');
 assert.ok((sourceByFile.get('scripts/refresh-service.mjs')||'').includes("'spells','spellbook'"),'Character refresh must probe personal spellbook-capable Forever profile endpoints');
