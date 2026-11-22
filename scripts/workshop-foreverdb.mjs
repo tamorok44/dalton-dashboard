@@ -265,7 +265,7 @@ function normalizeProfessionRank(raw={}){
     sources:rankSources
   };
 }
-function normalizeProfessionMaster(raw={},professionSlug){
+export function normalizeProfessionMaster(raw={},professionSlug){
   const data=object(raw);
   const ranks=asArray(first(data.ranks,data.skillRanks,data.skill_ranks,data.professionRanks,data.profession_ranks))
     .map(normalizeProfessionRank)
@@ -279,6 +279,15 @@ function normalizeProfessionMaster(raw={},professionSlug){
     trainers
   };
 }
+export async function fetchForeverDbProfessionMaster(professionSlug,{fetchImpl=fetch}={}){
+  const page=await fetchForeverDbProfession(professionSlug,{limit:1,offset:0,fetchImpl});
+  return {
+    generatedAt:new Date().toISOString(),
+    build:firstText(page.meta?.build,page.meta?.gameBuild,page.meta?.clientBuild)||null,
+    profession:normalizeProfessionMaster(page.data,professionSlug)
+  };
+}
+
 export function normalizeForeverDbRecipe(raw={},professionSlug){
   const makes=normalizeMakes(raw);
   if(!makes?.item?.id)return null;
