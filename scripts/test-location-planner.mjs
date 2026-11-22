@@ -4,17 +4,17 @@ import {buildLocationPlanner} from './location-planner.mjs';
 const vendor=(id,name,zone,priceCopper,extra={})=>({
   type:'vendor',evidence:'forever-confirmed',side:'alliance',id,name,
   location:{zone,uiMapId:zone==='Stormwind'?1453:zone==='Ironforge'?1455:null,x:id/10,y:id/20},
-  priceCopper,...extra
+  priceCopper,priceSource:priceCopper===null?null:'forever-observed',...extra
 });
 const trainer=(id,name,zone,priceCopper,extra={})=>({
   type:'trainer',evidence:'forever-confirmed',side:'alliance',id,name,
   location:{zone,uiMapId:zone==='Stormwind'?1453:zone==='Ironforge'?1455:null,x:id/10,y:id/20},
-  priceCopper,...extra
+  priceCopper,priceSource:priceCopper===null?null:'forever-observed',...extra
 });
 const expertCookbookSource={
   type:'vendor',evidence:'forever-confirmed',side:'alliance',id:3955,name:'Shandrina',
   location:{zone:'Ashenvale',uiMapId:1440,x:49.6,y:67.1},
-  priceCopper:10000
+  priceCopper:10000,priceSource:'forever-observed'
 };
 const baseCharacter={
   slug:'cole-dalton',name:'Cole Dalton',player:'Christian',level:12,classId:8,class:'Magier',faction:'Allianz',
@@ -31,7 +31,10 @@ const recipes=[
   {id:102,name:'Elixier B',professionSlug:'alchemy',requiredSkill:40,craftedItem:{id:502,name:'Elixier B'},learning:{sources:[vendor(1,'Alfred','Stormwind',200)]}},
   {id:103,name:'Zu schwer',professionSlug:'alchemy',requiredSkill:60,craftedItem:{id:503,name:'Zu schwer'},learning:{sources:[vendor(1,'Alfred','Stormwind',300)]}},
   {id:104,name:'Eisenschmiede-Rezept',professionSlug:'alchemy',requiredSkill:10,craftedItem:{id:504,name:'Fern'},learning:{sources:[vendor(3,'Clara','Ironforge',80)]}},
-  {id:105,name:'Lehrerrezept',professionSlug:'alchemy',requiredSkill:50,craftedItem:{id:505,name:'Lehrer'},learning:{sources:[trainer(10,'Lehrer Eins','Stormwind',350)]}},
+  {id:105,name:'Lehrerrezept',professionSlug:'alchemy',requiredSkill:50,craftedItem:{id:505,name:'Lehrer'},learning:{sources:[
+    trainer(10,'Lehrer Eins','Stormwind',350),
+    trainer(11,'Lehrer Classic','Stormwind',100,{priceSource:'classic'})
+  ]}},
   {id:106,name:'Normales Rezept ohne Levelangabe',professionSlug:'alchemy',requiredSkill:10,craftedItem:{id:506,name:'Normal'},learning:{sources:[vendor(5,'Emil','Stormwind',90)]}},
   {id:107,name:'Classic unsicher',professionSlug:'alchemy',requiredSkill:10,craftedItem:{id:507,name:'Unsicher'},learning:{sources:[{...vendor(6,'Dora','Stormwind',70),evidence:'classic-unconfirmed'}]}}
 ];
@@ -59,7 +62,7 @@ const professionMasters={
 const extraActions=[{
   key:'class:1459',id:1459,name:'Arkane Fähigkeit',category:'class-abilities',
   verified:true,availableNow:true,characterSlug:'cole-dalton',
-  sources:[trainer(30,'Magierlehrer','Stormwind',1000)]
+  sources:[trainer(30,'Magierlehrer','Stormwind',1000,{priceSource:'classic'})]
 },{
   key:'pet:1',id:1,name:'Nicht belegte Begleiterfähigkeit',category:'companion-abilities',
   verified:false,availableNow:true,characterSlug:'cole-dalton',
@@ -85,7 +88,12 @@ assert.equal(elixirA?.alternatives.some(source=>source.name==='Alfred'&&source.p
 assert.equal(elixirA?.alternatives.some(source=>source.name==='Dietmar'&&source.priceCopper===null),true);
 assert.equal(stormwind.npcs.filter(npc=>npc.actions.some(action=>action.key===elixirA.key)).length,4,'Alle bestätigten Händlerangebote bleiben am jeweiligen NPC sichtbar');
 assert.equal(new Set(stormwind.npcs.flatMap(npc=>npc.actions.filter(action=>action.key===elixirA.key).map(action=>action.source.key))).size,4);
-assert.equal(stormwind.actions.find(action=>action.id===105)?.source.role,'Lehrer');
+const trainerRecipe=stormwind.actions.find(action=>action.id===105);
+assert.equal(trainerRecipe?.source.role,'Lehrer');
+assert.equal(trainerRecipe?.source.name,'Lehrer Eins','Ein bestätigter Forever-Preis hat Vorrang vor einem numerisch billigeren Classic-Fallback');
+assert.equal(trainerRecipe?.source.priceCopper,350);
+assert.equal(trainerRecipe?.source.priceSource,'forever-observed');
+assert.equal(trainerRecipe?.alternatives.find(source=>source.name==='Lehrer Classic')?.priceSource,'classic');
 assert.equal(stormwind.actions.some(action=>action.type==='profession-training'&&action.profession==='Alchemie'),true,
   'Jetzt mögliche Berufsausbildung wird aufgenommen, wenn Rang, Level und Quelle belegt sind');
 assert.equal(stormwind.actions.find(action=>action.type==='profession-training'&&action.profession==='Alchemie')?.requiredSkill,50,
@@ -106,6 +114,9 @@ assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCo
   'companion-abilities':0
 });
 assert.equal(stormwind.counts.knownPrices,6,'Der Preisstatus zählt eindeutige Lernziele, nicht zusätzliche NPC-Angebote');
+assert.equal(stormwind.counts.confirmedPrices,5);
+assert.equal(stormwind.counts.classicPrices,1,'Classic-Preis bleibt nutzbar, wird aber separat von bestätigten Forever-Preisen gezählt');
+assert.equal(stormwind.counts.unknownPriceSources,0);
 assert.equal(stormwind.counts.unknownPrices,0,'Eine unbekannte Alternative macht ein Lernziel mit bestätigtem günstigstem Preis nicht unbepreist');
 
 const level9Data={...data,characters:[{...baseCharacter,level:9}]};
