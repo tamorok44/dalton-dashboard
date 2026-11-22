@@ -8,6 +8,9 @@ import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
 }
+function hasFiniteNumber(value){
+  return value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
+}
 function npcRenderSource({displayId,renderSourceUrl}={}){
   if(typeof renderSourceUrl==='string'&&/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\//.test(renderSourceUrl))return renderSourceUrl;
   const id=Number(displayId);
@@ -102,7 +105,7 @@ export default async function handler(req,res){
         professionMasterCount:professionMasterValues.filter(value=>value&&!value.error).length,
         professionMasterErrors,
         professionRankCount:professionRanks.length,
-        professionRankWithLevelCount:professionRanks.filter(rank=>Number.isFinite(Number(rank?.requiredLevel))).length,
+        professionRankWithLevelCount:professionRanks.filter(rank=>hasFiniteNumber(rank?.requiredLevel)).length,
         professionRankWithSourceCount:professionRanks.filter(rank=>Array.isArray(rank?.sources)&&rank.sources.length).length,
         professionTrainerCount:professionTrainers.length,
         professionTrainerConfirmedCount:professionTrainers.filter(source=>source?.evidence==='forever-confirmed').length,
