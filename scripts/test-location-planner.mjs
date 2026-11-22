@@ -128,8 +128,8 @@ assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCo
   'companion-abilities':0
 });
 assert.equal(stormwind.counts.knownPrices,6,'Der Preisstatus zählt eindeutige Lernziele, nicht zusätzliche NPC-Angebote');
-assert.equal(stormwind.counts.confirmedPrices,4);
-assert.equal(stormwind.counts.classicPrices,2,'Classic-Preise bleiben nutzbar, werden aber separat von bestätigten Forever-Preisen gezählt');
+assert.equal(stormwind.counts.confirmedPrices,5);
+assert.equal(stormwind.counts.classicPrices,1,'Classic-Preise bleiben nutzbar, werden aber separat von bestätigten Forever-Preisen gezählt');
 assert.equal(stormwind.counts.unknownPriceSources,0);
 assert.equal(stormwind.counts.unknownPrices,0,'Eine unbekannte Alternative macht ein Lernziel mit bestätigtem günstigstem Preis nicht unbepreist');
 
