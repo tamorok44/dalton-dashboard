@@ -99,6 +99,8 @@ assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForever
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must use a build-scoped profession-training master without rebuilding the recipe catalog');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("source?.evidence==='forever-confirmed'"),'Location planner must fail closed to Forever-confirmed NPC sources');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('currentSkill<requiredSkill||level<requiredLevel'),'Location planner must reject profession rank training when skill or character level is not met');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('fallbackProfessionRankRequiredSkill'),'Profession rank skill fallbacks must stay isolated from normal recipe learning');
+assert.ok(policy.includes('Geselle 50, Experte 125'),'Classic profession-rank fallback thresholds must stay explicitly bounded in the architecture contract');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.verified===true")&&(sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.availableNow===true"),'Class and companion actions must be explicitly verified and currently available');
 assert.ok(browserSource.includes("fetch('/api/location-planner?'"),'Location planner frontend must use its server-side API');
 assert.ok(browserSource.includes('invalidateLocationPlannerData({reloadVisible:true})'),'Character refresh must invalidate the location planner');
