@@ -1,7 +1,7 @@
 import {redis,configured as redisConfigured} from './character-store.mjs';
 import {foreverDbConfigured,fetchForeverDbClass} from './foreverdb-api.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v1:';
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v2:';
 export const CLASS_BY_ID=Object.freeze({
   1:'warrior',2:'paladin',3:'hunter',4:'rogue',5:'priest',7:'shaman',8:'mage',9:'warlock',11:'druid'
 });
