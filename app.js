@@ -1205,8 +1205,14 @@ const plannerState={
   pendingSwitch:null
 };
 let plannerEpoch=0;
+function plannerKnownCopper(value){
+  if(value===null||value===undefined||value==='')return null;
+  const amount=Number(value);
+  return Number.isFinite(amount)&&amount>=0?amount:null;
+}
 function plannerPrice(copper){
-  return Number.isFinite(Number(copper))?workshopCopper(Number(copper)):'Preis nicht verfügbar';
+  const amount=plannerKnownCopper(copper);
+  return amount===null?'Preis nicht verfügbar':workshopCopper(amount);
 }
 function plannerCoords(location={}){
   const x=Number(location?.x),y=Number(location?.y);
@@ -1232,11 +1238,11 @@ function plannerOfferByKey(action,key){
 }
 function plannerCheapestKnownOffer(action){
   const offers=plannerOffers(action);
-  const known=offers.filter(source=>Number.isFinite(Number(source.priceCopper)));
+  const known=offers.map(source=>({source,price:plannerKnownCopper(source.priceCopper)})).filter(entry=>entry.price!==null);
   if(!known.length)return action?.source||offers[0]||null;
-  const minimum=Math.min(...known.map(source=>Number(source.priceCopper)));
-  if(action?.source?.key&&Number(action.source.priceCopper)===minimum)return action.source;
-  return known.filter(source=>Number(source.priceCopper)===minimum).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de'))[0]||null;
+  const minimum=Math.min(...known.map(entry=>entry.price));
+  if(action?.source?.key&&plannerKnownCopper(action.source.priceCopper)===minimum)return action.source;
+  return known.filter(entry=>entry.price===minimum).map(entry=>entry.source).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de'))[0]||null;
 }
 function plannerActionLine(action){
   const parts=[];
@@ -1256,8 +1262,8 @@ function plannerAlternativeHtml(action,currentSourceKey){
     }).join('')+'</div></details>';
 }
 function plannerPriceWarningHtml(action,source){
-  const selectedPrice=Number(source?.priceCopper),cheapest=plannerCheapestKnownOffer(action),cheapestPrice=Number(cheapest?.priceCopper);
-  if(!Number.isFinite(selectedPrice)||!Number.isFinite(cheapestPrice)||selectedPrice<=cheapestPrice||cheapest?.key===source?.key)return '';
+  const selectedPrice=plannerKnownCopper(source?.priceCopper),cheapest=plannerCheapestKnownOffer(action),cheapestPrice=plannerKnownCopper(cheapest?.priceCopper);
+  if(selectedPrice===null||cheapestPrice===null||selectedPrice<=cheapestPrice||cheapest?.key===source?.key)return '';
   const saving=selectedPrice-cheapestPrice;
   return '<div class="planner-price-warning"><strong>Günstiger verfügbar</strong><span>Bei '+esc(cheapest.name||'einem anderen NPC')+' kostet diese Erledigung '+esc(plannerPrice(cheapestPrice))+' statt '+esc(plannerPrice(selectedPrice))+' · Ersparnis '+esc(workshopCopper(saving))+'.</span></div>';
 }
@@ -1314,8 +1320,8 @@ function plannerSelectionHtml(data){
     let group=byNpc.get(key);
     if(!group){group={name:source.name||'NPC',role:source.role||'',location:source.location||{},actions:[],total:0,unknown:0};byNpc.set(key,group)}
     group.actions.push(action);
-    const price=Number(source.priceCopper);
-    if(Number.isFinite(price)){group.total+=price;total+=price}else{group.unknown++;unknown++}
+    const price=plannerKnownCopper(source.priceCopper);
+    if(price!==null){group.total+=price;total+=price}else{group.unknown++;unknown++}
   }
   const groups=[...byNpc.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
   return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE ERLEDIGUNGSLISTE</span><h3>'+selected.length+' Erledigung'+(selected.length===1?'':'en')+' · '+groups.length+' Station'+(groups.length===1?'':'en')+'</h3></div><div class="planner-total"><span>'+(unknown?'Bekannte Kosten':'Gesamtkosten')+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(unknown?'<small>'+unknown+' ohne bestätigten Preis</small>':'')+'</div></div>'+
@@ -1333,9 +1339,9 @@ function plannerSwitchHtml(data){
   const action=(Array.isArray(data?.actions)?data.actions:[]).find(entry=>entry.key===pending.actionKey);
   const from=plannerOfferByKey(action,pending.fromSourceKey),to=plannerOfferByKey(action,pending.toSourceKey);
   if(!action||!from||!to)return '';
-  const fromPrice=Number(from.priceCopper),toPrice=Number(to.priceCopper);
+  const fromPrice=plannerKnownCopper(from.priceCopper),toPrice=plannerKnownCopper(to.priceCopper);
   let comparison='';
-  if(Number.isFinite(fromPrice)&&Number.isFinite(toPrice)){
+  if(fromPrice!==null&&toPrice!==null){
     const diff=Math.abs(toPrice-fromPrice);
     if(toPrice>fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' teurer.';
     else if(toPrice<fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' günstiger.';
