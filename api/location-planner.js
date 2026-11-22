@@ -3,7 +3,7 @@ import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
 import {getForeverDbMasterRecipeIndex,cachedForeverDbProfessionMasters,cachedForeverDbVendor} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildLocationPlanner} from '../scripts/location-planner.mjs';
-import {cachedForeverDbClassMaster} from '../scripts/class-training-store.mjs';
+import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function queryUrl(req){
@@ -18,6 +18,50 @@ function npcRenderSource({displayId,renderSourceUrl}={}){
   return Number.isInteger(id)&&id>0
     ?'https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-'+id+'.jpg'
     :null;
+}
+function germanRankLabel(value){
+  if(typeof value!=='string'||!value.trim())return null;
+  const rank=value.trim();
+  const match=rank.match(/^Rank\s+(\d+)$/i);
+  return match?'Rang '+match[1]:rank;
+}
+function localizeClassAction(action,localized={}){
+  if(action?.category!=='class-abilities')return action;
+  const id=Number(action.id);
+  const spell=Number.isInteger(id)?localized[id]:null;
+  const name=spell?.name||('Klassenfähigkeit #'+(Number.isInteger(id)?id:'–'));
+  const rank=germanRankLabel(spell?.rank||action?.rank);
+  return {
+    ...action,
+    name:[name,rank].filter(Boolean).join(' · '),
+    abilityName:name,
+    rank
+  };
+}
+function localizePlannerClassData(planner,localized={}){
+  const selectedCharacter=planner?.selectedCharacter?{
+    ...planner.selectedCharacter,
+    knownClassAbilities:Array.isArray(planner.selectedCharacter.knownClassAbilities)
+      ?planner.selectedCharacter.knownClassAbilities.map(entry=>{
+        const id=Number(entry?.id);
+        const spell=Number.isInteger(id)?localized[id]:null;
+        return {
+          ...entry,
+          name:spell?.name||entry?.name||('Klassenfähigkeit #'+(Number.isInteger(id)?id:'–')),
+          rank:germanRankLabel(spell?.rank||entry?.rank)
+        };
+      })
+      :planner.selectedCharacter.knownClassAbilities
+  }:planner?.selectedCharacter;
+  return {
+    ...planner,
+    selectedCharacter,
+    actions:Array.isArray(planner?.actions)?planner.actions.map(action=>localizeClassAction(action,localized)):planner?.actions,
+    npcs:Array.isArray(planner?.npcs)?planner.npcs.map(npc=>({
+      ...npc,
+      actions:Array.isArray(npc?.actions)?npc.actions.map(action=>localizeClassAction(action,localized)):npc?.actions
+    })):planner?.npcs
+  };
 }
 async function withNpcAvatar(npc,build){
   let candidate={...npc};
@@ -84,6 +128,14 @@ export default async function handler(req,res){
       professionMasters,
       classMaster
     });
+    const classSpellIds=[
+      ...(Array.isArray(planner.actions)?planner.actions.filter(action=>action?.category==='class-abilities').map(action=>action.id):[]),
+      ...(Array.isArray(planner.selectedCharacter?.knownClassAbilities)?planner.selectedCharacter.knownClassAbilities.map(entry=>entry?.id):[])
+    ];
+    if(classSpellIds.length){
+      const localized=await cachedGermanClassSpells(classSpellIds);
+      planner=localizePlannerClassData(planner,localized);
+    }
     if(planner.npcs?.length){
       const npcs=await Promise.all(planner.npcs.map(npc=>withNpcAvatar(npc,recipeIndex?.build||null)));
       const avatarByKey=new Map(npcs.map(npc=>[npc.key,npc.avatarUrl||null]));
@@ -119,9 +171,7 @@ export default async function handler(req,res){
         professionTrainerWithTitleCount:professionTrainers.filter(source=>source?.npcTitle).length,
         classMasterConnected:Boolean(classMaster&&!classMaster.error),
         classAbilityCount:Array.isArray(classMaster?.abilities)?classMaster.abilities.length:0,
-        classTrainerCount:Array.isArray(classMaster?.trainers)?classMaster.trainers.length:0,
-        classDiagnosticSchema:classMaster?.diagnosticSchema||null,
-        classDiagnosticAbilitySamples:Array.isArray(classMaster?.diagnosticAbilitySamples)?classMaster.diagnosticAbilitySamples:[]
+        classTrainerCount:Array.isArray(classMaster?.trainers)?classMaster.trainers.length:0
       },
       source:'ForeverDB.net'
     });
