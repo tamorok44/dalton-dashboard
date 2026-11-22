@@ -977,10 +977,16 @@ function workshopSourceHtml(source){
     ?Number(location.x).toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+Number(location.y).toLocaleString('de-DE',{maximumFractionDigits:1})
     :'';
   const where=[location.zone,coords,location.instance].filter(Boolean).join(' · ');
+  const priceSource=source.priceSource==='forever-observed'
+    ?'Forever-Preis'
+    :source.priceSource==='classic'
+      ?'Classic-Preis · noch nicht in Forever bestätigt'
+      :source.priceSource==='unknown'?'Preisquelle nicht bestätigt':'';
   const details=[
     source.side?workshopSideLabels[source.side]||source.side:'',
     where,
     Number.isFinite(Number(source.priceCopper))?workshopCopper(source.priceCopper):'',
+    priceSource,
     Number.isFinite(Number(source.limitedStock))?'Vorrat '+source.limitedStock:'',
     source.reputationFaction?'Ruf: '+source.reputationFaction:''
   ].filter(Boolean).join(' · ');
