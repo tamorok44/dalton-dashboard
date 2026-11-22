@@ -961,7 +961,7 @@ function workshopLearningCandidatesHtml(result){
           ?'<span class="workshop-learning-state">Noch nicht lernbar · ab Level '+esc(candidate.requiredCharacterLevel)+'</span>'
           :candidate.status==='skill-and-level-gap'
             ?'<span class="workshop-learning-state">Noch '+esc(candidate.gap)+' Skillpunkt'+(candidate.gap===1?'':'e')+' · ab Level '+esc(candidate.requiredCharacterLevel)+'</span>'
-            :'<span class="workshop-learning-state">Lernvoraussetzungen nicht vollständig bestätigt</span>';
+            :'<span class="workshop-learning-state">Passender Beruf</span>';
     const skill=Number.isFinite(Number(candidate.skill))
       ?esc(candidate.skill)+'/'+esc(candidate.skillCap??'–')
       :'Skill unbekannt';
