@@ -217,7 +217,14 @@ export function normalizeForeverDbClass(raw={},slug){
     ...collectTrainers(first(data.trainers,data.classTrainers,data.class_trainers),['trainers'])
   ]);
   const classTrainers=apiTrainers.length?apiTrainers:verifiedZephrasClassTrainers(slug);
-  const abilities=abilityList(data).filter(trainerAbility).map(ability=>{
+  const rawAbilities=abilityList(data);
+  const diagnosticAbilitySamples=rawAbilities.slice(0,8).map(ability=>({
+    name:ability?.name??null,
+    line:ability?.line??null,
+    learned:ability?.learned??null,
+    ranks:asArray(ability?.ranks).slice(0,3)
+  }));
+  const abilities=rawAbilities.filter(trainerAbility).map(ability=>{
     const ranksRaw=asArray(first(ability.ranks,ability.spells,ability.rankSpells,ability.rank_spells));
     const fallbackRanks=ranksRaw.length?ranksRaw:[ability];
     const ranks=fallbackRanks.map(rank=>normalizeRank(rank,ability,classTrainers))
@@ -238,6 +245,7 @@ export function normalizeForeverDbClass(raw={},slug){
   return {
     slug,
     diagnosticSchema,
+    diagnosticAbilitySamples,
     id:integer(first(data.id,data.classId,data.class_id)),
     name:firstText(data.name,data.localizedName,data.localized_name)||slug,
     abilities,
