@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {normalizeForeverDbClass,CLASS_BY_ID} from './class-training-store.mjs';
+import {normalizeForeverDbClass,cachedGermanClassSpells,CLASS_BY_ID} from './class-training-store.mjs';
 
 assert.equal(CLASS_BY_ID[8],'mage');
 assert.equal(CLASS_BY_ID[11],'druid');
@@ -83,7 +83,32 @@ const fallback=normalizeForeverDbClass({
 assert.equal(fallback.trainers.length,3,'Fehlt ein Lehrerobjekt in der Klassen-API, nutzt der Master die zentral bestätigten Zephras-Lehrer');
 assert.equal(fallback.trainers[0].evidence,'forever-confirmed');
 assert.equal(fallback.abilities[0].ranks[0].sources.length,3);
-assert.equal(fallback.abilities[0].ranks[0].sources[0].location.zone,'Zephras Isle');
+assert.equal(fallback.abilities[0].ranks[0].sources[0].location.zone,'Insel Zephras');
 assert.equal(fallback.abilities[0].ranks[0].requiredLevel,8,'ForeverDB-Feld learnedLevel wird als Lernlevel erkannt');
+
+const hunter=normalizeForeverDbClass({
+  name:'Jäger',
+  abilities:[
+    {name:'Beißen',line:'Beast Training',learned:'Trainer',ranks:[{id:17254,rank:'Rank 1',learnedLevel:1}]},
+    {name:'Arkaner Schuss',line:'Marksmanship',learned:'Trainer',ranks:[{id:3044,rank:'Rank 1',learnedLevel:6}]}
+  ]
+},'hunter');
+assert.equal(hunter.abilities.length,1,'Begleitertraining bleibt aus der Kategorie Klassenfähigkeiten heraus');
+assert.equal(hunter.abilities[0].ranks[0].id,3044);
+
+const previousKey=process.env.FOREVERDB_API_KEY;
+process.env.FOREVERDB_API_KEY='test-key';
+const localized=await cachedGermanClassSpells([133,143],{
+  fetchImpl:async url=>{
+    const id=Number(new URL(url).pathname.split('/').pop());
+    const data=id===133
+      ?{id:133,name:'Feuerball',rank:'Rang 1',requiredLevel:1}
+      :{id:143,name:'Feuerball',rank:'Rang 2',requiredLevel:6};
+    return {ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify({data})};
+  }
+});
+if(previousKey===undefined)delete process.env.FOREVERDB_API_KEY;else process.env.FOREVERDB_API_KEY=previousKey;
+assert.equal(localized[133].name,'Feuerball');
+assert.equal(localized[143].rank,'Rang 2');
 
 console.log('Klassenmaster: Lehrerfähigkeiten, Ränge, Level, Quellen und Preis-Provenienz: OK');
