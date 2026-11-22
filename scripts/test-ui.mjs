@@ -568,8 +568,9 @@ assert.equal(ui.plannerCheapestKnownOffer(plannerAction)?.key,'npc:2','Günstigs
 ui.plannerSelectAllVisible(plannerData);
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Alle auswählen legt das Lernziel einmal beim günstigsten Anbieter ab');
 assert.equal(ui.plannerState.selected.size,1,'Ein Lernziel erzeugt nur eine Auswahlposition');
-assert.ok(ui.plannerSelectionHtml(plannerData).includes(ui.plannerPrice(80)),'Gesamtliste verwendet den Preis des einmalig gewählten günstigsten Angebots');
-assert.ok(!ui.plannerSelectionHtml(plannerData).includes(ui.plannerPrice(100)),'Teurere Doppelangebote werden nicht zusätzlich in die Gesamtliste summiert');
+const selectedCost=ui.plannerSelectedActions(plannerData).reduce((sum,action)=>sum+(ui.plannerKnownCopper(action.source?.priceCopper)??0),0);
+assert.equal(selectedCost,80,'Gesamtkosten enthalten das eindeutige Lernziel genau einmal zum günstigsten bestätigten Preis');
+assert.ok(ui.plannerSelectionHtml(plannerData).includes(ui.plannerPrice(80)),'Gerenderte Gesamtliste zeigt den gewählten günstigsten Preis');
 assert.equal(ui.plannerRequestOfferSelection(plannerAction.key,'npc:1',true),'conflict','Zweites Angebot desselben Lernziels erzeugt einen Wechselkonflikt');
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Konflikt verändert die bestehende Auswahl noch nicht');
 assert.ok(ui.plannerSwitchHtml(plannerData).includes('Bisherige Auswahl behalten'),'Konflikthinweis bietet explizites Beibehalten an');
