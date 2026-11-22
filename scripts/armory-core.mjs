@@ -179,7 +179,8 @@ function gear(c) {
   const entries=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
   return entries.map(entry=>{
     if(!entry||typeof entry!=='object')return null;
-    const name=typeof (entry.name||entry.item?.name)==='string'?(entry.name||entry.item?.name).trim():'';
+    const rawName=entry.name||entry.item?.name;
+    const name=typeof rawName==='string'?rawName.trim():'';
     const id=Number(entry.id??entry.item?.id);
     const slotType=typeof entry.slot?.type==='string'?entry.slot.type:typeof entry.slot==='string'?entry.slot:null;
     const slot=typeof entry.slot?.name==='string'&&entry.slot.name.trim()?entry.slot.name.trim():null;
