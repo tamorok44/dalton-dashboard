@@ -96,6 +96,8 @@ function publicCharacter(character={}){
     classId:integer(character.classId),
     class:text(character.class)||null,
     faction:text(character.faction)||null,
+    knownClassAbilitiesVerified:character?.knownClassAbilitiesVerified===true,
+    knownClassAbilityCount:asArray(character?.knownClassAbilities).length,
     professions:asArray(character.professions).map(publicProfession)
   };
 }
@@ -281,6 +283,50 @@ function professionTrainingActions(character,recipeIndex){
   }
   return actions;
 }
+function classTrainingActions(character,classMaster){
+  const level=finite(character?.level);
+  if(level===null||!classMaster)return [];
+  const knownVerified=character?.knownClassAbilitiesVerified===true;
+  const knownIds=new Set(asArray(character?.knownClassAbilities).map(entry=>integer(
+    typeof entry==='number'?entry:entry?.id??entry?.spellId
+  )).filter(Boolean));
+  const actions=[];
+  for(const ability of asArray(classMaster?.abilities)){
+    for(const rank of asArray(ability?.ranks)){
+      const spellId=integer(rank?.id);
+      const requiredLevel=finite(rank?.requiredLevel);
+      if(!spellId||requiredLevel===null||requiredLevel>level)continue;
+      if(knownVerified&&knownIds.has(spellId))continue;
+      const sources=eligibleNpcSources(rank?.sources,character,{types:['trainer']});
+      if(!sources.length)continue;
+      const rankText=text(rank?.rank);
+      actions.push({
+        key:'class-spell:'+spellId,
+        type:'class-ability',
+        category:'class-abilities',
+        id:spellId,
+        name:[text(ability?.name)||text(rank?.name)||'Klassenfähigkeit',rankText].filter(Boolean).join(' · '),
+        abilityName:text(ability?.name)||text(rank?.name)||null,
+        rank:rankText||null,
+        school:text(ability?.school)||null,
+        requiredLevel,
+        currentLevel:level,
+        learnedState:knownVerified?'not-known':'unknown',
+        learnedStateVerified:knownVerified,
+        sources:sources.map(source=>{
+          const directPrice=sourcePriceCopper(source);
+          const rankPrice=finite(rank?.priceCopper);
+          return {
+            ...source,
+            priceCopper:directPrice??rankPrice,
+            priceSource:directPrice!==null?sourcePriceSource(source):(rankPrice!==null?(rank.priceSource||'unknown'):null)
+          };
+        })
+      });
+    }
+  }
+  return actions;
+}
 function verifiedExtraActions(character,extraActions=[]){
   return asArray(extraActions).filter(action=>
     action?.verified===true&&
@@ -454,6 +500,7 @@ export function buildLocationPlanner(data={},recipeIndex={},{
   characterSlug=null,
   location=null,
   professionMasters={},
+  classMaster=null,
   extraActions=[]
 }={}){
   const characters=asArray(data?.characters).map(publicCharacter).sort((a,b)=>a.name.localeCompare(b.name,'de'));
@@ -479,6 +526,7 @@ export function buildLocationPlanner(data={},recipeIndex={},{
   const candidates=mergeActionCandidates([
     ...recipeActions(character,effectiveIndex),
     ...professionTrainingActions(character,effectiveIndex),
+    ...classTrainingActions(character,classMaster),
     ...verifiedExtraActions(character,extraActions)
   ]);
   const locations=buildLocations(candidates);
