@@ -30,7 +30,7 @@ if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobT
 else delete process.env.BLOB_READ_WRITE_TOKEN;
 let saved=null,petRulesSaved=null;
 let history=[];
-let lock=null,cooldown=false,lockReleases=0;
+let lock=null,cooldown=false,lockReleases=0,failPetRuleSave=false;
 
 function fakeResponse(req){
   let status=200,payload=null;
@@ -73,7 +73,10 @@ globalThis.fetch=async (url,options={})=>{
       let result='OK';
       if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
       else if(key==='dalton-dashboard:refresh:manual:cooldown'){if(cooldown)result=null;else cooldown=true}
-      else if(key==='dalton-dashboard:pet-rules:v1')petRulesSaved=value;
+      else if(key==='dalton-dashboard:pet-rules:v1'){
+        if(failPetRuleSave)return {ok:true,json:async()=>({error:'pet rule write failed'})};
+        petRulesSaved=value;
+      }
       else saved=value;
       return {ok:true,json:async()=>({result})};
     }
@@ -143,6 +146,17 @@ try{
   const denied=fakeResponse();
   await handler({method:'POST',headers:{}},denied);
   assert.equal(denied.result().status,401);
+
+  failPetRuleSave=true;
+  cooldown=false;
+  const releasesBeforeRuleFailure=lockReleases;
+  const ruleFailure=fakeResponse();
+  await handler({method:'GET'},ruleFailure);
+  assert.equal(ruleFailure.result().status,503,'Pet-Regelprüfungsfehler darf den Refresh nicht als erfolgreich melden');
+  assert.equal(lock,null,'Refresh-Lock wird auch freigegeben, wenn die Pet-Regelprüfung vor dem Profilabruf scheitert');
+  assert.equal(lockReleases,releasesBeforeRuleFailure+1,'Fehler vor refreshAndPersist führt genau eine Lock-Freigabe aus');
+  failPetRuleSave=false;
+  cooldown=false;
 
   const ok=fakeResponse();
   await handler({method:'GET'},ok);
