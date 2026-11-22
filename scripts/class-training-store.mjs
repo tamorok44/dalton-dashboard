@@ -203,6 +203,14 @@ function abilityList(raw={}){
   }
   return [];
 }
+function schemaShape(value,depth=0){
+  if(depth>3)return typeof value;
+  if(Array.isArray(value)){
+    return {kind:'array',length:value.length,sample:value.slice(0,2).map(entry=>schemaShape(entry,depth+1))};
+  }
+  if(!value||typeof value!=='object')return typeof value;
+  return Object.fromEntries(Object.entries(value).slice(0,30).map(([key,entry])=>[key,schemaShape(entry,depth+1)]));
+}
 export function normalizeForeverDbClass(raw={},slug){
   const data=object(raw);
   const apiTrainers=dedupeTrainers([
@@ -223,6 +231,9 @@ export function normalizeForeverDbClass(raw={},slug){
       ranks
     };
   }).filter(ability=>ability.ranks.length);
+  if(!abilities.length){
+    console.warn('ForeverDB class schema without normalized abilities:',slug,JSON.stringify(schemaShape(data)));
+  }
   return {
     slug,
     id:integer(first(data.id,data.classId,data.class_id)),
