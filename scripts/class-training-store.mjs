@@ -231,11 +231,13 @@ export function normalizeForeverDbClass(raw={},slug){
       ranks
     };
   }).filter(ability=>ability.ranks.length);
-  if(!abilities.length){
-    console.warn('ForeverDB class schema without normalized abilities:',slug,JSON.stringify(schemaShape(data)));
+  const diagnosticSchema=!abilities.length?schemaShape(data):null;
+  if(diagnosticSchema){
+    console.warn('ForeverDB class schema without normalized abilities:',slug,JSON.stringify(diagnosticSchema));
   }
   return {
     slug,
+    diagnosticSchema,
     id:integer(first(data.id,data.classId,data.class_id)),
     name:firstText(data.name,data.localizedName,data.localized_name)||slug,
     abilities,
