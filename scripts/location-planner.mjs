@@ -292,6 +292,31 @@ function sourceSummary(source={}){
     npcTitle:text(source.npcTitle)||null
   };
 }
+function mergeActionCandidates(actions){
+  const byKey=new Map();
+  for(const action of asArray(actions)){
+    const key=text(action?.key);
+    if(!key)continue;
+    let merged=byKey.get(key);
+    if(!merged){
+      merged={...action,sources:[]};
+      byKey.set(key,merged);
+    }
+    const sourceByNpc=new Map(merged.sources.map(source=>[sourceNpcKey(source),source]));
+    for(const source of asArray(action.sources)){
+      const npcKey=sourceNpcKey(source);
+      const previous=sourceByNpc.get(npcKey);
+      if(!previous){
+        sourceByNpc.set(npcKey,source);
+        continue;
+      }
+      const oldPrice=sourcePriceCopper(previous),newPrice=sourcePriceCopper(source);
+      if((oldPrice===null&&newPrice!==null)||(oldPrice!==null&&newPrice!==null&&newPrice<oldPrice))sourceByNpc.set(npcKey,source);
+    }
+    merged.sources=[...sourceByNpc.values()];
+  }
+  return [...byKey.values()];
+}
 function choosePreferredSources(actions,zone){
   const withSources=actions.map(action=>({
     ...action,
@@ -307,14 +332,15 @@ function choosePreferredSources(actions,zone){
   }
   return withSources.map(action=>{
     const sorted=[...action.zoneSources].sort((a,b)=>{
-      const ak=sourceNpcKey(a),bk=sourceNpcKey(b);
-      const ac=coverage.get(ak)?.size||0,bc=coverage.get(bk)?.size||0;
-      if(ac!==bc)return bc-ac;
       const ap=sourcePriceCopper(a),bp=sourcePriceCopper(b);
       if((ap===null)!==(bp===null))return ap===null?1:-1;
       if(ap!==null&&bp!==null&&ap!==bp)return ap-bp;
+      const ak=sourceNpcKey(a),bk=sourceNpcKey(b);
+      const ac=coverage.get(ak)?.size||0,bc=coverage.get(bk)?.size||0;
+      if(ac!==bc)return bc-ac;
       return text(a.name).localeCompare(text(b.name),'de');
     });
+    const offers=sorted.map(sourceSummary);
     return {
       key:action.key,
       type:action.type,
@@ -329,32 +355,40 @@ function choosePreferredSources(actions,zone){
       requiredLevel:action.requiredLevel??null,
       requiredLevelSource:action.requiredLevelSource||null,
       currentLevel:action.currentLevel??null,
-      source:sourceSummary(sorted[0]),
-      alternatives:sorted.slice(1).map(sourceSummary)
+      source:offers[0],
+      alternatives:offers.slice(1),
+      offerCount:offers.length,
+      cheapestKnownPriceCopper:offers.find(source=>source.priceCopper!==null)?.priceCopper??null
     };
   });
 }
 function groupByNpc(actions){
   const groups=new Map();
   for(const action of actions){
-    const source=action.source;
-    let group=groups.get(source.key);
-    if(!group){
-      group={
-        key:source.key,
-        id:source.id,
-        name:source.name,
-        role:source.role,
-        sourceType:source.sourceType,
-        location:source.location,
-        displayId:source.displayId,
-        renderSourceUrl:source.renderSourceUrl,
-        actions:[]
-      };
-      groups.set(source.key,group);
+    const offers=[action.source,...asArray(action.alternatives)].filter(source=>source?.key);
+    for(const source of offers){
+      let group=groups.get(source.key);
+      if(!group){
+        group={
+          key:source.key,
+          id:source.id,
+          name:source.name,
+          role:source.role,
+          sourceType:source.sourceType,
+          location:source.location,
+          displayId:source.displayId,
+          renderSourceUrl:source.renderSourceUrl,
+          actions:[]
+        };
+        groups.set(source.key,group);
+      }
+      group.actions.push({
+        ...action,
+        source,
+        alternatives:offers.filter(other=>other.key!==source.key)
+      });
+      if(group.role!==source.role)group.role='Mehrere Dienste';
     }
-    group.actions.push(action);
-    if(group.role!==source.role)group.role='Mehrere Dienste';
   }
   return [...groups.values()].map(group=>({
     ...group,
@@ -371,7 +405,7 @@ function groupByNpc(actions){
     return a.name.localeCompare(b.name,'de');
   });
 }
-export function buildLocationPlanner(data={},recipeIndex={},{
+export function buildLocationPlannerexport function buildLocationPlanner(data={},recipeIndex={},{
   characterSlug=null,
   location=null,
   professionMasters={},
@@ -397,11 +431,11 @@ export function buildLocationPlanner(data={},recipeIndex={},{
     ...recipeIndex,
     professions:Object.values(professionMasters||{}).filter(master=>master&&!master.error)
   };
-  const candidates=[
+  const candidates=mergeActionCandidates([
     ...recipeActions(character,effectiveIndex),
     ...professionTrainingActions(character,effectiveIndex),
     ...verifiedExtraActions(character,extraActions)
-  ];
+  ]);
   const locations=buildLocations(candidates);
   const canonicalLocation=locations.find(entry=>norm(entry.name)===norm(location))?.name||null;
   const actions=canonicalLocation?choosePreferredSources(candidates,canonicalLocation):[];
