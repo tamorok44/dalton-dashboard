@@ -19,6 +19,8 @@ const expertCookbookSource={
 const baseCharacter={
   slug:'cole-dalton',name:'Cole Dalton',player:'Christian',level:12,classId:8,class:'Magier',faction:'Allianz',
   professionDetailsVerified:true,
+  knownClassAbilitiesVerified:true,
+  knownClassAbilities:[{id:116,name:'Frostblitz',rank:'Rang 1'}],
   professions:[
     {id:171,name:'Alchemie',current:58,max:75,knownRecipes:[{id:100,name:'Bekanntes Rezept'}]},
     {id:185,name:'Kochkunst',current:130,max:150,knownRecipes:[]}
@@ -59,22 +61,29 @@ const professionMasters={
     ]
   }
 };
+const classMaster={
+  slug:'mage',name:'Magier',
+  abilities:[{
+    id:116,name:'Frostblitz',school:'Frost',type:'Trainer',
+    ranks:[
+      {id:116,name:'Frostblitz',rank:'Rang 1',requiredLevel:4,priceCopper:100,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',100)]},
+      {id:205,name:'Frostblitz',rank:'Rang 2',requiredLevel:8,priceCopper:200,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',200)]},
+      {id:837,name:'Frostblitz',rank:'Rang 3',requiredLevel:14,priceCopper:400,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',400)]}
+    ]
+  }]
+};
 const extraActions=[{
-  key:'class:1459',id:1459,name:'Arkane Fähigkeit',category:'class-abilities',
-  verified:true,availableNow:true,characterSlug:'cole-dalton',
-  sources:[trainer(30,'Magierlehrer','Stormwind',1000,{priceSource:'classic'})]
-},{
   key:'pet:1',id:1,name:'Nicht belegte Begleiterfähigkeit',category:'companion-abilities',
   verified:false,availableNow:true,characterSlug:'cole-dalton',
   sources:[trainer(40,'Begleiterlehrer','Stormwind',100)]
 }];
 
-const overview=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions});
+const overview=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster});
 assert.equal(overview.counts.availableNow,7,'Nur jetzt mögliche Rezepte, Berufsausbildungen und verifizierte Zusatzaktionen zählen');
 assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Eisenschmiede',1],['Sturmwind',6]],
   'Level-20-Berufsausbildung taucht für einen Level-12-Charakter an keinem Ort auf');
 
-const stormwind=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions});
+const stormwind=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions,classMaster});
 assert.equal(stormwind.selectedLocation,'Sturmwind');
 assert.equal(stormwind.counts.atLocation,6);
 assert.equal(stormwind.actions.some(action=>action.id===106),true,'Normale Rezepte benötigen keine erfundene Charakterlevel-Prüfung');
@@ -107,7 +116,11 @@ assert.equal(journeymanAlchemy?.source.name,'Lilliam',
 assert.equal(journeymanAlchemy?.source.priceCopper,450,'Fehlender ForeverDB-Rangpreis nutzt ausschließlich den dokumentierten Alchemie-Classic-Fallback');
 assert.equal(journeymanAlchemy?.source.priceSource,'classic');
 assert.equal(journeymanAlchemy?.alternatives.some(source=>source.name==="Tel'Athir"&&source.priceCopper===450&&source.priceSource==='classic'),true);
-assert.equal(stormwind.actions.some(action=>action.category==='class-abilities'),true,'Verifizierte externe Klassenaktion kann vom gemeinsamen Resolver aufgenommen werden');
+const frostboltRank2=stormwind.actions.find(action=>action.category==='class-abilities');
+assert.equal(frostboltRank2?.id,205,'Bereits gelernter Rang 1 wird bei verifiziertem Spellbook ausgeblendet');
+assert.equal(frostboltRank2?.name,'Frostblitz · Rang 2');
+assert.equal(frostboltRank2?.learnedState,'not-known');
+assert.equal(frostboltRank2?.source.name,'Magierlehrer');
 assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCount])),{
   'class-abilities':1,
   'profession-recipes':4,
@@ -120,16 +133,22 @@ assert.equal(stormwind.counts.classicPrices,2,'Classic-Preise bleiben nutzbar, w
 assert.equal(stormwind.counts.unknownPriceSources,0);
 assert.equal(stormwind.counts.unknownPrices,0,'Eine unbekannte Alternative macht ein Lernziel mit bestätigtem günstigstem Preis nicht unbepreist');
 
+const unknownSpellbookData={...data,characters:[{...baseCharacter,knownClassAbilitiesVerified:false,knownClassAbilities:[]}]};
+const unknownSpellbook=buildLocationPlanner(unknownSpellbookData,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions,classMaster});
+const unknownClassActions=unknownSpellbook.actions.filter(action=>action.category==='class-abilities');
+assert.deepEqual(unknownClassActions.map(action=>action.id),[116,205],'Ohne persönlichen Spellbook-Stand werden fällige Klassenränge nicht fälschlich als bereits gelernt entfernt');
+assert.ok(unknownClassActions.every(action=>action.learnedState==='unknown'&&action.learnedStateVerified===false));
+
 const level9Data={...data,characters:[{...baseCharacter,level:9}]};
-const level9=buildLocationPlanner(level9Data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions});
+const level9=buildLocationPlanner(level9Data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions,classMaster});
 assert.equal(level9.actions.some(action=>action.type==='profession-training'&&action.profession==='Alchemie'),false,
   'Journeyman-Alchemie bleibt unter Charakterlevel 10 trotz Skill 58 ausgeblendet');
 
 const level20Data={...data,characters:[{...baseCharacter,level:20}]};
-const level20=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',professionMasters,extraActions});
+const level20=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster});
 assert.ok(level20.locations.some(location=>location.name==='Eschental'),
   'Kochkunst-Experte wird erst ab belegtem Charakterlevel 20 als Reiseerledigung freigeschaltet');
-const ashenvale=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',location:'Eschental',professionMasters,extraActions});
+const ashenvale=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',location:'Eschental',professionMasters,extraActions,classMaster});
 const expertCooking=ashenvale.actions.find(action=>action.type==='profession-training'&&action.profession==='Kochkunst');
 assert.ok(expertCooking,'Expertenkochbuch erscheint ab Level 20 und Kochkunst 125+');
 assert.equal(expertCooking.requiredLevel,20);
