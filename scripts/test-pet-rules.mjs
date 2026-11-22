@@ -11,7 +11,15 @@ const pages={
     <main>White swings get none of the crit inherited from the hunter.
     Claw and Bite crit at about the Hunter's crit chance.</main>`,
   'foreverdb.net/changelog':`
-    <main>Build changelog. Build 1.60.1.71037 is on the site now.</main>`,
+    <main>
+<h1>Build changelog</h1>
+<p>What each WoW Forever client build added, removed or changed.</p>
+<ul>
+<li>Build 1.60.1.71037 (2026-11-22): 9 spells (9 changed); 80 items (3 added, 77 changed); 1 armor set (1 changed).</li>
+<li>Build 1.60.1.70959 (2026-11-18): 1 class ability (1 changed); 2 talents (2 changed).</li>
+</ul>
+<p>Data from the WoW Forever client, build 1.60.1.71037, extracted 2026-11-22.</p>
+</main>`,
   'wowhead.com/forever/guide/classes/hunter/survival/overview-pve-dps':`
     <main>Stamina: Every 1 player Stamina gives the pet 2 Health.
     Armor: Pet gains 30% of the player's Armor.
@@ -98,8 +106,15 @@ for(const id of ['fox.family.profile','fox.training','pet.scaling','pet.crit.inh
 }
 assert.equal(changed.rules['pet.autoswing.crit'].status,'verified','Independent controlled measurement remains available');
 
+const historicalBuildOnly={...pages,
+  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replace('1.60.1.70959','1.60.1.70958')
+};
+const historicalState=await verifyPetRulebook({fetchImpl:fetchFrom(historicalBuildOnly),previousState:first,now:new Date('2026-11-22T06:37:00.000Z')});
+assert.equal(historicalState.sources.foreverDbBuild.status,'verified','Historical changelog rows do not masquerade as a current-build change');
+assert.equal(historicalState.sources.foreverDbBuild.build,'1.60.1.71037');
+
 const changedBuild={...pages,
-  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replace('1.60.1.71037','1.60.1.71038')
+  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('1.60.1.71037','1.60.1.71038')
 };
 const buildState=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild),previousState:first,now:new Date('2026-11-22T07:07:00.000Z')});
 assert.equal(buildState.sources.foreverDbBuild.status,'review_required','A new current client build needs explicit review');

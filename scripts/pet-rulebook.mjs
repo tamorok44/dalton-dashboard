@@ -152,9 +152,9 @@ const sources=Object.freeze({
     mode:'markers',
     semanticPatterns:Object.freeze([
       /build\s+changelog/i,
-      /build\s+1\.60\.1\.\d+[\s\S]{0,120}?on\s+the\s+site\s+now/i
+      /data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+1\.60\.1\.\d+,?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
     ]),
-    buildPattern:/build\s+(1\.60\.1\.\d+)[\s\S]{0,120}?on\s+the\s+site\s+now/i
+    buildPattern:/data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+(1\.60\.1\.\d+),?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
   }),
   bindFox:Object.freeze({
     label:'Bind on Forever · Fox',
