@@ -176,6 +176,21 @@ function fallbackProfessionRankRequiredSkill(slug,skillCap){
   if(cap===300)return ['cooking','first-aid','fishing'].includes(slug)?225:200;
   return null;
 }
+function fallbackProfessionRankRequiredLevel(slug,skillCap){
+  const cap=finite(skillCap);
+  // ForeverDB's profession guides document these rank gates from Classic trainer
+  // data. They are used only for profession-rank training, never for recipes.
+  if(cap===150){
+    if(slug==='fishing')return 1;
+    if(['alchemy','blacksmithing','enchanting','engineering','leatherworking','tailoring','cooking','first-aid'].includes(slug))return 10;
+  }
+  if(cap===225){
+    if(slug==='fishing')return 1;
+    if(['alchemy','blacksmithing','enchanting','engineering','leatherworking','tailoring','cooking','first-aid'].includes(slug))return 20;
+  }
+  if(cap===300&&['alchemy','blacksmithing','enchanting','engineering','leatherworking','cooking','first-aid','fishing','skinning'].includes(slug))return 35;
+  return null;
+}
 function professionTrainingActions(character,recipeIndex){
   const level=finite(character?.level);
   if(level===null)return [];
@@ -195,7 +210,10 @@ function professionTrainingActions(character,recipeIndex){
     const requiredSkill=directRequiredSkill!==null&&directRequiredSkill>0
       ?directRequiredSkill
       :fallbackProfessionRankRequiredSkill(slug,next.skillCap);
-    const requiredLevel=finite(next.requiredLevel);
+    const directRequiredLevel=finite(next.requiredLevel);
+    const requiredLevel=directRequiredLevel!==null&&directRequiredLevel>0
+      ?directRequiredLevel
+      :fallbackProfessionRankRequiredLevel(slug,next.skillCap);
     if(requiredSkill===null||requiredLevel===null||currentSkill<requiredSkill||level<requiredLevel)continue;
     const sources=professionRankSources(master,next,character);
     if(!sources.length)continue;
@@ -211,6 +229,7 @@ function professionTrainingActions(character,recipeIndex){
       requiredSkillSource:directRequiredSkill!==null&&directRequiredSkill>0?'foreverdb':'classic-trainer',
       currentSkill,
       requiredLevel,
+      requiredLevelSource:directRequiredLevel!==null&&directRequiredLevel>0?'foreverdb':'classic-trainer',
       currentLevel:level,
       sources:sources.map(source=>({...source,priceCopper:sourcePriceCopper(source)??finite(next.priceCopper)}))
     });
@@ -305,8 +324,10 @@ function choosePreferredSources(actions,zone){
       profession:action.profession||null,
       professionId:action.professionId??null,
       requiredSkill:action.requiredSkill??null,
+      requiredSkillSource:action.requiredSkillSource||null,
       currentSkill:action.currentSkill??null,
       requiredLevel:action.requiredLevel??null,
+      requiredLevelSource:action.requiredLevelSource||null,
       currentLevel:action.currentLevel??null,
       source:sourceSummary(sorted[0]),
       alternatives:sorted.slice(1).map(sourceSummary)
