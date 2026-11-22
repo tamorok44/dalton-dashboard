@@ -94,7 +94,15 @@ globalThis.fetch=async (url,options={})=>{
   if(sourceUrl.includes('us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes'))return {ok:true,status:200,text:async()=>`Pets now correctly benefit from Expertise.
 Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.`};
   if(sourceUrl.includes('4evrbugs.com/bug/556'))return {ok:true,status:200,text:async()=>`White swings get none of the crit inherited from the hunter. Claw and Bite crit at about the Hunter's crit chance.`};
-  if(sourceUrl.includes('foreverdb.net/changelog'))return {ok:true,status:200,text:async()=>`Build changelog. Build 1.60.1.71037 is on the site now.`};
+  if(sourceUrl.includes('foreverdb.net/changelog'))return {ok:true,status:200,text:async()=>`<main>
+<h1>Build changelog</h1>
+<p>What each WoW Forever client build added, removed or changed.</p>
+<ul>
+<li>Build 1.60.1.71037 (2026-11-22): 9 spells (9 changed); 80 items (3 added, 77 changed); 1 armor set (1 changed).</li>
+<li>Build 1.60.1.70959 (2026-11-18): 1 class ability (1 changed); 2 talents (2 changed).</li>
+</ul>
+<p>Data from the WoW Forever client, build 1.60.1.71037, extracted 2026-11-22.</p>
+</main>`};
   if(sourceUrl.includes('wowhead.com/forever/guide/classes/hunter/survival'))return {ok:true,status:200,text:async()=>`Stamina: Every 1 player Stamina gives the pet 2 Health.
 Armor: Pet gains 30% of the player's Armor.
 Attack Power: Pet gains 10% of the player's highest Attack Power source.
