@@ -198,24 +198,25 @@ const learningData={
   ]
 };
 const candidates=workshopLearningCandidates(learningData,{
-  ...remoteRecipe,requiredSkill:50,requiredCharacterLevel:0,learningRequirementsVerified:true
+  ...remoteRecipe,requiredSkill:50
 });
 assert.equal(candidates.length,1);
 assert.equal(candidates[0].name,'Chucky Dalton');
 assert.equal(candidates[0].gap,4);
 assert.equal(candidates[0].status,'skill-gap');
 
-const levelBlocked=workshopLearningCandidates(learningData,{
+const normalRecipe=workshopLearningCandidates(learningData,{
+  ...remoteRecipe,requiredSkill:40
+});
+assert.equal(normalRecipe[0].gap,0);
+assert.equal(normalRecipe[0].status,'can-learn-now','Normale Rezepte werden nicht mit dem Level des hergestellten Gegenstands oder Craft-Spells gesperrt');
+
+const explicitlyLevelBlocked=workshopLearningCandidates(learningData,{
   ...remoteRecipe,requiredSkill:40,requiredCharacterLevel:20,learningRequirementsVerified:true
 });
-assert.equal(levelBlocked[0].gap,0,'Berufsskill reicht im Level-Regressionsfall bereits aus');
-assert.equal(levelBlocked[0].levelGap,10);
-assert.equal(levelBlocked[0].status,'level-gap','Charakterlevel verhindert trotz ausreichendem Berufsskill den Lernstatus');
-
-const unverifiedLearning=workshopLearningCandidates(learningData,{
-  ...remoteRecipe,requiredSkill:40,requiredCharacterLevel:null,learningRequirementsVerified:false
-});
-assert.equal(unverifiedLearning[0].status,'requirements-unconfirmed','Unbestätigte Lernvoraussetzungen dürfen nie als jetzt lernbar gelten');
+assert.equal(explicitlyLevelBlocked[0].gap,0);
+assert.equal(explicitlyLevelBlocked[0].levelGap,10);
+assert.equal(explicitlyLevelBlocked[0].status,'level-gap','Eine ausdrücklich belegte zusätzliche Rezept-Levelanforderung bleibt unterstützt');
 
 const previousKey=process.env.FOREVERDB_API_KEY;
 process.env.FOREVERDB_API_KEY='test-key';
