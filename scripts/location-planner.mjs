@@ -324,8 +324,10 @@ function choosePreferredSources(actions,zone){
       profession:action.profession||null,
       professionId:action.professionId??null,
       requiredSkill:action.requiredSkill??null,
+      requiredSkillSource:action.requiredSkillSource||null,
       currentSkill:action.currentSkill??null,
       requiredLevel:action.requiredLevel??null,
+      requiredLevelSource:action.requiredLevelSource||null,
       currentLevel:action.currentLevel??null,
       source:sourceSummary(sorted[0]),
       alternatives:sorted.slice(1).map(sourceSummary)
