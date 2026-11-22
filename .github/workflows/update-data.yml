@@ -8,12 +8,22 @@ permissions:
   contents: read
 jobs:
   test:
+    name: Node ${{ matrix.node-version }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["22", "26"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
-      - name: UI und Blizzard-Datenformate prüfen
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: Getestete Abhängigkeiten installieren
+        run: npm ci --ignore-scripts
+      - name: Abhängigkeiten auf bekannte Schwachstellen prüfen
+        run: npm audit --audit-level=high
+      - name: UI, Datenlogik und Architektur prüfen
         run: npm test
