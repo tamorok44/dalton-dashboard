@@ -216,7 +216,7 @@ const verifiedPetCatalog={
   }
 };
 const verifiedPetRules={
-  rulebookVersion:'2026.11.22.1',checkedAt:'2026-11-22T04:07:00.000Z',overall:'verified',
+  rulebookVersion:'2026.11.22.2',checkedAt:'2026-11-22T04:07:00.000Z',overall:'verified',
   rules:{
     'fox.family.profile':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
     'fox.training':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
@@ -228,7 +228,7 @@ const verifiedPetRules={
     'pet.health.global':{status:'verified',version:2,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Blizzard-Hotfix'}
   },
   history:[
-    {at:'2026-11-22T04:07:00.000Z',type:'rulebook_version',fromRulebookVersion:'2026.11.21.3',toRulebookVersion:'2026.11.22.1'},
+    {at:'2026-11-22T04:07:00.000Z',type:'rulebook_version',fromRulebookVersion:'2026.11.22.1',toRulebookVersion:'2026.11.22.2'},
     {at:'2026-11-22T04:07:00.000Z',type:'rule_state',ruleId:'pet.scaling',label:'Jägerbegleiter-Skalierungskoeffizienten',fromStatus:'verified',toStatus:'verified',fromEvidence:'reference_model',toEvidence:'reference_model'}
   ]
 };
