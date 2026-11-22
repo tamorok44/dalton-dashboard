@@ -119,6 +119,22 @@ function sideFromPath(path=[]){
   }
   return null;
 }
+function sideFromEntry(entry={}){
+  const raw=object(entry);
+  const value=firstText(
+    raw.side,raw.faction,raw.team,raw.allegiance,
+    raw.npc?.side,raw.npc?.faction,raw.npc?.team,
+    raw.vendor?.side,raw.vendor?.faction,raw.vendor?.team,
+    raw.trainer?.side,raw.trainer?.faction,raw.trainer?.team,
+    raw.creature?.side,raw.creature?.faction,raw.creature?.team
+  );
+  if(!value)return null;
+  const key=value.toLocaleLowerCase('en-US');
+  if(/alliance|allianz/.test(key))return 'alliance';
+  if(/horde/.test(key))return 'horde';
+  if(/neutral|both|all/.test(key))return 'neutral';
+  return null;
+}
 function normalizeLocation(entry={}){
   const raw=object(first(entry.location,entry.place,entry.position,entry.coords,entry.coordinates));
   const zone=firstText(raw.zone,raw.zoneName,raw.area,entry.zone,entry.zoneName,entry.area);
@@ -183,7 +199,7 @@ function normalizeSource(entry,path){
   if(!identity.id&&!identity.name&&!location&&priceCopper===null&&!sourceLabel)return null;
   return {
     type,
-    side:sideFromPath(path),
+    side:sideFromEntry(raw)||sideFromPath(path),
     id:identity.id,
     name:identity.name||({trainer:'Unbekannter Lehrer',vendor:'Unbekannter Händler',quest:'Quest',drop:'Beute',object:'Objekt',item:'Rezeptgegenstand'}[type]||'Quelle'),
     location,
