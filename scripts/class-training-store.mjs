@@ -1,7 +1,8 @@
 import {redis,configured as redisConfigured} from './character-store.mjs';
-import {foreverDbConfigured,fetchForeverDbClass} from './foreverdb-api.mjs';
+import {foreverDbConfigured,fetchForeverDbClass,fetchForeverDbSpell} from './foreverdb-api.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v2:';
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v3:';
+const SPELL_LOCALE_HASH='dalton-dashboard:foreverdb:class-spell-locale:v1';
 export const CLASS_BY_ID=Object.freeze({
   1:'warrior',2:'paladin',3:'hunter',4:'rogue',5:'priest',7:'shaman',8:'mage',9:'warlock',11:'druid'
 });
@@ -39,7 +40,7 @@ function verifiedZephrasClassTrainers(slug){
     name:source.name,
     npcTitle:'Klassenlehrer',
     side:'alliance',
-    location:{zone:'Zephras Isle',x:source.x,y:source.y,uiMapId:null,instance:null},
+    location:{zone:'Insel Zephras',x:source.x,y:source.y,uiMapId:null,instance:null},
     evidence:'forever-confirmed',
     priceCopper:null,
     priceSource:null,
@@ -197,19 +198,16 @@ function trainerAbility(raw={}){
     asArray(rank?.trainers).length>0
   );
 }
+function companionTrainingAbility(raw={},slug){
+  if(slug!=='hunter')return false;
+  const line=lower(firstText(raw.line,raw.school,raw.category,raw.tab));
+  return /beast training|pet training|begleiter/.test(line);
+}
 function abilityList(raw={}){
   for(const key of ['abilities','classAbilities','class_abilities','spells']){
     if(Array.isArray(raw?.[key]))return raw[key];
   }
   return [];
-}
-function schemaShape(value,depth=0){
-  if(depth>3)return typeof value;
-  if(Array.isArray(value)){
-    return {kind:'array',length:value.length,sample:value.slice(0,2).map(entry=>schemaShape(entry,depth+1))};
-  }
-  if(!value||typeof value!=='object')return typeof value;
-  return Object.fromEntries(Object.entries(value).slice(0,30).map(([key,entry])=>[key,schemaShape(entry,depth+1)]));
 }
 export function normalizeForeverDbClass(raw={},slug){
   const data=object(raw);
@@ -218,13 +216,7 @@ export function normalizeForeverDbClass(raw={},slug){
   ]);
   const classTrainers=apiTrainers.length?apiTrainers:verifiedZephrasClassTrainers(slug);
   const rawAbilities=abilityList(data);
-  const diagnosticAbilitySamples=rawAbilities.slice(0,8).map(ability=>({
-    name:ability?.name??null,
-    line:ability?.line??null,
-    learned:ability?.learned??null,
-    ranks:asArray(ability?.ranks).slice(0,3)
-  }));
-  const abilities=rawAbilities.filter(trainerAbility).map(ability=>{
+  const abilities=rawAbilities.filter(ability=>trainerAbility(ability)&&!companionTrainingAbility(ability,slug)).map(ability=>{
     const ranksRaw=asArray(first(ability.ranks,ability.spells,ability.rankSpells,ability.rank_spells));
     const fallbackRanks=ranksRaw.length?ranksRaw:[ability];
     const ranks=fallbackRanks.map(rank=>normalizeRank(rank,ability,classTrainers))
@@ -238,14 +230,9 @@ export function normalizeForeverDbClass(raw={},slug){
       ranks
     };
   }).filter(ability=>ability.ranks.length);
-  const diagnosticSchema=!abilities.length?schemaShape(data):null;
-  if(diagnosticSchema){
-    console.warn('ForeverDB class schema without normalized abilities:',slug,JSON.stringify(diagnosticSchema));
-  }
+  if(!abilities.length)console.warn('ForeverDB-Klassenmaster ohne normalisierte Lehrerfähigkeiten:',slug);
   return {
     slug,
-    diagnosticSchema,
-    diagnosticAbilitySamples,
     id:integer(first(data.id,data.classId,data.class_id)),
     name:firstText(data.name,data.localizedName,data.localized_name)||slug,
     abilities,
@@ -258,6 +245,51 @@ export async function fetchForeverDbClassMaster(classId,{fetchImpl=fetch}={}){
   const result=await fetchForeverDbClass(slug,{fetchImpl});
   return {classMaster:normalizeForeverDbClass(result.data,slug),build:result.meta?.build||result.meta?.gameBuild||result.meta?.clientBuild||null};
 }
+export async function cachedGermanClassSpells(ids,{fetchImpl=fetch,maxFetch=25}={}){
+  const keys=[...new Set(asArray(ids).map(integer).filter(Boolean))];
+  if(!keys.length)return {};
+  const out={};
+  const missing=[];
+  if(redisConfigured()){
+    const values=await redis(['HMGET',SPELL_LOCALE_HASH,...keys.map(String)]);
+    keys.forEach((id,index)=>{
+      const raw=Array.isArray(values)?values[index]:null;
+      if(!raw){missing.push(id);return}
+      try{
+        const parsed=JSON.parse(raw);
+        if(parsed?.id===id&&parsed?.name)out[id]=parsed;
+        else missing.push(id);
+      }catch{missing.push(id)}
+    });
+  }else{
+    missing.push(...keys);
+  }
+  if(foreverDbConfigured()){
+    const queue=missing.slice(0,Math.max(0,Number(maxFetch)||0));
+    for(let i=0;i<queue.length;i+=5){
+      const batch=queue.slice(i,i+5);
+      const results=await Promise.all(batch.map(async id=>{
+        try{
+          const {spell}=await fetchForeverDbSpell(id,{fetchImpl});
+          if(!spell?.id||!spell?.name)return null;
+          return {id:spell.id,name:spell.name,rank:spell.rank||null};
+        }catch(error){
+          if(error?.code==='FOREVERDB_RATE_LIMIT')return null;
+          return null;
+        }
+      }));
+      const clean=results.filter(Boolean);
+      for(const record of clean)out[record.id]=record;
+      if(clean.length&&redisConfigured()){
+        const args=['HSET',SPELL_LOCALE_HASH];
+        for(const record of clean)args.push(String(record.id),JSON.stringify(record));
+        await redis(args);
+      }
+    }
+  }
+  return out;
+}
+
 export async function cachedForeverDbClassMaster(classId,{build=null,fetchImpl=fetch}={}){
   const slug=CLASS_BY_ID[Number(classId)];
   if(!slug)return null;
