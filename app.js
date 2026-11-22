@@ -1292,6 +1292,10 @@ function plannerConfirmSwitch(){
 function plannerKeepSelection(){
   plannerState.pendingSwitch=null;
 }
+function plannerClearSelection(){
+  plannerState.selected.clear();
+  plannerState.pendingSwitch=null;
+}
 function plannerSelectAllVisible(data){
   for(const action of plannerVisibleActions(data)){
     const offer=plannerCheapestKnownOffer(action);
@@ -1333,12 +1337,11 @@ function plannerSelectionHtml(data){
         '<div class="planner-route-subtotal"><span>'+(group.unknown?'Bekannte Kosten':'Zwischensumme')+'</span><strong>'+esc(workshopCopper(group.total))+'</strong>'+(group.unknown?'<small>'+group.unknown+' ohne Preis</small>':'')+'</div></article>';
     }).join('')+'</div></section>';
 }
-function plannerSwitchHtml(data){
+function plannerSwitchHtml(action,source){
   const pending=plannerState.pendingSwitch;
-  if(!pending)return '';
-  const action=(Array.isArray(data?.actions)?data.actions:[]).find(entry=>entry.key===pending.actionKey);
-  const from=plannerOfferByKey(action,pending.fromSourceKey),to=plannerOfferByKey(action,pending.toSourceKey);
-  if(!action||!from||!to)return '';
+  if(!pending||pending.actionKey!==action?.key||pending.toSourceKey!==source?.key)return '';
+  const from=plannerOfferByKey(action,pending.fromSourceKey),to=source;
+  if(!from||!to)return '';
   const fromPrice=plannerKnownCopper(from.priceCopper),toPrice=plannerKnownCopper(to.priceCopper);
   let comparison='';
   if(fromPrice!==null&&toPrice!==null){
@@ -1347,7 +1350,7 @@ function plannerSwitchHtml(data){
     else if(toPrice<fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' günstiger.';
     else comparison=' Beide Angebote haben denselben bestätigten Preis.';
   }
-  return '<section class="planner-switch" role="status"><div><span class="planner-kicker">BEREITS AUSGEWÄHLT</span><h3>'+esc(action.name)+'</h3><p>Diese Erledigung ist bereits bei <strong>'+esc(from.name||'einem anderen NPC')+'</strong> für '+esc(plannerPrice(from.priceCopper))+' ausgewählt. Bei <strong>'+esc(to.name||'diesem NPC')+'</strong> kostet sie '+esc(plannerPrice(to.priceCopper))+'.'+esc(comparison)+'</p></div><div class="planner-switch-actions"><button type="button" data-planner-switch-keep>Bisherige Auswahl behalten</button><button type="button" data-planner-switch-confirm>Zu '+esc(to.name||'diesem NPC')+' wechseln</button></div></section>';
+  return '<section class="planner-switch" role="alert"><div><span class="planner-kicker">BEREITS AUSGEWÄHLT</span><h3>'+esc(action.name)+'</h3><p>Diese Erledigung ist bereits bei <strong>'+esc(from.name||'einem anderen NPC')+'</strong> für '+esc(plannerPrice(from.priceCopper))+' ausgewählt. Bei <strong>'+esc(to.name||'diesem NPC')+'</strong> kostet sie '+esc(plannerPrice(to.priceCopper))+'.'+esc(comparison)+'</p></div><div class="planner-switch-actions"><button type="button" data-planner-switch-keep>Bisherige Auswahl behalten</button><button type="button" data-planner-switch-confirm>Zu '+esc(to.name||'diesem NPC')+' wechseln</button></div></section>';
 }
 function plannerNpcHtml(npc,data,actions){
   const location=npc.location||{};
@@ -1364,6 +1367,7 @@ function plannerNpcHtml(npc,data,actions){
       const line=plannerActionLine(action);
       return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><strong>'+esc(action.name)+'</strong>'+(line?'<small>'+esc(line)+'</small>':'')+
         (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(action.source?.priceCopper))+'</span></label>'+
+        plannerSwitchHtml(action,action.source)+
         (checked?plannerPriceWarningHtml(action,action.source):'')+
         plannerAlternativeHtml(action,sourceKey)+'</div>';
     }).join('')+'</div></article>';
@@ -1415,7 +1419,6 @@ function renderLocationPlanner(){
     })).filter(npc=>npc.actions.length);
     body=plannerCategoryFilters(data)+
       '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
-      plannerSwitchHtml(data)+
       plannerSelectionHtml(data)+
       (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
         '<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
@@ -1425,15 +1428,13 @@ function renderLocationPlanner(){
   plannerRoot.querySelector('#plannerCharacter')?.addEventListener('change',event=>{
     plannerState.character=event.target.value;
     plannerState.location='';
-    plannerState.selected.clear();
-    plannerState.pendingSwitch=null;
+    plannerClearSelection();
     plannerState.data=null;
     loadLocationPlanner({force:true});
   });
   plannerRoot.querySelector('#plannerLocation')?.addEventListener('change',event=>{
     plannerState.location=event.target.value;
-    plannerState.selected.clear();
-    plannerState.pendingSwitch=null;
+    plannerClearSelection();
     plannerState.data=null;
     loadLocationPlanner({force:true});
   });
@@ -1452,7 +1453,7 @@ function renderLocationPlanner(){
     renderLocationPlanner();
   });
   plannerRoot.querySelector('[data-planner-clear]')?.addEventListener('click',()=>{
-    plannerState.selected.clear();plannerState.pendingSwitch=null;renderLocationPlanner();
+    plannerClearSelection();renderLocationPlanner();
   });
   plannerRoot.querySelector('[data-planner-switch-keep]')?.addEventListener('click',()=>{
     plannerKeepSelection();renderLocationPlanner();
@@ -1476,10 +1477,10 @@ async function loadLocationPlanner({force=false}={}){
     if(epoch!==plannerEpoch)return;
     plannerState.data=result;
     if(plannerState.character&&!result.selectedCharacter){
-      plannerState.character='';plannerState.location='';plannerState.selected.clear();plannerState.pendingSwitch=null;plannerState.pendingSwitch=null;
+      plannerState.character='';plannerState.location='';plannerClearSelection();
     }
     if(plannerState.location&&!result.selectedLocation){
-      plannerState.location='';plannerState.selected.clear();
+      plannerState.location='';plannerClearSelection();
     }
   }catch(error){
     if(epoch===plannerEpoch)plannerState.error='Ortsplaner konnte nicht geladen werden.';
@@ -1492,8 +1493,7 @@ function invalidateLocationPlannerData({reloadVisible=true}={}){
   plannerState.data=null;
   plannerState.loading=false;
   plannerState.error=null;
-  plannerState.selected.clear();
-  plannerState.pendingSwitch=null;
+  plannerClearSelection();
   if(!plannerView.hidden&&reloadVisible)loadLocationPlanner({force:true});
 }
 
