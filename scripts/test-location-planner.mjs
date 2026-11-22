@@ -41,14 +41,14 @@ const professionMasters={
     slug:'alchemy',name:'Alchemie',
     ranks:[
       {id:1,name:'Lehrling',skillCap:75,requiredSkill:1,requiredLevel:5,sources:[]},
-      {id:2,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:500,sources:[trainer(20,'Alchemielehrer','Stormwind',500)]}
+      {id:2,name:'Geselle',skillCap:150,requiredSkill:null,requiredLevel:10,priceCopper:500,sources:[trainer(20,'Alchemielehrer','Stormwind',500)]}
     ]
   },
   cooking:{
     slug:'cooking',name:'Kochkunst',
     ranks:[
       {id:3,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,sources:[]},
-      {id:4,name:'Experte',skillCap:225,requiredSkill:125,requiredLevel:20,priceCopper:10000,sources:[expertCookbookSource]}
+      {id:4,name:'Experte',skillCap:225,requiredSkill:null,requiredLevel:20,priceCopper:10000,sources:[expertCookbookSource]}
     ]
   }
 };
@@ -76,6 +76,8 @@ assert.equal(stormwind.actions.find(action=>action.id===101)?.source.name,'Alfre
 assert.equal(stormwind.actions.find(action=>action.id===105)?.source.role,'Lehrer');
 assert.equal(stormwind.actions.some(action=>action.type==='profession-training'&&action.profession==='Alchemie'),true,
   'Jetzt mögliche Berufsausbildung wird aufgenommen, wenn Rang, Level und Quelle belegt sind');
+assert.equal(stormwind.actions.find(action=>action.type==='profession-training'&&action.profession==='Alchemie')?.requiredSkill,50,
+  'Geselle verwendet bei fehlendem API-Mindestskill den belegten Classic-Trainerwert 50');
 assert.equal(stormwind.actions.some(action=>action.category==='class-abilities'),true,'Verifizierte externe Klassenaktion kann vom gemeinsamen Resolver aufgenommen werden');
 assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCount])),{
   'class-abilities':1,

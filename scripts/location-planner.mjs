@@ -169,6 +169,13 @@ function professionRankSources(master,next,character){
     return Boolean(title)&&terms.some(term=>title.includes(norm(term)));
   });
 }
+function fallbackProfessionRankRequiredSkill(slug,skillCap){
+  const cap=finite(skillCap);
+  if(cap===150)return 50;
+  if(cap===225)return 125;
+  if(cap===300)return ['cooking','first-aid','fishing'].includes(slug)?225:200;
+  return null;
+}
 function professionTrainingActions(character,recipeIndex){
   const level=finite(character?.level);
   if(level===null)return [];
@@ -184,7 +191,11 @@ function professionTrainingActions(character,recipeIndex){
       .filter(rank=>finite(rank?.skillCap)!==null&&finite(rank.skillCap)>currentCap)
       .sort((a,b)=>finite(a.skillCap)-finite(b.skillCap))[0];
     if(!next)continue;
-    const requiredSkill=finite(next.requiredSkill),requiredLevel=finite(next.requiredLevel);
+    const directRequiredSkill=finite(next.requiredSkill);
+    const requiredSkill=directRequiredSkill!==null&&directRequiredSkill>0
+      ?directRequiredSkill
+      :fallbackProfessionRankRequiredSkill(slug,next.skillCap);
+    const requiredLevel=finite(next.requiredLevel);
     if(requiredSkill===null||requiredLevel===null||currentSkill<requiredSkill||level<requiredLevel)continue;
     const sources=professionRankSources(master,next,character);
     if(!sources.length)continue;
@@ -197,6 +208,7 @@ function professionTrainingActions(character,recipeIndex){
       profession:text(profession.name)||null,
       professionId:integer(profession.id),
       requiredSkill,
+      requiredSkillSource:directRequiredSkill!==null&&directRequiredSkill>0?'foreverdb':'classic-trainer',
       currentSkill,
       requiredLevel,
       currentLevel:level,
