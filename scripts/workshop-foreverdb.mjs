@@ -234,15 +234,48 @@ function normalizeSource(entry,path){
     renderSourceUrl:renderSourceUrl&&/^https:\/\//.test(renderSourceUrl)?renderSourceUrl:null
   };
 }
-function collectSources(value,path=[],out=[]){
+function trainerPriceContext(value,inherited={}){
+  const raw=object(value);
+  return {
+    trainerCostCopper:firstNumber(
+      raw.trainerCost,raw.trainer_cost,raw.trainingCost,raw.training_cost,
+      inherited.trainerCostCopper
+    ),
+    trainerCostSourceRaw:firstText(
+      raw.trainerCostSource,raw.trainer_cost_source,raw.trainingCostSource,raw.training_cost_source,
+      inherited.trainerCostSourceRaw
+    )
+  };
+}
+function inheritTrainerPrice(source,context={}){
+  if(!source||source.type!=='trainer')return source;
+  const ownPrice=firstNumber(source.priceCopper,source.pricePerItem);
+  if(ownPrice!==null){
+    if(source.priceSource&&source.priceSource!=='unknown')return source;
+    return {...source,priceSource:normalizePriceSource(source.trainerCostSource||context.trainerCostSourceRaw,{
+      type:'trainer',evidence:source.evidence,hasPrice:true
+    })};
+  }
+  const inheritedPrice=firstNumber(context.trainerCostCopper);
+  if(inheritedPrice===null)return source;
+  return {
+    ...source,
+    priceCopper:Math.round(inheritedPrice),
+    priceSource:normalizePriceSource(context.trainerCostSourceRaw,{
+      type:'trainer',evidence:source.evidence,hasPrice:true
+    })
+  };
+}
+function collectSources(value,path=[],out=[],inherited={}){
+  const context=trainerPriceContext(value,inherited);
   if(Array.isArray(value)){
     const type=sourceTypeFromPath(path);
     const recognized=type!=='source';
     for(const entry of value){
       if(entry&&typeof entry==='object'){
-        const normalized=recognized?normalizeSource(entry,path):null;
+        const normalized=recognized?inheritTrainerPrice(normalizeSource(entry,path),context):null;
         if(normalized)out.push(normalized);
-        else collectSources(entry,path,out);
+        else collectSources(entry,path,out,context);
       }
     }
     return out;
@@ -250,7 +283,7 @@ function collectSources(value,path=[],out=[]){
   if(!value||typeof value!=='object')return out;
   for(const [key,entry] of Object.entries(value)){
     if(['skill','category','reagents','makes'].includes(key))continue;
-    if(Array.isArray(entry)||entry&&typeof entry==='object')collectSources(entry,[...path,key],out);
+    if(Array.isArray(entry)||entry&&typeof entry==='object')collectSources(entry,[...path,key],out,context);
   }
   return out;
 }
@@ -289,19 +322,7 @@ function normalizeLearning(raw={}){
     type:'trainer',evidence:/classic|cmangos/i.test(trainerCostSourceRaw||'')?'classic-unconfirmed':'forever-confirmed',
     hasPrice:trainerCostCopper!==null
   });
-  const sources=dedupeSources(collectSources(sourceRoot).map(source=>{
-    if(source?.type!=='trainer')return source;
-    const ownPrice=firstNumber(source.priceCopper,source.pricePerItem);
-    if(ownPrice!==null){
-      return source.priceSource&&source.priceSource!=='unknown'
-        ?source
-        :{...source,priceSource:normalizePriceSource(source.trainerCostSource||trainerCostSourceRaw,{
-          type:'trainer',evidence:source.evidence,hasPrice:true
-        })};
-    }
-    if(trainerCostCopper===null)return source;
-    return {...source,priceCopper:Math.round(trainerCostCopper),priceSource:inheritedPriceSource};
-  }));
+  const sources=dedupeSources(collectSources(sourceRoot,[],[],{trainerCostCopper,trainerCostSourceRaw}));
   const method=firstText(learned.type,learned.method,learned.kind,raw.learnedFromType,raw.learnMethod);
   const automatic=Boolean(learned.automatic===true||raw.automatic===true||(method&&/auto/i.test(method)));
   return {
@@ -318,18 +339,23 @@ function normalizeProfessionRank(raw={}){
   const entry=object(raw);
   const nested=object(first(entry.rank,entry.skillRank,entry.skill_rank));
   const source=Object.keys(nested).length?{...entry,...nested}:entry;
-  const rankSources=dedupeSources(collectSources(first(source.sources,source.trainers,source.learnedFrom?.sources,source.learnedFrom?.trainers),['trainers']));
+  const rankPrice=firstNumber(source.priceCopper,source.price,source.trainerCost,source.trainer_cost,source.cost);
+  const rankPriceSourceRaw=firstText(source.priceSource,source.price_source,source.trainerCostSource,source.trainer_cost_source);
+  const rankSources=dedupeSources(collectSources(
+    first(source.sources,source.trainers,source.learnedFrom?.sources,source.learnedFrom?.trainers),
+    ['trainers'],[],{trainerCostCopper:rankPrice,trainerCostSourceRaw:rankPriceSourceRaw}
+  ));
   return {
     id:firstInteger(source.id,source.rankId,source.rank_id,source.spellId,source.spell_id),
     name:firstText(source.name,source.rankName,source.rank_name,source.label),
     skillCap:firstNumber(source.skillCap,source.skill_cap,source.maxSkill,source.max_skill,source.maximumSkill,source.cap,source.skill?.max,source.skill?.cap),
     requiredSkill:firstNumber(source.requiredSkill,source.required_skill,source.minSkill,source.minimumSkill,source.learnAtSkill,source.skillRequired,source.skill?.required),
     requiredLevel:firstNumber(source.requiredLevel,source.required_level,source.minLevel,source.minimumLevel,source.levelRequirement,source.level_requirement),
-    priceCopper:firstNumber(source.priceCopper,source.price,source.trainerCost,source.trainer_cost,source.cost),
-    priceSource:normalizePriceSource(firstText(source.priceSource,source.price_source,source.trainerCostSource,source.trainer_cost_source),{
+    priceCopper:rankPrice,
+    priceSource:normalizePriceSource(rankPriceSourceRaw,{
       type:'trainer',
-      evidence:/classic|cmangos/i.test(firstText(source.trainerCostSource,source.trainer_cost_source)||'')?'classic-unconfirmed':'forever-confirmed',
-      hasPrice:firstNumber(source.priceCopper,source.price,source.trainerCost,source.trainer_cost,source.cost)!==null
+      evidence:/classic|cmangos/i.test(rankPriceSourceRaw||'')?'classic-unconfirmed':'forever-confirmed',
+      hasPrice:rankPrice!==null
     }),
     sources:rankSources
   };
