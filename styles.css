@@ -1053,6 +1053,12 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .planner-control-copy h3,.planner-character h3,.planner-location-summary h3,.planner-selection h3,.planner-vendor h3{margin:2px 0 0;color:var(--cream);font-size:var(--type-h4);overflow-wrap:anywhere}
 .planner-control-copy p,.planner-character p,.planner-location-summary p,.planner-vendor-head p{margin:6px 0 0;color:var(--muted);font-size:var(--type-small);line-height:1.5;overflow-wrap:anywhere}
 .planner-character>div>small{display:block;margin-top:6px;color:var(--muted);font-size:var(--type-caption);line-height:1.4}
+.planner-known-abilities{margin-top:8px;max-width:min(680px,100%)}
+.planner-known-abilities summary{cursor:pointer;color:var(--gold);font:var(--weight-label) var(--type-small)/1.4 var(--body)}
+.planner-known-ability-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:6px;margin-top:8px}
+.planner-known-ability-list>span{display:grid;gap:1px;padding:7px 8px;border:1px solid var(--line);border-radius:4px;background:color-mix(in srgb,var(--paper) 3%,transparent);min-width:0}
+.planner-known-ability-list strong{color:var(--paper);font-size:var(--type-small);overflow-wrap:anywhere}
+.planner-known-ability-list small{color:var(--muted);font-size:var(--type-caption)}
 .planner-kicker{display:block;color:var(--gold);font:var(--weight-label) var(--type-caption)/1.35 var(--body);letter-spacing:var(--tracking-label);text-transform:uppercase}
 .planner-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
 .planner-field{display:grid;gap:5px;min-width:0}
