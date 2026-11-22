@@ -47,6 +47,8 @@ assert.ok(!sourceByFile.get('app.js')?.includes('recipe.professionSlug'),'Fronte
 assert.ok(sourceByFile.has('scripts/player-terminology.mjs'),'Verified player terminology master is required');
 const terminologySource=sourceByFile.get('scripts/player-terminology.mjs')||'';
 assert.ok(terminologySource.includes("171:Object.freeze({name:'Alchemie'})"),'Official German player term for profession 171 must be Alchemie');
+assert.ok(terminologySource.includes("1453:Object.freeze({name:'Sturmwind'"),'Official German player term for map 1453 must be Sturmwind');
+assert.ok((sourceByFile.get('scripts/profession-planner.mjs')||'').includes("preferredGermanGameName('zone'"),'Profession planner zones must pass through verified stable-ID terminology');
 assert.ok(terminologySource.includes('worldofwarcraft.blizzard.com/de-de/'),'Player terminology master must cite official German Blizzard sources');
 assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes('preferredGermanGameName'),'Technical localized strings must pass through verified player terminology priority');
 assert.ok((sourceByFile.get('scripts/character-store.mjs')||'').includes('normalizeVerifiedPlayerTerminology'),'Persisted character data must be normalized at the central store boundary');
