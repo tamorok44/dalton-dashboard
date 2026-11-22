@@ -100,9 +100,11 @@ const remoteRecipe=normalizeForeverDbRecipe({
   category:{name:'Verhüttete Barren',parent:{name:'Bergbau'}},
   learnedFrom:{sources:{
     alliance:{
+      trainerCost:10,
+      trainerCostSource:'forever',
       trainers:[
-        {id:100,name:'Gelman Steinhandschuh',location:{zone:'Sturmwind',uiMapId:84,x:59.2,y:37.8},seenInForever:true,trainerCost:10,trainerCostSource:'forever'},
-        {id:101,name:'Geofram Felszehe',location:{zone:'Eisenschmiede',x:50.3,y:26},seenInForever:true,trainerCost:10}
+        {id:100,name:'Gelman Steinhandschuh',location:{zone:'Sturmwind',uiMapId:84,x:59.2,y:37.8},seenInForever:true},
+        {id:101,name:'Geofram Felszehe',location:{zone:'Eisenschmiede',x:50.3,y:26},seenInForever:true}
       ],
       vendors:[
         {id:200,name:'Testhändler',location:{zone:'Sturmwind',x:60,y:40},seenInForever:false,price:250,limitedStock:1}
@@ -121,6 +123,23 @@ assert.equal(remoteRecipe.learning.sources.filter(source=>source.evidence==='for
 assert.equal(remoteRecipe.learning.sources.filter(source=>source.evidence==='classic-unconfirmed').length,1);
 assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='vendor'&&source.limitedStock===1));
 assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='drop'&&source.name==='Testkreatur'));
+const inheritedTrainerSources=remoteRecipe.learning.sources.filter(source=>source.type==='trainer');
+assert.equal(inheritedTrainerSources.length,2);
+assert.ok(inheritedTrainerSources.every(source=>source.priceCopper===10),'Übergeordneter Forever-Trainerpreis wird an alle zugehörigen Lehrer vererbt');
+assert.ok(inheritedTrainerSources.every(source=>source.priceSource==='forever-observed'),'Vererbter Forever-Trainerpreis behält seine Preis-Provenienz');
+
+const classicPricedRecipe=normalizeForeverDbRecipe({
+  id:7777,name:'Classic-Test',skill:{orange:1},
+  makes:{item:{id:97777,name:'Classic-Test'},count:1},
+  learnedFrom:{
+    trainerCost:500,
+    trainerCostSource:'classic',
+    sources:{alliance:{trainers:[{id:777,name:'Classic-Lehrer',location:{zone:'Sturmwind'},seenInForever:true}]}}
+  }
+},'alchemy');
+const classicTrainer=classicPricedRecipe.learning.sources.find(source=>source.type==='trainer');
+assert.equal(classicTrainer.priceCopper,500);
+assert.equal(classicTrainer.priceSource,'classic','Classic-Trainerpreis wird numerisch nutzbar, aber ausdrücklich als Classic markiert');
 
 const sideAwareMaster=normalizeProfessionMaster({
   trainers:[
@@ -262,7 +281,7 @@ const fakeFetch=async url=>{
       ...(slug==='mining'?{
         ranks:[
           {id:1000,name:'Lehrling',skillCap:75,requiredSkill:1,requiredLevel:5},
-          {id:1001,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:450}
+          {id:1001,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:450,trainerCostSource:'classic'}
         ],
         trainers:[
           {id:2000,name:'Gelman Steinhandschuh',title:'Gesellenbergmann',zone:'Sturmwind',x:59.2,y:37.8,seenInForever:true}
@@ -312,6 +331,10 @@ const professionMaster=await fetchForeverDbProfessionMaster('mining',{fetchImpl:
 assert.equal(professionMaster.profession.slug,'mining');
 assert.equal(professionMaster.profession.ranks[1].requiredLevel,10);
 assert.equal(professionMaster.profession.ranks[1].requiredSkill,50);
+assert.equal(professionMaster.profession.ranks[1].priceCopper,450);
+assert.equal(professionMaster.profession.ranks[1].priceSource,'classic');
+assert.equal(professionMaster.profession.ranks[1].sources[0].priceCopper,450,'Rangpreis wird an den konkreten Rang-Lehrer vererbt');
+assert.equal(professionMaster.profession.ranks[1].sources[0].priceSource,'classic');
 assert.equal(professionMaster.profession.trainers[0].evidence,'forever-confirmed');
 assert.equal(professionMaster.profession.trainers[0].npcTitle,'Gesellenbergmann');
 const remoteSpell=await fetchForeverDbSpell(3324,{fetchImpl:fakeFetch});
