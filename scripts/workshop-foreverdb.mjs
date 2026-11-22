@@ -169,6 +169,7 @@ function normalizeSource(entry,path){
   const reputationFaction=firstText(raw.reputationFaction?.name,raw.reputationFaction,raw.reputation_faction?.name,raw.reputation_faction);
   const trainerCostSource=firstText(raw.trainerCostSource,raw.trainer_cost_source);
   const sourceLabel=firstText(raw.source,raw.dataSource,raw.origin);
+  const npcTitle=firstText(raw.title,raw.npc?.title,raw.vendor?.title,raw.trainer?.title,raw.creature?.title);
   const dropChance=firstNumber(raw.dropChance,raw.chance,raw.percent);
   const observations=firstNumber(raw.players,raw.seenByPlayers,raw.observations,raw.count);
   const displayId=firstInteger(raw.displayId,raw.display_id,raw.creatureDisplayId,raw.creature_display_id,raw.display?.id,raw.npc?.displayId,raw.vendor?.displayId,raw.trainer?.displayId);
@@ -192,6 +193,7 @@ function normalizeSource(entry,path){
     dropChance,
     observations,
     sourceLabel,
+    npcTitle:npcTitle||null,
     displayId:displayId&&displayId>0?displayId:null,
     renderSourceUrl:renderSourceUrl&&/^https:\/\//.test(renderSourceUrl)?renderSourceUrl:null
   };
@@ -265,7 +267,7 @@ function normalizeProfessionRank(raw={}){
     sources:rankSources
   };
 }
-function normalizeProfessionMaster(raw={},professionSlug){
+export function normalizeProfessionMaster(raw={},professionSlug){
   const data=object(raw);
   const ranks=asArray(first(data.ranks,data.skillRanks,data.skill_ranks,data.professionRanks,data.profession_ranks))
     .map(normalizeProfessionRank)
@@ -279,6 +281,15 @@ function normalizeProfessionMaster(raw={},professionSlug){
     trainers
   };
 }
+export async function fetchForeverDbProfessionMaster(professionSlug,{fetchImpl=fetch}={}){
+  const page=await fetchForeverDbProfession(professionSlug,{limit:1,offset:0,fetchImpl});
+  return {
+    generatedAt:new Date().toISOString(),
+    build:firstText(page.meta?.build,page.meta?.gameBuild,page.meta?.clientBuild)||null,
+    profession:normalizeProfessionMaster(page.data,professionSlug)
+  };
+}
+
 export function normalizeForeverDbRecipe(raw={},professionSlug){
   const makes=normalizeMakes(raw);
   if(!makes?.item?.id)return null;

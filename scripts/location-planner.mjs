@@ -4,7 +4,7 @@ import {preferredGermanGameName} from './player-terminology.mjs';
 const CATEGORY_DEFS=Object.freeze([
   Object.freeze({id:'class-abilities',label:'Klassenfähigkeiten'}),
   Object.freeze({id:'profession-recipes',label:'Berufsrezepte'}),
-  Object.freeze({id:'profession-training',label:'Berufslehrer'}),
+  Object.freeze({id:'profession-training',label:'Berufsausbildung'}),
   Object.freeze({id:'companion-abilities',label:'Begleiterfähigkeiten'})
 ]);
 
@@ -124,20 +124,16 @@ function recipeBaseCandidates(character,recipeIndex){
   }
   return result;
 }
-export function locationPlannerRecipeSpellIds(data={},recipeIndex={},characterSlug=null){
-  const character=asArray(data?.characters).find(entry=>entry?.slug===characterSlug);
-  if(!character)return [];
-  return recipeBaseCandidates(character,recipeIndex).map(entry=>integer(entry.recipe?.id)).filter(Boolean);
-}
-function recipeActions(character,recipeIndex,spellDetails={}){
+function recipeActions(character,recipeIndex){
   const level=finite(character?.level);
   if(level===null)return [];
   const actions=[];
   for(const candidate of recipeBaseCandidates(character,recipeIndex)){
     const id=integer(candidate.recipe?.id);
-    const spell=id?spellDetails[id]:null;
-    const requiredLevel=finite(spell?.requiredLevel);
-    if(!spell||spell.error||requiredLevel===null||level<requiredLevel)continue;
+    const explicitRequiredLevel=candidate.recipe?.learningRequirementsVerified===true
+      ?finite(candidate.recipe?.requiredCharacterLevel)
+      :null;
+    if(explicitRequiredLevel!==null&&level<explicitRequiredLevel)continue;
     actions.push({
       key:recipeKey(candidate.recipe),
       type:'profession-recipe',
@@ -148,12 +144,30 @@ function recipeActions(character,recipeIndex,spellDetails={}){
       professionId:integer(candidate.profession?.id),
       requiredSkill:candidate.requiredSkill,
       currentSkill:candidate.currentSkill,
-      requiredLevel,
+      requiredLevel:explicitRequiredLevel,
       currentLevel:level,
       sources:candidate.sources
     });
   }
   return actions;
+}
+function rankTrainerTerms(skillCap){
+  const cap=finite(skillCap);
+  if(cap===75)return ['apprentice','lehrling'];
+  if(cap===150)return ['journeyman','geselle'];
+  if(cap===225)return ['expert','experte'];
+  if(cap===300)return ['artisan','fachmann','meister'];
+  return [];
+}
+function professionRankSources(master,next,character){
+  const direct=eligibleNpcSources(next?.sources,character,{types:['trainer','vendor']});
+  if(direct.length)return direct;
+  const terms=rankTrainerTerms(next?.skillCap);
+  if(!terms.length)return [];
+  return eligibleNpcSources(master?.trainers,character,{types:['trainer']}).filter(source=>{
+    const title=norm(source?.npcTitle);
+    return Boolean(title)&&terms.some(term=>title.includes(norm(term)));
+  });
 }
 function professionTrainingActions(character,recipeIndex){
   const level=finite(character?.level);
@@ -172,7 +186,7 @@ function professionTrainingActions(character,recipeIndex){
     if(!next)continue;
     const requiredSkill=finite(next.requiredSkill),requiredLevel=finite(next.requiredLevel);
     if(requiredSkill===null||requiredLevel===null||currentSkill<requiredSkill||level<requiredLevel)continue;
-    const sources=eligibleNpcSources(next.sources,character,{types:['trainer']});
+    const sources=professionRankSources(master,next,character);
     if(!sources.length)continue;
     actions.push({
       key:'profession-rank:'+slug+':'+String(integer(next.id)||Math.round(finite(next.skillCap))),
@@ -243,7 +257,8 @@ function sourceSummary(source={}){
     limitedStock:stock!==null&&stock>0?stock:null,
     side:source.side||null,
     displayId:integer(source.displayId),
-    renderSourceUrl:text(source.renderSourceUrl)||null
+    renderSourceUrl:text(source.renderSourceUrl)||null,
+    npcTitle:text(source.npcTitle)||null
   };
 }
 function choosePreferredSources(actions,zone){
@@ -326,7 +341,7 @@ function groupByNpc(actions){
 export function buildLocationPlanner(data={},recipeIndex={},{
   characterSlug=null,
   location=null,
-  spellDetails={},
+  professionMasters={},
   extraActions=[]
 }={}){
   const characters=asArray(data?.characters).map(publicCharacter).sort((a,b)=>a.name.localeCompare(b.name,'de'));
@@ -345,9 +360,13 @@ export function buildLocationPlanner(data={},recipeIndex={},{
   }
   const character=asArray(data?.characters).find(entry=>entry?.slug===characterSlug);
   if(!character)throw new Error('Charakter nicht gefunden');
+  const effectiveIndex={
+    ...recipeIndex,
+    professions:Object.values(professionMasters||{}).filter(master=>master&&!master.error)
+  };
   const candidates=[
-    ...recipeActions(character,recipeIndex,spellDetails),
-    ...professionTrainingActions(character,recipeIndex),
+    ...recipeActions(character,effectiveIndex),
+    ...professionTrainingActions(character,effectiveIndex),
     ...verifiedExtraActions(character,extraActions)
   ];
   const locations=buildLocations(candidates);

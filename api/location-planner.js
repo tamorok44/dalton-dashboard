@@ -1,8 +1,8 @@
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbSpells,cachedForeverDbVendor} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,cachedForeverDbProfessionMasters,cachedForeverDbVendor} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
-import {buildLocationPlanner,locationPlannerRecipeSpellIds} from '../scripts/location-planner.mjs';
+import {buildLocationPlanner} from '../scripts/location-planner.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function queryUrl(req){
@@ -60,14 +60,19 @@ export default async function handler(req,res){
     const recipeIndex=await getForeverDbMasterRecipeIndex({
       seedProfessionSlugs:workshopProfessionSlugs(stored.data)
     });
-    const spellIds=character?locationPlannerRecipeSpellIds(stored.data,recipeIndex,character):[];
-    const spellDetails=spellIds.length
-      ?await cachedForeverDbSpells(spellIds,{build:recipeIndex?.build||null})
+    const selectedCharacter=character
+      ?(stored.data?.characters||[]).find(entry=>entry?.slug===character)
+      :null;
+    const selectedProfessionSlugs=selectedCharacter
+      ?workshopProfessionSlugs({characters:[selectedCharacter]})
+      :[];
+    const professionMasters=selectedProfessionSlugs.length
+      ?await cachedForeverDbProfessionMasters(selectedProfessionSlugs,{build:recipeIndex?.build||null})
       :{};
     let planner=buildLocationPlanner(stored.data,recipeIndex,{
       characterSlug:character,
       location,
-      spellDetails
+      professionMasters
     });
     if(planner.npcs?.length){
       const npcs=await Promise.all(planner.npcs.map(npc=>withNpcAvatar(npc,recipeIndex?.build||null)));
@@ -81,7 +86,9 @@ export default async function handler(req,res){
         }))
       };
     }
-    const unresolvedSpellRequirements=Object.values(spellDetails).filter(value=>value?.error).length;
+    const professionMasterValues=Object.values(professionMasters);
+    const professionMasterErrors=professionMasterValues.filter(value=>value?.error).length;
+    const professionRanks=professionMasterValues.flatMap(value=>Array.isArray(value?.ranks)?value.ranks:[]);
     return res.status(200).json({
       ...planner,
       catalog:{
@@ -91,7 +98,11 @@ export default async function handler(req,res){
         build:recipeIndex?.build||null,
         generatedAt:recipeIndex?.generatedAt||null,
         recipeCount:Array.isArray(recipeIndex?.recipes)?recipeIndex.recipes.length:0,
-        unresolvedSpellRequirements
+        professionMasterCount:professionMasterValues.filter(value=>value&&!value.error).length,
+        professionMasterErrors,
+        professionRankCount:professionRanks.length,
+        professionRankWithLevelCount:professionRanks.filter(rank=>Number.isFinite(Number(rank?.requiredLevel))).length,
+        professionRankWithSourceCount:professionRanks.filter(rank=>Array.isArray(rank?.sources)&&rank.sources.length).length
       },
       source:'ForeverDB.net'
     });

@@ -331,8 +331,9 @@ export function preferredForeverRecipeForItem(index,itemId){
 export function workshopLearningCandidates(data,recipe){
   if(!recipe)return [];
   const required=finiteNumber(recipe.requiredSkill);
-  const requiredLevel=finiteNumber(recipe.requiredCharacterLevel);
-  const requirementsVerified=recipe.learningRequirementsVerified===true;
+  const explicitRequiredLevel=recipe.learningRequirementsVerified===true
+    ?finiteNumber(recipe.requiredCharacterLevel)
+    :null;
   const candidates=[];
   for(const character of asArray(data?.characters)){
     for(const profession of asArray(character?.professions)){
@@ -341,15 +342,13 @@ export function workshopLearningCandidates(data,recipe){
       const skill=finiteNumber(profession?.current),cap=finiteNumber(profession?.max);
       const level=finiteNumber(character?.level);
       const gap=required===null||skill===null?null:Math.max(0,Math.ceil(required-skill));
-      const levelGap=requiredLevel===null||level===null?null:Math.max(0,Math.ceil(requiredLevel-level));
-      let status='requirements-unconfirmed';
-      if(requirementsVerified&&required!==null&&skill!==null&&level!==null&&requiredLevel!==null){
-        if(gap===0&&levelGap===0)status='can-learn-now';
-        else if(gap>0&&levelGap>0)status='skill-and-level-gap';
+      const levelGap=explicitRequiredLevel===null||level===null?null:Math.max(0,Math.ceil(explicitRequiredLevel-level));
+      let status='profession-match';
+      if(gap!==null){
+        if(gap>0&&levelGap!==null&&levelGap>0)status='skill-and-level-gap';
         else if(gap>0)status='skill-gap';
-        else if(levelGap>0)status='level-gap';
-      }else if(requirementsVerified&&required!==null&&skill!==null&&requiredLevel===0){
-        status=gap===0?'can-learn-now':'skill-gap';
+        else if(levelGap!==null&&levelGap>0)status='level-gap';
+        else status='can-learn-now';
       }
       candidates.push({
         slug:character?.slug||null,
@@ -361,8 +360,8 @@ export function workshopLearningCandidates(data,recipe){
         skill,
         skillCap:cap,
         requiredSkill:required,
-        requiredCharacterLevel:requiredLevel,
-        learningRequirementsVerified:requirementsVerified,
+        requiredCharacterLevel:explicitRequiredLevel,
+        learningRequirementsVerified:recipe.learningRequirementsVerified===true,
         gap,
         levelGap,
         status
@@ -370,7 +369,7 @@ export function workshopLearningCandidates(data,recipe){
     }
   }
   return candidates.sort((a,b)=>{
-    const order={'can-learn-now':0,'skill-gap':1,'level-gap':1,'skill-and-level-gap':2,'requirements-unconfirmed':3};
+    const order={'can-learn-now':0,'skill-gap':1,'level-gap':1,'skill-and-level-gap':2,'profession-match':3};
     return (order[a.status]??9)-(order[b.status]??9)||
       (a.gap??0)+(a.levelGap??0)-(b.gap??0)-(b.levelGap??0)||
       a.name.localeCompare(b.name,'de');

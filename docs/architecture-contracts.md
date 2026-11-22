@@ -53,7 +53,7 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 ## 6. Werkstatt-Masterkatalog
 
 - ForeverDB-Rezepte aller 12 Berufe bilden einen charakterunabhängigen Masterkatalog.
-- Die Werkstatt darf „Jetzt lernbar“ nur ausgeben, wenn neben Beruf und Skill auch die Lernvoraussetzung des konkreten Rezept-Spells verifiziert ist und eine vorhandene Charakterlevel-Anforderung erfüllt wird. Das Gegenstands-Nutzungslevel darf dafür nicht verwendet werden.
+- Normale Rezepte werden nach passendem Beruf, bekanntem Rezeptstand und erforderlichem Berufsskill bewertet. Eine Charakterlevel-Anforderung darf nur berücksichtigt werden, wenn sie für das **konkrete Rezept selbst** ausdrücklich und belastbar belegt ist; weder das Level des hergestellten Gegenstands noch das Level des Herstellungs-Spells darf dafür verwendet werden.
 - Charakterdaten bestimmen nur den Filter `Herstellbar` und die Crafter-Zuordnung; sie begrenzen niemals den Masterkatalog.
 - Der Master wird persistent gespeichert. Bei Buildwechseln wird er rate-limit-sicher in Teilmengen erneuert; bis zum vollständigen neuen Stand bleibt der letzte vollständige Master aktiv.
 - Die Lupe durchsucht standardmäßig alle Gegenstände. Die geführte Auswahl zeigt standardmäßig nur aktuell durch die Daltons herstellbare Gegenstände. Beide Ansichten können jeweils auf den anderen Modus umgeschaltet werden.
@@ -62,11 +62,11 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 ## 7. Ortsplaner
 
 - Der Ortsplaner ersetzt den bisherigen Berufsplaner. Er verwendet die aktuellen Blizzard-Charakterdaten und gemeinsame persistente ForeverDB-Master; er führt **keine eigene Kopie** von Rezepten, Fähigkeiten oder NPC-Stammdaten.
-- Oben werden Charakter und Ort gewählt. Darunter stehen die echten Mehrfachfilter **Klassenfähigkeiten**, **Berufsrezepte**, **Berufslehrer** und **Begleiterfähigkeiten** standardmäßig aktiviert zur Verfügung.
+- Oben werden Charakter und Ort gewählt. Darunter stehen die echten Mehrfachfilter **Klassenfähigkeiten**, **Berufsrezepte**, **Berufsausbildung** und **Begleiterfähigkeiten** standardmäßig aktiviert zur Verfügung.
 - Der Ortsplaner zeigt ausschließlich Erledigungen, die der gewählte Charakter **jetzt** am gewählten Ort durchführen kann. Zukünftige Level-, Skill- oder sonstige Fortschrittshinweise gehören nicht in diese Ansicht.
-- Eine Rezept-Erledigung ist nur zulässig, wenn der Charakter den passenden Beruf besitzt, das Rezept nach dem verifizierten Charakterstand noch nicht kennt, der erforderliche Berufsskill erfüllt ist **und die Lernvoraussetzung des Rezept-Spells bestätigt wurde**. Eine vorhandene Charakterlevel-Anforderung muss erfüllt sein. Das Nutzungslevel des hergestellten Gegenstands ist dafür niemals ein Ersatz.
+- Eine Rezept-Erledigung ist nur zulässig, wenn der Charakter den passenden Beruf besitzt, das Rezept nach dem verifizierten Charakterstand noch nicht kennt, der erforderliche Berufsskill erfüllt ist und eine konkrete Forever-bestätigte Bezugsquelle am Ort existiert. Eine zusätzliche Rezept-Charakterlevel-Anforderung wird nur berücksichtigt, wenn sie für genau dieses Rezept ausdrücklich belegt ist.
 - Für NPC-Quellen werden nur `evidence = forever-confirmed`, ein bestätigter Ort und die passende Fraktion akzeptiert. Classic-unbestätigte oder unbekannte Quellen bleiben aus dem Ortsplaner heraus.
-- Berufslehrer-Leistungen werden nur aufgenommen, wenn die konkrete Leistung, ihre Voraussetzungen und ihre konkrete Lehrerquelle belegt sind. Ein allgemeiner Berufslehrer darf nicht ohne Rang-/Leistungsbezug als Beweis dienen.
+- Berufsausbildungen bzw. Berufsränge werden getrennt von normalen Rezepten behandelt. Hier werden Berufsskill, aktueller Skilldeckel, erforderliches Charakterlevel und die konkrete Bezugsquelle (Lehrer, Händlerbuch o. Ä.) geprüft. Eine Ausbildung erscheint nur, wenn alle belegten Voraussetzungen **jetzt** erfüllt sind. Ein allgemeiner Berufslehrer darf nicht ohne Rang-/Leistungsbezug als Beweis dienen.
 - Klassen- und Begleiterfähigkeiten werden nur aufgenommen, wenn sowohl der persönliche Zustand „noch nicht gelernt“ als auch der konkrete Erwerbsweg am NPC zuverlässig belegt sind. Level allein darf niemals als Beweis dafür dienen, dass eine Fähigkeit noch fehlt.
 - Mehrere bestätigte Anlaufstellen derselben Erledigung dürfen gebündelt werden. Die bevorzugte NPC-Zuordnung priorisiert eine geringere Zahl an Stationen; bestätigte Alternativen bleiben sichtbar.
 - Kategorien und einzelne Erledigungen sind echte Mehrfachauswahlen und dürfen deshalb Checkboxen verwenden. Die Erledigungsliste gruppiert nach NPC und summiert ausschließlich bekannte Preise. Fehlende Preise werden ausdrücklich ausgewiesen und niemals als `0` in eine vollständige Gesamtsumme eingerechnet.
@@ -76,7 +76,7 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 
 ## 8. Datenfrische / Frontend-Synchronisierung
 
-- Alle Ansichten verwenden denselben serverseitig gespeicherten Charakterstand als Quelle: Charaktere, Vergleich, Begleiter, Berufe, Ruf, Quests, Werkstatt-Crafter und Berufsplaner.
+- Alle Ansichten verwenden denselben serverseitig gespeicherten Charakterstand als Quelle: Charaktere, Vergleich, Begleiter, Berufe, Ruf, Quests, Werkstatt-Crafter und Ortsplaner.
 - Ein erfolgreicher manueller Refresh muss den neuen Stand sofort in derselben Browser-Sitzung anwenden.
 - Ein serverseitiger Morgen-/Cron-Refresh muss auch in bereits geöffneten Tabs automatisch erkannt werden. Dafür wird nur eine leichte Datenversion periodisch geprüft; ein vollständiger Datensatz wird ausschließlich bei Versionsänderung nachgeladen.
 - Beim Zurückkehren in einen Tab (`visibilitychange`, `focus`, `pageshow`, `online`) wird die Datenversion sofort geprüft.

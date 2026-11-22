@@ -96,9 +96,9 @@ assert.ok(policy.includes('Gegenstandsbezogene Eingaben gehören zur ausgewählt
 assert.ok(sourceByFile.has('api/location-planner.js'),'Location planner API is required');
 assert.ok(sourceByFile.has('scripts/location-planner.mjs'),'Location planner core is required');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Location planner must reuse the persistent Workshop recipe master');
-assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbSpells'),'Location planner must verify recipe learning levels through the spell cache');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must use a build-scoped profession-training master without rebuilding the recipe catalog');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("source?.evidence==='forever-confirmed'"),'Location planner must fail closed to Forever-confirmed NPC sources');
-assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("level<requiredLevel"),'Location planner must reject recipes whose character-level requirement is not met');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('currentSkill<requiredSkill||level<requiredLevel'),'Location planner must reject profession rank training when skill or character level is not met');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.verified===true")&&(sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.availableNow===true"),'Class and companion actions must be explicitly verified and currently available');
 assert.ok(browserSource.includes("fetch('/api/location-planner?'"),'Location planner frontend must use its server-side API');
 assert.ok(browserSource.includes('invalidateLocationPlannerData({reloadVisible:true})'),'Character refresh must invalidate the location planner');

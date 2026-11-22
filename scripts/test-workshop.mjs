@@ -21,6 +21,7 @@ import {
   normalizeForeverDbRecipe,
   hydrateRecipeIndex,
   fetchForeverDbRecipeIndex,
+  fetchForeverDbProfessionMaster,
   searchForeverDbRecipesForItem
 } from './workshop-foreverdb.mjs';
 import {
@@ -198,24 +199,25 @@ const learningData={
   ]
 };
 const candidates=workshopLearningCandidates(learningData,{
-  ...remoteRecipe,requiredSkill:50,requiredCharacterLevel:0,learningRequirementsVerified:true
+  ...remoteRecipe,requiredSkill:50
 });
 assert.equal(candidates.length,1);
 assert.equal(candidates[0].name,'Chucky Dalton');
 assert.equal(candidates[0].gap,4);
 assert.equal(candidates[0].status,'skill-gap');
 
-const levelBlocked=workshopLearningCandidates(learningData,{
+const normalRecipe=workshopLearningCandidates(learningData,{
+  ...remoteRecipe,requiredSkill:40
+});
+assert.equal(normalRecipe[0].gap,0);
+assert.equal(normalRecipe[0].status,'can-learn-now','Normale Rezepte werden nicht mit dem Level des hergestellten Gegenstands oder Craft-Spells gesperrt');
+
+const explicitlyLevelBlocked=workshopLearningCandidates(learningData,{
   ...remoteRecipe,requiredSkill:40,requiredCharacterLevel:20,learningRequirementsVerified:true
 });
-assert.equal(levelBlocked[0].gap,0,'Berufsskill reicht im Level-Regressionsfall bereits aus');
-assert.equal(levelBlocked[0].levelGap,10);
-assert.equal(levelBlocked[0].status,'level-gap','Charakterlevel verhindert trotz ausreichendem Berufsskill den Lernstatus');
-
-const unverifiedLearning=workshopLearningCandidates(learningData,{
-  ...remoteRecipe,requiredSkill:40,requiredCharacterLevel:null,learningRequirementsVerified:false
-});
-assert.equal(unverifiedLearning[0].status,'requirements-unconfirmed','Unbestätigte Lernvoraussetzungen dürfen nie als jetzt lernbar gelten');
+assert.equal(explicitlyLevelBlocked[0].gap,0);
+assert.equal(explicitlyLevelBlocked[0].levelGap,10);
+assert.equal(explicitlyLevelBlocked[0].status,'level-gap','Eine ausdrücklich belegte zusätzliche Rezept-Levelanforderung bleibt unterstützt');
 
 const previousKey=process.env.FOREVERDB_API_KEY;
 process.env.FOREVERDB_API_KEY='test-key';
@@ -243,7 +245,18 @@ const fakeFetch=async url=>{
       ?(slug==='mining'&&query==='Copper Bar'?[matchingRecipe]:[])
       :slug==='mining'?[matchingRecipe]:
        slug==='alchemy'?[{...matchingRecipe,id:5000+offset,makes:{item:{id:90000+offset,name:'Alchemietest '+offset},count:1}}]:[];
-    body={data:{recipes},meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
+    body={data:{
+      recipes,
+      ...(slug==='mining'?{
+        ranks:[
+          {id:1000,name:'Lehrling',skillCap:75,requiredSkill:1,requiredLevel:5},
+          {id:1001,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:450}
+        ],
+        trainers:[
+          {id:2000,name:'Gelman Steinhandschuh',title:'Gesellenbergmann',zone:'Sturmwind',x:59.2,y:37.8,seenInForever:true}
+        ]
+      }:{})
+    },meta:{total:slug==='alchemy'?150:recipes.length,build:'test'}};
   }else if(parsed.pathname.endsWith('/items/2840')){
     body={data:{id:2840,name:'Kupferbarren',quality:1,class:7,slot:0,requiredLevel:0},meta:{build:'test'}};
   }else if(parsed.pathname.endsWith('/spells/3324')){
@@ -283,6 +296,12 @@ const remoteItem=await fetchForeverDbItem(2840,{fetchImpl:fakeFetch});
 assert.equal(remoteItem.item.id,2840);
 const profession=await fetchForeverDbProfession('mining',{fetchImpl:fakeFetch});
 assert.equal(profession.recipes.length,1);
+const professionMaster=await fetchForeverDbProfessionMaster('mining',{fetchImpl:fakeFetch});
+assert.equal(professionMaster.profession.slug,'mining');
+assert.equal(professionMaster.profession.ranks[1].requiredLevel,10);
+assert.equal(professionMaster.profession.ranks[1].requiredSkill,50);
+assert.equal(professionMaster.profession.trainers[0].evidence,'forever-confirmed');
+assert.equal(professionMaster.profession.trainers[0].npcTitle,'Gesellenbergmann');
 const remoteSpell=await fetchForeverDbSpell(3324,{fetchImpl:fakeFetch});
 assert.equal(remoteSpell.spell.id,3324);
 assert.equal(remoteSpell.spell.requiredLevel,10);
