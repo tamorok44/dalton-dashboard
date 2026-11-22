@@ -57,17 +57,27 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Die Lupe durchsucht standardmäßig alle Gegenstände. Die geführte Auswahl zeigt standardmäßig nur aktuell durch die Daltons herstellbare Gegenstände. Beide Ansichten können jeweils auf den anderen Modus umgeschaltet werden.
 - Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID. Beim Wechsel auf einen anderen Gegenstand wird die Menge auf `1` zurückgesetzt. Beim selben Gegenstand, bei Filterwechseln und beim automatischen Neuladen desselben Gegenstands nach einem Datenupdate bleibt die Menge erhalten.
 
-## 7. Datenfrische / Frontend-Synchronisierung
+## 7. Berufsplaner
 
-- Alle Ansichten verwenden denselben serverseitig gespeicherten Charakterstand als Quelle: Charaktere, Vergleich, Begleiter, Berufe, Ruf, Quests und Werkstatt-Crafter.
+- Der Berufsplaner verwendet den bestehenden persistenten ForeverDB-Rezeptmaster und die aktuellen Blizzard-Charakterdaten. Für diese Funktion wird keine zusätzliche externe Datenquelle eingeführt.
+- Ein Rezept gilt als „jetzt kaufbar und lernbar“ nur, wenn der Charakter den passenden Beruf besitzt, die aktuelle Berufsfertigkeit mindestens der Rezeptanforderung entspricht und das Rezept in seinen bekannten Rezepten noch nicht vorhanden ist.
+- In der Kaufliste erscheinen ausschließlich Händlerquellen mit `evidence = forever-confirmed` und einem bestätigten Ort. Classic-unbestätigte oder unbekannte Quellen sowie Lehrerquellen werden nicht als kaufbare Händlerangebote ausgegeben.
+- Ortsnamen, Rezeptnamen, Händlernamen und Spielbegriffe werden aus den verifizierten Quelldaten übernommen; keine sichtbaren Orts- oder Händlernamen werden selbst übersetzt.
+- Mehrere Angebote desselben Rezepts dürfen gebündelt werden. Die bevorzugte Händlerzuordnung priorisiert eine geringere Zahl an Verkaufsstellen; bestätigte Alternativen bleiben sichtbar.
+- Die Rezeptauswahl ist eine echte Mehrfachauswahl und darf deshalb Checkboxen verwenden. Die Einkaufsliste gruppiert ausgewählte Rezepte nach Händler und summiert ausschließlich bekannte Preise. Fehlende Preise werden ausdrücklich ausgewiesen und niemals als 0 in eine vermeintlich vollständige Gesamtsumme eingerechnet.
+- Ändert sich der Charakterdatenstand, wird der Berufsplaner invalidiert und neu berechnet; eine bestehende Einkaufsauswahl wird verworfen, weil bekannte Rezepte und Skillstände sich geändert haben können.
+
+## 8. Datenfrische / Frontend-Synchronisierung
+
+- Alle Ansichten verwenden denselben serverseitig gespeicherten Charakterstand als Quelle: Charaktere, Vergleich, Begleiter, Berufe, Ruf, Quests, Werkstatt-Crafter und Berufsplaner.
 - Ein erfolgreicher manueller Refresh muss den neuen Stand sofort in derselben Browser-Sitzung anwenden.
 - Ein serverseitiger Morgen-/Cron-Refresh muss auch in bereits geöffneten Tabs automatisch erkannt werden. Dafür wird nur eine leichte Datenversion periodisch geprüft; ein vollständiger Datensatz wird ausschließlich bei Versionsänderung nachgeladen.
 - Beim Zurückkehren in einen Tab (`visibilitychange`, `focus`, `pageshow`, `online`) wird die Datenversion sofort geprüft.
-- Datenabhängige abgeleitete Ansichten müssen bei geändertem Charakter-`generatedAt` invalidiert werden. Für die Werkstatt betrifft das Overview, Suchergebnisse und ausgewählte Herstellbarkeitsinformationen.
+- Datenabhängige abgeleitete Ansichten müssen bei geändertem Charakter-`generatedAt` invalidiert werden. Für die Werkstatt betrifft das Overview, Suchergebnisse und ausgewählte Herstellbarkeitsinformationen; für den Berufsplaner die Rezept-/Ortsliste und die Einkaufsauswahl.
 - Benutzerzustände wie ausgewählte Vergleichscharaktere, aktive Charakter-Reiter oder Filtereinstellungen bleiben bei Hintergrundaktualisierungen erhalten.
 - Ein Update der Pet-Regeln muss die globale Datenversion ebenfalls ändern, auch wenn sich der Charakter-`generatedAt`-Wert nicht geändert hat.
 
-## 8. Merge-Gates
+## 9. Merge-Gates
 
 Jeder PR muss `npm test` bestehen. Dabei sind insbesondere verbindlich:
 

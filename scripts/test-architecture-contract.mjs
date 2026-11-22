@@ -21,7 +21,7 @@ const rel=file=>path.relative(root,file).replaceAll('\\','/');
 const sourceByFile=new Map(prodFiles.map(file=>[rel(file),fs.readFileSync(file,'utf8')]));
 
 const policy=fs.readFileSync(path.join(root,'docs','architecture-contracts.md'),'utf8');
-for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Datenfrische / Frontend-Synchronisierung','Merge-Gates']){
+for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Berufsplaner','Datenfrische / Frontend-Synchronisierung','Merge-Gates']){
   assert.ok(policy.includes(required),'Architecture policy is missing required section: '+required);
 }
 
@@ -91,10 +91,18 @@ assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefre
 assert.ok(browserSource.includes("if(changedItem&&!preserveQuantity)workshopState.quantity=1"),'Workshop item-scoped quantity must reset to 1 when the item ID changes');
 assert.ok(browserSource.includes("preserveQuery:true,preserveQuantity:true"),'Same-item refresh paths must explicitly preserve workshop quantity');
 assert.ok(policy.includes('Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID'),'Workshop item-scoped state rule must stay documented');
+assert.ok(sourceByFile.has('api/profession-planner.js'),'Profession planner API is required');
+assert.ok(sourceByFile.has('scripts/profession-planner.mjs'),'Profession planner core is required');
+assert.ok((sourceByFile.get('api/profession-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Profession planner must reuse the persistent Workshop recipe master');
+assert.ok((sourceByFile.get('scripts/profession-planner.mjs')||'').includes("source?.type==='vendor'")&&(sourceByFile.get('scripts/profession-planner.mjs')||'').includes("source?.evidence==='forever-confirmed'"),'Profession planner purchase list must fail closed to confirmed vendor sources');
+assert.ok(browserSource.includes("fetch('/api/profession-planner?'"),'Profession planner frontend must use its server-side API');
+assert.ok(browserSource.includes('invalidateProfessionPlannerData({reloadVisible:true})'),'Character refresh must invalidate the profession planner');
+assert.ok(policy.includes('Die Rezeptauswahl ist eine echte Mehrfachauswahl'),'Profession planner checkbox exception must stay documented');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
 assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
 for(const markup of checkboxMarkup){
-  assert.ok(markup.includes('data-compare-character'),'Checkboxes are reserved for true multi-selection; use segmentedControl() for binary filters: '+markup);
+  const allowed=markup.includes('data-compare-character')||markup.includes('data-planner-recipe');
+  assert.ok(allowed,'Checkboxes are reserved for approved true multi-selection controls: '+markup);
 }
 for(const host of ['render.worldofwarcraft.com','foreverdb.net/icons/','foreverspec.com/icons/']){
   assert.ok(!browserSource.includes(host),'Browser code must not hard-code external game image hosts: '+host);

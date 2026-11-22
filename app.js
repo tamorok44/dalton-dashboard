@@ -754,20 +754,24 @@ const charactersView=document.querySelector('#charactersView');
 const compareView=document.querySelector('#compareView');
 const workshopRoot=document.querySelector('#workshopContent');
 const workshopView=document.querySelector('#workshopView');
+const plannerRoot=document.querySelector('#plannerContent');
+const plannerView=document.querySelector('#plannerView');
 function setMainView(view){
-  const compare=view==='compare',workshop=view==='workshop';
-  charactersView.hidden=compare||workshop;
+  const compare=view==='compare',workshop=view==='workshop',planner=view==='planner';
+  charactersView.hidden=compare||workshop||planner;
   compareView.hidden=!compare;
   workshopView.hidden=!workshop;
+  plannerView.hidden=!planner;
   document.querySelectorAll('[data-view-link]').forEach(a=>{
     const on=a.dataset.viewLink===view;a.classList.toggle('is-active',on);
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   });
   if(compare)renderComparison();
   if(workshop)loadWorkshopOverview();
+  if(planner)loadProfessionPlanner();
 }
 function syncMainView(){
-  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':'characters';
+  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':location.hash==='#berufsplaner'?'planner':'characters';
   setMainView(view);
 }
 window.addEventListener('hashchange',syncMainView);
@@ -1180,6 +1184,184 @@ function invalidateWorkshopData({reloadVisible=true}={}){
   }
 }
 
+
+const plannerState={
+  data:null,
+  loading:false,
+  error:null,
+  character:'',
+  location:'',
+  selected:new Set()
+};
+let plannerEpoch=0;
+function plannerPrice(copper){
+  return Number.isFinite(Number(copper))?workshopCopper(Number(copper)):'Preis nicht verfügbar';
+}
+function plannerCoords(location={}){
+  const x=Number(location?.x),y=Number(location?.y);
+  if(!Number.isFinite(x)||!Number.isFinite(y))return '';
+  return x.toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+y.toLocaleString('de-DE',{maximumFractionDigits:1});
+}
+function plannerProfessionLine(recipe){
+  const required=Number(recipe?.requiredSkill),current=Number(recipe?.currentSkill);
+  const parts=[recipe?.profession||'Beruf'];
+  if(Number.isFinite(required))parts.push('benötigt '+required);
+  if(Number.isFinite(current))parts.push('aktuell '+current);
+  return parts.join(' · ');
+}
+function plannerAlternativeHtml(recipe){
+  const alternatives=Array.isArray(recipe?.alternatives)?recipe.alternatives:[];
+  if(!alternatives.length)return '';
+  return '<details class="planner-alternatives"><summary>Weitere Verkaufsstellen · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
+    alternatives.map(source=>{
+      const coords=plannerCoords(source.location);
+      const meta=[source.location?.zone,coords,plannerPrice(source.priceCopper)].filter(Boolean).join(' · ');
+      return '<div class="planner-alternative"><strong>'+esc(source.name||'Händler')+'</strong><span>'+esc(meta)+'</span></div>';
+    }).join('')+'</div></details>';
+}
+function plannerSelectedRecipes(data){
+  const selected=plannerState.selected;
+  return (Array.isArray(data?.recipes)?data.recipes:[]).filter(recipe=>selected.has(recipe.key));
+}
+function plannerSelectionHtml(data){
+  const selected=plannerSelectedRecipes(data);
+  if(!selected.length)return '<div class="planner-selection is-empty"><strong>Noch nichts auf der Einkaufsliste.</strong><span>Wähle einzelne Rezepte bei den Händlern aus.</span></div>';
+  const byVendor=new Map();
+  let total=0,unknown=0;
+  for(const recipe of selected){
+    const source=recipe.source||{};
+    const key=source.key||source.name||'vendor';
+    let group=byVendor.get(key);
+    if(!group){group={name:source.name||'Händler',location:source.location||{},recipes:[],total:0,unknown:0};byVendor.set(key,group)}
+    group.recipes.push(recipe);
+    const price=Number(source.priceCopper);
+    if(Number.isFinite(price)){group.total+=price;total+=price}else{group.unknown++;unknown++}
+  }
+  const groups=[...byVendor.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE EINKAUFSLISTE</span><h3>'+selected.length+' Rezept'+(selected.length===1?'':'e')+' · '+groups.length+' Händler</h3></div><div class="planner-total"><span>'+(unknown?'Bekannte Kosten':'Gesamtkosten')+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(unknown?'<small>'+unknown+' ohne Preisangabe</small>':'')+'</div></div>'+
+    '<div class="planner-route">'+groups.map(group=>{
+      const coords=plannerCoords(group.location);
+      const meta=[group.location?.zone,coords].filter(Boolean).join(' · ');
+      return '<article class="planner-route-stop"><div class="planner-route-head"><div><strong>'+esc(group.name)+'</strong>'+(meta?'<span>'+esc(meta)+'</span>':'')+'</div><span>'+group.recipes.length+' Rezept'+(group.recipes.length===1?'':'e')+'</span></div>'+
+        '<div class="planner-route-recipes">'+group.recipes.map(recipe=>'<div><span>'+esc(recipe.name)+'</span><strong>'+esc(plannerPrice(recipe.source?.priceCopper))+'</strong></div>').join('')+'</div>'+
+        '<div class="planner-route-subtotal"><span>'+(group.unknown?'Bekannte Kosten':'Zwischensumme')+'</span><strong>'+esc(workshopCopper(group.total))+'</strong>'+(group.unknown?'<small>'+group.unknown+' ohne Preis</small>':'')+'</div></article>';
+    }).join('')+'</div></section>';
+}
+function plannerVendorHtml(vendor){
+  const location=vendor.location||{};
+  const coords=plannerCoords(location);
+  const meta=[location.zone,coords].filter(Boolean).join(' · ');
+  return '<article class="planner-vendor"><div class="planner-vendor-head"><div><span class="planner-kicker">HÄNDLER</span><h3>'+esc(vendor.name||'Unbekannter Händler')+'</h3>'+(meta?'<p>'+esc(meta)+'</p>':'')+'</div><span class="planner-vendor-count">'+vendor.recipes.length+' Rezept'+(vendor.recipes.length===1?'':'e')+'</span></div>'+
+    '<div class="planner-recipe-list">'+vendor.recipes.map(recipe=>{
+      const checked=plannerState.selected.has(recipe.key);
+      const stock=Number(recipe.source?.limitedStock);
+      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-planner-recipe="'+esc(recipe.key)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><strong>'+esc(recipe.name)+'</strong><small>'+esc(plannerProfessionLine(recipe))+'</small>'+
+        (Number.isFinite(stock)?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(recipe.source?.priceCopper))+'</span></label>'+
+        plannerAlternativeHtml(recipe)+'</div>';
+    }).join('')+'</div></article>';
+}
+function renderProfessionPlanner(){
+  if(!plannerRoot)return;
+  const data=plannerState.data||{};
+  if(plannerState.loading&&!plannerState.data){
+    plannerRoot.innerHTML='<p class="compare-empty">Berufsplaner wird geladen …</p>';return;
+  }
+  if(plannerState.error&&!plannerState.data){
+    plannerRoot.innerHTML='<p class="error">'+esc(plannerState.error)+'</p>';return;
+  }
+  const characters=Array.isArray(data.characters)?data.characters:[];
+  const locations=Array.isArray(data.locations)?data.locations:[];
+  const selectedCharacter=data.selectedCharacter||null;
+  const selectedLocation=data.selectedLocation||null;
+  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ZIEL FESTLEGEN</span><h3>Was kann ich hier jetzt noch kaufen?</h3><p>Es erscheinen nur Rezepte, die der gewählte Charakter noch nicht kennt, mit seinem aktuellen Skill bereits lernen kann und die bei einem in WoW Forever bestätigten Händler am gewählten Ort erhältlich sind.</p></div>'+
+    '<div class="planner-fields"><label class="planner-field"><span>Charakter</span><select id="plannerCharacter"><option value="">Charakter wählen …</option>'+
+      characters.map(character=>'<option value="'+esc(character.slug)+'"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+
+    '</select></label><label class="planner-field"><span>Ort</span><select id="plannerLocation"'+(!plannerState.character?' disabled':'')+'><option value="">Ort wählen …</option>'+
+      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.recipeCount+' Rezept'+(location.recipeCount===1?'':'e')+'</option>').join('')+
+    '</select></label></div></section>';
+  let characterSummary='';
+  if(selectedCharacter){
+    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+'</h3><p>'+esc((selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · '))+'</p></div>'+
+      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>jetzt kaufbare, noch unbekannte Rezepte</span></div></section>';
+  }
+  let body='';
+  if(!plannerState.character){
+    body='<div class="planner-placeholder"><strong>Wähle zuerst einen Charakter.</strong><span>Danach zeigt der Planer nur Orte, an denen für dessen aktuelle Berufe und Skillstände etwas verfügbar ist.</span></div>';
+  }else if(!plannerState.location){
+    body='<div class="planner-placeholder"><strong>Wähle einen Ort.</strong><span>'+esc(data.counts?.availableNow??0)+' passende Rezepte sind aktuell über bestätigte Händler verfügbar.</span></div>';
+  }else if(!selectedLocation){
+    body='<div class="planner-placeholder"><strong>Der gewählte Ort ist für den aktuellen Stand nicht mehr verfügbar.</strong><span>Bitte wähle einen Ort aus der aktualisierten Liste.</span></div>';
+  }else if(!(data.vendors||[]).length){
+    body='<div class="planner-placeholder"><strong>Hier gibt es aktuell nichts Neues zu kaufen.</strong><span>Für den gewählten Charakter ist kein noch unbekanntes und bereits lernbares Rezept bei einem bestätigten Händler dieses Ortes hinterlegt.</span></div>';
+  }else{
+    const count=data.counts?.atLocation??0,vendorCount=data.counts?.vendors??0;
+    body='<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+esc(count)+' Rezept'+(count===1?'':'e')+' bei '+esc(vendorCount)+' Händler'+(vendorCount===1?'':'n')+'</h3><p>Die Händlerzuordnung bündelt Angebote möglichst auf wenige Verkaufsstellen. Weitere bestätigte Verkaufsstellen bleiben beim jeweiligen Rezept sichtbar.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
+      plannerSelectionHtml(data)+
+      '<div class="planner-vendors">'+(data.vendors||[]).map(plannerVendorHtml).join('')+'</div>'+
+      '<p class="planner-credit">Bezugsquellen: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a> · nur in Forever bestätigte Händlerangebote</p>';
+  }
+  plannerRoot.innerHTML='<div class="planner-shell">'+controls+characterSummary+body+'</div>';
+  plannerRoot.querySelector('#plannerCharacter')?.addEventListener('change',event=>{
+    plannerState.character=event.target.value;
+    plannerState.location='';
+    plannerState.selected.clear();
+    plannerState.data=null;
+    loadProfessionPlanner({force:true});
+  });
+  plannerRoot.querySelector('#plannerLocation')?.addEventListener('change',event=>{
+    plannerState.location=event.target.value;
+    plannerState.selected.clear();
+    plannerState.data=null;
+    loadProfessionPlanner({force:true});
+  });
+  plannerRoot.querySelectorAll('[data-planner-recipe]').forEach(input=>input.addEventListener('change',()=>{
+    const key=input.dataset.plannerRecipe;
+    if(input.checked)plannerState.selected.add(key);else plannerState.selected.delete(key);
+    renderProfessionPlanner();
+  }));
+  plannerRoot.querySelector('[data-planner-select-all]')?.addEventListener('click',()=>{
+    for(const recipe of data.recipes||[])plannerState.selected.add(recipe.key);
+    renderProfessionPlanner();
+  });
+  plannerRoot.querySelector('[data-planner-clear]')?.addEventListener('click',()=>{
+    plannerState.selected.clear();renderProfessionPlanner();
+  });
+}
+async function loadProfessionPlanner({force=false}={}){
+  if(plannerState.data&&!force)return;
+  const epoch=++plannerEpoch;
+  plannerState.loading=true;plannerState.error=null;renderProfessionPlanner();
+  try{
+    const params=new URLSearchParams();
+    if(plannerState.character)params.set('character',plannerState.character);
+    if(plannerState.location)params.set('location',plannerState.location);
+    params.set('t',Date.now());
+    const response=await fetch('/api/profession-planner?'+params.toString(),{cache:'no-store'});
+    if(!response.ok)throw new Error('Berufsplaner HTTP '+response.status);
+    const result=await response.json();
+    if(epoch!==plannerEpoch)return;
+    plannerState.data=result;
+    if(plannerState.character&&!result.selectedCharacter){
+      plannerState.character='';plannerState.location='';plannerState.selected.clear();
+    }
+    if(plannerState.location&&!result.selectedLocation){
+      plannerState.location='';plannerState.selected.clear();
+    }
+  }catch(error){
+    if(epoch===plannerEpoch)plannerState.error='Berufsplaner konnte nicht geladen werden.';
+  }finally{
+    if(epoch===plannerEpoch){plannerState.loading=false;renderProfessionPlanner()}
+  }
+}
+function invalidateProfessionPlannerData({reloadVisible=true}={}){
+  plannerEpoch++;
+  plannerState.data=null;
+  plannerState.loading=false;
+  plannerState.error=null;
+  plannerState.selected.clear();
+  if(!plannerView.hidden&&reloadVisible)loadProfessionPlanner({force:true});
+}
+
 let lastGeneratedAt=null;
 let lastDataVersion=null;
 let dataLoadPromise=null;
@@ -1205,7 +1387,10 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
     reputationCatalog:payload.reputationCatalog||{},
     petCatalog:payload.petCatalog||{}
   });
-  if(characterDataChanged)invalidateWorkshopData({reloadVisible:true});
+  if(characterDataChanged){
+    invalidateWorkshopData({reloadVisible:true});
+    invalidateProfessionPlannerData({reloadVisible:true});
+  }
   return true;
 }
 async function load({silent=false,force=false}={}){

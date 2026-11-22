@@ -533,6 +533,15 @@ assert.ok(source.includes("async function selectWorkshopItem(itemId,{preserveQue
 assert.ok(source.includes("if(changedItem&&!preserveQuantity)workshopState.quantity=1"),'Ein anderer Gegenstand setzt die Menge auf eins zurück');
 assert.ok(source.includes("selectWorkshopItem(workshopState.selected.item.id,{preserveQuery:true,preserveQuantity:true})"),'Mengenänderung am selben Gegenstand behält die gewählte Menge');
 assert.ok(source.includes("selectWorkshopItem(selectedId,{preserveQuery:true,preserveQuantity:true})"),'Automatisches Neuladen desselben Gegenstands behält die gewählte Menge');
+assert.ok(heroHtml.includes('data-view-link="planner"'),'Berufsplaner ist eigener Hauptreiter');
+assert.ok(heroHtml.includes('id="plannerView" class="main-view planner-view"'),'Berufsplaner nutzt den verbindlichen main-view-Vertrag');
+assert.ok(source.includes("location.hash==='#berufsplaner'?'planner'"),'Berufsplaner hat eigene Hash-Route');
+assert.ok(source.includes("fetch('/api/profession-planner?'"),'Berufsplaner nutzt die serverseitige Planner-API');
+assert.ok(source.includes('data-planner-recipe'),'Rezeptliste verwendet Checkboxen als echte Mehrfachauswahl');
+assert.ok(source.includes('plannerState.selected.clear()'),'Charakter-/Ortswechsel und Dateninvalidierung können die Einkaufsauswahl sicher verwerfen');
+assert.ok(source.includes('invalidateProfessionPlannerData({reloadVisible:true})'),'Neue Charakterdaten invalidieren den Berufsplaner');
+assert.ok(css.includes('.planner-view{')&&css.includes('.planner-recipe-choice{'),'Berufsplaner verwendet eine eigene tokenbasierte Dalton-CI-Struktur');
+assert.ok(css.includes('.main-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}'),'Vier Hauptreiter bleiben auf Mobilgeräten ohne Seiten-Scroll bedienbar');
 assert.ok(css.includes('.segmented-control{')&&css.includes('.segmented-option.is-active'),'Segment-Schalter ist als gemeinsame Dalton-CI-Komponente gestaltet');
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));
