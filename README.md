@@ -9,8 +9,9 @@ Verbindliche UI- und Responsive-Regeln für bestehende und neue Hauptreiter steh
 - `GET /api/characters` liest den letzten vollständigen Datensatz aus Redis, beim erstmaligen Start aus `data/characters.json`.
 - Ein Klick auf **Aktualisieren** löst `GET /api/refresh` aus und speichert erfolgreich abgerufene Daten dauerhaft. Der manuelle Abruf ist global auf einmal pro Minute begrenzt.
 - Es gibt **keinen 30-Minuten-Deployment- oder GitHub-Datenabruf**. Code-Pushes führen nur die Tests aus. Datenaktualisierung und Website-Deployment sind getrennt.
-- Der einzige planmäßige Serverlauf ist der Vercel-Cron in `vercel.json`: `7 4 * * *` (04:07 UTC, also 05:07 Uhr Berlin im Winter und 06:07 Uhr im Sommer). Er erstellt den täglichen Roh-Snapshot und aktualisiert danach die persistenten Charakterdaten.
-- Redis-basierte Sperren schützen gegen parallele Serverinstanzen und verhindern veraltete Überschreibungen.
+- Der tägliche Vercel-Lauf startet um `04:07 UTC` und besitzt um `04:37 UTC` einen idempotenten zweiten Versuch. Der erste erfolgreiche Lauf archiviert den Roh-Snapshot und aktualisiert die persistenten Charakterdaten; der zweite Lauf beendet sich sofort, wenn beides bereits vollständig abgeschlossen wurde, und wiederholt andernfalls nur den noch fehlenden Charakter-Refresh.
+- Redis-basierte Sperren schützen gegen parallele Serverinstanzen und verhindern veraltete Überschreibungen. Sperren werden auch bei Fehlern in vorgelagerten Regelprüfungen garantiert wieder freigegeben.
+- Vercel Functions, Upstash Redis und Vercel Blob laufen gemeinsam in Frankfurt (`fra1`), damit persistente Lese- und Schreibpfade keinen unnötigen Regionswechsel verursachen.
 - Teilfehler behalten den letzten Datenstand des betroffenen Charakters. Bei einem vollständigen Blizzard-Ausfall wird kein neuer Charakterstand gespeichert.
 - Vercel Blob archiviert tägliche Voll-Snapshots sowie optional Porträts, Avatare und Ausrüstungs-Icons.
 - Spielobjekte verwenden eine gemeinsame ID-basierte Katalogschicht für Items, Ruf-Fraktionen, Quests, Berufe, Rezepte, Spells, Talente und Begleiter. Beobachtete Charakterdaten registrieren Objekte dort zusätzlich, definieren aber nicht den vollständigen Masterkatalog.
