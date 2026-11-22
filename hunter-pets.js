@@ -1,4 +1,4 @@
-export const HUNTER_PET_RULEBOOK_VERSION='2026.11.21.3';
+export const HUNTER_PET_RULEBOOK_VERSION='2026.11.22.1';
 // Versioniertes Forever-Jägerwissen. Live-Zustand eines konkreten Tiers kommt ausschließlich von Blizzard.
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({
@@ -18,7 +18,7 @@ export const hunterPetMechanics=Object.freeze({
   inherited:Object.freeze({
     healthPerHunterStamina:Object.freeze({ruleId:'pet.scaling',factor:2,version:1}),
     armorFromHunter:Object.freeze({ruleId:'pet.scaling',factor:0.30,version:1}),
-    critFromHunter:Object.freeze({ruleId:'pet.scaling',factor:1,version:1})
+    critFromHunter:Object.freeze({ruleId:'pet.scaling',sourceRuleId:'pet.crit.inheritance',factor:1,displayKind:'inherited_component',version:2})
   }),
   focus:Object.freeze({ruleId:'pet.focus',maximum:150,regenPerSecond:10,version:1}),
   globalHealth:Object.freeze({ruleId:'pet.health.global',factor:1.15,percent:115,version:1})
@@ -84,7 +84,16 @@ export function hunterPetCombatProfile(character){
       attackPower:{
         ruleId:'pet.scaling',
         value:null,
-        reason:'Blizzard stellt in der aktuellen Online-Armory die höhere Nahkampf-/Fernkampf-Angriffskraft nicht getrennt und damit nicht eindeutig bereit.'
+        reason:'Das 10-%-Modell bleibt Referenzwissen; Blizzard stellt in der aktuellen Online-Armory die höhere Nahkampf-/Fernkampf-Angriffskraft nicht getrennt und damit nicht eindeutig bereit.'
+      },
+      hitChance:{
+        value:null,
+        reason:'Für die Hunter→Pet-Trefferchance gibt es derzeit keinen belastbaren numerischen Vererbungsfaktor.'
+      },
+      expertise:{
+        ruleId:'pet.expertise',
+        value:null,
+        reason:'Blizzard bestätigt, dass Begleiter von Expertise profitieren; ein numerischer Vererbungsfaktor ist jedoch nicht dokumentiert.'
       }
     },
     enduranceTraining:enduranceTraining(character),
