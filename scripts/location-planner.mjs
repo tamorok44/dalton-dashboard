@@ -405,7 +405,7 @@ function groupByNpc(actions){
     return a.name.localeCompare(b.name,'de');
   });
 }
-export function buildLocationPlannerexport function buildLocationPlanner(data={},recipeIndex={},{
+export function buildLocationPlanner(data={},recipeIndex={},{
   characterSlug=null,
   location=null,
   professionMasters={},
