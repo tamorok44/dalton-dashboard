@@ -21,7 +21,7 @@ const rel=file=>path.relative(root,file).replaceAll('\\','/');
 const sourceByFile=new Map(prodFiles.map(file=>[rel(file),fs.readFileSync(file,'utf8')]));
 
 const policy=fs.readFileSync(path.join(root,'docs','architecture-contracts.md'),'utf8');
-for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Berufsplaner','Datenfrische / Frontend-Synchronisierung','Merge-Gates']){
+for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Ortsplaner','Datenfrische / Frontend-Synchronisierung','Merge-Gates']){
   assert.ok(policy.includes(required),'Architecture policy is missing required section: '+required);
 }
 
@@ -48,7 +48,7 @@ assert.ok(sourceByFile.has('scripts/player-terminology.mjs'),'Verified player te
 const terminologySource=sourceByFile.get('scripts/player-terminology.mjs')||'';
 assert.ok(terminologySource.includes("171:Object.freeze({name:'Alchemie'})"),'Official German player term for profession 171 must be Alchemie');
 assert.ok(terminologySource.includes("1453:Object.freeze({name:'Sturmwind'"),'Official German player term for map 1453 must be Sturmwind');
-assert.ok((sourceByFile.get('scripts/profession-planner.mjs')||'').includes("preferredGermanGameName('zone'"),'Profession planner zones must pass through verified stable-ID terminology');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("preferredGermanGameName('zone'"),'Location planner zones must pass through verified stable-ID terminology');
 assert.ok(terminologySource.includes('worldofwarcraft.blizzard.com/de-de/'),'Player terminology master must cite official German Blizzard sources');
 assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes('preferredGermanGameName'),'Technical localized strings must pass through verified player terminology priority');
 assert.ok((sourceByFile.get('scripts/character-store.mjs')||'').includes('normalizeVerifiedPlayerTerminology'),'Persisted character data must be normalized at the central store boundary');
@@ -68,7 +68,7 @@ assert.ok(sourceByFile.get('api/workshop.js')?.includes('item:publicDetailedItem
 assert.ok(!/icon\s*:\s*remote\.icon/.test(sourceByFile.get('api/workshop.js')||''),
   'Raw ForeverDB icon URLs must never be returned directly');
 const workshopApi=sourceByFile.get('api/workshop.js')||'';
-assert.ok(workshopApi.includes('recipe:publicLearningRecipe(remoteRecipe)'),
+assert.ok(workshopApi.includes('recipe:publicLearningRecipe(learningRecipe)'),
   'Workshop must project remote recipes before sending them to the browser');
 assert.ok(workshopApi.includes('learningSources:currentlyCraftable?[]:publicSources'),
   'Workshop must project remote learning sources before sending them to the browser');
@@ -93,17 +93,22 @@ assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefre
 assert.ok(browserSource.includes("if(changedItem&&!preserveQuantity)workshopState.quantity=1"),'Workshop item-scoped quantity must reset to 1 when the item ID changes');
 assert.ok(browserSource.includes("preserveQuery:true,preserveQuantity:true"),'Same-item refresh paths must explicitly preserve workshop quantity');
 assert.ok(policy.includes('Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID'),'Workshop item-scoped state rule must stay documented');
-assert.ok(sourceByFile.has('api/profession-planner.js'),'Profession planner API is required');
-assert.ok(sourceByFile.has('scripts/profession-planner.mjs'),'Profession planner core is required');
-assert.ok((sourceByFile.get('api/profession-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Profession planner must reuse the persistent Workshop recipe master');
-assert.ok((sourceByFile.get('scripts/profession-planner.mjs')||'').includes("source?.type==='vendor'")&&(sourceByFile.get('scripts/profession-planner.mjs')||'').includes("source?.evidence==='forever-confirmed'"),'Profession planner purchase list must fail closed to confirmed vendor sources');
-assert.ok(browserSource.includes("fetch('/api/profession-planner?'"),'Profession planner frontend must use its server-side API');
-assert.ok(browserSource.includes('invalidateProfessionPlannerData({reloadVisible:true})'),'Character refresh must invalidate the profession planner');
-assert.ok(policy.includes('Die Rezeptauswahl ist eine echte Mehrfachauswahl'),'Profession planner checkbox exception must stay documented');
+assert.ok(sourceByFile.has('api/location-planner.js'),'Location planner API is required');
+assert.ok(sourceByFile.has('scripts/location-planner.mjs'),'Location planner core is required');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Location planner must reuse the persistent Workshop recipe master');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbSpells'),'Location planner must verify recipe learning levels through the spell cache');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("source?.evidence==='forever-confirmed'"),'Location planner must fail closed to Forever-confirmed NPC sources');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("level<requiredLevel"),'Location planner must reject recipes whose character-level requirement is not met');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.verified===true")&&(sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.availableNow===true"),'Class and companion actions must be explicitly verified and currently available');
+assert.ok(browserSource.includes("fetch('/api/location-planner?'"),'Location planner frontend must use its server-side API');
+assert.ok(browserSource.includes('invalidateLocationPlannerData({reloadVisible:true})'),'Character refresh must invalidate the location planner');
+assert.ok(policy.includes('Kategorien und einzelne Erledigungen sind echte Mehrfachauswahlen'),'Location planner checkbox exception must stay documented');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("entityType:'npc'"),'NPC portraits must use the central entity-based media resolver');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('resolveMediaAsset'),'NPC portraits must be archived through the central media resolver');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
 assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
 for(const markup of checkboxMarkup){
-  const allowed=markup.includes('data-compare-character')||markup.includes('data-planner-recipe');
+  const allowed=markup.includes('data-compare-character')||markup.includes('data-location-category')||markup.includes('data-location-action');
   assert.ok(allowed,'Checkboxes are reserved for approved true multi-selection controls: '+markup);
 }
 for(const host of ['render.worldofwarcraft.com','foreverdb.net/icons/','foreverspec.com/icons/']){
