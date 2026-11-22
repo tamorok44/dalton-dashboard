@@ -86,9 +86,18 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Benutzerzustände wie ausgewählte Vergleichscharaktere, aktive Charakter-Reiter oder Filtereinstellungen bleiben bei Hintergrundaktualisierungen erhalten.
 - Ein Update der Pet-Regeln muss die globale Datenversion ebenfalls ändern, auch wenn sich der Charakter-`generatedAt`-Wert nicht geändert hat.
 
-## 9. Merge-Gates
+## 9. Betrieb / Persistenz
 
-Jeder PR muss `npm test` bestehen. Dabei sind insbesondere verbindlich:
+- Redis ist die operative Wahrheit für Charakterstände, Kataloge und koordinierende Locks; Vercel Blob archiviert Voll-Snapshots und Medien. Diese Rollen dürfen nicht durch parallele Stammdatenkopien in einzelnen Features aufgeweicht werden.
+- Stateful Infrastruktur und Functions werden gemeinsam in Frankfurt (`fra1`) betrieben. Ein Regionswechsel weg von Redis/Blob ist eine Architekturänderung und muss vorab mit Latenz- und Fehlerbudget begründet werden.
+- Jeder verteilte Redis-Lock muss auf **jedem** Fehlerpfad freigegeben werden. Insbesondere dürfen vorgelagerte Regel-, Katalog- oder Validierungsfehler keinen Lock bis zum TTL-Ablauf liegen lassen.
+- Ein täglicher Roh-Snapshot und der anschliessende Charakter-Refresh sind zwei getrennte Erfolgsschritte. Ein bereits gespeicherter Snapshot darf einen noch nicht persistierten Charakter-Refresh nicht als erledigt markieren. Der zweite Morgenlauf ist idempotent: vollständig abgeschlossene Tage werden nur gelesen und sofort beendet; unvollständige Tage wiederholen ausschließlich den fehlenden Schritt.
+- Der produktive Dependency-Baum ist über `package-lock.json` reproduzierbar. CI muss deshalb mit `npm ci` installieren, bekannte High/Critical-Advisories prüfen und sowohl die unterstützte Mindestlaufzeit Node 22 als auch die aktuelle Produktionslaufzeit Node 26 testen.
+- Die Änderungschronik speichert nur fachliche Änderungen; tägliche Voll-Snapshots liegen komprimiert in Blob. Append-only-Verläufe werden nicht still gelöscht oder umgeschrieben. Speicher- und Command-Quoten werden bei strukturellen Erweiterungen erneut bewertet.
+
+## 10. Merge-Gates
+
+Jeder PR muss den reproduzierbaren Dependency-Install, den Security-Audit und `npm test` unter Node 22 und Node 26 bestehen. Dabei sind insbesondere verbindlich:
 
 - `test-game-language.mjs`
 - `test-layout-contract.mjs`

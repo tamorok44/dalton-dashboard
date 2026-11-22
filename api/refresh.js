@@ -5,6 +5,17 @@ import {publicPetRuleState} from '../scripts/pet-rulebook.mjs';
 import {buildDataVersion} from '../scripts/data-version.mjs';
 export const config={maxDuration:60};
 let pending=null;
+
+async function runLockedRefresh(lockToken,source){
+  try{
+    const petRuleState=await ensurePetRuleState({force:false});
+    const result=await refreshAndPersist({lockToken,source});
+    return {result,petRuleState};
+  }finally{
+    try{await releaseRefreshLock(lockToken)}catch(error){console.error('Redis-Refresh-Sperre konnte nicht freigegeben werden:',error)}
+  }
+}
+
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(!['GET','POST'].includes(req.method)){res.setHeader('Allow','GET, POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
@@ -24,13 +35,9 @@ export default async function handler(req,res){
       if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
       return res.status(202).json({pending:true,reason:'already_running'});
     }
-    const petRuleState=await ensurePetRuleState({force:false});
-    pending=refreshAndPersist({lockToken,source:req.method==='GET'?'manual':'scheduled'})
-      .finally(async()=>{
-        try{await releaseRefreshLock(lockToken)}catch(error){console.error('Redis-Refresh-Sperre konnte nicht freigegeben werden:',error)}
-        pending=null;
-      });
-    const result=await pending;
+    pending=runLockedRefresh(lockToken,req.method==='GET'?'manual':'scheduled')
+      .finally(()=>{pending=null});
+    const {result,petRuleState}=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
     const petRules=publicPetRuleState(petRuleState);
     const dataVersion=buildDataVersion({data:result.data,petRules});

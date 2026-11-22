@@ -21,7 +21,7 @@ const rel=file=>path.relative(root,file).replaceAll('\\','/');
 const sourceByFile=new Map(prodFiles.map(file=>[rel(file),fs.readFileSync(file,'utf8')]));
 
 const policy=fs.readFileSync(path.join(root,'docs','architecture-contracts.md'),'utf8');
-for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Ortsplaner','Datenfrische / Frontend-Synchronisierung','Merge-Gates']){
+for(const required of ['Externe APIs zuerst klären','Sprache / WoW-Begriffe','Medien / Bilder','Dalton-CI','Interaktionskontrollen','Werkstatt-Masterkatalog','Ortsplaner','Datenfrische / Frontend-Synchronisierung','Betrieb / Persistenz','Merge-Gates']){
   assert.ok(policy.includes(required),'Architecture policy is missing required section: '+required);
 }
 
@@ -90,6 +90,20 @@ assert.ok(sourceByFile.has('scripts/data-version.mjs'),'Central data-version mod
 assert.ok((sourceByFile.get('api/refresh.js')||'').includes('dataVersion'),'Manual refresh must return the global data version');
 assert.ok((sourceByFile.get('api/characters.js')||'').includes('dataVersion'),'Stored-data API must return the global data version');
 assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefreshLockWithRetry'),'Daily refresh must retry a temporarily occupied refresh lock');
+const refreshApi=sourceByFile.get('api/refresh.js')||'';
+const dailyApi=sourceByFile.get('api/daily-snapshot.js')||'';
+assert.ok(refreshApi.includes('async function runLockedRefresh')&&refreshApi.includes('releaseRefreshLock(lockToken)'),'Refresh lock release must cover pre-refresh validation failures');
+assert.ok(dailyApi.includes('dailyRefreshComplete(existing)')&&dailyApi.includes('registerDailySnapshot(completedMeta)'),'Daily snapshot must not suppress retry of an incomplete persisted refresh');
+const vercelConfig=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
+assert.deepEqual(vercelConfig.regions,['fra1'],'Vercel functions must stay colocated with Redis and Blob in Frankfurt');
+const dailySchedules=(vercelConfig.crons||[]).filter(job=>job.path==='/api/daily-snapshot').map(job=>job.schedule).sort();
+assert.deepEqual(dailySchedules,['37 4 * * *','7 4 * * *'],'Daily snapshot requires primary and idempotent retry schedules');
+const responseHeaders=Object.fromEntries((vercelConfig.headers?.[0]?.headers||[]).map(header=>[header.key,header.value]));
+assert.equal(responseHeaders['X-Content-Type-Options'],'nosniff','Basic response hardening must keep MIME sniffing disabled');
+const workflow=fs.readFileSync(path.join(root,'.github','workflows','update-data.yml'),'utf8');
+for(const required of ['node-version: ["22", "26"]','npm ci --ignore-scripts','npm audit --audit-level=high','npm test']){
+  assert.ok(workflow.includes(required),'CI must preserve reproducible dual-runtime gate: '+required);
+}
 assert.ok(browserSource.includes("if(changedItem&&!preserveQuantity)workshopState.quantity=1"),'Workshop item-scoped quantity must reset to 1 when the item ID changes');
 assert.ok(browserSource.includes("preserveQuery:true,preserveQuantity:true"),'Same-item refresh paths must explicitly preserve workshop quantity');
 assert.ok(policy.includes('Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID'),'Workshop item-scoped state rule must stay documented');
