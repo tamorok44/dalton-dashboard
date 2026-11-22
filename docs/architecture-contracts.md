@@ -21,6 +21,7 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Bei widersprüchlichen deutschen Quellen gilt für sichtbare Spielerbegriffe die Priorität: **offizielle deutsche Blizzard-Spieler-/UI-Terminologie → lokalisierte Blizzard-Game-Data-/Clientbezeichnung → keine selbst erfundene Übersetzung**.
 - Quellenbelegte Terminologie-Master sind ausschließlich über stabile Spiel-IDs erlaubt. Jeder Eintrag benötigt offizielle Quelle, Locale und Verifizierungsdatum; freie Englisch→Deutsch-Übersetzungstabellen bleiben verboten.
 - Der aktuelle Berufs-Master liegt in `scripts/player-terminology.mjs` und ist durch die offiziellen deutschen WoW-Forever-Berufsseiten belegt. Beispiel: Beruf-ID `171` wird sichtbar als **„Alchemie“** geführt, auch wenn technische Client-/Game-Data-Felder „Alchimie“ liefern.
+- Dasselbe Prinzip gilt für technische Ortsbezeichnungen: Wo eine stabile Karten-ID (`uiMapId`) vorliegt und eine offizielle deutsche Blizzard-Bezeichnung verifiziert ist, wird diese ID-basierte Spielerterminologie verwendet. Beispiel: `1453` = **„Sturmwind“**, auch wenn eine Quelldatenbank „Stormwind“ liefert.
 - Technische IDs und Slugs dürfen intern verwendet werden, aber nicht als sichtbarer Ersatztext.
 - Wenn eine deutsche Bezeichnung nicht verifiziert vorliegt, wird sie neutral weggelassen bzw. als nicht verfügbar behandelt.
 - Eigene UI-Begriffe wie „Werkstatt“, „Menge“, „Bezugsquellen“ oder die funktionale Werkstatt-Taxonomie sind erlaubt, solange sie nicht als Übersetzung eines Quellbegriffs ausgegeben werden.
