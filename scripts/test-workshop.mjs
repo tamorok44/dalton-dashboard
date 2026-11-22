@@ -19,6 +19,7 @@ import {
 } from './foreverdb-api.mjs';
 import {
   normalizeForeverDbRecipe,
+  normalizeProfessionMaster,
   hydrateRecipeIndex,
   fetchForeverDbRecipeIndex,
   fetchForeverDbProfessionMaster,
@@ -120,6 +121,17 @@ assert.equal(remoteRecipe.learning.sources.filter(source=>source.evidence==='for
 assert.equal(remoteRecipe.learning.sources.filter(source=>source.evidence==='classic-unconfirmed').length,1);
 assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='vendor'&&source.limitedStock===1));
 assert.ok(remoteRecipe.learning.sources.some(source=>source.type==='drop'&&source.name==='Testkreatur'));
+
+const sideAwareMaster=normalizeProfessionMaster({
+  trainers:[
+    {id:5500,name:"Tel'Athir",title:'Journeyman Alchemist',side:'alliance',location:{zone:'Stormwind',uiMapId:1453,x:55.6,y:85.7},seenInForever:true},
+    {id:11046,name:'Whuut',title:'Journeyman Alchemist',faction:'horde',location:{zone:'Orgrimmar',uiMapId:1454,x:56.1,y:33},seenInForever:true}
+  ]
+},'alchemy');
+assert.equal(sideAwareMaster.trainers.find(source=>source.id===5500)?.side,'alliance',
+  'Explizite ForeverDB-Lehrerfraktion wird normalisiert');
+assert.equal(sideAwareMaster.trainers.find(source=>source.id===11046)?.side,'horde',
+  'Auch das ForeverDB-Feld faction wird auf die Lehrerfraktion abgebildet');
 
 const index=hydrateRecipeIndex({generatedAt:data.generatedAt,complete:true,recipes:[remoteRecipe]});
 enrichWorkshopCatalogWithForeverDb(catalog,index);
