@@ -1283,6 +1283,7 @@ function plannerActionLine(action){
   if(action.profession)parts.push(action.profession);
   if(Number.isFinite(Number(action.requiredSkill)))parts.push('Fertigkeit '+action.requiredSkill);
   if(Number.isFinite(Number(action.requiredLevel))&&Number(action.requiredLevel)>0)parts.push('Level '+action.requiredLevel);
+  if(action.category==='class-abilities'&&action.learnedState==='unknown')parts.push('Persönlicher Lernstand noch nicht automatisch auslesbar');
   return parts.join(' · ');
 }
 function plannerAlternativeHtml(action,currentSourceKey){
@@ -1332,6 +1333,7 @@ function plannerClearSelection(){
 }
 function plannerSelectAllVisible(data){
   for(const action of plannerVisibleActions(data)){
+    if(action.category==='class-abilities'&&action.learnedState==='unknown')continue;
     const offer=plannerCheapestKnownOffer(action);
     if(offer?.key)plannerState.selected.set(action.key,offer.key);
   }
@@ -1433,7 +1435,7 @@ function plannerCategoryFilters(data){
   const categories=Array.isArray(data?.categories)?data.categories:[];
   return '<fieldset class="planner-filters"><legend>Was soll berücksichtigt werden?</legend><div class="planner-filter-grid">'+categories.map(category=>
     '<label class="planner-filter"><input type="checkbox" data-location-category="'+esc(category.id)+'"'+(plannerState.categories.has(category.id)?' checked':'')+'><span><strong>'+esc(category.label)+'</strong><small>'+esc(category.actionCount??0)+' hier verfügbar</small></span></label>'
-  ).join('')+'</div><p>Alle Kategorien sind vorausgewählt. Es erscheinen ausschließlich vollständig bestätigte Erledigungen, die der Charakter jetzt an diesem Ort durchführen kann.</p></fieldset>';
+  ).join('')+'</div><p>Alle Kategorien sind vorausgewählt. Lehrer, Lernlevel und Angebot sind bestätigt. Klassenfähigkeiten mit noch nicht automatisch auslesbarem persönlichem Lernstand werden sichtbar gekennzeichnet und bei „Alle sichtbaren auswählen“ ausgelassen.</p></fieldset>';
 }
 function renderLocationPlanner(){
   if(!plannerRoot)return;
@@ -1457,8 +1459,16 @@ function renderLocationPlanner(){
   let characterSummary='';
   if(selectedCharacter){
     const professionText=(selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
-    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+'</div>'+
-      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>bestätigte Erledigungen an allen verfügbaren Orten</span></div></section>';
+    const learnedClassAbilities=Array.isArray(selectedCharacter.knownClassAbilities)?selectedCharacter.knownClassAbilities:[];
+    const learnedClassDetails=selectedCharacter.knownClassAbilitiesVerified
+      ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+'</summary><div class="planner-known-ability-list">'+
+        (learnedClassAbilities.length
+          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Zauber '+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+'</span>').join('')
+          :'<span><strong>Noch keine auslesbaren Klassenränge</strong></span>')+
+        '</div></details>'
+      :'<small>Bereits gelernte Klassenränge werden vom Charakterprofil derzeit nicht bereitgestellt.</small>';
+    characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+learnedClassDetails+'</div>'+
+      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
   }
   let body='';
   if(!plannerState.character){
@@ -1474,12 +1484,16 @@ function renderLocationPlanner(){
       ...npc,
       actions:(Array.isArray(npc.actions)?npc.actions:[]).filter(action=>visibleKeys.has(action.key))
     })).filter(npc=>npc.actions.length);
-    body=plannerCategoryFilters(data)+
+    const unverifiedClassCount=visible.filter(action=>action.category==='class-abilities'&&action.learnedState==='unknown').length;
+    const classStatusWarning=unverifiedClassCount
+      ?'<div class="planner-status-warning" role="note"><strong>Persönlicher Klassen-Lernstand offen</strong><span>'+unverifiedClassCount+' Klassenfähigkeit'+(unverifiedClassCount===1?'':'en')+' ist hier grundsätzlich lernbar, aber der persönliche Spellbook-Stand dieses Charakters wird von der Online-Profilquelle derzeit nicht geliefert. Diese Einträge werden deshalb nicht automatisch ausgewählt.</span></div>'
+      :'';
+    body=plannerCategoryFilters(data)+classStatusWarning+
       '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
       plannerSelectionHtml(data)+
       (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
         '<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
-      '<p class="planner-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a> · angezeigt werden nur in Forever bestätigte und aktuell erfüllbare Angebote.</p>';
+      '<p class="planner-credit">Datenquelle für Klassen-/Lehrer- und Berufsdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a>. Persönlicher Lernstand wird nur dann als bekannt behandelt, wenn er aus dem Charakterprofil tatsächlich ausgelesen wurde.</p>';
   }
   plannerRoot.innerHTML='<div class="planner-shell">'+controls+characterSummary+body+'</div>';
   plannerRoot.querySelector('#plannerCharacter')?.addEventListener('change',event=>{

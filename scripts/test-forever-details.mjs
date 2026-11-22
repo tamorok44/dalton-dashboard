@@ -26,7 +26,14 @@ const snapshot={
         reputations:[{faction:{id:72,name:'Stormwind',key:{href:'https://eu.api.blizzard.com/data/wow/reputation-faction/72?namespace=static-1.60.1_70399-forever-eu'}},standing:{raw:3100,value:100,max:6000,tier:4,name:'Freundlich'}}]
       }},
       quests:{ok:true,data:{in_progress:[{id:9001,name:'A Grand Adventure',key:{href:'https://eu.api.blizzard.com/data/wow/quest/9001?namespace=static-1.60.1_70399-forever-eu'}}]}},
-      completedQuests:{ok:true,data:{quests:[{id:8123},{id:9001},{id:8123}]}}
+      completedQuests:{ok:true,data:{quests:[{id:8123},{id:9001},{id:8123}]}},
+      spells:{ok:false,status:404,data:{detail:'Not Found'}},
+      spellbook:{ok:true,data:{
+        entries:[
+          {spell:{id:1459,name:'Arkane Intelligenz'},rank:'Rang 1'},
+          {spell_id:133,name:'Feuerball',rank_name:'Rang 2'}
+        ]
+      }}
     }
   }
 };
@@ -68,4 +75,18 @@ assert.equal(cole.reputationsVerified,true);
 assert.equal(cole.questsVerified,true);
 assert.deepEqual(cole.completedQuestIds,[8123,9001]);
 assert.equal(cole.completedQuestsVerified,true);
-console.log('Forever-Detaildaten: deutsche Rezepte, Talente, Ruf sowie offene und abgeschlossene Quests: OK');
+assert.equal(cole.knownClassAbilitiesVerified,true);
+assert.equal(cole.knownClassAbilitiesSource,'blizzard-spellbook');
+assert.deepEqual(cole.knownClassAbilities.map(entry=>entry.id),[133,1459]);
+assert.equal(cole.knownClassAbilities.find(entry=>entry.id===1459)?.name,'Arkane Intelligenz');
+
+const unavailable=enrichWithForeverDetails(source,{
+  snapshotAt:'2026-11-22T21:00:00.000Z',
+  characters:{'cole-dalton':{
+    spells:{ok:false,status:404,data:{}},
+    spellbook:{ok:false,status:404,data:{}}
+  }}
+});
+assert.equal(unavailable.characters[0].knownClassAbilitiesVerified,false);
+assert.deepEqual(unavailable.characters[0].knownClassAbilities,[]);
+console.log('Forever-Detaildaten: deutsche Rezepte, Talente, Ruf, Quests und persönlicher Spellbook-Status: OK');

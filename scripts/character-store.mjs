@@ -57,6 +57,15 @@ export function mergeProfiles(previous,latest){
     const old=bySlug.get(c.slug);
     if(!old)return c;
     if(c.scrapeOk===false)return {...old,scrapeOk:false,scrapeError:c.scrapeError};
+    if(c.knownClassAbilitiesVerified===false&&old.knownClassAbilitiesVerified===true){
+      return {
+        ...c,
+        knownClassAbilities:Array.isArray(old.knownClassAbilities)?old.knownClassAbilities:[],
+        knownClassAbilitiesVerified:false,
+        knownClassAbilitiesSource:old.knownClassAbilitiesSource||null,
+        knownClassAbilitiesCheckedAt:c.knownClassAbilitiesCheckedAt||old.knownClassAbilitiesCheckedAt||null
+      };
+    }
     return c;
   })};
 }

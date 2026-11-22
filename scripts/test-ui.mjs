@@ -615,6 +615,22 @@ ui.plannerState.selected.clear();
 ui.plannerSelectAllVisible(twoTargets);
 assert.equal(ui.plannerState.selected.size,2,'Tatsächlich verschiedene Lernziele bzw. Ränge bleiben separat auswählbar');
 assert.equal(ui.plannerSelectedActions(twoTargets).length,2,'Getrennte Ränge werden nicht miteinander dedupliziert');
+const unknownClassAction={
+  key:'class-spell:205',name:'Frostblitz · Rang 2',category:'class-abilities',requiredLevel:8,learnedState:'unknown',
+  source:{key:'npc:331',name:'Magierlehrer',role:'Lehrer',sourceType:'trainer',location:{zone:'Sturmwind'},priceCopper:200,priceSource:'forever-observed'},
+  alternatives:[]
+};
+const verifiedClassAction={...unknownClassAction,key:'class-spell:2136',name:'Feuerschlag · Rang 1',id:2136,learnedState:'not-known'};
+const classPlannerData={actions:[unknownClassAction,verifiedClassAction],categories:[{id:'class-abilities',label:'Klassenfähigkeiten'}]};
+ui.plannerState.categories=new Set(['class-abilities']);
+ui.plannerState.selected.clear();
+ui.plannerSelectAllVisible(classPlannerData);
+assert.equal(ui.plannerState.selected.has(unknownClassAction.key),false,'Unbekannter persönlicher Klassen-Lernstand wird nie automatisch ausgewählt');
+assert.equal(ui.plannerState.selected.has(verifiedClassAction.key),true,'Verifiziert noch nicht gelernter Klassenrang bleibt automatisch auswählbar');
+assert.ok(ui.plannerNpcHtml({key:'npc:331',name:'Magierlehrer',role:'Lehrer',location:{zone:'Sturmwind'}},classPlannerData,[unknownClassAction]).includes('Persönlicher Lernstand noch nicht automatisch auslesbar'),'Offener Klassen-Lernstand wird direkt am Lernziel sichtbar');
+ui.plannerState.categories=new Set(['profession-recipes','profession-training']);
+ui.plannerState.selected.clear();
+ui.plannerSelectAllVisible(twoTargets);
 const mixedSelectionHtml=ui.plannerSelectionHtml(twoTargets);
 assert.ok(mixedSelectionHtml.includes('Voraussichtliche Gesamtkosten'),'Classic-Preis kennzeichnet die Gesamtsumme als voraussichtlich');
 assert.ok(mixedSelectionHtml.includes('noch nicht in Forever bestätigten Classic-Preisen'),'Classic-Anteil der Gesamtsumme wird transparent ausgewiesen');

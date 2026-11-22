@@ -26,7 +26,7 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
       const slugs=latest.characters.map(c=>c.slug);
       const detailsSnapshot=await fetchForeverSnapshot(slugs,{
         locale:'de_DE',
-        endpointNames:['professions','specializations','reputations','quests','completedQuests']
+        endpointNames:['professions','specializations','reputations','quests','completedQuests','spells','spellbook']
       });
       const recipeRefs=collectKnownRecipeRefs(detailsSnapshot);
       const localizedRefs=collectLocalizedRefs(detailsSnapshot);

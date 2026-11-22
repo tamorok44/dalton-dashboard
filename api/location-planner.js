@@ -3,6 +3,7 @@ import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
 import {getForeverDbMasterRecipeIndex,cachedForeverDbProfessionMasters,cachedForeverDbVendor} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildLocationPlanner} from '../scripts/location-planner.mjs';
+import {cachedForeverDbClassMaster} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function queryUrl(req){
@@ -69,13 +70,19 @@ export default async function handler(req,res){
     const selectedProfessionSlugs=selectedCharacter
       ?workshopProfessionSlugs({characters:[selectedCharacter]})
       :[];
-    const professionMasters=selectedProfessionSlugs.length
-      ?await cachedForeverDbProfessionMasters(selectedProfessionSlugs,{build:recipeIndex?.build||null})
-      :{};
+    const [professionMasters,classMaster]=await Promise.all([
+      selectedProfessionSlugs.length
+        ?cachedForeverDbProfessionMasters(selectedProfessionSlugs,{build:recipeIndex?.build||null})
+        :{},
+      selectedCharacter?.classId
+        ?cachedForeverDbClassMaster(selectedCharacter.classId,{build:recipeIndex?.build||null})
+        :null
+    ]);
     let planner=buildLocationPlanner(stored.data,recipeIndex,{
       characterSlug:character,
       location,
-      professionMasters
+      professionMasters,
+      classMaster
     });
     if(planner.npcs?.length){
       const npcs=await Promise.all(planner.npcs.map(npc=>withNpcAvatar(npc,recipeIndex?.build||null)));
@@ -109,7 +116,10 @@ export default async function handler(req,res){
         professionRankWithSourceCount:professionRanks.filter(rank=>Array.isArray(rank?.sources)&&rank.sources.length).length,
         professionTrainerCount:professionTrainers.length,
         professionTrainerConfirmedCount:professionTrainers.filter(source=>source?.evidence==='forever-confirmed').length,
-        professionTrainerWithTitleCount:professionTrainers.filter(source=>source?.npcTitle).length
+        professionTrainerWithTitleCount:professionTrainers.filter(source=>source?.npcTitle).length,
+        classMasterConnected:Boolean(classMaster&&!classMaster.error),
+        classAbilityCount:Array.isArray(classMaster?.abilities)?classMaster.abilities.length:0,
+        classTrainerCount:Array.isArray(classMaster?.trainers)?classMaster.trainers.length:0
       },
       source:'ForeverDB.net'
     });

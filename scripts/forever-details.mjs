@@ -122,6 +122,46 @@ function completedQuestIds(data){
   )).filter(Boolean))].sort((a,b)=>a-b);
 }
 
+function classSpellCandidates(data){
+  const out=[];
+  function visit(value,path=[]){
+    if(Array.isArray(value)){
+      for(const entry of value)visit(entry,path);
+      return;
+    }
+    if(!value||typeof value!=='object')return;
+    const pathText=path.join('.').toLowerCase();
+    const nested=value.spell||value.ability||value.class_ability||value.classAbility||null;
+    const id=integer(
+      value.spell_id??value.spellId??value.ability_id??value.abilityId??
+      nested?.id??((/spell|ability|entry/.test(pathText))?value.id:null)
+    );
+    if(id){
+      out.push({
+        id,
+        name:value.name||nested?.name||null,
+        rank:value.rank??value.rank_name??value.rankName??nested?.rank??null
+      });
+    }
+    for(const [key,entry] of Object.entries(value)){
+      if(entry&&typeof entry==='object')visit(entry,[...path,key]);
+    }
+  }
+  visit(data,[]);
+  const byId=new Map();
+  for(const entry of out)if(entry.id&&!byId.has(entry.id))byId.set(entry.id,entry);
+  return [...byId.values()].sort((a,b)=>a.id-b.id);
+}
+function personalClassAbilities(endpoints={}){
+  for(const key of ['spellbook','spells']){
+    const endpoint=endpoints?.[key];
+    if(!endpoint?.ok)continue;
+    const abilities=classSpellCandidates(endpoint.data);
+    if(abilities.length)return {abilities,verified:true,source:'blizzard-'+key};
+  }
+  return {abilities:[],verified:false,source:null};
+}
+
 export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={},localizedNames={}){
   const bySlug=snapshot?.characters||{};
   return {
@@ -160,6 +200,19 @@ export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={},loca
       if(endpoints.completedQuests?.ok){
         next.completedQuestIds=completedQuestIds(endpoints.completedQuests.data);
         next.completedQuestsVerified=true;
+      }
+
+      const classAbilities=personalClassAbilities(endpoints);
+      if(classAbilities.verified){
+        next.knownClassAbilities=classAbilities.abilities;
+        next.knownClassAbilitiesVerified=true;
+        next.knownClassAbilitiesSource=classAbilities.source;
+        next.knownClassAbilitiesCheckedAt=snapshot?.snapshotAt||new Date().toISOString();
+      }else{
+        next.knownClassAbilities=asArray(character?.knownClassAbilities);
+        next.knownClassAbilitiesVerified=false;
+        next.knownClassAbilitiesSource=null;
+        next.knownClassAbilitiesCheckedAt=snapshot?.snapshotAt||new Date().toISOString();
       }
 
       return next;
