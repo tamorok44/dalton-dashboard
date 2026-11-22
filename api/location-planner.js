@@ -119,7 +119,8 @@ export default async function handler(req,res){
         professionTrainerWithTitleCount:professionTrainers.filter(source=>source?.npcTitle).length,
         classMasterConnected:Boolean(classMaster&&!classMaster.error),
         classAbilityCount:Array.isArray(classMaster?.abilities)?classMaster.abilities.length:0,
-        classTrainerCount:Array.isArray(classMaster?.trainers)?classMaster.trainers.length:0
+        classTrainerCount:Array.isArray(classMaster?.trainers)?classMaster.trainers.length:0,
+        classDiagnosticSchema:classMaster?.diagnosticSchema||null
       },
       source:'ForeverDB.net'
     });
