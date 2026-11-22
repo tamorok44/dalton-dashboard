@@ -40,15 +40,18 @@ const professionMasters={
   alchemy:{
     slug:'alchemy',name:'Alchemie',
     ranks:[
-      {id:1,name:'Lehrling',skillCap:75,requiredSkill:1,requiredLevel:5,sources:[]},
-      {id:2,name:'Geselle',skillCap:150,requiredSkill:null,requiredLevel:10,priceCopper:500,sources:[trainer(20,'Alchemielehrer','Stormwind',500)]}
+      {id:1,name:null,skillCap:75,requiredSkill:null,requiredLevel:null,sources:[]},
+      {id:2,name:null,skillCap:150,requiredSkill:null,requiredLevel:null,priceCopper:null,sources:[]}
+    ],
+    trainers:[
+      trainer(20,"Tel'Athir",'Stormwind',null,{npcTitle:'Journeyman Alchemist'})
     ]
   },
   cooking:{
     slug:'cooking',name:'Kochkunst',
     ranks:[
       {id:3,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,sources:[]},
-      {id:4,name:'Experte',skillCap:225,requiredSkill:null,requiredLevel:20,priceCopper:10000,sources:[expertCookbookSource]}
+      {id:4,name:'Experte',skillCap:225,requiredSkill:null,requiredLevel:null,priceCopper:10000,sources:[expertCookbookSource]}
     ]
   }
 };
@@ -78,6 +81,12 @@ assert.equal(stormwind.actions.some(action=>action.type==='profession-training'&
   'Jetzt mögliche Berufsausbildung wird aufgenommen, wenn Rang, Level und Quelle belegt sind');
 assert.equal(stormwind.actions.find(action=>action.type==='profession-training'&&action.profession==='Alchemie')?.requiredSkill,50,
   'Geselle verwendet bei fehlendem API-Mindestskill den belegten Classic-Trainerwert 50');
+const journeymanAlchemy=stormwind.actions.find(action=>action.type==='profession-training'&&action.profession==='Alchemie');
+assert.equal(journeymanAlchemy?.requiredLevel,10,
+  'Geselle verwendet bei fehlendem API-Level den dokumentierten Classic-Trainerwert 10');
+assert.equal(journeymanAlchemy?.requiredLevelSource,'classic-trainer');
+assert.equal(journeymanAlchemy?.source.name,"Tel'Athir",
+  'Der reale ForeverDB-Fall mit leerem Rangdatensatz und Journeyman-Lehrertitel bleibt lernbar');
 assert.equal(stormwind.actions.some(action=>action.category==='class-abilities'),true,'Verifizierte externe Klassenaktion kann vom gemeinsamen Resolver aufgenommen werden');
 assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCount])),{
   'class-abilities':1,
@@ -88,6 +97,11 @@ assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCo
 assert.equal(stormwind.counts.knownPrices,6);
 assert.equal(stormwind.counts.unknownPrices,0);
 
+const level9Data={...data,characters:[{...baseCharacter,level:9}]};
+const level9=buildLocationPlanner(level9Data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions});
+assert.equal(level9.actions.some(action=>action.type==='profession-training'&&action.profession==='Alchemie'),false,
+  'Journeyman-Alchemie bleibt unter Charakterlevel 10 trotz Skill 58 ausgeblendet');
+
 const level20Data={...data,characters:[{...baseCharacter,level:20}]};
 const level20=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',professionMasters,extraActions});
 assert.ok(level20.locations.some(location=>location.name==='Eschental'),
@@ -96,6 +110,7 @@ const ashenvale=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalt
 const expertCooking=ashenvale.actions.find(action=>action.type==='profession-training'&&action.profession==='Kochkunst');
 assert.ok(expertCooking,'Expertenkochbuch erscheint ab Level 20 und Kochkunst 125+');
 assert.equal(expertCooking.requiredLevel,20);
+assert.equal(expertCooking.requiredLevelSource,'classic-trainer');
 assert.equal(expertCooking.requiredSkill,125);
 assert.equal(expertCooking.source.name,'Shandrina');
 
