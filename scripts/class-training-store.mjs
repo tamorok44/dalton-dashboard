@@ -163,7 +163,7 @@ function normalizeRank(raw={},ability={},classTrainers=[]){
   const id=integer(first(raw.id,raw.spellId,raw.spell_id,spell.id));
   const name=firstText(raw.name,spell.name,ability.name)||'Klassenfähigkeit';
   const rank=firstText(raw.rank,raw.rankName,raw.rank_name,spell.rank)||null;
-  const requiredLevel=firstNumber(raw.learnAtLevel,raw.learn_at_level,raw.learnedAtLevel,raw.learned_at_level,raw.requiredLevel,raw.required_level,raw.level,spell.requiredLevel,spell.required_level);
+  const requiredLevel=firstNumber(raw.learnAtLevel,raw.learn_at_level,raw.learnedAtLevel,raw.learned_at_level,raw.learnedLevel,raw.learned_level,raw.learnLevel,raw.learn_level,raw.requiredLevel,raw.required_level,raw.level,spell.requiredLevel,spell.required_level);
   const directPrice=firstNumber(raw.trainerCost,raw.trainer_cost,raw.trainingCost,raw.training_cost,raw.priceCopper,raw.price_copper);
   const abilityPrice=firstNumber(ability.trainerCost,ability.trainer_cost,ability.trainingCost,ability.training_cost);
   const finalPrice=directPrice??abilityPrice;
@@ -187,7 +187,7 @@ function normalizeRank(raw={},ability={},classTrainers=[]){
   };
 }
 function trainerAbility(raw={}){
-  const type=lower(firstText(raw.type,raw.kind,raw.learnedFromType,raw.learned_from_type,raw.sourceType,raw.source_type));
+  const type=lower(firstText(raw.type,raw.kind,typeof raw.learnedFrom==='string'?raw.learnedFrom:null,typeof raw.learned_from==='string'?raw.learned_from:null,raw.learnedFromType,raw.learned_from_type,raw.sourceType,raw.source_type));
   if(/talent|quest|book|rune|racial|passive|learned elsewhere/.test(type))return false;
   if(/trainer|class trainer|ausbilder|lehrer/.test(type))return true;
   if(raw.trainer===true||raw.isTrainer===true||raw.is_trainer===true)return true;
