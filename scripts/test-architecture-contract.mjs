@@ -111,6 +111,12 @@ assert.ok(sourceByFile.has('api/location-planner.js'),'Location planner API is r
 assert.ok(sourceByFile.has('scripts/location-planner.mjs'),'Location planner core is required');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Location planner must reuse the persistent Workshop recipe master');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must use a build-scoped profession-training master without rebuilding the recipe catalog');
+assert.ok(sourceByFile.has('scripts/class-training-store.mjs'),'Central class-training master is required');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbClassMaster'),'Location planner must load the shared build-scoped class master');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('classTrainingActions'),'Location planner must derive class training centrally instead of injecting ad-hoc rows');
+assert.ok((sourceByFile.get('scripts/refresh-service.mjs')||'').includes("'spells','spellbook'"),'Character refresh must probe personal spellbook-capable Forever profile endpoints');
+assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes('knownClassAbilitiesVerified'),'Personal learned class ranks need an explicit verification flag');
+assert.ok((sourceByFile.get('app.js')||'').includes("action.category==='class-abilities'&&action.learnedState==='unknown'")&&(sourceByFile.get('app.js')||'').includes('continue;'),'Bulk selection must skip class ranks whose personal learned state is unknown');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("source?.evidence==='forever-confirmed'"),'Location planner must fail closed to Forever-confirmed NPC sources');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('currentSkill<requiredSkill||level<requiredLevel'),'Location planner must reject profession rank training when skill or character level is not met');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('fallbackProfessionRankRequiredSkill'),'Profession rank skill fallbacks must stay isolated from normal recipe learning');
@@ -120,7 +126,9 @@ assert.ok(policy.includes('4 S 50 K (Geselle), 50 S (Experte) und 4 G 50 S (Fach
 assert.ok(policy.includes('Level-Fallbacks werden nur für die dort konkret dokumentierten Berufs-/Rangkombinationen hinterlegt'),'Profession rank level fallbacks must stay explicitly bounded in the architecture contract');
 assert.ok((sourceByFile.get('scripts/workshop-foreverdb.mjs')||'').includes('sideFromEntry'),'ForeverDB NPC faction fields must be normalized before location planning');
 assert.ok(policy.includes('Geselle 50, Experte 125'),'Classic profession-rank fallback thresholds must stay explicitly bounded in the architecture contract');
-assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.verified===true")&&(sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.availableNow===true"),'Class and companion actions must be explicitly verified and currently available');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.verified===true")&&(sourceByFile.get('scripts/location-planner.mjs')||'').includes("action?.availableNow===true"),'Externally injected companion actions must be explicitly verified and currently available');
+assert.ok(policy.includes('Level allein darf niemals als Beweis'),'Personal class-spell knowledge must never be inferred from character level');
+assert.ok(policy.includes('Bereits gelernte Klassenränge werden')&&policy.includes('sichtbar dokumentiert'),'Verified learned class ranks must be visible, not only used as an internal filter');
 assert.ok(policy.includes('Ein Lernziel besitzt genau eine stabile Erledigungs-ID'),'Location planner must distinguish one learning target from multiple NPC offers');
 assert.ok(policy.includes('ein stilles Opt-out ist verboten'),'Manual vendor switches must require explicit confirmation');
 assert.ok(policy.includes('direkt am neu angeklickten Angebot sichtbar'),'Vendor-switch confirmation must remain visible at the clicked offer in long lists');
