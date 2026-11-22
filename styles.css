@@ -1040,11 +1040,11 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 @media(max-width:520px){.workshop-material-grid{grid-template-columns:minmax(0,1fr)}.workshop-node-title{display:grid}.workshop-node-status{text-align:left}.workshop-tree-children{margin-left:9px;padding-left:10px}.workshop-learning-candidate{display:grid}.workshop-learning-state{justify-self:start}.workshop-source-evidence{margin-left:0}}
 
 
-/* Berufsplaner — Fortschrittsansicht auf Basis des bestehenden Werkstatt-Masters. */
+/* Ortsplaner — ortsbezogene, aktuell ausführbare Erledigungen auf gemeinsamen Masterdaten. */
 .planner-view{min-width:0;max-width:100%;min-height:420px;overflow:visible}
-#plannerContent,.planner-shell,.planner-controls,.planner-character,.planner-location-summary,.planner-selection,.planner-vendor{min-width:0;max-width:100%}
+#plannerContent,.planner-shell,.planner-controls,.planner-character,.planner-filters,.planner-location-summary,.planner-selection,.planner-vendor{min-width:0;max-width:100%}
 .planner-shell{display:grid;gap:16px}
-.planner-controls,.planner-character,.planner-location-summary,.planner-selection,.planner-vendor{
+.planner-controls,.planner-character,.planner-filters,.planner-location-summary,.planner-selection,.planner-vendor{
   padding:16px;border:1px solid var(--line);border-radius:7px;
   background:linear-gradient(118deg,color-mix(in srgb,var(--night) 94%,var(--wood)),color-mix(in srgb,var(--ink) 92%,var(--night)));
   box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 65%,transparent)
@@ -1062,6 +1062,20 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .planner-character-count{display:grid;justify-items:end;gap:2px;flex:0 0 min(220px,42%);text-align:right}
 .planner-character-count strong{color:var(--gold);font:var(--weight-h2) var(--type-h2)/1 var(--display);font-variant-numeric:tabular-nums}
 .planner-character-count span{color:var(--muted);font-size:var(--type-caption);line-height:1.4}
+.planner-filters{display:grid;gap:10px}
+.planner-filters legend{padding:0 4px;color:var(--cream);font:var(--weight-label) var(--type-small)/1.35 var(--body)}
+.planner-filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
+.planner-filter{display:flex;align-items:flex-start;gap:8px;min-width:0;padding:9px 10px;border:1px solid color-mix(in srgb,var(--gold-deep) 38%,transparent);border-radius:5px;background:color-mix(in srgb,var(--ink) 48%,transparent);cursor:pointer}
+.planner-filter:has(input:checked){border-color:color-mix(in srgb,var(--gold) 52%,transparent);background:color-mix(in srgb,var(--gold) 8%,var(--ink))}
+.planner-filter input{width:17px;height:17px;margin:1px 0 0;accent-color:var(--gold);flex:none}
+.planner-filter span{display:grid;gap:2px;min-width:0}
+.planner-filter strong{color:var(--cream);font-size:var(--type-small);overflow-wrap:anywhere}
+.planner-filter small,.planner-filters>p{color:var(--muted);font-size:var(--type-caption);line-height:1.4}
+.planner-filters>p{margin:0}
+.planner-npc-heading{display:flex;align-items:center;gap:11px;min-width:0}
+.planner-npc-heading>div{min-width:0}
+.planner-npc-avatar{width:48px;height:48px;flex:0 0 48px;border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:50%;object-fit:cover;background:color-mix(in srgb,var(--wood) 35%,var(--night))}
+.planner-action-category{width:max-content;max-width:100%;padding:2px 5px;border:1px solid color-mix(in srgb,var(--gold-deep) 32%,transparent);border-radius:3px;color:var(--gold);font:var(--weight-label) var(--type-caption)/1.25 var(--body);letter-spacing:.02em;overflow-wrap:anywhere}
 .planner-placeholder{display:grid;gap:5px;padding:28px 18px;border:1px dashed color-mix(in srgb,var(--gold-deep) 45%,transparent);border-radius:6px;color:var(--muted);text-align:center;background:color-mix(in srgb,var(--ink) 45%,transparent)}
 .planner-placeholder strong{color:var(--paper)}
 .planner-placeholder span{font-size:var(--type-small);line-height:1.45}
@@ -1117,12 +1131,14 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   .main-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
   .planner-controls{grid-template-columns:minmax(0,1fr)}
   .planner-fields{grid-template-columns:minmax(0,1fr)}
+  .planner-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .planner-character,.planner-location-summary,.planner-selection-head{display:grid}
   .planner-character-count{justify-items:start;max-width:100%;text-align:left}
   .planner-list-actions{justify-content:flex-start}
   .planner-total{justify-items:start;text-align:left}
 }
 @media(max-width:520px){
+  .planner-filter-grid{grid-template-columns:minmax(0,1fr)}
   .planner-recipe-choice{grid-template-columns:auto minmax(0,1fr)}
   .planner-recipe-price{grid-column:2;justify-self:start}
   .planner-vendor-head,.planner-route-head{display:grid}
