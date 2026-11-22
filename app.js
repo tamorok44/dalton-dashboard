@@ -754,20 +754,24 @@ const charactersView=document.querySelector('#charactersView');
 const compareView=document.querySelector('#compareView');
 const workshopRoot=document.querySelector('#workshopContent');
 const workshopView=document.querySelector('#workshopView');
+const plannerRoot=document.querySelector('#plannerContent');
+const plannerView=document.querySelector('#plannerView');
 function setMainView(view){
-  const compare=view==='compare',workshop=view==='workshop';
-  charactersView.hidden=compare||workshop;
+  const compare=view==='compare',workshop=view==='workshop',planner=view==='planner';
+  charactersView.hidden=compare||workshop||planner;
   compareView.hidden=!compare;
   workshopView.hidden=!workshop;
+  plannerView.hidden=!planner;
   document.querySelectorAll('[data-view-link]').forEach(a=>{
     const on=a.dataset.viewLink===view;a.classList.toggle('is-active',on);
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   });
   if(compare)renderComparison();
   if(workshop)loadWorkshopOverview();
+  if(planner)loadProfessionPlanner();
 }
 function syncMainView(){
-  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':'characters';
+  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':location.hash==='#berufsplaner'?'planner':'characters';
   setMainView(view);
 }
 window.addEventListener('hashchange',syncMainView);
