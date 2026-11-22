@@ -91,6 +91,10 @@ globalThis.fetch=async (url,options={})=>{
   }
   const sourceUrl=String(url);
   if(sourceUrl.includes('worldofwarcraft.blizzard.com/en-us/news/24315281'))return {ok:true,status:200,text:async()=>'<li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li>'};
+  if(sourceUrl.includes('us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes'))return {ok:true,status:200,text:async()=>`Pets now correctly benefit from Expertise.
+Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.`};
+  if(sourceUrl.includes('4evrbugs.com/bug/556'))return {ok:true,status:200,text:async()=>`White swings get none of the crit inherited from the hunter. Claw and Bite crit at about the Hunter's crit chance.`};
+  if(sourceUrl.includes('foreverdb.net/changelog'))return {ok:true,status:200,text:async()=>`Build changelog. Build 1.60.1.71037 is on the site now.`};
   if(sourceUrl.includes('wowhead.com/forever/guide/classes/hunter/survival'))return {ok:true,status:200,text:async()=>`Stamina: Every 1 player Stamina gives the pet 2 Health.
 Armor: Pet gains 30% of the player's Armor.
 Attack Power: Pet gains 10% of the player's highest Attack Power source.
@@ -142,6 +146,10 @@ try{
   assert.ok(petRulesSaved,'Redis contains a durable Pet rule state');
   assert.equal(result.payload.petRules.overall,'verified','Rule guard is checked before the profile refresh');
   assert.equal(result.payload.petRules.rules['pet.scaling'].evidence,'reference_model');
+  assert.equal(result.payload.petRules.rules['pet.crit.inheritance'].evidence,'official');
+  assert.equal(result.payload.petRules.rules['pet.expertise'].evidence,'official');
+  assert.equal(result.payload.petRules.rules['pet.autoswing.crit'].evidence,'measured');
+  assert.equal(result.payload.petRules.sources.foreverDbBuild.build,'1.60.1.71037');
   assert.ok(Array.isArray(result.payload.petRules.history)&&result.payload.petRules.history.length>0,'Rule state transitions are persisted and exposed');
   assert.ok(result.payload.changes>0,'Manual refresh reports meaningful changes');
   assert.equal(history.length,1,'Manual refresh appends one change batch');

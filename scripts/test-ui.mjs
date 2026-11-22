@@ -216,17 +216,20 @@ const verifiedPetCatalog={
   }
 };
 const verifiedPetRules={
-  rulebookVersion:'2026.11.21.3',checkedAt:'2026-11-21T04:07:00.000Z',overall:'verified',
+  rulebookVersion:'2026.11.22.1',checkedAt:'2026-11-22T04:07:00.000Z',overall:'verified',
   rules:{
-    'fox.family.profile':{status:'verified',version:2,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
-    'fox.training':{status:'verified',version:2,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
-    'pet.scaling':{status:'verified',version:3,evidence:'reference_model',evidenceLabel:'Referenzmodell',evidenceNote:'Serverkoeffizient nicht direkt veröffentlicht'},
-    'pet.focus':{status:'verified',version:2,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
+    'fox.family.profile':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
+    'fox.training':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
+    'pet.scaling':{status:'verified',version:4,evidence:'reference_model',evidenceLabel:'Referenzmodell',evidenceNote:'Serverkoeffizient nicht direkt veröffentlicht'},
+    'pet.crit.inheritance':{status:'verified',version:1,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Höherer Nah-/Fernkampf-Kritwert als Quelle'},
+    'pet.autoswing.crit':{status:'verified',version:1,evidence:'measured',evidenceLabel:'Gemessen',evidenceNote:'White-Swing-Abweichung kontrolliert gemessen'},
+    'pet.expertise':{status:'verified',version:1,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Pets profitieren von Expertise; kein numerischer Faktor'},
+    'pet.focus':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
     'pet.health.global':{status:'verified',version:2,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Blizzard-Hotfix'}
   },
   history:[
-    {at:'2026-11-21T04:07:00.000Z',type:'rulebook_version',fromRulebookVersion:'2026.11.21.2',toRulebookVersion:'2026.11.21.3'},
-    {at:'2026-11-21T04:07:00.000Z',type:'rule_state',ruleId:'pet.scaling',label:'Jägerbegleiter-Skalierung',fromStatus:'verified',toStatus:'verified',fromEvidence:'client',toEvidence:'reference_model'}
+    {at:'2026-11-22T04:07:00.000Z',type:'rulebook_version',fromRulebookVersion:'2026.11.21.3',toRulebookVersion:'2026.11.22.1'},
+    {at:'2026-11-22T04:07:00.000Z',type:'rule_state',ruleId:'pet.scaling',label:'Jägerbegleiter-Skalierungskoeffizienten',fromStatus:'verified',toStatus:'verified',fromEvidence:'reference_model',toEvidence:'reference_model'}
   ]
 };
 ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
@@ -252,7 +255,9 @@ assert.ok(!petPanel.includes('noch nicht aus der Pet-Datenquelle angebunden'),'N
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
 assert.ok(combat.includes('Rüstung aus Dolly')&&combat.includes('>+76,8<'),'30% of 256 Armor is shown as 76.8 before server rounding');
-assert.ok(combat.includes('Kritische Trefferchance aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'Source-backed crit label is used for pet inheritance');
+assert.ok(combat.includes('Vererbte Krit-Komponente aus Dolly')&&combat.includes('>+5,07 %-Pkt.<'),'Crit is shown only as an inherited component');
+assert.ok(!combat.includes('Kritische Trefferchance aus Dolly'),'Inherited crit must not be presented as the effective pet crit chance');
+assert.ok(combat.includes('tatsächliche Krit-Chance der Autoangriffe wird daraus nicht abgeleitet'),'Autoattack crit remains semantically separate from inherited crit');
 assert.ok(combat.includes('Forever-Gesundheitsfaktor')&&combat.includes('>115 %<'),'Official 115% global pet health factor is shown');
 assert.ok(combat.includes('Belastbarkeit-Ausbildung')&&combat.includes('>Rang 1<')&&combat.includes('um 3%'),'Live Endurance Training rank is shown from Blizzard talent data');
 assert.ok(combat.includes('Maximaler Fokus')&&combat.includes('>150<'),'Verified maximum Focus is shown');
@@ -260,6 +265,7 @@ assert.ok(combat.includes('Fokusregeneration')&&combat.includes('>+10/Sek.<'),'V
 assert.ok(combat.includes('Angriffskraft aus Dolly')&&combat.includes('Nahkampf-/Fernkampf-Angriffskraft'),'AP inheritance remains blocked without an unambiguous highest AP source');
 assert.ok(!combat.includes('Referenzmodell')&&!combat.includes('Clientdaten')&&!combat.includes('Offiziell'),'Combat panel does not expose technical evidence categories');
 assert.ok(combat.includes('Warum fehlen Gesamtleben, Gesamtrüstung und DPS?'),'Combat panel explains the strict calculation boundary');
+assert.ok(combat.includes('Trefferchance und Expertise')&&combat.includes('Autoangriffe'),'Hit, expertise and white-swing crit stay outside unsupported total calculations');
 const derived=hunterPetCombatProfile(petDolly);
 assert.equal(derived.inherited.health.value,60);
 assert.equal(derived.inherited.armor.value,76.8);
@@ -277,6 +283,9 @@ blockedRules.overall='review_required';
 blockedRules.rules['fox.family.profile'].status='review_required';
 blockedRules.rules['fox.training'].status='review_required';
 blockedRules.rules['pet.scaling'].status='review_required';
+blockedRules.rules['pet.crit.inheritance'].status='review_required';
+blockedRules.rules['pet.autoswing.crit'].status='review_required';
+blockedRules.rules['pet.expertise'].status='review_required';
 blockedRules.rules['pet.focus'].status='review_required';
 blockedRules.rules['pet.health.global'].status='review_required';
 ui.render(petData,{petRules:blockedRules,petCatalog:verifiedPetCatalog});
@@ -289,8 +298,16 @@ assert.ok(!blockedPetPanel.includes('<small>Schaden</small>'),'Blocked rule-deri
 assert.ok(!blockedPetPanel.includes('Gesundheit aus Dolly'),'Blocked scaling rule hides inherited calculations');
 assert.ok(!blockedPetPanel.includes('>115 %<'),'Blocked health rule hides the global health factor');
 assert.ok(!blockedPetPanel.includes('Maximaler Fokus'),'Blocked focus rule hides focus mechanics');
+const critSourceBlocked=structuredClone(verifiedPetRules);
+critSourceBlocked.overall='review_required';
+critSourceBlocked.rules['pet.crit.inheritance'].status='review_required';
+ui.render(petData,{petRules:critSourceBlocked,petCatalog:verifiedPetCatalog});
+const critBlockedPanel=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
+assert.ok(critBlockedPanel.includes('Gesundheit aus Dolly')&&critBlockedPanel.includes('Rüstung aus Dolly'),'Independent scaling contributions remain visible when only the official crit-source rule is blocked');
+assert.ok(!critBlockedPanel.includes('Vererbte Krit-Komponente aus Dolly'),'Crit component fails closed independently when its official source rule is blocked');
+
 const staleRuleVersion=structuredClone(verifiedPetRules);
-staleRuleVersion.rulebookVersion='2026.11.21.2';
+staleRuleVersion.rulebookVersion='2026.11.21.3';
 ui.render(petData,{petRules:staleRuleVersion,petCatalog:verifiedPetCatalog});
 const staleVersionPanel=ui.hunterPetsPanel(petDolly);
 assert.ok(staleVersionPanel.includes('Einige Begleiterwerte sind vorübergehend nicht verfügbar'),'A stale rulebook version is never trusted by the new frontend');

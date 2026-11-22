@@ -4,6 +4,14 @@ import {PET_RULEBOOK_VERSION,verifyPetRulebook,publicPetRuleState} from './pet-r
 const pages={
   'worldofwarcraft.blizzard.com/en-us/news/24315281':`
     <main><li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li></main>`,
+  'us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes':`
+    <main>Pets now correctly benefit from Expertise.
+    Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.</main>`,
+  '4evrbugs.com/bug/556':`
+    <main>White swings get none of the crit inherited from the hunter.
+    Claw and Bite crit at about the Hunter's crit chance.</main>`,
+  'foreverdb.net/changelog':`
+    <main>Build changelog. Build 1.60.1.71037 is on the site now.</main>`,
   'wowhead.com/forever/guide/classes/hunter/survival/overview-pve-dps':`
     <main>Stamina: Every 1 player Stamina gives the pet 2 Health.
     Armor: Pet gains 30% of the player's Armor.
@@ -55,22 +63,26 @@ function fetchFrom(currentPages,failPart=null){
     return {ok:true,status:200,text:async()=>currentPages[key]};
   };
 }
-const now=new Date('2026-11-21T04:07:00.000Z');
+const now=new Date('2026-11-22T04:07:00.000Z');
 const first=await verifyPetRulebook({fetchImpl:fetchFrom(pages),now});
 assert.equal(first.rulebookVersion,PET_RULEBOOK_VERSION);
 assert.equal(first.overall,'verified');
-assert.equal(Object.keys(first.rules).length,5);
+assert.equal(Object.keys(first.rules).length,8);
 assert.ok(Object.values(first.rules).every(rule=>rule.status==='verified'));
 assert.ok(Object.values(first.sources).every(source=>source.status==='verified'));
 assert.equal(first.sources.bindFox.build,'1.60.1.70959');
+assert.equal(first.sources.efficientPets.build,'70959');
+assert.equal(first.sources.foreverDbBuild.build,'1.60.1.71037');
 assert.equal(first.rules['pet.scaling'].evidence,'reference_model');
 assert.equal(first.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
+assert.equal(first.rules['pet.crit.inheritance'].evidence,'official');
+assert.equal(first.rules['pet.expertise'].evidence,'official');
+assert.equal(first.rules['pet.autoswing.crit'].evidence,'measured');
 assert.equal(first.rules['pet.focus'].evidence,'client');
 assert.equal(first.rules['pet.health.global'].evidence,'official');
 assert.equal(first.rules['fox.family.profile'].evidence,'client');
-assert.equal(first.sources.efficientPets.build,'70959');
 
-const same=await verifyPetRulebook({fetchImpl:fetchFrom(pages),previousState:first,now:new Date('2026-11-22T04:07:00.000Z')});
+const same=await verifyPetRulebook({fetchImpl:fetchFrom(pages),previousState:first,now:new Date('2026-11-22T05:07:00.000Z')});
 assert.equal(same.overall,'verified','Unchanged rule evidence stays verified');
 assert.equal(same.sources.blizzardHotfix.baselineDigest,first.sources.blizzardHotfix.baselineDigest);
 
@@ -78,38 +90,57 @@ const changedHotfix={...pages,
   'worldofwarcraft.blizzard.com/en-us/news/24315281':pages['worldofwarcraft.blizzard.com/en-us/news/24315281']+
     '<li>Hunter pets now gain a different amount of Armor from their owner.</li>'
 };
-const changed=await verifyPetRulebook({fetchImpl:fetchFrom(changedHotfix),previousState:first,now:new Date('2026-11-22T04:07:00.000Z')});
+const changed=await verifyPetRulebook({fetchImpl:fetchFrom(changedHotfix),previousState:first,now:new Date('2026-11-22T06:07:00.000Z')});
 assert.equal(changed.sources.blizzardHotfix.status,'review_required','New pet hotfix evidence freezes the old baseline');
 assert.equal(changed.overall,'review_required');
-assert.ok(Object.values(changed.rules).every(rule=>rule.status==='review_required'),'Official pet hotfix blocks all dependent derived rules');
+for(const id of ['fox.family.profile','fox.training','pet.scaling','pet.crit.inheritance','pet.expertise','pet.focus','pet.health.global']){
+  assert.equal(changed.rules[id].status,'review_required',id+' is blocked by a changed official pet hotfix baseline');
+}
+assert.equal(changed.rules['pet.autoswing.crit'].status,'verified','Independent controlled measurement remains available');
 
 const changedBuild={...pages,
-  'bindonforever.com/pets/fox':pages['bindonforever.com/pets/fox'].replace('1.60.1.70959','1.60.1.71000')
+  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replace('1.60.1.71037','1.60.1.71038')
 };
-const buildState=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild),previousState:first,now:new Date('2026-11-22T04:07:00.000Z')});
-assert.equal(buildState.sources.bindFox.status,'review_required','A new game-data build needs explicit review');
-assert.equal(buildState.rules['fox.family.profile'].status,'review_required');
-assert.equal(buildState.rules['fox.training'].status,'review_required');
+const buildState=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild),previousState:first,now:new Date('2026-11-22T07:07:00.000Z')});
+assert.equal(buildState.sources.foreverDbBuild.status,'review_required','A new current client build needs explicit review');
+for(const id of ['fox.family.profile','fox.training','pet.scaling','pet.focus']){
+  assert.equal(buildState.rules[id].status,'review_required',id+' is tied to the reviewed client build');
+}
+assert.equal(buildState.rules['pet.health.global'].status,'verified','Official health hotfix remains valid across a pure client-build change');
+assert.equal(buildState.rules['pet.crit.inheritance'].status,'verified','Official crit source rule is not downgraded by the build gate alone');
+assert.equal(buildState.rules['pet.expertise'].status,'verified','Official expertise mechanism is not downgraded by the build gate alone');
 
-const unavailable=await verifyPetRulebook({fetchImpl:fetchFrom(pages,'wowhead.com'),previousState:first,now:new Date('2026-11-22T04:07:00.000Z')});
+const unavailable=await verifyPetRulebook({fetchImpl:fetchFrom(pages,'wowhead.com'),previousState:first,now:new Date('2026-11-22T08:07:00.000Z')});
 assert.equal(unavailable.sources.wowheadScaling.status,'source_unavailable');
 assert.equal(unavailable.rules['pet.scaling'].status,'source_unavailable');
 assert.equal(unavailable.rules['pet.focus'].status,'verified','Focus remains available because it has independent sources');
 assert.equal(unavailable.rules['fox.family.profile'].status,'verified','Independent verified rules stay available');
+assert.equal(unavailable.rules['pet.crit.inheritance'].status,'verified','Official crit-source rule does not depend on Wowhead');
 
 const focusUnavailable=await verifyPetRulebook({
   fetchImpl:fetchFrom(pages,'raw.githubusercontent.com'),
   previousState:first,
-  now:new Date('2026-11-22T04:07:00.000Z')
+  now:new Date('2026-11-22T09:07:00.000Z')
 });
 assert.equal(focusUnavailable.sources.foreverSimFocusAudit.status,'source_unavailable');
 assert.equal(focusUnavailable.rules['pet.focus'].status,'source_unavailable','Focus fails closed when a required audit source is unavailable');
 assert.equal(focusUnavailable.rules['pet.scaling'].status,'verified','Scaling remains independently verified');
 
+const measurementUnavailable=await verifyPetRulebook({
+  fetchImpl:fetchFrom(pages,'4evrbugs.com'),
+  previousState:first,
+  now:new Date('2026-11-22T10:07:00.000Z')
+});
+assert.equal(measurementUnavailable.rules['pet.autoswing.crit'].status,'source_unavailable');
+assert.equal(measurementUnavailable.rules['pet.crit.inheritance'].status,'verified','Official crit inheritance source remains independent from the measured white-swing discrepancy');
+
 const client=publicPetRuleState(first);
 assert.equal(client.overall,'verified');
 assert.ok(!('digest' in client.sources.blizzardHotfix),'Internal fingerprints are never exposed to the browser');
 assert.equal(client.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
+assert.equal(client.rules['pet.crit.inheritance'].evidenceLabel,'Offiziell');
+assert.equal(client.rules['pet.autoswing.crit'].evidenceLabel,'Gemessen');
+assert.equal(client.rules['pet.expertise'].evidenceLabel,'Offiziell');
 assert.equal(client.rules['pet.focus'].evidenceLabel,'Clientdaten');
 assert.equal(client.rules['pet.health.global'].evidenceLabel,'Offiziell');
-console.log('Pet-Regelwerk: Skalierung, Fokus, Buildwechsel, Hotfix-Änderung und Fail-closed-Verhalten: OK');
+console.log('Pet-Regelwerk: Skalierung, Crit-Quelle, Autoattack-Crit, Expertise, Fokus, Buildwechsel und Fail-closed-Verhalten: OK');
