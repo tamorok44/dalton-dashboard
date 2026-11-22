@@ -70,7 +70,11 @@ function publicLearningRecipe(recipe){
     requiredSkill:recipe.requiredSkill??null,
     requiredCharacterLevel:recipe.requiredCharacterLevel??null,
     learningRequirementsVerified:recipe.learningRequirementsVerified===true,
-    learning:{automatic:recipe.learning?.automatic===true}
+    learning:{
+      automatic:recipe.learning?.automatic===true,
+      trainerCostCopper:recipe.learning?.trainerCostCopper??null,
+      trainerCostSource:recipe.learning?.trainerCostSource||null
+    }
   };
 }
 function publicLearningCandidate(candidate){
@@ -106,6 +110,7 @@ function publicLearningSource(source){
     }:null,
     evidence:source.evidence||'unknown',
     priceCopper:source.priceCopper??null,
+    priceSource:source.priceSource||null,
     pricePerItem:source.pricePerItem??null,
     stack:source.stack??null,
     limitedStock:source.limitedStock??null,

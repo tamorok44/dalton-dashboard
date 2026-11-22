@@ -977,10 +977,16 @@ function workshopSourceHtml(source){
     ?Number(location.x).toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+Number(location.y).toLocaleString('de-DE',{maximumFractionDigits:1})
     :'';
   const where=[location.zone,coords,location.instance].filter(Boolean).join(' · ');
+  const priceSource=source.priceSource==='forever-observed'
+    ?'Forever-Preis'
+    :source.priceSource==='classic'
+      ?'Classic-Preis · noch nicht in Forever bestätigt'
+      :source.priceSource==='unknown'?'Preisquelle nicht bestätigt':'';
   const details=[
     source.side?workshopSideLabels[source.side]||source.side:'',
     where,
     Number.isFinite(Number(source.priceCopper))?workshopCopper(source.priceCopper):'',
+    priceSource,
     Number.isFinite(Number(source.limitedStock))?'Vorrat '+source.limitedStock:'',
     source.reputationFaction?'Ruf: '+source.reputationFaction:''
   ].filter(Boolean).join(' · ');
@@ -1212,7 +1218,31 @@ function plannerKnownCopper(value){
 }
 function plannerPrice(copper){
   const amount=plannerKnownCopper(copper);
-  return amount===null?'Preis nicht verfügbar':workshopCopper(amount);
+  return amount===null?'Preis noch nicht bekannt':workshopCopper(amount);
+}
+function plannerPriceSource(source={}){
+  if(plannerKnownCopper(source?.priceCopper)===null)return null;
+  if(source?.priceSource==='forever-observed'||source?.priceSource==='classic'||source?.priceSource==='unknown')return source.priceSource;
+  return source?.sourceType==='vendor'?'forever-observed':'unknown';
+}
+function plannerPriceTier(source={}){
+  if(plannerKnownCopper(source?.priceCopper)===null)return 3;
+  const provenance=plannerPriceSource(source);
+  if(provenance==='forever-observed')return 0;
+  if(provenance==='classic')return 1;
+  return 2;
+}
+function plannerPriceSourceLabel(source,{short=false}={}){
+  const provenance=plannerPriceSource(source);
+  if(provenance==='forever-observed')return 'Forever-Preis';
+  if(provenance==='classic')return short?'Classic-Preis':'Classic-Preis · noch nicht in Forever bestätigt';
+  if(provenance==='unknown')return short?'Preisquelle offen':'Preisquelle nicht bestätigt';
+  return '';
+}
+function plannerPriceWithSource(source={}){
+  const price=plannerPrice(source?.priceCopper);
+  const label=plannerPriceSourceLabel(source,{short:true});
+  return label?price+' · '+label:price;
 }
 function plannerCoords(location={}){
   const x=Number(location?.x),y=Number(location?.y);
@@ -1238,11 +1268,17 @@ function plannerOfferByKey(action,key){
 }
 function plannerCheapestKnownOffer(action){
   const offers=plannerOffers(action);
-  const known=offers.map(source=>({source,price:plannerKnownCopper(source.priceCopper)})).filter(entry=>entry.price!==null);
+  const known=offers.map(source=>({
+    source,
+    price:plannerKnownCopper(source.priceCopper),
+    tier:plannerPriceTier(source)
+  })).filter(entry=>entry.price!==null);
   if(!known.length)return action?.source||offers[0]||null;
-  const minimum=Math.min(...known.map(entry=>entry.price));
-  if(action?.source?.key&&plannerKnownCopper(action.source.priceCopper)===minimum)return action.source;
-  return known.filter(entry=>entry.price===minimum).map(entry=>entry.source).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de'))[0]||null;
+  const bestTier=Math.min(...known.map(entry=>entry.tier));
+  const trusted=known.filter(entry=>entry.tier===bestTier);
+  const minimum=Math.min(...trusted.map(entry=>entry.price));
+  if(action?.source?.key&&plannerPriceTier(action.source)===bestTier&&plannerKnownCopper(action.source.priceCopper)===minimum)return action.source;
+  return trusted.filter(entry=>entry.price===minimum).map(entry=>entry.source).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de'))[0]||null;
 }
 function plannerActionLine(action){
   const parts=[];
@@ -1257,7 +1293,7 @@ function plannerAlternativeHtml(action,currentSourceKey){
   return '<details class="planner-alternatives"><summary>Auch hier erhältlich · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
     alternatives.map(source=>{
       const coords=plannerCoords(source.location);
-      const meta=[source.role,source.location?.zone,coords,plannerPrice(source.priceCopper)].filter(Boolean).join(' · ');
+      const meta=[source.role,source.location?.zone,coords,plannerPrice(source.priceCopper),plannerPriceSourceLabel(source,{short:true})].filter(Boolean).join(' · ');
       return '<div class="planner-alternative"><strong>'+esc(source.name||'NPC')+'</strong><span>'+esc(meta)+'</span></div>';
     }).join('')+'</div></details>';
 }
@@ -1265,7 +1301,7 @@ function plannerPriceWarningHtml(action,source){
   const selectedPrice=plannerKnownCopper(source?.priceCopper),cheapest=plannerCheapestKnownOffer(action),cheapestPrice=plannerKnownCopper(cheapest?.priceCopper);
   if(selectedPrice===null||cheapestPrice===null||selectedPrice<=cheapestPrice||cheapest?.key===source?.key)return '';
   const saving=selectedPrice-cheapestPrice;
-  return '<div class="planner-price-warning"><strong>Günstiger verfügbar</strong><span>Bei '+esc(cheapest.name||'einem anderen NPC')+' kostet diese Erledigung '+esc(plannerPrice(cheapestPrice))+' statt '+esc(plannerPrice(selectedPrice))+' · Ersparnis '+esc(workshopCopper(saving))+'.</span></div>';
+  return '<div class="planner-price-warning"><strong>Günstiger verfügbar</strong><span>Bei '+esc(cheapest.name||'einem anderen NPC')+' kostet diese Erledigung '+esc(plannerPriceWithSource(cheapest))+' statt '+esc(plannerPriceWithSource(source))+' · Ersparnis '+esc(workshopCopper(saving))+'.</span></div>';
 }
 function plannerRequestOfferSelection(actionKey,sourceKey,checked){
   const current=plannerState.selected.get(actionKey)||null;
@@ -1317,24 +1353,47 @@ function plannerSelectionHtml(data){
   const selected=plannerSelectedActions(data);
   if(!selected.length)return '<div class="planner-selection is-empty"><strong>Noch nichts auf der Erledigungsliste.</strong><span>Wähle die Dinge aus, die du an diesem Ort mitnehmen oder lernen möchtest.</span></div>';
   const byNpc=new Map();
-  let total=0,unknown=0;
+  let total=0,unknown=0,classicTotal=0,unverifiedTotal=0;
   for(const action of selected){
     const source=action.source||{};
     const key=source.key||source.name||'npc';
     let group=byNpc.get(key);
-    if(!group){group={name:source.name||'NPC',role:source.role||'',location:source.location||{},actions:[],total:0,unknown:0};byNpc.set(key,group)}
+    if(!group){
+      group={name:source.name||'NPC',role:source.role||'',location:source.location||{},actions:[],total:0,unknown:0,classicTotal:0,unverifiedTotal:0};
+      byNpc.set(key,group);
+    }
     group.actions.push(action);
     const price=plannerKnownCopper(source.priceCopper);
-    if(price!==null){group.total+=price;total+=price}else{group.unknown++;unknown++}
+    if(price!==null){
+      group.total+=price;total+=price;
+      const provenance=plannerPriceSource(source);
+      if(provenance==='classic'){group.classicTotal+=price;classicTotal+=price}
+      else if(provenance==='unknown'){group.unverifiedTotal+=price;unverifiedTotal+=price}
+    }else{group.unknown++;unknown++}
   }
   const groups=[...byNpc.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
-  return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE ERLEDIGUNGSLISTE</span><h3>'+selected.length+' Erledigung'+(selected.length===1?'':'en')+' · '+groups.length+' Station'+(groups.length===1?'':'en')+'</h3></div><div class="planner-total"><span>'+(unknown?'Bekannte Kosten':'Gesamtkosten')+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(unknown?'<small>'+unknown+' ohne bestätigten Preis</small>':'')+'</div></div>'+
+  const estimated=classicTotal>0||unverifiedTotal>0;
+  const totalLabel=unknown?'Bekannte Kosten':estimated?'Voraussichtliche Gesamtkosten':'Gesamtkosten';
+  const totalNotes=[];
+  if(classicTotal>0)totalNotes.push('davon '+workshopCopper(classicTotal)+' auf noch nicht in Forever bestätigten Classic-Preisen');
+  if(unverifiedTotal>0)totalNotes.push('davon '+workshopCopper(unverifiedTotal)+' mit nicht bestätigter Preisquelle');
+  if(unknown)totalNotes.push(unknown+' ohne Preis');
+  return '<section class="planner-selection"><div class="planner-selection-head"><div><span class="planner-kicker">DEINE ERLEDIGUNGSLISTE</span><h3>'+selected.length+' Erledigung'+(selected.length===1?'':'en')+' · '+groups.length+' Station'+(groups.length===1?'':'en')+'</h3></div><div class="planner-total"><span>'+totalLabel+'</span><strong>'+esc(workshopCopper(total))+'</strong>'+(totalNotes.length?'<small>'+esc(totalNotes.join(' · '))+'</small>':'')+'</div></div>'+
     '<div class="planner-route">'+groups.map(group=>{
       const coords=plannerCoords(group.location);
       const meta=[group.role,group.location?.zone,coords].filter(Boolean).join(' · ');
+      const groupEstimated=group.classicTotal>0||group.unverifiedTotal>0;
+      const groupLabel=group.unknown?'Bekannte Kosten':groupEstimated?'Voraussichtliche Zwischensumme':'Zwischensumme';
+      const groupNotes=[];
+      if(group.classicTotal>0)groupNotes.push(workshopCopper(group.classicTotal)+' Classic-Preis');
+      if(group.unverifiedTotal>0)groupNotes.push(workshopCopper(group.unverifiedTotal)+' Preisquelle offen');
+      if(group.unknown)groupNotes.push(group.unknown+' ohne Preis');
       return '<article class="planner-route-stop"><div class="planner-route-head"><div><strong>'+esc(group.name)+'</strong>'+(meta?'<span>'+esc(meta)+'</span>':'')+'</div><span>'+group.actions.length+' Erledigung'+(group.actions.length===1?'':'en')+'</span></div>'+
-        '<div class="planner-route-recipes">'+group.actions.map(action=>'<div><span>'+esc(action.name)+'</span><strong>'+esc(plannerPrice(action.source?.priceCopper))+'</strong></div>').join('')+'</div>'+
-        '<div class="planner-route-subtotal"><span>'+(group.unknown?'Bekannte Kosten':'Zwischensumme')+'</span><strong>'+esc(workshopCopper(group.total))+'</strong>'+(group.unknown?'<small>'+group.unknown+' ohne Preis</small>':'')+'</div></article>';
+        '<div class="planner-route-recipes">'+group.actions.map(action=>{
+          const priceLabel=plannerPriceSourceLabel(action.source,{short:true});
+          return '<div><span>'+esc(action.name)+'</span><strong>'+esc(plannerPrice(action.source?.priceCopper))+(priceLabel?'<small>'+esc(priceLabel)+'</small>':'')+'</strong></div>';
+        }).join('')+'</div>'+
+        '<div class="planner-route-subtotal"><span>'+groupLabel+'</span><strong>'+esc(workshopCopper(group.total))+'</strong>'+(groupNotes.length?'<small>'+esc(groupNotes.join(' · '))+'</small>':'')+'</div></article>';
     }).join('')+'</div></section>';
 }
 function plannerSwitchHtml(action,source){
@@ -1348,9 +1407,9 @@ function plannerSwitchHtml(action,source){
     const diff=Math.abs(toPrice-fromPrice);
     if(toPrice>fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' teurer.';
     else if(toPrice<fromPrice)comparison=' Der neu gewählte Anbieter ist '+workshopCopper(diff)+' günstiger.';
-    else comparison=' Beide Angebote haben denselben bestätigten Preis.';
+    else comparison=' Beide Angebote haben denselben Preis.';
   }
-  return '<section class="planner-switch" role="alert"><div><span class="planner-kicker">BEREITS AUSGEWÄHLT</span><h3>'+esc(action.name)+'</h3><p>Diese Erledigung ist bereits bei <strong>'+esc(from.name||'einem anderen NPC')+'</strong> für '+esc(plannerPrice(from.priceCopper))+' ausgewählt. Bei <strong>'+esc(to.name||'diesem NPC')+'</strong> kostet sie '+esc(plannerPrice(to.priceCopper))+'.'+esc(comparison)+'</p></div><div class="planner-switch-actions"><button type="button" data-planner-switch-keep>Bisherige Auswahl behalten</button><button type="button" data-planner-switch-confirm>Zu '+esc(to.name||'diesem NPC')+' wechseln</button></div></section>';
+  return '<section class="planner-switch" role="alert"><div><span class="planner-kicker">BEREITS AUSGEWÄHLT</span><h3>'+esc(action.name)+'</h3><p>Diese Erledigung ist bereits bei <strong>'+esc(from.name||'einem anderen NPC')+'</strong> für '+esc(plannerPriceWithSource(from))+' ausgewählt. Bei <strong>'+esc(to.name||'diesem NPC')+'</strong> kostet sie '+esc(plannerPriceWithSource(to))+'.'+esc(comparison)+'</p></div><div class="planner-switch-actions"><button type="button" data-planner-switch-keep>Bisherige Auswahl behalten</button><button type="button" data-planner-switch-confirm>Zu '+esc(to.name||'diesem NPC')+' wechseln</button></div></section>';
 }
 function plannerNpcHtml(npc,data,actions){
   const location=npc.location||{};
@@ -1366,7 +1425,7 @@ function plannerNpcHtml(npc,data,actions){
       const stock=Number(action.source?.limitedStock);
       const line=plannerActionLine(action);
       return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><strong>'+esc(action.name)+'</strong>'+(line?'<small>'+esc(line)+'</small>':'')+
-        (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price">'+esc(plannerPrice(action.source?.priceCopper))+'</span></label>'+
+        (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price"><strong>'+esc(plannerPrice(action.source?.priceCopper))+'</strong>'+(plannerPriceSourceLabel(action.source)?'<small>'+esc(plannerPriceSourceLabel(action.source))+'</small>':'')+'</span></label>'+
         plannerSwitchHtml(action,action.source)+
         (checked?plannerPriceWarningHtml(action,action.source):'')+
         plannerAlternativeHtml(action,sourceKey)+'</div>';

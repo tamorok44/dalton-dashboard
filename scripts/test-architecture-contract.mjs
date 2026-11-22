@@ -122,7 +122,12 @@ assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("actio
 assert.ok(policy.includes('Ein Lernziel besitzt genau eine stabile Erledigungs-ID'),'Location planner must distinguish one learning target from multiple NPC offers');
 assert.ok(policy.includes('ein stilles Opt-out ist verboten'),'Manual vendor switches must require explicit confirmation');
 assert.ok(policy.includes('direkt am neu angeklickten Angebot sichtbar'),'Vendor-switch confirmation must remain visible at the clicked offer in long lists');
-assert.ok(policy.includes('niedrigsten **bestätigten** Preis'),'Automatic location-planner selection must prefer the cheapest confirmed offer');
+assert.ok(policy.includes('forever-observed')&&policy.includes('classic'),'Price provenance contract must distinguish Forever observations from Classic fallbacks');
+assert.ok(policy.includes('Spell-`baseCost` ist **kein** Ersatz'),'Spell baseCost must never be reused as trainer gold price');
+assert.ok(policy.includes('Voraussichtliche Gesamtkosten'),'Classic fallback totals must remain visibly provisional');
+assert.ok((sourceByFile.get('scripts/workshop-foreverdb.mjs')||'').includes('inheritTrainerPrice'),'Trainer price inheritance must stay centralized in the ForeverDB adapter');
+assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes("if(provenance==='forever-observed')return 0"),'Location planner must rank confirmed Forever prices ahead of Classic fallback prices');
+assert.ok((sourceByFile.get('app.js')||'').includes("Classic-Preis · noch nicht in Forever bestätigt"),'Frontend must label Classic fallback prices explicitly');
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('mergeActionCandidates'),'Location planner must deduplicate learning targets centrally');
 assert.ok((sourceByFile.get('app.js')||'').includes('selected:new Map()'),'Location planner UI must keep at most one source per learning target');
 assert.ok((sourceByFile.get('app.js')||'').includes('plannerCheapestKnownOffer'),'Location planner UI must centralize cheapest-offer selection');

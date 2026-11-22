@@ -13,13 +13,13 @@ const RECIPE_TTL_SECONDS=12*60*60;
 const SEARCH_TTL_SECONDS=24*60*60;
 const ITEM_RECIPE_TTL_SECONDS=24*60*60;
 const META_TTL_SECONDS=10*60;
-const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v1';
-const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v1';
+const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v2';
+const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v2';
 const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
 const MASTER_REFRESH_CHUNK=3;
 const SPELL_CACHE_PREFIX='dalton-dashboard:foreverdb:spell:v1:';
 const VENDOR_CACHE_PREFIX='dalton-dashboard:foreverdb:vendor:v1:';
-const PROFESSION_MASTER_CACHE_PREFIX='dalton-dashboard:foreverdb:profession-master:v3:';
+const PROFESSION_MASTER_CACHE_PREFIX='dalton-dashboard:foreverdb:profession-master:v4:';
 
 function now(){return Date.now()}
 function fresh(value,maxAgeMs){
@@ -33,13 +33,13 @@ function normalizedSlugs(slugs=[]){
   return [...new Set((Array.isArray(slugs)?slugs:[]).filter(slug=>PROFESSION_SLUGS.has(slug)))].sort();
 }
 function recipeKey(slugs){
-  return 'dalton-dashboard:workshop:foreverdb:recipes:v2:'+digest(normalizedSlugs(slugs).join('|'));
+  return 'dalton-dashboard:workshop:foreverdb:recipes:v3:'+digest(normalizedSlugs(slugs).join('|'));
 }
 function searchKey(query){
   return 'dalton-dashboard:workshop:foreverdb:search:v1:'+digest(String(query).trim().toLocaleLowerCase('de-DE'));
 }
 function itemRecipeKey(itemId,itemName){
-  return 'dalton-dashboard:workshop:foreverdb:item-recipes:v2:'+Number(itemId)+':'+digest(String(itemName||'').trim().toLocaleLowerCase('en'));
+  return 'dalton-dashboard:workshop:foreverdb:item-recipes:v3:'+Number(itemId)+':'+digest(String(itemName||'').trim().toLocaleLowerCase('en'));
 }
 function recipeIdentity(recipe={}){
   return [

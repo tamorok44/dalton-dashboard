@@ -159,6 +159,7 @@ function sourceSummary(source={}){
       instance:text(location.instance)||null
     },
     priceCopper:sourcePriceCopper(source),
+    priceSource:source.priceSource||null,
     limitedStock:stock!==null&&stock>0?stock:null,
     side:source.side||null
   };

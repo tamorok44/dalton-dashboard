@@ -41,7 +41,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -551,9 +551,9 @@ assert.ok(css.includes('.segmented-control{')&&css.includes('.segmented-option.i
 
 const plannerAction={
   key:'recipe:9001',name:'Testrezept',category:'profession-recipes',
-  source:{key:'npc:2',name:'Günstig',role:'Händler',location:{zone:'Sturmwind'},priceCopper:80},
+  source:{key:'npc:2',name:'Günstig',role:'Händler',sourceType:'vendor',location:{zone:'Sturmwind'},priceCopper:80,priceSource:'forever-observed'},
   alternatives:[
-    {key:'npc:1',name:'Teuer',role:'Händler',location:{zone:'Sturmwind'},priceCopper:100},
+    {key:'npc:1',name:'Teuer',role:'Händler',sourceType:'vendor',location:{zone:'Sturmwind'},priceCopper:100,priceSource:'forever-observed'},
     {key:'npc:3',name:'Unbekannt',role:'Händler',location:{zone:'Sturmwind'},priceCopper:null}
   ]
 };
@@ -563,8 +563,16 @@ ui.plannerState.selected.clear();
 ui.plannerState.pendingSwitch=null;
 assert.equal(ui.plannerKnownCopper(null),null,'Fehlender Preis bleibt unbekannt und wird niemals zu 0 Kupfer');
 assert.equal(ui.plannerKnownCopper(''),null,'Leerer Preis bleibt unbekannt');
-assert.equal(ui.plannerPrice(null),'Preis nicht verfügbar','Fehlender Preis wird sichtbar als unbekannt ausgewiesen');
+assert.equal(ui.plannerPrice(null),'Preis noch nicht bekannt','Fehlender Preis wird sichtbar als unbekannt ausgewiesen');
+assert.equal(ui.plannerPriceSourceLabel({priceCopper:100,priceSource:'forever-observed'}),'Forever-Preis');
+assert.equal(ui.plannerPriceSourceLabel({priceCopper:100,priceSource:'classic'}),'Classic-Preis · noch nicht in Forever bestätigt');
 assert.equal(ui.plannerCheapestKnownOffer(plannerAction)?.key,'npc:2','Günstigstes bestätigtes Angebot wird erkannt');
+const mixedTrustAction={
+  key:'recipe:trust',name:'Vertrauens-Test',category:'profession-recipes',
+  source:{key:'npc:10',name:'Forever',role:'Lehrer',sourceType:'trainer',location:{zone:'Sturmwind'},priceCopper:100,priceSource:'forever-observed'},
+  alternatives:[{key:'npc:11',name:'Classic billiger',role:'Lehrer',sourceType:'trainer',location:{zone:'Sturmwind'},priceCopper:50,priceSource:'classic'}]
+};
+assert.equal(ui.plannerCheapestKnownOffer(mixedTrustAction)?.key,'npc:10','Bestätigter Forever-Preis schlägt einen billigeren unbestätigten Classic-Fallback');
 ui.plannerSelectAllVisible(plannerData);
 assert.equal(ui.plannerState.selected.get(plannerAction.key),'npc:2','Alle auswählen legt das Lernziel einmal beim günstigsten Anbieter ab');
 assert.equal(ui.plannerState.selected.size,1,'Ein Lernziel erzeugt nur eine Auswahlposition');
@@ -597,7 +605,7 @@ const tiedAction={
 assert.equal(ui.plannerPriceWarningHtml(tiedAction,tiedAction.alternatives[0]),'','Preisgleichstand erzeugt keine falsche Preiswarnung');
 const rankAction={
   key:'profession-rank:alchemy:2',name:'Alchemie · Geselle',category:'profession-training',
-  source:{key:'npc:6',name:'Lehrer',role:'Lehrer',location:{zone:'Sturmwind'},priceCopper:500},
+  source:{key:'npc:6',name:'Lehrer',role:'Lehrer',sourceType:'trainer',location:{zone:'Sturmwind'},priceCopper:500,priceSource:'classic'},
   alternatives:[]
 };
 const twoTargets={actions:[plannerAction,rankAction],categories:[...plannerData.categories,{id:'profession-training',label:'Berufsausbildung'}]};
@@ -606,6 +614,9 @@ ui.plannerState.selected.clear();
 ui.plannerSelectAllVisible(twoTargets);
 assert.equal(ui.plannerState.selected.size,2,'Tatsächlich verschiedene Lernziele bzw. Ränge bleiben separat auswählbar');
 assert.equal(ui.plannerSelectedActions(twoTargets).length,2,'Getrennte Ränge werden nicht miteinander dedupliziert');
+const mixedSelectionHtml=ui.plannerSelectionHtml(twoTargets);
+assert.ok(mixedSelectionHtml.includes('Voraussichtliche Gesamtkosten'),'Classic-Preis kennzeichnet die Gesamtsumme als voraussichtlich');
+assert.ok(mixedSelectionHtml.includes('noch nicht in Forever bestätigten Classic-Preisen'),'Classic-Anteil der Gesamtsumme wird transparent ausgewiesen');
 
 assert.ok(heroHtml.includes('WANTED · AZEROTH'));
 assert.ok(heroHtml.includes('Vier Abenteurer. Eine berüchtigte Bande.'));

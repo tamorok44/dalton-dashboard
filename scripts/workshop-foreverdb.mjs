@@ -24,6 +24,15 @@ function first(...values){for(const value of values)if(value!==null&&value!==und
 function firstNumber(...values){for(const value of values){const n=finite(value);if(n!==null)return n}return null}
 function firstInteger(...values){for(const value of values){const n=integer(value);if(n!==null)return n}return null}
 function firstText(...values){for(const value of values){const s=string(value);if(s)return s}return null}
+function normalizePriceSource(value,{type=null,evidence=null,hasPrice=false}={}){
+  if(!hasPrice)return null;
+  const key=String(value??'').trim().toLocaleLowerCase('en-US');
+  if(/forever|player|observed|live/.test(key))return 'forever-observed';
+  if(/classic|cmangos/.test(key))return 'classic';
+  if(type==='vendor'&&evidence==='forever-confirmed')return 'forever-observed';
+  if(type==='vendor'&&evidence==='classic-unconfirmed')return 'classic';
+  return 'unknown';
+}
 
 function itemRef(value){
   const raw=object(value);
@@ -197,6 +206,10 @@ function normalizeSource(entry,path){
   const displayId=firstInteger(raw.displayId,raw.display_id,raw.creatureDisplayId,raw.creature_display_id,raw.display?.id,raw.npc?.displayId,raw.vendor?.displayId,raw.trainer?.displayId);
   const renderSourceUrl=firstText(raw.render?.url,raw.renderUrl,raw.render_url,raw.imageUrl,raw.image_url,raw.npc?.render?.url,raw.vendor?.render?.url,raw.trainer?.render?.url);
   if(!identity.id&&!identity.name&&!location&&priceCopper===null&&!sourceLabel)return null;
+  const evidence=seen===true?'forever-confirmed':seen===false?'classic-unconfirmed':'unknown';
+  const priceSource=normalizePriceSource(firstText(raw.priceSource,raw.price_source,trainerCostSource,sourceLabel),{
+    type,evidence,hasPrice:priceCopper!==null||pricePerItem!==null
+  });
   return {
     type,
     side:sideFromEntry(raw)||sideFromPath(path),
@@ -204,8 +217,9 @@ function normalizeSource(entry,path){
     name:identity.name||({trainer:'Unbekannter Lehrer',vendor:'Unbekannter Händler',quest:'Quest',drop:'Beute',object:'Objekt',item:'Rezeptgegenstand'}[type]||'Quelle'),
     location,
     seenInForever:seen,
-    evidence:seen===true?'forever-confirmed':seen===false?'classic-unconfirmed':'unknown',
+    evidence,
     priceCopper,
+    priceSource,
     pricePerItem,
     stack,
     limitedStock,
@@ -220,15 +234,48 @@ function normalizeSource(entry,path){
     renderSourceUrl:renderSourceUrl&&/^https:\/\//.test(renderSourceUrl)?renderSourceUrl:null
   };
 }
-function collectSources(value,path=[],out=[]){
+function trainerPriceContext(value,inherited={}){
+  const raw=object(value);
+  return {
+    trainerCostCopper:firstNumber(
+      raw.trainerCost,raw.trainer_cost,raw.trainingCost,raw.training_cost,
+      inherited.trainerCostCopper
+    ),
+    trainerCostSourceRaw:firstText(
+      raw.trainerCostSource,raw.trainer_cost_source,raw.trainingCostSource,raw.training_cost_source,
+      inherited.trainerCostSourceRaw
+    )
+  };
+}
+function inheritTrainerPrice(source,context={}){
+  if(!source||source.type!=='trainer')return source;
+  const ownPrice=firstNumber(source.priceCopper,source.pricePerItem);
+  if(ownPrice!==null){
+    if(source.priceSource&&source.priceSource!=='unknown')return source;
+    return {...source,priceSource:normalizePriceSource(source.trainerCostSource||context.trainerCostSourceRaw,{
+      type:'trainer',evidence:source.evidence,hasPrice:true
+    })};
+  }
+  const inheritedPrice=firstNumber(context.trainerCostCopper);
+  if(inheritedPrice===null)return source;
+  return {
+    ...source,
+    priceCopper:Math.round(inheritedPrice),
+    priceSource:normalizePriceSource(context.trainerCostSourceRaw,{
+      type:'trainer',evidence:source.evidence,hasPrice:true
+    })
+  };
+}
+function collectSources(value,path=[],out=[],inherited={}){
+  const context=trainerPriceContext(value,inherited);
   if(Array.isArray(value)){
     const type=sourceTypeFromPath(path);
     const recognized=type!=='source';
     for(const entry of value){
       if(entry&&typeof entry==='object'){
-        const normalized=recognized?normalizeSource(entry,path):null;
+        const normalized=recognized?inheritTrainerPrice(normalizeSource(entry,path),context):null;
         if(normalized)out.push(normalized);
-        else collectSources(entry,path,out);
+        else collectSources(entry,path,out,context);
       }
     }
     return out;
@@ -236,7 +283,7 @@ function collectSources(value,path=[],out=[]){
   if(!value||typeof value!=='object')return out;
   for(const [key,entry] of Object.entries(value)){
     if(['skill','category','reagents','makes'].includes(key))continue;
-    if(Array.isArray(entry)||entry&&typeof entry==='object')collectSources(entry,[...path,key],out);
+    if(Array.isArray(entry)||entry&&typeof entry==='object')collectSources(entry,[...path,key],out,context);
   }
   return out;
 }
@@ -246,7 +293,7 @@ function dedupeSources(sources=[]){
     const key=[
       source.type,source.side,source.id,source.name,
       source.location?.uiMapId,source.location?.zone,source.location?.x,source.location?.y,
-      source.priceCopper,source.evidence
+      source.priceCopper,source.priceSource,source.evidence
     ].join('|');
     if(seen.has(key))continue;
     seen.add(key);result.push(source);
@@ -263,12 +310,26 @@ function dedupeSources(sources=[]){
 function normalizeLearning(raw={}){
   const learned=object(first(raw.learnedFrom,raw.learned_from,raw.learning,raw.learn));
   const sourceRoot=first(learned.sources,raw.sources,learned);
-  const sources=dedupeSources(collectSources(sourceRoot));
+  const trainerCostCopper=firstNumber(
+    learned.trainerCost,learned.trainer_cost,learned.trainingCost,learned.training_cost,
+    raw.trainerCost,raw.trainer_cost,raw.trainingCost,raw.training_cost
+  );
+  const trainerCostSourceRaw=firstText(
+    learned.trainerCostSource,learned.trainer_cost_source,learned.trainingCostSource,learned.training_cost_source,
+    raw.trainerCostSource,raw.trainer_cost_source,raw.trainingCostSource,raw.training_cost_source
+  );
+  const inheritedPriceSource=normalizePriceSource(trainerCostSourceRaw,{
+    type:'trainer',evidence:/classic|cmangos/i.test(trainerCostSourceRaw||'')?'classic-unconfirmed':'forever-confirmed',
+    hasPrice:trainerCostCopper!==null
+  });
+  const sources=dedupeSources(collectSources(sourceRoot,[],[],{trainerCostCopper,trainerCostSourceRaw}));
   const method=firstText(learned.type,learned.method,learned.kind,raw.learnedFromType,raw.learnMethod);
   const automatic=Boolean(learned.automatic===true||raw.automatic===true||(method&&/auto/i.test(method)));
   return {
     method:method||null,
     automatic,
+    trainerCostCopper:trainerCostCopper===null?null:Math.round(trainerCostCopper),
+    trainerCostSource:inheritedPriceSource,
     sources,
     recipeItemsHidden:asArray(first(raw.recipeItemsHidden,raw.recipeItemsNotInClient,learned.recipeItemsHidden)).map(itemRef).filter(Boolean)
   };
@@ -278,14 +339,24 @@ function normalizeProfessionRank(raw={}){
   const entry=object(raw);
   const nested=object(first(entry.rank,entry.skillRank,entry.skill_rank));
   const source=Object.keys(nested).length?{...entry,...nested}:entry;
-  const rankSources=dedupeSources(collectSources(first(source.sources,source.trainers,source.learnedFrom?.sources,source.learnedFrom?.trainers),['trainers']));
+  const rankPrice=firstNumber(source.priceCopper,source.price,source.trainerCost,source.trainer_cost,source.cost);
+  const rankPriceSourceRaw=firstText(source.priceSource,source.price_source,source.trainerCostSource,source.trainer_cost_source);
+  const rankSources=dedupeSources(collectSources(
+    first(source.sources,source.trainers,source.learnedFrom?.sources,source.learnedFrom?.trainers),
+    ['trainers'],[],{trainerCostCopper:rankPrice,trainerCostSourceRaw:rankPriceSourceRaw}
+  ));
   return {
     id:firstInteger(source.id,source.rankId,source.rank_id,source.spellId,source.spell_id),
     name:firstText(source.name,source.rankName,source.rank_name,source.label),
     skillCap:firstNumber(source.skillCap,source.skill_cap,source.maxSkill,source.max_skill,source.maximumSkill,source.cap,source.skill?.max,source.skill?.cap),
     requiredSkill:firstNumber(source.requiredSkill,source.required_skill,source.minSkill,source.minimumSkill,source.learnAtSkill,source.skillRequired,source.skill?.required),
     requiredLevel:firstNumber(source.requiredLevel,source.required_level,source.minLevel,source.minimumLevel,source.levelRequirement,source.level_requirement),
-    priceCopper:firstNumber(source.priceCopper,source.price,source.trainerCost,source.trainer_cost,source.cost),
+    priceCopper:rankPrice,
+    priceSource:normalizePriceSource(rankPriceSourceRaw,{
+      type:'trainer',
+      evidence:/classic|cmangos/i.test(rankPriceSourceRaw||'')?'classic-unconfirmed':'forever-confirmed',
+      hasPrice:rankPrice!==null
+    }),
     sources:rankSources
   };
 }
