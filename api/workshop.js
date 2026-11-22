@@ -16,7 +16,7 @@ import {
   foreverDbConfigured,
   fetchForeverDbItem
 } from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch,cachedForeverDbSpell} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function normalize(value){
@@ -218,22 +218,7 @@ export default async function handler(req,res){
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
       const plan=buildProductionPlan(catalog,itemId,quantity);
-      let learningRecipe=remoteRecipe;
-      if(remoteRecipe?.id){
-        try{
-          const spell=await cachedForeverDbSpell(remoteRecipe.id,{build:recipeIndex?.build||null});
-          learningRecipe=spell?.id?{
-            ...remoteRecipe,
-            requiredCharacterLevel:Number.isFinite(Number(spell.requiredLevel))?Number(spell.requiredLevel):null,
-            learningRequirementsVerified:Number.isFinite(Number(spell.requiredLevel))
-          }:{...remoteRecipe,learningRequirementsVerified:false};
-        }catch(error){
-          remoteErrors.push('Lernvoraussetzungen: '+String(error.message).slice(0,140));
-          learningRecipe={...remoteRecipe,learningRequirementsVerified:false};
-        }
-      }else if(remoteRecipe){
-        learningRecipe={...remoteRecipe,learningRequirementsVerified:false};
-      }
+      const learningRecipe=remoteRecipe;
       const learningCandidates=learningRecipe?workshopLearningCandidates(stored.data,learningRecipe):[];
       const learningSources=learningRecipe?.learning?.sources||[];
       const publicCandidates=learningCandidates.map(publicLearningCandidate);
