@@ -151,6 +151,24 @@ function recipeActions(character,recipeIndex){
   }
   return actions;
 }
+function rankTrainerTerms(skillCap){
+  const cap=finite(skillCap);
+  if(cap===75)return ['apprentice','lehrling'];
+  if(cap===150)return ['journeyman','geselle'];
+  if(cap===225)return ['expert','experte'];
+  if(cap===300)return ['artisan','fachmann','meister'];
+  return [];
+}
+function professionRankSources(master,next,character){
+  const direct=eligibleNpcSources(next?.sources,character,{types:['trainer','vendor']});
+  if(direct.length)return direct;
+  const terms=rankTrainerTerms(next?.skillCap);
+  if(!terms.length)return [];
+  return eligibleNpcSources(master?.trainers,character,{types:['trainer']}).filter(source=>{
+    const title=norm(source?.npcTitle);
+    return Boolean(title)&&terms.some(term=>title.includes(norm(term)));
+  });
+}
 function professionTrainingActions(character,recipeIndex){
   const level=finite(character?.level);
   if(level===null)return [];
@@ -168,7 +186,7 @@ function professionTrainingActions(character,recipeIndex){
     if(!next)continue;
     const requiredSkill=finite(next.requiredSkill),requiredLevel=finite(next.requiredLevel);
     if(requiredSkill===null||requiredLevel===null||currentSkill<requiredSkill||level<requiredLevel)continue;
-    const sources=eligibleNpcSources(next.sources,character,{types:['trainer']});
+    const sources=professionRankSources(master,next,character);
     if(!sources.length)continue;
     actions.push({
       key:'profession-rank:'+slug+':'+String(integer(next.id)||Math.round(finite(next.skillCap))),
@@ -239,7 +257,8 @@ function sourceSummary(source={}){
     limitedStock:stock!==null&&stock>0?stock:null,
     side:source.side||null,
     displayId:integer(source.displayId),
-    renderSourceUrl:text(source.renderSourceUrl)||null
+    renderSourceUrl:text(source.renderSourceUrl)||null,
+    npcTitle:text(source.npcTitle)||null
   };
 }
 function choosePreferredSources(actions,zone){
