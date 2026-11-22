@@ -1,5 +1,8 @@
 const BLIZZARD_FOREVER_PROFESSIONS_URL='https://worldofwarcraft.blizzard.com/de-de/news/24301516';
 const BLIZZARD_FOREVER_STARTER_GUIDE_URL='https://worldofwarcraft.blizzard.com/de-de/news/24315280/einsteigerleitfaden-f%C3%BCr-neue-spieler-willkommen-bei-world-of-warcraft';
+const BLIZZARD_STORMWIND_URL='https://worldofwarcraft.blizzard.com/de-de/news/24130393';
+const BLIZZARD_IRONFORGE_URL='https://worldofwarcraft.blizzard.com/de-de/news/24247147';
+const BLIZZARD_ASHENVALE_URL='https://worldofwarcraft.blizzard.com/de-de/news/24056979/schaut-euch-phase-2-der-saison-der-entdeckungen-an';
 
 const professionRecords=Object.freeze({
   129:Object.freeze({name:'Erste Hilfe'}),
@@ -16,15 +19,22 @@ const professionRecords=Object.freeze({
   393:Object.freeze({name:'Kürschnerei'})
 });
 
+const zoneRecords=Object.freeze({
+  1440:Object.freeze({name:'Eschental',sources:Object.freeze([BLIZZARD_ASHENVALE_URL])}),
+  1453:Object.freeze({name:'Sturmwind',sources:Object.freeze([BLIZZARD_STORMWIND_URL])}),
+  1455:Object.freeze({name:'Eisenschmiede',sources:Object.freeze([BLIZZARD_IRONFORGE_URL])})
+});
+
 export const VERIFIED_PLAYER_TERMINOLOGY=Object.freeze({
   locale:'de-DE',
-  verifiedAt:'2026-11-21',
-  authority:'Blizzard Entertainment – offizielle deutsche World of Warcraft: Forever Spielerterminologie',
+  verifiedAt:'2026-11-22',
+  authority:'Blizzard Entertainment – offizielle deutsche World of Warcraft Spielerterminologie',
   sources:Object.freeze([
     BLIZZARD_FOREVER_PROFESSIONS_URL,
     BLIZZARD_FOREVER_STARTER_GUIDE_URL
   ]),
-  profession:professionRecords
+  profession:professionRecords,
+  zone:zoneRecords
 });
 
 function numericId(value){
@@ -43,7 +53,7 @@ export function verifiedPlayerTerm(type,id){
     id:numeric,
     locale:VERIFIED_PLAYER_TERMINOLOGY.locale,
     authority:VERIFIED_PLAYER_TERMINOLOGY.authority,
-    sources:[...VERIFIED_PLAYER_TERMINOLOGY.sources],
+    sources:[...(Array.isArray(record.sources)?record.sources:VERIFIED_PLAYER_TERMINOLOGY.sources)],
     verifiedAt:VERIFIED_PLAYER_TERMINOLOGY.verifiedAt
   }:null;
 }
