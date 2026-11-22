@@ -19,7 +19,7 @@ const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
 const MASTER_REFRESH_CHUNK=3;
 const SPELL_CACHE_PREFIX='dalton-dashboard:foreverdb:spell:v1:';
 const VENDOR_CACHE_PREFIX='dalton-dashboard:foreverdb:vendor:v1:';
-const PROFESSION_MASTER_CACHE_PREFIX='dalton-dashboard:foreverdb:profession-master:v1:';
+const PROFESSION_MASTER_CACHE_PREFIX='dalton-dashboard:foreverdb:profession-master:v2:';
 
 function now(){return Date.now()}
 function fresh(value,maxAgeMs){
