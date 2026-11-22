@@ -977,11 +977,9 @@ function workshopSourceHtml(source){
     ?Number(location.x).toLocaleString('de-DE',{maximumFractionDigits:1})+' / '+Number(location.y).toLocaleString('de-DE',{maximumFractionDigits:1})
     :'';
   const where=[location.zone,coords,location.instance].filter(Boolean).join(' · ');
-  const priceSource=source.priceSource==='forever-observed'
-    ?'Forever-Preis'
-    :source.priceSource==='classic'
-      ?'Classic-Preis · noch nicht in Forever bestätigt'
-      :source.priceSource==='unknown'?'Preisquelle nicht bestätigt':'';
+  const priceSource=source.priceSource==='classic'
+    ?'Classic-Preis · noch nicht in Forever bestätigt'
+    :source.priceSource==='unknown'?'Preisquelle nicht bestätigt':'';
   const details=[
     source.side?workshopSideLabels[source.side]||source.side:'',
     where,
@@ -1234,7 +1232,7 @@ function plannerPriceTier(source={}){
 }
 function plannerPriceSourceLabel(source,{short=false}={}){
   const provenance=plannerPriceSource(source);
-  if(provenance==='forever-observed')return 'Forever-Preis';
+  if(provenance==='forever-observed')return '';
   if(provenance==='classic')return short?'Classic-Preis':'Classic-Preis · noch nicht in Forever bestätigt';
   if(provenance==='unknown')return short?'Preisquelle offen':'Preisquelle nicht bestätigt';
   return '';
