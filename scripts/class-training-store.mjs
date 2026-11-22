@@ -5,6 +5,52 @@ const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v1:';
 export const CLASS_BY_ID=Object.freeze({
   1:'warrior',2:'paladin',3:'hunter',4:'rogue',5:'priest',7:'shaman',8:'mage',9:'warlock',11:'druid'
 });
+const ZEPHRAS_FOREVER_TRAINERS=Object.freeze({
+  warrior:[
+    {name:'Blademaster Ren',x:43.7,y:24.2}
+  ],
+  hunter:[
+    {name:"Tai'ree Farsight",x:42.5,y:23.7},
+    {name:'Elayaa Easewind',x:45.2,y:44.3}
+  ],
+  rogue:[
+    {name:'Akeri Duskblade',x:43.7,y:24.3},
+    {name:'Miriaan Mistblade',x:43.2,y:43.2}
+  ],
+  shaman:[
+    {name:'Windshaper Boro',x:42.8,y:23.6},
+    {name:'Aarnor Galestrike',x:43.5,y:44.9}
+  ],
+  mage:[
+    {name:'Dorii Brightwhisper',x:41.6,y:23.7},
+    {name:'Shenaan Spellwind',x:45.1,y:45.8},
+    {name:'Anathamaas Aetherwind',x:65.9,y:80.6}
+  ],
+  druid:[
+    {name:'Xyton Silverwind',x:41.7,y:23.4},
+    {name:'Naeluna Swiftmend',x:45.2,y:44.3},
+    {name:'Lotheluum Starbreeze',x:64.0,y:75.1}
+  ]
+});
+function verifiedZephrasClassTrainers(slug){
+  return asArray(ZEPHRAS_FOREVER_TRAINERS[slug]).map((source,index)=>({
+    type:'trainer',
+    id:null,
+    name:source.name,
+    npcTitle:'Klassenlehrer',
+    side:'alliance',
+    location:{zone:'Zephras Isle',x:source.x,y:source.y,uiMapId:null,instance:null},
+    evidence:'forever-confirmed',
+    priceCopper:null,
+    priceSource:null,
+    displayId:null,
+    renderSourceUrl:null,
+    minLevel:null,
+    maxLevel:null,
+    sourceRef:'foreverdb-guide-zephras-2026-11-21',
+    sourceOrder:index
+  }));
+}
 
 function asArray(value){return Array.isArray(value)?value:[]}
 function object(value){return value&&typeof value==='object'&&!Array.isArray(value)?value:{}}
@@ -159,9 +205,10 @@ function abilityList(raw={}){
 }
 export function normalizeForeverDbClass(raw={},slug){
   const data=object(raw);
-  const classTrainers=dedupeTrainers([
+  const apiTrainers=dedupeTrainers([
     ...collectTrainers(first(data.trainers,data.classTrainers,data.class_trainers),['trainers'])
   ]);
+  const classTrainers=apiTrainers.length?apiTrainers:verifiedZephrasClassTrainers(slug);
   const abilities=abilityList(data).filter(trainerAbility).map(ability=>{
     const ranksRaw=asArray(first(ability.ranks,ability.spells,ability.rankSpells,ability.rank_spells));
     const fallbackRanks=ranksRaw.length?ranksRaw:[ability];
