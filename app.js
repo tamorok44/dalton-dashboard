@@ -313,6 +313,7 @@ function hunterPetCombatPanel(c,active){
   if(!active)return '';
   const profile=hunterPetCombatProfile(c);
   const scalingAllowed=petRuleVerified('pet.scaling');
+  const critSourceAllowed=petRuleVerified('pet.crit.inheritance');
   const focusAllowed=petRuleVerified('pet.focus');
   const healthRuleAllowed=petRuleVerified('pet.health.global');
   const inherited=profile.inherited||{};
@@ -323,8 +324,8 @@ function hunterPetCombatPanel(c,active){
   if(scalingAllowed&&inherited.armor){
     inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.armor.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong><span>'+esc(petNumber(inherited.armor.input))+(inherited.armor.inputName?' '+esc(inherited.armor.inputName):'')+' × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
   }
-  if(scalingAllowed&&inherited.crit){
-    inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.crit.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong><span>100 % des aktuellen Blizzard-Armory-Werts'+(inherited.crit.inputName?' · '+esc(inherited.crit.inputName):'')+'</span></div>');
+  if(scalingAllowed&&critSourceAllowed&&inherited.crit){
+    inheritedRows.push('<div class="pet-combat-stat"><small>Vererbte Krit-Komponente aus Dolly</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong><span>Rechnerische Vererbungskomponente aus dem aktuellen Blizzard-Armory-Wert'+(inherited.crit.inputName?' · '+esc(inherited.crit.inputName):'')+'. Blizzard bestätigt als Quelle den höheren Nah-/Fernkampf-Kritwert; die tatsächliche Krit-Chance der Autoangriffe wird daraus nicht abgeleitet.</span></div>');
   }
   const inheritedBlock=scalingAllowed
     ?'<div class="pet-combat-grid">'+inheritedRows.join('')+
@@ -348,7 +349,7 @@ function hunterPetCombatPanel(c,active){
     '<div class="pet-subsection-head"><div><span class="pet-overline">KAMPFPROFIL</span><h4>Werte & Beiträge</h4></div></div>'+
     '<div class="pet-combat-group"><span class="pet-combat-label">Von Dolly geerbt</span>'+inheritedBlock+'</div>'+
     (modifiersBlock?'<div class="pet-combat-group"><span class="pet-combat-label">Weitere Werte & Talente</span>'+modifiersBlock+'</div>':'')+
-    '<div class="pet-combat-caveat"><strong>Warum fehlen Gesamtleben, Gesamtrüstung und DPS?</strong><span>Blizzard veröffentlicht Slydris’ Grundwerte, aktuell trainierte passive Ränge, Zufriedenheit und die höhere Nah-/Fernkampf-Angriffskraft nicht vollständig online. Diese Größen werden deshalb nicht hochgerechnet.</span></div>'+
+    '<div class="pet-combat-caveat"><strong>Warum fehlen Gesamtleben, Gesamtrüstung und DPS?</strong><span>Blizzard veröffentlicht Slydris’ Grundwerte, aktuell trainierte passive Ränge, Zufriedenheit und die höhere Nah-/Fernkampf-Angriffskraft nicht vollständig online. Trefferchance und Expertise werden ohne belastbaren numerischen Vererbungsfaktor ebenfalls nicht hochgerechnet; die Krit-Chance der Autoangriffe bleibt wegen der aktuell gemessenen Abweichung separat unberechnet.</span></div>'+
   '</div>';
 }
 
