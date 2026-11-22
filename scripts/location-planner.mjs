@@ -88,6 +88,11 @@ function publicProfession(profession={}){
   };
 }
 function publicCharacter(character={}){
+  const knownClassAbilities=asArray(character?.knownClassAbilities).map(entry=>({
+    id:integer(typeof entry==='number'?entry:entry?.id??entry?.spellId),
+    name:text(entry?.name)||null,
+    rank:text(entry?.rank)||null
+  })).filter(entry=>entry.id);
   return {
     slug:text(character.slug)||null,
     name:text(character.name)||text(character.slug)||'Dalton',
@@ -97,7 +102,9 @@ function publicCharacter(character={}){
     class:text(character.class)||null,
     faction:text(character.faction)||null,
     knownClassAbilitiesVerified:character?.knownClassAbilitiesVerified===true,
-    knownClassAbilityCount:asArray(character?.knownClassAbilities).length,
+    knownClassAbilitiesSource:text(character?.knownClassAbilitiesSource)||null,
+    knownClassAbilityCount:knownClassAbilities.length,
+    knownClassAbilities,
     professions:asArray(character.professions).map(publicProfession)
   };
 }
