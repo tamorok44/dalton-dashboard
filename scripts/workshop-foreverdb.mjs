@@ -169,7 +169,13 @@ function normalizeSource(entry,path){
   const reputationFaction=firstText(raw.reputationFaction?.name,raw.reputationFaction,raw.reputation_faction?.name,raw.reputation_faction);
   const trainerCostSource=firstText(raw.trainerCostSource,raw.trainer_cost_source);
   const sourceLabel=firstText(raw.source,raw.dataSource,raw.origin);
-  const npcTitle=firstText(raw.title,raw.npc?.title,raw.vendor?.title,raw.trainer?.title,raw.creature?.title);
+  const npcTitle=firstText(
+    raw.title,raw.subname,raw.subName,raw.subtitle,raw.trainerTitle,raw.trainer_title,raw.rank,
+    raw.npc?.title,raw.npc?.subname,raw.npc?.subName,raw.npc?.subtitle,
+    raw.vendor?.title,raw.vendor?.subname,raw.vendor?.subtitle,
+    raw.trainer?.title,raw.trainer?.subname,raw.trainer?.subName,raw.trainer?.subtitle,raw.trainer?.rank,
+    raw.creature?.title,raw.creature?.subname,raw.creature?.subtitle
+  );
   const dropChance=firstNumber(raw.dropChance,raw.chance,raw.percent);
   const observations=firstNumber(raw.players,raw.seenByPlayers,raw.observations,raw.count);
   const displayId=firstInteger(raw.displayId,raw.display_id,raw.creatureDisplayId,raw.creature_display_id,raw.display?.id,raw.npc?.displayId,raw.vendor?.displayId,raw.trainer?.displayId);
