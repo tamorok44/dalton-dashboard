@@ -281,7 +281,8 @@ const fakeFetch=async url=>{
       ...(slug==='mining'?{
         ranks:[
           {id:1000,name:'Lehrling',skillCap:75,requiredSkill:1,requiredLevel:5},
-          {id:1001,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:450,trainerCostSource:'classic'}
+          {id:1001,name:'Geselle',skillCap:150,requiredSkill:50,requiredLevel:10,priceCopper:450,trainerCostSource:'classic',
+            sources:{alliance:{trainers:[{id:2000,name:'Gelman Steinhandschuh',title:'Gesellenbergmann',zone:'Sturmwind',x:59.2,y:37.8,seenInForever:true}]}}}
         ],
         trainers:[
           {id:2000,name:'Gelman Steinhandschuh',title:'Gesellenbergmann',zone:'Sturmwind',x:59.2,y:37.8,seenInForever:true}
