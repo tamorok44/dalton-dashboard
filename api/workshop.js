@@ -15,6 +15,7 @@ import {
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
 import {getForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
+import {applyLearningSourceEvidence,loadLearningSourceEvidence} from '../scripts/learning-source-evidence.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -114,7 +115,11 @@ function publicLearningSource(source){
     costs:Array.isArray(source.costs)?source.costs.map(cost=>({name:cost?.name||null,quantity:cost?.quantity??null})):[],
     reputationFaction:source.reputationFaction||null,
     dropChance:source.dropChance??null,
-    observations:source.observations??null
+    observations:source.observations??null,
+    offerStatus:source.offerStatus||null,
+    offerEvidenceSource:source.offerEvidenceSource||null,
+    offerObservedOn:source.offerObservedOn||null,
+    offerBuild:source.offerBuild||null
   };
 }
 async function archiveWorkshopItemIcon(item){
@@ -195,12 +200,12 @@ export default async function handler(req,res){
       if(remoteReady){
         try{
           const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
-          recipeIndex=index;
-          enrichWorkshopCatalogWithForeverDb(catalog,index);
-          const remote=await cachedForeverDbItem(itemId,{build:index?.build||null});
+          recipeIndex=applyLearningSourceEvidence(index,loadLearningSourceEvidence());
+          enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
+          const remote=await cachedForeverDbItem(itemId,{build:recipeIndex?.build||null});
           item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
           source='foreverdb';
-          remoteRecipe=preferredForeverRecipeForItem(index,itemId);
+          remoteRecipe=preferredForeverRecipeForItem(recipeIndex,itemId);
         }catch(error){
           remoteErrors.push(String(error.message).slice(0,180));
         }
@@ -251,7 +256,8 @@ export default async function handler(req,res){
     let recipeIndex=null,remoteError=null;
     if(remoteReady){
       try{
-        recipeIndex=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
+        const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
+        recipeIndex=applyLearningSourceEvidence(index,loadLearningSourceEvidence());
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
       }catch(error){
         remoteError=String(error.message).slice(0,180);
