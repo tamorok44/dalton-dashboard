@@ -108,6 +108,15 @@ local function appendHistory(snapshot)
   local last = history.entries[#history.entries]
   if type(last) == "table" and last.fingerprint == fingerprint then
     history.capturedAt = snapshot.capturedAt or ns.Now()
+    last.lastSeenAt = snapshot.capturedAt or ns.Now()
+    if not last.coordinatesAvailable and snapshot.coordinatesAvailable then
+      last.mapID = snapshot.mapID
+      last.mapName = snapshot.mapName
+      last.x = snapshot.x
+      last.y = snapshot.y
+      last.coordinatesAvailable = true
+      last.coordinatesCapturedAt = snapshot.capturedAt or ns.Now()
+    end
     db.locationHistory = history
     return
   end
