@@ -49,4 +49,10 @@ assert.equal(merged.characters[0].knownClassAbilitiesVerified,true,'Ein echter I
 assert.equal(merged.characters[0].knownClassAbilitiesSource,'WoW-Spellbook');
 assert.equal(merged.characters[0].knownClassAbilities[0].id,143);
 
-console.log('Addon Sync: SavedVariables-Parser, Privacy-Whitelist, Klassenfilter und Refresh-Persistenz: OK');
+const originalVercelEnv=process.env.VERCEL_ENV;
+process.env.VERCEL_ENV='preview';
+const previewStoreSource=await import('node:fs/promises').then(fs=>fs.readFile(new URL('./addon-sync-store.mjs',import.meta.url),'utf8'));
+assert.ok(previewStoreSource.includes("process.env.VERCEL_ENV==='production'?'production':'preview'"),'Preview-Sync muss einen eigenen Redis-Namensraum verwenden');
+if(originalVercelEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalVercelEnv;
+
+console.log('Addon Sync: SavedVariables-Parser, Privacy-Whitelist, Klassenfilter, Preview-Isolation und Refresh-Persistenz: OK');
