@@ -13,7 +13,7 @@ import {
   workshopLearningCandidates
 } from '../scripts/workshop-core.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function normalize(value){
@@ -191,7 +191,7 @@ export default async function handler(req,res){
       let item=publicItem(local);
       let source='blizzard-known';
       const remoteErrors=[];
-      let recipeIndex=null,remoteRecipe=null,targetedRecipeSearch=null;
+      let recipeIndex=null,remoteRecipe=null;
       if(remoteReady){
         try{
           const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
@@ -203,17 +203,6 @@ export default async function handler(req,res){
           remoteRecipe=preferredForeverRecipeForItem(index,itemId);
         }catch(error){
           remoteErrors.push(String(error.message).slice(0,180));
-        }
-        if(!local?.craftable&&!remoteRecipe&&item?.name&&!(recipeIndex?.masterComplete===true&&recipeIndex?.complete===true)){
-          try{
-            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.sourceSearchName||item.name);
-            if(targetedRecipeSearch.recipes?.length){
-              const targetedIndex={byItem:new Map([[itemId,targetedRecipeSearch.recipes]])};
-              remoteRecipe=preferredForeverRecipeForItem(targetedIndex,itemId);
-            }
-          }catch(error){
-            remoteErrors.push(String(error.message).slice(0,180));
-          }
         }
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
@@ -254,9 +243,7 @@ export default async function handler(req,res){
           generatedAt:recipeIndex?.generatedAt||null,
           cached:recipeIndex?.cached===true,
           complete:recipeIndex?.complete===true,
-          requestCount:recipeIndex?.requestCount||0,
-          targetedSearchRequests:targetedRecipeSearch?.requestCount||0,
-          targetedSearchCached:targetedRecipeSearch?.cached===true
+          requestCount:recipeIndex?.requestCount||0
         }
       });
     }
