@@ -5,26 +5,21 @@ assert.equal(CLASS_BY_ID[8],'mage');
 assert.equal(CLASS_BY_ID[11],'druid');
 
 const publicTrainers=await fetchForeverDbPublicClassTrainers(8,{
-  fetchImpl:async url=>{
-    const href=String(url);
-    if(href.includes('/i18n/de.json'))return {
-      ok:true,status:200,
-      json:async()=>({'Stormwind':'Sturmwind','Mage Trainer':'Magierlehrer'})
-    };
-    return {
-      ok:true,status:200,
-      json:async()=>({classTrainers:{'8':[
-        {npc:331,n:'Maginor Dumas',sub:'Mage Trainer',side:'Alliance',m:1453,zone:'Stormwind',x:38.2,y:80.1,at:'forever',fv:1,seen:4},
-        {npc:999,n:'Alter Classic-Lehrer',sub:'Mage Trainer',side:'Alliance',m:1453,zone:'Stormwind',x:40,y:80,fv:0}
-      ]}})
-    };
-  }
+  fetchImpl:async()=>({
+    ok:true,status:200,
+    json:async()=>({classTrainers:{'8':[
+      {npc:331,n:'Maginor Dumas',sub:'Mage Trainer',side:'Alliance',m:1453,zone:'Stormwind',x:38.2,y:80.1,at:'forever',fv:1,seen:4},
+      {npc:999,n:'Alter Classic-Lehrer',sub:'Mage Trainer',side:'Alliance',m:1453,zone:'Stormwind',x:40,y:80,fv:0},
+      {npc:1000,n:'Gebirgslehrer',sub:'Mage Trainer',side:'Alliance',m:1416,zone:'Alterac Mountains',x:42,y:50,at:'forever',fv:1}
+    ]}})
+  })
 });
-assert.equal(publicTrainers.length,2);
+assert.equal(publicTrainers.length,3);
 assert.equal(publicTrainers[0].id,331);
 assert.equal(publicTrainers[0].name,'Maginor Dumas');
-assert.equal(publicTrainers[0].npcTitle,'Magierlehrer');
-assert.equal(publicTrainers[0].location.zone,'Sturmwind','ForeverDB deutsche UI-Lokalisierung wird für sichtbare Lehrerorte verwendet');
+assert.equal(publicTrainers[0].npcTitle,'Mage Trainer');
+assert.equal(publicTrainers[0].location.zone,'Stormwind');
+assert.equal(publicTrainers.find(source=>source.id===1000)?.location.zone,'Alteracgebirge','Sichtbare Lehrerorte folgen der source-backed deutschen ForeverDB-Map-ID-Zuordnung');
 assert.equal(publicTrainers[0].location.uiMapId,1453);
 assert.equal(publicTrainers[0].evidence,'forever-confirmed');
 assert.equal(publicTrainers[1].evidence,'classic-unconfirmed');
