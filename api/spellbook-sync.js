@@ -3,6 +3,7 @@ import {loadCharacters,saveCharacters,acquireRefreshLock,releaseRefreshLock} fro
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {parseSpellbookCode,resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
+import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 export const config={maxDuration:30};
 
@@ -22,6 +23,31 @@ async function requestCode(req){
     if(raw.length>250000)throw new Error('Spellbook-Anfrage ist zu groß');
   }
   try{return JSON.parse(raw)?.code||null}catch{return null}
+}
+async function archiveKnownAbilityIcons(data,characterSlug){
+  const characters=[...(data?.characters||[])];
+  const index=characters.findIndex(character=>character?.slug===characterSlug);
+  if(index<0)return data;
+  const character=characters[index];
+  const abilities=await Promise.all((character.knownClassAbilities||[]).map(async ability=>{
+    const iconId=Number(ability?.iconId);
+    if(!Number.isInteger(iconId)||iconId<=0)return ability;
+    try{
+      const iconUrl=await resolveMediaAsset({
+        entityType:'spell',
+        entityId:ability.id,
+        role:'icon',
+        sourceUrl:'https://foreverdb.net/icons/'+iconId+'.webp',
+        priorStoredUrl:ability.iconUrl||null
+      });
+      return {...ability,iconUrl:iconUrl||ability.iconUrl||null};
+    }catch(error){
+      console.warn('Spellbook-Icon konnte nicht archiviert werden:',String(error.message).slice(0,120));
+      return ability;
+    }
+  }));
+  characters[index]={...character,knownClassAbilities:abilities};
+  return {...data,characters};
 }
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
@@ -48,7 +74,8 @@ export default async function handler(req,res){
     let localized={};
     try{localized=await cachedGermanClassSpells(directIds,{maxFetch:30})}catch{}
     const syncedAt=new Date().toISOString();
-    const updated=applySpellbookSnapshot(before,snapshot,{classMaster,localized,syncedAt});
+    let updated=applySpellbookSnapshot(before,snapshot,{classMaster,localized,syncedAt});
+    updated=await archiveKnownAbilityIcons(updated,snapshot.characterSlug);
     await saveCharacters(updated,lockToken);
     try{await appendChangeBatch(before,updated,{source:'spellbook-sync'})}catch(error){
       console.warn('Spellbook-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
