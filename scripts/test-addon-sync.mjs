@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
+import {previewCookieFromSetCookie} from './dalton-sync-client.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
 '  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.5", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
@@ -13,6 +14,12 @@ const lua='DaltonDashboardCharDB = {\n'+
 '  ["economy"] = { ["moneyCopper"] = 999999 },\n'+
 '  ["inventory"] = { ["bags"] = { ["totalSlots"] = 56 } }\n'+
 '}';
+
+assert.equal(
+  previewCookieFromSetCookie(['_vercel_jwt=test-token; Max-Age=60; Path=/; Secure; HttpOnly','other=value; Path=/']),
+  '_vercel_jwt=test-token',
+  'Der Companion muss Vercels Preview-Cookie ohne manuelles Browser-Copy extrahieren'
+);
 
 const parsed=parseLuaSavedVariable(lua);
 assert.equal(parsed.character.name,'Cole Dalton');
