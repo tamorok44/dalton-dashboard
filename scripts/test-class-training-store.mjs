@@ -138,19 +138,31 @@ const hunter=normalizeForeverDbClass({
 assert.equal(hunter.abilities.length,1,'Begleitertraining bleibt aus der Kategorie Klassenfähigkeiten heraus');
 assert.equal(hunter.abilities[0].ranks[0].id,3044);
 
-const previousKey=process.env.FOREVERDB_API_KEY;
-process.env.FOREVERDB_API_KEY='test-key';
+let publicFetches=0;
 const localized=await cachedGermanClassSpells([133,143],{
   fetchImpl:async url=>{
-    const id=Number(new URL(url).pathname.split('/').pop());
-    const data=id===133
-      ?{id:133,name:'Feuerball',rank:'Rang 1',requiredLevel:1}
-      :{id:143,name:'Feuerball',rank:'Rang 2',requiredLevel:6};
-    return {ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify({data})};
+    publicFetches++;
+    const pathname=new URL(url).pathname;
+    if(pathname.endsWith('/l10n/de/spells.json')){
+      return {ok:true,status:200,json:async()=>({
+        '133':{n:'Feuerball',r:'Rang 1'},
+        '143':{n:'Feuerball',r:'Rang 2'}
+      })};
+    }
+    if(pathname.endsWith('/classes.json')){
+      return {ok:true,status:200,json:async()=>[
+        {id:8,n:'Mage',abilities:[{n:'Fireball',ranks:[
+          {id:133,lv:1,r:'Rank 1',ic:135812},
+          {id:143,lv:6,r:'Rank 2',ic:135812}
+        ]}]}
+      ]};
+    }
+    throw new Error('Unerwartete öffentliche ForeverDB-Datei: '+pathname);
   }
 });
-if(previousKey===undefined)delete process.env.FOREVERDB_API_KEY;else process.env.FOREVERDB_API_KEY=previousKey;
+assert.equal(publicFetches,2,'Deutsche Klassennamen und Icons werden aus zwei öffentlichen Builddateien statt einzelnen API-Spellrequests geladen');
 assert.equal(localized[133].name,'Feuerball');
 assert.equal(localized[143].rank,'Rang 2');
+assert.equal(localized[143].iconId,135812);
 
 console.log('Klassenmaster: Lehrerfähigkeiten, Ränge, Level, Quellen und Preis-Provenienz: OK');
