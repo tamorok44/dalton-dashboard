@@ -1,10 +1,11 @@
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbProfessionMasters,cachedForeverDbVendor} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildLocationPlanner} from '../scripts/location-planner.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
+import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
@@ -63,14 +64,11 @@ function localizePlannerClassData(planner,localized={}){
     })):planner?.npcs
   };
 }
-async function withNpcAvatar(npc,build){
-  let candidate={...npc};
-  if(!candidate.renderSourceUrl&&candidate.sourceType==='vendor'&&Number.isInteger(Number(candidate.id))){
-    try{
-      const vendor=await cachedForeverDbVendor(candidate.id,{build});
-      if(vendor?.id)candidate={...candidate,displayId:vendor.displayId||candidate.displayId,renderSourceUrl:vendor.renderUrl||candidate.renderSourceUrl};
-    }catch{}
-  }
+async function withNpcAvatar(npc){
+  const candidate={
+    ...npc,
+    displayId:Number(npc?.displayId)||classicNpcDisplayId(npc?.id)||null
+  };
   const sourceUrl=npcRenderSource(candidate);
   if(!sourceUrl||!candidate.id)return {...candidate,avatarUrl:null};
   try{
@@ -114,14 +112,14 @@ export default async function handler(req,res){
     const selectedProfessionSlugs=selectedCharacter
       ?workshopProfessionSlugs({characters:[selectedCharacter]})
       :[];
-    const [professionMasters,classMaster]=await Promise.all([
-      selectedProfessionSlugs.length
-        ?cachedForeverDbProfessionMasters(selectedProfessionSlugs,{build:recipeIndex?.build||null})
-        :{},
-      selectedCharacter?.classId
-        ?cachedForeverDbClassMaster(selectedCharacter.classId,{build:recipeIndex?.build||null})
-        :null
-    ]);
+    const professionMasters=Object.fromEntries(
+      (recipeIndex?.professions||[])
+        .filter(profession=>selectedProfessionSlugs.includes(profession?.slug))
+        .map(profession=>[profession.slug,{...profession,cached:true}])
+    );
+    const classMaster=selectedCharacter?.classId
+      ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:recipeIndex?.build||null})
+      :null;
     let planner=buildLocationPlanner(stored.data,recipeIndex,{
       characterSlug:character,
       location,
@@ -137,7 +135,7 @@ export default async function handler(req,res){
       planner=localizePlannerClassData(planner,localized);
     }
     if(planner.npcs?.length){
-      const npcs=await Promise.all(planner.npcs.map(npc=>withNpcAvatar(npc,recipeIndex?.build||null)));
+      const npcs=await Promise.all(planner.npcs.map(npc=>withNpcAvatar(npc)));
       const avatarByKey=new Map(npcs.map(npc=>[npc.key,npc.avatarUrl||null]));
       planner={
         ...planner,
