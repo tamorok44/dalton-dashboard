@@ -1,7 +1,9 @@
 import {redis,configured as redisConfigured} from './character-store.mjs';
 import {foreverDbConfigured,fetchForeverDbClass,fetchForeverDbSpell} from './foreverdb-api.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v3:';
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v4:';
+const PUBLIC_DATA_BASE='https://foreverdb.net/data/';
+let publicTrainerCache=null;
 const SPELL_LOCALE_HASH='dalton-dashboard:foreverdb:class-spell-locale:v1';
 export const CLASS_BY_ID=Object.freeze({
   1:'warrior',2:'paladin',3:'hunter',4:'rogue',5:'priest',7:'shaman',8:'mage',9:'warlock',11:'druid'
@@ -73,10 +75,12 @@ function priceSource(value,{hasPrice=false}={}){
   return 'unknown';
 }
 function evidence(raw={}){
-  const seen=first(raw.seenInForever,raw.seen_in_forever,raw.seen,raw.verifiedInForever,raw.verified_in_forever);
+  const foreverFlag=first(raw.fv,raw.foreverVerified,raw.forever_verified);
+  if(foreverFlag===true||foreverFlag===1||foreverFlag==='true')return 'forever-confirmed';
+  const seen=first(raw.seenInForever,raw.seen_in_forever,raw.verifiedInForever,raw.verified_in_forever);
   if(seen===true||seen===1||seen==='true')return 'forever-confirmed';
-  if(seen===false||seen===0||seen==='false')return 'classic-unconfirmed';
-  const source=lower(firstText(raw.evidence,raw.source,raw.dataSource,raw.data_source));
+  if(seen===false||seen===0||seen==='false'||foreverFlag===false||foreverFlag===0)return 'classic-unconfirmed';
+  const source=lower(firstText(raw.evidence,raw.source,raw.dataSource,raw.data_source,raw.at));
   if(/forever|observed|verified|live/.test(source))return 'forever-confirmed';
   if(/classic|cmangos/.test(source))return 'classic-unconfirmed';
   return 'unknown';
@@ -92,12 +96,12 @@ function location(raw={}){
   const zone=firstText(loc.zone,loc.zoneName,loc.zone_name,raw.zone,raw.zoneName,raw.zone_name,loc.map?.name,raw.map?.name);
   const x=firstNumber(loc.x,loc.coordX,loc.coord_x,raw.x,raw.coordX,raw.coord_x);
   const y=firstNumber(loc.y,loc.coordY,loc.coord_y,raw.y,raw.coordY,raw.coord_y);
-  const uiMapId=integer(first(loc.uiMapId,loc.ui_map_id,loc.mapId,loc.map_id,raw.uiMapId,raw.ui_map_id,raw.mapId,raw.map_id,loc.map?.id,raw.map?.id));
+  const uiMapId=integer(first(loc.uiMapId,loc.ui_map_id,loc.mapId,loc.map_id,raw.uiMapId,raw.ui_map_id,raw.mapId,raw.map_id,raw.m,loc.map?.id,raw.map?.id));
   return {zone:zone||null,x,y,uiMapId,instance:firstText(loc.instance,raw.instance)||null};
 }
 function normalizeTrainer(raw={},inherited={}){
-  const id=integer(first(raw.id,raw.npcId,raw.npc_id,raw.creatureId,raw.creature_id,raw.npc?.id));
-  const name=firstText(raw.name,raw.npcName,raw.npc_name,raw.npc?.name);
+  const id=integer(first(raw.id,raw.npcId,raw.npc_id,raw.creatureId,raw.creature_id,typeof raw.npc==='number'?raw.npc:null,raw.npc?.id));
+  const name=firstText(raw.name,raw.n,raw.npcName,raw.npc_name,raw.npc?.name);
   if(!id&&!name)return null;
   const directPrice=firstNumber(raw.trainerCost,raw.trainer_cost,raw.trainingCost,raw.training_cost,raw.priceCopper,raw.price_copper,raw.price);
   const inheritedPrice=firstNumber(inherited.priceCopper);
@@ -107,7 +111,7 @@ function normalizeTrainer(raw={},inherited={}){
     type:'trainer',
     id,
     name:name||'Klassenlehrer',
-    npcTitle:firstText(raw.title,raw.npcTitle,raw.npc_title,raw.npc?.title)||null,
+    npcTitle:firstText(raw.title,raw.sub,raw.npcTitle,raw.npc_title,raw.npc?.title)||null,
     side:side(raw)||inherited.side||null,
     location:location(raw),
     evidence:evidence(raw),
@@ -116,7 +120,8 @@ function normalizeTrainer(raw={},inherited={}){
     displayId:integer(first(raw.displayId,raw.display_id,raw.creatureDisplayId,raw.creature_display_id)),
     renderSourceUrl:firstText(raw.render?.url,raw.renderUrl,raw.render_url,raw.imageUrl,raw.image_url)||null,
     minLevel:firstNumber(raw.minLevel,raw.min_level,raw.requiredLevel,raw.required_level),
-    maxLevel:firstNumber(raw.maxLevel,raw.max_level)
+    maxLevel:firstNumber(raw.maxLevel,raw.max_level),
+    sourceRef:firstText(raw.sourceRef,raw.source_ref)||null
   };
 }
 function trainerContext(value,inherited={}){
@@ -158,6 +163,41 @@ function dedupeTrainers(sources=[]){
     if(score>priorScore)byKey.set(key,{...prior,...source});
   }
   return [...byKey.values()];
+}
+
+async function publicTrainerData({fetchImpl=fetch}={}){
+  if(publicTrainerCache&&Date.now()-publicTrainerCache.at<10*60*1000)return publicTrainerCache.data;
+  const url=new URL('trainers.json',PUBLIC_DATA_BASE);
+  const response=await fetchImpl(url,{
+    headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},
+    signal:AbortSignal.timeout(15000)
+  });
+  if(!response.ok)throw new Error('ForeverDB öffentliche Klassenlehrer HTTP '+response.status);
+  const data=await response.json();
+  publicTrainerCache={at:Date.now(),data};
+  return data;
+}
+export async function fetchForeverDbPublicClassTrainers(classId,{fetchImpl=fetch}={}){
+  const data=await publicTrainerData({fetchImpl});
+  const rows=asArray(data?.classTrainers?.[String(Number(classId))]);
+  return dedupeTrainers(rows.map(raw=>normalizeTrainer(raw)).filter(Boolean));
+}
+function replaceGenericTrainerFallbacks(classMaster,trainers){
+  const generic=dedupeTrainers(trainers);
+  const fallbackOnly=sources=>asArray(sources).length>0&&asArray(sources).every(source=>
+    String(source?.sourceRef||'').startsWith('foreverdb-guide-zephras-')
+  );
+  return {
+    ...classMaster,
+    trainers:generic,
+    abilities:asArray(classMaster?.abilities).map(ability=>({
+      ...ability,
+      ranks:asArray(ability?.ranks).map(rank=>({
+        ...rank,
+        sources:!asArray(rank?.sources).length||fallbackOnly(rank.sources)?generic:rank.sources
+      }))
+    }))
+  };
 }
 function normalizeRank(raw={},ability={},classTrainers=[]){
   const spell=object(first(raw.spell,raw.ability,raw.classAbility,raw.class_ability));
@@ -242,8 +282,20 @@ export function normalizeForeverDbClass(raw={},slug){
 export async function fetchForeverDbClassMaster(classId,{fetchImpl=fetch}={}){
   const slug=CLASS_BY_ID[Number(classId)];
   if(!slug)throw new Error('Nicht unterstützte Forever-Klasse');
-  const result=await fetchForeverDbClass(slug,{fetchImpl});
-  return {classMaster:normalizeForeverDbClass(result.data,slug),build:result.meta?.build||result.meta?.gameBuild||result.meta?.clientBuild||null};
+  const [result,publicTrainers]=await Promise.all([
+    fetchForeverDbClass(slug,{fetchImpl}),
+    fetchForeverDbPublicClassTrainers(classId,{fetchImpl}).catch(()=>[])
+  ]);
+  const normalized=normalizeForeverDbClass(result.data,slug);
+  const mergedTrainers=dedupeTrainers([
+    ...publicTrainers,
+    ...normalized.trainers,
+    ...verifiedZephrasClassTrainers(slug)
+  ]);
+  return {
+    classMaster:replaceGenericTrainerFallbacks(normalized,mergedTrainers),
+    build:result.meta?.build||result.meta?.gameBuild||result.meta?.clientBuild||null
+  };
 }
 export async function cachedGermanClassSpells(ids,{fetchImpl=fetch,maxFetch=25}={}){
   const keys=[...new Set(asArray(ids).map(integer).filter(Boolean))];
