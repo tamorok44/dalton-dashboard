@@ -1,19 +1,24 @@
 import {redis,configured} from './character-store.mjs';
 import {publicAddonSyncSummary} from './addon-sync.mjs';
 
-const PREFIX='dalton-dashboard:addon-sync:v1:';
+function environmentScope(){
+  return process.env.VERCEL_ENV==='production'?'production':'preview';
+}
+function keyFor(characterSlug){
+  return 'dalton-dashboard:addon-sync:v1:'+environmentScope()+':'+characterSlug;
+}
 
 export async function saveAddonSyncState(characterSlug,payload){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
   const state={characterSlug,receivedAt:new Date().toISOString(),payload};
-  await redis(['SET',PREFIX+characterSlug,JSON.stringify(state)]);
+  await redis(['SET',keyFor(characterSlug),JSON.stringify(state)]);
   return state;
 }
 
 export async function loadAddonSyncState(characterSlug){
   if(!configured())return null;
-  const value=await redis(['GET',PREFIX+characterSlug]);
+  const value=await redis(['GET',keyFor(characterSlug)]);
   if(!value)return null;
   const parsed=JSON.parse(value);
   return parsed&&typeof parsed==='object'?parsed:null;
