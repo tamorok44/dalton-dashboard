@@ -43,6 +43,8 @@ assert.ok(bundle.includes('MERCHANT_SHOW'));
 assert.ok(bundle.includes('TRAINER_SHOW'));
 assert.ok(bundle.includes('C_MerchantFrame.GetItemInfo'));
 assert.ok(bundle.includes('GetNumTrainerServices'));
+assert.ok(bundle.includes('GetTrainerServiceSkillReq'));
+assert.ok(bundle.includes('GetTrainerServiceAbilityReq'));
 assert.ok(bundle.includes('locationHistory'));
 assert.ok(bundle.includes('GetContainerItemInfo'));
 assert.ok(bundle.includes('FetchPurchasedBankTabData'));
