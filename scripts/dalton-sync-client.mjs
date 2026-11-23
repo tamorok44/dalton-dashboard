@@ -29,30 +29,45 @@ function help(){
   console.log('Bei geschützten Vercel-Previews kann DALTON_SYNC_PREVIEW_SHARE_URL gesetzt werden.');
 }
 async function discoverFiles(){
-  const roots=[
+  const wowRoots=[
     process.env.DALTON_WOW_ROOT,
     process.platform==='darwin'?'/Applications/World of Warcraft':null,
     process.platform==='darwin'?join(homedir(),'Applications','World of Warcraft'):null,
     process.env['PROGRAMFILES(X86)']?join(process.env['PROGRAMFILES(X86)'],'World of Warcraft'):null,
     process.env.PROGRAMFILES?join(process.env.PROGRAMFILES,'World of Warcraft'):null
   ].filter(Boolean).filter(existsSync);
+
+  const accountRoots=[];
+  for(const root of wowRoots){
+    const directAccount=join(root,'WTF','Account');
+    if(existsSync(directAccount))accountRoots.push(directAccount);
+
+    let entries=[];
+    try{entries=await fs.readdir(root,{withFileTypes:true})}catch{}
+    for(const entry of entries){
+      if(!entry.isDirectory())continue;
+      const account=join(root,entry.name,'WTF','Account');
+      if(existsSync(account))accountRoots.push(account);
+    }
+  }
+
   const found=[];
-  const skip=new Set(['node_modules','.git','Cache','Logs','Screenshots']);
-  async function walk(dir,depth){
-    if(depth>12)return;
+  async function walkSavedVariables(dir,depth){
+    if(depth>7)return;
     let entries;
     try{entries=await fs.readdir(dir,{withFileTypes:true})}catch{return}
     for(const entry of entries){
       const full=join(dir,entry.name);
       if(entry.isDirectory()){
-        if(!skip.has(entry.name))await walk(full,depth+1);
+        if(entry.name==='Cache'||entry.name==='Logs')continue;
+        await walkSavedVariables(full,depth+1);
       }else if(entry.isFile()&&entry.name==='DaltonDashboard.lua'&&/SavedVariables/i.test(full)){
         const stat=await fs.stat(full);
         found.push({file:full,mtime:stat.mtimeMs});
       }
     }
   }
-  for(const root of roots)await walk(root,0);
+  for(const root of [...new Set(accountRoots)])await walkSavedVariables(root,0);
   return found.sort((a,b)=>b.mtime-a.mtime);
 }
 async function resolveFile(explicit){
