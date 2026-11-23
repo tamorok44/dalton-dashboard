@@ -67,8 +67,10 @@ local function trainerFingerprint(snapshot)
       tostring(service.name or ""),
       tostring(service.serviceType or ""),
       tostring(service.requiredLevel or ""),
+      tostring(service.requiredSkillRank or ""),
       tostring(service.priceCopper or ""),
-      tostring(service.skillLine or "")
+      tostring(service.skillLine or ""),
+      tostring(service.requiredSkillName or "")
     }, ":")
   end
   return table.concat(parts, "|")
@@ -110,6 +112,8 @@ local function captureMerchant(reason)
     reason = reason,
     type = "merchant",
     complete = true,
+    build = ns.GetDB().meta and ns.GetDB().meta.build or nil,
+    gameVersion = ns.GetDB().meta and ns.GetDB().meta.gameVersion or nil,
     npc = npcIdentity(),
     location = locationSnapshot(reason),
     count = count,
@@ -164,6 +168,8 @@ local function captureTrainer(reason)
     reason = reason,
     type = "trainer",
     complete = true,
+    build = ns.GetDB().meta and ns.GetDB().meta.build or nil,
+    gameVersion = ns.GetDB().meta and ns.GetDB().meta.gameVersion or nil,
     npc = npcIdentity(),
     location = locationSnapshot(reason),
     count = count,
