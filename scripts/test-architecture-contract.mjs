@@ -159,15 +159,29 @@ assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('l
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('trainerRoleMatchesAbility'),'Portal and pet trainers must not be treated as generic class trainers');
 assert.ok(policy.includes('Startzauber, interne Auren und Effekte')&&policy.includes('fail-closed unsichtbar'),'Architecture contract must reject class rows without lesson evidence');
 assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes("character?.knownClassAbilitiesSource==='WoW-Spellbook'"),'Normal profile refresh must preserve a verified ingame spellbook snapshot');
-const addonSource=fs.readFileSync(path.join(root,'addons','DaltonDashboard','DaltonDashboard.lua'),'utf8');
-const addonConfig=fs.readFileSync(path.join(root,'addons','DaltonDashboard','Config.lua'),'utf8');
-const addonToc=fs.readFileSync(path.join(root,'addons','DaltonDashboard','DaltonDashboard.toc'),'utf8');
-assert.ok(addonSource.includes('C_SpellBook.GetSpellBookItemInfo')&&addonSource.includes('C_SpellBook.IsSpellKnown'),'Forever addon must read the actual player spellbook');
+const addonRoot=path.join(root,'addons','DaltonDashboard');
+const addonCore=fs.readFileSync(path.join(addonRoot,'Core.lua'),'utf8');
+const addonEntry=fs.readFileSync(path.join(addonRoot,'DaltonDashboard.lua'),'utf8');
+const addonSpellbook=fs.readFileSync(path.join(addonRoot,'Modules','Spellbook.lua'),'utf8');
+const addonLocation=fs.readFileSync(path.join(addonRoot,'Modules','Location.lua'),'utf8');
+const addonInstances=fs.readFileSync(path.join(addonRoot,'Modules','Instances.lua'),'utf8');
+const addonInventory=fs.readFileSync(path.join(addonRoot,'Modules','Inventory.lua'),'utf8');
+const addonHunter=fs.readFileSync(path.join(addonRoot,'Modules','HunterPet.lua'),'utf8');
+const addonToc=fs.readFileSync(path.join(addonRoot,'DaltonDashboard.toc'),'utf8');
+const addonBundle=[addonCore,addonEntry,addonSpellbook,addonLocation,addonInstances,addonInventory,addonHunter,addonToc].join('\n');
+assert.ok(addonSpellbook.includes('C_SpellBook.GetSpellBookItemInfo')&&addonSpellbook.includes('C_SpellBook.IsSpellKnown'),'Forever addon must read the actual player spellbook');
 assert.ok(addonToc.includes('## Interface: 16001'),'Forever addon must declare the current Forever 1.60.1 interface version');
-assert.ok(addonSource.includes('for lineIndex = 2, lines do'),'Spellbook export must exclude the General skill line and profession tabs');
-assert.ok(addonConfig.includes('PRIVATE_TOKEN_HERE'),'Repository addon config must contain only the public placeholder');
-assert.ok(!/DALTON_DASHBOARD_SYNC_TOKEN\s*=\s*["'](?!PRIVATE_TOKEN_HERE["'])[^"']+/.test(addonConfig),'Private spellbook token must never be committed');
-assert.ok(policy.includes('SPELLBOOK_SYNC_TOKEN')&&policy.includes('niemals im Repository oder Frontend'),'Architecture contract must keep the spellbook credential private');
+assert.ok(addonToc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'),'Forever addon must persist collected data per character');
+for(const required of ['Modules/Spellbook.lua','Modules/Location.lua','Modules/Instances.lua','Modules/Inventory.lua','Modules/HunterPet.lua']){
+  assert.ok(addonToc.includes(required),'Forever addon must load collector module: '+required);
+}
+assert.ok(addonLocation.includes('GetPlayerMapPosition')&&addonLocation.includes('GetBindLocation'),'Forever addon must capture real client location and bind location');
+assert.ok(addonInstances.includes('GetSavedInstanceInfo'),'Forever addon must capture real instance lockouts');
+assert.ok(addonInventory.includes('GetContainerItemInfo'),'Forever addon must capture bags and last readable bank state');
+assert.ok(addonHunter.includes('GetPetHappiness')&&addonHunter.includes('SpellBookSpellBank.Pet'),'Forever addon must capture real hunter-pet state and pet spellbook');
+assert.ok(!fs.existsSync(path.join(addonRoot,'Config.lua')),'CurseForge addon must not require a committed private-token config file');
+assert.ok(!addonBundle.includes('DALTON_DASHBOARD_SYNC_TOKEN')&&!addonBundle.includes('PRIVATE_TOKEN_HERE'),'CurseForge addon must never contain the private dashboard sync credential');
+assert.ok(policy.includes('SPELLBOOK_SYNC_TOKEN')&&policy.includes('niemals im Repository oder Frontend'),'Architecture contract must keep the existing server-side spellbook credential private');
 assert.ok(policy.includes('Ein Lernziel besitzt genau eine stabile Erledigungs-ID'),'Location planner must distinguish one learning target from multiple NPC offers');
 assert.ok(policy.includes('ein stilles Opt-out ist verboten'),'Manual vendor switches must require explicit confirmation');
 assert.ok(policy.includes('direkt am neu angeklickten Angebot sichtbar'),'Vendor-switch confirmation must remain visible at the clicked offer in long lists');
