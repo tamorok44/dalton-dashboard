@@ -224,7 +224,7 @@ export async function getForeverDbMasterRecipeIndex({
     await deleteKey(MASTER_DRAFT_KEY);
   }
   const draftTime=Date.parse(draft?.generatedAt||'');
-  const advancedByConcurrentRequest=Number.isFinite(draftTime)&&draftTime>=requestStartedAt;
+  const advancedByConcurrentRequest=Number.isFinite(draftTime)&&draftTime>requestStartedAt;
 
   if(!draft){
     const seed=await seedDraftFromExistingScope(seedProfessionSlugs);
