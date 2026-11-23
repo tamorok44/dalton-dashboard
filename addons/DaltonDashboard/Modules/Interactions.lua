@@ -12,6 +12,27 @@ module.events = {
 
 local HISTORY_LIMIT = 80
 
+local function interactionDiagnostics()
+  local db = ns.GetDB()
+  db.diagnostics = db.diagnostics or {}
+  db.diagnostics.interactions = db.diagnostics.interactions or {}
+  return db.diagnostics.interactions
+end
+
+local function noteEvent(event)
+  local diagnostics = interactionDiagnostics()
+  diagnostics.lastEvent = event
+  diagnostics.lastEventAt = ns.Now()
+  diagnostics.eventCount = (tonumber(diagnostics.eventCount) or 0) + 1
+end
+
+local function noteCapture(kind, ok, detail)
+  local diagnostics = interactionDiagnostics()
+  diagnostics["last" .. kind .. "CaptureAt"] = ns.Now()
+  diagnostics["last" .. kind .. "CaptureOK"] = ok and true or false
+  diagnostics["last" .. kind .. "CaptureDetail"] = tostring(detail or ""):sub(1, 240)
+end
+
 local function npcIdentity()
   local guid = ns.SafeString(UnitGUID and UnitGUID("npc"))
   local creatureID
@@ -98,14 +119,61 @@ local function storeSnapshot(kind, snapshot, fingerprint)
   db.meta.lastUpdatedAt = interactions.capturedAt
 end
 
+local function merchantInfo(index)
+  if C_MerchantFrame and type(C_MerchantFrame.GetItemInfo) == "function" then
+    local ok, info = pcall(C_MerchantFrame.GetItemInfo, index)
+    if ok and type(info) == "table" then
+      return true, {
+        name = info.name,
+        texture = info.texture,
+        price = info.price,
+        stackCount = info.stackCount,
+        numAvailable = info.numAvailable,
+        isPurchasable = info.isPurchasable,
+        isUsable = info.isUsable,
+        hasExtendedCost = info.hasExtendedCost,
+        currencyID = info.currencyID,
+        spellID = info.spellID,
+        isQuestStartItem = info.isQuestStartItem,
+        api = "C_MerchantFrame.GetItemInfo"
+      }
+    end
+  end
+
+  if type(GetMerchantItemInfo) == "function" then
+    local ok, name, texture, price, stackCount, numAvailable, isPurchasable, isUsable, extendedCost, currencyID =
+      pcall(GetMerchantItemInfo, index)
+    if ok and name then
+      return true, {
+        name = name,
+        texture = texture,
+        price = price,
+        stackCount = stackCount,
+        numAvailable = numAvailable,
+        isPurchasable = isPurchasable,
+        isUsable = isUsable,
+        hasExtendedCost = extendedCost,
+        currencyID = currencyID,
+        api = "GetMerchantItemInfo"
+      }
+    end
+  end
+
+  return false, nil
+end
+
 local function captureMerchant(reason)
-  if type(GetMerchantNumItems) ~= "function" or not (C_MerchantFrame and C_MerchantFrame.GetItemInfo) then
-    ns.RecordCompatibility("Interactions.Merchant", "Forever-Händlerdaten sind auf diesem Client nicht vollständig lesbar.")
+  if type(GetMerchantNumItems) ~= "function" then
+    ns.RecordCompatibility("Interactions.Merchant", "GetMerchantNumItems fehlt auf diesem Client.")
+    noteCapture("Merchant", false, "GetMerchantNumItems fehlt")
     return false
   end
 
   local okCount, count = pcall(GetMerchantNumItems)
-  if not okCount or type(count) ~= "number" or ns.IsSecret(count) then return false end
+  if not okCount or type(count) ~= "number" or ns.IsSecret(count) then
+    noteCapture("Merchant", false, "Händleranzahl nicht lesbar")
+    return false
+  end
 
   local snapshot = {
     capturedAt = ns.Now(),
@@ -120,11 +188,13 @@ local function captureMerchant(reason)
     items = {}
   }
 
+  local apiUsed
   for index = 1, count do
-    local okInfo, info = pcall(C_MerchantFrame.GetItemInfo, index)
+    local okInfo, info = merchantInfo(index)
     if not okInfo or type(info) ~= "table" then
       snapshot.complete = false
     else
+      apiUsed = apiUsed or info.api
       if not ns.SafeString(info.name) then snapshot.complete = false end
       local link
       if type(GetMerchantItemLink) == "function" then
@@ -150,18 +220,24 @@ local function captureMerchant(reason)
     end
   end
 
+  snapshot.api = apiUsed
   storeSnapshot("merchant", snapshot, merchantFingerprint(snapshot))
+  noteCapture("Merchant", true, tostring(count) .. " Einträge über " .. tostring(apiUsed or "unbekannte API"))
   return true
 end
 
 local function captureTrainer(reason)
   if type(GetNumTrainerServices) ~= "function" or type(GetTrainerServiceInfo) ~= "function" then
     ns.RecordCompatibility("Interactions.Trainer", "Forever-Lehrerdaten sind auf diesem Client nicht vollständig lesbar.")
+    noteCapture("Trainer", false, "Trainer-Grundfunktionen fehlen")
     return false
   end
 
   local okCount, count = pcall(GetNumTrainerServices)
-  if not okCount or type(count) ~= "number" or ns.IsSecret(count) then return false end
+  if not okCount or type(count) ~= "number" or ns.IsSecret(count) then
+    noteCapture("Trainer", false, "Lehreranzahl nicht lesbar")
+    return false
+  end
 
   local snapshot = {
     capturedAt = ns.Now(),
@@ -247,6 +323,7 @@ local function captureTrainer(reason)
   end
 
   storeSnapshot("trainer", snapshot, trainerFingerprint(snapshot))
+  noteCapture("Trainer", true, tostring(count) .. " Einträge")
   return true
 end
 
@@ -267,6 +344,7 @@ function module:Capture(reason)
 end
 
 function module:OnEvent(event)
+  noteEvent(event)
   if event == "MERCHANT_CLOSED" then markClosed("merchant"); return end
   if event == "TRAINER_CLOSED" then markClosed("trainer"); return end
   if event == "MERCHANT_SHOW" or event == "MERCHANT_UPDATE" then
