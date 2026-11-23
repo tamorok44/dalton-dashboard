@@ -170,20 +170,22 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
     }
 
     const existingKeys=new Set(sources.map(sourceKey).filter(Boolean));
-    const directPresent=new Map();
+    const directDecisions=new Map();
     for(const observation of observations){
-      if(observation?.status!=='present'||!evidenceBuildApplies(observation,recipeIndex?.build)||!targetMatches(observation,recipe))continue;
+      if(!['present','absent'].includes(observation?.status)||
+        !evidenceBuildApplies(observation,recipeIndex?.build)||
+        !targetMatches(observation,recipe))continue;
       const key=observationSourceKey(observation);
       if(!key)continue;
-      const previous=directPresent.get(key);
+      const previous=directDecisions.get(key);
       if(!previous||sourcePriority(observation?.source)>sourcePriority(previous?.source)||
         sourcePriority(observation?.source)===sourcePriority(previous?.source)&&
         observationDate(observation?.observedAt??observation?.observedOn)>observationDate(previous?.observedAt??previous?.observedOn)){
-        directPresent.set(key,observation);
+        directDecisions.set(key,observation);
       }
     }
-    for(const [key,observation] of directPresent){
-      if(existingKeys.has(key))continue;
+    for(const [key,observation] of directDecisions){
+      if(existingKeys.has(key)||observation?.status!=='present')continue;
       const source=sourceFromObservation(observation);
       if(!source)continue;
       sources.push(source);
