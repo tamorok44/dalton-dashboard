@@ -3,7 +3,7 @@ import {foreverDbConfigured,fetchForeverDbClass} from './foreverdb-api.mjs';
 import {CLASSIC_CLASS_TRAINER_COSTS} from './class-training-classic-costs.mjs';
 import {CLASS_TRAINER_ZONE_DE} from './class-trainer-zones-de.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v7:';
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v8:';
 const PUBLIC_DATA_BASE='https://foreverdb.net/data/';
 let publicTrainerCache=null;
 let publicClassDataCache=null;
