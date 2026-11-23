@@ -588,7 +588,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .spellbook-known-entry span{color:var(--class);font:var(--weight-label) var(--type-caption)/1.3 var(--body);white-space:nowrap}
 .spellbook-known-entry small{grid-column:1/-1;color:var(--muted);font-size:var(--type-caption)}
 .spellbook-empty{margin:0;color:var(--muted);font-size:var(--type-small)}
-.spellbook-sync{display:grid;gap:9px;padding:11px;border:1px solid rgba(182,148,97,.40);border-radius:4px;background:linear-gradient(110deg,color-mix(in srgb,var(--ink) 68%,var(--teal)),color-mix(in srgb,var(--ink) 82%,var(--wood)))}
+.spellbook-sync{display:grid;gap:9px;padding:11px;border:1px solid rgba(182,148,97,.40);border-radius:4px;background:linear-gradient(110deg,color-mix(in srgb,var(--ink) 78%,var(--class)),color-mix(in srgb,var(--ink) 82%,var(--wood)))}
 .spellbook-sync h4{margin:2px 0 4px;color:var(--cream);font:var(--weight-label) var(--type-body)/1.3 var(--body)}
 .spellbook-sync p{margin:0;color:var(--muted);font-size:var(--type-small);line-height:1.5}
 .spellbook-sync textarea{box-sizing:border-box;width:100%;min-width:0;resize:vertical;padding:8px 9px;border:1px solid color-mix(in srgb,var(--gold-deep) 48%,transparent);border-radius:4px;color:var(--paper);background:color-mix(in srgb,var(--ink) 82%,transparent);font:var(--weight-body) var(--type-caption)/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}
