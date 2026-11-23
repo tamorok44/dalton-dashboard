@@ -237,6 +237,7 @@ export async function getForeverDbMasterRecipeIndex({
     });
   }
   if(meta.build&&!draft.build)draft.build=meta.build;
+  const observedProgress=normalizedSlugs(draft?.professionSlugs).join('|');
   if(!advance){
     const active=master?.complete?master:draft;
     return {...active,cached:Boolean(master?.complete),refreshing:!active?.complete,masterComplete:Boolean(master?.complete)};
@@ -264,7 +265,23 @@ export async function getForeverDbMasterRecipeIndex({
       return {...master,cached:true,refreshing:false,masterComplete:true};
     }
     const lockedDraft=await loadDraft();
-    if(lockedDraft&&(!meta.build||!lockedDraft.build||lockedDraft.build===meta.build))draft=lockedDraft;
+    if(lockedDraft&&(!meta.build||!lockedDraft.build||lockedDraft.build===meta.build)){
+      const lockedProgress=normalizedSlugs(lockedDraft.professionSlugs).join('|');
+      if(lockedProgress!==observedProgress){
+        const active=master?.complete?master:lockedDraft;
+        return {
+          ...active,
+          cached:Boolean(master?.complete),
+          refreshing:true,
+          masterComplete:Boolean(master?.complete),
+          refreshProgress:{
+            completed:normalizedSlugs(lockedDraft.professionSlugs).length,
+            total:PROFESSION_SLUGS.size
+          }
+        };
+      }
+      draft=lockedDraft;
+    }
 
     let missing=missingMasterProfessionSlugs(draft);
     if(missing.length){
