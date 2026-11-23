@@ -19,7 +19,7 @@ Aktuell werden lokal erfasst:
 
 ## Datenschutz und Synchronisierung
 
-Version 0.1.0-alpha.3 sendet keinerlei Daten ins Internet. Alles bleibt in den WoW-SavedVariables auf dem jeweiligen Rechner.
+Version 0.1.0-alpha.4 sendet keinerlei Daten ins Internet. Alles bleibt in den WoW-SavedVariables auf dem jeweiligen Rechner.
 
 Gold, Taschen und Bank werden bewusst bereits erfasst, aber noch nicht im Dalton Dashboard angezeigt oder verwendet. Ob und wie einzelne Datenbereiche später synchronisiert werden, wird separat entschieden.
 
@@ -35,7 +35,8 @@ Der spätere Sync ist ein eigener Transport-Schritt. Dadurch muss die Datenerfas
 - neu gelernte Klassenzauber werden über SPELLS_CHANGED aktualisiert
 - in Instanzen können Kartenkoordinaten absichtlich nicht verfügbar sein; das Addon erfindet keine Werte
 - Taschen- und Bankdaten überschreiben einen gültigen Stand niemals mit einem unlesbaren Logout-/Ladezustand
-- Banktabs werden dynamisch über die aktuelle Forever-C_Bank-API ermittelt und beim Öffnen der Bank aktualisiert
+- Banktabs werden dynamisch über die aktuelle Forever-C_Bank-API ermittelt; die Lesbarkeit der Charakterbank wird live mit C_Bank.CanViewBank geprüft
+- zusätzlich reagiert die Bankerfassung auf BANK_TABS_CHANGED, damit sie nicht von einem einzelnen Öffnen-Event abhängt
 - Pet-Daten werden nur gespeichert, wenn der Forever-Client sie tatsächlich liefert
 - nicht unterstützte oder geschützte Werte werden ausgelassen statt geschätzt
 - nicht unterstützte Events landen als Kompatibilitätshinweis und nicht mehr im eigentlichen Fehlerprotokoll
