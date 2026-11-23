@@ -1522,13 +1522,16 @@ function renderLocationPlanner(){
   if(selectedCharacter){
     const professionText=(selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
     const learnedClassAbilities=Array.isArray(selectedCharacter.knownClassAbilities)?selectedCharacter.knownClassAbilities:[];
+    const spellbookCaptured=Number.isFinite(Date.parse(selectedCharacter.knownClassAbilitiesCapturedAt||''))
+      ?new Date(selectedCharacter.knownClassAbilitiesCapturedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
+      :null;
     const learnedClassDetails=selectedCharacter.knownClassAbilitiesVerified
-      ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+'</summary><div class="planner-known-ability-list">'+
+      ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+(spellbookCaptured?' · Stand '+esc(spellbookCaptured):'')+'</summary><div class="planner-known-ability-list">'+
         (learnedClassAbilities.length
-          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Zauber '+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+'</span>').join('')
-          :'<span><strong>Noch keine auslesbaren Klassenränge</strong></span>')+
+          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Klassenfähigkeit #'+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+(ability.inferredFromHigherRank===true?'<small>durch höheren bekannten Rang mitgelernt</small>':'')+'</span>').join('')
+          :'<span><strong>Noch keine Klassenränge im synchronisierten Spellbook</strong></span>')+
         '</div></details>'
-      :'<small>Bereits gelernte Klassenränge werden vom Charakterprofil derzeit nicht bereitgestellt.</small>';
+      :'<small>Persönlicher Lernstand noch offen · im Charakterreiter „Klassenfähigkeiten“ einmal mit <strong>/dalton</strong> synchronisieren.</small>';
     characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+learnedClassDetails+'</div>'+
       '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
   }
