@@ -194,6 +194,33 @@ local function captureTrainer(reason)
         local okSkill, value = pcall(GetTrainerServiceSkillLine, index)
         if okSkill then skillLine = ns.SafeString(value) end
       end
+
+      local requiredSkillName, requiredSkillRank, hasSkillRequirement
+      if type(GetTrainerServiceSkillReq) == "function" then
+        local okRequirement, skillName, skillRank, hasRequirement = pcall(GetTrainerServiceSkillReq, index)
+        if okRequirement then
+          requiredSkillName = ns.SafeString(skillName)
+          requiredSkillRank = ns.SafeNumber(skillRank)
+          hasSkillRequirement = ns.Readable(hasRequirement)
+        end
+      end
+
+      local abilityRequirements = {}
+      if type(GetTrainerServiceNumAbilityReq) == "function" and type(GetTrainerServiceAbilityReq) == "function" then
+        local okRequirementCount, requirementCount = pcall(GetTrainerServiceNumAbilityReq, index)
+        if okRequirementCount and type(requirementCount) == "number" and not ns.IsSecret(requirementCount) then
+          for requirementIndex = 1, requirementCount do
+            local okAbility, abilityName, hasAbility = pcall(GetTrainerServiceAbilityReq, index, requirementIndex)
+            if okAbility and abilityName then
+              abilityRequirements[#abilityRequirements + 1] = {
+                name = ns.SafeString(abilityName),
+                met = ns.Readable(hasAbility)
+              }
+            end
+          end
+        end
+      end
+
       snapshot.services[#snapshot.services + 1] = {
         index = index,
         name = ns.SafeString(name),
@@ -204,7 +231,11 @@ local function captureTrainer(reason)
         category = ns.Readable(category),
         priceCopper = priceCopper,
         isProfession = isProfession,
-        skillLine = skillLine
+        skillLine = skillLine,
+        requiredSkillName = requiredSkillName,
+        requiredSkillRank = requiredSkillRank,
+        hasSkillRequirement = hasSkillRequirement,
+        abilityRequirements = abilityRequirements
       }
     end
   end
