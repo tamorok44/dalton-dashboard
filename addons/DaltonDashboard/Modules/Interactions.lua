@@ -121,6 +121,7 @@ local function captureMerchant(reason)
     if not okInfo or type(info) ~= "table" then
       snapshot.complete = false
     else
+      if not ns.SafeString(info.name) then snapshot.complete = false end
       local link
       if type(GetMerchantItemLink) == "function" then
         local okLink, value = pcall(GetMerchantItemLink, index)
