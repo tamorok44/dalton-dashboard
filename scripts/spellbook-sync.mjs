@@ -1,3 +1,6 @@
+function slug(value){
+  return String(value||'').trim().toLocaleLowerCase('en-US').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
 function integer(value){const n=Number(value);return Number.isInteger(n)&&n>0?n:null}
 function text(value,max=120){return typeof value==='string'&&value.trim()?value.trim().slice(0,max):null}
 function decode(value){
@@ -64,11 +67,23 @@ export function expandKnownClassAbilities(entries=[],classMaster=null,localized=
     };
   }).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||(a.rank||'').localeCompare(b.rank||'','de')||a.id-b.id);
 }
-export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized={},syncedAt=new Date().toISOString()}={}){
+export function resolveSpellbookCharacter(data,snapshot){
   if(!data||!Array.isArray(data.characters))throw new Error('Charakterdaten ungültig');
-  const index=data.characters.findIndex(character=>character?.slug===snapshot?.characterSlug);
-  if(index<0)throw new Error('Charakter nicht gefunden');
-  const current=data.characters[index];
+  const requested=slug(snapshot?.characterSlug);
+  const exact=data.characters.find(character=>character?.slug===requested);
+  if(exact)return exact;
+  const candidates=data.characters.filter(character=>
+    Number(character?.classId)===Number(snapshot?.classId)&&(
+      slug(character?.name)===requested||
+      slug(character?.slug).startsWith(requested+'-')
+    )
+  );
+  if(candidates.length===1)return candidates[0];
+  throw new Error('Charakter nicht gefunden');
+}
+export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized={},syncedAt=new Date().toISOString()}={}){
+  const current=resolveSpellbookCharacter(data,snapshot);
+  const index=data.characters.findIndex(character=>character?.slug===current.slug);
   if(Number(current.classId)!==Number(snapshot.classId))throw new Error('Klasse des Spellbook-Codes passt nicht zum Charakter');
   const currentLevel=Number(current.level),capturedLevel=Number(snapshot.level);
   if(Number.isFinite(currentLevel)&&Math.abs(currentLevel-capturedLevel)>2)throw new Error('Spellbook-Code passt nicht zum aktuellen Charakterlevel');
