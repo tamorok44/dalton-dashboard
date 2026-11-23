@@ -122,7 +122,7 @@ async function cachedForeverDbMeta({fetchImpl=fetch}={}){
   try{
     const meta=await fetchForeverDbMeta({fetchImpl});
     const value={...meta,generatedAt:new Date().toISOString()};
-    await saveJson(META_KEY,value,{ttl:META_TTL_SECONDS});
+    await saveJson(META_KEY,value);
     return {...value,cached:false};
   }catch(error){
     if(cached){
