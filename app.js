@@ -182,7 +182,7 @@ function classAbilitiesPanel(c){
         ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+abilities.map(entry=>{
           const icon=entry.iconUrl
             ?'<img class="spellbook-ability-icon" src="'+esc(entry.iconUrl)+'" alt="" width="36" height="36" loading="lazy">'
-            :'<span class="spellbook-ability-icon is-fallback" aria-hidden="true">✦</span>';
+            :'<span class="spellbook-ability-icon is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5z"/><path d="M19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19z"/><path d="M8 8h2M14 8h2"/></svg></span>';
           return '<div class="spellbook-known-entry">'+icon+'<div class="spellbook-known-copy"><strong>'+esc(entry.name||('Klassenfähigkeit #'+entry.id))+'</strong>'+
             (entry.inferredFromHigherRank===true?'<small>Durch höheren bekannten Rang mitgelernt</small>':'')+
             '</div>'+(entry.rank?'<span class="spellbook-known-rank">'+esc(entry.rank)+'</span>':'')+'</div>';
@@ -1492,7 +1492,7 @@ function plannerNpcHtml(npc,data,actions){
       const actionIcon=action.category==='class-abilities'
         ?(action.iconUrl
           ?'<img class="planner-action-icon" src="'+esc(action.iconUrl)+'" alt="" width="34" height="34" loading="lazy">'
-          :'<span class="planner-action-icon is-fallback" aria-hidden="true">✦</span>')
+          :'<span class="planner-action-icon is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5z"/><path d="M19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19z"/><path d="M8 8h2M14 8h2"/></svg></span>')
         :'';
       return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><span class="planner-action-titleline">'+actionIcon+'<strong>'+esc(action.name)+'</strong></span>'+(line?'<small>'+esc(line)+'</small>':'')+
         (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price"><strong>'+esc(plannerPrice(action.source?.priceCopper))+'</strong>'+(plannerPriceSourceLabel(action.source)?'<small>'+esc(plannerPriceSourceLabel(action.source))+'</small>':'')+'</span></label>'+
