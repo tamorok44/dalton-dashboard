@@ -10,6 +10,13 @@ module.events = {
   PLAYER_LOGOUT = true
 }
 
+local function safeStringCall(fn)
+  if type(fn) ~= "function" then return nil end
+  local ok, value = pcall(fn)
+  if not ok then return nil end
+  return ns.SafeString(value)
+end
+
 local function currentInstance()
   if not GetInstanceInfo then return nil end
   local ok, name, instanceType, difficultyID, difficultyName, maxPlayers,
@@ -32,15 +39,26 @@ end
 
 local function mapPosition()
   if not (C_Map and C_Map.GetBestMapForUnit and C_Map.GetPlayerMapPosition) then return nil end
-  local mapID = C_Map.GetBestMapForUnit("player")
-  if type(mapID) ~= "number" or ns.IsSecret(mapID) then return nil end
 
-  local mapInfo = C_Map.GetMapInfo and C_Map.GetMapInfo(mapID) or nil
-  local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+  local okMap, mapID = pcall(C_Map.GetBestMapForUnit, "player")
+  if not okMap or type(mapID) ~= "number" or ns.IsSecret(mapID) then return nil end
+
+  local mapInfo
+  if C_Map.GetMapInfo then
+    local okInfo, value = pcall(C_Map.GetMapInfo, mapID)
+    if okInfo then mapInfo = value end
+  end
+
+  local pos
+  local okPos, value = pcall(C_Map.GetPlayerMapPosition, mapID, "player")
+  if okPos then pos = value end
+
   local x, y
   if pos and pos.GetXY then
-    local ok, a, b = pcall(pos.GetXY, pos)
-    if ok then x, y = ns.SafeNumber(a), ns.SafeNumber(b) end
+    local okXY, a, b = pcall(pos.GetXY, pos)
+    if okXY then
+      x, y = ns.SafeNumber(a), ns.SafeNumber(b)
+    end
   end
 
   return {
@@ -53,6 +71,7 @@ end
 
 local function captureLocation(reason)
   local position = mapPosition()
+
   local bindLocation
   if GetBindLocation then
     local ok, value = pcall(GetBindLocation)
@@ -61,9 +80,9 @@ local function captureLocation(reason)
 
   local payload = {
     reason = reason,
-    zone = ns.SafeString(GetZoneText and GetZoneText()),
-    realZone = ns.SafeString(GetRealZoneText and GetRealZoneText()),
-    subZone = ns.SafeString(GetSubZoneText and GetSubZoneText()),
+    zone = safeStringCall(GetZoneText),
+    realZone = safeStringCall(GetRealZoneText),
+    subZone = safeStringCall(GetSubZoneText),
     bindLocation = bindLocation,
     mapID = position and position.mapID or nil,
     mapName = position and position.mapName or nil,
