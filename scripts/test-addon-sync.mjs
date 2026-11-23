@@ -34,6 +34,7 @@ const classMaster={abilities:[
 ]};
 const spellSnapshot=addonSpellbookSnapshot(payload,classMaster);
 assert.deepEqual(spellSnapshot.entries.map(entry=>entry.id),[143],'Server übernimmt nur Klassenzauber aus dem Klassenmaster');
+assert.equal(addonSpellbookSnapshot(payload,{abilities:[]}),null,'Ein leerer Klassenmaster darf niemals das ungefilterte Spellbook freigeben');
 
 const old={generatedAt:'2026-11-23T18:00:00.000Z',characters:[{
   slug:'cole-dalton',name:'Cole Dalton',knownClassAbilities:[{id:143,name:'Feuerball'}],
