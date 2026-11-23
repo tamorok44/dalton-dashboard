@@ -112,7 +112,7 @@ assert.ok(workshopStore.includes('META_TTL_SECONDS=30*60'),'ForeverDB build meta
 assert.ok(workshopStore.includes('MASTER_REFRESH_LOCK_KEY')&&workshopStore.includes("'NX','EX'"),'ForeverDB master rebuild must use a distributed Redis lock');
 assert.ok(workshopStore.includes('cachedForeverDbItem'),'ForeverDB item details must have a shared build-scoped cache');
 assert.ok((sourceByFile.get('api/workshop.js')||'').includes('cachedForeverDbItem(itemId'),'Workshop selected item must use the shared item cache');
-assert.ok((sourceByFile.get('api/workshop.js')||'').includes("recipeIndex?.masterComplete===true&&recipeIndex?.complete===true"),'Complete recipe master must suppress the 12-profession targeted search fanout');
+assert.ok(!(sourceByFile.get('api/workshop.js')||'').includes('cachedForeverDbRecipeSearch'),'Normal workshop requests must never trigger the 12-profession targeted recipe-search fanout');
 assert.ok(policy.includes('5.000 API-Key-Requests pro Tag und 30 pro Minute'),'ForeverDB free-tier request budget must be an explicit architecture constraint');
 assert.ok(policy.includes('verteilten Redis-Lock'),'ForeverDB rebuild concurrency protection must stay documented');
 assert.ok(sourceByFile.has('api/location-planner.js'),'Location planner API is required');
