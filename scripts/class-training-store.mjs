@@ -221,7 +221,7 @@ function localizedTrainer(source,translations={}){
 export async function fetchForeverDbPublicClassTrainers(classId,{fetchImpl=fetch}={}){
   const [data,translations]=await Promise.all([
     publicTrainerData({fetchImpl}),
-    publicGermanUiTranslations({fetchImpl})
+    publicGermanUiTranslations({fetchImpl}).catch(()=>publicGermanUiCache?.data||{})
   ]);
   const rows=asArray(data?.classTrainers?.[String(Number(classId))]);
   return dedupeTrainers(rows.map(raw=>localizedTrainer(normalizeTrainer(raw),translations)).filter(Boolean));
