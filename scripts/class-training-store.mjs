@@ -205,13 +205,20 @@ function replaceGenericTrainerFallbacks(classMaster,trainers){
   return {
     ...classMaster,
     trainers:generic,
-    abilities:asArray(classMaster?.abilities).map(ability=>({
-      ...ability,
-      ranks:asArray(ability?.ranks).map(rank=>({
-        ...rank,
-        sources:!asArray(rank?.sources).length||fallbackOnly(rank.sources)?generic:rank.sources
-      }))
-    }))
+    abilities:asArray(classMaster?.abilities).map(ability=>{
+      const matching=generic.filter(source=>trainerRoleMatchesAbility(source,ability));
+      return {
+        ...ability,
+        ranks:asArray(ability?.ranks).map(rank=>{
+          if(asArray(rank?.sources).length&&!fallbackOnly(rank.sources))return rank;
+          const sources=matching.map(source=>{
+            if(source.priceCopper!==null||rank?.priceCopper===null||rank?.priceCopper===undefined)return source;
+            return {...source,priceCopper:rank.priceCopper,priceSource:rank.priceSource||null};
+          });
+          return {...rank,sources};
+        })
+      };
+    })
   };
 }
 function normalizeRank(raw={},ability={},classTrainers=[]){
