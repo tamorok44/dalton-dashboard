@@ -70,7 +70,8 @@ export default async function handler(req,res){
     return res.status(400).json({error:String(error.message).slice(0,180)});
   }
 
-  const lockToken=await acquireRefreshLock();
+  const previewIsolated=process.env.VERCEL_ENV!=='production';
+  const lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
   if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
 
   try{
@@ -100,7 +101,7 @@ export default async function handler(req,res){
     }
 
     const snapshot=addonSpellbookSnapshot(payload,classMaster);
-    if(snapshot&&classMaster){
+    if(snapshot&&classMaster&&!previewIsolated){
       snapshot.characterSlug=target.slug;
       const directIds=snapshot.entries.map(entry=>entry.id);
       let localized={};
@@ -118,6 +119,7 @@ export default async function handler(req,res){
     const character=(updated.characters||before.characters).find(entry=>entry.slug===target.slug)||target;
     return res.status(200).json({
       duplicate:false,
+      previewIsolated,
       spellbookApplied,
       character:{slug:character.slug,name:character.name,knownClassAbilitiesVerified:character.knownClassAbilitiesVerified===true},
       summary:publicAddonSyncSummary(state)
@@ -127,6 +129,8 @@ export default async function handler(req,res){
     const status=/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
     return res.status(status).json({error:String(error.message).slice(0,180)});
   }finally{
-    try{await releaseRefreshLock(lockToken)}catch(error){console.error('Addon-Sync-Lock konnte nicht freigegeben werden:',error)}
+    if(!previewIsolated){
+      try{await releaseRefreshLock(lockToken)}catch(error){console.error('Addon-Sync-Lock konnte nicht freigegeben werden:',error)}
+    }
   }
 }
