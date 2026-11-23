@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: Dalton Dashboard Spellbook Sync
+## Notes: Exportiert den echten Klassen-Spellbook-Stand für das private Dalton Dashboard.
+## Author: Dalton Dashboard
+## Version: 1.0.0
+## X-Website: https://dalton-dashboard-eight.vercel.app
+
+Config.lua
+DaltonDashboard.lua
