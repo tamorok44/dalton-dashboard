@@ -12,10 +12,10 @@ assert.equal(parsed.entries[0].rank,'Rang 2');
 
 const classMaster={abilities:[
   {name:'Feuerball',ranks:[
-    {id:133,requiredLevel:1},{id:143,requiredLevel:6},{id:145,requiredLevel:12}
+    {id:133,requiredLevel:1,iconId:135812},{id:143,requiredLevel:6,iconId:135812},{id:145,requiredLevel:12,iconId:135812}
   ]},
   {name:'Frostrüstung',ranks:[
-    {id:168,requiredLevel:1},{id:7300,requiredLevel:10}
+    {id:168,requiredLevel:1,iconId:135843},{id:7300,requiredLevel:10,iconId:135843}
   ]}
 ]};
 const expanded=expandKnownClassAbilities(parsed.entries,classMaster,{
@@ -24,6 +24,7 @@ const expanded=expandKnownClassAbilities(parsed.entries,classMaster,{
 });
 assert.deepEqual(expanded.map(x=>x.id).sort((a,b)=>a-b),[133,143,168,7300]);
 assert.equal(expanded.find(x=>x.id===133).inferredFromHigherRank,true);
+assert.equal(expanded.find(x=>x.id===133).iconId,135812,'Mitgelernt markierte niedrigere Ränge behalten die stabile Spell-Icon-ID');
 assert.equal(expanded.find(x=>x.id===168).name,'Frostrüstung');
 
 const data={generatedAt:'2026-11-23T05:00:00.000Z',characters:[

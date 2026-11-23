@@ -12,11 +12,8 @@ import {
   preferredForeverRecipeForItem,
   workshopLearningCandidates
 } from '../scripts/workshop-core.mjs';
-import {
-  foreverDbConfigured,
-  fetchForeverDbItem
-} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
+import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
+import {getForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function normalize(value){
@@ -194,31 +191,18 @@ export default async function handler(req,res){
       let item=publicItem(local);
       let source='blizzard-known';
       const remoteErrors=[];
-      let recipeIndex=null,remoteRecipe=null,targetedRecipeSearch=null;
+      let recipeIndex=null,remoteRecipe=null;
       if(remoteReady){
         try{
-          const [remote,index]=await Promise.all([
-            fetchForeverDbItem(itemId),
-            getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
-          ]);
+          const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
           recipeIndex=index;
           enrichWorkshopCatalogWithForeverDb(catalog,index);
-          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote.item,catalog.byItemId.get(itemId)||local));
+          const remote=await cachedForeverDbItem(itemId,{build:index?.build||null});
+          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
           source='foreverdb';
           remoteRecipe=preferredForeverRecipeForItem(index,itemId);
         }catch(error){
           remoteErrors.push(String(error.message).slice(0,180));
-        }
-        if(!local?.craftable&&!remoteRecipe&&item?.name){
-          try{
-            targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.sourceSearchName||item.name);
-            if(targetedRecipeSearch.recipes?.length){
-              const targetedIndex={byItem:new Map([[itemId,targetedRecipeSearch.recipes]])};
-              remoteRecipe=preferredForeverRecipeForItem(targetedIndex,itemId);
-            }
-          }catch(error){
-            remoteErrors.push(String(error.message).slice(0,180));
-          }
         }
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
@@ -259,9 +243,7 @@ export default async function handler(req,res){
           generatedAt:recipeIndex?.generatedAt||null,
           cached:recipeIndex?.cached===true,
           complete:recipeIndex?.complete===true,
-          requestCount:recipeIndex?.requestCount||0,
-          targetedSearchRequests:targetedRecipeSearch?.requestCount||0,
-          targetedSearchCached:targetedRecipeSearch?.cached===true
+          requestCount:recipeIndex?.requestCount||0
         }
       });
     }

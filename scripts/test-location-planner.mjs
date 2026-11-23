@@ -67,7 +67,7 @@ const classMaster={
     id:116,name:'Frostblitz',school:'Frost',type:'Trainer',
     ranks:[
       {id:116,name:'Frostblitz',rank:'Rang 1',requiredLevel:4,priceCopper:100,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',100)]},
-      {id:205,name:'Frostblitz',rank:'Rang 2',requiredLevel:8,priceCopper:200,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',200)]},
+      {id:205,name:'Frostblitz',rank:'Rang 2',requiredLevel:8,iconId:135846,priceCopper:200,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',200)]},
       {id:837,name:'Frostblitz',rank:'Rang 3',requiredLevel:14,priceCopper:400,priceSource:'forever-observed',sources:[trainer(30,'Magierlehrer','Stormwind',400)]}
     ]
   }]
@@ -119,6 +119,7 @@ assert.equal(journeymanAlchemy?.alternatives.some(source=>source.name==="Tel'Ath
 const frostboltRank2=stormwind.actions.find(action=>action.category==='class-abilities');
 assert.equal(frostboltRank2?.id,205,'Bereits gelernter Rang 1 wird bei verifiziertem Spellbook ausgeblendet');
 assert.equal(frostboltRank2?.name,'Frostblitz · Rang 2');
+assert.equal(frostboltRank2?.iconId,135846,'Klassenlernziel trägt die stabile Icon-ID aus dem gemeinsamen Klassenmaster');
 assert.equal(frostboltRank2?.learnedState,'not-known');
 assert.equal(frostboltRank2?.source.name,'Magierlehrer');
 assert.deepEqual(Object.fromEntries(stormwind.categories.map(c=>[c.id,c.actionCount])),{

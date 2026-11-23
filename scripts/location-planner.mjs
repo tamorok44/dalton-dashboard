@@ -319,6 +319,7 @@ function classTrainingActions(character,classMaster){
         abilityName:text(ability?.name)||text(rank?.name)||null,
         rank:rankText||null,
         school:text(ability?.school)||null,
+        iconId:integer(rank?.iconId),
         requiredLevel,
         currentLevel:level,
         learnedState:knownVerified?'not-known':'unknown',

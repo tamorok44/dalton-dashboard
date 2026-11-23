@@ -400,13 +400,14 @@ const spellbookVerified=ui.classAbilitiesPanel({
   slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:true,
   knownClassAbilitiesCapturedAt:'2026-11-23T05:55:00.000Z',
   knownClassAbilities:[
-    {id:133,name:'Feuerball',rank:'Rang 1'},
-    {id:143,name:'Feuerball',rank:'Rang 2',inferredFromHigherRank:true}
+    {id:133,name:'Feuerball',rank:'Rang 1',iconUrl:'https://blob.example/spell-133.webp'},
+    {id:143,name:'Feuerball',rank:'Rang 2',iconUrl:'https://blob.example/spell-143.webp',inferredFromHigherRank:true}
   ]
 });
 assert.ok(spellbookVerified.includes('2 gelernte Klassenränge'));
 assert.ok(spellbookVerified.includes('Feuerball')&&spellbookVerified.includes('Rang 2'));
 assert.ok(spellbookVerified.includes('Durch höheren bekannten Rang mitgelernt'));
+assert.ok(spellbookVerified.includes('class="spellbook-ability-icon"')&&spellbookVerified.includes('https://blob.example/spell-143.webp'),'Gelernte Klassenfähigkeiten zeigen das archivierte Zauberbild vorne an');
 const expectedCharacterTabs=data.characters.reduce((count,character)=>count+7+(Number(character.classId)===3?1:0),0);
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
@@ -533,6 +534,7 @@ assert.ok(source.includes("workshopFetch('/api/workshop"),'Werkstatt nutzt serve
 assert.ok(source.includes("function segmentedControl("),'Binäre Ansichtsfilter verwenden die gemeinsame Segment-Komponente');
 assert.ok(source.includes("segmentedControl('compare-mode'"),'Vergleich nutzt den gemeinsamen Segment-Schalter');
 assert.ok(source.includes("segmentedControl('workshop-search-mode'"),'Werkstatt-Lupe nutzt den gemeinsamen Segment-Schalter');
+assert.ok(source.includes("workshopState.query.trim().length<3")&&source.includes("setTimeout(()=>searchWorkshop(workshopState.query),350)"),'Werkstattsuche bündelt kurze Tippfolgen, bevor ForeverDB angefragt wird');
 assert.ok(source.includes("segmentedControl('workshop-browse-mode'"),'Werkstatt-Dropdown nutzt den gemeinsamen Segment-Schalter');
 assert.ok(!source.includes('compareDifferences'),'Alte Vergleichs-Checkbox ist entfernt');
 assert.ok(source.includes("searchMode:'all'")&&source.includes("browseMode:'craftable'"),'Werkstatt hat die vereinbarten unabhängigen Standardfilter');
@@ -632,7 +634,7 @@ ui.plannerSelectAllVisible(twoTargets);
 assert.equal(ui.plannerState.selected.size,2,'Tatsächlich verschiedene Lernziele bzw. Ränge bleiben separat auswählbar');
 assert.equal(ui.plannerSelectedActions(twoTargets).length,2,'Getrennte Ränge werden nicht miteinander dedupliziert');
 const unknownClassAction={
-  key:'class-spell:205',name:'Frostblitz · Rang 2',category:'class-abilities',requiredLevel:8,learnedState:'unknown',
+  key:'class-spell:205',name:'Frostblitz · Rang 2',category:'class-abilities',requiredLevel:8,learnedState:'unknown',iconUrl:'https://blob.example/spell-205.webp',
   source:{key:'npc:331',name:'Magierlehrer',role:'Lehrer',sourceType:'trainer',location:{zone:'Sturmwind'},priceCopper:200,priceSource:'forever-observed'},
   alternatives:[]
 };
@@ -644,6 +646,9 @@ ui.plannerSelectAllVisible(classPlannerData);
 assert.equal(ui.plannerState.selected.has(unknownClassAction.key),false,'Unbekannter persönlicher Klassen-Lernstand wird nie automatisch ausgewählt');
 assert.equal(ui.plannerState.selected.has(verifiedClassAction.key),true,'Verifiziert noch nicht gelernter Klassenrang bleibt automatisch auswählbar');
 assert.ok(ui.plannerNpcHtml({key:'npc:331',name:'Magierlehrer',role:'Lehrer',location:{zone:'Sturmwind'}},classPlannerData,[unknownClassAction]).includes('Persönlicher Lernstand noch nicht automatisch auslesbar'),'Offener Klassen-Lernstand wird direkt am Lernziel sichtbar');
+const plannerClassHtml=ui.plannerNpcHtml({key:'npc:331',name:'Magierlehrer',role:'Lehrer',location:{zone:'Sturmwind'}},classPlannerData,[unknownClassAction]);
+assert.ok(plannerClassHtml.includes('class="planner-action-icon"')&&plannerClassHtml.includes('https://blob.example/spell-205.webp'),'Klassenfähigkeiten zeigen im Ortsplaner das Zauberbild vor dem Namen');
+assert.ok(plannerClassHtml.includes('planner-npc-avatar is-fallback'),'NPC ohne verfügbares Renderbild behält einen sichtbaren Avatarplatz');
 ui.plannerState.categories=new Set(['profession-recipes','profession-training']);
 ui.plannerState.selected.clear();
 ui.plannerSelectAllVisible(twoTargets);

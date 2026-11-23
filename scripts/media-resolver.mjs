@@ -5,6 +5,8 @@ const MAX_IMAGE_BYTES=5_000_000;
 const ALLOWED_TYPES=new Set(['image/png','image/jpeg','image/webp']);
 const SOURCE_RULES=[
   /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\//,
+  /^https:\/\/render-eu\.worldofwarcraft\.com\/npcs\/(?:zoom|portrait)\/creature-display-\d+\.jpg$/,
+  /^https:\/\/render\.worldofwarcraft\.com\/eu\/npcs\/(?:zoom|portrait)\/creature-display-\d+\.jpg$/,
   /^https:\/\/foreverspec\.com\/icons\/\d+\.webp$/,
   /^https:\/\/foreverdb\.net\/icons\/\d+\.webp$/,
   /^https:\/\/warcraft\.wiki\.gg\/images\//

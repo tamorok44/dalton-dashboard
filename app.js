@@ -179,12 +179,14 @@ function classAbilitiesPanel(c){
   const learned=verified
     ?'<div class="spellbook-status is-verified"><strong>'+abilities.length+' gelernte Klassenränge</strong><span>Direkt aus dem persönlichen WoW-Spellbook'+(captured?' · Stand '+esc(captured):'')+'</span></div>'+
       (abilities.length
-        ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+abilities.map(entry=>
-          '<div class="spellbook-known-entry"><strong>'+esc(entry.name||('Klassenfähigkeit #'+entry.id))+'</strong>'+
-          (entry.rank?'<span>'+esc(entry.rank)+'</span>':'')+
-          (entry.inferredFromHigherRank===true?'<small>Durch höheren bekannten Rang mitgelernt</small>':'')+
-          '</div>'
-        ).join('')+'</div></details>'
+        ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+abilities.map(entry=>{
+          const icon=entry.iconUrl
+            ?'<img class="spellbook-ability-icon" src="'+esc(entry.iconUrl)+'" alt="" width="36" height="36" loading="lazy">'
+            :'<span class="spellbook-ability-icon is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5z"/><path d="M19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19z"/><path d="M8 8h2M14 8h2"/></svg></span>';
+          return '<div class="spellbook-known-entry">'+icon+'<div class="spellbook-known-copy"><strong>'+esc(entry.name||('Klassenfähigkeit #'+entry.id))+'</strong>'+
+            (entry.inferredFromHigherRank===true?'<small>Durch höheren bekannten Rang mitgelernt</small>':'')+
+            '</div>'+(entry.rank?'<span class="spellbook-known-rank">'+esc(entry.rank)+'</span>':'')+'</div>';
+        }).join('')+'</div></details>'
         :'<p class="spellbook-empty">Im synchronisierten Spellbook wurden keine Klassenränge gefunden.</p>')
     :'<div class="spellbook-status is-open"><strong>Persönlicher Lernstand noch nicht synchronisiert</strong><span>Blizzard veröffentlicht den tatsächlichen Spellbook-Stand nicht über die Charakter-API. Deshalb wird hier nichts aus dem Level geraten.</span></div>';
   const sync='<div class="spellbook-sync" data-spellbook-sync-root="'+esc(c.slug)+'">'+
@@ -1168,8 +1170,8 @@ function renderWorkshop(){
   search?.addEventListener('input',()=>{
     workshopState.query=search.value;
     clearTimeout(workshopSearchTimer);
-    if(workshopState.query.trim().length<2){workshopState.suggestions=[];renderWorkshop();return;}
-    workshopSearchTimer=setTimeout(()=>searchWorkshop(workshopState.query),180);
+    if(workshopState.query.trim().length<3){workshopState.suggestions=[];renderWorkshop();return;}
+    workshopSearchTimer=setTimeout(()=>searchWorkshop(workshopState.query),350);
   });
   workshopRoot.querySelectorAll('[data-workshop-suggestion]').forEach(button=>button.addEventListener('click',()=>selectWorkshopItem(Number(button.dataset.workshopSuggestion))));
   workshopRoot.querySelectorAll('[data-workshop-browse-level]').forEach(select=>select.addEventListener('change',()=>{
@@ -1477,16 +1479,22 @@ function plannerNpcHtml(npc,data,actions){
   const location=npc.location||{};
   const coords=plannerCoords(location);
   const meta=[npc.role,location.zone,coords].filter(Boolean).join(' · ');
+  const initials=String(npc.name||'?').split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]?.toLocaleUpperCase('de-DE')||'').join('')||'?';
   const avatar=npc.avatarUrl
     ?'<img class="planner-npc-avatar" src="'+esc(npc.avatarUrl)+'" alt="" width="48" height="48" loading="lazy">'
-    :'';
+    :'<span class="planner-npc-avatar is-fallback" aria-hidden="true">'+esc(initials)+'</span>';
   return '<article class="planner-vendor"><div class="planner-vendor-head"><div class="planner-npc-heading">'+avatar+'<div><span class="planner-kicker">'+esc(npc.role||'ANLAUFSTELLE')+'</span><h3>'+esc(npc.name||'Unbekannter NPC')+'</h3>'+(meta?'<p>'+esc(meta)+'</p>':'')+'</div></div><span class="planner-vendor-count">'+actions.length+' Erledigung'+(actions.length===1?'':'en')+'</span></div>'+
     '<div class="planner-recipe-list">'+actions.map(action=>{
       const sourceKey=action.source?.key||npc.key;
       const checked=plannerState.selected.get(action.key)===sourceKey;
       const stock=Number(action.source?.limitedStock);
       const line=plannerActionLine(action);
-      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><strong>'+esc(action.name)+'</strong>'+(line?'<small>'+esc(line)+'</small>':'')+
+      const actionIcon=action.category==='class-abilities'
+        ?(action.iconUrl
+          ?'<img class="planner-action-icon" src="'+esc(action.iconUrl)+'" alt="" width="34" height="34" loading="lazy">'
+          :'<span class="planner-action-icon is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5z"/><path d="M19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19z"/><path d="M8 8h2M14 8h2"/></svg></span>')
+        :'';
+      return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><span class="planner-action-titleline">'+actionIcon+'<strong>'+esc(action.name)+'</strong></span>'+(line?'<small>'+esc(line)+'</small>':'')+
         (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price"><strong>'+esc(plannerPrice(action.source?.priceCopper))+'</strong>'+(plannerPriceSourceLabel(action.source)?'<small>'+esc(plannerPriceSourceLabel(action.source))+'</small>':'')+'</span></label>'+
         plannerSwitchHtml(action,action.source)+
         (checked?plannerPriceWarningHtml(action,action.source):'')+

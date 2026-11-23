@@ -53,16 +53,21 @@ export function expandKnownClassAbilities(entries=[],classMaster=null,localized=
         id,
         name:text(loc.name)||null,
         rank:text(loc.rank)||null,
+        iconId:integer(rank.iconId)||integer(loc.iconId),
         inferredFromHigherRank:true
       });
     }
   }
   return [...byId.values()].map(entry=>{
     const loc=localized[entry.id]||{};
+    const masterRank=(Array.isArray(classMaster?.abilities)?classMaster.abilities:[])
+      .flatMap(ability=>Array.isArray(ability?.ranks)?ability.ranks:[])
+      .find(rank=>integer(rank?.id)===entry.id);
     return {
       id:entry.id,
       name:text(entry.name)||text(loc.name)||null,
       rank:text(entry.rank,80)||text(loc.rank,80)||null,
+      iconId:integer(entry.iconId)||integer(loc.iconId)||integer(masterRank?.iconId),
       inferredFromHigherRank:entry.inferredFromHigherRank===true
     };
   }).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||(a.rank||'').localeCompare(b.rank||'','de')||a.id-b.id);

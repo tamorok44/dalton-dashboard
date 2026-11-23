@@ -15,6 +15,16 @@ Sobald eine externe API als ernsthafte Datenquelle in Betracht kommt, wird **vor
 
 Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und UI dürfen danach parallel geplant werden, aber nicht auf ein ungeprüftes API-Schema fest verdrahtet werden.
 
+### ForeverDB-Request-Budget
+
+- Der Free-Tarif ist als harte Betriebsgrenze zu behandeln: **5.000 API-Key-Requests pro Tag und 30 pro Minute**. Die öffentliche `/data/*`-Buildauslieferung ist für statische Builddaten bewusst zu bevorzugen.
+- ForeverDB-API-Antworten werden serverseitig zentral und buildbezogen in Redis gespeichert. Normale Seitenaufrufe dürfen denselben Spell, NPC, Gegenstand, Beruf oder Katalog nicht erneut beim API-Key-Endpunkt laden.
+- Der ForeverDB-Build wird im Normalbetrieb höchstens alle **30 Minuten** über `/meta` geprüft. Ist `/meta` vorübergehend nicht erreichbar oder rate-limited, bleibt der letzte gespeicherte Build nutzbar.
+- Ein Katalog-Neuaufbau ist über einen verteilten Redis-Lock geschützt. Parallele Vercel-Instanzen dürfen niemals denselben Master-Chunk gleichzeitig laden.
+- Eine 12-fache berufsweise Rezeptsuche für einen einzelnen Gegenstand ist in normalen Nutzeraufrufen grundsätzlich verboten. Während eines Master-Neuaufbaus bleibt der letzte vollständige Katalog bzw. der Aktualisierungshinweis maßgeblich. Itemdetails besitzen einen eigenen buildbezogenen Cache; freie Suchbegriffe werden 24 Stunden gecacht und im Browser erst nach mindestens drei Zeichen/350 ms Ruhe ausgelöst.
+- Deutsche Klassenzaubernamen, Ränge und Icon-IDs werden aus den öffentlichen ForeverDB-Builddateien geladen. Pro-Spell-API-Aufrufe für reine Darstellung/Lokalisierung sind verboten.
+- NPC-Bilder dürfen keinen `/vendors/:id`- oder vergleichbaren ForeverDB-N+1-Abruf verursachen. Render-Metadaten aus dem Master haben Vorrang; für bekannte Classic-NPC-IDs ist die CMaNGOS-Display-ID ausschließlich als visueller Fallback zulässig.
+
 ## 2. Sprache / WoW-Begriffe
 
 - Sichtbare WoW-Bezeichnungen kommen aus verifizierten deutschen Blizzard-/Forever-Quellen.
@@ -34,6 +44,8 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - Der Resolver bevorzugt einen vorhandenen Master in Vercel Blob und archiviert neue Quellen bei Bedarf.
 - User-facing APIs liefern nur gespeicherte Blob-URLs. Bei Archivierungsfehlern wird lieber kein Bild ausgeliefert als die externe Quelle direkt durchzureichen.
 - Deduplizierung erfolgt über die stabile Entity-ID, nicht über die URL.
+- Klassenfähigkeits-Icons und NPC-Porträts verwenden denselben Resolver. Zaubericons werden über stabile Spell-/Icon-IDs archiviert; NPC-Porträts über stabile NPC-/Display-IDs.
+- Ist für einen Forever-bestätigten Classic-NPC keine Render-ID in der Forever-Quelle vorhanden, darf ausschließlich für die Darstellung eine belegte Classic-Display-ID verwendet werden. Neue Forever-NPCs werden niemals über Namensraten einem Classic-Modell zugeordnet; fehlt eine stabile Bildidentität, zeigt die UI den neutralen Dalton-NPC-Fallback.
 
 ## 4. Dalton-CI
 
@@ -86,7 +98,7 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 - **Darstellungskonvention:** Bestätigte aktuelle Forever-Daten sind der Normalfall und erhalten **kein zusätzliches Bestätigungslabel**. Sichtbare Labels kennzeichnen Abweichungen vom Normalfall; bei Preisen betrifft das insbesondere `Classic-Preis · noch nicht in Forever bestätigt`. Ein Label wie `Forever-Preis` darf in der normalen Oberfläche nicht erscheinen.
 - Die manuelle Auswahl speichert höchstens eine NPC-Quelle je Lernziel. Wird dasselbe Lernziel bei einem anderen NPC angeklickt, bleibt die bisherige Auswahl bestehen, bis der Wechsel ausdrücklich bestätigt wird; ein stilles Opt-out ist verboten. Die Wechselabfrage muss direkt am neu angeklickten Angebot sichtbar sein, damit sie auch in langen NPC-Listen nicht ausserhalb des aktuellen Sichtbereichs verloren geht. Ein bestätigter Wechsel ersetzt Quelle und Preis atomar. Ist die manuell gewählte Quelle nach bestätigten Preisen teurer als eine andere Quelle am selben Ort, muss der günstigere NPC samt Preis und Ersparnis sichtbar genannt werden.
 - Verschiedene Ränge oder sonstige tatsächlich getrennt zu erwerbende Lerninhalte behalten unterschiedliche Erledigungs-IDs und dürfen unabhängig ausgewählt werden. Kategorien und Lernziele bleiben echte Mehrfachauswahlen. Die Erledigungsliste gruppiert nach dem tatsächlich gewählten NPC und summiert ausschließlich die eindeutigen ausgewählten Lernziele; fehlende Preise werden ausdrücklich ausgewiesen und niemals als `0` in eine vollständige Gesamtsumme eingerechnet.
-- NPC-Bilder verwenden ausschließlich die gemeinsame Medienlogik `entityType + entityId + role`. Ein Avatar wird nur bei einer stabil und zweifelsfrei dem NPC zugeordneten Forever-Renderquelle archiviert; andernfalls bleibt er weg.
+- NPC-Bilder verwenden ausschließlich die gemeinsame Medienlogik `entityType + entityId + role`. Forever-native Renderdaten haben Vorrang. Für einen eindeutig über stabile NPC-ID identifizierten Classic-NPC darf die zentrale CMaNGOS-Display-ID als **visueller** Fallback dienen; neue Forever-NPCs werden niemals per Name oder Ähnlichkeit zugeordnet. Ist kein belastbares Bild verfügbar, bleibt der Avatarplatz sichtbar und verwendet den neutralen Dalton-Fallback.
 - Sichtbare Spielbegriffe und Orte folgen Abschnitt 2. ForeverDB-Daten werden sichtbar als Quelle verlinkt.
 - Ändert sich der Charakterdatenstand, wird der Ortsplaner invalidiert und neu berechnet; die bestehende Erledigungsauswahl wird verworfen, weil Lernstand, Skill, Level oder Begleiterstatus sich geändert haben können.
 
