@@ -155,7 +155,12 @@ assert.ok(policy.includes('Level allein darf niemals als Beweis'),'Personal clas
 assert.ok(policy.includes('Bereits gelernte Klassenränge werden')&&policy.includes('sichtbar dokumentiert'),'Verified learned class ranks must be visible, not only used as an internal filter');
 assert.ok(sourceByFile.has('scripts/spellbook-sync.mjs'),'Central spellbook snapshot normalizer is required');
 assert.ok(sourceByFile.has('api/spellbook-sync.js'),'Private spellbook sync endpoint is required');
+assert.ok(sourceByFile.has('api/addon-sync.js'),'Private full addon sync endpoint is required');
+assert.ok(sourceByFile.has('scripts/addon-sync.mjs')&&sourceByFile.has('scripts/addon-sync-store.mjs'),'Addon sync needs centralized validation and persistence');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
+assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/addon-sync.js')||'').includes('DALTON_SYNC_TOKEN'),'Addon sync writes must require constant-time bearer authentication');
+assert.ok((sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'character',")&&(sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'interactions'"),'Addon sync must use an explicit section whitelist');
+assert.ok(!(sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'economy',")&&!(sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'inventory',"),'Sensitive economy/inventory sections must stay outside the default sync whitelist');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('fetchForeverDbPublicClassTrainers'),'Class training must consume the central current Forever class-trainer dataset');
 assert.ok(sourceByFile.has('scripts/class-training-classic-costs.mjs'),'Central Classic class-trainer cost fallback is required');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('classicTrainerCost'),'Class rank pricing must use the bounded central Classic trainer-cost fallback');
