@@ -1,4 +1,4 @@
-import {createHash} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {configured as redisConfigured,redis} from './character-store.mjs';
 import {
   fetchForeverDbRecipeIndex,
@@ -12,11 +12,13 @@ import {PROFESSION_SLUGS,fetchForeverDbMeta,searchForeverDbItems,fetchForeverDbI
 const RECIPE_TTL_SECONDS=12*60*60;
 const SEARCH_TTL_SECONDS=24*60*60;
 const ITEM_RECIPE_TTL_SECONDS=24*60*60;
-const META_TTL_SECONDS=10*60;
+const META_TTL_SECONDS=30*60;
 const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v2';
 const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v2';
 const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
 const MASTER_REFRESH_CHUNK=3;
+const MASTER_REFRESH_LOCK_KEY='dalton-dashboard:workshop:foreverdb:master-refresh-lock:v1';
+const MASTER_REFRESH_LOCK_SECONDS=55;
 const ITEM_CACHE_PREFIX='dalton-dashboard:foreverdb:item:v1:';
 const SPELL_CACHE_PREFIX='dalton-dashboard:foreverdb:spell:v1:';
 const VENDOR_CACHE_PREFIX='dalton-dashboard:foreverdb:vendor:v1:';
@@ -104,13 +106,31 @@ async function saveJson(key,value,{ttl=null}={}){
 async function deleteKey(key){
   if(redisConfigured())await redis(['DEL',key]);
 }
+async function acquireMasterRefreshLock(){
+  if(!redisConfigured())return 'local';
+  const token=randomUUID();
+  const result=await redis(['SET',MASTER_REFRESH_LOCK_KEY,token,'NX','EX',String(MASTER_REFRESH_LOCK_SECONDS)]);
+  return result==='OK'?token:null;
+}
+async function releaseMasterRefreshLock(token){
+  if(!redisConfigured()||!token||token==='local')return;
+  await redis(['EVAL',"if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",'1',MASTER_REFRESH_LOCK_KEY,token]);
+}
 async function cachedForeverDbMeta({fetchImpl=fetch}={}){
   const cached=await loadJson(META_KEY);
   if(cached&&fresh(cached,META_TTL_SECONDS*1000))return {...cached,cached:true};
-  const meta=await fetchForeverDbMeta({fetchImpl});
-  const value={...meta,generatedAt:new Date().toISOString()};
-  await saveJson(META_KEY,value,{ttl:META_TTL_SECONDS});
-  return {...value,cached:false};
+  try{
+    const meta=await fetchForeverDbMeta({fetchImpl});
+    const value={...meta,generatedAt:new Date().toISOString()};
+    await saveJson(META_KEY,value,{ttl:META_TTL_SECONDS});
+    return {...value,cached:false};
+  }catch(error){
+    if(cached){
+      console.warn('ForeverDB-Meta vorübergehend nicht erreichbar – letzter bekannter Build bleibt aktiv:',String(error.message).slice(0,140));
+      return {...cached,cached:true,stale:true};
+    }
+    throw error;
+  }
 }
 export async function loadCachedRecipeIndex(professionSlugs=[]){
   if(!redisConfigured())return null;
@@ -186,59 +206,88 @@ export async function getForeverDbMasterRecipeIndex({
       recipes:[]
     });
   }
-
   if(meta.build&&!draft.build)draft.build=meta.build;
   if(!advance){
     const active=master?.complete?master:draft;
     return {...active,cached:Boolean(master?.complete),refreshing:!active?.complete,masterComplete:Boolean(master?.complete)};
   }
 
-  let missing=missingMasterProfessionSlugs(draft);
-  if(missing.length){
-    let chunk=missing;
-    if(!draft.professionSlugs?.length)chunk=missing.slice(0,MASTER_REFRESH_CHUNK);
-    else if(missing.length>4)chunk=missing.slice(0,MASTER_REFRESH_CHUNK);
-    try{
-      const fetched=await fetchForeverDbRecipeIndex({
-        fetchImpl,
-        professionSlugs:chunk,
-        maxRequests:28
-      });
-      draft=mergeRecipeIndexes(draft,fetched);
-      if(meta.build)draft.build=meta.build;
-      missing=missingMasterProfessionSlugs(draft);
-    }catch(error){
-      if(!/sichere Request-Budget/.test(String(error.message)))throw error;
-      const fallbackChunk=nextMasterProfessionChunk(draft,MASTER_REFRESH_CHUNK);
-      const fetched=await fetchForeverDbRecipeIndex({
-        fetchImpl,
-        professionSlugs:fallbackChunk,
-        maxRequests:28
-      });
-      draft=mergeRecipeIndexes(draft,fetched);
-      if(meta.build)draft.build=meta.build;
-      missing=missingMasterProfessionSlugs(draft);
+  const lockToken=await acquireMasterRefreshLock();
+  if(!lockToken){
+    const active=master?.complete?master:draft;
+    return {
+      ...active,
+      cached:Boolean(master?.complete),
+      refreshing:true,
+      masterComplete:Boolean(master?.complete),
+      refreshProgress:{
+        completed:normalizedSlugs(draft?.professionSlugs).length,
+        total:PROFESSION_SLUGS.size
+      }
+    };
+  }
+
+  try{
+    // A second function may have completed the work between our first read and lock acquisition.
+    master=await loadMaster();
+    if(master?.complete&&(!meta.build||!master.build||master.build===meta.build)){
+      return {...master,cached:true,refreshing:false,masterComplete:true};
     }
-  }
+    const lockedDraft=await loadDraft();
+    if(lockedDraft&&(!meta.build||!lockedDraft.build||lockedDraft.build===meta.build))draft=lockedDraft;
 
-  if(!missing.length){
-    draft.complete=true;
-    const persisted=await persistMaster(draft);
-    return {...persisted,cached:false,refreshing:false,masterComplete:true};
-  }
+    let missing=missingMasterProfessionSlugs(draft);
+    if(missing.length){
+      let chunk=missing;
+      if(!draft.professionSlugs?.length)chunk=missing.slice(0,MASTER_REFRESH_CHUNK);
+      else if(missing.length>4)chunk=missing.slice(0,MASTER_REFRESH_CHUNK);
+      try{
+        const fetched=await fetchForeverDbRecipeIndex({
+          fetchImpl,
+          professionSlugs:chunk,
+          maxRequests:28
+        });
+        draft=mergeRecipeIndexes(draft,fetched);
+        if(meta.build)draft.build=meta.build;
+        missing=missingMasterProfessionSlugs(draft);
+      }catch(error){
+        if(!/sichere Request-Budget/.test(String(error.message)))throw error;
+        const fallbackChunk=nextMasterProfessionChunk(draft,MASTER_REFRESH_CHUNK);
+        const fetched=await fetchForeverDbRecipeIndex({
+          fetchImpl,
+          professionSlugs:fallbackChunk,
+          maxRequests:28
+        });
+        draft=mergeRecipeIndexes(draft,fetched);
+        if(meta.build)draft.build=meta.build;
+        missing=missingMasterProfessionSlugs(draft);
+      }
+    }
 
-  await persistDraft(draft);
-  if(master?.complete){
-    return {...master,cached:true,refreshing:true,masterComplete:true,refreshProgress:{
+    if(!missing.length){
+      draft.complete=true;
+      const persisted=await persistMaster(draft);
+      return {...persisted,cached:false,refreshing:false,masterComplete:true};
+    }
+
+    await persistDraft(draft);
+    if(master?.complete){
+      return {...master,cached:true,refreshing:true,masterComplete:true,refreshProgress:{
+        completed:normalizedSlugs(draft.professionSlugs).length,
+        total:PROFESSION_SLUGS.size
+      }};
+    }
+    return {...draft,cached:false,refreshing:true,masterComplete:false,refreshProgress:{
       completed:normalizedSlugs(draft.professionSlugs).length,
       total:PROFESSION_SLUGS.size
     }};
+  }finally{
+    try{await releaseMasterRefreshLock(lockToken)}catch(error){
+      console.warn('ForeverDB-Master-Sperre konnte nicht freigegeben werden:',String(error.message).slice(0,120));
+    }
   }
-  return {...draft,cached:false,refreshing:true,masterComplete:false,refreshProgress:{
-    completed:normalizedSlugs(draft.professionSlugs).length,
-    total:PROFESSION_SLUGS.size
-  }};
 }
+
 export async function cachedForeverDbRecipeSearch(itemId,itemName,{fetchImpl=fetch}={}){
   const id=Number(itemId);
   if(!Number.isInteger(id)||id<=0)return {recipes:[],generatedAt:new Date().toISOString(),cached:false,requestCount:0};
