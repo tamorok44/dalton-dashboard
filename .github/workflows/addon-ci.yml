@@ -5,6 +5,13 @@ on:
     paths:
       - "addons/DaltonDashboard/**"
       - "scripts/test-addon-structure.mjs"
+      - "scripts/test-addon-sync.mjs"
+      - "scripts/addon-sync.mjs"
+      - "scripts/addon-sync-store.mjs"
+      - "scripts/savedvariables-parser.mjs"
+      - "scripts/dalton-sync-client.mjs"
+      - "api/addon-sync.js"
+      - "api/addon-sync-status.js"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/addon-ci.yml"
@@ -14,6 +21,13 @@ on:
     paths:
       - "addons/DaltonDashboard/**"
       - "scripts/test-addon-structure.mjs"
+      - "scripts/test-addon-sync.mjs"
+      - "scripts/addon-sync.mjs"
+      - "scripts/addon-sync-store.mjs"
+      - "scripts/savedvariables-parser.mjs"
+      - "scripts/dalton-sync-client.mjs"
+      - "api/addon-sync.js"
+      - "api/addon-sync-status.js"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/addon-ci.yml"
@@ -54,14 +68,14 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           cd addons
-          zip -r "../dist/DaltonDashboard-0.1.0-alpha.4.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
+          zip -r "../dist/DaltonDashboard-0.1.0-alpha.5.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
           cd ..
-          unzip -l dist/DaltonDashboard-0.1.0-alpha.4.zip
+          unzip -l dist/DaltonDashboard-0.1.0-alpha.5.zip
 
       - name: Testpaket bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboard-0.1.0-alpha.4
-          path: dist/DaltonDashboard-0.1.0-alpha.4.zip
+          name: DaltonDashboard-0.1.0-alpha.5
+          path: dist/DaltonDashboard-0.1.0-alpha.5.zip
           if-no-files-found: error
           retention-days: 14

@@ -10,6 +10,8 @@ module.events = {
   PLAYER_LOGOUT = true
 }
 
+local HISTORY_LIMIT = 200
+
 local function safeStringCall(fn)
   if type(fn) ~= "function" then return nil end
   local ok, value = pcall(fn)
@@ -22,7 +24,6 @@ local function currentInstance()
   local ok, name, instanceType, difficultyID, difficultyName, maxPlayers,
     dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, lfgDungeonID = pcall(GetInstanceInfo)
   if not ok then return nil end
-
   return {
     name = ns.SafeString(name),
     instanceType = ns.SafeString(instanceType),
@@ -39,7 +40,6 @@ end
 
 local function mapPosition()
   if not (C_Map and C_Map.GetBestMapForUnit and C_Map.GetPlayerMapPosition) then return nil end
-
   local okMap, mapID = pcall(C_Map.GetBestMapForUnit, "player")
   if not okMap or type(mapID) ~= "number" or ns.IsSecret(mapID) then return nil end
 
@@ -56,9 +56,7 @@ local function mapPosition()
   local x, y
   if pos and pos.GetXY then
     local okXY, a, b = pcall(pos.GetXY, pos)
-    if okXY then
-      x, y = ns.SafeNumber(a), ns.SafeNumber(b)
-    end
+    if okXY then x, y = ns.SafeNumber(a), ns.SafeNumber(b) end
   end
 
   return {
@@ -69,34 +67,82 @@ local function mapPosition()
   }
 end
 
-local function captureLocation(reason)
+local function currentLocationSnapshot(reason)
   local position = mapPosition()
-
-  local bindLocation
-  if GetBindLocation then
-    local ok, value = pcall(GetBindLocation)
-    if ok then bindLocation = ns.SafeString(value) end
-  end
-
-  local payload = {
+  return {
+    capturedAt = ns.Now(),
     reason = reason,
     zone = safeStringCall(GetZoneText),
     realZone = safeStringCall(GetRealZoneText),
     subZone = safeStringCall(GetSubZoneText),
-    bindLocation = bindLocation,
     mapID = position and position.mapID or nil,
     mapName = position and position.mapName or nil,
     x = position and position.x or nil,
     y = position and position.y or nil,
     instance = currentInstance(),
-    coordinatesAvailable = position and position.x ~= nil and position.y ~= nil or false,
-    logout = reason == "PLAYER_LOGOUT"
+    coordinatesAvailable = position and position.x ~= nil and position.y ~= nil or false
   }
+end
+
+ns.GetCurrentLocationSnapshot = currentLocationSnapshot
+
+local function locationFingerprint(snapshot)
+  local instance = snapshot and snapshot.instance or nil
+  return table.concat({
+    tostring(snapshot and snapshot.mapID or ""),
+    tostring(snapshot and snapshot.zone or ""),
+    tostring(snapshot and snapshot.subZone or ""),
+    tostring(instance and instance.instanceID or ""),
+    tostring(instance and instance.difficultyID or "")
+  }, "|")
+end
+
+local function appendHistory(snapshot)
+  if type(snapshot) ~= "table" then return end
+  local db = ns.GetDB()
+  local history = type(db.locationHistory) == "table" and db.locationHistory or {}
+  history.entries = type(history.entries) == "table" and history.entries or {}
+  history.maxEntries = HISTORY_LIMIT
+
+  local fingerprint = locationFingerprint(snapshot)
+  local last = history.entries[#history.entries]
+  if type(last) == "table" and last.fingerprint == fingerprint then
+    history.capturedAt = snapshot.capturedAt or ns.Now()
+    db.locationHistory = history
+    return
+  end
+
+  history.entries[#history.entries + 1] = {
+    capturedAt = snapshot.capturedAt or ns.Now(),
+    reason = snapshot.reason,
+    zone = snapshot.zone,
+    realZone = snapshot.realZone,
+    subZone = snapshot.subZone,
+    mapID = snapshot.mapID,
+    mapName = snapshot.mapName,
+    x = snapshot.x,
+    y = snapshot.y,
+    coordinatesAvailable = snapshot.coordinatesAvailable,
+    instance = snapshot.instance,
+    fingerprint = fingerprint
+  }
+  while #history.entries > HISTORY_LIMIT do table.remove(history.entries, 1) end
+  history.capturedAt = snapshot.capturedAt or ns.Now()
+  db.locationHistory = history
+end
+
+local function captureLocation(reason)
+  local payload = currentLocationSnapshot(reason)
+  if GetBindLocation then
+    local ok, value = pcall(GetBindLocation)
+    if ok then payload.bindLocation = ns.SafeString(value) end
+  end
+  payload.logout = reason == "PLAYER_LOGOUT"
 
   local previous = ns.GetDB().location
   if payload.coordinatesAvailable then
     payload.lastKnownCoordinates = {
-      capturedAt = ns.Now(),
+      capturedAt = payload.capturedAt,
       mapID = payload.mapID,
       mapName = payload.mapName,
       x = payload.x,
@@ -108,6 +154,7 @@ local function captureLocation(reason)
     payload.lastKnownCoordinates = previous.lastKnownCoordinates
   end
 
+  appendHistory(payload)
   ns.StoreSection("location", payload)
 end
 

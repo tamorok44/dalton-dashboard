@@ -11,6 +11,8 @@ Aktuell werden lokal erfasst:
 - Charakteridentität, Klasse, Volk und Level
 - vollständiger lesbarer Spieler-Spellbook-Stand inklusive Spell-ID, Name, Rang und SkillLine
 - aktueller Standort, Zone, Unterzone, Karten-ID, Koordinaten soweit der Client sie freigibt, Ruhestein-Ort und aktuelle Instanz
+- schlanke Standorthistorie: ein neuer Eintrag nur bei tatsächlichem Gebiets-/Untergebiets-/Instanzwechsel, niemals permanentes Positions-Polling
+- vollständige Händler- und Lehrerbeobachtungen beim Öffnen/Ändern des jeweiligen Fensters, inklusive NPC, Standort, Angebot, Preis und Forever-Build soweit lesbar
 - Instanz- und Raid-Lockouts; wenn der Client keine vollständige Saved-Instance-Liste bereitstellt, wird der aktuelle Instanz-Lockout als bestätigter Fallback gespeichert
 - Tascheninhalt
 - letzter bekannter Bankinhalt, sobald die Bank geöffnet wurde
@@ -19,11 +21,11 @@ Aktuell werden lokal erfasst:
 
 ## Datenschutz und Synchronisierung
 
-Version 0.1.0-alpha.4 sendet keinerlei Daten ins Internet. Alles bleibt in den WoW-SavedVariables auf dem jeweiligen Rechner.
+Das WoW-Addon selbst sendet weiterhin keinerlei Daten ins Internet. Alles wird zunächst in den WoW-SavedVariables auf dem jeweiligen Rechner gespeichert.
 
-Gold, Taschen und Bank werden bewusst bereits erfasst, aber noch nicht im Dalton Dashboard angezeigt oder verwendet. Ob und wie einzelne Datenbereiche später synchronisiert werden, wird separat entschieden.
+Für Alpha 5 gibt es zusätzlich einen separaten lokalen Sync-Companion. Er liest die gespeicherten SavedVariables nach Logout oder /reload und überträgt ausschließlich die freigegebenen Bereiche Charakter, Spellbook, Standort/Standorthistorie, Lockouts, Hunter/Pet und Händler-/Lehrerbeobachtungen. **Gold, Taschen und Bank sind ausdrücklich nicht Teil des Standard-Syncs.**
 
-Der spätere Sync ist ein eigener Transport-Schritt. Dadurch muss die Datenerfassung nicht erneut umgebaut werden, wenn sich die Dashboard-Nutzung einzelner Bereiche ändert.
+Damit bleiben Datenerfassung und Transport technisch getrennt. Das Addon benötigt weder Netzwerkzugriff noch einen eingebetteten Schlüssel.
 
 ## Technische Hinweise
 
@@ -37,6 +39,8 @@ Der spätere Sync ist ein eigener Transport-Schritt. Dadurch muss die Datenerfas
 - Taschen- und Bankdaten überschreiben einen gültigen Stand niemals mit einem unlesbaren Logout-/Ladezustand
 - Banktabs werden dynamisch über die aktuelle Forever-C_Bank-API ermittelt; die Lesbarkeit der Charakterbank wird live mit C_Bank.CanViewBank geprüft
 - zusätzlich reagiert die Bankerfassung auf BANK_TABS_CHANGED, damit sie nicht von einem einzelnen Öffnen-Event abhängt
+- Händler-/Lehrerbeobachtungen werden ausschließlich über MERCHANT_SHOW/UPDATE bzw. TRAINER_SHOW/UPDATE ausgelöst und als vollständige Momentaufnahme markiert, wenn alle Einträge lesbar waren
+- der Sync-Companion arbeitet ausserhalb von WoW; er beobachtet die SavedVariables-Datei ereignisgesteuert und erzeugt keine dauerhafte Last im Spielclient
 - Pet-Daten werden nur gespeichert, wenn der Forever-Client sie tatsächlich liefert
 - nicht unterstützte oder geschützte Werte werden ausgelassen statt geschätzt
 - nicht unterstützte Events landen als Kompatibilitätshinweis und nicht mehr im eigentlichen Fehlerprotokoll
@@ -49,3 +53,15 @@ Der spätere Sync ist ein eigener Transport-Schritt. Dadurch muss die Datenerfas
 - /dalton compat: letzte Kompatibilitätshinweise
 
 Die frühere Copy/Paste-Spellbook-Lösung und ein eingebetteter privater Sync-Schlüssel sind nicht mehr Bestandteil des Addons.
+
+
+## Lokaler Alpha-5-Sync-Test
+
+Der Companion liegt unter `scripts/dalton-sync-client.mjs`. Ohne Argument sucht er auf macOS und Windows nach der zuletzt geänderten `DaltonDashboard.lua`. Alternativ kann die Datei mit `--file` explizit angegeben werden.
+
+- `node scripts/dalton-sync-client.mjs --dry-run` prüft Parser und Privacy-Whitelist ohne Upload.
+- `node scripts/dalton-sync-client.mjs --watch` synchronisiert nach jeder Änderung der SavedVariables-Datei.
+- Für echte Übertragung wird der private Schlüssel ausschließlich lokal als `DALTON_SYNC_TOKEN` gesetzt; er wird niemals in Addon oder Repository geschrieben.
+- Der Endpunkt kann für den Test über `DALTON_SYNC_ENDPOINT` bzw. `--endpoint` auf einen Preview-Build gesetzt werden.
+
+Wichtig: WoW schreibt SavedVariables regulär bei Logout bzw. `/reload`. Der Companion kann daher erst danach neue Daten sehen; das Addon führt dafür absichtlich keinen Hintergrund-Dateizugriff oder Netzwerkverkehr aus.

@@ -66,7 +66,7 @@ end
 local function status()
   local db = ns.GetDB()
   local parts = {}
-  for _, key in ipairs({"character", "spellbook", "location", "instances", "inventory", "hunter", "economy"}) do
+  for _, key in ipairs({"character", "spellbook", "location", "locationHistory", "interactions", "instances", "inventory", "hunter", "economy"}) do
     local value = db[key]
     if type(value) == "table" then
       parts[#parts + 1] = key .. ":" .. tostring(value.capturedAt or "ja")
@@ -75,7 +75,7 @@ local function status()
 
   ns.Chat("Version " .. tostring(ns.VERSION) .. " · Schema " .. tostring(db.schemaVersion))
   ns.Chat(#parts > 0 and table.concat(parts, " · ") or "Noch keine Daten erfasst.")
-  ns.Chat("Daten bleiben derzeit ausschließlich lokal in SavedVariables.")
+  ns.Chat("Das Addon selbst sendet nichts ins Internet. Ein optionaler lokaler Companion kann freigegebene Bereiche nach dem Speichern der SavedVariables synchronisieren.")
 end
 
 local function printDiagnostics(kind)
