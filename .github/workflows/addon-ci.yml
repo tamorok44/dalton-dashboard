@@ -68,9 +68,9 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           cd addons
-          zip -r "../dist/DaltonDashboard-0.1.0-alpha.5.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
+          zip -r "../dist/DaltonDashboard-0.1.0-alpha.6.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
           cd ..
-          unzip -l dist/DaltonDashboard-0.1.0-alpha.5.zip
+          unzip -l dist/DaltonDashboard-0.1.0-alpha.6.zip
 
       - name: Sync-Companion-Paket bauen
         shell: bash
@@ -82,22 +82,22 @@ jobs:
           cp scripts/addon-sync.mjs dist/DaltonDashboardSyncCompanion/
           cp docs/dalton-sync-companion.md dist/DaltonDashboardSyncCompanion/README.md
           cd dist
-          zip -r "DaltonDashboardSyncCompanion-0.1.0-alpha.5.zip" DaltonDashboardSyncCompanion
+          zip -r "DaltonDashboardSyncCompanion-0.1.0-alpha.6.zip" DaltonDashboardSyncCompanion
           cd ..
-          unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-alpha.5.zip
+          unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-alpha.6.zip
 
       - name: Addon-Testpaket bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboard-0.1.0-alpha.5
-          path: dist/DaltonDashboard-0.1.0-alpha.5.zip
+          name: DaltonDashboard-0.1.0-alpha.6
+          path: dist/DaltonDashboard-0.1.0-alpha.6.zip
           if-no-files-found: error
           retention-days: 14
 
       - name: Sync-Companion-Testpaket bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboardSyncCompanion-0.1.0-alpha.5
-          path: dist/DaltonDashboardSyncCompanion-0.1.0-alpha.5.zip
+          name: DaltonDashboardSyncCompanion-0.1.0-alpha.6
+          path: dist/DaltonDashboardSyncCompanion-0.1.0-alpha.6.zip
           if-no-files-found: error
           retention-days: 14
