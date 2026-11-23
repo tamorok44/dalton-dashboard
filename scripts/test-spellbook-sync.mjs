@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {parseSpellbookCode,expandKnownClassAbilities,applySpellbookSnapshot} from './spellbook-sync.mjs';
+import {parseSpellbookCode,resolveSpellbookCharacter,expandKnownClassAbilities,applySpellbookSnapshot} from './spellbook-sync.mjs';
 
 const code='DALTON1|secret-token|cole-dalton|8|11|1795417200|143:Feuerball:Rang%202,7300:Frostr%C3%BCstung:Rang%202';
 const parsed=parseSpellbookCode(code);
@@ -29,6 +29,7 @@ assert.equal(expanded.find(x=>x.id===168).name,'Frostrüstung');
 const data={generatedAt:'2026-11-23T05:00:00.000Z',characters:[
   {slug:'cole-dalton',name:'Cole Dalton',classId:8,level:11}
 ]};
+assert.equal(resolveSpellbookCharacter(data,{characterSlug:'cole',classId:8}).slug,'cole-dalton','UnitName-Vorname wird eindeutig auf den Forever-Slug mit Nachnamen abgebildet');
 const now=new Date('2026-11-23T06:00:00.000Z').toISOString();
 const snapshot={...parsed,capturedAt:'2026-11-23T05:55:00.000Z'};
 const updated=applySpellbookSnapshot(data,snapshot,{
