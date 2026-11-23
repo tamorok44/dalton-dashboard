@@ -22,7 +22,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
-assert.ok(toc.includes('## Version: 0.1.0-alpha.3'));
+assert.ok(toc.includes('## Version: 0.1.0-alpha.4'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -40,6 +40,8 @@ assert.ok(bundle.includes('GetInstanceLockTimeRemaining'));
 assert.ok(bundle.includes('GetPlayerMapPosition'));
 assert.ok(bundle.includes('GetContainerItemInfo'));
 assert.ok(bundle.includes('FetchPurchasedBankTabData'));
+assert.ok(bundle.includes('C_Bank.CanViewBank'));
+assert.ok(bundle.includes('BANK_TABS_CHANGED'));
 assert.ok(bundle.includes('Enum.BagIndex'));
 assert.ok(bundle.includes('GetPetHappiness'));
 assert.ok(bundle.includes('GetPetTrainingPoints'));
