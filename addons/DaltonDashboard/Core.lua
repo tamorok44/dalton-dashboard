@@ -47,6 +47,17 @@ function ns.Chat(message)
   end
 end
 
+local function pruneLegacyRegistrationErrors(errors)
+  if type(errors) ~= "table" then return {} end
+  local kept = {}
+  for _, entry in ipairs(errors) do
+    if type(entry) ~= "table" or not tostring(entry.where or ""):match("^RegisterEvent:") then
+      kept[#kept + 1] = entry
+    end
+  end
+  return kept
+end
+
 function ns.EnsureDB()
   if type(DaltonDashboardDB) ~= "table" then DaltonDashboardDB = {} end
   DaltonDashboardDB.schemaVersion = ns.SCHEMA_VERSION
@@ -61,8 +72,11 @@ function ns.EnsureDB()
   db.meta.interface = select(4, GetBuildInfo())
   db.meta.locale = GetLocale and GetLocale() or nil
   db.meta.lastUpdatedAt = db.meta.lastUpdatedAt or ns.Now()
-  db.diagnostics = db.diagnostics or { errors = {} }
-  db.diagnostics.errors = db.diagnostics.errors or {}
+
+  db.diagnostics = db.diagnostics or {}
+  db.diagnostics.errors = pruneLegacyRegistrationErrors(db.diagnostics.errors or {})
+  db.diagnostics.compatibility = db.diagnostics.compatibility or {}
+  db.diagnostics.modules = db.diagnostics.modules or {}
   return db
 end
 
@@ -89,6 +103,17 @@ function ns.RecordError(where, err)
   while #list > 20 do table.remove(list) end
 end
 
+function ns.RecordCompatibility(where, message)
+  local db = ns.EnsureDB()
+  local list = db.diagnostics.compatibility
+  table.insert(list, 1, {
+    at = ns.Now(),
+    where = tostring(where or "?"),
+    message = tostring(message or "unsupported"):sub(1, 400)
+  })
+  while #list > 20 do table.remove(list) end
+end
+
 function ns.RegisterModule(name, module)
   module = module or {}
   module.name = name
@@ -99,7 +124,16 @@ end
 
 function ns.Run(module, method, ...)
   if not module or type(module[method]) ~= "function" then return true end
+
   local ok, result = pcall(module[method], module, ...)
+  local db = ns.EnsureDB()
+  db.diagnostics.modules[module.name or "?"] = {
+    at = ns.Now(),
+    method = method,
+    ok = ok and true or false,
+    error = ok and nil or tostring(result):sub(1, 400)
+  }
+
   if not ok then
     ns.RecordError((module.name or "?") .. "." .. method, result)
     return false, result
@@ -111,12 +145,18 @@ function ns.Schedule(delay, key, callback)
   ns._timers = ns._timers or {}
   if ns._timers[key] then return end
   ns._timers[key] = true
+
   local function run()
     ns._timers[key] = nil
     local ok, err = pcall(callback)
     if not ok then ns.RecordError("timer:" .. tostring(key), err) end
   end
-  if C_Timer and C_Timer.After then C_Timer.After(delay or 0, run) else run() end
+
+  if C_Timer and C_Timer.After then
+    C_Timer.After(delay or 0, run)
+  else
+    run()
+  end
 end
 
 function ns.CopyNumberArray(source)
