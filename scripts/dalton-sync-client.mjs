@@ -69,9 +69,10 @@ async function resolveFile(explicit){
 }
 async function readPayload(file){
   const raw=await fs.readFile(file,'utf8');
-  const hash=createHash('sha256').update(raw).digest('hex');
   const charDb=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
-  return {hash,payload:buildSafeAddonSyncPayload(charDb,{syncId:hash})};
+  const safePayload=buildSafeAddonSyncPayload(charDb);
+  const hash=createHash('sha256').update(JSON.stringify(safePayload)).digest('hex');
+  return {hash,payload:{...safePayload,syncId:hash}};
 }
 async function postPayload(endpoint,token,payload){
   const url=new URL(endpoint);
