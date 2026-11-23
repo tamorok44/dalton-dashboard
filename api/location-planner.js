@@ -6,6 +6,7 @@ import {buildLocationPlanner} from '../scripts/location-planner.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
+import {applyLearningSourceEvidence,loadLearningSourceEvidence} from '../scripts/learning-source-evidence.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
@@ -124,6 +125,7 @@ export default async function handler(req,res){
     const recipeIndex=await getForeverDbMasterRecipeIndex({
       seedProfessionSlugs:workshopProfessionSlugs(stored.data)
     });
+    const evaluatedRecipeIndex=applyLearningSourceEvidence(recipeIndex,loadLearningSourceEvidence());
     const selectedCharacter=character
       ?(stored.data?.characters||[]).find(entry=>entry?.slug===character)
       :null;
@@ -131,14 +133,14 @@ export default async function handler(req,res){
       ?workshopProfessionSlugs({characters:[selectedCharacter]})
       :[];
     const professionMasters=Object.fromEntries(
-      (recipeIndex?.professions||[])
+      (evaluatedRecipeIndex?.professions||[])
         .filter(profession=>selectedProfessionSlugs.includes(profession?.slug))
         .map(profession=>[profession.slug,{...profession,cached:true}])
     );
     const classMaster=selectedCharacter?.classId
-      ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:recipeIndex?.build||null})
+      ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:evaluatedRecipeIndex?.build||null})
       :null;
-    let planner=buildLocationPlanner(stored.data,recipeIndex,{
+    let planner=buildLocationPlanner(stored.data,evaluatedRecipeIndex,{
       characterSlug:character,
       location,
       professionMasters,
@@ -186,7 +188,8 @@ export default async function handler(req,res){
         refreshing:recipeIndex?.refreshing===true,
         build:recipeIndex?.build||null,
         generatedAt:recipeIndex?.generatedAt||null,
-        recipeCount:Array.isArray(recipeIndex?.recipes)?recipeIndex.recipes.length:0,
+        recipeCount:Array.isArray(evaluatedRecipeIndex?.recipes)?evaluatedRecipeIndex.recipes.length:0,
+        learningSourceEvidence:evaluatedRecipeIndex?.learningSourceEvidence||null,
         professionMasterCount:professionMasterValues.filter(value=>value&&!value.error).length,
         professionMasterErrors,
         professionRankCount:professionRanks.length,
