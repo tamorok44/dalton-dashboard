@@ -51,6 +51,63 @@ function sourceMatches(observation,source){
   if(npcName&&npcName!==norm(source?.name))return false;
   return npcId!==null||Boolean(npcName);
 }
+function observationSourceKey(observation={}){
+  const id=integer(observation?.npcId??observation?.vendorId);
+  const type=text(observation?.sourceType)||'source';
+  if(id)return type+':'+id;
+  const name=norm(observation?.npcName);
+  return name?type+':name:'+name:null;
+}
+function sourceKey(source={}){
+  const id=integer(source?.id);
+  const type=text(source?.type)||'source';
+  if(id)return type+':'+id;
+  const name=norm(source?.name);
+  return name?type+':name:'+name:null;
+}
+function sourceFromObservation(observation={}){
+  const id=integer(observation?.npcId??observation?.vendorId);
+  const name=text(observation?.npcName);
+  const type=text(observation?.sourceType);
+  if(!['vendor','trainer'].includes(type)||(!id&&!name))return null;
+  const observedPrice=finite(observation?.priceCopper);
+  const location=observation?.location&&typeof observation.location==='object'
+    ?{
+      zone:text(observation.location.zone)||null,
+      x:finite(observation.location.x),
+      y:finite(observation.location.y),
+      uiMapId:integer(observation.location.uiMapId),
+      instance:text(observation.location.instance)||null
+    }
+    :null;
+  return {
+    type,
+    side:text(observation?.side)||null,
+    id,
+    name:name||(type==='trainer'?'Unbekannter Lehrer':'Unbekannter Händler'),
+    location,
+    seenInForever:true,
+    evidence:'forever-confirmed',
+    priceCopper:observedPrice!==null?Math.round(observedPrice):null,
+    priceSource:observedPrice!==null?'forever-observed':null,
+    pricePerItem:null,
+    stack:null,
+    limitedStock:null,
+    costs:[],
+    reputationFaction:null,
+    trainerCostSource:null,
+    dropChance:null,
+    observations:null,
+    sourceLabel:text(observation?.source)||null,
+    npcTitle:text(observation?.npcTitle)||null,
+    displayId:integer(observation?.displayId),
+    renderSourceUrl:text(observation?.renderSourceUrl)||null,
+    offerStatus:'present',
+    offerEvidenceSource:text(observation?.source)||null,
+    offerObservedOn:text(observation?.observedAt??observation?.observedOn)||null,
+    offerBuild:text(observation?.build)||null
+  };
+}
 function bestObservation(observations,recipe,source,indexBuild){
   return asArray(observations)
     .filter(observation=>
@@ -110,6 +167,28 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
         continue;
       }
       sources.push(source);
+    }
+
+    const existingKeys=new Set(sources.map(sourceKey).filter(Boolean));
+    const directPresent=new Map();
+    for(const observation of observations){
+      if(observation?.status!=='present'||!evidenceBuildApplies(observation,recipeIndex?.build)||!targetMatches(observation,recipe))continue;
+      const key=observationSourceKey(observation);
+      if(!key)continue;
+      const previous=directPresent.get(key);
+      if(!previous||sourcePriority(observation?.source)>sourcePriority(previous?.source)||
+        sourcePriority(observation?.source)===sourcePriority(previous?.source)&&
+        observationDate(observation?.observedAt??observation?.observedOn)>observationDate(previous?.observedAt??previous?.observedOn)){
+        directPresent.set(key,observation);
+      }
+    }
+    for(const [key,observation] of directPresent){
+      if(existingKeys.has(key))continue;
+      const source=sourceFromObservation(observation);
+      if(!source)continue;
+      sources.push(source);
+      existingKeys.add(key);
+      confirmed++;
     }
     return {...recipe,learning:{...learning,sources}};
   });
