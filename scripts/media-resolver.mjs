@@ -55,6 +55,8 @@ export async function resolveMediaAsset({
   try{
     const known=await loadMediaRecord(type,id,kind);
     if(known?.storedUrl&&(!refreshOnSourceChange||known.sourceUrl===sourceUrl))return known.storedUrl;
+    const negativeAge=Date.now()-Date.parse(known?.updatedAt||'');
+    if(!known?.storedUrl&&known?.sourceUrl===sourceUrl&&Number.isFinite(negativeAge)&&negativeAge>=0&&negativeAge<7*24*60*60*1000)return null;
   }catch(error){
     console.warn('Medienregister konnte nicht gelesen werden:',String(error.message).slice(0,100));
   }
@@ -65,7 +67,13 @@ export async function resolveMediaAsset({
     headers:{'user-agent':'Dalton-Dashboard/1.0 media archiver'},
     signal:AbortSignal.timeout(12000)
   });
-  if(!response.ok)throw Error('Bildquelle HTTP '+response.status);
+  if(!response.ok){
+    if(response.status===403||response.status===404){
+      try{await saveMediaRecord(type,id,kind,{sourceUrl,storedUrl:null,contentType:null})}catch{}
+      return null;
+    }
+    throw Error('Bildquelle HTTP '+response.status);
+  }
   const contentType=(response.headers.get('content-type')||'').split(';')[0];
   if(!ALLOWED_TYPES.has(contentType))throw Error('Ungültiges Bildformat');
   const body=Buffer.from(await response.arrayBuffer());

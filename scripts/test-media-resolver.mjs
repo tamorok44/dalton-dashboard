@@ -47,6 +47,15 @@ assert.equal(await resolveMediaAsset({
   sourceUrl:'https://example.com/not-allowed.png'
 }),null);
 
+const missingNpc=await resolveMediaAsset({
+  entityType:'npc',
+  entityId:5498,
+  role:'portrait',
+  sourceUrl:'https://render-eu.worldofwarcraft.com/npcs/zoom/creature-display-3293.jpg',
+  fetchImpl:async()=>({ok:false,status:403,headers:{get:()=>null}})
+});
+assert.equal(missingNpc,null,'Dauerhaft fehlendes Blizzard-NPC-Renderbild fällt ohne Exception auf den UI-Fallback zurück');
+
 if(previousToken===undefined)delete process.env.BLOB_READ_WRITE_TOKEN;
 else process.env.BLOB_READ_WRITE_TOKEN=previousToken;
 
