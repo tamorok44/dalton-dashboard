@@ -10,11 +10,18 @@ function safeEqual(a,b){
   const left=Buffer.from(String(a||'')),right=Buffer.from(String(b||''));
   return left.length===right.length&&timingSafeEqual(left,right);
 }
-function requestCode(req){
+async function requestCode(req){
   if(typeof req.body==='string'){
     try{return JSON.parse(req.body)?.code||null}catch{return null}
   }
-  return req.body?.code||null;
+  if(req.body&&typeof req.body==='object')return req.body.code||null;
+  if(typeof req[Symbol.asyncIterator]!=='function')return null;
+  let raw='';
+  for await(const chunk of req){
+    raw+=chunk;
+    if(raw.length>250000)throw new Error('Spellbook-Anfrage ist zu groß');
+  }
+  try{return JSON.parse(raw)?.code||null}catch{return null}
 }
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
@@ -22,7 +29,7 @@ export default async function handler(req,res){
   const expected=process.env.SPELLBOOK_SYNC_TOKEN;
   if(!expected)return res.status(503).json({error:'Spellbook-Synchronisierung ist nicht konfiguriert'});
   let snapshot;
-  try{snapshot=parseSpellbookCode(requestCode(req))}catch(error){
+  try{snapshot=parseSpellbookCode(await requestCode(req))}catch(error){
     return res.status(400).json({error:String(error.message).slice(0,160)});
   }
   if(!safeEqual(snapshot.token,expected))return res.status(401).json({error:'Spellbook-Code wurde nicht für dieses Dashboard erstellt'});
