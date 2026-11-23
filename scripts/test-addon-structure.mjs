@@ -22,6 +22,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
+assert.ok(toc.includes('## Version: 0.1.0-alpha.2'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -33,12 +34,25 @@ const bundle=required.map(file=>readFileSync(root+'/'+file,'utf8')).join('\n');
 assert.ok(!bundle.includes('PRIVATE_TOKEN_HERE'),'Privater Platzhalter darf nicht im Addon liegen');
 assert.ok(!bundle.includes('DALTON_DASHBOARD_SYNC_TOKEN'),'Privater Sync-Schlüssel darf nicht im Addon liegen');
 assert.ok(bundle.includes('C_SpellBook'));
+assert.ok(bundle.includes('SPELLS_CHANGED'));
 assert.ok(bundle.includes('GetSavedInstanceInfo'));
+assert.ok(bundle.includes('GetInstanceLockTimeRemaining'));
 assert.ok(bundle.includes('GetPlayerMapPosition'));
 assert.ok(bundle.includes('GetContainerItemInfo'));
 assert.ok(bundle.includes('GetPetHappiness'));
+assert.ok(bundle.includes('GetPetTrainingPoints'));
 assert.ok(bundle.includes('GetStabledPetList'));
 assert.ok(bundle.includes('moneyCopper'));
 assert.ok(bundle.includes('SCHEMA_VERSION = 1'));
 
-console.log('Dalton Dashboard Addon: Struktur, Privacy-Grenze und Datendomänen: OK');
+for(const unsupported of [
+  'LEARNED_SPELL_IN_TAB',
+  'CRAFT_SHOW',
+  'CRAFT_UPDATE',
+  'PET_SPELL_POWER_UPDATE',
+  'PLAYER_FACTION_UPDATE'
+]){
+  assert.ok(!bundle.includes(unsupported),'Nicht unterstütztes Forever-Event darf nicht zurückkehren: '+unsupported);
+}
+
+console.log('Dalton Dashboard Addon: Struktur, Forever-Events, Privacy-Grenze und Datendomänen: OK');
