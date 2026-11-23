@@ -3,9 +3,13 @@ import {createHash} from 'node:crypto';
 import {existsSync,promises as fs,watch} from 'node:fs';
 import {dirname,basename,join,resolve} from 'node:path';
 import {homedir} from 'node:os';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {pathToFileURL} from 'node:url';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,publicAddonSyncSummary} from './addon-sync.mjs';
+
+const execFileAsync=promisify(execFile);
 
 function args(argv){
   const out={watch:false,dryRun:false,file:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
@@ -28,6 +32,30 @@ function help(){
   console.log('Gold, Taschen und Bank werden vom Standard-Sync niemals übertragen.');
   console.log('Bei geschützten Vercel-Previews kann DALTON_SYNC_PREVIEW_SHARE_URL gesetzt werden.');
 }
+async function spotlightSavedVariables(){
+  if(process.platform!=='darwin')return [];
+  try{
+    const {stdout}=await execFileAsync('/usr/bin/mdfind',[
+      "kMDItemFSName == 'DaltonDashboard.lua'c"
+    ],{maxBuffer:1024*1024});
+    const candidates=String(stdout||'')
+      .split(/\r?\n/)
+      .map(value=>value.trim())
+      .filter(Boolean)
+      .filter(value=>/\/WTF\/Account\//i.test(value)&&/\/SavedVariables\/DaltonDashboard\.lua$/i.test(value));
+    const found=[];
+    for(const file of [...new Set(candidates)]){
+      try{
+        const stat=await fs.stat(file);
+        if(stat.isFile())found.push({file,mtime:stat.mtimeMs,source:'Spotlight'});
+      }catch{}
+    }
+    return found;
+  }catch{
+    return [];
+  }
+}
+
 async function discoverFiles(){
   const wowRoots=[
     process.env.DALTON_WOW_ROOT,
@@ -51,7 +79,7 @@ async function discoverFiles(){
     }
   }
 
-  const found=[];
+  const found=[...(await spotlightSavedVariables())];
   async function walkSavedVariables(dir,depth){
     if(depth>7)return;
     let entries;
@@ -63,12 +91,17 @@ async function discoverFiles(){
         await walkSavedVariables(full,depth+1);
       }else if(entry.isFile()&&entry.name==='DaltonDashboard.lua'&&/SavedVariables/i.test(full)){
         const stat=await fs.stat(full);
-        found.push({file:full,mtime:stat.mtimeMs});
+        found.push({file:full,mtime:stat.mtimeMs,source:'WoW-Pfad'});
       }
     }
   }
   for(const root of [...new Set(accountRoots)])await walkSavedVariables(root,0);
-  return found.sort((a,b)=>b.mtime-a.mtime);
+  const unique=new Map();
+  for(const item of found){
+    const previous=unique.get(item.file);
+    if(!previous||item.mtime>previous.mtime)unique.set(item.file,item);
+  }
+  return [...unique.values()].sort((a,b)=>b.mtime-a.mtime);
 }
 async function resolveFile(explicit){
   if(explicit){
@@ -77,10 +110,10 @@ async function resolveFile(explicit){
     return file;
   }
   const matches=await discoverFiles();
-  if(!matches.length)throw new Error('Keine DaltonDashboard.lua unter den üblichen WoW-Verzeichnissen gefunden. Bitte --file angeben.');
+  if(!matches.length)throw new Error('Keine DaltonDashboard.lua gefunden. Bitte WoW mit aktiviertem DaltonDashboard starten und einmal /reload ausführen; danach den Dry-Run erneut starten.');
   if(matches.length>1){
     console.log('Mehrere SavedVariables-Dateien gefunden; verwendet wird die zuletzt geänderte:');
-    for(const item of matches.slice(0,5))console.log('  '+item.file);
+    for(const item of matches.slice(0,5))console.log('  '+item.file+(item.source?' ['+item.source+']':''));
   }
   return matches[0].file;
 }
