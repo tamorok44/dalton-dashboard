@@ -12,7 +12,10 @@
       "build": "1.60.1.71037",
       "observedOn": "2026-11-23",
       "source": "dalton-live",
-      "note": "Direkte Ingame-Prüfung: Rezept Glitschhautmakrele wird von Nyalah Brightfire nicht angeboten."
+      "note": "Direkte Ingame-Prüfung: Rezept Glitschhautmakrele wird von Nyalah Brightfire nicht angeboten.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
     },
     {
       "npcId": 257006,
@@ -25,7 +28,10 @@
       "build": "1.60.1.71037",
       "observedOn": "2026-11-23",
       "source": "dalton-live",
-      "note": "Direkte Ingame-Prüfung: Rezept Geräucherter Weisenfisch wird für 5 Silber angeboten."
+      "note": "Direkte Ingame-Prüfung: Rezept Geräucherter Weisenfisch wird für 5 Silber angeboten.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
     },
     {
       "npcId": 257006,
@@ -38,7 +44,10 @@
       "build": "1.60.1.71037",
       "observedOn": "2026-11-23",
       "source": "dalton-live",
-      "note": "Direkte Ingame-Prüfung: Rezept Weisenfisch Supreme wird für 50 Silber angeboten."
+      "note": "Direkte Ingame-Prüfung: Rezept Weisenfisch Supreme wird für 50 Silber angeboten.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
     },
     {
       "npcId": 257006,
@@ -51,7 +60,10 @@
       "build": "1.60.1.71037",
       "observedOn": "2026-11-23",
       "source": "dalton-live",
-      "note": "Direkte Ingame-Prüfung: Spinnenwurst wird als Kochkunst-Ausbildung für 40 Silber gelehrt."
+      "note": "Direkte Ingame-Prüfung: Spinnenwurst wird als Kochkunst-Ausbildung für 40 Silber gelehrt.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
     }
   ]
 }
