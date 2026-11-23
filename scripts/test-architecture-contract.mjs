@@ -138,6 +138,11 @@ assert.ok(sourceByFile.has('scripts/spellbook-sync.mjs'),'Central spellbook snap
 assert.ok(sourceByFile.has('api/spellbook-sync.js'),'Private spellbook sync endpoint is required');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('fetchForeverDbPublicClassTrainers'),'Class training must consume the central current Forever class-trainer dataset');
+assert.ok(sourceByFile.has('scripts/class-training-classic-costs.mjs'),'Central Classic class-trainer cost fallback is required');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('classicTrainerCost'),'Class rank pricing must use the bounded central Classic trainer-cost fallback');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('lessonVerified'),'Class ranks without actual lesson evidence must stay fail-closed');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('trainerRoleMatchesAbility'),'Portal and pet trainers must not be treated as generic class trainers');
+assert.ok(policy.includes('Startzauber, interne Auren und Effekte')&&policy.includes('fail-closed unsichtbar'),'Architecture contract must reject class rows without lesson evidence');
 assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes("character?.knownClassAbilitiesSource==='WoW-Spellbook'"),'Normal profile refresh must preserve a verified ingame spellbook snapshot');
 const addonSource=fs.readFileSync(path.join(root,'addons','DaltonDashboard','DaltonDashboard.lua'),'utf8');
 const addonConfig=fs.readFileSync(path.join(root,'addons','DaltonDashboard','Config.lua'),'utf8');

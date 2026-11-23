@@ -27,14 +27,20 @@ const realSchema=normalizeForeverDbClass({
     name:'Feuerball',line:'Fire',learned:'Trainer',newInForever:false,
     ranks:[{id:133,rank:'Rang 1',learnedLevel:1},{id:143,rank:'Rang 2',learnedLevel:6}]
   },{
+    name:'Chilled',line:'Frost',learned:'Trainer',
+    ranks:[{id:12484,rank:'',learnedLevel:1}]
+  },{
     name:'Arkane Konzentration',line:'Arcane',learned:'Talent',
     ranks:[{id:11213,rank:'Rang 1',learnedLevel:15}]
   }]
 },'mage');
 assert.equal(realSchema.abilities.length,1,'Reales ForeverDB-Feld learned unterscheidet Trainer von Talent/Quest');
 assert.equal(realSchema.abilities[0].school,'Fire');
-assert.deepEqual(realSchema.abilities[0].ranks.map(rank=>rank.id),[133,143]);
-assert.deepEqual(realSchema.abilities[0].ranks.map(rank=>rank.requiredLevel),[1,6]);
+assert.deepEqual(realSchema.abilities[0].ranks.map(rank=>rank.id),[143],'Automatisch bekannte Startzauber ohne Lehrerbeleg werden nicht als Kauf angeboten');
+assert.deepEqual(realSchema.abilities[0].ranks.map(rank=>rank.requiredLevel),[6]);
+assert.equal(realSchema.abilities[0].ranks[0].priceCopper,100);
+assert.equal(realSchema.abilities[0].ranks[0].priceSource,'classic');
+assert.equal(realSchema.abilities.some(ability=>ability.name==='Chilled'),false,'Interner Effekt ohne Unterrichtsevidenz bleibt fail-closed aus der Klassenausbildung');
 
 const mage=normalizeForeverDbClass({
   id:8,name:'Magier',
@@ -102,6 +108,22 @@ assert.equal(fallback.trainers[0].evidence,'forever-confirmed');
 assert.equal(fallback.abilities[0].ranks[0].sources.length,3);
 assert.equal(fallback.abilities[0].ranks[0].sources[0].location.zone,'Insel Zephras');
 assert.equal(fallback.abilities[0].ranks[0].requiredLevel,8,'ForeverDB-Feld learnedLevel wird als Lernlevel erkannt');
+
+const trainerRoles=normalizeForeverDbClass({
+  name:'Magier',
+  trainers:[
+    {id:331,name:'Maginor Dumas',title:'Mage Trainer',side:'alliance',seenInForever:true,zone:'Sturmwind',x:38.2,y:80.1},
+    {id:2485,name:'Larimaine Purdue',title:'Portal Trainer',side:'alliance',seenInForever:true,zone:'Sturmwind',x:39.9,y:81.4}
+  ],
+  abilities:[
+    {name:'Feuerball',type:'Trainer',ranks:[{id:143,rank:'Rang 2',learnedLevel:6}]},
+    {name:'Teleport: Stormwind',type:'Trainer',ranks:[{id:3561,rank:'',learnedLevel:20}]}
+  ]
+},'mage');
+assert.equal(trainerRoles.abilities[0].ranks[0].sources.some(source=>/Portal Trainer/i.test(source.npcTitle||'')),false,'Portal-Lehrer bietet keine normalen Magierzauber an');
+const teleport=trainerRoles.abilities.find(ability=>/Teleport/i.test(ability.name));
+assert.ok(teleport);
+assert.ok(teleport.ranks[0].sources.length>0&&teleport.ranks[0].sources.every(source=>/Portal Trainer/i.test(source.npcTitle||'')),'Teleport-Ränge werden ausschließlich Portal-Lehrern zugeordnet');
 
 const hunter=normalizeForeverDbClass({
   name:'Jäger',
