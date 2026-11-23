@@ -6,10 +6,21 @@ module.events = {
   BAG_UPDATE_DELAYED = true,
   BANKFRAME_OPENED = true,
   BANKFRAME_CLOSED = true,
+  BANK_TABS_CHANGED = true,
   PLAYERBANKSLOTS_CHANGED = true
 }
 
 local bankOpen = false
+
+local function characterBankViewable()
+  if C_Bank and C_Bank.CanViewBank and Enum and Enum.BankType and Enum.BankType.Character ~= nil then
+    local ok, value = pcall(C_Bank.CanViewBank, Enum.BankType.Character)
+    if ok and not ns.IsSecret(value) then
+      return value and true or false
+    end
+  end
+  return bankOpen
+end
 
 local function bagIndex(name, fallback)
   if Enum and Enum.BagIndex and Enum.BagIndex[name] ~= nil then
@@ -167,7 +178,7 @@ local function purchasedBankContainers()
 end
 
 local function scanBank(reason)
-  if not bankOpen then return false end
+  if not characterBankViewable() then return false end
 
   local containers = purchasedBankContainers()
   if not containers then
@@ -190,8 +201,9 @@ local function scanBank(reason)
 end
 
 function module:Capture(reason)
-  scanBags(reason or "manual")
-  if bankOpen then scanBank(reason or "manual") end
+  local why = reason or "manual"
+  scanBags(why)
+  scanBank(why)
 end
 
 function module:OnEvent(event)
@@ -201,21 +213,22 @@ function module:OnEvent(event)
       scanBank(event)
       scanBags(event)
     end)
+    ns.Schedule(1.25, "bank-open-late", function()
+      scanBank(event)
+    end)
   elseif event == "BANKFRAME_CLOSED" then
     bankOpen = false
     local inventory = ns.GetDB().inventory
     if type(inventory) == "table" and type(inventory.bank) == "table" then
       inventory.bank.lastClosedAt = ns.Now()
     end
-  elseif event == "PLAYERBANKSLOTS_CHANGED" then
-    if bankOpen then
-      ns.Schedule(0.15, "bank", function() scanBank(event) end)
-    end
+  elseif event == "BANK_TABS_CHANGED" or event == "PLAYERBANKSLOTS_CHANGED" then
+    ns.Schedule(0.15, "bank", function() scanBank(event) end)
   else
     ns.Schedule(event == "PLAYER_LOGIN" and 1.5 or 0.2, "bags", function()
       scanBags(event)
     end)
-    if bankOpen then
+    if characterBankViewable() then
       ns.Schedule(0.25, "bank", function() scanBank(event) end)
     end
   end
