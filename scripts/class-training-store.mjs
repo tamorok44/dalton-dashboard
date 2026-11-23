@@ -1,12 +1,14 @@
 import {redis,configured as redisConfigured} from './character-store.mjs';
-import {foreverDbConfigured,fetchForeverDbClass,fetchForeverDbSpell} from './foreverdb-api.mjs';
+import {foreverDbConfigured,fetchForeverDbClass} from './foreverdb-api.mjs';
 import {CLASSIC_CLASS_TRAINER_COSTS} from './class-training-classic-costs.mjs';
 import {CLASS_TRAINER_ZONE_DE} from './class-trainer-zones-de.mjs';
 
 const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v7:';
 const PUBLIC_DATA_BASE='https://foreverdb.net/data/';
 let publicTrainerCache=null;
-const SPELL_LOCALE_HASH='dalton-dashboard:foreverdb:class-spell-locale:v1';
+let publicClassDataCache=null;
+let publicGermanSpellCache=null;
+const SPELL_LOCALE_HASH='dalton-dashboard:foreverdb:class-spell-locale:v2';
 export const CLASS_BY_ID=Object.freeze({
   1:'warrior',2:'paladin',3:'hunter',4:'rogue',5:'priest',7:'shaman',8:'mage',9:'warlock',11:'druid'
 });
@@ -193,6 +195,40 @@ async function publicTrainerData({fetchImpl=fetch}={}){
   publicTrainerCache={at:Date.now(),data};
   return data;
 }
+async function publicClassData({fetchImpl=fetch}={}){
+  if(publicClassDataCache&&Date.now()-publicClassDataCache.at<10*60*1000)return publicClassDataCache.data;
+  const response=await fetchImpl(new URL('classes.json',PUBLIC_DATA_BASE),{
+    headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},
+    signal:AbortSignal.timeout(15000)
+  });
+  if(!response.ok)throw new Error('ForeverDB öffentliche Klassendaten HTTP '+response.status);
+  const data=await response.json();
+  publicClassDataCache={at:Date.now(),data:Array.isArray(data)?data:[]};
+  return publicClassDataCache.data;
+}
+async function publicGermanSpellData({fetchImpl=fetch}={}){
+  if(publicGermanSpellCache&&Date.now()-publicGermanSpellCache.at<10*60*1000)return publicGermanSpellCache.data;
+  const response=await fetchImpl(new URL('l10n/de/spells.json',PUBLIC_DATA_BASE),{
+    headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},
+    signal:AbortSignal.timeout(15000)
+  });
+  if(!response.ok)throw new Error('ForeverDB öffentliche deutsche Zauberdaten HTTP '+response.status);
+  const data=await response.json();
+  publicGermanSpellCache={at:Date.now(),data:data&&typeof data==='object'?data:{}};
+  return publicGermanSpellCache.data;
+}
+function publicClassIconMap(classes=[]){
+  const map=new Map();
+  for(const klass of asArray(classes)){
+    for(const ability of asArray(klass?.abilities)){
+      for(const rank of asArray(ability?.ranks)){
+        const id=integer(rank?.id),iconId=integer(first(rank?.ic,rank?.iconId,rank?.icon_id,rank?.icon));
+        if(id&&iconId)map.set(id,iconId);
+      }
+    }
+  }
+  return map;
+}
 function localizedTrainer(source){
   if(!source)return source;
   const uiMapId=integer(source.location?.uiMapId);
@@ -322,22 +358,31 @@ export function normalizeForeverDbClass(raw={},slug){
 export async function fetchForeverDbClassMaster(classId,{fetchImpl=fetch}={}){
   const slug=CLASS_BY_ID[Number(classId)];
   if(!slug)throw new Error('Nicht unterstützte Forever-Klasse');
-  const [result,publicTrainers]=await Promise.all([
+  const [result,publicTrainers,publicClasses]=await Promise.all([
     fetchForeverDbClass(slug,{fetchImpl}),
-    fetchForeverDbPublicClassTrainers(classId,{fetchImpl}).catch(()=>[])
+    fetchForeverDbPublicClassTrainers(classId,{fetchImpl}).catch(()=>[]),
+    publicClassData({fetchImpl}).catch(()=>[])
   ]);
   const normalized=normalizeForeverDbClass(result.data,slug);
+  const iconMap=publicClassIconMap(publicClasses);
   const mergedTrainers=dedupeTrainers([
     ...publicTrainers,
     ...normalized.trainers,
     ...verifiedZephrasClassTrainers(slug)
   ]);
+  const classMaster=replaceGenericTrainerFallbacks(normalized,mergedTrainers);
   return {
-    classMaster:replaceGenericTrainerFallbacks(normalized,mergedTrainers),
+    classMaster:{
+      ...classMaster,
+      abilities:asArray(classMaster.abilities).map(ability=>({
+        ...ability,
+        ranks:asArray(ability.ranks).map(rank=>({...rank,iconId:integer(rank.iconId)||iconMap.get(integer(rank.id))||null}))
+      }))
+    },
     build:result.meta?.build||result.meta?.gameBuild||result.meta?.clientBuild||null
   };
 }
-export async function cachedGermanClassSpells(ids,{fetchImpl=fetch,maxFetch=25}={}){
+export async function cachedGermanClassSpells(ids,{fetchImpl=fetch}={}){
   const keys=[...new Set(asArray(ids).map(integer).filter(Boolean))];
   if(!keys.length)return {};
   const out={};
@@ -353,30 +398,34 @@ export async function cachedGermanClassSpells(ids,{fetchImpl=fetch,maxFetch=25}=
         else missing.push(id);
       }catch{missing.push(id)}
     });
-  }else{
-    missing.push(...keys);
-  }
-  if(foreverDbConfigured()){
-    const queue=missing.slice(0,Math.max(0,Number(maxFetch)||0));
-    for(let i=0;i<queue.length;i+=5){
-      const batch=queue.slice(i,i+5);
-      const results=await Promise.all(batch.map(async id=>{
-        try{
-          const {spell}=await fetchForeverDbSpell(id,{fetchImpl});
-          if(!spell?.id||!spell?.name)return null;
-          return {id:spell.id,name:spell.name,rank:spell.rank||null};
-        }catch(error){
-          if(error?.code==='FOREVERDB_RATE_LIMIT')return null;
-          return null;
-        }
-      }));
-      const clean=results.filter(Boolean);
-      for(const record of clean)out[record.id]=record;
+  }else missing.push(...keys);
+  if(missing.length){
+    try{
+      const [localized,classes]=await Promise.all([
+        publicGermanSpellData({fetchImpl}),
+        publicClassData({fetchImpl})
+      ]);
+      const iconMap=publicClassIconMap(classes);
+      const clean=[];
+      for(const id of missing){
+        const row=localized?.[String(id)]||localized?.[id]||{};
+        const name=firstText(row.n,row.name,row.localizedName);
+        if(!name)continue;
+        const record={
+          id,
+          name,
+          rank:firstText(row.r,row.rank)||null,
+          iconId:iconMap.get(id)||null
+        };
+        out[id]=record;clean.push(record);
+      }
       if(clean.length&&redisConfigured()){
         const args=['HSET',SPELL_LOCALE_HASH];
         for(const record of clean)args.push(String(record.id),JSON.stringify(record));
         await redis(args);
       }
+    }catch(error){
+      console.warn('Öffentliche deutsche ForeverDB-Zauberdaten nicht verfügbar:',String(error.message).slice(0,140));
     }
   }
   return out;
