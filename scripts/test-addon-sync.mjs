@@ -5,7 +5,7 @@ import {mergeProfiles} from './character-store.mjs';
 import {previewCookieFromSetCookie} from './dalton-sync-client.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
-'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.5", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
+'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.6", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
 '  ["character"] = { ["name"] = "Cole Dalton", ["classID"] = 8, ["level"] = 11, ["capturedAt"] = 1795460000 },\n'+
 '  ["spellbook"] = { ["capturedAt"] = 1795460000, ["entryCount"] = 2, ["entries"] = { [1] = { ["spellID"] = 143, ["name"] = "Feuerball", ["rank"] = "Rang 2", ["known"] = true }, [2] = { ["spellID"] = 205, ["name"] = "Frostblitz", ["rank"] = "Rang 2", ["known"] = true } } },\n'+
 '  ["location"] = { ["zone"] = "Insel Zephras", ["subZone"] = "Valanaar", ["mapID"] = 2521, ["x"] = 0.62, ["y"] = 0.73 },\n'+
@@ -27,7 +27,7 @@ assert.equal(parsed.spellbook.entries.length,2);
 assert.equal(parsed.locationHistory.entries.length,1);
 
 const payload=buildSafeAddonSyncPayload(parsed,{syncId:'a'.repeat(64)});
-assert.equal(payload.addon.version,'0.1.0-alpha.5');
+assert.equal(payload.addon.version,'0.1.0-alpha.6');
 assert.equal(payload.sections.character.name,'Cole Dalton');
 assert.ok(!('economy' in payload.sections),'Gold bleibt aus dem Standard-Sync ausgeschlossen');
 assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem Standard-Sync ausgeschlossen');
