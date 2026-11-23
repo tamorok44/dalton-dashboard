@@ -25,6 +25,14 @@ Verbindliche UI- und Responsive-Regeln für bestehende und neue Hauptreiter steh
 - Forever-Fokuswerte werden als eigene Regel überwacht: 150 maximaler Fokus und 10 Fokus/Sekunde kontinuierliche Regeneration.
 - Die Website wird bei normalen Datenaktualisierungen **nicht neu deployed**.
 
+## Klassenfähigkeiten und persönliches Spellbook
+
+- Der Klassenfähigkeiten-Master kommt zentral aus ForeverDB: Spell-ID, Rang, Lernlevel und Erwerbsart werden von der Klassenquelle übernommen; bestätigte Klassenlehrer stammen aus der aktuellen Forever-Lehrerliste plus ausdrücklich belegten Forever-Fallbacks.
+- Blizzard veröffentlicht den persönlichen Klassen-Spellbook-Stand derzeit nicht über die Forever-Profil-API. Deshalb wird **niemals** aus Level oder Klassenmaster abgeleitet, dass ein Rang bereits gelernt wurde.
+- Das mitgelieferte kleine Forever-Addon `addons/DaltonDashboard` liest den tatsächlichen Player-Spellbook-Stand über `C_SpellBook`. Mit `/dalton` wird ein privater Sync-Code erzeugt.
+- Der Code wird im Charakterreiter **Klassenfähigkeiten** eingefügt und serverseitig persistent gespeichert. Der private Schreibschlüssel liegt ausschließlich als sensibles Vercel-Environment und im persönlichen lokalen Addon-Paket.
+- Nach einem verifizierten Sync zeigt der Charakterbereich die tatsächlich bekannten Klassenränge. Der Ortsplaner blendet diese Ränge aus offenen Klassenausbildungen aus und dokumentiert den gelernten Stand weiterhin sichtbar.
+
 ## Pet-Regelwerk und Fail-closed-Prinzip
 
 Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.

@@ -168,6 +168,33 @@ function talentPanel(c){
   return '<div class="section talents-section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="talent-trees">'+body+'</div></div>';
 }
 
+function classAbilitiesPanel(c){
+  const abilities=(Array.isArray(c.knownClassAbilities)?c.knownClassAbilities:[])
+    .filter(entry=>Number.isInteger(Number(entry?.id)))
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||(a.rank||'').localeCompare(b.rank||'','de')||Number(a.id)-Number(b.id));
+  const verified=c.knownClassAbilitiesVerified===true;
+  const captured=Number.isFinite(Date.parse(c.knownClassAbilitiesCapturedAt||''))
+    ?new Date(c.knownClassAbilitiesCapturedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
+    :null;
+  const learned=verified
+    ?'<div class="spellbook-status is-verified"><strong>'+abilities.length+' gelernte Klassenränge</strong><span>Direkt aus dem persönlichen WoW-Spellbook'+(captured?' · Stand '+esc(captured):'')+'</span></div>'+
+      (abilities.length
+        ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+abilities.map(entry=>
+          '<div class="spellbook-known-entry"><strong>'+esc(entry.name||('Klassenfähigkeit #'+entry.id))+'</strong>'+
+          (entry.rank?'<span>'+esc(entry.rank)+'</span>':'')+
+          (entry.inferredFromHigherRank===true?'<small>Durch höheren bekannten Rang mitgelernt</small>':'')+
+          '</div>'
+        ).join('')+'</div></details>'
+        :'<p class="spellbook-empty">Im synchronisierten Spellbook wurden keine Klassenränge gefunden.</p>')
+    :'<div class="spellbook-status is-open"><strong>Persönlicher Lernstand noch nicht synchronisiert</strong><span>Blizzard veröffentlicht den tatsächlichen Spellbook-Stand nicht über die Charakter-API. Deshalb wird hier nichts aus dem Level geraten.</span></div>';
+  const sync='<div class="spellbook-sync" data-spellbook-sync-root="'+esc(c.slug)+'">'+
+    '<div><span class="planner-kicker">SPELLBOOK SYNC</span><h4>Echten Lernstand übernehmen</h4><p>Im Spiel <strong>/dalton</strong> eingeben, den angezeigten privaten Code kopieren und hier einfügen. Bereits gelernte Ränge verschwinden danach automatisch aus der offenen Klassenausbildung im Ortsplaner.</p></div>'+
+    '<textarea rows="4" data-spellbook-code="'+esc(c.slug)+'" aria-label="Spellbook-Code für '+esc(c.name)+'" placeholder="DALTON1|…"></textarea>'+
+    '<div class="spellbook-sync-actions"><button type="button" data-spellbook-sync="'+esc(c.slug)+'">Spellbook übernehmen</button><span data-spellbook-sync-status="'+esc(c.slug)+'"></span></div>'+
+  '</div>';
+  return '<div class="section class-abilities-section"><h3>Klassenfähigkeiten</h3>'+learned+sync+'</div>';
+}
+
 function reputationStageIndex(standing={}){
   const tier=Number(standing.tier);
   return Number.isInteger(tier)&&tier>=0&&tier<reputationStages.length?tier:-1;
@@ -581,6 +608,7 @@ const baseCharacterTabs=[
   {id:'stats',label:'Charakterwerte'},
   {id:'equipment',label:'Ausrüstung'},
   {id:'talents',label:'Talente'},
+  {id:'abilities',label:'Klassenfähigkeiten'},
   {id:'quests',label:'Quests'},
   {id:'professions',label:'Berufe'},
   {id:'reputation',label:'Ruf'}
@@ -591,7 +619,7 @@ let displayedReputationCatalog={build:null,expected:0,records:{}};
 function characterTabsFor(c){
   if(!isHunter(c))return baseCharacterTabs;
   const tabs=[...baseCharacterTabs];
-  tabs.splice(3,0,{id:'pets',label:'Begleiter'});
+  tabs.splice(4,0,{id:'pets',label:'Begleiter'});
   return tabs;
 }
 function activeCharacterTabFor(c){
@@ -628,6 +656,38 @@ function setActiveCharacterTab(slug,tab){
 function installCharacterTabs(){
   cards.querySelectorAll('button[data-character-tab]').forEach(button=>
     button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab))
+  );
+}
+async function submitSpellbookSync(button){
+  const slug=button?.dataset?.spellbookSync;
+  if(!slug||button.disabled)return;
+  const root=cards.querySelector('[data-spellbook-sync-root="'+slug+'"]');
+  const input=root?.querySelector('[data-spellbook-code="'+slug+'"]');
+  const message=root?.querySelector('[data-spellbook-sync-status="'+slug+'"]');
+  const code=String(input?.value||'').trim();
+  if(!code){if(message)message.textContent='Bitte zuerst den Code aus /dalton einfügen.';return}
+  button.disabled=true;
+  if(message)message.textContent='Spellbook wird geprüft und gespeichert …';
+  try{
+    const response=await fetch('/api/spellbook-sync',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({code}),
+      cache:'no-store'
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload?.error||('HTTP '+response.status));
+    activeCharacterTabs.set(slug,'abilities');
+    await load({silent:true,force:true});
+  }catch(error){
+    if(message)message.textContent='Synchronisierung fehlgeschlagen: '+String(error.message||error).slice(0,140);
+  }finally{
+    button.disabled=false;
+  }
+}
+function installSpellbookSync(){
+  cards.querySelectorAll('button[data-spellbook-sync]').forEach(button=>
+    button.addEventListener('click',()=>submitSpellbookSync(button))
   );
 }
 
@@ -728,6 +788,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
     ${characterTabPanel(c,'talents',talentPanel(c))}
+    ${characterTabPanel(c,'abilities',classAbilitiesPanel(c))}
     ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
     ${characterTabPanel(c,'reputation',reputationPanel(c))}
@@ -738,6 +799,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  </article>`).join("");
  installPortraitFallbacks();
  installCharacterTabs();
+ installSpellbookSync();
  if(!compareView.hidden)renderComparison();
 }
 
@@ -1460,13 +1522,16 @@ function renderLocationPlanner(){
   if(selectedCharacter){
     const professionText=(selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
     const learnedClassAbilities=Array.isArray(selectedCharacter.knownClassAbilities)?selectedCharacter.knownClassAbilities:[];
+    const spellbookCaptured=Number.isFinite(Date.parse(selectedCharacter.knownClassAbilitiesCapturedAt||''))
+      ?new Date(selectedCharacter.knownClassAbilitiesCapturedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
+      :null;
     const learnedClassDetails=selectedCharacter.knownClassAbilitiesVerified
-      ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+'</summary><div class="planner-known-ability-list">'+
+      ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+(spellbookCaptured?' · Stand '+esc(spellbookCaptured):'')+'</summary><div class="planner-known-ability-list">'+
         (learnedClassAbilities.length
-          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Zauber '+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+'</span>').join('')
-          :'<span><strong>Noch keine auslesbaren Klassenränge</strong></span>')+
+          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Klassenfähigkeit #'+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+(ability.inferredFromHigherRank===true?'<small>durch höheren bekannten Rang mitgelernt</small>':'')+'</span>').join('')
+          :'<span><strong>Noch keine Klassenränge im synchronisierten Spellbook</strong></span>')+
         '</div></details>'
-      :'<small>Bereits gelernte Klassenränge werden vom Charakterprofil derzeit nicht bereitgestellt.</small>';
+      :'<small>Persönlicher Lernstand noch offen · im Charakterreiter „Klassenfähigkeiten“ einmal mit <strong>/dalton</strong> synchronisieren.</small>';
     characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+learnedClassDetails+'</div>'+
       '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
   }

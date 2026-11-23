@@ -208,6 +208,17 @@ export function enrichWithForeverDetails(data,snapshot,recipeDetailsById={},loca
         next.knownClassAbilitiesVerified=true;
         next.knownClassAbilitiesSource=classAbilities.source;
         next.knownClassAbilitiesCheckedAt=snapshot?.snapshotAt||new Date().toISOString();
+      }else if(character?.knownClassAbilitiesVerified===true&&character?.knownClassAbilitiesSource==='WoW-Spellbook'){
+        // Ein echter Ingame-Snapshot darf durch eine weiterhin fehlende Online-Spellbook-API
+        // nicht entwertet werden. Er bleibt mit seinem eigenen Erfassungszeitpunkt gültig,
+        // bis ein neuer Ingame-Sync oder eine echte persönliche Blizzard-Quelle ihn ersetzt.
+        next.knownClassAbilities=asArray(character?.knownClassAbilities);
+        next.knownClassAbilitiesVerified=true;
+        next.knownClassAbilitiesSource='WoW-Spellbook';
+        next.knownClassAbilitiesCapturedAt=character?.knownClassAbilitiesCapturedAt||null;
+        next.knownClassAbilitiesSyncedAt=character?.knownClassAbilitiesSyncedAt||null;
+        next.knownClassAbilitiesCapturedLevel=character?.knownClassAbilitiesCapturedLevel??null;
+        next.knownClassAbilitiesCheckedAt=character?.knownClassAbilitiesCapturedAt||character?.knownClassAbilitiesCheckedAt||null;
       }else{
         next.knownClassAbilities=asArray(character?.knownClassAbilities);
         next.knownClassAbilitiesVerified=false;

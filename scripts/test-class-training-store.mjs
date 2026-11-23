@@ -1,8 +1,25 @@
 import assert from 'node:assert/strict';
-import {normalizeForeverDbClass,cachedGermanClassSpells,CLASS_BY_ID} from './class-training-store.mjs';
+import {normalizeForeverDbClass,cachedGermanClassSpells,fetchForeverDbPublicClassTrainers,CLASS_BY_ID} from './class-training-store.mjs';
 
 assert.equal(CLASS_BY_ID[8],'mage');
 assert.equal(CLASS_BY_ID[11],'druid');
+
+const publicTrainers=await fetchForeverDbPublicClassTrainers(8,{
+  fetchImpl:async url=>({
+    ok:true,status:200,
+    json:async()=>({classTrainers:{'8':[
+      {npc:331,n:'Maginor Dumas',sub:'Mage Trainer',side:'Alliance',m:1453,zone:'Stormwind',x:38.2,y:80.1,at:'forever',fv:1,seen:4},
+      {npc:999,n:'Alter Classic-Lehrer',sub:'Mage Trainer',side:'Alliance',m:1453,zone:'Stormwind',x:40,y:80,fv:0}
+    ]}})
+  })
+});
+assert.equal(publicTrainers.length,2);
+assert.equal(publicTrainers[0].id,331);
+assert.equal(publicTrainers[0].name,'Maginor Dumas');
+assert.equal(publicTrainers[0].npcTitle,'Mage Trainer');
+assert.equal(publicTrainers[0].location.uiMapId,1453);
+assert.equal(publicTrainers[0].evidence,'forever-confirmed');
+assert.equal(publicTrainers[1].evidence,'classic-unconfirmed');
 
 const realSchema=normalizeForeverDbClass({
   id:8,name:'Magier',
