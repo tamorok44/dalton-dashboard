@@ -144,7 +144,7 @@ const addonConfig=sourceByFile.get('addons/DaltonDashboard/Config.lua')||'';
 assert.ok(addonSource.includes('C_SpellBook.GetSpellBookItemInfo')&&addonSource.includes('C_SpellBook.IsSpellKnown'),'Forever addon must read the actual player spellbook');
 assert.ok(addonSource.includes('for lineIndex = 2, lines do'),'Spellbook export must exclude the General skill line and profession tabs');
 assert.ok(addonConfig.includes('PRIVATE_TOKEN_HERE'),'Repository addon config must contain only the public placeholder');
-assert.ok(!addonConfig.includes('sNJsMA6ux'),'Private spellbook token must never be committed');
+assert.ok(!/DALTON_DASHBOARD_SYNC_TOKEN\s*=\s*["'](?!PRIVATE_TOKEN_HERE["'])[^"']+/.test(addonConfig),'Private spellbook token must never be committed');
 assert.ok(policy.includes('SPELLBOOK_SYNC_TOKEN')&&policy.includes('niemals im Repository oder Frontend'),'Architecture contract must keep the spellbook credential private');
 assert.ok(policy.includes('Ein Lernziel besitzt genau eine stabile Erledigungs-ID'),'Location planner must distinguish one learning target from multiple NPC offers');
 assert.ok(policy.includes('ein stilles Opt-out ist verboten'),'Manual vendor switches must require explicit confirmation');
