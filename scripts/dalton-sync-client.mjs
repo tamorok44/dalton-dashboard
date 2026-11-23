@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {existsSync,promises as fs,watch} from 'node:fs';
 import {dirname,basename,join,resolve} from 'node:path';
 import {homedir} from 'node:os';
+import {pathToFileURL} from 'node:url';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,publicAddonSyncSummary} from './addon-sync.mjs';
 
@@ -162,7 +163,10 @@ async function main(){
   process.on('SIGINT',()=>{watcher.close();process.exit(0)});
   process.on('SIGTERM',()=>{watcher.close();process.exit(0)});
 }
-main().catch(error=>{
-  console.error('Dalton Sync: '+error.message);
-  process.exitCode=1;
-});
+const invokedDirectly=Boolean(process.argv[1])&&import.meta.url===pathToFileURL(process.argv[1]).href;
+if(invokedDirectly){
+  main().catch(error=>{
+    console.error('Dalton Sync: '+error.message);
+    process.exitCode=1;
+  });
+}
