@@ -22,7 +22,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
-assert.ok(toc.includes('## Version: 0.1.0-alpha.2'));
+assert.ok(toc.includes('## Version: 0.1.0-alpha.3'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -39,6 +39,8 @@ assert.ok(bundle.includes('GetSavedInstanceInfo'));
 assert.ok(bundle.includes('GetInstanceLockTimeRemaining'));
 assert.ok(bundle.includes('GetPlayerMapPosition'));
 assert.ok(bundle.includes('GetContainerItemInfo'));
+assert.ok(bundle.includes('FetchPurchasedBankTabData'));
+assert.ok(bundle.includes('Enum.BagIndex'));
 assert.ok(bundle.includes('GetPetHappiness'));
 assert.ok(bundle.includes('GetPetTrainingPoints'));
 assert.ok(bundle.includes('GetStabledPetList'));
@@ -54,5 +56,9 @@ for(const unsupported of [
 ]){
   assert.ok(!bundle.includes(unsupported),'Nicht unterstütztes Forever-Event darf nicht zurückkehren: '+unsupported);
 }
+
+const inventory=readFileSync(root+'/Modules/Inventory.lua','utf8');
+assert.ok(!inventory.includes('PLAYER_LOGOUT'),'Inventar darf beim Logout keinen gültigen Snapshot überschreiben');
+assert.ok(inventory.includes('letzter gültiger Stand bleibt erhalten'),'Inventar muss bei unlesbaren Daten fail-closed bleiben');
 
 console.log('Dalton Dashboard Addon: Struktur, Forever-Events, Privacy-Grenze und Datendomänen: OK');
