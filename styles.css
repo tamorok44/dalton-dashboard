@@ -583,10 +583,14 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .spellbook-status.is-open{border-color:color-mix(in srgb,var(--gold) 34%,transparent)}
 .spellbook-known{margin-top:0}
 .spellbook-known-list{display:grid;gap:6px;margin-top:9px}
-.spellbook-known-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:baseline;padding:8px 9px;border-left:3px solid var(--class);background:rgba(13,20,27,.52)}
-.spellbook-known-entry strong{min-width:0;color:var(--cream);font-size:var(--type-small);overflow-wrap:anywhere}
-.spellbook-known-entry span{color:var(--class);font:var(--weight-label) var(--type-caption)/1.3 var(--body);white-space:nowrap}
-.spellbook-known-entry small{grid-column:1/-1;color:var(--muted);font-size:var(--type-caption)}
+.spellbook-known-entry{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:3px 10px;align-items:center;padding:8px 9px;border-left:3px solid var(--class);background:rgba(13,20,27,.52)}
+.spellbook-ability-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;flex:0 0 36px;border:1px solid color-mix(in srgb,var(--class) 54%,var(--line));border-radius:4px;object-fit:cover;background:color-mix(in srgb,var(--ink) 70%,var(--class));box-shadow:inset 0 0 0 1px rgba(0,0,0,.45)}
+.spellbook-ability-icon.is-fallback{color:var(--class)}
+.spellbook-ability-icon.is-fallback svg{width:21px;height:21px}
+.spellbook-known-copy{display:grid;gap:2px;min-width:0}
+.spellbook-known-copy strong{min-width:0;color:var(--cream);font-size:var(--type-small);overflow-wrap:anywhere}
+.spellbook-known-rank{color:var(--class);font:var(--weight-label) var(--type-caption)/1.3 var(--body);white-space:nowrap}
+.spellbook-known-copy small{color:var(--muted);font-size:var(--type-caption)}
 .spellbook-empty{margin:0;color:var(--muted);font-size:var(--type-small)}
 .spellbook-sync{display:grid;gap:9px;padding:11px;border:1px solid rgba(182,148,97,.40);border-radius:4px;background:linear-gradient(110deg,color-mix(in srgb,var(--ink) 78%,var(--class)),color-mix(in srgb,var(--ink) 82%,var(--wood)))}
 .spellbook-sync h4{margin:2px 0 4px;color:var(--cream);font:var(--weight-label) var(--type-body)/1.3 var(--body)}
@@ -596,7 +600,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .spellbook-sync-actions button{padding:7px 10px;border:1px solid color-mix(in srgb,var(--gold) 48%,transparent);border-radius:4px;color:var(--cream);background:color-mix(in srgb,var(--wood) 52%,var(--ink));font:var(--weight-label) var(--type-small)/1.2 var(--body);cursor:pointer}
 .spellbook-sync-actions button:disabled{opacity:.58;cursor:wait}
 .spellbook-sync-actions span{min-width:0;color:var(--muted);font-size:var(--type-caption);overflow-wrap:anywhere}
-@media(max-width:520px){.spellbook-known-entry{grid-template-columns:minmax(0,1fr)}.spellbook-known-entry span{white-space:normal}}
+@media(max-width:520px){.spellbook-known-entry{grid-template-columns:auto minmax(0,1fr)}.spellbook-known-rank{grid-column:2;white-space:normal}}
 
 .profession-knowledge{
   margin-top:10px;border-top:1px dotted rgba(208,186,148,.20);padding-top:9px
@@ -1104,7 +1108,8 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .planner-filters>p{margin:0}
 .planner-npc-heading{display:flex;align-items:center;gap:11px;min-width:0}
 .planner-npc-heading>div{min-width:0}
-.planner-npc-avatar{width:48px;height:48px;flex:0 0 48px;border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:50%;object-fit:cover;background:color-mix(in srgb,var(--wood) 35%,var(--night))}
+.planner-npc-avatar{display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex:0 0 48px;border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:50%;object-fit:cover;background:color-mix(in srgb,var(--wood) 35%,var(--night))}
+.planner-npc-avatar.is-fallback{color:var(--gold);font:var(--weight-label) var(--type-small)/1 var(--display);letter-spacing:.04em;box-shadow:inset 0 0 0 2px rgba(7,12,17,.55)}
 .planner-action-category{width:max-content;max-width:100%;padding:2px 5px;border:1px solid color-mix(in srgb,var(--gold-deep) 32%,transparent);border-radius:3px;color:var(--gold);font:var(--weight-label) var(--type-caption)/1.25 var(--body);letter-spacing:.02em;overflow-wrap:anywhere}
 .planner-placeholder{display:grid;gap:5px;padding:28px 18px;border:1px dashed color-mix(in srgb,var(--gold-deep) 45%,transparent);border-radius:6px;color:var(--muted);text-align:center;background:color-mix(in srgb,var(--ink) 45%,transparent)}
 .planner-placeholder strong{color:var(--paper)}
@@ -1152,6 +1157,10 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .planner-recipe-choice:has(input:checked){background:color-mix(in srgb,var(--ok) 10%,transparent)}
 .planner-recipe-choice input{width:17px;height:17px;margin-top:2px;accent-color:var(--gold);flex:none}
 .planner-recipe-copy{display:grid;gap:2px;min-width:0}
+.planner-action-titleline{display:flex;align-items:center;gap:8px;min-width:0}
+.planner-action-icon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;flex:0 0 34px;border:1px solid color-mix(in srgb,var(--class) 45%,var(--gold-deep));border-radius:4px;object-fit:cover;background:color-mix(in srgb,var(--ink) 72%,var(--class));box-shadow:inset 0 0 0 1px rgba(0,0,0,.38)}
+.planner-action-icon.is-fallback{color:var(--class)}
+.planner-action-icon.is-fallback svg{width:20px;height:20px}
 .planner-recipe-copy strong{color:var(--cream);font-size:var(--type-small);overflow-wrap:anywhere}
 .planner-recipe-copy small{color:var(--muted);font-size:var(--type-caption);line-height:1.4;overflow-wrap:anywhere}
 .planner-recipe-copy .planner-stock{color:var(--gold)}
