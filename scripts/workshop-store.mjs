@@ -211,6 +211,7 @@ export async function getForeverDbMasterRecipeIndex({
   fetchImpl=fetch,
   advance=true
 }={}){
+  const requestStartedAt=Date.now();
   const meta=await cachedForeverDbMeta({fetchImpl});
   let master=await loadMaster();
   if(master?.complete&&(!meta.build||!master.build||master.build===meta.build)){
@@ -222,6 +223,8 @@ export async function getForeverDbMasterRecipeIndex({
     draft=null;
     await deleteKey(MASTER_DRAFT_KEY);
   }
+  const draftTime=Date.parse(draft?.generatedAt||'');
+  const advancedByConcurrentRequest=Number.isFinite(draftTime)&&draftTime>=requestStartedAt;
 
   if(!draft){
     const seed=await seedDraftFromExistingScope(seedProfessionSlugs);
@@ -238,6 +241,19 @@ export async function getForeverDbMasterRecipeIndex({
   }
   if(meta.build&&!draft.build)draft.build=meta.build;
   const observedProgress=normalizedSlugs(draft?.professionSlugs).join('|');
+  if(advance&&advancedByConcurrentRequest){
+    const active=master?.complete?master:draft;
+    return {
+      ...active,
+      cached:Boolean(master?.complete),
+      refreshing:true,
+      masterComplete:Boolean(master?.complete),
+      refreshProgress:{
+        completed:normalizedSlugs(draft?.professionSlugs).length,
+        total:PROFESSION_SLUGS.size
+      }
+    };
+  }
   if(!advance){
     const active=master?.complete?master:draft;
     return {...active,cached:Boolean(master?.complete),refreshing:!active?.complete,masterComplete:Boolean(master?.complete)};
