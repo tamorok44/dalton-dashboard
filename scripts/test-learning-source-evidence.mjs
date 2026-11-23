@@ -23,6 +23,10 @@ const base={
     {
       id:102,professionSlug:'cooking',name:'Spider Sausage',craftedItem:{id:17222,name:'Spider Sausage'},
       learning:{sources:[trainer(257006,'Nyalah Brightfire',3000)]}
+    },
+    {
+      id:103,professionSlug:'cooking',name:'Smoked Sagefish',craftedItem:{id:21072,name:'Smoked Sagefish'},
+      learning:{sources:[]}
     }
   ]
 };
@@ -32,7 +36,8 @@ const evidence={
     {npcId:257006,sourceType:'vendor',professionSlug:'cooking',craftedItemId:787,status:'present',build:'1.60.1.71037',observedOn:'2026-11-20',source:'external-live'},
     {npcId:257006,sourceType:'vendor',professionSlug:'cooking',craftedItemId:787,status:'absent',build:'1.60.1.71037',observedOn:'2026-11-23',source:'dalton-live'},
     {npcId:257006,sourceType:'vendor',professionSlug:'cooking',craftedItemId:21217,status:'present',priceCopper:5000,build:'1.60.1.71037',observedOn:'2026-11-23',source:'dalton-live'},
-    {npcId:257006,sourceType:'trainer',professionSlug:'cooking',craftedItemId:17222,status:'present',priceCopper:4000,build:'1.60.1.71037',observedOn:'2026-11-23',source:'dalton-live'}
+    {npcId:257006,sourceType:'trainer',professionSlug:'cooking',craftedItemId:17222,status:'present',priceCopper:4000,build:'1.60.1.71037',observedOn:'2026-11-23',source:'dalton-live'},
+    {npcId:257006,npcName:'Nyalah Brightfire',sourceType:'vendor',professionSlug:'cooking',craftedItemId:21072,status:'present',priceCopper:500,location:{zone:'Insel Zephras'},build:'1.60.1.71037',observedOn:'2026-11-23',source:'dalton-live'}
   ]
 };
 
@@ -44,8 +49,13 @@ assert.equal(evaluated.recipes[1].learning.sources[0].priceCopper,5000,
 assert.equal(evaluated.recipes[1].learning.sources[0].offerEvidenceSource,'dalton-live');
 assert.equal(evaluated.recipes[2].learning.sources[0].priceCopper,4000,
   'Die Evidenzschicht funktioniert auch für Lehrerangebote');
+assert.equal(evaluated.recipes[3].learning.sources.length,1,
+  'Eine direkte aktuelle Beobachtung ergänzt auch eine Bezugsquelle, die im Masterkatalog fehlt');
+assert.equal(evaluated.recipes[3].learning.sources[0].id,257006);
+assert.equal(evaluated.recipes[3].learning.sources[0].location.zone,'Insel Zephras');
+assert.equal(evaluated.recipes[3].learning.sources[0].priceCopper,500);
 assert.equal(evaluated.learningSourceEvidence.blockedSourceCount,1);
-assert.equal(evaluated.learningSourceEvidence.confirmedSourceCount,2);
+assert.equal(evaluated.learningSourceEvidence.confirmedSourceCount,3);
 
 const nextBuild=applyLearningSourceEvidence({...base,build:'1.60.1.72000'},evidence);
 assert.equal(nextBuild.recipes[0].learning.sources.length,2,
