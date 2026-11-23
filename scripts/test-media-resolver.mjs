@@ -3,6 +3,8 @@ import {resolveMediaAsset,sourceImageAllowed} from './media-resolver.mjs';
 
 assert.equal(sourceImageAllowed('https://foreverdb.net/icons/133216.webp'),true);
 assert.equal(sourceImageAllowed('https://render.worldofwarcraft.com/forever-eu/icons/56/458223.jpg'),true);
+assert.equal(sourceImageAllowed('https://render-eu.worldofwarcraft.com/npcs/zoom/creature-display-3292.jpg'),true);
+assert.equal(sourceImageAllowed('https://render.worldofwarcraft.com/eu/npcs/portrait/creature-display-1484.jpg'),true);
 assert.equal(sourceImageAllowed('https://example.com/icon.png'),false);
 
 const previousToken=process.env.BLOB_READ_WRITE_TOKEN;
