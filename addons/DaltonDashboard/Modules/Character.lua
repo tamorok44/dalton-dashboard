@@ -4,8 +4,7 @@ local module = ns.RegisterModule("Character", {})
 module.events = {
   PLAYER_LOGIN = true,
   PLAYER_LEVEL_UP = true,
-  PLAYER_MONEY = true,
-  PLAYER_FACTION_UPDATE = true
+  PLAYER_MONEY = true
 }
 
 local function captureCharacter(reason)
