@@ -41,7 +41,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -391,7 +391,23 @@ assert.ok(ui.characterTabsFor({slug:'dolly-test',classId:3,class:'Jägerin'}).so
   'Hunter companion tab is keyed by class ID and remains visible for Blizzard de-DE class name Jägerin');
 assert.ok(!ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='pets'),
   'Non-hunters do not receive the companion tab');
-const expectedCharacterTabs=data.characters.reduce((count,character)=>count+6+(Number(character.classId)===3?1:0),0);
+assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='abilities'),
+  'Every class gets the Klassenfähigkeiten tab');
+const spellbookOpen=ui.classAbilitiesPanel({slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:false,knownClassAbilities:[]});
+assert.ok(spellbookOpen.includes('Persönlicher Lernstand noch nicht synchronisiert'));
+assert.ok(spellbookOpen.includes('/dalton')&&spellbookOpen.includes('Spellbook übernehmen'));
+const spellbookVerified=ui.classAbilitiesPanel({
+  slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:true,
+  knownClassAbilitiesCapturedAt:'2026-11-23T05:55:00.000Z',
+  knownClassAbilities:[
+    {id:133,name:'Feuerball',rank:'Rang 1'},
+    {id:143,name:'Feuerball',rank:'Rang 2',inferredFromHigherRank:true}
+  ]
+});
+assert.ok(spellbookVerified.includes('2 gelernte Klassenränge'));
+assert.ok(spellbookVerified.includes('Feuerball')&&spellbookVerified.includes('Rang 2'));
+assert.ok(spellbookVerified.includes('Durch höheren bekannten Rang mitgelernt'));
+const expectedCharacterTabs=data.characters.reduce((count,character)=>count+7+(Number(character.classId)===3?1:0),0);
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
