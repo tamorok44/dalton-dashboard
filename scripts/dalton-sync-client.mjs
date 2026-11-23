@@ -25,7 +25,7 @@ function args(argv){
   return out;
 }
 function help(){
-  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.5');
+  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.6');
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
   console.log('');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN in der lokalen Umgebung gesetzt sein.');
@@ -117,12 +117,25 @@ async function resolveFile(explicit){
   }
   return matches[0].file;
 }
+function localDiagnosticsSummary(charDb){
+  const interactions=charDb?.diagnostics?.interactions;
+  if(!interactions||typeof interactions!=='object')return null;
+  return {
+    lastEvent:interactions.lastEvent||null,
+    lastEventAt:interactions.lastEventAt||null,
+    eventCount:Number(interactions.eventCount)||0,
+    lastMerchantCaptureOK:interactions.lastMerchantCaptureOK??null,
+    lastMerchantCaptureDetail:interactions.lastMerchantCaptureDetail||null,
+    lastTrainerCaptureOK:interactions.lastTrainerCaptureOK??null,
+    lastTrainerCaptureDetail:interactions.lastTrainerCaptureDetail||null
+  };
+}
 async function readPayload(file){
   const raw=await fs.readFile(file,'utf8');
   const charDb=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
   const safePayload=buildSafeAddonSyncPayload(charDb);
   const hash=createHash('sha256').update(JSON.stringify(safePayload)).digest('hex');
-  return {hash,payload:{...safePayload,syncId:hash}};
+  return {hash,payload:{...safePayload,syncId:hash},localDiagnostics:localDiagnosticsSummary(charDb)};
 }
 export function previewCookieFromSetCookie(values=[]){
   return values
@@ -149,7 +162,7 @@ async function postPayload(endpoint,token,payload,{cookie=null}={}){
   const headers={
     Authorization:'Bearer '+token,
     'Content-Type':'application/json',
-    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.5'
+    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.6'
   };
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(url,{
@@ -176,11 +189,11 @@ async function main(){
     if(running){rerun=true;return}
     running=true;
     try{
-      const {hash,payload}=await readPayload(file);
+      const {hash,payload,localDiagnostics}=await readPayload(file);
       if(hash===lastHash)return;
       const localSummary=publicAddonSyncSummary({characterSlug:null,receivedAt:null,payload});
       if(options.dryRun){
-        console.log(JSON.stringify({dryRun:true,summary:localSummary},null,2));
+        console.log(JSON.stringify({dryRun:true,summary:localSummary,localDiagnostics},null,2));
         lastHash=hash;
         return;
       }
