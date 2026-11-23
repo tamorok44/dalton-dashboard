@@ -41,6 +41,13 @@ jobs:
       - name: Tests ausführen
         run: npm test
 
+      - name: Lua-5.1-Syntax prüfen
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y lua5.1
+          find addons/DaltonDashboard -type f -name "*.lua" -print0 | xargs -0 -n1 luac5.1 -p
+
       - name: Addon-Paket bauen
         shell: bash
         run: |
