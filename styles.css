@@ -575,6 +575,29 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .talent-entry-head strong{color:#f4e2c3;font-size:var(--type-body)}
 .talent-entry p{margin:5px 0 0;color:#bdb5a7;font-size:var(--type-small);line-height:1.5}
 
+.class-abilities-section{display:grid;gap:10px}
+.spellbook-status{display:grid;gap:3px;padding:10px 11px;border:1px solid color-mix(in srgb,var(--gold-deep) 38%,transparent);border-radius:4px;background:color-mix(in srgb,var(--ink) 45%,transparent)}
+.spellbook-status strong{color:var(--cream);font-size:var(--type-small)}
+.spellbook-status span{color:var(--muted);font-size:var(--type-caption);line-height:1.45}
+.spellbook-status.is-verified{border-color:color-mix(in srgb,var(--ok) 38%,transparent)}
+.spellbook-status.is-open{border-color:color-mix(in srgb,var(--gold) 34%,transparent)}
+.spellbook-known{margin-top:0}
+.spellbook-known-list{display:grid;gap:6px;margin-top:9px}
+.spellbook-known-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:baseline;padding:8px 9px;border-left:3px solid var(--class);background:rgba(13,20,27,.52)}
+.spellbook-known-entry strong{min-width:0;color:var(--cream);font-size:var(--type-small);overflow-wrap:anywhere}
+.spellbook-known-entry span{color:var(--class);font:var(--weight-label) var(--type-caption)/1.3 var(--body);white-space:nowrap}
+.spellbook-known-entry small{grid-column:1/-1;color:var(--muted);font-size:var(--type-caption)}
+.spellbook-empty{margin:0;color:var(--muted);font-size:var(--type-small)}
+.spellbook-sync{display:grid;gap:9px;padding:11px;border:1px solid rgba(182,148,97,.40);border-radius:4px;background:linear-gradient(110deg,rgba(28,40,44,.80),rgba(25,26,34,.86))}
+.spellbook-sync h4{margin:2px 0 4px;color:var(--cream);font:var(--weight-label) var(--type-body)/1.3 var(--body)}
+.spellbook-sync p{margin:0;color:var(--muted);font-size:var(--type-small);line-height:1.5}
+.spellbook-sync textarea{box-sizing:border-box;width:100%;min-width:0;resize:vertical;padding:8px 9px;border:1px solid color-mix(in srgb,var(--gold-deep) 48%,transparent);border-radius:4px;color:var(--paper);background:rgba(6,12,17,.78);font:var(--weight-body) var(--type-caption)/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}
+.spellbook-sync-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.spellbook-sync-actions button{padding:7px 10px;border:1px solid color-mix(in srgb,var(--gold) 48%,transparent);border-radius:4px;color:var(--cream);background:color-mix(in srgb,var(--wood) 52%,var(--ink));font:var(--weight-label) var(--type-small)/1.2 var(--body);cursor:pointer}
+.spellbook-sync-actions button:disabled{opacity:.58;cursor:wait}
+.spellbook-sync-actions span{min-width:0;color:var(--muted);font-size:var(--type-caption);overflow-wrap:anywhere}
+@media(max-width:520px){.spellbook-known-entry{grid-template-columns:minmax(0,1fr)}.spellbook-known-entry span{white-space:normal}}
+
 .profession-knowledge{
   margin-top:10px;border-top:1px dotted rgba(208,186,148,.20);padding-top:9px
 }
