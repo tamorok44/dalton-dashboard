@@ -6,11 +6,7 @@ module.events = {
   UNIT_PET = true,
   UNIT_PET_EXPERIENCE = true,
   PET_BAR_UPDATE = true,
-  PET_SPELL_POWER_UPDATE = true,
   SPELLS_CHANGED = true,
-  LEARNED_SPELL_IN_TAB = true,
-  CRAFT_SHOW = true,
-  CRAFT_UPDATE = true,
   PET_STABLE_SHOW = true,
   PET_STABLE_UPDATE = true,
   PLAYER_LOGOUT = true
@@ -29,11 +25,9 @@ end
 local function petSpellCount()
   if C_SpellBook and C_SpellBook.HasPetSpells then
     local ok, value = pcall(C_SpellBook.HasPetSpells)
-    if ok and type(value) == "number" and not ns.IsSecret(value) then return value end
-  end
-  if HasPetSpells then
-    local ok, value = pcall(HasPetSpells)
-    if ok and type(value) == "number" and not ns.IsSecret(value) then return value end
+    if ok and type(value) == "number" and not ns.IsSecret(value) then
+      return value
+    end
   end
   return 0
 end
@@ -43,41 +37,46 @@ local function petSpellInfo(index)
   local bank = Enum and Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Pet
   if bank == nil then return nil end
 
-  if C_SpellBook.GetSpellBookItemInfo then
-    local ok, info = pcall(C_SpellBook.GetSpellBookItemInfo, index, bank)
-    if ok and type(info) == "table" then
-      return {
-        slot = index,
-        spellID = ns.SafeNumber(info.spellID or info.actionID),
-        actionID = ns.SafeNumber(info.actionID),
-        name = ns.SafeString(info.name),
-        rank = ns.SafeString(info.subName),
-        rankNumber = rankNumber(info.subName),
-        iconID = ns.SafeNumber(info.iconID or info.iconFileID)
-      }
-    end
+  local ok, info = pcall(C_SpellBook.GetSpellBookItemInfo, index, bank)
+  if not ok or type(info) ~= "table" then return nil end
+
+  local iconID
+  if C_SpellBook.GetSpellBookItemTexture then
+    local okIcon, value = pcall(C_SpellBook.GetSpellBookItemTexture, index, bank)
+    if okIcon then iconID = ns.SafeNumber(value) end
   end
+
+  return {
+    slot = index,
+    spellID = ns.SafeNumber(info.spellID or info.actionID),
+    actionID = ns.SafeNumber(info.actionID),
+    name = ns.SafeString(info.name),
+    rank = ns.SafeString(info.subName),
+    rankNumber = rankNumber(info.subName),
+    iconID = iconID or ns.SafeNumber(info.iconID or info.iconFileID)
+  }
 end
 
 local function activePetAbilities()
   local out = {}
-  local count = petSpellCount()
-  for index = 1, count do
+  for index = 1, petSpellCount() do
     local info = petSpellInfo(index)
     if info and info.name then out[#out + 1] = info end
   end
   return out
 end
 
-local function serializeStablePet(info)
+local function serializePetInfo(info)
   if type(info) ~= "table" then return nil end
   return {
     slotID = ns.SafeNumber(info.slotID),
     petNumber = ns.SafeNumber(info.petNumber),
     creatureID = ns.SafeNumber(info.creatureID),
+    specID = ns.SafeNumber(info.specID),
     name = ns.SafeString(info.name),
     level = ns.SafeNumber(info.level),
     familyName = ns.SafeString(info.familyName),
+    specialization = ns.SafeString(info.specialization),
     type = ns.SafeString(info.type),
     icon = ns.SafeNumber(info.icon),
     displayID = ns.SafeNumber(info.displayID),
@@ -87,35 +86,38 @@ local function serializeStablePet(info)
     experience = ns.SafeNumber(info.experience),
     experienceNeeded = ns.SafeNumber(info.experienceNeeded),
     petAbilities = ns.CopyNumberArray(info.petAbilities),
-    specAbilities = ns.CopyNumberArray(info.specAbilities)
+    specAbilities = ns.CopyNumberArray(info.specAbilities),
+    isFavorite = ns.Readable(info.isFavorite),
+    isExotic = ns.Readable(info.isExotic)
   }
 end
 
-local function scanStable()
-  if not (C_StableInfo and C_StableInfo.GetStabledPetList) then return nil end
-  local ok, list = pcall(C_StableInfo.GetStabledPetList)
+local function scanPetList(methodName)
+  if not (C_StableInfo and type(C_StableInfo[methodName]) == "function") then return nil end
+
+  local ok, list = pcall(C_StableInfo[methodName])
   if not ok or type(list) ~= "table" then return nil end
 
   local out = {}
   for _, info in ipairs(list) do
-    local pet = serializeStablePet(info)
+    local pet = serializePetInfo(info)
     if pet and pet.name then out[#out + 1] = pet end
   end
   return out
 end
 
-local function matchPetNumber(stablePets, name, family)
-  local found
-  for _, pet in ipairs(stablePets or {}) do
+local function matchingPet(list, name, family)
+  local match
+  for _, pet in ipairs(list or {}) do
     if pet.name == name and pet.familyName == family then
-      if found then return nil end
-      found = pet.petNumber
+      if match then return nil end
+      match = pet
     end
   end
-  return found
+  return match
 end
 
-local function activePet(stablePets)
+local function activePet(activePets, stabledPets)
   if not (UnitExists and UnitExists("pet")) then
     return {
       present = false,
@@ -126,13 +128,16 @@ local function activePet(stablePets)
 
   local name = ns.SafeString(UnitName("pet"))
   local family = ns.SafeString(UnitCreatureFamily and UnitCreatureFamily("pet"))
+  local known = matchingPet(activePets, name, family) or matchingPet(stabledPets, name, family)
 
   local xp, xpNeeded
-  if GetPetExperience then
-    local ok, current, needed = pcall(GetPetExperience)
-    if ok then
-      xp, xpNeeded = ns.SafeNumber(current), ns.SafeNumber(needed)
-    end
+  if UnitXP then
+    local ok, value = pcall(UnitXP, "pet")
+    if ok then xp = ns.SafeNumber(value) end
+  end
+  if UnitXPMax then
+    local ok, value = pcall(UnitXPMax, "pet")
+    if ok then xpNeeded = ns.SafeNumber(value) end
   end
 
   local happiness, damagePercentage, loyaltyRate
@@ -142,6 +147,21 @@ local function activePet(stablePets)
       happiness = ns.SafeNumber(a)
       damagePercentage = ns.SafeNumber(b)
       loyaltyRate = ns.SafeNumber(c)
+    end
+  end
+
+  local loyaltyName
+  if C_PetInfo and C_PetInfo.GetPetLoyalty then
+    local ok, value = pcall(C_PetInfo.GetPetLoyalty)
+    if ok then loyaltyName = ns.SafeString(value) end
+  end
+
+  local trainingTotal, trainingUsed
+  if C_PetInfo and C_PetInfo.GetPetTrainingPoints then
+    local ok, total, used = pcall(C_PetInfo.GetPetTrainingPoints)
+    if ok then
+      trainingTotal = ns.SafeNumber(total)
+      trainingUsed = ns.SafeNumber(used)
     end
   end
 
@@ -158,45 +178,26 @@ local function activePet(stablePets)
     name = name,
     level = ns.SafeNumber(UnitLevel("pet")),
     familyName = family,
-    petNumber = matchPetNumber(stablePets, name, family),
-    icon = ns.SafeNumber(GetPetIcon and GetPetIcon()),
+    petNumber = known and known.petNumber or nil,
+    creatureID = known and known.creatureID or nil,
+    displayID = known and known.displayID or nil,
+    icon = known and known.icon or nil,
     health = ns.SafeNumber(UnitHealth and UnitHealth("pet")),
     healthMax = ns.SafeNumber(UnitHealthMax and UnitHealthMax("pet")),
-    experience = xp,
-    experienceNeeded = xpNeeded,
-    happiness = happiness,
+    experience = xp or (known and known.experience or nil),
+    experienceNeeded = xpNeeded or (known and known.experienceNeeded or nil),
+    happiness = happiness or (known and known.happinessLevel or nil),
     damagePercentage = damagePercentage,
     loyaltyRate = loyaltyRate,
+    loyaltyName = loyaltyName or (known and known.loyaltyName or nil),
+    loyaltyLevel = known and known.loyaltyLevel or nil,
+    trainingPointsTotal = trainingTotal,
+    trainingPointsUsed = trainingUsed,
+    trainingPointsAvailable = trainingTotal and trainingUsed and (trainingTotal - trainingUsed) or nil,
     talentTree = talentTree,
+    petAbilityIDs = known and known.petAbilities or {},
+    specAbilityIDs = known and known.specAbilities or {},
     abilities = activePetAbilities()
-  }
-end
-
-local function scanBeastTraining()
-  if not (GetNumCrafts and GetCraftInfo) then return nil end
-  local line = GetCraftDisplaySkillLine and GetCraftDisplaySkillLine() or nil
-  if line and line ~= "Beast Training" and line ~= (BEAST_TRAINING or "") then return nil end
-
-  local byName, entries = {}, {}
-  for index = 1, GetNumCrafts() or 0 do
-    local name, subName, kind = GetCraftInfo(index)
-    if name and kind ~= "header" then
-      local rank = rankNumber(subName) or 1
-      entries[#entries + 1] = {
-        index = index,
-        name = ns.SafeString(name),
-        rank = ns.SafeString(subName),
-        rankNumber = rank
-      }
-      if not byName[name] or rank > byName[name] then byName[name] = rank end
-    end
-  end
-
-  if #entries == 0 then return nil end
-  return {
-    capturedAt = ns.Now(),
-    entries = entries,
-    highestRankByName = byName
   }
 end
 
@@ -205,7 +206,7 @@ local function petHistoryKey(pet)
   return (pet.name or "?") .. "|" .. (pet.familyName or "?")
 end
 
-local function capture(reason, includeStable, includeTraining)
+local function capture(reason, refreshStable)
   if not isHunter() then return end
 
   local db = ns.GetDB()
@@ -213,22 +214,26 @@ local function capture(reason, includeStable, includeTraining)
   hunter.capturedAt = ns.Now()
   hunter.reason = reason
 
-  local stable = includeStable and scanStable() or nil
-  if stable then
-    hunter.stablePets = stable
-    hunter.stableCapturedAt = ns.Now()
+  local activePets = scanPetList("GetActivePetList")
+  if activePets then
+    hunter.activePets = activePets
+    hunter.activePetsCapturedAt = ns.Now()
   end
 
-  local pet = activePet(hunter.stablePets)
+  if refreshStable then
+    local stabledPets = scanPetList("GetStabledPetList")
+    if stabledPets then
+      hunter.stablePets = stabledPets
+      hunter.stableCapturedAt = ns.Now()
+    end
+  end
+
+  local pet = activePet(hunter.activePets, hunter.stablePets)
   hunter.activePet = pet
   hunter.observedPets = hunter.observedPets or {}
+
   if pet.present and pet.name then
     hunter.observedPets[petHistoryKey(pet)] = pet
-  end
-
-  if includeTraining then
-    local knowledge = scanBeastTraining()
-    if knowledge then hunter.trainingKnowledge = knowledge end
   end
 
   db.hunter = hunter
@@ -236,7 +241,7 @@ local function capture(reason, includeStable, includeTraining)
 end
 
 function module:Capture(reason)
-  capture(reason or "manual", true, true)
+  capture(reason or "manual", true)
 end
 
 function module:OnEvent(event, unit)
@@ -244,18 +249,14 @@ function module:OnEvent(event, unit)
   if event == "UNIT_PET" and unit and unit ~= "player" then return end
 
   if event == "PLAYER_LOGOUT" then
-    capture(event, false, false)
+    capture(event, false)
   elseif event == "PET_STABLE_SHOW" or event == "PET_STABLE_UPDATE" then
     ns.Schedule(0.15, "hunter-stable", function()
-      capture(event, true, false)
-    end)
-  elseif event == "CRAFT_SHOW" or event == "CRAFT_UPDATE" then
-    ns.Schedule(0.1, "hunter-training", function()
-      capture(event, false, true)
+      capture(event, true)
     end)
   else
     ns.Schedule(event == "PLAYER_LOGIN" and 1.5 or 0.2, "hunter-pet", function()
-      capture(event, event == "PLAYER_LOGIN", false)
+      capture(event, false)
     end)
   end
 end
