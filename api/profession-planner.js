@@ -3,6 +3,7 @@ import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
 import {getForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildProfessionPlanner} from '../scripts/profession-planner.mjs';
+import {applyLearningSourceEvidence,loadLearningSourceEvidence} from '../scripts/learning-source-evidence.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/profession-planner','https://dalton-dashboard.local');
@@ -29,7 +30,8 @@ export default async function handler(req,res){
     const recipeIndex=await getForeverDbMasterRecipeIndex({
       seedProfessionSlugs:workshopProfessionSlugs(stored.data)
     });
-    const planner=buildProfessionPlanner(stored.data,recipeIndex,{characterSlug:character,location});
+    const evaluatedRecipeIndex=applyLearningSourceEvidence(recipeIndex,loadLearningSourceEvidence());
+    const planner=buildProfessionPlanner(stored.data,evaluatedRecipeIndex,{characterSlug:character,location});
     return res.status(200).json({
       ...planner,
       catalog:{
@@ -38,7 +40,8 @@ export default async function handler(req,res){
         refreshing:recipeIndex?.refreshing===true,
         build:recipeIndex?.build||null,
         generatedAt:recipeIndex?.generatedAt||null,
-        recipeCount:Array.isArray(recipeIndex?.recipes)?recipeIndex.recipes.length:0
+        recipeCount:Array.isArray(evaluatedRecipeIndex?.recipes)?evaluatedRecipeIndex.recipes.length:0,
+        learningSourceEvidence:evaluatedRecipeIndex?.learningSourceEvidence||null
       },
       source:'ForeverDB.net'
     });
