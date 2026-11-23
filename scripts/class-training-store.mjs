@@ -1,7 +1,8 @@
 import {redis,configured as redisConfigured} from './character-store.mjs';
 import {foreverDbConfigured,fetchForeverDbClass,fetchForeverDbSpell} from './foreverdb-api.mjs';
+import {CLASSIC_CLASS_TRAINER_COSTS} from './class-training-classic-costs.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v4:';
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v5:';
 const PUBLIC_DATA_BASE='https://foreverdb.net/data/';
 let publicTrainerCache=null;
 const SPELL_LOCALE_HASH='dalton-dashboard:foreverdb:class-spell-locale:v1';
@@ -67,6 +68,20 @@ function first(...values){for(const value of values)if(value!==undefined&&value!
 function firstNumber(...values){for(const value of values){const n=number(value);if(n!==null)return n}return null}
 function firstText(...values){for(const value of values){const s=text(value);if(s)return s}return null}
 function lower(value){return String(value??'').trim().toLocaleLowerCase('en-US')}
+function classicTrainerCost(spellId){
+  const id=integer(spellId);
+  if(!id)return null;
+  const value=CLASSIC_CLASS_TRAINER_COSTS[String(id)]??CLASSIC_CLASS_TRAINER_COSTS[id];
+  return Number.isInteger(Number(value))&&Number(value)>=0?Number(value):null;
+}
+function trainerRoleMatchesAbility(source,ability={}){
+  const title=lower(source?.npcTitle);
+  if(/pet trainer|begleiter/.test(title))return false;
+  const name=lower(firstText(ability?.name,ability?.englishName));
+  const portal=/portal|teleport/.test(name);
+  if(/portal trainer/.test(title))return portal;
+  return !portal;
+}
 function priceSource(value,{hasPrice=false}={}){
   if(!hasPrice)return null;
   const key=lower(value);
@@ -207,13 +222,17 @@ function normalizeRank(raw={},ability={},classTrainers=[]){
   const requiredLevel=firstNumber(raw.learnAtLevel,raw.learn_at_level,raw.learnedAtLevel,raw.learned_at_level,raw.learnedLevel,raw.learned_level,raw.learnLevel,raw.learn_level,raw.requiredLevel,raw.required_level,raw.level,spell.requiredLevel,spell.required_level);
   const directPrice=firstNumber(raw.trainerCost,raw.trainer_cost,raw.trainingCost,raw.training_cost,raw.priceCopper,raw.price_copper);
   const abilityPrice=firstNumber(ability.trainerCost,ability.trainer_cost,ability.trainingCost,ability.training_cost);
-  const finalPrice=directPrice??abilityPrice;
-  const sourceRaw=firstText(raw.trainerCostSource,raw.trainer_cost_source,raw.trainingCostSource,raw.training_cost_source,ability.trainerCostSource,ability.trainer_cost_source);
+  const classicPrice=classicTrainerCost(id);
+  const finalPrice=directPrice??abilityPrice??classicPrice;
+  const explicitSourceRaw=firstText(raw.trainerCostSource,raw.trainer_cost_source,raw.trainingCostSource,raw.training_cost_source,ability.trainerCostSource,ability.trainer_cost_source);
+  const sourceRaw=explicitSourceRaw||(classicPrice!==null?'classic':null);
   const directSources=dedupeTrainers([
     ...collectTrainers(first(raw.sources,raw.trainers,raw.learnedFrom,raw.learned_from),['trainers'],[],{priceCopper:finalPrice,priceSourceRaw:sourceRaw}),
     ...collectTrainers(first(ability.sources,ability.trainers,ability.learnedFrom,ability.learned_from),['trainers'],[],{priceCopper:finalPrice,priceSourceRaw:sourceRaw})
-  ]);
-  const sources=(directSources.length?directSources:classTrainers).map(source=>{
+  ]).filter(source=>trainerRoleMatchesAbility(source,ability));
+  const fallbackSources=classTrainers.filter(source=>trainerRoleMatchesAbility(source,ability));
+  const lessonVerified=directPrice!==null||abilityPrice!==null||classicPrice!==null||directSources.length>0;
+  const sources=(directSources.length?directSources:fallbackSources).map(source=>{
     if(finalPrice===null||source.priceCopper!==null)return source;
     return {...source,priceCopper:Math.round(finalPrice),priceSource:priceSource(sourceRaw,{hasPrice:true})};
   });
@@ -224,6 +243,7 @@ function normalizeRank(raw={},ability={},classTrainers=[]){
     requiredLevel,
     priceCopper:finalPrice===null?null:Math.round(finalPrice),
     priceSource:priceSource(sourceRaw,{hasPrice:finalPrice!==null}),
+    lessonVerified,
     sources:dedupeTrainers(sources)
   };
 }
@@ -260,7 +280,7 @@ export function normalizeForeverDbClass(raw={},slug){
     const ranksRaw=asArray(first(ability.ranks,ability.spells,ability.rankSpells,ability.rank_spells));
     const fallbackRanks=ranksRaw.length?ranksRaw:[ability];
     const ranks=fallbackRanks.map(rank=>normalizeRank(rank,ability,classTrainers))
-      .filter(rank=>rank.id&&rank.requiredLevel!==null)
+      .filter(rank=>rank.id&&rank.requiredLevel!==null&&rank.lessonVerified===true)
       .sort((a,b)=>a.requiredLevel-b.requiredLevel||a.id-b.id);
     return {
       id:integer(first(ability.id,ability.spellId,ability.spell_id,ranks[0]?.id)),
