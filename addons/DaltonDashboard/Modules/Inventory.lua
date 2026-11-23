@@ -6,13 +6,26 @@ module.events = {
   BAG_UPDATE_DELAYED = true,
   BANKFRAME_OPENED = true,
   BANKFRAME_CLOSED = true,
-  PLAYERBANKSLOTS_CHANGED = true,
-  PLAYER_LOGOUT = true
+  PLAYERBANKSLOTS_CHANGED = true
 }
 
-local BAG_CONTAINERS = {0, 1, 2, 3, 4}
-local BANK_CONTAINERS = {-1, 5, 6, 7, 8, 9, 10, 11}
 local bankOpen = false
+
+local function bagIndex(name, fallback)
+  if Enum and Enum.BagIndex and Enum.BagIndex[name] ~= nil then
+    return Enum.BagIndex[name]
+  end
+  return fallback
+end
+
+local BAG_CONTAINERS = {
+  bagIndex("Backpack", 0),
+  bagIndex("Bag_1", 1),
+  bagIndex("Bag_2", 2),
+  bagIndex("Bag_3", 3),
+  bagIndex("Bag_4", 4),
+  bagIndex("ReagentBag", 5)
+}
 
 local function containerSlots(container)
   if not (C_Container and C_Container.GetContainerNumSlots) then return nil end
@@ -46,6 +59,7 @@ local function itemInfo(container, slot)
     local ok, value = pcall(C_Container.GetContainerItemID, container, slot)
     if ok then itemID = ns.SafeNumber(value) end
   end
+
   itemID = itemID or (info and ns.SafeNumber(info.itemID))
   if not itemID then return nil end
 
@@ -67,13 +81,14 @@ local function itemInfo(container, slot)
 end
 
 local function scanContainers(list)
-  local containers, occupiedSlots, complete = {}, 0, true
+  local containers, occupiedSlots, totalSlots, complete = {}, 0, 0, true
 
   for _, container in ipairs(list) do
     local slots = containerSlots(container)
     if slots == nil then
       complete = false
     else
+      totalSlots = totalSlots + slots
       local entry = {
         container = container,
         slots = slots,
@@ -105,6 +120,7 @@ local function scanContainers(list)
     capturedAt = ns.Now(),
     complete = complete,
     containerCount = #containers,
+    totalSlots = totalSlots,
     occupiedSlots = occupiedSlots,
     containers = containers
   }
@@ -122,15 +138,55 @@ end
 local function scanBags(reason)
   local bags = scanContainers(BAG_CONTAINERS)
   bags.reason = reason
+
+  local backpackSlots = containerSlots(bagIndex("Backpack", 0))
+  if not backpackSlots or backpackSlots <= 0 or bags.totalSlots <= 0 then
+    ns.RecordCompatibility("Inventory.Bags", "Taschen waren in diesem Moment nicht lesbar; letzter gültiger Stand bleibt erhalten.")
+    return false
+  end
+
   storePart("bags", bags)
+  return true
+end
+
+local function purchasedBankContainers()
+  if not (C_Bank and C_Bank.FetchPurchasedBankTabData and Enum and Enum.BankType) then
+    return nil
+  end
+
+  local ok, tabs = pcall(C_Bank.FetchPurchasedBankTabData, Enum.BankType.Character)
+  if not ok or type(tabs) ~= "table" then return nil end
+
+  local containers = {}
+  for _, tab in ipairs(tabs) do
+    if type(tab) == "table" and type(tab.ID) == "number" and not ns.IsSecret(tab.ID) then
+      containers[#containers + 1] = tab.ID
+    end
+  end
+  return containers
 end
 
 local function scanBank(reason)
-  if not bankOpen and reason ~= "manual" then return end
-  local bank = scanContainers(BANK_CONTAINERS)
+  if not bankOpen then return false end
+
+  local containers = purchasedBankContainers()
+  if not containers then
+    ns.RecordCompatibility("Inventory.Bank", "Forever-Banktabs waren nicht lesbar; letzter gültiger Stand bleibt erhalten.")
+    return false
+  end
+
+  local bank = scanContainers(containers)
   bank.reason = reason
   bank.lastOpenedAt = ns.Now()
+  bank.bankType = "character"
+
+  if #containers > 0 and bank.totalSlots <= 0 then
+    ns.RecordCompatibility("Inventory.Bank", "Bank war geöffnet, lieferte aber keine lesbaren Slots; letzter gültiger Stand bleibt erhalten.")
+    return false
+  end
+
   storePart("bank", bank)
+  return true
 end
 
 function module:Capture(reason)
@@ -141,8 +197,10 @@ end
 function module:OnEvent(event)
   if event == "BANKFRAME_OPENED" then
     bankOpen = true
-    scanBank(event)
-    scanBags(event)
+    ns.Schedule(0.35, "bank-open", function()
+      scanBank(event)
+      scanBags(event)
+    end)
   elseif event == "BANKFRAME_CLOSED" then
     bankOpen = false
     local inventory = ns.GetDB().inventory
@@ -151,16 +209,14 @@ function module:OnEvent(event)
     end
   elseif event == "PLAYERBANKSLOTS_CHANGED" then
     if bankOpen then
-      ns.Schedule(0.1, "bank", function() scanBank(event) end)
+      ns.Schedule(0.15, "bank", function() scanBank(event) end)
     end
-  elseif event == "PLAYER_LOGOUT" then
-    scanBags(event)
   else
-    ns.Schedule(event == "PLAYER_LOGIN" and 1.2 or 0.15, "bags", function()
+    ns.Schedule(event == "PLAYER_LOGIN" and 1.5 or 0.2, "bags", function()
       scanBags(event)
     end)
     if bankOpen then
-      ns.Schedule(0.2, "bank", function() scanBank(event) end)
+      ns.Schedule(0.25, "bank", function() scanBank(event) end)
     end
   end
 end
