@@ -159,6 +159,8 @@ assert.ok(sourceByFile.has('api/addon-sync.js'),'Private full addon sync endpoin
 assert.ok(sourceByFile.has('scripts/addon-sync.mjs')&&sourceByFile.has('scripts/addon-sync-store.mjs'),'Addon sync needs centralized validation and persistence');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/addon-sync.js')||'').includes('DALTON_SYNC_TOKEN'),'Addon sync writes must require constant-time bearer authentication');
+assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes("process.env.VERCEL_ENV!=='production'")&&(sourceByFile.get('api/addon-sync.js')||'').includes('previewIsolated'),'Preview addon sync must never write verified spellbook data into the shared production character store');
+assert.ok((sourceByFile.get('scripts/addon-sync-store.mjs')||'').includes("?'production':'preview'"),'Addon sync raw-state Redis keys must be environment-scoped');
 const addonSyncSource=sourceByFile.get('scripts/addon-sync.mjs')||'';
 const whitelistStart=addonSyncSource.indexOf('const SAFE_SECTION_NAMES');
 const whitelistEnd=addonSyncSource.indexOf(']);',whitelistStart);
