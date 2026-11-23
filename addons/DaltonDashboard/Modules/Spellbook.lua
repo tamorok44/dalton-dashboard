@@ -4,7 +4,6 @@ local module = ns.RegisterModule("Spellbook", {})
 module.events = {
   PLAYER_LOGIN = true,
   SPELLS_CHANGED = true,
-  LEARNED_SPELL_IN_TAB = true,
   PLAYER_LEVEL_UP = true
 }
 
@@ -45,6 +44,7 @@ local function captureSpellbook(reason)
             local ok, value = pcall(C_SpellBook.IsSpellKnown, spellID, bank)
             if ok and not ns.IsSecret(value) then known = value and true or false end
           end
+
           local item = {
             slot = slot,
             skillLineIndex = lineIndex,
@@ -57,6 +57,7 @@ local function captureSpellbook(reason)
             iconID = ns.SafeNumber(info.iconID or info.iconFileID),
             known = known
           }
+
           lineOut.spells[#lineOut.spells + 1] = item
           entries[#entries + 1] = item
         end
