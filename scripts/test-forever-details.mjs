@@ -89,4 +89,28 @@ const unavailable=enrichWithForeverDetails(source,{
 });
 assert.equal(unavailable.characters[0].knownClassAbilitiesVerified,false);
 assert.deepEqual(unavailable.characters[0].knownClassAbilities,[]);
+
+const localSource={
+  ...source,
+  characters:[{
+    ...source.characters[0],
+    knownClassAbilities:[{id:133,name:'Feuerball',rank:'Rang 1'}],
+    knownClassAbilitiesVerified:true,
+    knownClassAbilitiesSource:'WoW-Spellbook',
+    knownClassAbilitiesCapturedAt:'2026-11-23T05:55:00.000Z',
+    knownClassAbilitiesSyncedAt:'2026-11-23T06:00:00.000Z',
+    knownClassAbilitiesCapturedLevel:11
+  }]
+};
+const preservedLocal=enrichWithForeverDetails(localSource,{
+  snapshotAt:'2026-11-23T07:00:00.000Z',
+  characters:{'cole-dalton':{
+    spells:{ok:false,status:404,data:{}},
+    spellbook:{ok:false,status:404,data:{}}
+  }}
+});
+assert.equal(preservedLocal.characters[0].knownClassAbilitiesVerified,true,'Fehlende Online-Spellbook-API entwertet keinen echten Ingame-Snapshot');
+assert.equal(preservedLocal.characters[0].knownClassAbilitiesSource,'WoW-Spellbook');
+assert.equal(preservedLocal.characters[0].knownClassAbilitiesCapturedAt,'2026-11-23T05:55:00.000Z');
+assert.deepEqual(preservedLocal.characters[0].knownClassAbilities.map(entry=>entry.id),[133]);
 console.log('Forever-Detaildaten: deutsche Rezepte, Talente, Ruf, Quests und persönlicher Spellbook-Status: OK');
