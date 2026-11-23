@@ -12,11 +12,8 @@ import {
   preferredForeverRecipeForItem,
   workshopLearningCandidates
 } from '../scripts/workshop-core.mjs';
-import {
-  foreverDbConfigured,
-  fetchForeverDbItem
-} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch} from '../scripts/workshop-store.mjs';
+import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
+import {getForeverDbMasterRecipeIndex,cachedForeverDbRecipeSearch,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 
 function normalize(value){
@@ -197,19 +194,17 @@ export default async function handler(req,res){
       let recipeIndex=null,remoteRecipe=null,targetedRecipeSearch=null;
       if(remoteReady){
         try{
-          const [remote,index]=await Promise.all([
-            fetchForeverDbItem(itemId),
-            getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
-          ]);
+          const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
           recipeIndex=index;
           enrichWorkshopCatalogWithForeverDb(catalog,index);
-          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote.item,catalog.byItemId.get(itemId)||local));
+          const remote=await cachedForeverDbItem(itemId,{build:index?.build||null});
+          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
           source='foreverdb';
           remoteRecipe=preferredForeverRecipeForItem(index,itemId);
         }catch(error){
           remoteErrors.push(String(error.message).slice(0,180));
         }
-        if(!local?.craftable&&!remoteRecipe&&item?.name){
+        if(!local?.craftable&&!remoteRecipe&&item?.name&&!(recipeIndex?.masterComplete===true&&recipeIndex?.complete===true)){
           try{
             targetedRecipeSearch=await cachedForeverDbRecipeSearch(itemId,item.sourceSearchName||item.name);
             if(targetedRecipeSearch.recipes?.length){
