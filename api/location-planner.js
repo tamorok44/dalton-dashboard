@@ -14,10 +14,10 @@ function hasFiniteNumber(value){
   return value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
 }
 function npcRenderSource({displayId,renderSourceUrl}={}){
-  if(typeof renderSourceUrl==='string'&&/^https:\/\/render\.worldofwarcraft\.com\/forever-eu\//.test(renderSourceUrl))return renderSourceUrl;
+  if(typeof renderSourceUrl==='string'&&/^https:\/\/(?:render\.worldofwarcraft\.com\/forever-eu\/|render(?:-eu)?\.worldofwarcraft\.com\/(?:eu\/)?npcs\/)/.test(renderSourceUrl))return renderSourceUrl;
   const id=Number(displayId);
   return Number.isInteger(id)&&id>0
-    ?'https://render.worldofwarcraft.com/forever-eu/npcs/zoom/creature-display-'+id+'.jpg'
+    ?'https://render-eu.worldofwarcraft.com/npcs/zoom/creature-display-'+id+'.jpg'
     :null;
 }
 function germanRankLabel(value){
@@ -36,7 +36,8 @@ function localizeClassAction(action,localized={}){
     ...action,
     name:[name,rank].filter(Boolean).join(' · '),
     abilityName:name,
-    rank
+    rank,
+    iconId:Number.isInteger(Number(spell?.iconId))?Number(spell.iconId):(Number.isInteger(Number(action?.iconId))?Number(action.iconId):null)
   };
 }
 function localizePlannerClassData(planner,localized={}){
@@ -82,6 +83,22 @@ async function withNpcAvatar(npc){
   }catch(error){
     console.warn('NPC-Bild konnte nicht archiviert werden:',String(error.message).slice(0,120));
     return {...candidate,avatarUrl:null};
+  }
+}
+async function withClassActionIcon(action){
+  const iconId=Number(action?.iconId);
+  if(action?.category!=='class-abilities'||!Number.isInteger(iconId)||iconId<=0)return action;
+  try{
+    const iconUrl=await resolveMediaAsset({
+      entityType:'spell',
+      entityId:action.id,
+      role:'icon',
+      sourceUrl:'https://foreverdb.net/icons/'+iconId+'.webp'
+    });
+    return {...action,iconUrl:iconUrl||null};
+  }catch(error){
+    console.warn('Klassenfähigkeits-Icon konnte nicht archiviert werden:',String(error.message).slice(0,120));
+    return action;
   }
 }
 export default async function handler(req,res){
@@ -134,6 +151,16 @@ export default async function handler(req,res){
       const localized=await cachedGermanClassSpells(classSpellIds);
       planner=localizePlannerClassData(planner,localized);
     }
+    const classActions=await Promise.all((planner.actions||[]).map(action=>withClassActionIcon(action)));
+    const iconByKey=new Map(classActions.map(action=>[action.key,action.iconUrl||null]));
+    planner={
+      ...planner,
+      actions:classActions,
+      npcs:(planner.npcs||[]).map(npc=>({
+        ...npc,
+        actions:(npc.actions||[]).map(action=>({...action,iconUrl:iconByKey.get(action.key)||null}))
+      }))
+    };
     if(planner.npcs?.length){
       const npcs=await Promise.all(planner.npcs.map(npc=>withNpcAvatar(npc)));
       const avatarByKey=new Map(npcs.map(npc=>[npc.key,npc.avatarUrl||null]));
