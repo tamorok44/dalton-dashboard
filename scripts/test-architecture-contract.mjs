@@ -139,9 +139,11 @@ assert.ok(sourceByFile.has('api/spellbook-sync.js'),'Private spellbook sync endp
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('fetchForeverDbPublicClassTrainers'),'Class training must consume the central current Forever class-trainer dataset');
 assert.ok((sourceByFile.get('scripts/forever-details.mjs')||'').includes("character?.knownClassAbilitiesSource==='WoW-Spellbook'"),'Normal profile refresh must preserve a verified ingame spellbook snapshot');
-const addonSource=sourceByFile.get('addons/DaltonDashboard/DaltonDashboard.lua')||'';
-const addonConfig=sourceByFile.get('addons/DaltonDashboard/Config.lua')||'';
+const addonSource=fs.readFileSync(path.join(root,'addons','DaltonDashboard','DaltonDashboard.lua'),'utf8');
+const addonConfig=fs.readFileSync(path.join(root,'addons','DaltonDashboard','Config.lua'),'utf8');
+const addonToc=fs.readFileSync(path.join(root,'addons','DaltonDashboard','DaltonDashboard.toc'),'utf8');
 assert.ok(addonSource.includes('C_SpellBook.GetSpellBookItemInfo')&&addonSource.includes('C_SpellBook.IsSpellKnown'),'Forever addon must read the actual player spellbook');
+assert.ok(addonToc.includes('## Interface: 16001'),'Forever addon must declare the current Forever 1.60.1 interface version');
 assert.ok(addonSource.includes('for lineIndex = 2, lines do'),'Spellbook export must exclude the General skill line and profession tabs');
 assert.ok(addonConfig.includes('PRIVATE_TOKEN_HERE'),'Repository addon config must contain only the public placeholder');
 assert.ok(!/DALTON_DASHBOARD_SYNC_TOKEN\s*=\s*["'](?!PRIVATE_TOKEN_HERE["'])[^"']+/.test(addonConfig),'Private spellbook token must never be committed');
