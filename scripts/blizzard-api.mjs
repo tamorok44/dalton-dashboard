@@ -26,7 +26,17 @@ export const FOREVER_CHARACTER_ENDPOINTS={
   titles:'/titles',
   hunterPets:'/hunter-pets',
   spells:'/spells',
-  spellbook:'/spellbook'
+  spellbook:'/spellbook',
+  skills:'/skills',
+  abilities:'/abilities',
+  knownSpells:'/known-spells',
+  classSpells:'/class-spells',
+  classAbilities:'/class-abilities',
+  skillLines:'/skill-lines',
+  playerSpells:'/player-spells',
+  learnedSpells:'/learned-spells',
+  spellbookSpells:'/spellbook/spells',
+  spellsKnown:'/spells/known'
 };
 
 export function blizzardApiConfigured(){
