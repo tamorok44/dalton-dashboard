@@ -8,6 +8,7 @@ Dieses Paket ist **nur für den lokalen Entwicklungstest mit Cole** gedacht. Es 
 - Das WoW-Addon Dalton Dashboard Sync Alpha 5 ist installiert.
 - Für einen echten Upload muss lokal die Umgebungsvariable `DALTON_SYNC_TOKEN` gesetzt sein.
 - Für einen Preview-Test kann `DALTON_SYNC_ENDPOINT` auf den Preview-Endpunkt gesetzt werden.
+- Ist der Preview durch Vercel Authentication geschützt, wird zusätzlich `DALTON_SYNC_PREVIEW_SHARE_URL` mit einem temporären Vercel-Share-Link gesetzt. Der Companion holt daraus selbstständig den Zugangscookie.
 
 ## Datenschutz
 
@@ -51,6 +52,7 @@ Der private Schlüssel wird niemals als Kommandozeilenargument oder im Addon ges
 ```bash
 export DALTON_SYNC_TOKEN='...'
 export DALTON_SYNC_ENDPOINT='https://<preview>/api/addon-sync'
+export DALTON_SYNC_PREVIEW_SHARE_URL='https://<preview>/?_vercel_share=...'
 node dalton-sync-client.mjs --watch
 ```
 
