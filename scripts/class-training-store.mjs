@@ -2,9 +2,11 @@ import {redis,configured as redisConfigured} from './character-store.mjs';
 import {foreverDbConfigured,fetchForeverDbClass,fetchForeverDbSpell} from './foreverdb-api.mjs';
 import {CLASSIC_CLASS_TRAINER_COSTS} from './class-training-classic-costs.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v5:';
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v6:';
 const PUBLIC_DATA_BASE='https://foreverdb.net/data/';
+const PUBLIC_I18N_DE='https://foreverdb.net/i18n/de.json';
 let publicTrainerCache=null;
+let publicGermanUiCache=null;
 const SPELL_LOCALE_HASH='dalton-dashboard:foreverdb:class-spell-locale:v1';
 export const CLASS_BY_ID=Object.freeze({
   1:'warrior',2:'paladin',3:'hunter',4:'rogue',5:'priest',7:'shaman',8:'mage',9:'warlock',11:'druid'
@@ -192,10 +194,37 @@ async function publicTrainerData({fetchImpl=fetch}={}){
   publicTrainerCache={at:Date.now(),data};
   return data;
 }
+async function publicGermanUiTranslations({fetchImpl=fetch}={}){
+  if(publicGermanUiCache&&Date.now()-publicGermanUiCache.at<10*60*1000)return publicGermanUiCache.data;
+  const response=await fetchImpl(PUBLIC_I18N_DE,{
+    headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},
+    signal:AbortSignal.timeout(15000)
+  });
+  if(!response.ok)throw new Error('ForeverDB deutsche UI-Lokalisierung HTTP '+response.status);
+  const data=await response.json();
+  publicGermanUiCache={at:Date.now(),data:data&&typeof data==='object'?data:{}};
+  return publicGermanUiCache.data;
+}
+function localizedTrainer(source,translations={}){
+  if(!source)return source;
+  const zone=source.location?.zone;
+  const title=source.npcTitle;
+  return {
+    ...source,
+    npcTitle:title?(translations[title]||title):title,
+    location:{
+      ...source.location,
+      zone:zone?(translations[zone]||zone):zone
+    }
+  };
+}
 export async function fetchForeverDbPublicClassTrainers(classId,{fetchImpl=fetch}={}){
-  const data=await publicTrainerData({fetchImpl});
+  const [data,translations]=await Promise.all([
+    publicTrainerData({fetchImpl}),
+    publicGermanUiTranslations({fetchImpl}).catch(()=>publicGermanUiCache?.data||{})
+  ]);
   const rows=asArray(data?.classTrainers?.[String(Number(classId))]);
-  return dedupeTrainers(rows.map(raw=>normalizeTrainer(raw)).filter(Boolean));
+  return dedupeTrainers(rows.map(raw=>localizedTrainer(normalizeTrainer(raw),translations)).filter(Boolean));
 }
 function replaceGenericTrainerFallbacks(classMaster,trainers){
   const generic=dedupeTrainers(trainers);
