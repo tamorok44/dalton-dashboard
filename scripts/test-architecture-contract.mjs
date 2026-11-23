@@ -159,8 +159,13 @@ assert.ok(sourceByFile.has('api/addon-sync.js'),'Private full addon sync endpoin
 assert.ok(sourceByFile.has('scripts/addon-sync.mjs')&&sourceByFile.has('scripts/addon-sync-store.mjs'),'Addon sync needs centralized validation and persistence');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/addon-sync.js')||'').includes('DALTON_SYNC_TOKEN'),'Addon sync writes must require constant-time bearer authentication');
-assert.ok((sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'character',")&&(sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'interactions'"),'Addon sync must use an explicit section whitelist');
-assert.ok(!(sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'economy',")&&!(sourceByFile.get('scripts/addon-sync.mjs')||'').includes("'inventory',"),'Sensitive economy/inventory sections must stay outside the default sync whitelist');
+const addonSyncSource=sourceByFile.get('scripts/addon-sync.mjs')||'';
+const whitelistStart=addonSyncSource.indexOf('const SAFE_SECTION_NAMES');
+const whitelistEnd=addonSyncSource.indexOf(']);',whitelistStart);
+const addonSyncWhitelist=whitelistStart>=0&&whitelistEnd>whitelistStart?addonSyncSource.slice(whitelistStart,whitelistEnd+3):'';
+assert.ok(addonSyncWhitelist.includes("'character'")&&addonSyncWhitelist.includes("'interactions'"),'Addon sync must use an explicit section whitelist');
+assert.ok(!addonSyncWhitelist.includes("'economy'")&&!addonSyncWhitelist.includes("'inventory'"),'Sensitive economy/inventory sections must stay outside the default sync whitelist');
+assert.ok(addonSyncSource.includes("for(const forbidden of ['economy','inventory'])"),'Server must actively reject sensitive economy/inventory sections even if a client injects them');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('fetchForeverDbPublicClassTrainers'),'Class training must consume the central current Forever class-trainer dataset');
 assert.ok(sourceByFile.has('scripts/class-training-classic-costs.mjs'),'Central Classic class-trainer cost fallback is required');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('classicTrainerCost'),'Class rank pricing must use the bounded central Classic trainer-cost fallback');
