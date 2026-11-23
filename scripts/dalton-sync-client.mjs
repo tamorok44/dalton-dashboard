@@ -25,6 +25,7 @@ function help(){
   console.log('');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN in der lokalen Umgebung gesetzt sein.');
   console.log('Gold, Taschen und Bank werden vom Standard-Sync niemals übertragen.');
+  console.log('Bei geschützten Vercel-Previews kann DALTON_SYNC_PREVIEW_SHARE_URL gesetzt werden.');
 }
 async function discoverFiles(){
   const roots=[
@@ -74,16 +75,37 @@ async function readPayload(file){
   const hash=createHash('sha256').update(JSON.stringify(safePayload)).digest('hex');
   return {hash,payload:{...safePayload,syncId:hash}};
 }
-async function postPayload(endpoint,token,payload){
+export function previewCookieFromSetCookie(values=[]){
+  return values
+    .map(value=>String(value||'').split(';')[0].trim())
+    .filter(value=>value.startsWith('_vercel_jwt='))
+    .join('; ');
+}
+async function previewCookie(shareUrl){
+  if(!shareUrl)return null;
+  const url=new URL(shareUrl);
+  if(url.protocol!=='https:')throw new Error('Preview-Share-Link muss HTTPS verwenden');
+  const response=await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(15000)});
+  if(response.status<200||response.status>=400)throw new Error('Preview-Freigabe HTTP '+response.status);
+  const raw=typeof response.headers.getSetCookie==='function'
+    ?response.headers.getSetCookie()
+    :[response.headers.get('set-cookie')].filter(Boolean);
+  const cookie=previewCookieFromSetCookie(raw);
+  if(!cookie)throw new Error('Preview-Freigabe hat keinen Vercel-Zugangscookie geliefert');
+  return cookie;
+}
+async function postPayload(endpoint,token,payload,{cookie=null}={}){
   const url=new URL(endpoint);
   if(url.protocol!=='https:'&&url.hostname!=='localhost'&&url.hostname!=='127.0.0.1')throw new Error('Sync-Endpunkt muss HTTPS verwenden');
+  const headers={
+    Authorization:'Bearer '+token,
+    'Content-Type':'application/json',
+    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.5'
+  };
+  if(cookie)headers.Cookie=cookie;
   const response=await fetch(url,{
     method:'POST',
-    headers:{
-      Authorization:'Bearer '+token,
-      'Content-Type':'application/json',
-      'User-Agent':'DaltonDashboardSync/0.1.0-alpha.5'
-    },
+    headers,
     body:JSON.stringify(payload),
     signal:AbortSignal.timeout(20000)
   });
@@ -99,6 +121,7 @@ async function main(){
   let lastHash=null;
   let running=false;
   let rerun=false;
+  const previewAuthCookie=await previewCookie(process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
 
   const sync=async()=>{
     if(running){rerun=true;return}
@@ -114,7 +137,7 @@ async function main(){
       }
       const token=process.env.DALTON_SYNC_TOKEN;
       if(!token)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
-      const result=await postPayload(options.endpoint,token,payload);
+      const result=await postPayload(options.endpoint,token,payload,{cookie:previewAuthCookie});
       lastHash=hash;
       console.log('Synchronisiert: '+String(result.character?.name||result.character?.slug||'Charakter')+
         ' · Spellbook '+String(result.summary?.spellbookEntryCount??0)+
