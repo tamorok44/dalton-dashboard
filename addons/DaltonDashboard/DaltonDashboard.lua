@@ -12,7 +12,7 @@ local function registerModuleEvents()
         if ok then
           registered[event] = true
         else
-          ns.RecordError("RegisterEvent:" .. tostring(event), err)
+          ns.RecordCompatibility("RegisterEvent:" .. tostring(event), err)
         end
       end
     end
@@ -31,21 +31,36 @@ frame:SetScript("OnEvent", function(self, event, ...)
   if event == "ADDON_LOADED" then
     local loaded = ...
     if loaded ~= ADDON_NAME then return end
+
     ns.EnsureDB()
-    for _, module in ipairs(ns.modules) do ns.Run(module, "Initialize") end
+    for _, module in ipairs(ns.modules) do
+      ns.Run(module, "Initialize")
+    end
     registerModuleEvents()
     self:UnregisterEvent("ADDON_LOADED")
     ns.Chat("Datenerfassung geladen. /dalton zeigt den Status.")
     return
   end
+
   dispatch(event, ...)
 end)
 
 local function captureAll()
+  local succeeded, failed = 0, {}
   for _, module in ipairs(ns.modules) do
-    ns.Run(module, "Capture", "manual")
+    local ok = ns.Run(module, "Capture", "manual")
+    if ok then
+      succeeded = succeeded + 1
+    else
+      failed[#failed + 1] = module.name or "?"
+    end
   end
-  ns.Chat("Lokaler Datensatz wurde aktualisiert.")
+
+  if #failed == 0 then
+    ns.Chat("Lokaler Datensatz wurde aktualisiert (" .. tostring(succeeded) .. " Module).")
+  else
+    ns.Chat("Datensatz teilweise aktualisiert. Fehler in: " .. table.concat(failed, ", ") .. ".")
+  end
 end
 
 local function status()
@@ -57,28 +72,38 @@ local function status()
       parts[#parts + 1] = key .. ":" .. tostring(value.capturedAt or "ja")
     end
   end
+
   ns.Chat("Version " .. tostring(ns.VERSION) .. " · Schema " .. tostring(db.schemaVersion))
   ns.Chat(#parts > 0 and table.concat(parts, " · ") or "Noch keine Daten erfasst.")
   ns.Chat("Daten bleiben derzeit ausschließlich lokal in SavedVariables.")
+end
+
+local function printDiagnostics(kind)
+  local db = ns.GetDB()
+  local list = db.diagnostics[kind] or {}
+  if #list == 0 then
+    ns.Chat(kind == "errors" and "Keine protokollierten Fehler." or "Keine Kompatibilitätshinweise.")
+    return
+  end
+
+  ns.Chat(kind == "errors" and "Letzte Fehler:" or "Letzte Kompatibilitätshinweise:")
+  for index = 1, math.min(8, #list) do
+    local entry = list[index]
+    ns.Chat(tostring(entry.where) .. ": " .. tostring(entry.message))
+  end
 end
 
 SLASH_DALTONDASHBOARD1 = "/dalton"
 SLASH_DALTONDASHBOARD2 = "/daltonsync"
 SlashCmdList.DALTONDASHBOARD = function(command)
   command = tostring(command or ""):lower():match("^%s*(.-)%s*$")
+
   if command == "scan" then
     captureAll()
   elseif command == "errors" then
-    local errors = ns.GetDB().diagnostics.errors or {}
-    if #errors == 0 then
-      ns.Chat("Keine protokollierten Fehler.")
-    else
-      ns.Chat("Letzte Fehler:")
-      for index = 1, math.min(5, #errors) do
-        local errorEntry = errors[index]
-        ns.Chat(tostring(errorEntry.where) .. ": " .. tostring(errorEntry.message))
-      end
-    end
+    printDiagnostics("errors")
+  elseif command == "compat" then
+    printDiagnostics("compatibility")
   else
     status()
   end
