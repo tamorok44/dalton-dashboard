@@ -1,0 +1,131 @@
+local ADDON_NAME, ns = ...
+
+ns.ADDON_NAME = ADDON_NAME
+ns.SCHEMA_VERSION = 1
+ns.modules = ns.modules or {}
+
+local function addonVersion()
+  if C_AddOns and C_AddOns.GetAddOnMetadata then
+    return C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version") or "dev"
+  end
+  if GetAddOnMetadata then
+    return GetAddOnMetadata(ADDON_NAME, "Version") or "dev"
+  end
+  return "dev"
+end
+
+ns.VERSION = addonVersion()
+
+function ns.Now()
+  return time and time() or 0
+end
+
+function ns.IsSecret(value)
+  return issecretvalue and issecretvalue(value) or false
+end
+
+function ns.Readable(value)
+  if value == nil or ns.IsSecret(value) then return nil end
+  local kind = type(value)
+  if kind == "string" or kind == "number" or kind == "boolean" then return value end
+  return nil
+end
+
+function ns.SafeNumber(value)
+  value = ns.Readable(value)
+  return type(value) == "number" and value or nil
+end
+
+function ns.SafeString(value)
+  value = ns.Readable(value)
+  return type(value) == "string" and value or nil
+end
+
+function ns.Chat(message)
+  if DEFAULT_CHAT_FRAME then
+    DEFAULT_CHAT_FRAME:AddMessage("|cffffd36aDalton Dashboard:|r " .. tostring(message))
+  end
+end
+
+function ns.EnsureDB()
+  if type(DaltonDashboardDB) ~= "table" then DaltonDashboardDB = {} end
+  DaltonDashboardDB.schemaVersion = ns.SCHEMA_VERSION
+  DaltonDashboardDB.settings = DaltonDashboardDB.settings or {}
+
+  if type(DaltonDashboardCharDB) ~= "table" then DaltonDashboardCharDB = {} end
+  local db = DaltonDashboardCharDB
+  db.schemaVersion = ns.SCHEMA_VERSION
+  db.meta = db.meta or {}
+  db.meta.addonVersion = ns.VERSION
+  db.meta.gameVersion, db.meta.build = GetBuildInfo()
+  db.meta.interface = select(4, GetBuildInfo())
+  db.meta.locale = GetLocale and GetLocale() or nil
+  db.meta.lastUpdatedAt = db.meta.lastUpdatedAt or ns.Now()
+  db.diagnostics = db.diagnostics or { errors = {} }
+  db.diagnostics.errors = db.diagnostics.errors or {}
+  return db
+end
+
+function ns.GetDB()
+  return ns.EnsureDB()
+end
+
+function ns.StoreSection(name, payload)
+  if type(payload) ~= "table" then return end
+  local db = ns.EnsureDB()
+  payload.capturedAt = payload.capturedAt or ns.Now()
+  db[name] = payload
+  db.meta.lastUpdatedAt = payload.capturedAt
+end
+
+function ns.RecordError(where, err)
+  local db = ns.EnsureDB()
+  local list = db.diagnostics.errors
+  table.insert(list, 1, {
+    at = ns.Now(),
+    where = tostring(where or "?"),
+    message = tostring(err or "unknown"):sub(1, 400)
+  })
+  while #list > 20 do table.remove(list) end
+end
+
+function ns.RegisterModule(name, module)
+  module = module or {}
+  module.name = name
+  module.events = module.events or {}
+  ns.modules[#ns.modules + 1] = module
+  return module
+end
+
+function ns.Run(module, method, ...)
+  if not module or type(module[method]) ~= "function" then return true end
+  local ok, result = pcall(module[method], module, ...)
+  if not ok then
+    ns.RecordError((module.name or "?") .. "." .. method, result)
+    return false, result
+  end
+  return true, result
+end
+
+function ns.Schedule(delay, key, callback)
+  ns._timers = ns._timers or {}
+  if ns._timers[key] then return end
+  ns._timers[key] = true
+  local function run()
+    ns._timers[key] = nil
+    local ok, err = pcall(callback)
+    if not ok then ns.RecordError("timer:" .. tostring(key), err) end
+  end
+  if C_Timer and C_Timer.After then C_Timer.After(delay or 0, run) else run() end
+end
+
+function ns.CopyNumberArray(source)
+  local out = {}
+  if type(source) ~= "table" then return out end
+  for _, value in ipairs(source) do
+    if type(value) == "number" and not ns.IsSecret(value) then
+      out[#out + 1] = value
+    end
+  end
+  return out
+end
