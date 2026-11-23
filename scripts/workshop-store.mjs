@@ -16,6 +16,8 @@ const META_TTL_SECONDS=30*60;
 const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v2';
 const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v2';
 const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
+const META_REFRESH_LOCK_KEY='dalton-dashboard:workshop:foreverdb:meta-refresh-lock:v1';
+const META_REFRESH_LOCK_SECONDS=15;
 const MASTER_REFRESH_CHUNK=3;
 const MASTER_REFRESH_LOCK_KEY='dalton-dashboard:workshop:foreverdb:master-refresh-lock:v1';
 const MASTER_REFRESH_LOCK_SECONDS=55;
@@ -106,30 +108,58 @@ async function saveJson(key,value,{ttl=null}={}){
 async function deleteKey(key){
   if(redisConfigured())await redis(['DEL',key]);
 }
-async function acquireMasterRefreshLock(){
+async function acquireRedisLock(key,seconds){
   if(!redisConfigured())return 'local';
   const token=randomUUID();
-  const result=await redis(['SET',MASTER_REFRESH_LOCK_KEY,token,'NX','EX',String(MASTER_REFRESH_LOCK_SECONDS)]);
+  const result=await redis(['SET',key,token,'NX','EX',String(seconds)]);
   return result==='OK'?token:null;
 }
-async function releaseMasterRefreshLock(token){
+async function releaseRedisLock(key,token){
   if(!redisConfigured()||!token||token==='local')return;
-  await redis(['EVAL',"if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",'1',MASTER_REFRESH_LOCK_KEY,token]);
+  await redis(['EVAL',"if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",1,key,token]);
+}
+async function acquireMasterRefreshLock(){
+  return acquireRedisLock(MASTER_REFRESH_LOCK_KEY,MASTER_REFRESH_LOCK_SECONDS);
+}
+async function releaseMasterRefreshLock(token){
+  return releaseRedisLock(MASTER_REFRESH_LOCK_KEY,token);
 }
 async function cachedForeverDbMeta({fetchImpl=fetch}={}){
-  const cached=await loadJson(META_KEY);
+  let cached=await loadJson(META_KEY);
   if(cached&&fresh(cached,META_TTL_SECONDS*1000))return {...cached,cached:true};
-  try{
-    const meta=await fetchForeverDbMeta({fetchImpl});
-    const value={...meta,generatedAt:new Date().toISOString()};
-    await saveJson(META_KEY,value);
-    return {...value,cached:false};
-  }catch(error){
-    if(cached){
-      console.warn('ForeverDB-Meta vorübergehend nicht erreichbar – letzter bekannter Build bleibt aktiv:',String(error.message).slice(0,140));
-      return {...cached,cached:true,stale:true};
+
+  const lockToken=await acquireRedisLock(META_REFRESH_LOCK_KEY,META_REFRESH_LOCK_SECONDS);
+  if(!lockToken){
+    if(cached)return {...cached,cached:true,stale:true};
+    // A concurrent cold start is already loading /meta. Wait briefly for its shared result
+    // rather than spending another ForeverDB request.
+    for(let attempt=0;attempt<20;attempt++){
+      await new Promise(resolve=>setTimeout(resolve,75));
+      const shared=await loadJson(META_KEY);
+      if(shared)return {...shared,cached:true};
     }
-    throw error;
+    throw new Error('ForeverDB-Meta wird gerade durch eine andere Instanz geladen');
+  }
+
+  try{
+    cached=await loadJson(META_KEY);
+    if(cached&&fresh(cached,META_TTL_SECONDS*1000))return {...cached,cached:true};
+    try{
+      const meta=await fetchForeverDbMeta({fetchImpl});
+      const value={...meta,generatedAt:new Date().toISOString()};
+      await saveJson(META_KEY,value);
+      return {...value,cached:false};
+    }catch(error){
+      if(cached){
+        console.warn('ForeverDB-Meta vorübergehend nicht erreichbar – letzter bekannter Build bleibt aktiv:',String(error.message).slice(0,140));
+        return {...cached,cached:true,stale:true};
+      }
+      throw error;
+    }
+  }finally{
+    try{await releaseRedisLock(META_REFRESH_LOCK_KEY,lockToken)}catch(error){
+      console.warn('ForeverDB-Meta-Sperre konnte nicht freigegeben werden:',String(error.message).slice(0,120));
+    }
   }
 }
 export async function loadCachedRecipeIndex(professionSlugs=[]){
