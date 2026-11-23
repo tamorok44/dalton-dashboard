@@ -1,0 +1,60 @@
+name: Addon CI
+
+on:
+  pull_request:
+    paths:
+      - "addons/DaltonDashboard/**"
+      - "scripts/test-addon-structure.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/addon-ci.yml"
+  push:
+    branches:
+      - "feature/curseforge-addon-foundation"
+    paths:
+      - "addons/DaltonDashboard/**"
+      - "scripts/test-addon-structure.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/addon-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Node 22 einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Tests ausführen
+        run: npm test
+
+      - name: Addon-Paket bauen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cd addons
+          zip -r "../dist/DaltonDashboard-0.1.0-alpha.1.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
+          cd ..
+          unzip -l dist/DaltonDashboard-0.1.0-alpha.1.zip
+
+      - name: Testpaket bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboard-0.1.0-alpha.1
+          path: dist/DaltonDashboard-0.1.0-alpha.1.zip
+          if-no-files-found: error
+          retention-days: 14
