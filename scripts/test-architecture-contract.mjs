@@ -118,8 +118,12 @@ assert.ok(policy.includes('verteilten Redis-Lock'),'ForeverDB rebuild concurrenc
 assert.ok(sourceByFile.has('api/location-planner.js'),'Location planner API is required');
 assert.ok(sourceByFile.has('scripts/location-planner.mjs'),'Location planner core is required');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Location planner must reuse the persistent Workshop recipe master');
-assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('recipeIndex?.professions'),'Location planner must reuse profession ranks/trainers already embedded in the shared recipe master');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('evaluatedRecipeIndex?.professions'),'Location planner must reuse profession ranks/trainers from the shared recipe master after applying the evidence layer');
 assert.ok(!(sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must not refetch profession masters already contained in the shared recipe master');
+assert.ok(sourceByFile.has('scripts/learning-source-evidence.mjs'),'Build-scoped learning-source evidence layer is required');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('applyLearningSourceEvidence'),'Location planner must apply current learning-source evidence before building routes');
+assert.ok((sourceByFile.get('api/profession-planner.js')||'').includes('applyLearningSourceEvidence'),'Profession planner must use the same learning-source evidence rules');
+assert.ok((sourceByFile.get('api/workshop.js')||'').includes('applyLearningSourceEvidence'),'Workshop learning sources must use the same learning-source evidence rules');
 assert.ok(sourceByFile.has('scripts/class-training-store.mjs'),'Central class-training master is required');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('companionTrainingAbility'),'Hunter Beast Training must stay outside class training');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('cachedGermanClassSpells'),'Visible class spell localization must use the centralized German spell cache');
