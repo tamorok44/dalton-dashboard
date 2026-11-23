@@ -91,11 +91,12 @@ export function addonSpellbookSnapshot(payload,classMaster=null){
     array(classMaster?.abilities).flatMap(ability=>array(ability?.ranks))
       .map(rank=>integer(rank?.id)).filter(Boolean)
   );
+  if(!allowedIds.size)return null;
   const seen=new Set(),entries=[];
   for(const entry of rawEntries){
     const id=integer(entry?.spellID??entry?.id);
     if(!id||seen.has(id)||entry?.known===false)continue;
-    if(allowedIds.size&&!allowedIds.has(id))continue;
+    if(!allowedIds.has(id))continue;
     seen.add(id);
     entries.push({
       id,
