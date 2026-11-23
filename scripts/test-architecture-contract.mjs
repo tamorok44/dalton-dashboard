@@ -107,13 +107,25 @@ for(const required of ['node-version: ["22", "26"]','npm ci --ignore-scripts','n
 assert.ok(browserSource.includes("if(changedItem&&!preserveQuantity)workshopState.quantity=1"),'Workshop item-scoped quantity must reset to 1 when the item ID changes');
 assert.ok(browserSource.includes("preserveQuery:true,preserveQuantity:true"),'Same-item refresh paths must explicitly preserve workshop quantity');
 assert.ok(policy.includes('Gegenstandsbezogene Eingaben gehören zur ausgewählten Item-ID'),'Workshop item-scoped state rule must stay documented');
+const workshopStore=sourceByFile.get('scripts/workshop-store.mjs')||'';
+assert.ok(workshopStore.includes('META_TTL_SECONDS=30*60'),'ForeverDB build meta must be capped at two API checks per hour');
+assert.ok(workshopStore.includes('MASTER_REFRESH_LOCK_KEY')&&workshopStore.includes("'NX','EX'"),'ForeverDB master rebuild must use a distributed Redis lock');
+assert.ok(workshopStore.includes('cachedForeverDbItem'),'ForeverDB item details must have a shared build-scoped cache');
+assert.ok((sourceByFile.get('api/workshop.js')||'').includes('cachedForeverDbItem(itemId'),'Workshop selected item must use the shared item cache');
+assert.ok((sourceByFile.get('api/workshop.js')||'').includes("recipeIndex?.masterComplete===true&&recipeIndex?.complete===true"),'Complete recipe master must suppress the 12-profession targeted search fanout');
+assert.ok(policy.includes('5.000 API-Key-Requests pro Tag und 30 pro Minute'),'ForeverDB free-tier request budget must be an explicit architecture constraint');
+assert.ok(policy.includes('verteilten Redis-Lock'),'ForeverDB rebuild concurrency protection must stay documented');
 assert.ok(sourceByFile.has('api/location-planner.js'),'Location planner API is required');
 assert.ok(sourceByFile.has('scripts/location-planner.mjs'),'Location planner core is required');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('getForeverDbMasterRecipeIndex'),'Location planner must reuse the persistent Workshop recipe master');
-assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must use a build-scoped profession-training master without rebuilding the recipe catalog');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('recipeIndex?.professions'),'Location planner must reuse profession ranks/trainers already embedded in the shared recipe master');
+assert.ok(!(sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbProfessionMasters'),'Location planner must not refetch profession masters already contained in the shared recipe master');
 assert.ok(sourceByFile.has('scripts/class-training-store.mjs'),'Central class-training master is required');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('companionTrainingAbility'),'Hunter Beast Training must stay outside class training');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('cachedGermanClassSpells'),'Visible class spell localization must use the centralized German spell cache');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('publicGermanSpellData'),'Visible class spell localization must prefer ForeverDB public build files');
+assert.ok(!(sourceByFile.get('scripts/class-training-store.mjs')||'').includes('fetchForeverDbSpell'),'Class localization must not consume one ForeverDB API request per spell');
+assert.ok((sourceByFile.get('scripts/spellbook-sync.mjs')||'').includes('iconId'),'Spellbook snapshots must preserve stable class-spell icon IDs');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes("zone:'Insel Zephras'"),'Class trainer fallback must use the canonical German Zephras location');
 assert.ok(sourceByFile.has('scripts/class-trainer-zones-de.mjs'),'Source-backed German class-trainer zone catalog is required');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('CLASS_TRAINER_ZONE_DE'),'Class trainer zones must be localized centrally by stable uiMapId');
@@ -175,6 +187,11 @@ assert.ok(browserSource.includes('invalidateLocationPlannerData({reloadVisible:t
 assert.ok(policy.includes('Kategorien und Lernziele bleiben echte Mehrfachauswahlen'),'Location planner checkbox exception must stay documented at learning-target level');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("entityType:'npc'"),'NPC portraits must use the central entity-based media resolver');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('resolveMediaAsset'),'NPC portraits must be archived through the central media resolver');
+assert.ok(sourceByFile.has('scripts/classic-npc-display-ids.mjs'),'Central visual-only Classic NPC display fallback is required');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('classicNpcDisplayId'),'NPC portraits may use the bounded Classic display-ID fallback without per-NPC ForeverDB API calls');
+assert.ok(!(sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbVendor'),'Location planner must never create a ForeverDB vendor N+1 for portraits');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("entityType:'spell'"),'Class-spell icons must use the central media resolver');
+assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('archiveKnownAbilityIcons'),'Verified learned class abilities must persist archived icons with the spellbook snapshot');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
 assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
 for(const markup of checkboxMarkup){
