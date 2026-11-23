@@ -77,7 +77,8 @@ async function withNpcAvatar(npc){
       entityType:'npc',
       entityId:candidate.id,
       role:'portrait',
-      sourceUrl
+      sourceUrl,
+      refreshOnSourceChange:true
     });
     return {...candidate,avatarUrl:avatarUrl||null};
   }catch(error){
