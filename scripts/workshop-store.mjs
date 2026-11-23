@@ -7,7 +7,7 @@ import {
   serializableRecipeIndex,
   hydrateRecipeIndex
 } from './workshop-foreverdb.mjs';
-import {PROFESSION_SLUGS,fetchForeverDbMeta,searchForeverDbItems,fetchForeverDbSpell,fetchForeverDbVendor} from './foreverdb-api.mjs';
+import {PROFESSION_SLUGS,fetchForeverDbMeta,searchForeverDbItems,fetchForeverDbItem,fetchForeverDbSpell,fetchForeverDbVendor} from './foreverdb-api.mjs';
 
 const RECIPE_TTL_SECONDS=12*60*60;
 const SEARCH_TTL_SECONDS=24*60*60;
@@ -17,6 +17,7 @@ const MASTER_KEY='dalton-dashboard:workshop:foreverdb:master:v2';
 const MASTER_DRAFT_KEY='dalton-dashboard:workshop:foreverdb:master-draft:v2';
 const META_KEY='dalton-dashboard:workshop:foreverdb:meta:v1';
 const MASTER_REFRESH_CHUNK=3;
+const ITEM_CACHE_PREFIX='dalton-dashboard:foreverdb:item:v1:';
 const SPELL_CACHE_PREFIX='dalton-dashboard:foreverdb:spell:v1:';
 const VENDOR_CACHE_PREFIX='dalton-dashboard:foreverdb:vendor:v1:';
 const PROFESSION_MASTER_CACHE_PREFIX='dalton-dashboard:foreverdb:profession-master:v4:';
@@ -259,6 +260,17 @@ export async function cachedForeverDbRecipeSearch(itemId,itemName,{fetchImpl=fet
 
 function buildScopedCacheKey(prefix,id,build){
   return prefix+String(id)+':'+(build?digest(build):'current');
+}
+export async function cachedForeverDbItem(itemId,{build=null,fetchImpl=fetch}={}){
+  const id=Number(itemId);
+  if(!Number.isInteger(id)||id<=0)return null;
+  const key=buildScopedCacheKey(ITEM_CACHE_PREFIX,id,build);
+  const cached=await loadJson(key);
+  if(cached?.item?.id===id)return {...cached.item,cached:true};
+  const result=await fetchForeverDbItem(id,{fetchImpl});
+  if(!result?.item?.id)return null;
+  await saveJson(key,{item:result.item,generatedAt:new Date().toISOString(),build});
+  return {...result.item,cached:false};
 }
 export async function cachedForeverDbSpell(spellId,{build=null,fetchImpl=fetch}={}){
   const id=Number(spellId);
