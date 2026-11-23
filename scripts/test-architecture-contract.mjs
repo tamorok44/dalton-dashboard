@@ -115,6 +115,9 @@ assert.ok(sourceByFile.has('scripts/class-training-store.mjs'),'Central class-tr
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('companionTrainingAbility'),'Hunter Beast Training must stay outside class training');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('cachedGermanClassSpells'),'Visible class spell localization must use the centralized German spell cache');
 assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes("zone:'Insel Zephras'"),'Class trainer fallback must use the canonical German Zephras location');
+assert.ok(sourceByFile.has('scripts/class-trainer-zones-de.mjs'),'Source-backed German class-trainer zone catalog is required');
+assert.ok((sourceByFile.get('scripts/class-training-store.mjs')||'').includes('CLASS_TRAINER_ZONE_DE'),'Class trainer zones must be localized centrally by stable uiMapId');
+assert.ok(policy.includes('/de/maps/{uiMapId}')&&policy.includes('technische englische Namen'),'Architecture contract must keep technical English trainer zones out of the visible UI');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("'Klassenfähigkeit #'"),'Missing spell localization must use neutral German ID fallback, never English technical text');
 assert.ok(policy.includes('Jäger-Begleitertraining')&&policy.includes('keine Klassenfähigkeit'),'Architecture contract must keep pet training out of class abilities');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbClassMaster'),'Location planner must load the shared build-scoped class master');
