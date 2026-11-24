@@ -24,14 +24,15 @@ Das WoW-Addon führt **keinen HTTP-Zugriff** aus und enthält keinen privaten Se
 Ab Alpha 11 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Relay:
 
 - Cole Dalton ist der Relay-Hub.
-- Chucky Dalton, Dolly Dalton und Viola Dalton senden ausschließlich die freigegebenen Dashboard-Bereiche über die offizielle WoW-AddOn-Kommunikation an Cole.
-- Ein Versand startet nur, wenn Cole tatsächlich in derselben Gruppe ist. Es gibt kein permanentes Polling und keine Offline-Whisper-Schleife.
+- Chucky Dalton, Dolly Dalton und Viola Dalton senden ausschließlich die freigegebenen Dashboard-Bereiche über die offizielle WoW-AddOn-Kommunikation direkt an Cole.
+- Cole muss dafür nicht in derselben Gruppe sein. Ist er offline, wird der fehlgeschlagene Direktversand erkannt und für fünf Minuten unterdrückt; es gibt weder permanentes Polling noch eine Whisper-Schleife.
+- Befindet sich Cole in derselben Gruppe, kann der Hub zusätzlich eine gezielte Aktualisierung der bekannten Dalton-Mitglieder anfordern.
 - Vor dem Versand wird der Datensatz per CBOR serialisiert, auf Geschwindigkeit komprimiert und Base64-kodiert. Die Übertragung erfolgt in kleinen, gedrosselten Paketen.
 - Ein deterministischer Inhaltsfingerabdruck verhindert erneute Komprimierung und Übertragung, wenn sich fachlich nichts geändert hat.
 - Der Empfänger akzeptiert nur das fest definierte Dalton-Roster und entfernt die privaten Bereiche `inventory` und `economy` zusätzlich.
 - Coles Account-SavedVariables speichern die zuletzt empfangenen Peer-Datensätze im Relay-Postfach.
 
-Optional kann auf jedem Rechner eine kleine lokale Bridge installiert werden. Sie läuft nach der einmaligen Kopplung unsichtbar im Benutzerhintergrund, beobachtet nur die Dalton-SavedVariables und lädt freigegebene Daten nach `/reload` oder Logout direkt hoch. Ist keine Bridge installiert, bleibt der Ingame-Relay zu Cole als kostenloser Fallback bestehen. Christians Rechner kann weiterhin Coles eigenen Datensatz und das Relay-Postfach zum Dashboard übertragen.
+Optional kann auf jedem Rechner eine kleine lokale Bridge installiert werden. Sie läuft nach der einmaligen Kopplung unsichtbar im Benutzerhintergrund, beobachtet nur die Dalton-SavedVariables und lädt freigegebene Daten nach `/reload` oder Logout direkt hoch. Dadurch funktioniert der Solo-Sync auch dann, wenn Cole komplett offline ist. Ist keine Bridge installiert, bleibt der direkte Ingame-Relay zu Cole als kostenloser Fallback bestehen. Coles Rechner kann zusätzlich die über das Relay empfangenen Dalton-Datensätze zum Dashboard übertragen.
 
 **Gold, Taschen und Bank sind niemals Teil des Standard-Syncs.**
 
