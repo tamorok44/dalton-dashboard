@@ -491,8 +491,9 @@ assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterSlug,bu
 assert.ok(source.includes('function addonDataRequirement'),'AddOn-abhängige Dashboardbereiche verwenden eine zentrale Statuskomponente');
 assert.ok(!source.includes('data-spellbook-code')&&!source.includes('Spellbook übernehmen'),'Manueller Spellbook-Code ist aus der Dashboard-Oberfläche entfernt');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
-assert.ok(css.includes('.addon-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'),'Spielstatus nutzt ein responsives Grid');
-assert.ok(css.includes('@media(max-width:520px){\n  .addon-state-grid{grid-template-columns:1fr}'),'Spielstatus fällt auf schmalen Displays auf eine Spalte zurück');
+assert.ok(css.includes('.character-presence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'),'Ruhestein und Standort nutzen auf breiten Displays ein Zweispaltenraster');
+assert.ok(css.includes('@media(max-width:520px){\n  .character-presence{grid-template-columns:1fr}'),'Ruhestein und Standort fallen auf schmalen Displays auf eine Spalte zurück');
+assert.ok(css.includes('.addon-instance-list{display:grid'),'Instanz- und Dungeonliste nutzt das zentrale responsive Listenmuster');
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
 const wowClassColors={mage:'#3fc7eb',hunter:'#aad372',druid:'#ff7c0a'};
 for(const [klass,color] of Object.entries(wowClassColors)){
