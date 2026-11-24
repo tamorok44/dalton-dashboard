@@ -159,11 +159,27 @@ jobs:
 
           Compress-Archive -Path dist/bridge-windows/* -DestinationPath dist/DaltonDashboardBridge-Windows-0.1.0-beta.1.zip -Force
 
+          New-Item -ItemType Directory -Path "dist/bridge-player-windows/Dalton Dashboard Bridge" -Force | Out-Null
+          Copy-Item dist/bridge-windows/DaltonDashboardBridge.exe "dist/bridge-player-windows/Dalton Dashboard Bridge/"
+          Copy-Item dist/bridge-windows/Installieren.cmd "dist/bridge-player-windows/Dalton Dashboard Bridge/"
+          Copy-Item dist/bridge-windows/install-windows.ps1 "dist/bridge-player-windows/Dalton Dashboard Bridge/"
+          Copy-Item dist/bridge-windows/uninstall-windows.ps1 "dist/bridge-player-windows/Dalton Dashboard Bridge/"
+          Copy-Item bridge/README-Spieler-Windows.txt "dist/bridge-player-windows/Dalton Dashboard Bridge/README - ZUERST LESEN.txt"
+          Compress-Archive -Path "dist/bridge-player-windows/Dalton Dashboard Bridge" -DestinationPath dist/DaltonDashboardBridge-Spieler-Windows-0.1.0-beta.1.zip -Force
+
       - name: Windows-Bridge bereitstellen
         uses: actions/upload-artifact@v4
         with:
           name: DaltonDashboardBridge-Windows-0.1.0-beta.1
           path: dist/DaltonDashboardBridge-Windows-0.1.0-beta.1.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Windows-Spielerpaket bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboardBridge-Spieler-Windows-0.1.0-beta.1
+          path: dist/DaltonDashboardBridge-Spieler-Windows-0.1.0-beta.1.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -194,6 +210,14 @@ jobs:
           grep -q "cole-dalton" bridge/Einrichtungscode-erstellen.command
           cd dist
           zip -r DaltonDashboardBridge-macOS-0.1.0-beta.1.zip bridge-macos
+          mkdir -p "bridge-player-macos/Dalton Dashboard Bridge"
+          cp bridge-macos/DaltonDashboardBridge-macos-arm64 "bridge-player-macos/Dalton Dashboard Bridge/"
+          cp bridge-macos/DaltonDashboardBridge-macos-x64 "bridge-player-macos/Dalton Dashboard Bridge/"
+          cp bridge-macos/Installieren.command "bridge-player-macos/Dalton Dashboard Bridge/"
+          cp bridge-macos/Deinstallieren.command "bridge-player-macos/Dalton Dashboard Bridge/"
+          cp ../bridge/README-Spieler-macOS.txt "bridge-player-macos/Dalton Dashboard Bridge/README - ZUERST LESEN.txt"
+          chmod +x "bridge-player-macos/Dalton Dashboard Bridge/"*.command "bridge-player-macos/Dalton Dashboard Bridge/"/DaltonDashboardBridge-macos-*
+          zip -r DaltonDashboardBridge-Spieler-macOS-0.1.0-beta.1.zip "bridge-player-macos/Dalton Dashboard Bridge"
           cd ..
 
       - name: macOS-Bridge bereitstellen
@@ -201,6 +225,14 @@ jobs:
         with:
           name: DaltonDashboardBridge-macOS-0.1.0-beta.1
           path: dist/DaltonDashboardBridge-macOS-0.1.0-beta.1.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: macOS-Spielerpaket bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboardBridge-Spieler-macOS-0.1.0-beta.1
+          path: dist/DaltonDashboardBridge-Spieler-macOS-0.1.0-beta.1.zip
           if-no-files-found: error
           retention-days: 14
 
