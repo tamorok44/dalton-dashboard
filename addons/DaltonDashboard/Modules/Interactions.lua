@@ -24,6 +24,8 @@ local function noteEvent(event)
   diagnostics.lastEvent = event
   diagnostics.lastEventAt = ns.Now()
   diagnostics.eventCount = (tonumber(diagnostics.eventCount) or 0) + 1
+  diagnostics.eventCounts = diagnostics.eventCounts or {}
+  diagnostics.eventCounts[event] = (tonumber(diagnostics.eventCounts[event]) or 0) + 1
 end
 
 local function noteCapture(kind, ok, detail)
@@ -343,17 +345,35 @@ function module:Capture(reason)
   end
 end
 
+local function guardedCapture(kind, fn, reason)
+  local ok, result = pcall(fn, reason)
+  if not ok then
+    noteCapture(kind, false, result)
+    ns.RecordError("Interactions." .. kind, result)
+    return false
+  end
+  return result
+end
+
 function module:OnEvent(event)
   noteEvent(event)
   if event == "MERCHANT_CLOSED" then markClosed("merchant"); return end
   if event == "TRAINER_CLOSED" then markClosed("trainer"); return end
+
   if event == "MERCHANT_SHOW" or event == "MERCHANT_UPDATE" then
-    ns.Schedule(event == "MERCHANT_SHOW" and 0.2 or 0.1, "interaction-merchant", function()
-      captureMerchant(event)
+    -- Forever marks these events as synchronous; capture once immediately while
+    -- merchant context is guaranteed to exist, then retry briefly for delayed item data.
+    guardedCapture("Merchant", captureMerchant, event .. ":immediate")
+    ns.Schedule(0.15, "interaction-merchant", function()
+      guardedCapture("Merchant", captureMerchant, event .. ":retry")
     end)
     return
   end
-  ns.Schedule(event == "TRAINER_SHOW" and 0.25 or 0.1, "interaction-trainer", function()
-    captureTrainer(event)
-  end)
+
+  if event == "TRAINER_SHOW" or event == "TRAINER_UPDATE" then
+    guardedCapture("Trainer", captureTrainer, event .. ":immediate")
+    ns.Schedule(0.15, "interaction-trainer", function()
+      guardedCapture("Trainer", captureTrainer, event .. ":retry")
+    end)
+  end
 end
