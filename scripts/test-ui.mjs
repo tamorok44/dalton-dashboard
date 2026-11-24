@@ -448,7 +448,7 @@ const spellbookVerified=ui.classAbilitiesPanel({
     {id:143,name:'Feuerball',rank:'Rang 2',iconUrl:'https://blob.example/spell-143.webp',inferredFromHigherRank:true}
   ]
 });
-assert.ok(spellbookVerified.includes('2 gelernte Klassenränge'));
+assert.ok(spellbookVerified.includes('1 gelernte Fähigkeiten'));
 assert.ok(spellbookVerified.includes('Feuerball')&&spellbookVerified.includes('Rang 2'));
 assert.ok(spellbookVerified.includes('Durch höheren bekannten Rang mitgelernt'));
 assert.ok(spellbookVerified.includes('class="spellbook-ability-icon"')&&spellbookVerified.includes('https://blob.example/spell-143.webp'),'Gelernte Klassenfähigkeiten zeigen das archivierte Zauberbild vorne an');
