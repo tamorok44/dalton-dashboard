@@ -1,4 +1,4 @@
-import {createDeviceEnrollment,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {authorizeDeviceToken,createDeviceEnrollment,deviceMayCreateEnrollment,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
 export const config={maxDuration:15};
 
@@ -25,9 +25,11 @@ export default async function handler(req,res){
   try{
     const body=await requestBody(req);
     if(body?.action==='create'){
-      const token=authToken(req,'Bearer');
-      if(!masterSyncTokenMatches(token))return res.status(401).json({error:'Nicht berechtigt'});
-      const created=await createDeviceEnrollment(String(body.characterSlug||''));
+      const characterSlug=String(body.characterSlug||'');
+      const master=masterSyncTokenMatches(authToken(req,'Bearer'));
+      const device=master?null:await authorizeDeviceToken(authToken(req,'Device'));
+      if(!master&&!deviceMayCreateEnrollment(device,characterSlug))return res.status(401).json({error:'Nicht berechtigt'});
+      const created=await createDeviceEnrollment(characterSlug);
       return res.status(200).json(created);
     }
     if(body?.action==='revoke'){
