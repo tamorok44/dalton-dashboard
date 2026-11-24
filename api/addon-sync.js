@@ -1,4 +1,3 @@
-import {timingSafeEqual} from 'node:crypto';
 import {loadCharacters,saveCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
@@ -7,16 +6,14 @@ import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
 import {loadAddonSyncState,saveAddonSyncState} from '../scripts/addon-sync-store.mjs';
 import {ingestAddonLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
+import {authorizeDeviceToken,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
 export const config={maxDuration:30};
 
-function safeEqual(a,b){
-  const left=Buffer.from(String(a||'')),right=Buffer.from(String(b||''));
-  return left.length===right.length&&timingSafeEqual(left,right);
-}
-function bearer(req){
+function authValue(req,scheme){
   const raw=String(req.headers?.authorization||'');
-  return raw.startsWith('Bearer ')?raw.slice(7):'';
+  const prefix=scheme+' ';
+  return raw.startsWith(prefix)?raw.slice(prefix.length):'';
 }
 async function requestBody(req){
   if(req.body&&typeof req.body==='object')return req.body;
@@ -62,9 +59,10 @@ export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
 
-  const expected=process.env.DALTON_SYNC_TOKEN||process.env.SPELLBOOK_SYNC_TOKEN;
-  if(!expected)return res.status(503).json({error:'Addon-Synchronisierung ist nicht konfiguriert'});
-  if(!safeEqual(bearer(req),expected))return res.status(401).json({error:'Ungültige Addon-Sync-Berechtigung'});
+  const masterAuthorized=masterSyncTokenMatches(authValue(req,'Bearer'));
+  const deviceToken=authValue(req,'Device');
+  const device=masterAuthorized?null:await authorizeDeviceToken(deviceToken);
+  if(!masterAuthorized&&!device)return res.status(401).json({error:'Ungültige Addon-Sync-Berechtigung'});
 
   let payload;
   try{payload=normalizeAddonSyncPayload(await requestBody(req))}catch(error){
@@ -78,6 +76,9 @@ export default async function handler(req,res){
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
+    if(device&&device.characterSlug!==target.slug){
+      return res.status(403).json({error:'Dieser Gerätezugang darf nur '+String(device.characterName||device.characterSlug)+' synchronisieren'});
+    }
     const previousState=await loadAddonSyncState(target.slug);
     if(previousState?.payload?.syncId&&previousState.payload.syncId===payload.syncId){
       return res.status(200).json({
