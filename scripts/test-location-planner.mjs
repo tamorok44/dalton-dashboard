@@ -29,7 +29,7 @@ const baseCharacter={
 const data={generatedAt:'2026-11-22T12:00:00.000Z',characters:[baseCharacter]};
 const recipes=[
   {id:100,name:'Bekanntes Rezept',professionSlug:'alchemy',requiredSkill:1,craftedItem:{id:500,name:'Bekannt'},learning:{sources:[vendor(1,'Alfred','Stormwind',50)]}},
-  {id:101,name:'Elixier A',professionSlug:'alchemy',requiredSkill:25,craftedItem:{id:501,name:'Elixier A'},learning:{sources:[vendor(1,'Alfred','Stormwind',100),vendor(2,'Bruno','Stormwind',80),vendor(7,'Cäcilia','Stormwind',80),vendor(8,'Dietmar','Stormwind',null)]}},
+  {id:101,name:'Elixier A',professionSlug:'alchemy',requiredSkill:25,craftedItem:{id:501,name:'Elixier A'},learning:{sources:[vendor(1,'Alfred','Stormwind',100),vendor(2,'Bruno','Stormwind',80),vendor(7,'Cäcilia','Stormwind',80),vendor(8,'Dietmar','Stormwind',null),vendor(9,'Borin','Ironforge',90)]}},
   {id:102,name:'Elixier B',professionSlug:'alchemy',requiredSkill:40,craftedItem:{id:502,name:'Elixier B'},learning:{sources:[vendor(1,'Alfred','Stormwind',200)]}},
   {id:103,name:'Zu schwer',professionSlug:'alchemy',requiredSkill:60,craftedItem:{id:503,name:'Zu schwer'},learning:{sources:[vendor(1,'Alfred','Stormwind',300)]}},
   {id:104,name:'Eisenschmiede-Rezept',professionSlug:'alchemy',requiredSkill:10,craftedItem:{id:504,name:'Fern'},learning:{sources:[vendor(3,'Clara','Ironforge',80)]}},
@@ -79,9 +79,11 @@ const extraActions=[{
 }];
 
 const overview=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster});
-assert.equal(overview.counts.availableNow,7,'Nur jetzt mögliche Rezepte, Berufsausbildungen und verifizierte Zusatzaktionen zählen');
-assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Eisenschmiede',1],['Sturmwind',6]],
-  'Level-20-Berufsausbildung taucht für einen Level-12-Charakter an keinem Ort auf');
+assert.equal(overview.counts.availableNow,7,'Globale Anzahl zählt eindeutige Lernziele – dieselbe Erledigung an mehreren Orten nur einmal');
+assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Eisenschmiede',2],['Sturmwind',6]],
+  'Ortszahlen dürfen dasselbe Lernziel je Ort enthalten, ohne die globale eindeutige Anzahl aufzublähen');
+assert.equal(overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),8,'Ortszählungen können sich wegen alternativer Orte überschneiden');
+assert.ok(overview.counts.availableNow<overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),'Globale Zählung darf überschneidende Ortsangebote niemals doppelt zählen');
 
 const stormwind=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions,classMaster});
 assert.equal(stormwind.selectedLocation,'Sturmwind');
@@ -92,11 +94,14 @@ const elixirA=stormwind.actions.find(action=>action.id===101);
 assert.equal(stormwind.actions.filter(action=>action.id===101).length,1,'Dasselbe Lernziel bleibt trotz mehrerer Händler genau eine Erledigung');
 assert.equal(elixirA?.source.name,'Bruno','Der niedrigste bestätigte Preis wird als automatische Quelle bevorzugt');
 assert.equal(elixirA?.source.priceCopper,80);
-assert.equal(elixirA?.alternatives.length,3);
+assert.equal(elixirA?.alternatives.length,3,'Am ausgewählten Ort werden nur die dortigen Alternativen angeboten');
 assert.equal(elixirA?.alternatives.some(source=>source.name==='Alfred'&&source.priceCopper===100),true);
 assert.equal(elixirA?.alternatives.some(source=>source.name==='Dietmar'&&source.priceCopper===null),true);
 assert.equal(stormwind.npcs.filter(npc=>npc.actions.some(action=>action.key===elixirA.key)).length,4,'Alle bestätigten Händlerangebote bleiben am jeweiligen NPC sichtbar');
 assert.equal(new Set(stormwind.npcs.flatMap(npc=>npc.actions.filter(action=>action.key===elixirA.key).map(action=>action.source.key))).size,4);
+const ironforge=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Eisenschmiede',professionMasters,extraActions,classMaster});
+assert.equal(ironforge.actions.filter(action=>action.id===101).length,1,'Dasselbe Elixier erscheint auch in Eisenschmiede nur einmal');
+assert.equal(ironforge.actions.find(action=>action.id===101)?.source.name,'Borin');
 const trainerRecipe=stormwind.actions.find(action=>action.id===105);
 assert.equal(trainerRecipe?.source.role,'Lehrer');
 assert.equal(trainerRecipe?.source.name,'Lehrer Eins','Ein bestätigter Forever-Preis hat Vorrang vor einem numerisch billigeren Classic-Fallback');
