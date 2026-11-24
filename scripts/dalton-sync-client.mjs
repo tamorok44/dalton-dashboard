@@ -190,15 +190,20 @@ async function readCharacterRecord(file){
     diagnostics:localDiagnosticsSummary(charDb)
   });
 }
+export function relayCharDbsFromGlobalDb(globalDb){
+  const inbox=globalDb?.relayInbox;
+  if(!inbox||typeof inbox!=='object'||Array.isArray(inbox))return [];
+  return Object.entries(inbox)
+    .map(([inboxKey,entry])=>({inboxKey,charDb:entry?.charDb}))
+    .filter(entry=>entry.charDb&&typeof entry.charDb==='object'&&trustedCharacter(entry.charDb))
+    .filter(entry=>normalizedName(entry.charDb.character?.name)!=='cole dalton');
+}
 async function readRelayRecords(file){
   if(!file)return [];
   const raw=await fs.readFile(file,'utf8');
   const globalDb=parseLuaSavedVariable(raw,'DaltonDashboardDB');
-  const inbox=globalDb?.relayInbox;
-  if(!inbox||typeof inbox!=='object'||Array.isArray(inbox))return [];
-
   const records=[];
-  for(const [inboxKey,entry] of Object.entries(inbox)){
+  for(const {inboxKey,charDb} of relayCharDbsFromGlobalDb(globalDb)){
     const charDb=entry?.charDb;
     if(!charDb||typeof charDb!=='object'||!trustedCharacter(charDb))continue;
     const name=normalizedName(charDb.character?.name);
