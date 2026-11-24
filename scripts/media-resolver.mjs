@@ -94,4 +94,4 @@ export async function resolveMediaAsset({
 // The resolver remains the only direct caller of the shared media registry.
 export function mediaIconKey(type,id){return mediaField(type,id,'icon')}
 export async function readIconRecords(refs){return loadMediaRecords(refs)}
-export async function rememberMissingIcon(type,id){return saveMediaRecord(type,id,'icon',{sourceUrl:null,storedUrl:null})}
+export async function rememberMissingIcon(type,id,lookupPolicy,sourceUrl=null){return saveMediaRecord(type,id,'icon',{sourceUrl:sourceImageAllowed(sourceUrl)?sourceUrl:null,storedUrl:null,lookupPolicy})}

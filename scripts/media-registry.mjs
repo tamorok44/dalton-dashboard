@@ -27,6 +27,7 @@ export async function saveMediaRecord(entityType,entityId,role,record={}){
     sourceUrl:record.sourceUrl||null,
     storedUrl:record.storedUrl||null,
     contentType:record.contentType||null,
+    ...(record.lookupPolicy?{lookupPolicy:record.lookupPolicy}:{}),
     updatedAt:new Date().toISOString()
   };
   await redis(['HSET',MEDIA_KEY,field,JSON.stringify(value)]);

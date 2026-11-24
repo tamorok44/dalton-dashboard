@@ -3,10 +3,13 @@ import {configured,redis} from './character-store.mjs';
 import {resolveMediaAsset,imageStoreConfigured,sourceImageAllowed,readIconRecords,mediaIconKey,rememberMissingIcon} from './media-resolver.mjs';
 import {blizzardApiConfigured,fetchForeverMediaIcon,fetchForeverSnapshot} from './blizzard-api.mjs';
 import {collectKnownRecipeRefs,collectLocalizedRefs} from './forever-details.mjs';
+import {foreverDbConfigured} from './foreverdb-api.mjs';
+import {cachedForeverDbItem,cachedForeverDbSpell} from './workshop-store.mjs';
 
 const NAMESPACE_KEY='dalton-dashboard:knowledge-media:namespace:v1';
 const LOCK_KEY='dalton-dashboard:knowledge-media:batch:v1';
 const NEGATIVE_TTL=7*86400000;
+const LOOKUP_POLICY='blizzard-foreverdb-v2';
 // Skill-Line-ID -> basic profession spell, only if Blizzard has no profession media.
 const PROFESSION_SPELLS={171:2259,164:2018,333:7411,202:4036,165:2108,197:3908,182:2366,186:2575,393:8613,185:2550,129:3273,356:7620};
 function positiveId(value){const id=Number(value);return Number.isInteger(id)&&id>0?id:null}
@@ -35,7 +38,7 @@ async function observedNamespace(characterSlug){
   return null;
 }
 function field(entry){return entry?mediaIconKey(entry.type,entry.id):null}
-function freshNegative(record){const age=Date.now()-Date.parse(record?.updatedAt||'');return record&&!record.storedUrl&&Number.isFinite(age)&&age>=0&&age<NEGATIVE_TTL}
+function freshNegative(record){const age=Date.now()-Date.parse(record?.updatedAt||'');return record&&!record.storedUrl&&record.lookupPolicy===LOOKUP_POLICY&&Number.isFinite(age)&&age>=0&&age<NEGATIVE_TTL}
 export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,maxNew=24}={}){
   const byKey=new Map();
   for(const entry of refs.filter(Boolean)){
@@ -58,6 +61,7 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
     const namespace=missing.some(([,entry])=>!entry.iconId)&&blizzardApiConfigured()
       ?await observedNamespace(characterSlug).catch(()=>null):null;
     const start=Date.now();
+    let fallbackBudget=6;
     for(let i=0;i<missing.length&&Date.now()-start<15000;i+=6){
       await Promise.all(missing.slice(i,i+6).map(async ([key,entry])=>{
         try{
@@ -67,12 +71,26 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
             if(!source&&entry.type==='profession'&&PROFESSION_SPELLS[entry.id])
               source=await fetchForeverMediaIcon('spell',PROFESSION_SPELLS[entry.id],{namespace});
           }
-          if(sourceImageAllowed(source)){
-            const url=await resolveMediaAsset({entityType:entry.type,entityId:entry.id,role:'icon',sourceUrl:source});
-            if(url)icons[key]=url;
-          }else if(namespace){
-            await rememberMissingIcon(entry.type,entry.id);
+          async function archive(value){
+            if(!sourceImageAllowed(value))return null;
+            return resolveMediaAsset({entityType:entry.type,entityId:entry.id,role:'icon',sourceUrl:value});
           }
+          let url=await archive(source);
+          // Some pet spells and Forever items have no Blizzard media record.
+          // Use the exact same typed object ID with the already cached data adapter.
+          // Never guess an icon from a similarly named ability.
+          if(!url&&['spell','item'].includes(entry.type)&&foreverDbConfigured()){
+            if(fallbackBudget<=0)return;
+            fallbackBudget--;
+            const result=entry.type==='spell'?await cachedForeverDbSpell(entry.id):await cachedForeverDbItem(entry.id);
+            const raw=result?.icon;
+            const iconId=positiveId(raw)||positiveId(String(raw||'').match(/(?:^|\/)icons\/(\d+)\.webp$/)?.[1]);
+            const fallback=iconId?'https://render.worldofwarcraft.com/forever-eu/icons/56/'+iconId+'.jpg':raw;
+            if(fallback&&fallback!==source)url=await archive(fallback);
+            if(!url&&sourceImageAllowed(fallback))source=fallback;
+          }
+          if(url)icons[key]=url;
+          else if(namespace)await rememberMissingIcon(entry.type,entry.id,LOOKUP_POLICY,source);
         }catch{/* Media outage never invalidates game data. */}
       }));
     }
