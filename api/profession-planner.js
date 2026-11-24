@@ -5,6 +5,7 @@ import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildProfessionPlanner} from '../scripts/profession-planner.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
+import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/profession-planner','https://dalton-dashboard.local');
@@ -32,7 +33,15 @@ export default async function handler(req,res){
         reason:'ForeverDB ist derzeit nicht verbunden und es liegt kein gecachter Rezept-Master vor.'
       });
     }
-    const evaluatedRecipeIndex=applyLearningSourceEvidence(recipeIndex,learningSourceEvidenceForIndex(recipeIndex,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
+    const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+    const [addonStates,liveKnowledge]=await Promise.all([
+      loadAddonSyncStates(characterSlugs),
+      loadLiveKnowledge({build:recipeIndex?.build||null})
+    ]);
+    const evaluatedRecipeIndex=applyLearningSourceEvidence(
+      recipeIndex,
+      learningSourceEvidenceForIndex(recipeIndex,addonStates,liveKnowledge)
+    );
     const planner=buildProfessionPlanner(stored.data,evaluatedRecipeIndex,{characterSlug:character,location});
     return res.status(200).json({
       ...planner,
@@ -44,7 +53,8 @@ export default async function handler(req,res){
         build:recipeIndex?.build||null,
         generatedAt:recipeIndex?.generatedAt||null,
         recipeCount:Array.isArray(evaluatedRecipeIndex?.recipes)?evaluatedRecipeIndex.recipes.length:0,
-        learningSourceEvidence:evaluatedRecipeIndex?.learningSourceEvidence||null
+        learningSourceEvidence:evaluatedRecipeIndex?.learningSourceEvidence||null,
+        liveKnowledge:publicLiveKnowledgeSummary(liveKnowledge)
       },
       source:'ForeverDB.net'
     });
