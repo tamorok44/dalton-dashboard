@@ -14,6 +14,7 @@ on:
       - "api/addon-sync.js"
       - "api/addon-sync-status.js"
       - "api/addon-device-enroll.js"
+      - "api/addon-device-promote.js"
       - "bridge/**"
       - "docs/dalton-sync-companion.md"
       - "package.json"
@@ -34,6 +35,7 @@ on:
       - "api/addon-sync.js"
       - "api/addon-sync-status.js"
       - "api/addon-device-enroll.js"
+      - "api/addon-device-promote.js"
       - "bridge/**"
       - "docs/dalton-sync-companion.md"
       - "package.json"
@@ -138,6 +140,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
           if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--revoke-device" -Quiet)) { throw "Bridge-Quellcode enthält Geräte-Widerruf nicht" }
           if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--create-enroll" -Quiet)) { throw "Bridge-Quellcode enthält Hub-Einrichtung nicht" }
+          if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--promote-production" -Quiet)) { throw "Bridge-Quellcode enthält Produktionsübernahme nicht" }
           if (-not (Select-String -Path bridge/create-enroll-windows.ps1 -Pattern "cole-dalton" -Quiet)) { throw "Windows-Hub-Helfer ist nicht auf Cole begrenzt" }
           & dist/bridge-windows/DaltonDashboardBridge.exe --dry-run --file scripts/fixtures/bridge-savedvariables.lua
           if ($LASTEXITCODE -ne 0) { throw "Bridge Dry-Run fehlgeschlagen" }
