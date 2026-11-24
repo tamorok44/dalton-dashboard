@@ -1,12 +1,13 @@
 # Dalton Dashboard Sync Companion · Alpha 11
 
-Dieses Paket läuft **nur auf Christians Rechner** und ist bewusst vom WoW-Addon getrennt. Die übrigen Spieler benötigen keinen Companion.
+Die Bridge ist bewusst vom WoW-Addon getrennt. Auf Christians Rechner läuft sie als Master-Hub; optional kann jeder weitere Dalton-Spieler dieselbe Bridge einmalig koppeln. Danach läuft sie ohne sichtbares Fenster automatisch im Benutzerhintergrund.
 
 ## Voraussetzungen
 
 - Node.js 22 oder neuer.
 - Das WoW-Addon Dalton Dashboard Sync Alpha 11 ist bei Cole installiert.
-- Für einen echten Upload muss lokal die Umgebungsvariable `DALTON_SYNC_TOKEN` gesetzt sein.
+- Christians Master-Hub verwendet weiterhin lokal `DALTON_SYNC_TOKEN`.
+- Chucky, Dolly und Viola erhalten stattdessen jeweils einen einmaligen Einrichtungscode. Daraus wird ein eigener Gerätezugang erzeugt, der ausschließlich den zugeordneten Charakter synchronisieren darf.
 - Für einen Preview-Test kann `DALTON_SYNC_ENDPOINT` auf den Preview-Endpunkt gesetzt werden.
 - Ist der Preview durch Vercel Authentication geschützt, wird zusätzlich `DALTON_SYNC_PREVIEW_SHARE_URL` mit einem temporären Vercel-Share-Link gesetzt. Der Companion holt daraus selbstständig den Zugangscookie.
 
@@ -56,4 +57,4 @@ export DALTON_SYNC_PREVIEW_SHARE_URL='https://<preview>/?_vercel_share=...'
 node dalton-sync-client.mjs --watch
 ```
 
-Für Max, Valentin und Stephan ist keine Companion-Verteilung vorgesehen: deren AddOn reicht die freigegebenen Daten ingame an Cole weiter. Der Companion bleibt ausschließlich Christians lokale Brücke zum Dashboard.
+Für Max, Valentin und Stephan bleibt der Ingame-Relay zu Cole der erste Fallback. Wer die optionale Bridge installiert, bekommt zusätzlich den Solo-Weg: Nach `/reload` oder Logout werden die freigegebenen Daten selbst dann hochgeladen, wenn Christian komplett offline ist. Die Windows-Bridge startet über den Benutzer-Autostart ohne sichtbares Fenster; macOS nutzt einen LaunchAgent.
