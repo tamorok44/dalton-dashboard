@@ -1,14 +1,10 @@
 local _, ns = ...
 local module = ns.RegisterModule("Inventory", {})
 
-module.events = {
-  PLAYER_LOGIN = true,
-  BAG_UPDATE_DELAYED = true,
-  BANKFRAME_OPENED = true,
-  BANKFRAME_CLOSED = true,
-  BANK_TABS_CHANGED = true,
-  PLAYERBANKSLOTS_CHANGED = true
-}
+-- Taschen und Bank sind private lokale Diagnosebereiche und gehören nicht zum
+-- Dashboard-Sync. Für minimale Last werden sie ausschließlich per /dalton scan
+-- erfasst und registrieren im normalen Spielbetrieb keine Events.
+module.events = {}
 
 local bankOpen = false
 
