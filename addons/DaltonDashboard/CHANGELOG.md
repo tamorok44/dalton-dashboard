@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0-alpha.11
+## 0.1.0-beta.1
 
 ### Neu
 - Ereignisgesteuerte Erfassung von Charakter, Spellbook, Standort, Instanz-Lockouts sowie Händler- und Lehrerbeobachtungen.
