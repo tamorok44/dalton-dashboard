@@ -125,17 +125,32 @@ end
 function ns.Run(module, method, ...)
   if not module or type(module[method]) ~= "function" then return true end
 
+  local started = debugprofilestop and debugprofilestop() or nil
   local ok, result = pcall(module[method], module, ...)
+  local duration
+  if started and debugprofilestop then
+    duration = math.max(0, debugprofilestop() - started)
+  end
+
   local db = ns.EnsureDB()
-  db.diagnostics.modules[module.name or "?"] = {
+  local name = module.name or "?"
+  local previous = db.diagnostics.modules[name] or {}
+  local runs = (tonumber(previous.runs) or 0) + 1
+  local totalDuration = (tonumber(previous.totalDurationMs) or 0) + (duration or 0)
+  db.diagnostics.modules[name] = {
     at = ns.Now(),
     method = method,
     ok = ok and true or false,
-    error = ok and nil or tostring(result):sub(1, 400)
+    error = ok and nil or tostring(result):sub(1, 400),
+    runs = runs,
+    lastDurationMs = duration,
+    maxDurationMs = duration and math.max(tonumber(previous.maxDurationMs) or 0, duration) or previous.maxDurationMs,
+    totalDurationMs = duration and totalDuration or previous.totalDurationMs,
+    averageDurationMs = duration and (totalDuration / runs) or previous.averageDurationMs
   }
 
   if not ok then
-    ns.RecordError((module.name or "?") .. "." .. method, result)
+    ns.RecordError(name .. "." .. method, result)
     return false, result
   end
   return true, result
