@@ -192,8 +192,8 @@ function formatAddonDate(value){
   const time=Date.parse(value||'');
   return Number.isFinite(time)?new Date(time).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):null;
 }
-function addonPresence(c){
-  const state=addonSyncState(c);
+function addonPresence(c,stateOverride=null){
+  const state=stateOverride&&typeof stateOverride==='object'?stateOverride:addonSyncState(c);
   if(!state)return '';
   const location=state.currentLocation&&typeof state.currentLocation==='object'?state.currentLocation:null;
   const bind=location?.bindLocation||null;
