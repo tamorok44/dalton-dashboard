@@ -435,12 +435,16 @@ assert.ok(css.includes('.compare-scroll{width:100%;min-width:0;max-width:100%;ov
 assert.ok(css.includes('.roster-rule{display:none}'),'Decorative roster rules are removed on narrow screens');
 assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
 assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
-assert.ok(ui.characterTabsFor({slug:'dolly-test',classId:3,class:'Jägerin'}).some(tab=>tab.id==='pets'),
-  'Hunter companion tab is keyed by class ID and remains visible for Blizzard de-DE class name Jägerin');
-assert.ok(!ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='pets'),
-  'Non-hunters do not receive the companion tab');
-assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='abilities'),
-  'Every class gets the Klassenfähigkeiten tab');
+assert.deepEqual(
+  ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).map(tab=>tab.id),
+  ['stats','equipment','talents','abilities','professions','reputation','quests','game'],
+  'Character tabs follow the fixed character → build → abilities → progression → world order'
+);
+assert.deepEqual(
+  ui.characterTabsFor({slug:'dolly-test',classId:3,class:'Jägerin'}).map(tab=>tab.id),
+  ['stats','equipment','talents','abilities','pets','professions','reputation','quests','game'],
+  'Hunter companion tab sits directly after class abilities in the same fixed information architecture'
+);
 assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='game'&&tab.label==='Instanzen & Dungeons'),
   'Every character gets the Instanzen & Dungeons tab');
 const spellbookOpen=ui.classAbilitiesPanel({slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:false,knownClassAbilities:[]});
@@ -450,9 +454,11 @@ assert.ok(!spellbookOpen.includes('/dalton')&&!spellbookOpen.includes('Spellbook
 const gameStatusMissing=ui.gameStatusPanel({slug:'chucky-dalton',name:'Chucky Dalton',classId:11});
 assert.ok(gameStatusMissing.includes('WoW-Forever-AddOn erforderlich')&&gameStatusMissing.includes('CurseForge'),'Instanzbereich erklärt vor dem ersten Sync die AddOn-Voraussetzung');
 const presence=ui.addonPresence({slug:'cole-dalton',name:'Cole Dalton'},{
-  currentLocation:{zone:'Die Insel Zephras',subZone:'Valanaar',x:.621,y:.734,bindLocation:'Valanaar'}
+  currentLocation:{zone:'Die Insel Zephras',subZone:'Valanaar',x:.621,y:.734,bindLocation:'Valanaar'},
+  merchantNpcCount:6,trainerNpcCount:2
 });
 assert.ok(presence.includes('Ruhestein')&&presence.includes('Valanaar')&&presence.includes('62.1 / 73.4'),'Ruhestein und letzter Standort stehen direkt bei der Charakteraktivität');
+assert.ok(presence.includes('Entdeckte NPCs')&&presence.includes('6 Händler · 2 Lehrer'),'Eindeutige Händler- und Lehrer-NPCs werden kompakt beim Standort angezeigt');
 const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8},{
   receivedAt:'2026-11-24T09:30:00.000Z',
   visitedInstances:[
@@ -492,6 +498,7 @@ assert.ok(source.includes('function addonDataRequirement'),'AddOn-abhängige Das
 assert.ok(!source.includes('data-spellbook-code')&&!source.includes('Spellbook übernehmen'),'Manueller Spellbook-Code ist aus der Dashboard-Oberfläche entfernt');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
 assert.ok(css.includes('.character-presence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'),'Ruhestein und Standort nutzen auf breiten Displays ein Zweispaltenraster');
+assert.ok(css.includes('.character-presence-npcs{grid-column:1/-1}'),'NPC-Zählung sitzt als kompakte gemeinsame Zeile im Standortbereich');
 assert.ok(css.includes('@media(max-width:520px){\n  .character-presence{grid-template-columns:1fr}'),'Ruhestein und Standort fallen auf schmalen Displays auf eine Spalte zurück');
 assert.ok(css.includes('.addon-instance-list{display:grid'),'Instanz- und Dungeonliste nutzt das zentrale responsive Listenmuster');
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
