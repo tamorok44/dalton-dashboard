@@ -401,13 +401,12 @@ assert.ok(spellbookOpen.includes('CurseForge'));
 assert.ok(!spellbookOpen.includes('/dalton')&&!spellbookOpen.includes('Spellbook übernehmen'),'Dashboard darf keinen manuellen Spellbook-Code mehr verlangen');
 const gameStatusMissing=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8});
 assert.ok(gameStatusMissing.includes('WoW-Forever-AddOn erforderlich')&&gameStatusMissing.includes('CurseForge'),'Spielstatus erklärt vor dem ersten Sync die AddOn-Voraussetzung');
-ui.displayedData={addonSync:{'cole-dalton':{
+const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8},{
   receivedAt:'2026-11-24T09:30:00.000Z',addonVersion:'0.1.0-alpha.9',build:'71037',
   currentLocation:{zone:'Insel Zephras',subZone:'Valanaar',x:.62,y:.73,bindLocation:'Sturmwind'},
   locationHistoryCount:4,lockoutCount:1,merchantObservationCount:3,trainerObservationCount:1,
   lockouts:[{name:'Testinstanz',difficultyName:'Normal',resetAt:'2026-11-25T09:30:00.000Z',locked:true}]
-}}};
-const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8});
+});
 assert.ok(gameStatusSynced.includes('Sturmwind')&&gameStatusSynced.includes('Insel Zephras')&&gameStatusSynced.includes('Valanaar'));
 assert.ok(gameStatusSynced.includes('Testinstanz')&&gameStatusSynced.includes('1')&&gameStatusSynced.includes('Lockouts'));
 
