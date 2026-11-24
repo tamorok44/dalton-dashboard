@@ -23,7 +23,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
-assert.ok(toc.includes('## Version: 0.1.0-alpha.6'));
+assert.ok(toc.includes('## Version: 0.1.0-alpha.7'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -41,6 +41,8 @@ assert.ok(bundle.includes('GetInstanceLockTimeRemaining'));
 assert.ok(bundle.includes('GetPlayerMapPosition'));
 assert.ok(bundle.includes('MERCHANT_SHOW'));
 assert.ok(bundle.includes('TRAINER_SHOW'));
+assert.ok(bundle.includes(':immediate'),'Interaction capture must run synchronously inside Forever merchant/trainer events');
+assert.ok(bundle.includes('guardedCapture'),'Interaction capture failures must be persisted diagnostically');
 assert.ok(bundle.includes('C_MerchantFrame.GetItemInfo'));
 assert.ok(bundle.includes('GetMerchantItemInfo'),'Forever addon must support the verified Vanilla merchant API fallback');
 assert.ok(bundle.includes('GetNumTrainerServices'));
