@@ -42,7 +42,7 @@ export function buildSafeAddonSyncPayload(charDb,{syncId=null}={}){
   return {
     schemaVersion:1,
     syncId:text(syncId,128),
-    client:{transport:'dalton-sync-companion',transportVersion:'0.1.0-alpha.8'},
+    client:{transport:'dalton-sync-companion',transportVersion:'0.1.0-alpha.9'},
     addon:{
       version:text(meta.addonVersion,80),
       gameVersion:text(meta.gameVersion,80),
@@ -53,6 +53,35 @@ export function buildSafeAddonSyncPayload(charDb,{syncId=null}={}){
     },
     sections
   };
+}
+
+const VOLATILE_SYNC_KEYS=new Set([
+  'syncId',
+  'capturedAt',
+  'reason',
+  'lastUpdatedAt',
+  'lastSeenAt',
+  'closedAt',
+  'coordinatesCapturedAt',
+  'lastOpenedAt',
+  'lastClosedAt',
+  'resetSeconds',
+  'resetAt',
+  'logout'
+]);
+function stableContentValue(value){
+  if(Array.isArray(value))return value.map(stableContentValue);
+  if(!value||typeof value!=='object')return value;
+  const out={};
+  for(const key of Object.keys(value).sort()){
+    if(VOLATILE_SYNC_KEYS.has(key))continue;
+    const normalized=stableContentValue(value[key]);
+    if(normalized!==undefined)out[key]=normalized;
+  }
+  return out;
+}
+export function addonSyncContentIdentity(payload){
+  return stableContentValue(payload);
 }
 
 export function normalizeAddonSyncPayload(raw){
