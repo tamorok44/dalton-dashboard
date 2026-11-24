@@ -161,15 +161,16 @@ async function discoverFiles(){
   }
   return [...unique.values()].sort((a,b)=>b.mtime-a.mtime);
 }
-async function classifyCandidates(matches){
+async function classifyCandidates(matches,{characterName=null}={}){
   const character=[],relay=[];
+  const wanted=characterName?normalizedName(characterName):null;
   for(const item of matches){
     let raw;
     try{raw=await fs.readFile(item.file,'utf8')}catch{continue}
     if(variablePattern('DaltonDashboardCharDB').test(raw)){
       try{
         const db=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
-        if(trustedCharacter(db))character.push({...item,charDb:db});
+        if(trustedCharacter(db)&&(!wanted||normalizedName(db.character?.name)===wanted))character.push({...item,charDb:db});
       }catch{}
     }
     if(variablePattern('DaltonDashboardDB').test(raw)&&raw.includes('relayInbox')){
@@ -178,19 +179,22 @@ async function classifyCandidates(matches){
   }
   return {character,relay};
 }
-async function resolveSources(explicit){
+async function resolveSources(explicit,{characterName=null}={}){
   let explicitCharacter=null,explicitRelay=null;
   if(explicit){
     const file=resolve(explicit);
     if(!existsSync(file))throw new Error('SavedVariables-Datei nicht gefunden: '+file);
     const raw=await fs.readFile(file,'utf8');
-    if(variablePattern('DaltonDashboardCharDB').test(raw))explicitCharacter={file,raw};
+    if(variablePattern('DaltonDashboardCharDB').test(raw)){
+      const explicitDb=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
+      if(!characterName||normalizedName(explicitDb.character?.name)===normalizedName(characterName))explicitCharacter={file,raw};
+    }
     if(variablePattern('DaltonDashboardDB').test(raw)&&raw.includes('relayInbox'))explicitRelay={file,raw};
     if(!explicitCharacter&&!explicitRelay)throw new Error('Die angegebene Datei enthält keine Dalton-Dashboard-SavedVariables.');
   }
 
   const matches=await discoverFiles();
-  const classified=await classifyCandidates(matches);
+  const classified=await classifyCandidates(matches,{characterName});
   const characterFile=explicitCharacter?.file||classified.character[0]?.file||null;
   const relayFile=explicitRelay?.file||classified.relay[0]?.file||null;
 
@@ -199,9 +203,9 @@ async function resolveSources(explicit){
   }
   return {characterFile,relayFile};
 }
-async function resolveSourcesWithRetry(explicit,watchMode){
+async function resolveSourcesWithRetry(explicit,watchMode,{characterName=null}={}){
   while(true){
-    try{return await resolveSources(explicit)}
+    try{return await resolveSources(explicit,{characterName})}
     catch(error){
       if(!watchMode)throw error;
       console.error('Dalton Bridge wartet auf WoW-SavedVariables: '+String(error.message||error).slice(0,180));
@@ -346,7 +350,7 @@ async function main(){
 
   const config=await loadConfig();
   if(config.endpoint&&!process.env.DALTON_SYNC_ENDPOINT)options.endpoint=config.endpoint;
-  const sources=await resolveSourcesWithRetry(options.file,options.watch);
+  const sources=await resolveSourcesWithRetry(options.file,options.watch,{characterName:config.deviceToken?config.characterName:null});
   if(sources.characterFile)console.log('Eigener Charakter: '+sources.characterFile);
   if(sources.relayFile)console.log('Relay-Postfach: '+sources.relayFile);
 
