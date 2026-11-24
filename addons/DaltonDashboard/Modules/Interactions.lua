@@ -120,6 +120,7 @@ local function storeSnapshot(kind, snapshot, fingerprint)
 
   db.interactions = interactions
   db.meta.lastUpdatedAt = interactions.capturedAt
+  if type(ns.RelaySectionChanged) == "function" then ns.RelaySectionChanged("interactions") end
 end
 
 local function merchantInfo(index)
