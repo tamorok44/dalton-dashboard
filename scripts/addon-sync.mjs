@@ -173,6 +173,8 @@ export function publicAddonSyncSummary(state={}){
     receivedAt:text(state.receivedAt,80),
     syncId:text(payload.syncId,128),
     addonVersion:text(payload.addon?.version,80),
+    transport:text(payload.client?.transport,80),
+    transportVersion:text(payload.client?.transportVersion,80),
     build:text(payload.addon?.build,80),
     locale:text(payload.addon?.locale,40),
     spellbookEntryCount:finite(spellbook.entryCount)??array(spellbook.entries).length,
