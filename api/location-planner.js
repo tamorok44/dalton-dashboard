@@ -20,6 +20,63 @@ function hasFiniteNumber(value){
 function normalizeText(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
 }
+function numericEntries(value){
+  if(Array.isArray(value))return value;
+  if(!value||typeof value!=='object')return [];
+  return Object.entries(value)
+    .filter(([key])=>/^\d+$/.test(key))
+    .sort((a,b)=>Number(a[0])-Number(b[0]))
+    .map(([,entry])=>entry);
+}
+function plannerLocationName(location={}){
+  if(typeof location==='string')return location.trim()||null;
+  const raw=location&&typeof location==='object'?location:{};
+  const mapId=Number(raw.uiMapId??raw.mapID);
+  const technical=typeof raw.zone==='string'&&raw.zone.trim()
+    ?raw.zone.trim()
+    :typeof raw.mapName==='string'&&raw.mapName.trim()?raw.mapName.trim():null;
+  return preferredGermanGameName('zone',Number.isInteger(mapId)?mapId:null,technical)||technical||null;
+}
+function collectPlannerKnownLocations({recipeIndex={},professionMasters={},classMaster=null,addonStates={},liveKnowledge=[]}={}){
+  const zones=new Map();
+  const add=location=>{
+    const name=plannerLocationName(location);
+    const key=normalizeText(name);
+    if(key&&!zones.has(key))zones.set(key,{name});
+  };
+  const addSources=sources=>{
+    for(const source of Array.isArray(sources)?sources:[])add(source?.location);
+  };
+  for(const recipe of Array.isArray(recipeIndex?.recipes)?recipeIndex.recipes:[])addSources(recipe?.learning?.sources);
+  for(const profession of Array.isArray(recipeIndex?.professions)?recipeIndex.professions:[]){
+    addSources(profession?.trainers);
+    for(const rank of Array.isArray(profession?.ranks)?profession.ranks:[])addSources(rank?.sources);
+  }
+  for(const master of Object.values(professionMasters||{})){
+    if(!master||master.error)continue;
+    addSources(master.trainers);
+    for(const rank of Array.isArray(master.ranks)?master.ranks:[])addSources(rank?.sources);
+  }
+  if(classMaster){
+    addSources(classMaster.trainers);
+    for(const ability of Array.isArray(classMaster.abilities)?classMaster.abilities:[]){
+      for(const rank of Array.isArray(ability?.ranks)?ability.ranks:[])addSources(rank?.sources);
+    }
+  }
+  for(const record of Array.isArray(liveKnowledge)?liveKnowledge:[]){
+    add(record?.location);
+    add(record?.latestSnapshot?.location);
+  }
+  for(const state of Object.values(addonStates||{})){
+    const sections=state?.payload?.sections||{};
+    add(sections.location);
+    for(const entry of numericEntries(sections?.locationHistory?.entries)){
+      add(entry);
+      add(entry?.location);
+    }
+  }
+  return [...zones.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+}
 function discoveryZone(discovery={}){
   const location=discovery.location||{};
   const mapId=Number(location.uiMapId);
@@ -145,22 +202,23 @@ export default async function handler(req,res){
     const character=(url.searchParams.get('character')||'').trim()||null;
     const location=(url.searchParams.get('location')||'').trim()||null;
     const remoteReady=foreverDbConfigured();
-    const recipeIndex=remoteReady
-      ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:workshopProfessionSlugs(stored.data)})
-      :await getCachedForeverDbMasterRecipeIndex();
+    const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+    const [recipeIndex,addonStates]=await Promise.all([
+      remoteReady
+        ?getForeverDbMasterRecipeIndex({seedProfessionSlugs:workshopProfessionSlugs(stored.data)})
+        :getCachedForeverDbMasterRecipeIndex(),
+      loadAddonSyncStates(characterSlugs)
+    ]);
     if(!recipeIndex){
-      const base=buildLocationPlanner(stored.data,{recipes:[],professions:[]},{characterSlug:character,location});
+      const knownLocations=collectPlannerKnownLocations({addonStates});
+      const base=buildLocationPlanner(stored.data,{recipes:[],professions:[]},{characterSlug:character,location,knownLocations});
       return res.status(200).json({
         ...base,
         catalog:{connected:false,complete:false,build:null,generatedAt:null},
         reason:'ForeverDB ist derzeit nicht verbunden und es liegt kein gecachter Rezept-Master vor.'
       });
     }
-    const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
-    const [addonStates,liveKnowledge]=await Promise.all([
-      loadAddonSyncStates(characterSlugs),
-      loadLiveKnowledge({build:recipeIndex?.build||null})
-    ]);
+    const liveKnowledge=await loadLiveKnowledge({build:recipeIndex?.build||null});
     const evaluatedRecipeIndex=applyLearningSourceEvidence(
       recipeIndex,
       learningSourceEvidenceForIndex(recipeIndex,addonStates,liveKnowledge)
@@ -179,11 +237,19 @@ export default async function handler(req,res){
     const classMaster=selectedCharacter?.classId
       ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:evaluatedRecipeIndex?.build||null})
       :null;
+    const knownLocations=collectPlannerKnownLocations({
+      recipeIndex:evaluatedRecipeIndex,
+      professionMasters,
+      classMaster,
+      addonStates,
+      liveKnowledge
+    });
     let planner=buildLocationPlanner(stored.data,evaluatedRecipeIndex,{
       characterSlug:character,
       location,
       professionMasters,
-      classMaster
+      classMaster,
+      knownLocations
     });
     const discoveries=liveKnowledgeDiscoveries(recipeIndex,liveKnowledge).map(publicDiscovery);
     const discoveryZones=new Map();
