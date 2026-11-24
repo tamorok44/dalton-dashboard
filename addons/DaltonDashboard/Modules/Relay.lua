@@ -26,7 +26,9 @@ module.events = {
 
 local function canonicalName(value)
   value = tostring(value or "")
-  value = value:gsub("%-.*$", "")
+  value = value:gsub("%-", " ")
+  value = value:gsub("%s+", " ")
+  value = value:gsub("^%s+", ""):gsub("%s+$", "")
   return value:lower()
 end
 
@@ -35,10 +37,10 @@ local function trusted(value)
 end
 
 local function playerName()
-  local name, realm
-  if UnitFullName then name, realm = UnitFullName("player") end
-  name = name or (UnitName and UnitName("player"))
-  if name and realm and realm ~= "" then return name .. "-" .. realm end
+  local name, second
+  if UnitFullName then name, second = UnitFullName("player") end
+  if not name and UnitName then name, second = UnitName("player") end
+  if name and second and second ~= "" then return name .. " " .. second end
   return name
 end
 
@@ -47,11 +49,11 @@ local function isHub()
 end
 
 local function unitTarget(unit)
-  local name, realm
-  if UnitFullName then name, realm = UnitFullName(unit) end
-  name = name or (UnitName and UnitName(unit))
+  local name, second
+  if UnitFullName then name, second = UnitFullName(unit) end
+  if not name and UnitName then name, second = UnitName(unit) end
   if not name then return nil end
-  if realm and realm ~= "" then return name .. "-" .. realm end
+  if second and second ~= "" then return name .. " " .. second end
   return name
 end
 
