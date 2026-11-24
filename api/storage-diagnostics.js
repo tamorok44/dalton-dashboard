@@ -1,3 +1,4 @@
+import {gzipSync,brotliCompressSync} from 'node:zlib';
 import {configured,redis} from '../scripts/character-store.mjs';
 
 function n(value){const x=Number(value);return Number.isFinite(x)?x:null}
@@ -57,6 +58,23 @@ export default async function handler(req,res){
       agg.payloadBytes+=row.payloadBytes||0;
       agg.entries+=row.entries||0;
     }
+    const compression={};
+    for(const key of [
+      'dalton-dashboard:characters:v1',
+      'dalton-dashboard:pet-rules:v1',
+      'dalton-dashboard:workshop:foreverdb:master:v2',
+      'dalton-dashboard:foreverdb:class-master:v8:mage:1.60.1.71037',
+      'dalton-dashboard:foreverdb:class-master:v8:hunter:1.60.1.71037',
+      'dalton-dashboard:foreverdb:class-master:v8:druid:1.60.1.71037'
+    ]){
+      const raw=await redis(['GET',key]);
+      if(typeof raw!=='string')continue;
+      compression[key]={
+        rawBytes:Buffer.byteLength(raw),
+        gzipBytes:gzipSync(Buffer.from(raw),{level:6}).length,
+        brotliBytes:brotliCompressSync(Buffer.from(raw)).length
+      };
+    }
     return res.status(200).json({
       generatedAt:new Date().toISOString(),
       dbSize:await redis(['DBSIZE']),
@@ -67,6 +85,7 @@ export default async function handler(req,res){
         stringPayloadBytes:measurements.reduce((s,r)=>s+(r.payloadBytes||0),0)
       },
       byPrefix,
+      compression,
       keys:measurements
     });
   }catch(error){
