@@ -21,7 +21,7 @@ Aktuell werden lokal erfasst:
 
 Das WoW-Addon führt **keinen HTTP-Zugriff** aus und enthält keinen privaten Server-Schlüssel.
 
-Ab Alpha 10 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Relay:
+Ab Alpha 11 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Relay:
 
 - Cole Dalton ist der Relay-Hub.
 - Chucky Dalton, Dolly Dalton und Viola Dalton senden ausschließlich die freigegebenen Dashboard-Bereiche über die offizielle WoW-AddOn-Kommunikation an Cole.
@@ -31,7 +31,7 @@ Ab Alpha 10 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Re
 - Der Empfänger akzeptiert nur das fest definierte Dalton-Roster und entfernt die privaten Bereiche `inventory` und `economy` zusätzlich.
 - Coles Account-SavedVariables speichern die zuletzt empfangenen Peer-Datensätze im Relay-Postfach.
 
-Nur auf Christians Rechner läuft weiterhin der lokale Sync-Companion. Er liest nach `/reload` oder Logout sowohl Coles eigenen Datensatz als auch das Relay-Postfach und überträgt die freigegebenen Bereiche zum Dashboard. Für Max, Valentin und Stephan ist dadurch ausschließlich die CurseForge-Installation des WoW-Addons vorgesehen.
+Optional kann auf jedem Rechner eine kleine lokale Bridge installiert werden. Sie läuft nach der einmaligen Kopplung unsichtbar im Benutzerhintergrund, beobachtet nur die Dalton-SavedVariables und lädt freigegebene Daten nach `/reload` oder Logout direkt hoch. Ist keine Bridge installiert, bleibt der Ingame-Relay zu Cole als kostenloser Fallback bestehen. Christians Rechner kann weiterhin Coles eigenen Datensatz und das Relay-Postfach zum Dashboard übertragen.
 
 **Gold, Taschen und Bank sind niemals Teil des Standard-Syncs.**
 
@@ -65,7 +65,7 @@ Nur auf Christians Rechner läuft weiterhin der lokale Sync-Companion. Er liest 
 Die frühere Copy/Paste-Spellbook-Lösung und ein eingebetteter privater Sync-Schlüssel sind nicht mehr Bestandteil des Addons.
 
 
-## Lokaler Alpha-10-Sync-Test
+## Lokaler Alpha-11-Sync-Test
 
 Der Companion liegt unter `scripts/dalton-sync-client.mjs`. Ohne Argument sucht er auf macOS und Windows nach der zuletzt geänderten `DaltonDashboard.lua`. Alternativ kann die Datei mit `--file` explizit angegeben werden.
 
