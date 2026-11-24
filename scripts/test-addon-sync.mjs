@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
-import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity} from './addon-sync.mjs';
+import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
 import {previewCookieFromSetCookie} from './dalton-sync-client.mjs';
 
@@ -31,6 +31,17 @@ assert.equal(payload.addon.version,'0.1.0-alpha.9');
 assert.equal(payload.sections.character.name,'Cole Dalton');
 assert.ok(!('economy' in payload.sections),'Gold bleibt aus dem Standard-Sync ausgeschlossen');
 assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem Standard-Sync ausgeschlossen');
+
+const publicState=publicAddonSyncSummary({
+  characterSlug:'cole-dalton',
+  receivedAt:'2026-11-24T09:30:00.000Z',
+  payload:{...payload,sections:{...payload.sections,instances:{
+    count:1,entries:[{name:'Testinstanz',difficultyName:'Normal',resetAt:1795541400,locked:true,numEncounters:4,encounterProgress:1,instanceID:999}]
+  }}}
+});
+assert.equal(publicState.lockouts.length,1);
+assert.equal(publicState.lockouts[0].name,'Testinstanz');
+assert.equal(publicState.lockouts[0].encounterProgress,1);
 
 const normalized=normalizeAddonSyncPayload(payload);
 const sameContentLater=structuredClone(payload);
