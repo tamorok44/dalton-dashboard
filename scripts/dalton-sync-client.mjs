@@ -25,7 +25,7 @@ function args(argv){
   return out;
 }
 function help(){
-  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.7');
+  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.8');
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
   console.log('');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN in der lokalen Umgebung gesetzt sein.');
@@ -163,7 +163,7 @@ async function postPayload(endpoint,token,payload,{cookie=null}={}){
   const headers={
     Authorization:'Bearer '+token,
     'Content-Type':'application/json',
-    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.7'
+    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.8'
   };
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(url,{
