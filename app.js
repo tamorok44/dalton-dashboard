@@ -1651,13 +1651,13 @@ function renderLocationPlanner(){
         '</div></details>'
       :'<small>Persönlicher Lernstand noch offen · für vollständige Daten das WoW-Forever-AddOn über CurseForge installieren; nach der ersten Synchronisation wird der Lernstand automatisch übernommen.</small>';
     characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+learnedClassDetails+'</div>'+
-      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
+      '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>unterschiedliche aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
   }
   let body='';
   if(!plannerState.character){
     body='<div class="planner-placeholder"><strong>Wähle zuerst einen Charakter.</strong><span>Danach werden nur Orte angeboten, an denen aktuell mindestens eine bestätigte Erledigung möglich ist.</span></div>';
   }else if(!plannerState.location){
-    body='<div class="planner-placeholder"><strong>Wähle einen Ort.</strong><span>'+esc(data.counts?.availableNow??0)+' bestätigte Erledigung'+(data.counts?.availableNow===1?'':'en')+' sind für diesen Charakter aktuell verfügbar.</span></div>';
+    body='<div class="planner-placeholder"><strong>Wähle einen Ort.</strong><span>'+esc(data.counts?.availableNow??0)+' unterschiedliche bestätigte Erledigung'+(data.counts?.availableNow===1?'':'en')+' sind für diesen Charakter aktuell verfügbar.</span></div>';
   }else if(!selectedLocation){
     body='<div class="planner-placeholder"><strong>Der gewählte Ort ist für den aktuellen Stand nicht mehr verfügbar.</strong><span>Bitte wähle einen Ort aus der aktualisierten Liste.</span></div>';
   }else{
