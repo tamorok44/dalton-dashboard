@@ -25,10 +25,6 @@ export function masterSyncTokenMatches(token){
   const expected=process.env.DALTON_SYNC_TOKEN||process.env.SPELLBOOK_SYNC_TOKEN;
   return Boolean(expected)&&safeEqual(token,expected);
 }
-export function previewSetupTokenMatches(token){
-  const expected=process.env.VERCEL_ENV==='preview'?process.env.DALTON_PREVIEW_SETUP_TOKEN:null;
-  return Boolean(expected)&&safeEqual(token,expected);
-}
 export async function createDeviceEnrollment(characterSlug){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!isTrustedCharacterSlug(characterSlug))throw new Error('Unbekannter Dalton-Charakter');
