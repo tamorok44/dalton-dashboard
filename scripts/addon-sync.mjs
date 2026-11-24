@@ -156,6 +156,18 @@ export function publicAddonSyncSummary(state={}){
   const instances=object(sections.instances);
   const hunter=object(sections.hunter);
   const spellbook=object(sections.spellbook);
+  const lockouts=array(instances.entries).slice(0,40).map(entry=>({
+    name:text(entry?.name,160),
+    difficultyName:text(entry?.difficultyName,120),
+    resetAt:epochIso(entry?.resetAt??entry?.lock?.resetAt),
+    locked:entry?.locked===true,
+    extended:entry?.extended===true,
+    isRaid:entry?.isRaid===true,
+    maxPlayers:finite(entry?.maxPlayers),
+    numEncounters:finite(entry?.numEncounters??entry?.lock?.encountersTotal),
+    encounterProgress:finite(entry?.encounterProgress??entry?.lock?.encountersCompleted),
+    instanceID:integer(entry?.instanceID)
+  })).filter(entry=>entry.name);
   return {
     characterSlug:text(state.characterSlug,80),
     receivedAt:text(state.receivedAt,80),
@@ -174,7 +186,8 @@ export function publicAddonSyncSummary(state={}){
       bindLocation:text(location.bindLocation,160)
     }:null,
     locationHistoryCount:array(history.entries).length,
-    lockoutCount:finite(instances.count)??array(instances.entries).length,
+    lockoutCount:finite(instances.count)??lockouts.length,
+    lockouts,
     hunterCaptured:Boolean(Object.keys(hunter).length),
     merchantObservationCount:merchantHistory.length,
     trainerObservationCount:trainerHistory.length,
