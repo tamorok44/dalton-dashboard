@@ -26,6 +26,8 @@ TARGET="$TARGET_DIR/DaltonDashboardBridge"
 PLIST="$HOME/Library/LaunchAgents/de.dalton.dashboard.bridge.plist"
 UNINSTALL_SOURCE="$DIR/Deinstallieren.command"
 UNINSTALL_TARGET="$HOME/Applications/Dalton Dashboard Bridge deinstallieren.command"
+ENROLL_HELPER_SOURCE="$DIR/Einrichtungscode-erstellen.command"
+ENROLL_HELPER_TARGET="$HOME/Applications/Dalton Dashboard Einrichtungscode erstellen.command"
 mkdir -p "$TARGET_DIR" "$HOME/Library/LaunchAgents" "$HOME/Applications"
 cp "$SOURCE" "$TARGET"
 chmod 700 "$TARGET"
@@ -37,6 +39,14 @@ xattr -dr com.apple.quarantine "$TARGET_DIR" >/dev/null 2>&1 || true
 xattr -d com.apple.quarantine "$UNINSTALL_TARGET" >/dev/null 2>&1 || true
 
 "$TARGET" --enroll "$CODE"
+
+if grep -q '"characterSlug": "cole-dalton"' "$TARGET_DIR/config.json" 2>/dev/null && [[ -f "$ENROLL_HELPER_SOURCE" ]]; then
+  cp "$ENROLL_HELPER_SOURCE" "$ENROLL_HELPER_TARGET"
+  chmod 700 "$ENROLL_HELPER_TARGET"
+  xattr -d com.apple.quarantine "$ENROLL_HELPER_TARGET" >/dev/null 2>&1 || true
+else
+  rm -f "$ENROLL_HELPER_TARGET"
+fi
 
 cat > "$PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -66,3 +76,6 @@ echo ""
 echo "Dalton Dashboard Bridge ist eingerichtet."
 echo "Sie startet künftig automatisch im Hintergrund."
 echo "Deinstallation: ~/Applications/Dalton Dashboard Bridge deinstallieren.command"
+if [[ -f "$ENROLL_HELPER_TARGET" ]]; then
+  echo "Peer-Einrichtung: ~/Applications/Dalton Dashboard Einrichtungscode erstellen.command"
+fi
