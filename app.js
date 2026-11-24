@@ -1630,7 +1630,7 @@ function renderLocationPlanner(){
   const locations=Array.isArray(data.locations)?data.locations:[];
   const selectedCharacter=data.selectedCharacter||null;
   const selectedLocation=data.selectedLocation||null;
-  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ORT PLANEN</span><h3>Was kannst du hier erledigen?</h3><p>Wähle Charakter und Ort. Bekannte Orte bleiben auch dann auswählbar, wenn dort aktuell keine Erledigung möglich ist.</p></div>'+
+  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ORT PLANEN</span><h3>Was kannst du hier erledigen?</h3><p>Wähle Charakter und Ort. Bekannte Orte bleiben auch bei 0 Erledigungen auswählbar; angezeigt werden dort weiterhin nur bestätigte Dinge, die mit dem aktuellen Charakterstand sofort möglich sind.</p></div>'+
     '<div class="planner-fields"><label class="planner-field"><span>Charakter</span><select id="plannerCharacter"><option value="">Charakter wählen …</option>'+
       characters.map(character=>'<option value="'+esc(character.slug)+'"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+
     '</select></label><label class="planner-field"><span>Ort</span><select id="plannerLocation"'+(!plannerState.character?' disabled':'')+'><option value="">Ort wählen …</option>'+
