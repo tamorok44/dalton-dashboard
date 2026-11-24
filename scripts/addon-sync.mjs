@@ -42,7 +42,7 @@ export function buildSafeAddonSyncPayload(charDb,{syncId=null}={}){
   return {
     schemaVersion:1,
     syncId:text(syncId,128),
-    client:{transport:'dalton-sync-companion',transportVersion:'0.1.0-alpha.6'},
+    client:{transport:'dalton-sync-companion',transportVersion:'0.1.0-alpha.7'},
     addon:{
       version:text(meta.addonVersion,80),
       gameVersion:text(meta.gameVersion,80),
