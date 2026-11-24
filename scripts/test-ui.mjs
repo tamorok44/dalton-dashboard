@@ -574,7 +574,7 @@ assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css
   'Item-level number must use neutral color');
 
 // Golden sheriff-star header and daylight/western landscape should not regress.
-const heroHtml=read('index.html'),crest=read('dalton-crest.svg'),sky=read('skyborne-horizon.svg'),icon=read('icon.svg');
+const heroHtml=read('index.html'),crest=read('dalton-crest.svg'),sky=read('skyborne-horizon.svg'),icon=read('icon.svg'),trayIcon=read('bridge-tray.svg'),bridgeBranding=read('bridge-branding.svg'),manifest=JSON.parse(read('manifest.webmanifest'));
 assert.ok(heroHtml.includes('data-view-link="workshop"'),'Werkstatt ist dritter Hauptreiter');
 assert.ok(heroHtml.includes('id="workshopView" class="main-view workshop-view"'),'Werkstatt nutzt verbindlichen main-view-Vertrag');
 assert.ok(source.includes("location.hash==='#werkstatt'?'workshop'"),'Werkstatt hat eigene Hash-Route');
@@ -711,7 +711,17 @@ assert.ok(heroHtml.includes('CHUCKY · COLE · DOLLY · VIOLA'));
 assert.ok(!heroHtml.includes('Vier Himmelsgeborene. Ein wilder Himmel.'));
 assert.match(crest,/sechszackiger Dalton-Sheriffstern/);
 assert.ok(crest.includes('>D</text>') && crest.includes('url(#blueEnamel)'));
-assert.ok(icon.includes('Dalton-Sheriffstern'));
+assert.ok(icon.includes('Dalton-Sheriffstern')&&icon.includes('>D</text>'),'Dashboard-App-Icon uses the Dalton sheriff-star D');
+assert.ok(icon.includes('<rect width="512" height="512" fill="url(#bg)"/>'),'Dashboard app icon is opaque and full-bleed for macOS maskable icons');
+assert.ok(trayIcon.includes('kompakt')&&trayIcon.includes('>D</text>'),'Compact Dalton icon remains recognizable at small sizes');
+assert.ok(bridgeBranding.includes('Branding Sheriffstern')&&bridgeBranding.includes('stroke-dasharray="7 11"'),'Bridge branding keeps the more ornate selected variant');
+assert.equal(manifest.icons.length,1,'Web app manifest exposes one unambiguous preferred app icon');
+assert.equal(manifest.icons[0].src,'/icon.svg');
+assert.equal(manifest.icons[0].purpose,'any maskable','Primary Dalton icon is valid as the macOS maskable app icon');
+assert.ok(heroHtml.includes('<link rel="icon" href="/bridge-tray.svg"'),'Compact variant is used as the browser favicon');
+assert.ok(read('sw.js').includes('"/icon.svg","/bridge-tray.svg","/bridge-branding.svg"'),'All Dalton branding icons are available offline');
+const addonCi=read('.github/workflows/addon-ci.yml');
+assert.ok(addonCi.includes('Dalton Dashboard Bridge.svg')&&addonCi.includes('Dalton Dashboard Kompakt.svg'),'Bridge player packages ship the matching icon family');
 assert.ok(sky.includes('url(#day)') && sky.includes('url(#sunMist)'));
 const mobileSky=read('skyborne-mainstreet-mobile.svg');
 for(const scene of [sky,mobileSky]){
