@@ -729,6 +729,7 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .character-presence>div{min-width:0;padding:7px 9px;border-left:2px solid var(--class);background:rgba(4,12,18,.22)}
 .character-presence small{display:block;color:var(--muted);font-size:var(--type-caption);line-height:1.25}
 .character-presence strong{display:block;margin-top:2px;color:var(--cream);font:var(--weight-label) var(--type-small)/1.35 var(--body);overflow-wrap:anywhere}
+.character-presence-npcs{grid-column:1/-1}
 .addon-instance-overview{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;padding:9px 10px;border:1px solid rgba(208,186,148,.16);border-radius:4px;background:rgba(4,12,18,.28)}
 .addon-instance-overview strong{color:var(--cream);font-size:var(--type-small)}
 .addon-instance-overview span{color:var(--muted);font-size:var(--type-caption);text-align:right}
