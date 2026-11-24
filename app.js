@@ -1501,6 +1501,21 @@ function plannerNpcHtml(npc,data,actions){
         plannerAlternativeHtml(action,sourceKey)+'</div>';
     }).join('')+'</div></article>';
 }
+function plannerLiveDiscoveriesHtml(data){
+  const discoveries=Array.isArray(data?.liveDiscoveries)?data.liveDiscoveries:[];
+  if(!discoveries.length)return '';
+  const groups=new Map();
+  for(const discovery of discoveries){
+    const key=String(discovery.npcId||discovery.npcName||'unbekannt');
+    let group=groups.get(key);
+    if(!group){group={name:discovery.npcName||'Unbekannter Händler',items:[]};groups.set(key,group)}
+    group.items.push(discovery);
+  }
+  return '<section class="planner-status-warning" role="note"><strong>Live beobachtete neue Händlerangebote</strong><span>Diese Lerngegenstände wurden im aktuellen Forever-Build tatsächlich beim Händler gesehen, sind im zugrunde liegenden Rezeptkatalog aber noch nicht eindeutig zugeordnet. Sie werden deshalb angezeigt, aber nicht automatisch als lernbare Erledigung ausgewählt.</span>'+
+    [...groups.values()].map(group=>'<div><strong>'+esc(group.name)+'</strong><span>'+
+      group.items.map(item=>esc(item.itemName)+(item.itemID?' · Item '+esc(item.itemID):'')+(Number.isFinite(Number(item.priceCopper))?' · '+esc(plannerPrice(item.priceCopper)):'')).join('<br>')+
+    '</span></div>').join('')+'</section>';
+}
 function plannerCategoryFilters(data){
   const categories=Array.isArray(data?.categories)?data.categories:[];
   return '<fieldset class="planner-filters"><legend>Was soll berücksichtigt werden?</legend><div class="planner-filter-grid">'+categories.map(category=>
@@ -1524,7 +1539,7 @@ function renderLocationPlanner(){
     '<div class="planner-fields"><label class="planner-field"><span>Charakter</span><select id="plannerCharacter"><option value="">Charakter wählen …</option>'+
       characters.map(character=>'<option value="'+esc(character.slug)+'"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+
     '</select></label><label class="planner-field"><span>Ort</span><select id="plannerLocation"'+(!plannerState.character?' disabled':'')+'><option value="">Ort wählen …</option>'+
-      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.actionCount+' Erledigung'+(location.actionCount===1?'':'en')+'</option>').join('')+
+      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.actionCount+' Erledigung'+(location.actionCount===1?'':'en')+(Number(location.discoveryCount)>0?' · '+location.discoveryCount+' Live-Fund'+(location.discoveryCount===1?'':'e'):'')+'</option>').join('')+
     '</select></label></div></section>';
   let characterSummary='';
   if(selectedCharacter){
@@ -1561,7 +1576,7 @@ function renderLocationPlanner(){
     const classStatusWarning=unverifiedClassCount
       ?'<div class="planner-status-warning" role="note"><strong>Persönlicher Klassen-Lernstand offen</strong><span>'+unverifiedClassCount+' Klassenfähigkeit'+(unverifiedClassCount===1?'':'en')+' ist hier grundsätzlich lernbar, aber der persönliche Spellbook-Stand dieses Charakters wird von der Online-Profilquelle derzeit nicht geliefert. Diese Einträge werden deshalb nicht automatisch ausgewählt.</span></div>'
       :'';
-    body=plannerCategoryFilters(data)+classStatusWarning+
+    body=plannerCategoryFilters(data)+classStatusWarning+plannerLiveDiscoveriesHtml(data)+
       '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
       plannerSelectionHtml(data)+
       (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
