@@ -53,7 +53,7 @@ async function revokeDevice(config){
   const endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync';
   const base=new URL(endpoint);
   base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
-  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const cookie=await previewCookie(previewShareUrlOverride||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
   const headers={
     Authorization:'Device '+token,
     'Content-Type':'application/json',
@@ -74,9 +74,9 @@ async function revokeDevice(config){
   await saveConfig(clean);
   return {revoked:true,characterName:config.characterName||null};
 }
-async function promoteToProduction(config){
+async function promoteToProduction(config,{endpointOverride=null,previewShareUrlOverride=null}={}){
   const token=config?.deviceToken;
-  const endpoint=config?.endpoint;
+  const endpoint=endpointOverride||config?.endpoint;
   if(!token||!endpoint)throw new Error('Aktive Preview-Kopplung fehlt');
   if(config.characterSlug!=='cole-dalton')throw new Error('Nur Coles Hub kann auf Produktion umgestellt werden');
   const base=new URL(endpoint);
@@ -145,13 +145,13 @@ function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,promoteProduction:false,character:null,previewShareUrl:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
   for(let i=0;i<argv.length;i++){
     const value=argv[i];
     if(value==='--watch')out.watch=true;
     else if(value==='--dry-run')out.dryRun=true;
     else if(value==='--file')out.file=argv[++i]||null;
-    else if(value==='--endpoint')out.endpoint=argv[++i]||out.endpoint;
+    else if(value==='--endpoint'){out.endpoint=argv[++i]||out.endpoint;out.endpointProvided=true;}
     else if(value==='--enroll')out.enroll=argv[++i]||null;
     else if(value==='--create-enroll')out.createEnroll=argv[++i]||null;
     else if(value==='--revoke-device')out.revokeDevice=true;
@@ -450,7 +450,10 @@ async function main(){
   }
   if(options.promoteProduction){
     const config=await loadConfig();
-    const promoted=await promoteToProduction(config);
+    const promoted=await promoteToProduction(config,{
+      endpointOverride:options.endpointProvided?options.endpoint:null,
+      previewShareUrlOverride:options.previewShareUrl
+    });
     console.log('Bridge auf Produktion umgestellt: '+String(promoted.characterName||promoted.characterSlug));
     console.log('Endpunkt: '+promoted.endpoint);
     return;
