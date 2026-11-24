@@ -447,9 +447,11 @@ const spellbookOpen=ui.classAbilitiesPanel({slug:'cole-dalton',name:'Cole Dalton
 assert.ok(spellbookOpen.includes('WoW-Forever-AddOn erforderlich'));
 assert.ok(spellbookOpen.includes('CurseForge'));
 assert.ok(!spellbookOpen.includes('/dalton')&&!spellbookOpen.includes('Spellbook übernehmen'),'Dashboard darf keinen manuellen Spellbook-Code mehr verlangen');
-const gameStatusMissing=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8});
+const gameStatusMissing=ui.gameStatusPanel({slug:'chucky-dalton',name:'Chucky Dalton',classId:11});
 assert.ok(gameStatusMissing.includes('WoW-Forever-AddOn erforderlich')&&gameStatusMissing.includes('CurseForge'),'Instanzbereich erklärt vor dem ersten Sync die AddOn-Voraussetzung');
-const presence=ui.addonPresence({slug:'cole-dalton',name:'Cole Dalton'});
+const presence=ui.addonPresence({slug:'cole-dalton',name:'Cole Dalton'},{
+  currentLocation:{zone:'Die Insel Zephras',subZone:'Valanaar',x:.621,y:.734,bindLocation:'Valanaar'}
+});
 assert.ok(presence.includes('Ruhestein')&&presence.includes('Valanaar')&&presence.includes('62.1 / 73.4'),'Ruhestein und letzter Standort stehen direkt bei der Charakteraktivität');
 const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8},{
   receivedAt:'2026-11-24T09:30:00.000Z',
