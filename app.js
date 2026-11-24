@@ -211,7 +211,8 @@ function gameStatusPanel(c,stateOverride=null){
   const lockouts=Array.isArray(state.lockouts)?state.lockouts:[];
   const lockoutCount=Number.isFinite(Number(state.lockoutCount))?Number(state.lockoutCount):lockouts.length;
   const received=formatAddonDate(state.receivedAt);
-  const version=[state.addonVersion?('AddOn '+state.addonVersion):null,state.build?('Build '+state.build):null,received?('Sync '+received):null].filter(Boolean).join(' · ');
+  const transportLabel=state.transport==='dalton-local-bridge'?'direkte Bridge':state.transport==='dalton-peer-relay'?'Peer-Relay über Cole':state.transport?'lokaler Sync':null;
+  const version=[state.addonVersion?('AddOn '+state.addonVersion):null,transportLabel,state.build?('Build '+state.build):null,received?('Sync '+received):null].filter(Boolean).join(' · ');
   const observations=(Number(state.merchantObservationCount)||0)+(Number(state.trainerObservationCount)||0);
 
   const lockoutHtml=lockouts.length
