@@ -39,7 +39,8 @@ local function npcIdentity()
   local guid = ns.SafeString(UnitGUID and UnitGUID("npc"))
   local creatureID
   if guid and strsplit then
-    creatureID = tonumber(select(6, strsplit("-", guid)))
+    local creatureToken = select(6, strsplit("-", guid))
+    creatureID = tonumber(creatureToken)
   elseif guid then
     creatureID = tonumber(guid:match("^[^-]+%-[^-]+%-[^-]+%-[^-]+%-[^-]+%-(%d+)"))
   end
