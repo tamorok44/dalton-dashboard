@@ -175,6 +175,7 @@ function recipeActions(character,recipeIndex){
       type:'profession-recipe',
       category:'profession-recipes',
       id,
+      craftedItemId:integer(candidate.recipe?.craftedItem?.id),
       name:text(candidate.recipe?.name)||text(candidate.recipe?.craftedItem?.name)||'Rezept',
       profession:text(candidate.profession?.name)||null,
       professionId:integer(candidate.profession?.id),

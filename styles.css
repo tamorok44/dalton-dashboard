@@ -453,7 +453,16 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
   background:linear-gradient(110deg,rgba(28,40,44,.85),rgba(25,26,34,.89));
   box-shadow:inset 0 0 0 1px rgba(9,12,18,.7);
 }
-.profession-head{display:flex;align-items:baseline;justify-content:space-between;gap:7px;margin:0 1px 8px;flex-wrap:wrap}
+.profession-head{display:flex;align-items:center;justify-content:flex-start;gap:8px;margin:0 1px 8px;flex-wrap:wrap}
+.knowledge-title{display:inline-flex;align-items:center;gap:7px;min-width:0;max-width:100%;vertical-align:middle}
+.knowledge-title>strong{min-width:0;overflow-wrap:anywhere}
+.knowledge-icon{display:inline-block;object-fit:cover;flex:0 0 auto;border:1px solid var(--gold-deep);border-radius:3px;vertical-align:middle;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.knowledge-icon.is-fallback{display:inline-grid;place-items:center;width:28px;height:28px;background:rgba(16,22,29,.65);color:var(--gold)}
+.knowledge-icon.is-fallback svg{width:65%;height:65%}
+.profession-head>.knowledge-icon.is-fallback{width:36px;height:36px}
+.recipe-name{align-items:center}
+.recipe-name>strong{min-width:0;overflow-wrap:anywhere}
+.compare-table .knowledge-icon{max-width:22px;max-height:22px}
 .profession-label{color:#f2d7ab;font:700 var(--type-body) var(--body);line-height:1.35}
 .profession-rank{
   display:inline-flex;align-items:center;white-space:nowrap;padding:2px 7px;

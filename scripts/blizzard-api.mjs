@@ -411,3 +411,15 @@ export async function fetchForeverLocalizedNames(refs,{
   }));
   return Object.fromEntries(entries.filter(([,name])=>name));
 }
+
+/** An explicitly typed media identity in an observed Forever namespace. */
+export async function fetchForeverMediaIcon(type,id,{namespace,fetchImpl=fetch,locale='de_DE'}={}){
+  if(!['profession','recipe','item','spell'].includes(type)||!Number.isInteger(Number(id))||Number(id)<=0)return null;
+  const url=gameDataUrl('/data/wow/media/'+type+'/'+Number(id),namespace,locale);
+  const {token}=await accessToken(fetchImpl);
+  const response=await fetchImpl(url,{headers:{authorization:'Bearer '+token,accept:'application/json'},signal:AbortSignal.timeout(6000)});
+  if(response.status===404)return null;
+  if(!response.ok)throw Error('Blizzard-Medien HTTP '+response.status);
+  const body=await parseResponse(response);
+  return (Array.isArray(body?.assets)?body.assets:[]).find(asset=>asset?.key==='icon'&&typeof asset.value==='string')?.value||null;
+}

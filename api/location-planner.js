@@ -1,3 +1,4 @@
+import {enrichPlannerKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
 import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
@@ -174,22 +175,6 @@ async function withNpcAvatar(npc){
     return {...candidate,avatarUrl:null};
   }
 }
-async function withClassActionIcon(action){
-  const iconId=Number(action?.iconId);
-  if(action?.category!=='class-abilities'||!Number.isInteger(iconId)||iconId<=0)return action;
-  try{
-    const iconUrl=await resolveMediaAsset({
-      entityType:'spell',
-      entityId:action.id,
-      role:'icon',
-      sourceUrl:'https://foreverdb.net/icons/'+iconId+'.webp'
-    });
-    return {...action,iconUrl:iconUrl||null};
-  }catch(error){
-    console.warn('Klassenfähigkeits-Icon konnte nicht archiviert werden:',String(error.message).slice(0,120));
-    return action;
-  }
-}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','public, no-store');
   if(req.method!=='GET'){
@@ -289,11 +274,11 @@ export default async function handler(req,res){
       const localized=await cachedGermanClassSpells(classSpellIds);
       planner=localizePlannerClassData(planner,localized);
     }
-    const classActions=await Promise.all((planner.actions||[]).map(action=>withClassActionIcon(action)));
-    const iconByKey=new Map(classActions.map(action=>[action.key,action.iconUrl||null]));
+    const illustratedActions=await enrichPlannerKnowledgeMedia(planner.actions||[],character).catch(()=>planner.actions||[]);
+    const iconByKey=new Map(illustratedActions.map(action=>[action.key,action.iconUrl||null]));
     planner={
       ...planner,
-      actions:classActions,
+      actions:illustratedActions,
       npcs:(planner.npcs||[]).map(npc=>({
         ...npc,
         actions:(npc.actions||[]).map(action=>({...action,iconUrl:iconByKey.get(action.key)||null}))

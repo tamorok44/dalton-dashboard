@@ -114,6 +114,12 @@ for(const e of examples){
   assert.match(html,/aria-valuemax="300"/);
   assert.match(html,/role="progressbar"/);
 }
+for(const name of ['Bergbau','Kräuterkunde','Kürschnerei','Angeln','Alchemie','Kochkunst','Erste Hilfe']){
+  const html=ui.professionRows([{name,current:25,max:75,iconUrl:'https://blob.example/profession.webp',knownRecipes:[{name:'Kenntnis',iconUrl:'https://blob.example/recipe.webp'}]}]);
+  assert.ok(html.includes('Rezepte &amp; Fähigkeiten'),'Alle Berufe verwenden dieselbe Bezeichnung');
+  assert.ok(html.includes('https://blob.example/profession.webp')&&html.includes('https://blob.example/recipe.webp'),'Original-Icons an Beruf und Kenntnis');
+  assert.ok(!html.includes('Camping')&&!html.includes('Verhüttung &amp; Fähigkeiten'));
+}
 const invalid=ui.professionRows([{name:'Angeln',current:20,max:0}]);
 assert.deepEqual(getSegments(invalid).map(x=>x.width),[0,0,0,0]);
 assert.ok(!invalid.includes('Lehrling')&&!invalid.includes('Geselle')&&!invalid.includes('Experte')&&!invalid.includes('Fachmann'));
@@ -734,7 +740,8 @@ assert.equal(ui.plannerState.selected.has(unknownClassAction.key),false,'Unbekan
 assert.equal(ui.plannerState.selected.has(verifiedClassAction.key),true,'Verifiziert noch nicht gelernter Klassenrang bleibt automatisch auswählbar');
 assert.ok(ui.plannerNpcHtml({key:'npc:331',name:'Magierlehrer',role:'Lehrer',location:{zone:'Sturmwind'}},classPlannerData,[unknownClassAction]).includes('Persönlicher Lernstand noch nicht automatisch auslesbar'),'Offener Klassen-Lernstand wird direkt am Lernziel sichtbar');
 const plannerClassHtml=ui.plannerNpcHtml({key:'npc:331',name:'Magierlehrer',role:'Lehrer',location:{zone:'Sturmwind'}},classPlannerData,[unknownClassAction]);
-assert.ok(plannerClassHtml.includes('class="planner-action-icon"')&&plannerClassHtml.includes('https://blob.example/spell-205.webp'),'Klassenfähigkeiten zeigen im Ortsplaner das Zauberbild vor dem Namen');
+assert.ok(plannerClassHtml.includes('knowledge-icon planner-action-icon')&&plannerClassHtml.includes('https://blob.example/spell-205.webp'),'Klassenfähigkeiten zeigen im Ortsplaner das Zauberbild vor dem Namen');
+assert.ok(ui.plannerNpcHtml({key:'npc:2',name:'Händler'},plannerData,[{...plannerAction,iconUrl:'https://blob.example/recipe.webp'}]).includes('https://blob.example/recipe.webp'),'Berufsrezepte verwenden denselben Bildvertrag wie Klassenfähigkeiten');
 assert.ok(plannerClassHtml.includes('planner-npc-avatar is-fallback'),'NPC ohne verfügbares Renderbild behält einen sichtbaren Avatarplatz');
 ui.plannerState.categories=new Set(['profession-recipes','profession-training']);
 ui.plannerState.selected.clear();

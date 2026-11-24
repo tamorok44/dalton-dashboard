@@ -86,3 +86,8 @@ Vollständige Masterkataloge sind an den verifizierten Forever-Clientbuild zu bi
 ## Historisierung
 
 Die Änderungschronik speichert fachliche Charakteränderungen. Stammdaten und Medien werden nicht bei jedem Charakter-Snapshot dupliziert. Item-, Pet- und andere Spielobjekt-IDs bleiben in der Historie erhalten, damit historische Zustände später eindeutig gegen den passenden Katalog aufgelöst werden können.
+
+
+### Berufe, Rezepte und Fähigkeiten
+
+Alle Berufe führen die einheitliche UI-Bezeichnung „Rezepte & Fähigkeiten“. Icons werden zentral nach Spielobjekttyp und stabiler ID aufgelöst: Beruf (Skill-Line-ID), hergestellter Gegenstand (Item-ID), nicht herstellende Kenntnis (Blizzard-Rezept-ID), Talent/Zauber/Begleiterfähigkeit (Spell-ID). Eine Rezept-ID darf nie ersatzweise als Spell-ID verwendet werden. Ortsplaner, Charakteransicht, Vergleich und Werkstatt nutzen dieselben registrierten Blob-Icons. Fehlende Quellen zeigen neutrale Platzhalter. Medien bleiben außerhalb des individuellen Lernstands; kalte Abrufe sind serverseitig begrenzt, bereits archivierte Bilder werden wiederverwendet.

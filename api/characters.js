@@ -1,3 +1,4 @@
+import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {loadQuestCatalogByIds} from '../scripts/quest-catalog-store.mjs';
 import {loadPublicPetRuleState} from '../scripts/pet-rule-store.mjs';
@@ -39,7 +40,8 @@ export default async function handler(req,res){
       console.warn('Addon-Sync-Status konnte nicht geladen werden:',String(error.message).slice(0,140));
     }
     const dataVersion=buildDataVersion({data:result.data,petRules,addonSync});
-    return res.status(200).json({...result,questCatalog,petRules,reputationCatalog,petCatalog,addonSync,dataVersion});
+    const media=await enrichKnowledgeMedia(result.data,petCatalog).catch(()=>({data:result.data,petCatalog}));
+    return res.status(200).json({...result,...media,questCatalog,petRules,reputationCatalog,addonSync,dataVersion});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);
     return res.status(503).json({error:'Gespeicherte Charakterdaten derzeit nicht erreichbar'});

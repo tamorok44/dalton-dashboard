@@ -1,3 +1,4 @@
+import {knowledgeRecipeRef,plannerKnowledgeRef} from './knowledge-media.mjs';
 import assert from 'node:assert/strict';
 import {buildLocationPlanner} from './location-planner.mjs';
 
@@ -180,3 +181,8 @@ assert.equal(unverified.counts.availableNow,1,
 
 assert.throws(()=>buildLocationPlanner(data,index,{characterSlug:'unknown'}),/Charakter nicht gefunden/);
 console.log('Ortsplaner: eindeutige Lernziele, Mehranbieterpreise, Berufsausbildung, Quellen und fail-closed Regeln: OK');
+
+assert.deepEqual(knowledgeRecipeRef({id:1838,craftedItem:{id:1251}}),{type:'item',id:1251,iconId:null});
+assert.deepEqual(knowledgeRecipeRef({id:4344}),{type:'recipe',id:4344,iconId:null},'Blizzard-Rezept-ID niemals als Spell-ID interpretieren');
+assert.deepEqual(plannerKnowledgeRef(elixirA),{type:'item',id:501,iconId:null},'Rezept und Produkt teilen die zentrale Item-Bildidentität');
+assert.equal(plannerKnowledgeRef(journeymanAlchemy).type,'profession');

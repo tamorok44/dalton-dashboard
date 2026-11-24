@@ -1,3 +1,4 @@
+import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {configured,acquireRefreshLock,releaseRefreshLock,manualCooldown} from '../scripts/character-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
 import {ensurePetRuleState} from '../scripts/pet-rule-store.mjs';
@@ -41,7 +42,8 @@ export default async function handler(req,res){
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
     const petRules=publicPetRuleState(petRuleState);
     const dataVersion=buildDataVersion({data:result.data,petRules});
-    return res.status(200).json({...result,petRules,dataVersion});
+    const media=await enrichKnowledgeMedia(result.data,result.petCatalog,{allowFetch:false}).catch(()=>({data:result.data,petCatalog:result.petCatalog}));
+    return res.status(200).json({...result,...media,petRules,dataVersion});
   }catch(error){
     console.error('Live-Abruf oder Speichern fehlgeschlagen:',error);
     return res.status(503).json({error:'Aktualisierung konnte nicht dauerhaft gespeichert werden'});

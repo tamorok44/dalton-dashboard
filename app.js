@@ -76,10 +76,12 @@ function professionScale(){
     professionStages.map(end=>'<span>'+end+'</span>').join('')+
     '</div>';
 }
-function knowledgeLabel(name){
-  if(name==='Bergbau')return 'Verhüttung & Fähigkeiten';
-  if(['Kräuterkunde','Kürschnerei','Angeln'].includes(name))return 'Fähigkeiten & Camping';
-  return 'Rezepte & Fähigkeiten';
+function knowledgeLabel(){return 'Rezepte & Fähigkeiten'}
+function knowledgeIcon(url,size=32,extraClass=''){
+  const cls='knowledge-icon'+(extraClass?' '+extraClass:'');
+  return url
+    ?'<img class="'+cls+'" src="'+esc(url)+'" alt="" width="'+size+'" height="'+size+'" loading="lazy" decoding="async">'
+    :'<span class="'+cls+' is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5zM19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19zM8 8h2m4 0h2"/></svg></span>';
 }
 function craftedQuantityText(quantity){
   if(!quantity)return '';
@@ -102,7 +104,7 @@ function recipeRows(recipes=[]){
     const materials=reagents.length?'<span class="recipe-reagents">Materialien: '+esc(reagents.join(' · '))+'</span>':'';
     const hasDetails=Boolean(crafted||materials);
     return '<div class="recipe-entry">'+
-      '<div class="recipe-name"><span class="recipe-dot" aria-hidden="true"></span><strong>'+esc(recipeName||'Kenntnis')+'</strong></div>'+
+      '<div class="recipe-name">'+knowledgeIcon(recipe.iconUrl,28)+'<strong>'+esc(recipeName||'Kenntnis')+'</strong></div>'+
       (hasDetails?'<div class="recipe-meta">'+crafted+materials+'</div>':'')+
       '</div>';
   }).join('')+'</div>';
@@ -138,7 +140,7 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
         '<summary>'+esc(knowledgeLabel(p.name))+' · '+recipes.length+'</summary>'+recipeRows(recipes)+'</details>'
       :'';
     return '<div class="profession">'+
-      '<div class="profession-head"><span class="profession-label">'+esc(label)+'</span>'+
+      '<div class="profession-head">'+knowledgeIcon(p.iconUrl,36)+'<span class="profession-label">'+esc(label)+'</span>'+
       '</div>'+
       '<div class="profession-track" role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="300" aria-valuenow="'+(valid?Math.max(0,Math.min(300,Math.round(currentSkill))):0)+'" aria-valuetext="'+esc(valid?fraction:'kein bestätigter Stand')+'">'+
       stageSegments+
@@ -162,7 +164,7 @@ function talentPanel(c){
   const body=active.map(tree=>'<div class="talent-tree">'+
     '<div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(tree.spentPoints)+' '+(Number(tree.spentPoints)===1?'Punkt':'Punkte')+'</span></div>'+
     '<div class="talent-list">'+(tree.talents||[]).map(talent=>'<div class="talent-entry">'+
-      '<div class="talent-entry-head"><strong>'+esc(talent.name)+'</strong>'+(Number.isFinite(Number(talent.rank))?'<span>Rang '+esc(talent.rank)+'</span>':'')+'</div>'+
+      '<div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(talent.iconUrl,28)+'<strong>'+esc(talent.name)+'</strong></span>'+(Number.isFinite(Number(talent.rank))?'<span>Rang '+esc(talent.rank)+'</span>':'')+'</div>'+
       (talent.description?'<p>'+esc(talent.description)+'</p>':'')+
     '</div>').join('')+'</div></div>').join('');
   return '<div class="section talents-section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="talent-trees">'+body+'</div></div>';
@@ -581,7 +583,7 @@ function hunterPetsPanel(c){
       :('Ab Stufe '+required);
     const groupLabel=state==='now'?'JETZT ERLERNBAR':state==='next'?'ALS NÄCHSTES':'SPÄTER';
     return '<div class="stat-tile pet-training-card is-'+state+'"><span class="pet-training-status">'+esc(groupLabel)+'</span>'+
-      '<div class="pet-training-card-head"><strong>'+esc(ability.name)+'</strong><span>'+esc(stateLabel)+'</span></div>'+
+      '<div class="pet-training-card-head"><span class="knowledge-title">'+knowledgeIcon(ability.iconUrl,28)+'<strong>'+esc(ability.name)+'</strong></span><span>'+esc(stateLabel)+'</span></div>'+
       (ability.description?'<p>'+esc(ability.description)+'</p>':'')+'</div>';
   };
   const currentHtml=currentAbilities.length
@@ -938,11 +940,11 @@ function cmpNumber(v){if(v===null||v===undefined||v==='')return null;const n=Num
 function cmpEntry(value,score=null,extra='',stale=false){
   return {value:value===null||value===undefined||value===''?'–':String(value),score:cmpNumber(score),extra,stale};
 }
-function cmpTableRow(label,values,chars,{direction=1,comparable=true}={}){
+function cmpTableRow(label,values,chars,{direction=1,comparable=true,iconUrl=null}={}){
   const scores=values.map(v=>v?.score).filter(v=>v!==null&&v!==undefined&&Number.isFinite(v));
   const min=scores.length?Math.min(...scores):null,max=scores.length?Math.max(...scores):null;
   const diff=comparable&&scores.length>=2&&max!==min;
-  return '<tr><th scope="row">'+esc(label)+'</th>'+values.map(v=>{
+  return '<tr><th scope="row">'+(iconUrl?'<span class="knowledge-title">'+knowledgeIcon(iconUrl,22)+esc(label)+'</span>':esc(label))+'</th>'+values.map(v=>{
     const missing=!v||v.value==='–';
     const state=!diff||missing||v.score===null?'':(v.score===max?(direction===1?'best':'worst'):v.score===min?(direction===1?'worst':'best'):'middle');
     return '<td class="'+(state?'compare-'+state:'')+'">'+
@@ -990,7 +992,7 @@ function cmpSectionRows(id,chars){
     for(const tree of trees){
       push('Talentbaum: '+tree,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree);return t?cmpEntry(t.spentPoints+' Punkte',t.spentPoints,'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false});
       const talents=[...new Set(chars.flatMap(c=>((c.talentDetails||[]).find(t=>t.name===tree)?.talents||[]).map(t=>t.name)))].sort((a,b)=>a.localeCompare(b,'de'));
-      for(const name of talents)push('↳ '+name,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree)?.talents?.find(x=>x.name===name);return t?cmpEntry('Rang '+(t.rank??'–'),t.rank,t.description||'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false});
+      for(const name of talents)push('↳ '+name,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree)?.talents?.find(x=>x.name===name);return t?cmpEntry('Rang '+(t.rank??'–'),t.rank,t.description||'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false,iconUrl:chars.flatMap(c=>(c.talentDetails||[]).find(x=>x.name===tree)?.talents||[]).find(t=>t.name===name&&t.iconUrl)?.iconUrl});
     }
   }
   if(id==='quests'){
@@ -1008,9 +1010,9 @@ function cmpSectionRows(id,chars){
     const names=[...new Set(chars.flatMap(c=>(c.professions||[]).map(p=>p.name)))];
     const ordered=sortProfessionsForDisplay(names.map(name=>({name}))).map(p=>p.name);
     for(const name of ordered){
-      push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,'',p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)});
+      push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,'',p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)},{iconUrl:chars.flatMap(c=>c.professions||[]).find(p=>p.name===name&&p.iconUrl)?.iconUrl});
       const recipes=[...new Set(chars.flatMap(c=>((c.professions||[]).find(p=>p.name===name)?.knownRecipes||[]).map(r=>r.name)))].sort((a,b)=>a.localeCompare(b,'de'));
-      for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false});
+      for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false,iconUrl:chars.flatMap(c=>(c.professions||[]).find(p=>p.name===name)?.knownRecipes||[]).find(r=>r.name===recipe&&r.iconUrl)?.iconUrl});
     }
   }
   if(id==='reputation'){
@@ -1179,7 +1181,7 @@ function workshopLearningHtml(result){
         '</div>'
       :'<p>'+esc(result.learningSourcesReason||'ForeverDB kennt derzeit keine konkrete Bezugsquelle.')+'</p>';
   return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4>'+
-    '<p class="workshop-recipe-line"><strong>'+esc(recipe.name||result.item?.name||'Rezept')+'</strong>'+requirement+'</p>'+
+    '<p class="workshop-recipe-line"><span class="knowledge-title">'+knowledgeIcon(result.item?.iconUrl,28)+'<strong>'+esc(recipe.name||result.item?.name||'Rezept')+'</strong></span>'+requirement+'</p>'+
     workshopLearningCandidatesHtml(result)+
     '<div class="workshop-learning-sources"><h5>Bezugsquellen</h5>'+sourceHtml+'</div></section>';
 }
@@ -1207,7 +1209,7 @@ function workshopResultHtml(){
   const craftable=tree?.status==='craftable';
   const base=(result.plan?.externalMaterials||[]);
   return '<article class="workshop-result">'+
-    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3>'+esc(item.name||('Item '+item.id))+'</h3>'+
+    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3 class="knowledge-title">'+knowledgeIcon(item.iconUrl,40)+esc(item.name||('Item '+item.id))+'</h3>'+
     '<p>'+esc(workshopCrafterText(topCrafters))+'</p></div>'+
     (craftable?'<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label>':'')+'</div>'+
     (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
@@ -1584,11 +1586,7 @@ function plannerNpcHtml(npc,data,actions){
       const checked=plannerState.selected.get(action.key)===sourceKey;
       const stock=Number(action.source?.limitedStock);
       const line=plannerActionLine(action);
-      const actionIcon=action.category==='class-abilities'
-        ?(action.iconUrl
-          ?'<img class="planner-action-icon" src="'+esc(action.iconUrl)+'" alt="" width="34" height="34" loading="lazy">'
-          :'<span class="planner-action-icon is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5z"/><path d="M19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19z"/><path d="M8 8h2M14 8h2"/></svg></span>')
-        :'';
+      const actionIcon=knowledgeIcon(action.iconUrl,34,'planner-action-icon');
       return '<div class="planner-recipe-card"><label class="planner-recipe-choice"><input type="checkbox" data-location-action="'+esc(action.key)+'" data-location-source="'+esc(sourceKey)+'"'+(checked?' checked':'')+'><span class="planner-recipe-copy"><span class="planner-action-category">'+esc(plannerCategoryLabel(action.category,data))+'</span><span class="planner-action-titleline">'+actionIcon+'<strong>'+esc(action.name)+'</strong></span>'+(line?'<small>'+esc(line)+'</small>':'')+
         (Number.isFinite(stock)&&stock>0?'<small class="planner-stock">Begrenzter Vorrat · '+esc(stock)+'</small>':'')+'</span><span class="planner-recipe-price"><strong>'+esc(plannerPrice(action.source?.priceCopper))+'</strong>'+(plannerPriceSourceLabel(action.source)?'<small>'+esc(plannerPriceSourceLabel(action.source))+'</small>':'')+'</span></label>'+
         plannerSwitchHtml(action,action.source)+
