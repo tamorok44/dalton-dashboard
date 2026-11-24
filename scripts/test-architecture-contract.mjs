@@ -242,7 +242,9 @@ assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('resolveMed
 assert.ok(sourceByFile.has('scripts/classic-npc-display-ids.mjs'),'Central visual-only Classic NPC display fallback is required');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('classicNpcDisplayId'),'NPC portraits may use the bounded Classic display-ID fallback without per-NPC ForeverDB API calls');
 assert.ok(!(sourceByFile.get('api/location-planner.js')||'').includes('cachedForeverDbVendor'),'Location planner must never create a ForeverDB vendor N+1 for portraits');
-assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("entityType:'spell'"),'Class-spell icons must use the central media resolver');
+const knowledgeMedia=sourceByFile.get('scripts/knowledge-media.mjs')||'';
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('enrichPlannerKnowledgeMedia')&&knowledgeMedia.includes("return ref('spell',action.id,action.iconId)")&&knowledgeMedia.includes('resolveMediaAsset({entityType:entry.type,entityId:entry.id'),'Class-spell icons must use the central media resolver');
+assert.ok(knowledgeMedia.includes("ref('item',recipe?.craftedItem?.id)||ref('recipe',recipe?.id)")&&knowledgeMedia.includes("ref('profession',action.professionId)"),'Profession and recipe media identities must remain explicit and shared');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('archiveKnownAbilityIcons'),'Verified learned class abilities must persist archived icons with the spellbook snapshot');
 const checkboxMarkup=[...browserSource.matchAll(/<input[^>]+type=["']checkbox["'][^>]*>/g)].map(match=>match[0]);
 assert.ok(checkboxMarkup.length>0,'Character multi-selection checkboxes should remain available');
