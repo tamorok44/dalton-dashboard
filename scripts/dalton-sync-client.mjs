@@ -7,7 +7,7 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {pathToFileURL} from 'node:url';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
-import {buildSafeAddonSyncPayload,publicAddonSyncSummary} from './addon-sync.mjs';
+import {buildSafeAddonSyncPayload,publicAddonSyncSummary,addonSyncContentIdentity} from './addon-sync.mjs';
 
 const execFileAsync=promisify(execFile);
 
@@ -25,7 +25,7 @@ function args(argv){
   return out;
 }
 function help(){
-  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.8');
+  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.9');
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
   console.log('');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN in der lokalen Umgebung gesetzt sein.');
@@ -135,7 +135,7 @@ async function readPayload(file){
   const raw=await fs.readFile(file,'utf8');
   const charDb=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
   const safePayload=buildSafeAddonSyncPayload(charDb);
-  const hash=createHash('sha256').update(JSON.stringify(safePayload)).digest('hex');
+  const hash=createHash('sha256').update(JSON.stringify(addonSyncContentIdentity(safePayload))).digest('hex');
   return {hash,payload:{...safePayload,syncId:hash},localDiagnostics:localDiagnosticsSummary(charDb)};
 }
 export function previewCookieFromSetCookie(values=[]){
@@ -163,7 +163,7 @@ async function postPayload(endpoint,token,payload,{cookie=null}={}){
   const headers={
     Authorization:'Bearer '+token,
     'Content-Type':'application/json',
-    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.8'
+    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.9'
   };
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(url,{
