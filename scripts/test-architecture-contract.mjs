@@ -159,12 +159,16 @@ assert.ok(sourceByFile.has('api/addon-sync.js'),'Private full addon sync endpoin
 assert.ok(sourceByFile.has('scripts/addon-sync.mjs')&&sourceByFile.has('scripts/addon-sync-store.mjs'),'Addon sync needs centralized validation and persistence');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
 assert.ok(sourceByFile.has('scripts/addon-device-auth.mjs')&&sourceByFile.has('api/addon-device-enroll.js'),'Addon sync device authorization and one-time enrollment are required');
+assert.ok(sourceByFile.has('api/addon-device-promote.js'),'Cole preview device needs an explicit production-promotion endpoint');
 assert.ok((sourceByFile.get('scripts/addon-device-auth.mjs')||'').includes('timingSafeEqual')&&(sourceByFile.get('scripts/addon-device-auth.mjs')||'').includes('DALTON_SYNC_TOKEN'),'Master addon sync token must stay constant-time compared at the centralized auth boundary');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('authorizeDeviceToken')&&(sourceByFile.get('api/addon-sync.js')||'').includes('masterSyncTokenMatches'),'Addon sync must accept only the master token or a validated per-device token');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('deviceMaySync(device,target.slug,payload.client?.transport)'),'Device authorization must pass character and transport through the centralized policy');
 const deviceAuthSource=sourceByFile.get('scripts/addon-device-auth.mjs')||'';
 assert.ok(deviceAuthSource.includes("if(own===target)return true")&&deviceAuthSource.includes("own==='cole-dalton'")&&deviceAuthSource.includes("transport||'')==='dalton-peer-relay'"),'Device tokens stay character-bound; only Cole hub may forward trusted peer-relay payloads');
 assert.ok(deviceAuthSource.includes("deviceMayCreateEnrollment")&&deviceAuthSource.includes("String(targetSlug)!=='cole-dalton'"),'Only Cole hub may create one-time enrollment codes for other trusted Dalton characters, never for itself');
+assert.ok(deviceAuthSource.includes('promoteColeDeviceToProduction')&&deviceAuthSource.includes("device.characterSlug!=='cole-dalton'"),'Production promotion must be restricted to the authenticated Cole preview hub');
+const promoteApi=sourceByFile.get('api/addon-device-promote.js')||'';
+assert.ok(promoteApi.includes("process.env.VERCEL_ENV==='production'")&&promoteApi.includes('promoteColeDeviceToProduction'),'Production-promotion endpoint must be disabled in production and validate the preview Cole device');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes("process.env.VERCEL_ENV!=='production'")&&(sourceByFile.get('api/addon-sync.js')||'').includes('previewIsolated'),'Preview addon sync must never write verified spellbook data into the shared production character store');
 assert.ok((sourceByFile.get('scripts/addon-sync-store.mjs')||'').includes("?'production':'preview'"),'Addon sync raw-state Redis keys must be environment-scoped');
 assert.ok(sourceByFile.has('scripts/live-knowledge-store.mjs'),'Persistent build-scoped Dalton live-knowledge store is required');
