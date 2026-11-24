@@ -6,6 +6,7 @@ import {resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spell
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
 import {loadAddonSyncState,saveAddonSyncState} from '../scripts/addon-sync-store.mjs';
+import {ingestAddonLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
 
 export const config={maxDuration:30};
 
@@ -78,10 +79,12 @@ export default async function handler(req,res){
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
+    const liveKnowledge=await ingestAddonLiveKnowledge(payload);
     const previousState=await loadAddonSyncState(target.slug);
     if(previousState?.payload?.syncId&&previousState.payload.syncId===payload.syncId){
       return res.status(200).json({
         duplicate:true,
+        liveKnowledge,
         character:{slug:target.slug,name:target.name},
         summary:publicAddonSyncSummary(previousState)
       });
@@ -121,6 +124,7 @@ export default async function handler(req,res){
       duplicate:false,
       previewIsolated,
       spellbookApplied,
+      liveKnowledge,
       character:{slug:character.slug,name:character.name,knownClassAbilitiesVerified:character.knownClassAbilitiesVerified===true},
       summary:publicAddonSyncSummary(state)
     });
