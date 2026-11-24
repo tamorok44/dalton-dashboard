@@ -238,6 +238,7 @@ local function capture(reason, refreshStable)
 
   db.hunter = hunter
   db.meta.lastUpdatedAt = hunter.capturedAt
+  if type(ns.RelaySectionChanged) == "function" then ns.RelaySectionChanged("hunter") end
 end
 
 function module:Capture(reason)
