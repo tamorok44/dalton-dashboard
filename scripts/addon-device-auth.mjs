@@ -21,6 +21,17 @@ function safeEqual(a,b){
 export function trustedCharacterSlugs(){return Object.keys(TRUSTED_CHARACTERS)}
 export function trustedCharacterName(slug){return TRUSTED_CHARACTERS[String(slug||'')]||null}
 export function isTrustedCharacterSlug(slug){return Boolean(trustedCharacterName(slug))}
+export function deviceMaySync(device,targetSlug,transport){
+  const own=String(device?.characterSlug||'');
+  const target=String(targetSlug||'');
+  if(!isTrustedCharacterSlug(own)||!isTrustedCharacterSlug(target))return false;
+  if(own===target)return true;
+  return own==='cole-dalton'&&target!=='cole-dalton'&&String(transport||'')==='dalton-peer-relay';
+}
+export function deviceMayCreateEnrollment(device,targetSlug){
+  return String(device?.characterSlug||'')==='cole-dalton'&&
+    isTrustedCharacterSlug(targetSlug)&&String(targetSlug)!=='cole-dalton';
+}
 export function masterSyncTokenMatches(token){
   const expected=process.env.DALTON_SYNC_TOKEN||process.env.SPELLBOOK_SYNC_TOKEN;
   return Boolean(expected)&&safeEqual(token,expected);
