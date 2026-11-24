@@ -78,6 +78,34 @@ local function status()
   ns.Chat("Das Addon selbst sendet nichts ins Internet. Ein optionaler lokaler Companion kann freigegebene Bereiche nach dem Speichern der SavedVariables synchronisieren.")
 end
 
+local function printPerformance()
+  local db = ns.GetDB()
+  local rows = {}
+  for name, entry in pairs(db.diagnostics.modules or {}) do
+    if type(entry) == "table" and tonumber(entry.runs) then
+      rows[#rows + 1] = {
+        name = tostring(name),
+        runs = tonumber(entry.runs) or 0,
+        last = tonumber(entry.lastDurationMs),
+        max = tonumber(entry.maxDurationMs),
+        avg = tonumber(entry.averageDurationMs)
+      }
+    end
+  end
+  table.sort(rows, function(a, b) return a.name < b.name end)
+  if #rows == 0 then
+    ns.Chat("Noch keine Performance-Messwerte vorhanden.")
+    return
+  end
+  ns.Chat("Performance seit diesem Login (nur ereignisgesteuerte Aufrufe):")
+  for _, row in ipairs(rows) do
+    ns.Chat(row.name .. " · " .. tostring(row.runs) .. " Aufrufe · zuletzt " ..
+      (row.last and string.format("%.2f ms", row.last) or "–") .. " · Ø " ..
+      (row.avg and string.format("%.2f ms", row.avg) or "–") .. " · max " ..
+      (row.max and string.format("%.2f ms", row.max) or "–"))
+  end
+end
+
 local function printDiagnostics(kind)
   local db = ns.GetDB()
   local list = db.diagnostics[kind] or {}
@@ -104,6 +132,8 @@ SlashCmdList.DALTONDASHBOARD = function(command)
     printDiagnostics("errors")
   elseif command == "compat" then
     printDiagnostics("compatibility")
+  elseif command == "perf" then
+    printPerformance()
   else
     status()
   end
