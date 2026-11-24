@@ -81,9 +81,9 @@ jobs:
           set -euo pipefail
           mkdir -p dist
           cd addons
-          zip -r "../dist/DaltonDashboard-0.1.0-alpha.11.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
+          zip -r "../dist/DaltonDashboard-0.1.0-beta.1.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
           cd ..
-          unzip -l dist/DaltonDashboard-0.1.0-alpha.11.zip
+          unzip -l dist/DaltonDashboard-0.1.0-beta.1.zip
 
       - name: Sync-Companion-Paket bauen
         shell: bash
@@ -95,23 +95,23 @@ jobs:
           cp scripts/addon-sync.mjs dist/DaltonDashboardSyncCompanion/
           cp docs/dalton-sync-companion.md dist/DaltonDashboardSyncCompanion/README.md
           cd dist
-          zip -r "DaltonDashboardSyncCompanion-0.1.0-alpha.11.zip" DaltonDashboardSyncCompanion
+          zip -r "DaltonDashboardSyncCompanion-0.1.0-beta.1.zip" DaltonDashboardSyncCompanion
           cd ..
-          unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-alpha.11.zip
+          unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-beta.1.zip
 
       - name: Addon-Testpaket bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboard-0.1.0-alpha.11
-          path: dist/DaltonDashboard-0.1.0-alpha.11.zip
+          name: DaltonDashboard-0.1.0-beta.1
+          path: dist/DaltonDashboard-0.1.0-beta.1.zip
           if-no-files-found: error
           retention-days: 14
 
       - name: Sync-Companion-Testpaket bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboardSyncCompanion-0.1.0-alpha.11
-          path: dist/DaltonDashboardSyncCompanion-0.1.0-alpha.11.zip
+          name: DaltonDashboardSyncCompanion-0.1.0-beta.1
+          path: dist/DaltonDashboardSyncCompanion-0.1.0-beta.1.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -157,13 +157,13 @@ jobs:
           Write-Host "Bridge Idle-Baseline: Working Set ${wsMb} MB; CPU-Zeit in 4 s: ${idleCpu} s"
           Stop-Process -Id $p.Id -Force
 
-          Compress-Archive -Path dist/bridge-windows/* -DestinationPath dist/DaltonDashboardBridge-Windows-0.1.0-alpha.11.zip -Force
+          Compress-Archive -Path dist/bridge-windows/* -DestinationPath dist/DaltonDashboardBridge-Windows-0.1.0-beta.1.zip -Force
 
       - name: Windows-Bridge bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboardBridge-Windows-0.1.0-alpha.11
-          path: dist/DaltonDashboardBridge-Windows-0.1.0-alpha.11.zip
+          name: DaltonDashboardBridge-Windows-0.1.0-beta.1
+          path: dist/DaltonDashboardBridge-Windows-0.1.0-beta.1.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -193,14 +193,14 @@ jobs:
           grep -q "Gerätezugang" bridge/uninstall-windows.ps1
           grep -q "cole-dalton" bridge/Einrichtungscode-erstellen.command
           cd dist
-          zip -r DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip bridge-macos
+          zip -r DaltonDashboardBridge-macOS-0.1.0-beta.1.zip bridge-macos
           cd ..
 
       - name: macOS-Bridge bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: DaltonDashboardBridge-macOS-0.1.0-alpha.11
-          path: dist/DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip
+          name: DaltonDashboardBridge-macOS-0.1.0-beta.1
+          path: dist/DaltonDashboardBridge-macOS-0.1.0-beta.1.zip
           if-no-files-found: error
           retention-days: 14
 

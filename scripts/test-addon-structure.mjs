@@ -25,7 +25,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
-assert.ok(toc.includes('## Version: 0.1.0-alpha.11'));
+assert.ok(toc.includes('## Version: 0.1.0-beta.1'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -105,6 +105,6 @@ assert.ok(inventory.includes('letzter gültiger Stand bleibt erhalten'),'Inventa
 assert.ok(!bundle.includes('https://dalton-dashboard-eight.vercel.app/api/addon-sync'),'WoW-Addon darf keinen Netzwerk-Endpunkt enthalten');
 assert.ok(!bundle.includes('Dalton-Gruppenmitglieder'),'Statushilfe darf den direkten Relay nicht fälschlich auf Gruppenmitglieder beschränken');
 assert.ok(!readFileSync(root+'/README.md','utf8').includes('Ein Versand startet nur, wenn Cole tatsächlich in derselben Gruppe ist'),'README darf den alten Gruppen-Zwang nicht beschreiben');
-assert.ok(readFileSync(root+'/CHANGELOG.md','utf8').includes('0.1.0-alpha.11'),'Release-Paket braucht ein versionsbezogenes Changelog');
+assert.ok(readFileSync(root+'/CHANGELOG.md','utf8').includes('0.1.0-beta.1'),'Release-Paket braucht ein versionsbezogenes Changelog');
 
 console.log('Dalton Dashboard Addon: Struktur, Forever-Events, Privacy-Grenze und Datendomänen: OK');

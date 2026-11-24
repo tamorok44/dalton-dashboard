@@ -1,7 +1,7 @@
 DaltonDashboardCharDB = {
   ["schemaVersion"] = 1,
   ["meta"] = {
-    ["addonVersion"] = "0.1.0-alpha.11",
+    ["addonVersion"] = "0.1.0-beta.1",
     ["gameVersion"] = "1.60.1",
     ["build"] = "70790",
     ["interface"] = 16001,

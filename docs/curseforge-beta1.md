@@ -1,4 +1,4 @@
-# CurseForge-Freigabe · Dalton Dashboard Sync 0.1.0-alpha.11
+# CurseForge-Freigabe · Dalton Dashboard Sync 0.1.0-beta.1
 
 ## Projektname
 Dalton Dashboard Sync
@@ -39,7 +39,7 @@ Das AddOn ist auf geringe Last ausgelegt:
 - `/dalton scan` – manueller lokaler Diagnose-Scan
 
 ## Datei für den ersten Dalton-Test
-- **Display Name:** Dalton Dashboard Sync 0.1.0-alpha.11
+- **Display Name:** Dalton Dashboard Sync 0.1.0-beta.1
 - **Release Type:** Beta
 - **Changelog Type:** Markdown
 - **Supported Version:** WoW Forever / passend zur in CurseForge angebotenen Forever-Version
@@ -48,7 +48,7 @@ Das AddOn ist auf geringe Last ausgelegt:
 Warum Beta: Der Stand soll über den CurseForge-Client an die Testspieler verteilt werden, ist aber noch kein endgültiger Release. Eine reine Alpha-Datei wird im CurseForge-Client nicht regulär verteilt.
 
 ## Changelog für das Upload-Feld
-## 0.1.0-alpha.11
+## 0.1.0-beta.1
 
 ### Neu
 - Ereignisgesteuerte Erfassung von Charakter, Spellbook, Standort, Instanz-Lockouts sowie Händler- und Lehrerbeobachtungen.

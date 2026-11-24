@@ -1,4 +1,4 @@
-# Dalton Dashboard Sync Companion · Alpha 11
+# Dalton Dashboard Sync Companion · Beta 1
 
 Die Bridge ist bewusst vom WoW-Addon getrennt. Auf Christians Rechner läuft sie als Master-Hub; optional kann jeder weitere Dalton-Spieler dieselbe Bridge einmalig koppeln. Danach läuft sie ohne sichtbares Fenster automatisch im Benutzerhintergrund.
 
