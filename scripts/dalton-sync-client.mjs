@@ -303,7 +303,6 @@ async function readRelayRecords(file){
   const globalDb=parseLuaSavedVariable(raw,'DaltonDashboardDB');
   const records=[];
   for(const {inboxKey,charDb} of relayCharDbsFromGlobalDb(globalDb)){
-    const charDb=entry?.charDb;
     if(!charDb||typeof charDb!=='object'||!trustedCharacter(charDb))continue;
     const name=normalizedName(charDb.character?.name);
     if(!name||name==='cole dalton')continue;
