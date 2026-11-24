@@ -14,18 +14,26 @@ Aktuell werden lokal erfasst:
 - schlanke Standorthistorie: ein neuer Eintrag nur bei tatsächlichem Gebiets-/Untergebiets-/Instanzwechsel, niemals permanentes Positions-Polling
 - vollständige Händler- und Lehrerbeobachtungen beim Öffnen/Ändern des jeweiligen Fensters, inklusive NPC, Standort, Angebot, Preis und Forever-Build soweit lesbar
 - Instanz- und Raid-Lockouts; wenn der Client keine vollständige Saved-Instance-Liste bereitstellt, wird der aktuelle Instanz-Lockout als bestätigter Fallback gespeichert
-- Tascheninhalt
-- letzter bekannter Bankinhalt, sobald die Bank geöffnet wurde
-- Goldbestand
+- Taschen-/Bank-/Goldinformationen nur noch als lokaler manueller Diagnosebestand über `/dalton scan`; sie werden weder automatisch im Spielbetrieb erfasst noch synchronisiert
 - bei Jägern: aktives Pet, XP, Zufriedenheit, Loyalität, Trainingspunkte, Pet-Spellbook sowie aktive und gestallte Pets soweit der Forever-Client sie liefert
 
 ## Datenschutz und Synchronisierung
 
-Das WoW-Addon selbst sendet weiterhin keinerlei Daten ins Internet. Alles wird zunächst in den WoW-SavedVariables auf dem jeweiligen Rechner gespeichert.
+Das WoW-Addon führt **keinen HTTP-Zugriff** aus und enthält keinen privaten Server-Schlüssel.
 
-Für Alpha 5 gibt es zusätzlich einen separaten lokalen Sync-Companion. Er liest die gespeicherten SavedVariables nach Logout oder /reload und überträgt ausschließlich die freigegebenen Bereiche Charakter, Spellbook, Standort/Standorthistorie, Lockouts, Hunter/Pet und Händler-/Lehrerbeobachtungen. **Gold, Taschen und Bank sind ausdrücklich nicht Teil des Standard-Syncs.**
+Ab Alpha 10 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Relay:
 
-Damit bleiben Datenerfassung und Transport technisch getrennt. Das Addon benötigt weder Netzwerkzugriff noch einen eingebetteten Schlüssel.
+- Cole Dalton ist der Relay-Hub.
+- Chucky Dalton, Dolly Dalton und Viola Dalton senden ausschließlich die freigegebenen Dashboard-Bereiche über die offizielle WoW-AddOn-Kommunikation an Cole.
+- Ein Versand startet nur, wenn Cole tatsächlich in derselben Gruppe ist. Es gibt kein permanentes Polling und keine Offline-Whisper-Schleife.
+- Vor dem Versand wird der Datensatz per CBOR serialisiert, auf Geschwindigkeit komprimiert und Base64-kodiert. Die Übertragung erfolgt in kleinen, gedrosselten Paketen.
+- Ein deterministischer Inhaltsfingerabdruck verhindert erneute Komprimierung und Übertragung, wenn sich fachlich nichts geändert hat.
+- Der Empfänger akzeptiert nur das fest definierte Dalton-Roster und entfernt die privaten Bereiche `inventory` und `economy` zusätzlich.
+- Coles Account-SavedVariables speichern die zuletzt empfangenen Peer-Datensätze im Relay-Postfach.
+
+Nur auf Christians Rechner läuft weiterhin der lokale Sync-Companion. Er liest nach `/reload` oder Logout sowohl Coles eigenen Datensatz als auch das Relay-Postfach und überträgt die freigegebenen Bereiche zum Dashboard. Für Max, Valentin und Stephan ist dadurch ausschließlich die CurseForge-Installation des WoW-Addons vorgesehen.
+
+**Gold, Taschen und Bank sind niemals Teil des Standard-Syncs.**
 
 ## Technische Hinweise
 
@@ -40,7 +48,7 @@ Damit bleiben Datenerfassung und Transport technisch getrennt. Das Addon benöti
 - Banktabs werden dynamisch über die aktuelle Forever-C_Bank-API ermittelt; die Lesbarkeit der Charakterbank wird live mit C_Bank.CanViewBank geprüft
 - zusätzlich reagiert die Bankerfassung auf BANK_TABS_CHANGED, damit sie nicht von einem einzelnen Öffnen-Event abhängt
 - Händler-/Lehrerbeobachtungen werden ausschließlich über MERCHANT_SHOW/UPDATE bzw. TRAINER_SHOW/UPDATE ausgelöst und als vollständige Momentaufnahme markiert, wenn alle Einträge lesbar waren
-- der Sync-Companion arbeitet ausserhalb von WoW; er beobachtet die SavedVariables-Datei ereignisgesteuert und erzeugt keine dauerhafte Last im Spielclient
+- der Sync-Companion arbeitet ausschließlich auf Christians Rechner ausserhalb von WoW; er beobachtet Coles SavedVariables und das Relay-Postfach ereignisgesteuert
 - Pet-Daten werden nur gespeichert, wenn der Forever-Client sie tatsächlich liefert
 - nicht unterstützte oder geschützte Werte werden ausgelassen statt geschätzt
 - nicht unterstützte Events landen als Kompatibilitätshinweis und nicht mehr im eigentlichen Fehlerprotokoll
@@ -51,11 +59,13 @@ Damit bleiben Datenerfassung und Transport technisch getrennt. Das Addon benöti
 - /dalton scan: manueller Gesamtscan mit Erfolg-/Fehlerstatus
 - /dalton errors: letzte echten Addonfehler
 - /dalton compat: letzte Kompatibilitätshinweise
+- /dalton perf: ereignisbasierte Modul-Laufzeiten seit Login
+- /dalton relay: Rolle, Gruppenstatus und letzter Relay-Stand
 
 Die frühere Copy/Paste-Spellbook-Lösung und ein eingebetteter privater Sync-Schlüssel sind nicht mehr Bestandteil des Addons.
 
 
-## Lokaler Alpha-5-Sync-Test
+## Lokaler Alpha-10-Sync-Test
 
 Der Companion liegt unter `scripts/dalton-sync-client.mjs`. Ohne Argument sucht er auf macOS und Windows nach der zuletzt geänderten `DaltonDashboard.lua`. Alternativ kann die Datei mit `--file` explizit angegeben werden.
 
@@ -64,4 +74,4 @@ Der Companion liegt unter `scripts/dalton-sync-client.mjs`. Ohne Argument sucht 
 - Für echte Übertragung wird der private Schlüssel ausschließlich lokal als `DALTON_SYNC_TOKEN` gesetzt; er wird niemals in Addon oder Repository geschrieben.
 - Der Endpunkt kann für den Test über `DALTON_SYNC_ENDPOINT` bzw. `--endpoint` auf einen Preview-Build gesetzt werden.
 
-Wichtig: WoW schreibt SavedVariables regulär bei Logout bzw. `/reload`. Der Companion kann daher erst danach neue Daten sehen; das Addon führt dafür absichtlich keinen Hintergrund-Dateizugriff oder Netzwerkverkehr aus.
+Wichtig: WoW schreibt SavedVariables regulär bei Logout bzw. `/reload`. Erst dann sieht der Companion neue lokale oder empfangene Relay-Daten. Innerhalb von WoW gibt es weiterhin keinen Dateizugriff und keinen Internetzugriff.
