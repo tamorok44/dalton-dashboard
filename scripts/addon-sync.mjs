@@ -19,6 +19,7 @@ function array(value){
 }
 function integer(value){const n=Number(value);return Number.isInteger(n)&&n>0?n:null}
 function finite(value){const n=Number(value);return Number.isFinite(n)?n:null}
+function optionalFinite(value){return value===null||value===undefined||value===''?null:finite(value)}
 function text(value,max=240){return typeof value==='string'&&value.trim()?value.trim().slice(0,max):null}
 function epochIso(value){
   const n=finite(value);
@@ -145,6 +146,50 @@ export function addonSpellbookSnapshot(payload,classMaster=null){
   };
 }
 
+function uniqueNpcCount(entries=[]){
+  const keys=new Set();
+  for(const entry of array(entries)){
+    const npc=object(entry?.npc);
+    const id=integer(npc.id);
+    const name=text(npc.name,160);
+    if(id)keys.add('id:'+id);
+    else if(name)keys.add('name:'+name.toLocaleLowerCase('de-DE'));
+  }
+  return keys.size;
+}
+function sameLocation(a={},b={}){
+  const az=text(a.zone,160),bz=text(b.zone,160);
+  if(!az||!bz||az!==bz)return false;
+  const as=text(a.subZone,160),bs=text(b.subZone,160);
+  return !as||!bs||as===bs;
+}
+function visitedInstancesFromLocationHistory(history={}){
+  const seen=new Map();
+  for(const entry of array(history.entries)){
+    const instance=object(entry?.instance);
+    const type=text(instance.instanceType,40);
+    if(type!=='party'&&type!=='raid')continue;
+    const name=text(instance.name,160);
+    if(!name)continue;
+    const instanceID=integer(instance.instanceID);
+    const difficultyID=integer(instance.difficultyID);
+    const key=[instanceID||name.toLocaleLowerCase('de-DE'),difficultyID||''].join(':');
+    const capturedAt=epochIso(entry?.lastSeenAt??entry?.capturedAt);
+    const previous=seen.get(key);
+    const candidate={
+      name,
+      instanceType:type,
+      instanceID,
+      difficultyID,
+      difficultyName:text(instance.difficultyName,120),
+      maxPlayers:finite(instance.maxPlayers),
+      lastSeenAt:capturedAt
+    };
+    if(!previous||Date.parse(capturedAt||'')>Date.parse(previous.lastSeenAt||''))seen.set(key,candidate);
+  }
+  return [...seen.values()].sort((a,b)=>Date.parse(b.lastSeenAt||'')-Date.parse(a.lastSeenAt||'')).slice(0,60);
+}
+
 export function publicAddonSyncSummary(state={}){
   const payload=object(state.payload);
   const sections=object(payload.sections);
@@ -156,8 +201,10 @@ export function publicAddonSyncSummary(state={}){
   const instances=object(sections.instances);
   const hunter=object(sections.hunter);
   const spellbook=object(sections.spellbook);
+  const visitedInstances=visitedInstancesFromLocationHistory(history);
   const lockouts=array(instances.entries).slice(0,40).map(entry=>({
     name:text(entry?.name,160),
+    difficultyID:integer(entry?.difficultyID),
     difficultyName:text(entry?.difficultyName,120),
     resetAt:epochIso(entry?.resetAt??entry?.lock?.resetAt),
     locked:entry?.locked===true,
@@ -178,21 +225,32 @@ export function publicAddonSyncSummary(state={}){
     build:text(payload.addon?.build,80),
     locale:text(payload.addon?.locale,40),
     spellbookEntryCount:finite(spellbook.entryCount)??array(spellbook.entries).length,
-    currentLocation:location.zone?{
-      capturedAt:epochIso(location.capturedAt),
-      zone:text(location.zone,160),
-      subZone:text(location.subZone,160),
-      mapID:integer(location.mapID),
-      x:finite(location.x),
-      y:finite(location.y),
-      bindLocation:text(location.bindLocation,160)
-    }:null,
+    currentLocation:location.zone?(()=>{
+      const lastKnown=object(location.lastKnownCoordinates);
+      const currentX=optionalFinite(location.x),currentY=optionalFinite(location.y);
+      const lastX=optionalFinite(lastKnown.x),lastY=optionalFinite(lastKnown.y);
+      const useLastKnown=(currentX===null||currentY===null)&&lastX!==null&&lastY!==null&&sameLocation(location,lastKnown);
+      return {
+        capturedAt:epochIso(location.capturedAt),
+        zone:text(location.zone,160),
+        subZone:text(location.subZone,160),
+        mapID:integer(location.mapID)??(useLastKnown?integer(lastKnown.mapID):null),
+        x:currentX??(useLastKnown?lastX:null),
+        y:currentY??(useLastKnown?lastY:null),
+        coordinatesCapturedAt:useLastKnown?epochIso(lastKnown.capturedAt):epochIso(location.capturedAt),
+        bindLocation:text(location.bindLocation,160)
+      };
+    })():null,
     locationHistoryCount:array(history.entries).length,
+    visitedInstances,
+    visitedInstanceCount:visitedInstances.length,
     lockoutCount:finite(instances.count)??lockouts.length,
     lockouts,
     hunterCaptured:Boolean(Object.keys(hunter).length),
     merchantObservationCount:merchantHistory.length,
     trainerObservationCount:trainerHistory.length,
+    merchantNpcCount:uniqueNpcCount(merchantHistory),
+    trainerNpcCount:uniqueNpcCount(trainerHistory),
     latestMerchant:text(interactions.currentMerchant?.npc?.name,160),
     latestTrainer:text(interactions.currentTrainer?.npc?.name,160)
   };
