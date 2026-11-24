@@ -43,6 +43,36 @@ const window={addEventListener(){}};
 const location={hash:''};
 const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
+const classAbilityQa=ui.classAbilitiesPanel({
+  knownClassAbilitiesVerified:true,
+  knownClassAbilitiesCapturedAt:'2026-11-24T12:26:00.000Z',
+  knownClassAbilities:[
+    {id:5143,name:'Arkane Geschosse',rank:'Rang 1'},
+    {id:1459,name:'Arkane Intelligenz',rank:'Rang 1'},
+    {id:587,name:'Essen herbeizaubern',rank:'Rang 1'},
+    {id:143,name:'Feuerball',rank:'Rang 2'},
+    {id:2136,name:'Feuerschlag',rank:'Rang 1'},
+    {id:116,name:'Frostblitz',rank:'Rang 1'},
+    {id:205,name:'Frostblitz',rank:'Rang 2'},
+    {id:122,name:'Frostnova',rank:'Rang 1'},
+    {id:168,name:'Frostrüstung',rank:'Rang 1'},
+    {id:7300,name:'Frostrüstung',rank:'Rang 2'},
+    {id:118,name:'Verwandlung',rank:'Rang 1'},
+    {id:5504,name:'Wasser herbeizaubern',rank:'Rang 1'},
+    {id:5505,name:'Wasser herbeizaubern',rank:'Rang 2'}
+  ]
+});
+assert.ok(classAbilityQa.includes('10 gelernte Fähigkeiten'),'13 gespeicherte Klassenränge werden auf 10 eindeutige Fähigkeiten verdichtet');
+assert.ok(classAbilityQa.includes('Gelernte Fähigkeiten anzeigen · 10'),'Aufklappbereich zählt Fähigkeiten statt einzelner Ränge');
+assert.equal((classAbilityQa.match(/<strong>Frostblitz<\/strong>/g)||[]).length,1,'Frostblitz erscheint nur einmal');
+assert.match(classAbilityQa,/Frostblitz[\s\S]*?Rang 2/,'Frostblitz zeigt den höchsten gelernten Rang');
+assert.ok(!/Frostblitz[\s\S]*?Rang 1/.test(classAbilityQa),'Niedriger Frostblitz-Rang wird in der Übersicht ausgeblendet');
+assert.equal((classAbilityQa.match(/<strong>Frostrüstung<\/strong>/g)||[]).length,1,'Frostrüstung erscheint nur einmal');
+assert.match(classAbilityQa,/Frostrüstung[\s\S]*?Rang 2/,'Frostrüstung zeigt Rang 2');
+assert.equal((classAbilityQa.match(/<strong>Wasser herbeizaubern<\/strong>/g)||[]).length,1,'Wasser herbeizaubern erscheint nur einmal');
+assert.match(classAbilityQa,/Wasser herbeizaubern[\s\S]*?Rang 2/,'Wasser herbeizaubern zeigt Rang 2');
+assert.ok(!classAbilityQa.includes('gelernte Klassenränge'),'Alte Rang-Zählung wird nicht mehr angezeigt');
+
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
   .map(m=>({state:m[1],width:Number(m[2])}));
