@@ -379,6 +379,91 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
   };
 }
 
+
+export function liveKnowledgeAsAddonStates(records=[]){
+  const result=[];
+  for(const record of asArray(records)){
+    const snapshot=record?.latestSnapshot;
+    if(!snapshot||!['merchant','trainer'].includes(record?.kind))continue;
+    const [gameVersion,build]=String(record.build||'').match(/^(\d+\.\d+\.\d+)\.(\d+)$/)?.slice(1)||[null,record.build||null];
+    const location=snapshot.location?{
+      zone:snapshot.location.zone,
+      subZone:snapshot.location.subZone,
+      x:snapshot.location.x,
+      y:snapshot.location.y,
+      mapID:snapshot.location.uiMapId,
+      instance:snapshot.location.instance?{name:snapshot.location.instance}:null
+    }:null;
+    const common={
+      capturedAt:snapshot.capturedAt,
+      complete:snapshot.complete===true,
+      build,
+      gameVersion,
+      npc:snapshot.npc,
+      location,
+      count:snapshot.count,
+      api:snapshot.api
+    };
+    result.push({
+      receivedAt:record.lastObservedAt,
+      payload:{
+        addon:{gameVersion,build},
+        sections:{interactions:record.kind==='merchant'
+          ?{merchantHistory:[{...common,items:snapshot.entries}]}
+          :{trainerHistory:[{...common,services:snapshot.entries}]}
+        }
+      }
+    });
+  }
+  return result;
+}
+
+export function buildLiveKnowledgeLearningSourceEvidence(recipeIndex={},records=[]){
+  return buildAddonLearningSourceEvidence(recipeIndex,liveKnowledgeAsAddonStates(records));
+}
+
+export function liveKnowledgeDiscoveries(recipeIndex={},records=[]){
+  const recipes=asArray(recipeIndex?.recipes);
+  const discoveries=[];
+  for(const record of asArray(records)){
+    if(record?.kind!=='merchant'||!record?.latestSnapshot?.complete)continue;
+    const snapshot=record.latestSnapshot;
+    for(const item of asArray(snapshot.entries)){
+      const target=learningItemTargetName(item?.name);
+      if(!target)continue;
+      const matched=recipes.some(recipe=>merchantItemMatchesRecipe(item,recipe));
+      if(matched)continue;
+      discoveries.push({
+        build:record.build||null,
+        npcId:integer(record?.npc?.id),
+        npcName:text(record?.npc?.name)||null,
+        location:snapshot.location||record.location||null,
+        itemID:integer(item?.itemID??item?.id),
+        itemName:text(item?.name)||null,
+        priceCopper:finite(item?.priceCopper),
+        firstSeenAt:asArray(record?.offers).find(offer=>offerKeyForDiscovery(offer)===offerKeyForDiscovery(item))?.firstSeenAt||record.firstObservedAt||null,
+        lastSeenAt:record.lastObservedAt||snapshot.capturedAt||null,
+        currentlyPresent:true,
+        classification:'unresolved-learning-item',
+        source:'dalton-addon'
+      });
+    }
+  }
+  const map=new Map();
+  for(const entry of discoveries){
+    const key=[entry.build,entry.npcId||norm(entry.npcName),entry.itemID||norm(entry.itemName)].join('|');
+    const previous=map.get(key);
+    if(!previous||observationDate(entry.lastSeenAt)>observationDate(previous.lastSeenAt))map.set(key,entry);
+  }
+  return [...map.values()];
+}
+function offerKeyForDiscovery(item={}){
+  const id=integer(item?.itemID??item?.id);
+  if(id)return 'item:'+id;
+  const name=norm(item?.name);
+  return name?'name:'+name:null;
+}
+
 export function mergeLearningSourceEvidence(...documents){
   const observations=documents.flatMap(document=>asArray(document?.observations));
   const deduped=new Map();
@@ -402,10 +487,11 @@ export function mergeLearningSourceEvidence(...documents){
   };
 }
 
-export function learningSourceEvidenceForIndex(recipeIndex={},addonStates=[]){
+export function learningSourceEvidenceForIndex(recipeIndex={},addonStates=[],liveKnowledge=[]){
   return mergeLearningSourceEvidence(
     loadLearningSourceEvidence(),
-    buildAddonLearningSourceEvidence(recipeIndex,addonStates)
+    buildAddonLearningSourceEvidence(recipeIndex,addonStates),
+    buildLiveKnowledgeLearningSourceEvidence(recipeIndex,liveKnowledge)
   );
 }
 
