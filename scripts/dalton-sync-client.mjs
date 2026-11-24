@@ -10,6 +10,12 @@ import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,publicAddonSyncSummary,addonSyncContentIdentity} from './addon-sync.mjs';
 
 const execFileAsync=promisify(execFile);
+const VERSION='0.1.0-alpha.10';
+const TRUSTED_NAMES=new Set(['cole dalton','chucky dalton','dolly dalton','viola dalton']);
+
+function normalizedName(value){return String(value||'').trim().toLocaleLowerCase('de-DE')}
+function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb?.character?.name))}
+function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
   const out={watch:false,dryRun:false,file:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
@@ -25,10 +31,11 @@ function args(argv){
   return out;
 }
 function help(){
-  console.log('Dalton Dashboard Sync Companion 0.1.0-alpha.9');
+  console.log('Dalton Dashboard Sync Companion '+VERSION);
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
   console.log('');
-  console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN in der lokalen Umgebung gesetzt sein.');
+  console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
+  console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN nur auf diesem Rechner lokal gesetzt sein.');
   console.log('Gold, Taschen und Bank werden vom Standard-Sync niemals übertragen.');
   console.log('Bei geschützten Vercel-Previews kann DALTON_SYNC_PREVIEW_SHARE_URL gesetzt werden.');
 }
@@ -55,7 +62,6 @@ async function spotlightSavedVariables(){
     return [];
   }
 }
-
 async function discoverFiles(){
   const wowRoots=[
     process.env.DALTON_WOW_ROOT,
@@ -96,6 +102,7 @@ async function discoverFiles(){
     }
   }
   for(const root of [...new Set(accountRoots)])await walkSavedVariables(root,0);
+
   const unique=new Map();
   for(const item of found){
     const previous=unique.get(item.file);
@@ -103,40 +110,118 @@ async function discoverFiles(){
   }
   return [...unique.values()].sort((a,b)=>b.mtime-a.mtime);
 }
-async function resolveFile(explicit){
+async function classifyCandidates(matches){
+  const character=[],relay=[];
+  for(const item of matches){
+    let raw;
+    try{raw=await fs.readFile(item.file,'utf8')}catch{continue}
+    if(variablePattern('DaltonDashboardCharDB').test(raw)){
+      try{
+        const db=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
+        if(trustedCharacter(db))character.push({...item,charDb:db});
+      }catch{}
+    }
+    if(variablePattern('DaltonDashboardDB').test(raw)&&raw.includes('relayInbox')){
+      relay.push({...item,raw});
+    }
+  }
+  return {character,relay};
+}
+async function resolveSources(explicit){
+  let explicitCharacter=null,explicitRelay=null;
   if(explicit){
     const file=resolve(explicit);
     if(!existsSync(file))throw new Error('SavedVariables-Datei nicht gefunden: '+file);
-    return file;
+    const raw=await fs.readFile(file,'utf8');
+    if(variablePattern('DaltonDashboardCharDB').test(raw))explicitCharacter={file,raw};
+    if(variablePattern('DaltonDashboardDB').test(raw)&&raw.includes('relayInbox'))explicitRelay={file,raw};
+    if(!explicitCharacter&&!explicitRelay)throw new Error('Die angegebene Datei enthält keine Dalton-Dashboard-SavedVariables.');
   }
+
   const matches=await discoverFiles();
-  if(!matches.length)throw new Error('Keine DaltonDashboard.lua gefunden. Bitte WoW mit aktiviertem DaltonDashboard starten und einmal /reload ausführen; danach den Dry-Run erneut starten.');
-  if(matches.length>1){
-    console.log('Mehrere SavedVariables-Dateien gefunden; verwendet wird die zuletzt geänderte:');
-    for(const item of matches.slice(0,5))console.log('  '+item.file+(item.source?' ['+item.source+']':''));
+  const classified=await classifyCandidates(matches);
+  const characterFile=explicitCharacter?.file||classified.character[0]?.file||null;
+  const relayFile=explicitRelay?.file||classified.relay[0]?.file||null;
+
+  if(!characterFile&&!relayFile){
+    throw new Error('Keine passenden DaltonDashboard.lua gefunden. Bitte WoW mit aktiviertem AddOn starten und einmal /reload ausführen.');
   }
-  return matches[0].file;
+  return {characterFile,relayFile};
 }
 function localDiagnosticsSummary(charDb){
   const interactions=charDb?.diagnostics?.interactions;
-  if(!interactions||typeof interactions!=='object')return null;
+  const relay=charDb?.diagnostics?.relay;
+  if(!interactions&&!relay)return null;
   return {
-    lastEvent:interactions.lastEvent||null,
-    lastEventAt:interactions.lastEventAt||null,
-    eventCount:Number(interactions.eventCount)||0,
-    eventCounts:interactions.eventCounts||{},
-    lastMerchantCaptureOK:interactions.lastMerchantCaptureOK??null,
-    lastMerchantCaptureDetail:interactions.lastMerchantCaptureDetail||null,
-    lastTrainerCaptureOK:interactions.lastTrainerCaptureOK??null,
-    lastTrainerCaptureDetail:interactions.lastTrainerCaptureDetail||null
+    interactions:interactions&&typeof interactions==='object'?{
+      lastEvent:interactions.lastEvent||null,
+      lastEventAt:interactions.lastEventAt||null,
+      eventCount:Number(interactions.eventCount)||0,
+      eventCounts:interactions.eventCounts||{},
+      lastMerchantCaptureOK:interactions.lastMerchantCaptureOK??null,
+      lastMerchantCaptureDetail:interactions.lastMerchantCaptureDetail||null,
+      lastTrainerCaptureOK:interactions.lastTrainerCaptureOK??null,
+      lastTrainerCaptureDetail:interactions.lastTrainerCaptureDetail||null
+    }:null,
+    relay:relay&&typeof relay==='object'?relay:null
   };
 }
-async function readPayload(file){
+function payloadRecord(charDb,{key,transport,source,diagnostics=null}){
+  const safePayload=buildSafeAddonSyncPayload(charDb);
+  safePayload.client={transport,transportVersion:VERSION};
+  const hash=createHash('sha256').update(JSON.stringify(addonSyncContentIdentity(safePayload))).digest('hex');
+  return {
+    key,
+    hash,
+    payload:{...safePayload,syncId:hash},
+    source,
+    localDiagnostics:diagnostics
+  };
+}
+async function readCharacterRecord(file){
+  if(!file)return null;
   const raw=await fs.readFile(file,'utf8');
   const charDb=parseLuaSavedVariable(raw,'DaltonDashboardCharDB');
-  const safePayload=buildSafeAddonSyncPayload(charDb);
-  const hash=createHash('sha256').update(JSON.stringify(addonSyncContentIdentity(safePayload))).digest('hex');
-  return {hash,payload:{...safePayload,syncId:hash},localDiagnostics:localDiagnosticsSummary(charDb)};
+  if(!trustedCharacter(charDb))return null;
+  return payloadRecord(charDb,{
+    key:'local:'+normalizedName(charDb.character.name),
+    transport:'dalton-sync-companion',
+    source:file,
+    diagnostics:localDiagnosticsSummary(charDb)
+  });
+}
+async function readRelayRecords(file){
+  if(!file)return [];
+  const raw=await fs.readFile(file,'utf8');
+  const globalDb=parseLuaSavedVariable(raw,'DaltonDashboardDB');
+  const inbox=globalDb?.relayInbox;
+  if(!inbox||typeof inbox!=='object'||Array.isArray(inbox))return [];
+
+  const records=[];
+  for(const [inboxKey,entry] of Object.entries(inbox)){
+    const charDb=entry?.charDb;
+    if(!charDb||typeof charDb!=='object'||!trustedCharacter(charDb))continue;
+    const name=normalizedName(charDb.character?.name);
+    if(!name||name==='cole dalton')continue;
+    try{
+      records.push(payloadRecord(charDb,{
+        key:'relay:'+name,
+        transport:'dalton-peer-relay',
+        source:file+'#'+inboxKey,
+        diagnostics:null
+      }));
+    }catch(error){
+      console.error('Relay-Datensatz übersprungen: '+String(error.message||error).slice(0,180));
+    }
+  }
+  return records.sort((a,b)=>a.key.localeCompare(b.key,'de'));
+}
+async function readRecords(sources){
+  const records=[];
+  const local=await readCharacterRecord(sources.characterFile);
+  if(local)records.push(local);
+  records.push(...await readRelayRecords(sources.relayFile));
+  return records;
 }
 export function previewCookieFromSetCookie(values=[]){
   return values
@@ -163,7 +248,7 @@ async function postPayload(endpoint,token,payload,{cookie=null}={}){
   const headers={
     Authorization:'Bearer '+token,
     'Content-Type':'application/json',
-    'User-Agent':'DaltonDashboardSync/0.1.0-alpha.9'
+    'User-Agent':'DaltonDashboardSync/'+VERSION
   };
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(url,{
@@ -179,9 +264,12 @@ async function postPayload(endpoint,token,payload,{cookie=null}={}){
 async function main(){
   const options=args(process.argv.slice(2));
   if(options.help){help();return}
-  const file=await resolveFile(options.file);
-  console.log('SavedVariables: '+file);
-  let lastHash=null;
+
+  const sources=await resolveSources(options.file);
+  if(sources.characterFile)console.log('Eigener Charakter: '+sources.characterFile);
+  if(sources.relayFile)console.log('Relay-Postfach: '+sources.relayFile);
+
+  const lastHashes=new Map();
   let running=false;
   let rerun=false;
   const previewAuthCookie=await previewCookie(process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
@@ -190,23 +278,39 @@ async function main(){
     if(running){rerun=true;return}
     running=true;
     try{
-      const {hash,payload,localDiagnostics}=await readPayload(file);
-      if(hash===lastHash)return;
-      const localSummary=publicAddonSyncSummary({characterSlug:null,receivedAt:null,payload});
-      if(options.dryRun){
-        console.log(JSON.stringify({dryRun:true,summary:localSummary,localDiagnostics},null,2));
-        lastHash=hash;
-        return;
+      const records=await readRecords(sources);
+      if(!records.length)return;
+      const token=options.dryRun?null:process.env.DALTON_SYNC_TOKEN;
+      if(!options.dryRun&&!token)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
+
+      for(const record of records){
+        if(lastHashes.get(record.key)===record.hash)continue;
+        const localSummary=publicAddonSyncSummary({characterSlug:null,receivedAt:null,payload:record.payload});
+        if(options.dryRun){
+          console.log(JSON.stringify({
+            dryRun:true,
+            key:record.key,
+            transport:record.payload.client?.transport,
+            summary:localSummary,
+            localDiagnostics:record.localDiagnostics
+          },null,2));
+          lastHashes.set(record.key,record.hash);
+          continue;
+        }
+
+        try{
+          const result=await postPayload(options.endpoint,token,record.payload,{cookie:previewAuthCookie});
+          lastHashes.set(record.key,record.hash);
+          console.log('Synchronisiert: '+String(result.character?.name||result.character?.slug||record.key)+
+            ' · Transport '+String(record.payload.client?.transport||'unbekannt')+
+            ' · Spellbook '+String(result.summary?.spellbookEntryCount??0)+
+            ' · Orte '+String(result.summary?.locationHistoryCount??0)+
+            ' · Händler '+String(result.summary?.merchantObservationCount??0)+
+            ' · Lehrer '+String(result.summary?.trainerObservationCount??0));
+        }catch(error){
+          console.error(record.key+': '+String(error.message||error).slice(0,220));
+        }
       }
-      const token=process.env.DALTON_SYNC_TOKEN;
-      if(!token)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
-      const result=await postPayload(options.endpoint,token,payload,{cookie:previewAuthCookie});
-      lastHash=hash;
-      console.log('Synchronisiert: '+String(result.character?.name||result.character?.slug||'Charakter')+
-        ' · Spellbook '+String(result.summary?.spellbookEntryCount??0)+
-        ' · Orte '+String(result.summary?.locationHistoryCount??0)+
-        ' · Händler '+String(result.summary?.merchantObservationCount??0)+
-        ' · Lehrer '+String(result.summary?.trainerObservationCount??0));
     }finally{
       running=false;
       if(rerun){rerun=false;setTimeout(()=>sync().catch(error=>console.error(error.message)),1000)}
@@ -215,15 +319,29 @@ async function main(){
 
   await sync();
   if(!options.watch)return;
-  console.log('Beobachtung aktiv. WoW schreibt SavedVariables bei Logout bzw. /reload; dann wird automatisch synchronisiert.');
+
+  console.log('Beobachtung aktiv. Nach /reload oder Logout synchronisiert der Companion Coles Daten und das Relay-Postfach automatisch.');
+  const files=[sources.characterFile,sources.relayFile].filter(Boolean);
+  const byDirectory=new Map();
+  for(const file of files){
+    const dir=dirname(file);
+    if(!byDirectory.has(dir))byDirectory.set(dir,new Set());
+    byDirectory.get(dir).add(basename(file));
+  }
+
   let timer=null;
-  const watcher=watch(dirname(file),(event,filename)=>{
-    if(filename&&String(filename)!==basename(file))return;
-    clearTimeout(timer);
-    timer=setTimeout(()=>sync().catch(error=>console.error(error.message)),900);
-  });
-  process.on('SIGINT',()=>{watcher.close();process.exit(0)});
-  process.on('SIGTERM',()=>{watcher.close();process.exit(0)});
+  const watchers=[];
+  for(const [dir,names] of byDirectory){
+    const watcher=watch(dir,(event,filename)=>{
+      if(filename&&!names.has(String(filename)))return;
+      clearTimeout(timer);
+      timer=setTimeout(()=>sync().catch(error=>console.error(error.message)),900);
+    });
+    watchers.push(watcher);
+  }
+  const close=()=>{for(const watcher of watchers)watcher.close();process.exit(0)};
+  process.on('SIGINT',close);
+  process.on('SIGTERM',close);
 }
 const invokedDirectly=Boolean(process.argv[1])&&import.meta.url===pathToFileURL(process.argv[1]).href;
 if(invokedDirectly){
