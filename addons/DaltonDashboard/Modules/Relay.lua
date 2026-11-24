@@ -7,6 +7,7 @@ local PROTOCOL_VERSION = 1
 local CHUNK_SIZE = 200
 local MAX_CHUNKS = 220
 local RX_TTL = 120
+local OFFLINE_RETRY_SECONDS = 300
 local HISTORY_LIMIT = 30
 local INTERACTION_LIMIT = 20
 
@@ -388,8 +389,13 @@ local function sendChunks(target, messages, index)
 
   local ok, result = sendMessage(target, messages[index])
   if not ok then
-    if tonumber(result) == 3 or tonumber(result) == 8 then
+    local code = tonumber(result)
+    if code == 3 or code == 8 then
       ns.Schedule(0.8, "relay-throttle", function() sendChunks(target, messages, index) end)
+    elseif code == 12 or (Enum and Enum.SendAddonMessageResult and result == Enum.SendAddonMessageResult.TargetOffline) then
+      local state = relayState()
+      state.lastOfflineAt = ns.Now()
+      finishSend(false, "Cole offline")
     else
       finishSend(false, "Sendefehler " .. tostring(result))
     end
@@ -401,12 +407,12 @@ end
 
 local function trySend(force)
   if isHub() or not trusted(playerName()) or ns._relaySending then return end
-  local target = findGroupTarget(HUB_NAME)
-  if not target then return end
+  local state = relayState()
+  if not force and tonumber(state.lastOfflineAt) and ns.Now() - tonumber(state.lastOfflineAt) < OFFLINE_RETRY_SECONDS then return end
+  local target = findGroupTarget(HUB_NAME) or HUB_NAME
 
   local snapshot = relaySnapshot()
   if not snapshot then return end
-  local state = relayState()
   local contentHash = contentChecksum(snapshot)
   if not force and state.lastAckContentHash == contentHash then
     state.pending = false
