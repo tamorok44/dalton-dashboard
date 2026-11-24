@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {applyLearningSourceEvidence} from './learning-source-evidence.mjs';
+import {applyLearningSourceEvidence,buildAddonLearningSourceEvidence,mergeLearningSourceEvidence} from './learning-source-evidence.mjs';
 
 const vendor=(id,name,priceCopper)=>({
   type:'vendor',id,name,evidence:'forever-confirmed',seenInForever:true,
@@ -62,3 +62,96 @@ assert.equal(nextBuild.recipes[0].learning.sources.length,2,
   'Buildgebundene Beobachtungen werden nach einem Client-Buildwechsel nicht blind weiterverwendet');
 
 console.log('Lernquellen-Evidenz: Buildbindung, negative Beobachtungen und Preispriorität: OK');
+
+
+const addonBase={
+  build:'1.60.1.71037',
+  recipes:[
+    {
+      id:200,professionSlug:'cooking',name:'Glitschhautmakrele',craftedItem:{id:787,name:'Glitschhautmakrele'},
+      learning:{sources:[vendor(257006,'Nyalah Brightfire',40)]}
+    },
+    {
+      id:201,professionSlug:'cooking',name:'Geräucherter Weisenfisch',craftedItem:{id:21072,name:'Geräucherter Weisenfisch'},
+      learning:{sources:[{type:'item',id:21099,name:'Rezept: Geräucherter Weisenfisch',evidence:'forever-confirmed'}]}
+    },
+    {
+      id:202,professionSlug:'cooking',name:'Weisenfisch Supreme',craftedItem:{id:21217,name:'Weisenfisch Supreme'},
+      learning:{sources:[vendor(257006,'Nyalah Brightfire',4000)]}
+    },
+    {
+      id:203,professionSlug:'cooking',name:'Spinnenwurst',craftedItem:{id:17222,name:'Spinnenwurst'},
+      learning:{sources:[trainer(257006,'Nyalah Brightfire',3000)]}
+    }
+  ]
+};
+const addonState={
+  receivedAt:'2026-11-24T08:36:00.000Z',
+  payload:{
+    addon:{version:'0.1.0-alpha.8',gameVersion:'1.60.1',build:'71037',locale:'deDE'},
+    sections:{
+      interactions:{
+        merchantHistory:[
+          {
+            capturedAt:1795509206,complete:false,build:'71037',gameVersion:'1.60.1',
+            npc:{id:257006,name:'Nyalah Brightfire'},
+            location:{zone:'Die Insel Zephras',mapID:2521,x:0.6064,y:0.7269},
+            items:{1:{itemID:21099,name:'Rezept: Geräucherter Weisenfisch',priceCopper:500}}
+          },
+          {
+            capturedAt:1795509207,complete:true,build:'71037',gameVersion:'1.60.1',
+            npc:{id:257006,name:'Nyalah Brightfire'},
+            location:{zone:'Die Insel Zephras',mapID:2521,x:0.6064,y:0.7269},
+            items:{
+              1:{itemID:159,name:'Erfrischendes Quellwasser',priceCopper:25},
+              10:{itemID:21099,name:'Rezept: Geräucherter Weisenfisch',priceCopper:500},
+              11:{itemID:21219,name:'Rezept: Weisenfisch Supreme',priceCopper:5000}
+            }
+          }
+        ],
+        trainerHistory:[
+          {
+            capturedAt:1795509208,complete:true,build:'71037',gameVersion:'1.60.1',
+            npc:{id:257006,name:'Nyalah Brightfire'},
+            location:{zone:'Die Insel Zephras',mapID:2521,x:0.6064,y:0.7269},
+            services:{
+              1:{name:'Spinnenwurst',serviceType:'unavailable',priceCopper:4000,skillLine:'Kochkunst',requiredSkillName:'Kochkunst',requiredSkillRank:200}
+            }
+          }
+        ]
+      }
+    }
+  }
+};
+const addonEvidence=buildAddonLearningSourceEvidence(addonBase,[addonState]);
+assert.ok(addonEvidence.observations.some(entry=>
+  entry.source==='dalton-addon'&&entry.sourceType==='vendor'&&entry.recipeId===200&&entry.status==='absent'
+),'Ein vollständiger Händler-Snapshot widerlegt eine bisherige Vendor-Zuordnung, wenn das Rezept tatsächlich fehlt');
+assert.ok(addonEvidence.observations.some(entry=>
+  entry.sourceType==='vendor'&&entry.recipeId===201&&entry.status==='present'&&entry.priceCopper===500&&entry.offerItemId===21099
+),'Ein Rezeptgegenstand wird über seine Item-ID dem gelernten Rezept zugeordnet');
+assert.ok(addonEvidence.observations.some(entry=>
+  entry.sourceType==='vendor'&&entry.recipeId===202&&entry.status==='present'&&entry.priceCopper===5000
+),'Ein lokalisierter Rezeptname kann eine fehlende/alte Händlerzuordnung korrekt bestätigen');
+const spider=addonEvidence.observations.find(entry=>entry.sourceType==='trainer'&&entry.recipeId===203&&entry.status==='present');
+assert.equal(spider?.priceCopper,4000);
+assert.equal(spider?.requiredSkillRank,200);
+assert.equal(spider?.requiredSkillName,'Kochkunst');
+
+const incompleteOnly=buildAddonLearningSourceEvidence(addonBase,[{
+  payload:{addon:{gameVersion:'1.60.1',build:'71037'},sections:{interactions:{merchantHistory:[
+    {capturedAt:1795509206,complete:false,npc:{id:257006,name:'Nyalah Brightfire'},items:{}}
+  ]}}}
+}]);
+assert.ok(!incompleteOnly.observations.some(entry=>entry.status==='absent'),
+  'Unvollständige Händlerfenster dürfen niemals negative Evidenz erzeugen');
+
+const addonEvaluated=applyLearningSourceEvidence(addonBase,mergeLearningSourceEvidence(addonEvidence));
+assert.equal(addonEvaluated.recipes[0].learning.sources.length,0,
+  'Die echte Addon-Beobachtung entfernt Nyalah als Glitschhautmakrelen-Quelle');
+assert.equal(addonEvaluated.recipes[1].learning.sources.some(source=>source.id===257006&&source.priceCopper===500),true,
+  'Die Addon-Beobachtung ergänzt Nyalah als aktuelle Quelle für Geräucherten Weisenfisch');
+assert.equal(addonEvaluated.recipes[2].learning.sources.find(source=>source.id===257006)?.priceCopper,5000);
+assert.equal(addonEvaluated.recipes[3].learning.sources.find(source=>source.id===257006)?.priceCopper,4000);
+
+console.log('Addon-Liveevidenz: vollständige Händlerfenster, Rezept-Item-Mapping und Traineranforderungen: OK');
