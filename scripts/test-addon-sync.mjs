@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
-import {previewCookieFromSetCookie,relayCharDbsFromGlobalDb} from './dalton-sync-client.mjs';
+import {previewCookieFromSetCookie,relayCharDbsFromGlobalDb,relayRecordsFromGlobalDb} from './dalton-sync-client.mjs';
 import {deviceMayCreateEnrollment,deviceMaySync,trustedCharacterName,trustedCharacterSlugs} from './addon-device-auth.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
@@ -48,6 +48,12 @@ const globalRelay={
 const relayDbs=relayCharDbsFromGlobalDb(globalRelay);
 assert.equal(relayDbs.length,1,'Companion übernimmt nur vertrauenswürdige Dalton-Relay-Datensätze');
 assert.equal(relayDbs[0].charDb.character.name,'Chucky Dalton');
+const relayRecords=relayRecordsFromGlobalDb(globalRelay,{source:'fixture'});
+assert.equal(relayRecords.length,1,'Relay-Postfach muss genau einen sicheren Payload erzeugen');
+assert.equal(relayRecords[0].key,'relay:chucky dalton');
+assert.equal(relayRecords[0].payload.client.transport,'dalton-peer-relay');
+assert.equal(relayRecords[0].payload.sections.character.name,'Chucky Dalton');
+assert.ok(!('inventory' in relayRecords[0].payload.sections)&&!('economy' in relayRecords[0].payload.sections),'Auch Relay-Payloads bleiben an der Privacy-Grenze');
 
 const parsed=parseLuaSavedVariable(lua);
 assert.equal(parsed.character.name,'Cole Dalton');
