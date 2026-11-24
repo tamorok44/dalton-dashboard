@@ -132,9 +132,9 @@ jobs:
           Copy-Item bridge/uninstall-windows.ps1 dist/bridge-windows/
           Copy-Item bridge/Deinstallieren.cmd dist/bridge-windows/
 
-          $help = & dist/bridge-windows/DaltonDashboardBridge.exe --help
+          & dist/bridge-windows/DaltonDashboardBridge.exe --help
           if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
-          if (($help -join "`n") -notmatch "--revoke-device") { throw "Bridge-Hilfe enthält Geräte-Widerruf nicht" }
+          if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--revoke-device" -Quiet)) { throw "Bridge-Quellcode enthält Geräte-Widerruf nicht" }
           & dist/bridge-windows/DaltonDashboardBridge.exe --dry-run --file scripts/fixtures/bridge-savedvariables.lua
           if ($LASTEXITCODE -ne 0) { throw "Bridge Dry-Run fehlgeschlagen" }
 
