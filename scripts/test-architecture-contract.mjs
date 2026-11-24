@@ -161,7 +161,10 @@ assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEq
 assert.ok(sourceByFile.has('scripts/addon-device-auth.mjs')&&sourceByFile.has('api/addon-device-enroll.js'),'Addon sync device authorization and one-time enrollment are required');
 assert.ok((sourceByFile.get('scripts/addon-device-auth.mjs')||'').includes('timingSafeEqual')&&(sourceByFile.get('scripts/addon-device-auth.mjs')||'').includes('DALTON_SYNC_TOKEN'),'Master addon sync token must stay constant-time compared at the centralized auth boundary');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('authorizeDeviceToken')&&(sourceByFile.get('api/addon-sync.js')||'').includes('masterSyncTokenMatches'),'Addon sync must accept only the master token or a validated per-device token');
-assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes("device.characterSlug!==target.slug"),'Per-device bridge tokens must be restricted to exactly one character');
+assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('deviceMaySync(device,target.slug,payload.client?.transport)'),'Device authorization must pass character and transport through the centralized policy');
+const deviceAuthSource=sourceByFile.get('scripts/addon-device-auth.mjs')||'';
+assert.ok(deviceAuthSource.includes("if(own===target)return true")&&deviceAuthSource.includes("own==='cole-dalton'")&&deviceAuthSource.includes("transport||'')==='dalton-peer-relay'"),'Device tokens stay character-bound; only Cole hub may forward trusted peer-relay payloads');
+assert.ok(deviceAuthSource.includes("deviceMayCreateEnrollment")&&deviceAuthSource.includes("String(targetSlug)!=='cole-dalton'"),'Only Cole hub may create one-time enrollment codes for other trusted Dalton characters, never for itself');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes("process.env.VERCEL_ENV!=='production'")&&(sourceByFile.get('api/addon-sync.js')||'').includes('previewIsolated'),'Preview addon sync must never write verified spellbook data into the shared production character store');
 assert.ok((sourceByFile.get('scripts/addon-sync-store.mjs')||'').includes("?'production':'preview'"),'Addon sync raw-state Redis keys must be environment-scoped');
 assert.ok(sourceByFile.has('scripts/live-knowledge-store.mjs'),'Persistent build-scoped Dalton live-knowledge store is required');
