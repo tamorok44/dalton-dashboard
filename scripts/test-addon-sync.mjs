@@ -6,7 +6,7 @@ import {previewCookieFromSetCookie,relayCharDbsFromGlobalDb,relayRecordsFromGlob
 import {deviceMayCreateEnrollment,deviceMaySync,trustedCharacterName,trustedCharacterSlugs} from './addon-device-auth.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
-'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.11", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
+'  ["meta"] = { ["addonVersion"] = "0.1.0-beta.1", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
 '  ["character"] = { ["name"] = "Cole Dalton", ["classID"] = 8, ["level"] = 11, ["capturedAt"] = 1795460000 },\n'+
 '  ["spellbook"] = { ["capturedAt"] = 1795460000, ["entryCount"] = 2, ["entries"] = { [1] = { ["spellID"] = 143, ["name"] = "Feuerball", ["rank"] = "Rang 2", ["known"] = true }, [2] = { ["spellID"] = 205, ["name"] = "Frostblitz", ["rank"] = "Rang 2", ["known"] = true } } },\n'+
 '  ["location"] = { ["zone"] = "Insel Zephras", ["subZone"] = "Valanaar", ["mapID"] = 2521, ["x"] = 0.62, ["y"] = 0.73 },\n'+
@@ -38,7 +38,7 @@ assert.equal(deviceMayCreateEnrollment(chuckyDevice,'dolly-dalton'),false,'Peer-
 const globalRelay={
   relayInbox:{
     chucky:{receivedAt:1795461000,sender:'Chucky Dalton',charDb:{
-      meta:{addonVersion:'0.1.0-alpha.11',gameVersion:'1.60.1',build:'71037',interface:16001,locale:'deDE'},
+      meta:{addonVersion:'0.1.0-beta.1',gameVersion:'1.60.1',build:'71037',interface:16001,locale:'deDE'},
       character:{name:'Chucky Dalton',classID:11,level:10},
       spellbook:{entries:[]}
     }},
@@ -61,7 +61,7 @@ assert.equal(parsed.spellbook.entries.length,2);
 assert.equal(parsed.locationHistory.entries.length,1);
 
 const payload=buildSafeAddonSyncPayload(parsed,{syncId:'a'.repeat(64)});
-assert.equal(payload.addon.version,'0.1.0-alpha.11');
+assert.equal(payload.addon.version,'0.1.0-beta.1');
 assert.equal(payload.sections.character.name,'Cole Dalton');
 assert.ok(!('economy' in payload.sections),'Gold bleibt aus dem Standard-Sync ausgeschlossen');
 assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem Standard-Sync ausgeschlossen');
