@@ -75,7 +75,7 @@ local function status()
 
   ns.Chat("Version " .. tostring(ns.VERSION) .. " · Schema " .. tostring(db.schemaVersion))
   ns.Chat(#parts > 0 and table.concat(parts, " · ") or "Noch keine Daten erfasst.")
-  ns.Chat("Das Addon selbst sendet nichts ins Internet. Ein optionaler lokaler Companion kann freigegebene Bereiche nach dem Speichern der SavedVariables synchronisieren.")
+  ns.Chat("Das Addon sendet keine Daten ins Internet. Dalton-Gruppenmitglieder können freigegebene Daten ingame an Cole weiterreichen; nur Coles lokaler Sync überträgt sie später zum Dashboard.")
 end
 
 local function printPerformance()
@@ -103,6 +103,21 @@ local function printPerformance()
       (row.last and string.format("%.2f ms", row.last) or "–") .. " · Ø " ..
       (row.avg and string.format("%.2f ms", row.avg) or "–") .. " · max " ..
       (row.max and string.format("%.2f ms", row.max) or "–"))
+  end
+end
+
+local function printRelayStatus()
+  if type(ns.RelayStatus) ~= "function" then
+    ns.Chat("Peer-Relay ist auf diesem Client nicht verfügbar.")
+    return
+  end
+  local relay = ns.RelayStatus()
+  ns.Chat("Relay-Rolle: " .. tostring(relay.role) .. " · Cole in Gruppe: " .. (relay.targetVisible and "ja" or "nein"))
+  ns.Chat("Ausstehend: " .. (relay.pending and "ja" or "nein") ..
+    " · letzter Versuch: " .. tostring(relay.lastAttemptAt or "–") ..
+    " · letzte Bestätigung: " .. tostring(relay.lastAckAt or "–"))
+  if relay.role == "Hub" then
+    ns.Chat("Empfangene Gruppenmitglieder im Relay-Postfach: " .. tostring(relay.inboxCount or 0))
   end
 end
 
@@ -134,6 +149,8 @@ SlashCmdList.DALTONDASHBOARD = function(command)
     printDiagnostics("compatibility")
   elseif command == "perf" then
     printPerformance()
+  elseif command == "relay" then
+    printRelayStatus()
   else
     status()
   end
