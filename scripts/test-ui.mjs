@@ -722,7 +722,7 @@ assert.ok(heroHtml.includes('<link rel="icon" href="/bridge-tray.svg"'),'Compact
 assert.ok(heroHtml.includes('<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=ios-20261124b" sizes="180x180">'),'iOS receives a real PNG Dalton sheriff-star as Apple touch icon');
 assert.equal(manifest.icons[0].purpose,'any','Safari/iOS manifest icon uses the unambiguous any purpose');
 const sw=read('sw.js');
-assert.ok(sw.includes('"/icon.svg"')&&sw.includes('"/bridge-tray.svg"')&&sw.includes('"/bridge-branding.svg"')&&sw.includes('"/apple-touch-icon.png?v=ios-20261124a"'),'All Dalton branding icons including the iOS PNG are available offline');
+assert.ok(sw.includes('"/icon.svg"')&&sw.includes('"/bridge-tray.svg"')&&sw.includes('"/bridge-branding.svg"')&&sw.includes('"/apple-touch-icon.png?v=ios-20261124b"'),'All Dalton branding icons including the iOS PNG are available offline');
 const addonCi=read('.github/workflows/addon-ci.yml');
 assert.ok(addonCi.includes('Dalton Dashboard Bridge.svg')&&addonCi.includes('Dalton Dashboard Kompakt.svg'),'Bridge player packages ship the matching icon family');
 assert.ok(sky.includes('url(#day)') && sky.includes('url(#sunMist)'));
