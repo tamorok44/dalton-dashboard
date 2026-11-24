@@ -85,10 +85,12 @@ assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Eisenschmi
 assert.equal(overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),8,'Ortszählungen können sich wegen alternativer Orte überschneiden');
 assert.ok(overview.counts.availableNow<overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),'Globale Zählung darf überschneidende Ortsangebote niemals doppelt zählen');
 
-const withKnownZero=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster,knownLocations:['Insel Zephras']});
-assert.equal(withKnownZero.locations.find(entry=>entry.name==='Insel Zephras')?.actionCount,0,'Bekannte Orte bleiben auch ohne aktuelle Erledigung in der Ortsliste');
-const zephras=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Insel Zephras',professionMasters,extraActions,classMaster,knownLocations:['Insel Zephras']});
-assert.equal(zephras.selectedLocation,'Insel Zephras','Ein bekannter Ort mit 0 Erledigungen bleibt auswählbar');
+const withKnownZero=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster,knownLocations:['Die Insel Zephras','Insel Zephras']});
+const zephrasLocations=withKnownZero.locations.filter(entry=>/Insel Zephras/.test(entry.name));
+assert.equal(zephrasLocations.length,1,'Artikelvarianten desselben Ortes werden nicht doppelt im Dropdown geführt');
+assert.equal(zephrasLocations[0]?.actionCount,0,'Bekannte Orte bleiben auch ohne aktuelle Erledigung in der Ortsliste');
+const zephras=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Insel Zephras',professionMasters,extraActions,classMaster,knownLocations:['Die Insel Zephras','Insel Zephras']});
+assert.match(zephras.selectedLocation,/Insel Zephras/,'Ein bekannter Ort mit 0 Erledigungen bleibt trotz Artikelvariante auswählbar');
 assert.equal(zephras.counts.atLocation,0);
 assert.equal(zephras.actions.length,0);
 assert.equal(zephras.npcs.length,0);
