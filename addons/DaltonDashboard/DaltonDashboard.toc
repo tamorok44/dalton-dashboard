@@ -2,7 +2,7 @@
 ## Title: Dalton Dashboard Sync
 ## Notes: Erfasst lokale WoW-Forever-Charakterdaten fuer eine optionale Dalton-Dashboard-Synchronisierung.
 ## Author: Dalton Dashboard
-## Version: 0.1.0-alpha.8
+## Version: 0.1.0-alpha.9
 ## X-Website: https://dalton-dashboard-eight.vercel.app
 ## SavedVariables: DaltonDashboardDB
 ## SavedVariablesPerCharacter: DaltonDashboardCharDB
