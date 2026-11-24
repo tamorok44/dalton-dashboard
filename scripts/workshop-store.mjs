@@ -182,6 +182,10 @@ async function loadMaster(){
   const parsed=await loadJson(MASTER_KEY);
   return parsed?hydrateRecipeIndex(parsed):null;
 }
+export async function getCachedForeverDbMasterRecipeIndex(){
+  const master=await loadMaster();
+  return master?{...master,cached:true,refreshing:false,masterComplete:master.complete===true}:null;
+}
 async function loadDraft(){
   const parsed=await loadJson(MASTER_DRAFT_KEY);
   return parsed?hydrateRecipeIndex(parsed):null;
