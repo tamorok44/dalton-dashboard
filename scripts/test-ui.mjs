@@ -56,8 +56,10 @@ const addonPayloadQa={
 assert.equal(ui.applyServerPayload(addonPayloadQa,{force:true}),true,'Server payload with AddOn state is accepted');
 const addonRendered=nodes.get('#cards').innerHTML;
 assert.ok(addonRendered.includes('AddOn synchronisiert'),'Top-level addonSync survives applyServerPayload and reaches the game-status panel');
-assert.ok(addonRendered.includes('direkte Bridge'),'Cole local bridge transport is rendered');
 assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered instead of the install prompt');
+assert.ok(!addonRendered.includes('direkte Bridge')&&!addonRendered.includes('Build 71037'),'Technical transport/build diagnostics are hidden from the player-facing game status');
+assert.ok(!addonRendered.includes('Standort-Historie')&&!addonRendered.includes('Händler & Lehrer'),'Internal history and live-evidence counters stay out of the player-facing game status');
+assert.ok(!addonRendered.includes('Instanzbindungen'),'Zero instance bindings are not shown at all');
 
 const classAbilityQa=ui.classAbilitiesPanel({
   knownClassAbilitiesVerified:true,
@@ -454,7 +456,10 @@ const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton'
   lockouts:[{name:'Testinstanz',difficultyName:'Normal',resetAt:'2026-11-25T09:30:00.000Z',locked:true}]
 });
 assert.ok(gameStatusSynced.includes('Sturmwind')&&gameStatusSynced.includes('Insel Zephras')&&gameStatusSynced.includes('Valanaar'));
-assert.ok(gameStatusSynced.includes('Testinstanz')&&gameStatusSynced.includes('1')&&gameStatusSynced.includes('Lockouts'));
+assert.ok(!gameStatusSynced.includes('62,0 %')&&!gameStatusSynced.includes('73,0 %'),'Map coordinates are not shown as confusing percentages');
+assert.ok(!gameStatusSynced.includes('Standort-Historie')&&!gameStatusSynced.includes('Händler & Lehrer'),'Internal sync counters are not shown');
+assert.ok(gameStatusSynced.includes('Testinstanz')&&gameStatusSynced.includes('Aktive Instanzbindungen · 1'),'Existing lockouts use the understandable term Instanzbindungen and are only shown when present');
+assert.ok(!gameStatusSynced.includes('Lockouts'),'Technical lockout terminology is not exposed');
 
 const spellbookVerified=ui.classAbilitiesPanel({
   slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:true,
