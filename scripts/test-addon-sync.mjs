@@ -62,6 +62,7 @@ assert.equal(parsed.locationHistory.entries.length,1);
 
 const payload=buildSafeAddonSyncPayload(parsed,{syncId:'a'.repeat(64)});
 assert.equal(payload.addon.version,'0.1.0-beta.1');
+assert.equal(payload.client.transportVersion,'0.1.0-beta.1','Safe sync payload must not fall back to an older release transport version');
 assert.equal(payload.sections.character.name,'Cole Dalton');
 assert.ok(!('economy' in payload.sections),'Gold bleibt aus dem Standard-Sync ausgeschlossen');
 assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem Standard-Sync ausgeschlossen');
