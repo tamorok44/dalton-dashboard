@@ -12,7 +12,11 @@ const ENROLL_TTL_SECONDS=86400;
 function scope(){return process.env.VERCEL_ENV==='production'?'production':'preview'}
 function sha(value){return createHash('sha256').update(String(value)).digest('hex')}
 function inviteKey(code){return 'dalton-dashboard:addon-device:v1:'+scope()+':invite:'+sha(code)}
-function deviceKey(token){return 'dalton-dashboard:addon-device:v1:'+scope()+':token:'+sha(token)}
+function deviceKeyForScope(token,targetScope=scope()){
+  const resolved=targetScope==='production'?'production':'preview';
+  return 'dalton-dashboard:addon-device:v1:'+resolved+':token:'+sha(token);
+}
+function deviceKey(token){return deviceKeyForScope(token,scope())}
 function now(){return new Date().toISOString()}
 function safeEqual(a,b){
   const left=Buffer.from(String(a||'')),right=Buffer.from(String(b||''));
@@ -68,15 +72,30 @@ export async function redeemDeviceEnrollment(code){
   await redis(['SET',deviceKey(token),JSON.stringify(record)]);
   return {token,...record};
 }
-export async function authorizeDeviceToken(token){
+export async function authorizeDeviceToken(token,{targetScope=scope()}={}){
   if(!configured()||typeof token!=='string'||!token.startsWith('ddv1_'))return null;
-  const raw=await redis(['GET',deviceKey(token)]);
+  const raw=await redis(['GET',deviceKeyForScope(token,targetScope)]);
   if(!raw)return null;
   try{
     const record=JSON.parse(raw);
     if(!record||record.revokedAt||!isTrustedCharacterSlug(record.characterSlug))return null;
     return record;
   }catch{return null}
+}
+export async function promoteColeDeviceToProduction(token){
+  if(process.env.VERCEL_ENV==='production')throw new Error('Geräteübernahme ist nur aus dem Preview möglich');
+  const device=await authorizeDeviceToken(token,{targetScope:'preview'});
+  if(!device||device.characterSlug!=='cole-dalton')throw new Error('Nur Coles Preview-Hub darf auf Produktion übernommen werden');
+  const promotedToken='ddv1_'+createHash('sha256').update('production-promotion-v1:'+token).digest('base64url');
+  const record={
+    ...device,
+    schemaVersion:1,
+    promotedAt:now(),
+    promotedFromDeviceId:device.deviceId,
+    revokedAt:null
+  };
+  await redis(['SET',deviceKeyForScope(promotedToken,'production'),JSON.stringify(record)]);
+  return {token:promotedToken,...record};
 }
 export async function revokeDeviceToken(token){
   const record=await authorizeDeviceToken(token);
