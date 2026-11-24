@@ -717,7 +717,7 @@ assert.ok(trayIcon.includes('kompakt')&&trayIcon.includes('>D</text>'),'Compact 
 assert.ok(bridgeBranding.includes('Branding Sheriffstern')&&bridgeBranding.includes('stroke-dasharray="7 11"'),'Bridge branding keeps the more ornate selected variant');
 assert.equal(manifest.icons.length,1,'Web app manifest exposes one unambiguous preferred app icon');
 assert.equal(manifest.icons[0].src,'/icon.svg');
-assert.equal(manifest.icons[0].purpose,'any maskable','Primary Dalton icon is valid as the macOS maskable app icon');
+assert.equal(manifest.icons[0].purpose,'any','Primary Dalton icon uses the Safari-compatible any purpose');
 assert.ok(heroHtml.includes('<link rel="icon" href="/bridge-tray.svg"'),'Compact variant is used as the browser favicon');
 assert.ok(heroHtml.includes('<link rel="apple-touch-icon" href="/icon.svg" sizes="180x180">'),'iOS receives the Dalton sheriff-star as an explicit Apple touch icon');
 assert.equal(manifest.icons[0].purpose,'any','Safari/iOS manifest icon uses the unambiguous any purpose');
