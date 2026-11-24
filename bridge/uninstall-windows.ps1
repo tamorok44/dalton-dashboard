@@ -6,6 +6,7 @@ $startup = [Environment]::GetFolderPath("Startup")
 $startupLink = Join-Path $startup "Dalton Dashboard Bridge.lnk"
 $programs = [Environment]::GetFolderPath("Programs")
 $uninstallLink = Join-Path $programs "Dalton Dashboard Bridge deinstallieren.lnk"
+$enrollLink = Join-Path $programs "Dalton Dashboard Einrichtungscode erstellen.lnk"
 
 Write-Host "Dalton Dashboard Bridge deinstallieren"
 Write-Host ""
@@ -25,6 +26,7 @@ if (Test-Path $target) {
 Get-Process "DaltonDashboardBridge" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
 Remove-Item $startupLink -Force -ErrorAction SilentlyContinue
 Remove-Item $uninstallLink -Force -ErrorAction SilentlyContinue
+Remove-Item $enrollLink -Force -ErrorAction SilentlyContinue
 
 if (Test-Path $targetDir) {
   Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue
