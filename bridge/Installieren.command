@@ -24,10 +24,17 @@ fi
 TARGET_DIR="$HOME/Library/Application Support/DaltonDashboardBridge"
 TARGET="$TARGET_DIR/DaltonDashboardBridge"
 PLIST="$HOME/Library/LaunchAgents/de.dalton.dashboard.bridge.plist"
-mkdir -p "$TARGET_DIR" "$HOME/Library/LaunchAgents"
+UNINSTALL_SOURCE="$DIR/Deinstallieren.command"
+UNINSTALL_TARGET="$HOME/Applications/Dalton Dashboard Bridge deinstallieren.command"
+mkdir -p "$TARGET_DIR" "$HOME/Library/LaunchAgents" "$HOME/Applications"
 cp "$SOURCE" "$TARGET"
 chmod 700 "$TARGET"
+if [[ -f "$UNINSTALL_SOURCE" ]]; then
+  cp "$UNINSTALL_SOURCE" "$UNINSTALL_TARGET"
+  chmod 700 "$UNINSTALL_TARGET"
+fi
 xattr -dr com.apple.quarantine "$TARGET_DIR" >/dev/null 2>&1 || true
+xattr -d com.apple.quarantine "$UNINSTALL_TARGET" >/dev/null 2>&1 || true
 
 "$TARGET" --enroll "$CODE"
 
@@ -58,3 +65,4 @@ launchctl kickstart -k "gui/$(id -u)/de.dalton.dashboard.bridge"
 echo ""
 echo "Dalton Dashboard Bridge ist eingerichtet."
 echo "Sie startet künftig automatisch im Hintergrund."
+echo "Deinstallation: ~/Applications/Dalton Dashboard Bridge deinstallieren.command"
