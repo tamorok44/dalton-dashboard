@@ -184,6 +184,62 @@ function addonDataRequirement(c,{title='Zusätzliche Spieldaten noch nicht verf�
   return '<div class="spellbook-sync addon-data-requirement"><div><span class="planner-kicker">ADDON-DATEN</span><h4>'+esc(title)+'</h4><p><strong>'+esc(heading)+'</strong><br>'+esc(copy)+'</p></div></div>';
 }
 
+function formatAddonCoordinate(value){
+  const n=Number(value);
+  return Number.isFinite(n)?new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n*100)+' %':null;
+}
+function formatAddonDate(value){
+  const time=Date.parse(value||'');
+  return Number.isFinite(time)?new Date(time).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):null;
+}
+function gameStatusPanel(c){
+  const state=addonSyncState(c);
+  if(!state){
+    return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
+      addonDataRequirement(c,{
+        title:'Spielstatus noch nicht verfügbar',
+        detail:'Ruhestein, Standort, Lockouts und weitere persönliche Spieldaten automatisch hier angezeigt.'
+      })+'</div>';
+  }
+
+  const location=state.currentLocation&&typeof state.currentLocation==='object'?state.currentLocation:null;
+  const place=location
+    ?[location.zone,location.subZone].filter(Boolean).join(' · ')||'noch nicht erfasst'
+    :'noch nicht erfasst';
+  const coords=location?[formatAddonCoordinate(location.x),formatAddonCoordinate(location.y)].filter(Boolean).join(' / '):'';
+  const bind=location?.bindLocation||'noch nicht erfasst';
+  const lockouts=Array.isArray(state.lockouts)?state.lockouts:[];
+  const lockoutCount=Number.isFinite(Number(state.lockoutCount))?Number(state.lockoutCount):lockouts.length;
+  const received=formatAddonDate(state.receivedAt);
+  const version=[state.addonVersion?('AddOn '+state.addonVersion):null,state.build?('Build '+state.build):null,received?('Sync '+received):null].filter(Boolean).join(' · ');
+  const observations=(Number(state.merchantObservationCount)||0)+(Number(state.trainerObservationCount)||0);
+
+  const lockoutHtml=lockouts.length
+    ?'<div class="addon-lockout-list">'+lockouts.map(entry=>{
+      const progress=Number.isFinite(Number(entry.encounterProgress))&&Number.isFinite(Number(entry.numEncounters))
+        ?Number(entry.encounterProgress)+'/'+Number(entry.numEncounters)+' Bosse'
+        :null;
+      const reset=formatAddonDate(entry.resetAt);
+      const meta=[entry.difficultyName,progress,reset?('Reset '+reset):null,entry.extended?'verlängert':null].filter(Boolean);
+      return '<div class="addon-lockout"><div><strong>'+esc(entry.name)+'</strong>'+(meta.length?'<small>'+esc(meta.join(' · '))+'</small>':'')+'</div>'+
+        '<span>'+(entry.locked===false?'offen':'gebunden')+'</span></div>';
+    }).join('')+'</div>'
+    :'<p class="knowledge-empty">'+(lockoutCount===0?'Keine aktiven Lockouts gemeldet.':'Lockout-Details wurden noch nicht vollständig synchronisiert.')+'</p>';
+
+  return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
+    '<div class="addon-sync-meta"><strong>AddOn synchronisiert</strong>'+(version?'<span>'+esc(version)+'</span>':'')+'</div>'+
+    '<div class="addon-state-grid">'+
+      '<div class="addon-state-card"><small>Ruhestein</small><strong>'+esc(bind)+'</strong></div>'+
+      '<div class="addon-state-card"><small>Letzter Standort</small><strong>'+esc(place)+'</strong>'+(coords?'<span>'+esc(coords)+'</span>':'')+'</div>'+
+      '<div class="addon-state-card"><small>Lockouts</small><strong>'+esc(lockoutCount)+'</strong></div>'+
+      '<div class="addon-state-card"><small>Standort-Historie</small><strong>'+esc(Number(state.locationHistoryCount)||0)+'</strong><span>gespeicherte Ortswechsel</span></div>'+
+      '<div class="addon-state-card"><small>Händler & Lehrer</small><strong>'+esc(observations)+'</strong><span>Live-Beobachtungen</span></div>'+
+      (Number(c.classId)===3?'<div class="addon-state-card"><small>Begleiterdaten</small><strong>'+(state.hunterCaptured?'erfasst':'noch offen')+'</strong></div>':'')+
+    '</div>'+
+    '<details class="details addon-lockouts" data-detail-key="'+esc(c.slug)+':addon-lockouts"><summary>Lockouts anzeigen · '+esc(lockoutCount)+'</summary>'+lockoutHtml+'</details>'+
+    '</div>';
+}
+
 function classAbilitiesPanel(c){
   const abilities=(Array.isArray(c.knownClassAbilities)?c.knownClassAbilities:[])
     .filter(entry=>Number.isInteger(Number(entry?.id)))
@@ -622,6 +678,7 @@ function installPortraitFallbacks(){
 
 const baseCharacterTabs=[
   {id:'stats',label:'Charakterwerte'},
+  {id:'game',label:'Spielstatus'},
   {id:'equipment',label:'Ausrüstung'},
   {id:'talents',label:'Talente'},
   {id:'abilities',label:'Klassenfähigkeiten'},
@@ -771,6 +828,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
     ${characterTabPanel(c,'talents',talentPanel(c))}
+    ${characterTabPanel(c,'game',gameStatusPanel(c))}
     ${characterTabPanel(c,'abilities',classAbilitiesPanel(c))}
     ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
