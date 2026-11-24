@@ -127,9 +127,12 @@ jobs:
           bun build scripts/dalton-sync-client.mjs --compile --minify --windows-hide-console --outfile dist/bridge-windows/DaltonDashboardBridge.exe
           Copy-Item bridge/install-windows.ps1 dist/bridge-windows/
           Copy-Item bridge/Installieren.cmd dist/bridge-windows/
+          Copy-Item bridge/uninstall-windows.ps1 dist/bridge-windows/
+          Copy-Item bridge/Deinstallieren.cmd dist/bridge-windows/
 
-          & dist/bridge-windows/DaltonDashboardBridge.exe --help
+          $help = & dist/bridge-windows/DaltonDashboardBridge.exe --help
           if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
+          if (($help -join "`n") -notmatch "--revoke-device") { throw "Bridge-Hilfe enthält Geräte-Widerruf nicht" }
           & dist/bridge-windows/DaltonDashboardBridge.exe --dry-run --file scripts/fixtures/bridge-savedvariables.lua
           if ($LASTEXITCODE -ne 0) { throw "Bridge Dry-Run fehlgeschlagen" }
 
@@ -172,8 +175,12 @@ jobs:
           bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-arm64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-arm64
           bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-x64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-x64
           cp bridge/Installieren.command dist/bridge-macos/
+          cp bridge/Deinstallieren.command dist/bridge-macos/
           cp bridge/Testen.command dist/bridge-macos/
           chmod +x dist/bridge-macos/*
+          grep -q -- "--revoke-device" scripts/dalton-sync-client.mjs
+          grep -q "Gerätezugang" bridge/Deinstallieren.command
+          grep -q "Gerätezugang" bridge/uninstall-windows.ps1
           cd dist
           zip -r DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip bridge-macos
           cd ..
