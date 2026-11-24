@@ -161,6 +161,14 @@ assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEq
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/addon-sync.js')||'').includes('DALTON_SYNC_TOKEN'),'Addon sync writes must require constant-time bearer authentication');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes("process.env.VERCEL_ENV!=='production'")&&(sourceByFile.get('api/addon-sync.js')||'').includes('previewIsolated'),'Preview addon sync must never write verified spellbook data into the shared production character store');
 assert.ok((sourceByFile.get('scripts/addon-sync-store.mjs')||'').includes("?'production':'preview'"),'Addon sync raw-state Redis keys must be environment-scoped');
+assert.ok(sourceByFile.has('scripts/live-knowledge-store.mjs'),'Persistent build-scoped Dalton live-knowledge store is required');
+assert.ok((sourceByFile.get('scripts/live-knowledge-store.mjs')||'').includes("record:'+kind+':'+encodeURIComponent(build)"),'Live knowledge must be keyed by build, NPC and interaction kind');
+assert.ok((sourceByFile.get('scripts/live-knowledge-store.mjs')||'').includes('changes.slice(-CHANGE_LIMIT)'),'Live knowledge must keep only bounded factual change history instead of unbounded snapshots');
+assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('ingestAddonLiveKnowledge(payload)'),'Every addon sync must feed the shared live-knowledge layer');
+assert.ok((sourceByFile.get('scripts/data-version.mjs')||'').includes('loadLiveKnowledgeVersion'),'Live-knowledge changes must participate in the global frontend data version');
+assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('liveKnowledgeDiscoveries'),'Location planner must surface unresolved live learning-item discoveries without pretending they are classified recipes');
+assert.ok((sourceByFile.get('app.js')||'').includes('Live beobachtete neue Händlerangebote'),'Frontend must visibly separate unresolved live discoveries from selectable confirmed actions');
+assert.ok(policy.includes('Dalton-Livewissen ist charakterunabhängig')&&policy.includes('vollständigen Fenster'),'Architecture policy must define persistent shared live knowledge and fail-closed negative merchant evidence');
 const addonSyncSource=sourceByFile.get('scripts/addon-sync.mjs')||'';
 const whitelistStart=addonSyncSource.indexOf('const SAFE_SECTION_NAMES');
 const whitelistEnd=addonSyncSource.indexOf(']);',whitelistStart);
