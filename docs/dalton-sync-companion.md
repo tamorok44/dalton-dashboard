@@ -89,3 +89,21 @@ Die Deinstallation ist auf beiden Plattformen absichtlich zweistufig abgesichert
 2. Erst nach erfolgreichem Widerruf werden Autostart, lokale Konfiguration und Bridge-Dateien entfernt.
 
 Dadurch kann eine alte Kopie der lokalen Geräte-Konfiguration nach der Deinstallation nicht weiter synchronisieren. Für den serverseitigen Widerruf ist während der Deinstallation eine Internetverbindung erforderlich. Das WoW-Addon selbst wird durch die Bridge-Deinstallation nicht entfernt und kann unabhängig über CurseForge deinstalliert werden.
+
+
+## Peer-Einrichtung durch Cole
+
+Coles Hub-Gerät darf Einmal-Codes ausschließlich für **Chucky Dalton, Dolly Dalton und Viola Dalton** erzeugen. Es darf keinen neuen Cole-Zugang erstellen.
+
+Nach der Installation wird nur auf Coles Hub-Rechner ein Helfer angeboten:
+
+- macOS: `~/Applications/Dalton Dashboard Einrichtungscode erstellen.command`
+- Windows: Startmenü **Dalton Dashboard Einrichtungscode erstellen**
+
+Der Helfer fragt den Zielcharakter ab, erzeugt einen 24 Stunden gültigen Einmal-Code und kopiert ihn in die Zwischenablage. Peer-Geräte erhalten diesen Helfer nicht.
+
+Die Geräteberechtigungen bleiben eng begrenzt:
+- jedes Gerät darf seinen eigenen Dalton-Charakter direkt synchronisieren;
+- nur Coles Hub-Gerät darf zusätzlich einen echten `dalton-peer-relay`-Datensatz von Chucky, Dolly oder Viola weiterleiten;
+- Coles Hub-Gerät darf **keinen** fremden Direkt-Sync vortäuschen;
+- Peer-Geräte dürfen weder andere Dalton-Charaktere synchronisieren noch weitere Einrichtungscodes erzeugen.
