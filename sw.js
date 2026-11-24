@@ -1,5 +1,5 @@
-const CACHE="daltons-class-media-budget-v57";
-const ASSETS=["/","/styles.css?v=class-media-budget-20261123a","/app.js?v=class-media-budget-20261123b","/hunter-pets.js","/reputation-data.js","/icon.svg","/bridge-tray.svg","/bridge-branding.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=wow-colors-20261121a","/scene-dolly.svg?v=wow-colors-20261121a","/scene-chucky.svg?v=wow-colors-20261121a","/scene-viola.svg?v=wow-colors-20261121a"];
+const CACHE="daltons-class-media-budget-v58";
+const ASSETS=["/","/styles.css?v=class-media-budget-20261123a","/app.js?v=class-media-budget-20261123b","/hunter-pets.js","/reputation-data.js","/icon.svg","/apple-touch-icon.png?v=ios-20261124a","/bridge-tray.svg","/bridge-branding.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=wow-colors-20261121a","/scene-dolly.svg?v=wow-colors-20261121a","/scene-chucky.svg?v=wow-colors-20261121a","/scene-viola.svg?v=wow-colors-20261121a"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
