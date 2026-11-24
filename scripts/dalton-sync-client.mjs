@@ -31,19 +31,20 @@ async function saveConfig(value){
   await fs.writeFile(file,JSON.stringify(value,null,2)+'\n',{mode:0o600});
   return file;
 }
-async function enrollDevice(endpoint,code,character=null){
+async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
   const base=new URL(endpoint);
   base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
+  const cookie=await previewCookie(previewShareUrl);
   const response=await fetch(base,{
     method:'POST',
-    headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION},
+    headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,...(cookie?{Cookie:cookie}:{})},
     body:JSON.stringify({code,character}),
     signal:AbortSignal.timeout(15000)
   });
   const body=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error('Einrichtung fehlgeschlagen: '+String(body.error||response.statusText).slice(0,180));
   const current=await loadConfig();
-  const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint});
+  const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null});
   return {...body,configFile:file};
 }
 async function createEnrollment(endpoint,characterSlug,masterToken){
@@ -64,7 +65,7 @@ function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,character:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,character:null,previewShareUrl:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
   for(let i=0;i<argv.length;i++){
     const value=argv[i];
     if(value==='--watch')out.watch=true;
@@ -74,6 +75,7 @@ function args(argv){
     else if(value==='--enroll')out.enroll=argv[++i]||null;
     else if(value==='--create-enroll')out.createEnroll=argv[++i]||null;
     else if(value==='--character')out.character=argv[++i]||null;
+    else if(value==='--preview-share-url')out.previewShareUrl=argv[++i]||null;
     else if(value==='--help')out.help=true;
     else throw new Error('Unbekannte Option: '+value);
   }
@@ -342,7 +344,7 @@ async function main(){
     return;
   }
   if(options.enroll){
-    const enrolled=await enrollDevice(options.endpoint,options.enroll,options.character);
+    const enrolled=await enrollDevice(options.endpoint,options.enroll,options.character,options.previewShareUrl);
     console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
     console.log('Konfiguration: '+enrolled.configFile);
     return;
@@ -357,7 +359,7 @@ async function main(){
   const lastHashes=new Map();
   let running=false;
   let rerun=false;
-  const previewAuthCookie=await previewCookie(process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const previewAuthCookie=await previewCookie(options.previewShareUrl||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
 
   const sync=async()=>{
     if(running){rerun=true;return}
