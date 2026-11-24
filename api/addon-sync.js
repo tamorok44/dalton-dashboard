@@ -72,24 +72,26 @@ export default async function handler(req,res){
   }
 
   const previewIsolated=process.env.VERCEL_ENV!=='production';
-  const lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
-  if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
+  let lockToken=null;
 
   try{
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
-    const liveKnowledge=await ingestAddonLiveKnowledge(payload);
     const previousState=await loadAddonSyncState(target.slug);
     if(previousState?.payload?.syncId&&previousState.payload.syncId===payload.syncId){
       return res.status(200).json({
         duplicate:true,
-        liveKnowledge,
+        liveKnowledge:{duplicate:true},
         character:{slug:target.slug,name:target.name},
         summary:publicAddonSyncSummary(previousState)
       });
     }
 
+    lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
+    if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
+
+    const liveKnowledge=await ingestAddonLiveKnowledge(payload);
     let updated=before;
     let spellbookApplied=false;
     let classMaster=null;
@@ -133,7 +135,7 @@ export default async function handler(req,res){
     const status=/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
     return res.status(status).json({error:String(error.message).slice(0,180)});
   }finally{
-    if(!previewIsolated){
+    if(lockToken&&!previewIsolated){
       try{await releaseRefreshLock(lockToken)}catch(error){console.error('Addon-Sync-Lock konnte nicht freigegeben werden:',error)}
     }
   }
