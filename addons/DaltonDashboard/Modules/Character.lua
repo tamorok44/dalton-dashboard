@@ -7,17 +7,22 @@ module.events = {
 }
 
 local function captureCharacter(reason)
-  local name, realm
-  if UnitFullName then name, realm = UnitFullName("player") end
-  name = name or (UnitName and UnitName("player"))
-  realm = realm or (GetRealmName and GetRealmName())
+  local name, second
+  if UnitFullName then name, second = UnitFullName("player") end
+  if not name and UnitName then name, second = UnitName("player") end
+
+  local fullName = name
+  if name and second and second ~= "" then
+    fullName = name .. " " .. second
+  end
+  local realm = GetRealmName and GetRealmName() or nil
 
   local className, classFile, classID = UnitClass("player")
   local raceName, raceFile, raceID = UnitRace("player")
 
   ns.StoreSection("character", {
     reason = reason,
-    name = ns.SafeString(name),
+    name = ns.SafeString(fullName),
     realm = ns.SafeString(realm),
     guid = ns.SafeString(UnitGUID and UnitGUID("player")),
     className = ns.SafeString(className),
