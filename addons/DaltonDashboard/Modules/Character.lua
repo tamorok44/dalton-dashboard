@@ -3,8 +3,7 @@ local module = ns.RegisterModule("Character", {})
 
 module.events = {
   PLAYER_LOGIN = true,
-  PLAYER_LEVEL_UP = true,
-  PLAYER_MONEY = true
+  PLAYER_LEVEL_UP = true
 }
 
 local function captureCharacter(reason)
@@ -52,9 +51,5 @@ function module:Capture(reason)
 end
 
 function module:OnEvent(event)
-  if event == "PLAYER_MONEY" then
-    captureEconomy(event)
-  else
-    self:Capture(event)
-  end
+  captureCharacter(event)
 end
