@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "updatedOn": "2026-11-23",
+  "observations": [
+    {
+      "npcId": 257006,
+      "npcName": "Nyalah Brightfire",
+      "sourceType": "vendor",
+      "professionSlug": "cooking",
+      "craftedItemId": 787,
+      "status": "absent",
+      "build": "1.60.1.71037",
+      "observedOn": "2026-11-23",
+      "source": "dalton-live",
+      "note": "Direkte Ingame-Prüfung: Rezept Glitschhautmakrele wird von Nyalah Brightfire nicht angeboten.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
+    },
+    {
+      "npcId": 257006,
+      "npcName": "Nyalah Brightfire",
+      "sourceType": "vendor",
+      "professionSlug": "cooking",
+      "craftedItemId": 21072,
+      "status": "present",
+      "priceCopper": 500,
+      "build": "1.60.1.71037",
+      "observedOn": "2026-11-23",
+      "source": "dalton-live",
+      "note": "Direkte Ingame-Prüfung: Rezept Geräucherter Weisenfisch wird für 5 Silber angeboten.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
+    },
+    {
+      "npcId": 257006,
+      "npcName": "Nyalah Brightfire",
+      "sourceType": "vendor",
+      "professionSlug": "cooking",
+      "craftedItemId": 21217,
+      "status": "present",
+      "priceCopper": 5000,
+      "build": "1.60.1.71037",
+      "observedOn": "2026-11-23",
+      "source": "dalton-live",
+      "note": "Direkte Ingame-Prüfung: Rezept Weisenfisch Supreme wird für 50 Silber angeboten.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
+    },
+    {
+      "npcId": 257006,
+      "npcName": "Nyalah Brightfire",
+      "sourceType": "trainer",
+      "professionSlug": "cooking",
+      "craftedItemId": 17222,
+      "status": "present",
+      "priceCopper": 4000,
+      "build": "1.60.1.71037",
+      "observedOn": "2026-11-23",
+      "source": "dalton-live",
+      "note": "Direkte Ingame-Prüfung: Spinnenwurst wird als Kochkunst-Ausbildung für 40 Silber gelehrt.",
+      "location": {
+        "zone": "Insel Zephras"
+      }
+    }
+  ]
+}

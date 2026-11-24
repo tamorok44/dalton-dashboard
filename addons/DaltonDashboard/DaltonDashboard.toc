@@ -1,9 +1,19 @@
 ## Interface: 16001
-## Title: Dalton Dashboard Spellbook Sync
-## Notes: Exportiert den echten Klassen-Spellbook-Stand für das private Dalton Dashboard.
+## Title: Dalton Dashboard Sync
+## Notes: Erfasst lokale WoW-Forever-Charakterdaten fuer eine optionale Dalton-Dashboard-Synchronisierung.
 ## Author: Dalton Dashboard
-## Version: 1.0.0
+## Version: 0.1.0-alpha.11
 ## X-Website: https://dalton-dashboard-eight.vercel.app
+## SavedVariables: DaltonDashboardDB
+## SavedVariablesPerCharacter: DaltonDashboardCharDB
 
-Config.lua
+Core.lua
+Modules/Character.lua
+Modules/Spellbook.lua
+Modules/Location.lua
+Modules/Interactions.lua
+Modules/Instances.lua
+Modules/Inventory.lua
+Modules/HunterPet.lua
+Modules/Relay.lua
 DaltonDashboard.lua

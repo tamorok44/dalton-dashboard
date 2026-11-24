@@ -1,0 +1,206 @@
+name: Addon CI
+
+on:
+  pull_request:
+    paths:
+      - "addons/DaltonDashboard/**"
+      - "scripts/test-addon-structure.mjs"
+      - "scripts/test-addon-sync.mjs"
+      - "scripts/addon-sync.mjs"
+      - "scripts/addon-sync-store.mjs"
+      - "scripts/addon-device-auth.mjs"
+      - "scripts/savedvariables-parser.mjs"
+      - "scripts/dalton-sync-client.mjs"
+      - "api/addon-sync.js"
+      - "api/addon-sync-status.js"
+      - "api/addon-device-enroll.js"
+      - "api/addon-device-promote.js"
+      - "bridge/**"
+      - "docs/dalton-sync-companion.md"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/addon-ci.yml"
+  push:
+    branches:
+      - "feature/curseforge-addon-foundation"
+    paths:
+      - "addons/DaltonDashboard/**"
+      - "scripts/test-addon-structure.mjs"
+      - "scripts/test-addon-sync.mjs"
+      - "scripts/addon-sync.mjs"
+      - "scripts/addon-sync-store.mjs"
+      - "scripts/addon-device-auth.mjs"
+      - "scripts/savedvariables-parser.mjs"
+      - "scripts/dalton-sync-client.mjs"
+      - "api/addon-sync.js"
+      - "api/addon-sync-status.js"
+      - "api/addon-device-enroll.js"
+      - "api/addon-device-promote.js"
+      - "bridge/**"
+      - "docs/dalton-sync-companion.md"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/addon-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Node 22 einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Tests ausführen
+        run: npm test
+
+      - name: Bridge-Dry-Run gegen SavedVariables-Fixture
+        run: node scripts/dalton-sync-client.mjs --dry-run --file scripts/fixtures/bridge-savedvariables.lua
+
+      - name: Lua-5.1-Syntax prüfen
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y lua5.1
+          find addons/DaltonDashboard -type f -name "*.lua" -print0 | xargs -0 -n1 luac5.1 -p
+
+      - name: Addon-Paket bauen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cd addons
+          zip -r "../dist/DaltonDashboard-0.1.0-alpha.11.zip" DaltonDashboard             -x "*/.DS_Store" "*/Thumbs.db"
+          cd ..
+          unzip -l dist/DaltonDashboard-0.1.0-alpha.11.zip
+
+      - name: Sync-Companion-Paket bauen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/DaltonDashboardSyncCompanion
+          cp scripts/dalton-sync-client.mjs dist/DaltonDashboardSyncCompanion/
+          cp scripts/savedvariables-parser.mjs dist/DaltonDashboardSyncCompanion/
+          cp scripts/addon-sync.mjs dist/DaltonDashboardSyncCompanion/
+          cp docs/dalton-sync-companion.md dist/DaltonDashboardSyncCompanion/README.md
+          cd dist
+          zip -r "DaltonDashboardSyncCompanion-0.1.0-alpha.11.zip" DaltonDashboardSyncCompanion
+          cd ..
+          unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-alpha.11.zip
+
+      - name: Addon-Testpaket bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboard-0.1.0-alpha.11
+          path: dist/DaltonDashboard-0.1.0-alpha.11.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Sync-Companion-Testpaket bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboardSyncCompanion-0.1.0-alpha.11
+          path: dist/DaltonDashboardSyncCompanion-0.1.0-alpha.11.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  bridge-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Bun einrichten
+        uses: oven-sh/setup-bun@v2
+
+      - name: Unsichtbare Windows-Bridge bauen
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist/bridge-windows -Force | Out-Null
+          bun build scripts/dalton-sync-client.mjs --compile --minify --windows-hide-console --outfile dist/bridge-windows/DaltonDashboardBridge.exe
+          Copy-Item bridge/install-windows.ps1 dist/bridge-windows/
+          Copy-Item bridge/Installieren.cmd dist/bridge-windows/
+          Copy-Item bridge/uninstall-windows.ps1 dist/bridge-windows/
+          Copy-Item bridge/Deinstallieren.cmd dist/bridge-windows/
+          Copy-Item bridge/create-enroll-windows.ps1 dist/bridge-windows/
+          Copy-Item bridge/Einrichtungscode-erstellen.cmd dist/bridge-windows/
+
+          & dist/bridge-windows/DaltonDashboardBridge.exe --help
+          if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
+          if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--revoke-device" -Quiet)) { throw "Bridge-Quellcode enthält Geräte-Widerruf nicht" }
+          if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--create-enroll" -Quiet)) { throw "Bridge-Quellcode enthält Hub-Einrichtung nicht" }
+          if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--promote-production" -Quiet)) { throw "Bridge-Quellcode enthält Produktionsübernahme nicht" }
+          if (-not (Select-String -Path bridge/create-enroll-windows.ps1 -Pattern "cole-dalton" -Quiet)) { throw "Windows-Hub-Helfer ist nicht auf Cole begrenzt" }
+          & dist/bridge-windows/DaltonDashboardBridge.exe --dry-run --file scripts/fixtures/bridge-savedvariables.lua
+          if ($LASTEXITCODE -ne 0) { throw "Bridge Dry-Run fehlgeschlagen" }
+
+          $p = Start-Process -FilePath "dist/bridge-windows/DaltonDashboardBridge.exe" -ArgumentList "--dry-run","--watch","--file","scripts/fixtures/bridge-savedvariables.lua" -PassThru
+          Start-Sleep -Seconds 4
+          $proc = Get-Process -Id $p.Id
+          $cpu1 = $proc.CPU
+          $wsMb = [Math]::Round($proc.WorkingSet64 / 1MB, 1)
+          Start-Sleep -Seconds 4
+          $proc.Refresh()
+          $cpu2 = $proc.CPU
+          $idleCpu = [Math]::Round(($cpu2 - $cpu1), 3)
+          Write-Host "Bridge Idle-Baseline: Working Set ${wsMb} MB; CPU-Zeit in 4 s: ${idleCpu} s"
+          Stop-Process -Id $p.Id -Force
+
+          Compress-Archive -Path dist/bridge-windows/* -DestinationPath dist/DaltonDashboardBridge-Windows-0.1.0-alpha.11.zip -Force
+
+      - name: Windows-Bridge bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboardBridge-Windows-0.1.0-alpha.11
+          path: dist/DaltonDashboardBridge-Windows-0.1.0-alpha.11.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  bridge-macos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Bun einrichten
+        uses: oven-sh/setup-bun@v2
+
+      - name: macOS-Bridge für Intel und Apple Silicon bauen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/bridge-macos
+          bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-arm64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-arm64
+          bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-x64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-x64
+          cp bridge/Installieren.command dist/bridge-macos/
+          cp bridge/Deinstallieren.command dist/bridge-macos/
+          cp bridge/Einrichtungscode-erstellen.command dist/bridge-macos/
+          cp bridge/Testen.command dist/bridge-macos/
+          chmod +x dist/bridge-macos/*
+          grep -q -- "--revoke-device" scripts/dalton-sync-client.mjs
+          grep -q "Gerätezugang" bridge/Deinstallieren.command
+          grep -q "Gerätezugang" bridge/uninstall-windows.ps1
+          grep -q "cole-dalton" bridge/Einrichtungscode-erstellen.command
+          cd dist
+          zip -r DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip bridge-macos
+          cd ..
+
+      - name: macOS-Bridge bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaltonDashboardBridge-macOS-0.1.0-alpha.11
+          path: dist/DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip
+          if-no-files-found: error
+          retention-days: 14
+

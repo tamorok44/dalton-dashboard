@@ -725,6 +725,28 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .character-tab-panel[hidden]{display:none}
 .character-tab-panel>.section,.character-tab-panel>.details{margin-top:0}
 
+.addon-sync-meta{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;padding:9px 10px;border:1px solid rgba(208,186,148,.16);border-radius:4px;background:rgba(4,12,18,.28)}
+.addon-sync-meta strong{color:var(--cream);font-size:var(--type-small)}
+.addon-sync-meta span{color:var(--muted);font-size:var(--type-caption);text-align:right}
+.addon-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.addon-state-card{min-width:0;padding:10px 11px;border:1px solid rgba(124,105,79,.42);border-left:3px solid var(--class);border-radius:3px;background:linear-gradient(130deg,rgba(36,44,48,.84),rgba(18,24,31,.90))}
+.addon-state-card small,.addon-state-card span{display:block;color:var(--muted);font-size:var(--type-caption);line-height:1.35}
+.addon-state-card strong{display:block;margin:3px 0;color:var(--cream);font:var(--weight-label) var(--type-body)/1.3 var(--body);overflow-wrap:anywhere}
+.addon-lockouts{margin-top:10px}
+.addon-lockout-list{display:grid;gap:7px;padding-top:9px}
+.addon-lockout{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid rgba(124,105,79,.38);border-radius:3px;background:rgba(12,18,25,.54)}
+.addon-lockout>div{min-width:0}
+.addon-lockout strong{display:block;color:var(--cream);font-size:var(--type-small);overflow-wrap:anywhere}
+.addon-lockout small{display:block;margin-top:3px;color:var(--muted);font-size:var(--type-caption);line-height:1.4}
+.addon-lockout>span{flex:0 0 auto;color:var(--class);font:var(--weight-label) var(--type-caption)/1.3 var(--body)}
+@media(max-width:520px){
+  .addon-state-grid{grid-template-columns:1fr}
+  .addon-sync-meta{display:grid}
+  .addon-sync-meta span{text-align:left}
+  .addon-lockout{display:grid}
+  .addon-lockout>span{justify-self:start}
+}
+
 .equipment-overview{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 10px;padding:10px 12px;border:1px solid rgba(208,186,148,.16);border-radius:5px;background:rgba(4,12,18,.28)}
 .equipment-overview small{color:#bca98b;font-size:var(--type-caption)}
 .equipment-overview strong{color:#f4e3c4;font:800 1.2rem var(--display);font-variant-numeric:tabular-nums}

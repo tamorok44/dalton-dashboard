@@ -41,7 +41,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 // Uniform 0–300 scale: current skill must not stretch to 100% at the old 75/150 cap.
 const getSegments=html=>[...html.matchAll(/class="profession-segment (is-unlocked|is-locked)"><span class="profession-segment-fill" style="width:([0-9.]+)%"/g)]
@@ -393,9 +393,23 @@ assert.ok(!ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some
   'Non-hunters do not receive the companion tab');
 assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='abilities'),
   'Every class gets the Klassenfähigkeiten tab');
+assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='game'),
+  'Every character gets the Spielstatus tab');
 const spellbookOpen=ui.classAbilitiesPanel({slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:false,knownClassAbilities:[]});
-assert.ok(spellbookOpen.includes('Persönlicher Lernstand noch nicht synchronisiert'));
-assert.ok(spellbookOpen.includes('/dalton')&&spellbookOpen.includes('Spellbook übernehmen'));
+assert.ok(spellbookOpen.includes('WoW-Forever-AddOn erforderlich'));
+assert.ok(spellbookOpen.includes('CurseForge'));
+assert.ok(!spellbookOpen.includes('/dalton')&&!spellbookOpen.includes('Spellbook übernehmen'),'Dashboard darf keinen manuellen Spellbook-Code mehr verlangen');
+const gameStatusMissing=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8});
+assert.ok(gameStatusMissing.includes('WoW-Forever-AddOn erforderlich')&&gameStatusMissing.includes('CurseForge'),'Spielstatus erklärt vor dem ersten Sync die AddOn-Voraussetzung');
+const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8},{
+  receivedAt:'2026-11-24T09:30:00.000Z',addonVersion:'0.1.0-alpha.9',build:'71037',
+  currentLocation:{zone:'Insel Zephras',subZone:'Valanaar',x:.62,y:.73,bindLocation:'Sturmwind'},
+  locationHistoryCount:4,lockoutCount:1,merchantObservationCount:3,trainerObservationCount:1,
+  lockouts:[{name:'Testinstanz',difficultyName:'Normal',resetAt:'2026-11-25T09:30:00.000Z',locked:true}]
+});
+assert.ok(gameStatusSynced.includes('Sturmwind')&&gameStatusSynced.includes('Insel Zephras')&&gameStatusSynced.includes('Valanaar'));
+assert.ok(gameStatusSynced.includes('Testinstanz')&&gameStatusSynced.includes('1')&&gameStatusSynced.includes('Lockouts'));
+
 const spellbookVerified=ui.classAbilitiesPanel({
   slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:true,
   knownClassAbilitiesCapturedAt:'2026-11-23T05:55:00.000Z',
@@ -408,12 +422,16 @@ assert.ok(spellbookVerified.includes('2 gelernte Klassenränge'));
 assert.ok(spellbookVerified.includes('Feuerball')&&spellbookVerified.includes('Rang 2'));
 assert.ok(spellbookVerified.includes('Durch höheren bekannten Rang mitgelernt'));
 assert.ok(spellbookVerified.includes('class="spellbook-ability-icon"')&&spellbookVerified.includes('https://blob.example/spell-143.webp'),'Gelernte Klassenfähigkeiten zeigen das archivierte Zauberbild vorne an');
-const expectedCharacterTabs=data.characters.reduce((count,character)=>count+7+(Number(character.classId)===3?1:0),0);
+const expectedCharacterTabs=data.characters.reduce((count,character)=>count+8+(Number(character.classId)===3?1:0),0);
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
 assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab)"),'A tab click changes only the selected character card');
+assert.ok(source.includes('function addonDataRequirement'),'AddOn-abhängige Dashboardbereiche verwenden eine zentrale Statuskomponente');
+assert.ok(!source.includes('data-spellbook-code')&&!source.includes('Spellbook übernehmen'),'Manueller Spellbook-Code ist aus der Dashboard-Oberfläche entfernt');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
+assert.ok(css.includes('.addon-state-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'),'Spielstatus nutzt ein responsives Grid');
+assert.ok(css.includes('@media(max-width:520px){\n  .addon-state-grid{grid-template-columns:1fr}'),'Spielstatus fällt auf schmalen Displays auf eine Spalte zurück');
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
 const wowClassColors={mage:'#3fc7eb',hunter:'#aad372',druid:'#ff7c0a'};
 for(const [klass,color] of Object.entries(wowClassColors)){

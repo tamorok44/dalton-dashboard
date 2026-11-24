@@ -168,6 +168,79 @@ function talentPanel(c){
   return '<div class="section talents-section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="talent-trees">'+body+'</div></div>';
 }
 
+function addonSyncState(c){
+  const state=displayedData?.addonSync?.[c?.slug];
+  return state&&typeof state==='object'?state:null;
+}
+function addonDataRequirement(c,{title='Zusätzliche Spieldaten noch nicht verfügbar',detail='die zusätzlichen Spieldaten automatisch im Dashboard angezeigt.'}={}){
+  const state=addonSyncState(c);
+  const received=state&&Number.isFinite(Date.parse(state.receivedAt||''))
+    ?new Date(state.receivedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
+    :null;
+  const heading=state?'AddOn erkannt – Daten noch nicht vollständig':'WoW-Forever-AddOn erforderlich';
+  const copy=state
+    ?'Das AddOn wurde bereits synchronisiert'+(received?' · zuletzt '+esc(received):'')+'. '+detail
+    :'Installiere unser WoW-Forever-AddOn über CurseForge. Nach der ersten erfolgreichen Synchronisation werden '+detail;
+  return '<div class="spellbook-sync addon-data-requirement"><div><span class="planner-kicker">ADDON-DATEN</span><h4>'+esc(title)+'</h4><p><strong>'+esc(heading)+'</strong><br>'+esc(copy)+'</p></div></div>';
+}
+
+function formatAddonCoordinate(value){
+  const n=Number(value);
+  return Number.isFinite(n)?new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n*100)+' %':null;
+}
+function formatAddonDate(value){
+  const time=Date.parse(value||'');
+  return Number.isFinite(time)?new Date(time).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):null;
+}
+function gameStatusPanel(c,stateOverride=null){
+  const state=stateOverride&&typeof stateOverride==='object'?stateOverride:addonSyncState(c);
+  if(!state){
+    return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
+      addonDataRequirement(c,{
+        title:'Spielstatus noch nicht verfügbar',
+        detail:'Ruhestein, Standort, Lockouts und weitere persönliche Spieldaten automatisch hier angezeigt.'
+      })+'</div>';
+  }
+
+  const location=state.currentLocation&&typeof state.currentLocation==='object'?state.currentLocation:null;
+  const place=location
+    ?[location.zone,location.subZone].filter(Boolean).join(' · ')||'noch nicht erfasst'
+    :'noch nicht erfasst';
+  const coords=location?[formatAddonCoordinate(location.x),formatAddonCoordinate(location.y)].filter(Boolean).join(' / '):'';
+  const bind=location?.bindLocation||'noch nicht erfasst';
+  const lockouts=Array.isArray(state.lockouts)?state.lockouts:[];
+  const lockoutCount=Number.isFinite(Number(state.lockoutCount))?Number(state.lockoutCount):lockouts.length;
+  const received=formatAddonDate(state.receivedAt);
+  const transportLabel=state.transport==='dalton-local-bridge'?'direkte Bridge':state.transport==='dalton-peer-relay'?'Peer-Relay über Cole':state.transport?'lokaler Sync':null;
+  const version=[state.addonVersion?('AddOn '+state.addonVersion):null,transportLabel,state.build?('Build '+state.build):null,received?('Sync '+received):null].filter(Boolean).join(' · ');
+  const observations=(Number(state.merchantObservationCount)||0)+(Number(state.trainerObservationCount)||0);
+
+  const lockoutHtml=lockouts.length
+    ?'<div class="addon-lockout-list">'+lockouts.map(entry=>{
+      const progress=Number.isFinite(Number(entry.encounterProgress))&&Number.isFinite(Number(entry.numEncounters))
+        ?Number(entry.encounterProgress)+'/'+Number(entry.numEncounters)+' Bosse'
+        :null;
+      const reset=formatAddonDate(entry.resetAt);
+      const meta=[entry.difficultyName,progress,reset?('Reset '+reset):null,entry.extended?'verlängert':null].filter(Boolean);
+      return '<div class="addon-lockout"><div><strong>'+esc(entry.name)+'</strong>'+(meta.length?'<small>'+esc(meta.join(' · '))+'</small>':'')+'</div>'+
+        '<span>'+(entry.locked===false?'offen':'gebunden')+'</span></div>';
+    }).join('')+'</div>'
+    :'<p class="knowledge-empty">'+(lockoutCount===0?'Keine aktiven Lockouts gemeldet.':'Lockout-Details wurden noch nicht vollständig synchronisiert.')+'</p>';
+
+  return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
+    '<div class="addon-sync-meta"><strong>AddOn synchronisiert</strong>'+(version?'<span>'+esc(version)+'</span>':'')+'</div>'+
+    '<div class="addon-state-grid">'+
+      '<div class="addon-state-card"><small>Ruhestein</small><strong>'+esc(bind)+'</strong></div>'+
+      '<div class="addon-state-card"><small>Letzter Standort</small><strong>'+esc(place)+'</strong>'+(coords?'<span>'+esc(coords)+'</span>':'')+'</div>'+
+      '<div class="addon-state-card"><small>Lockouts</small><strong>'+esc(lockoutCount)+'</strong></div>'+
+      '<div class="addon-state-card"><small>Standort-Historie</small><strong>'+esc(Number(state.locationHistoryCount)||0)+'</strong><span>gespeicherte Ortswechsel</span></div>'+
+      '<div class="addon-state-card"><small>Händler & Lehrer</small><strong>'+esc(observations)+'</strong><span>Live-Beobachtungen</span></div>'+
+      (Number(c.classId)===3?'<div class="addon-state-card"><small>Begleiterdaten</small><strong>'+(state.hunterCaptured?'erfasst':'noch offen')+'</strong></div>':'')+
+    '</div>'+
+    '<details class="details addon-lockouts" data-detail-key="'+esc(c.slug)+':addon-lockouts"><summary>Lockouts anzeigen · '+esc(lockoutCount)+'</summary>'+lockoutHtml+'</details>'+
+    '</div>';
+}
+
 function classAbilitiesPanel(c){
   const abilities=(Array.isArray(c.knownClassAbilities)?c.knownClassAbilities:[])
     .filter(entry=>Number.isInteger(Number(entry?.id)))
@@ -188,13 +261,11 @@ function classAbilitiesPanel(c){
             '</div>'+(entry.rank?'<span class="spellbook-known-rank">'+esc(entry.rank)+'</span>':'')+'</div>';
         }).join('')+'</div></details>'
         :'<p class="spellbook-empty">Im synchronisierten Spellbook wurden keine Klassenränge gefunden.</p>')
-    :'<div class="spellbook-status is-open"><strong>Persönlicher Lernstand noch nicht synchronisiert</strong><span>Blizzard veröffentlicht den tatsächlichen Spellbook-Stand nicht über die Charakter-API. Deshalb wird hier nichts aus dem Level geraten.</span></div>';
-  const sync='<div class="spellbook-sync" data-spellbook-sync-root="'+esc(c.slug)+'">'+
-    '<div><span class="planner-kicker">SPELLBOOK SYNC</span><h4>Echten Lernstand übernehmen</h4><p>Im Spiel <strong>/dalton</strong> eingeben, den angezeigten privaten Code kopieren und hier einfügen. Bereits gelernte Ränge verschwinden danach automatisch aus der offenen Klassenausbildung im Ortsplaner.</p></div>'+
-    '<textarea rows="4" data-spellbook-code="'+esc(c.slug)+'" aria-label="Spellbook-Code für '+esc(c.name)+'" placeholder="DALTON1|…"></textarea>'+
-    '<div class="spellbook-sync-actions"><button type="button" data-spellbook-sync="'+esc(c.slug)+'">Spellbook übernehmen</button><span data-spellbook-sync-status="'+esc(c.slug)+'"></span></div>'+
-  '</div>';
-  return '<div class="section class-abilities-section"><h3>Klassenfähigkeiten</h3>'+learned+sync+'</div>';
+    :addonDataRequirement(c,{
+        title:'Klassenfähigkeiten noch nicht verfügbar',
+        detail:'deine persönlichen Klassenfähigkeiten automatisch hier angezeigt.'
+      });
+  return '<div class="section class-abilities-section"><h3>Klassenfähigkeiten</h3>'+learned+'</div>';
 }
 
 function reputationStageIndex(standing={}){
@@ -608,6 +679,7 @@ function installPortraitFallbacks(){
 
 const baseCharacterTabs=[
   {id:'stats',label:'Charakterwerte'},
+  {id:'game',label:'Spielstatus'},
   {id:'equipment',label:'Ausrüstung'},
   {id:'talents',label:'Talente'},
   {id:'abilities',label:'Klassenfähigkeiten'},
@@ -660,39 +732,6 @@ function installCharacterTabs(){
     button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab))
   );
 }
-async function submitSpellbookSync(button){
-  const slug=button?.dataset?.spellbookSync;
-  if(!slug||button.disabled)return;
-  const root=cards.querySelector('[data-spellbook-sync-root="'+slug+'"]');
-  const input=root?.querySelector('[data-spellbook-code="'+slug+'"]');
-  const message=root?.querySelector('[data-spellbook-sync-status="'+slug+'"]');
-  const code=String(input?.value||'').trim();
-  if(!code){if(message)message.textContent='Bitte zuerst den Code aus /dalton einfügen.';return}
-  button.disabled=true;
-  if(message)message.textContent='Spellbook wird geprüft und gespeichert …';
-  try{
-    const response=await fetch('/api/spellbook-sync',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({code}),
-      cache:'no-store'
-    });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload?.error||('HTTP '+response.status));
-    activeCharacterTabs.set(slug,'abilities');
-    await load({silent:true,force:true});
-  }catch(error){
-    if(message)message.textContent='Synchronisierung fehlgeschlagen: '+String(error.message||error).slice(0,140);
-  }finally{
-    button.disabled=false;
-  }
-}
-function installSpellbookSync(){
-  cards.querySelectorAll('button[data-spellbook-sync]').forEach(button=>
-    button.addEventListener('click',()=>submitSpellbookSync(button))
-  );
-}
-
 let displayedData=null;
 function keepNewestProfiles(data){
   if(!displayedData)return data;
@@ -790,6 +829,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
     ${characterTabPanel(c,'talents',talentPanel(c))}
+    ${characterTabPanel(c,'game',gameStatusPanel(c))}
     ${characterTabPanel(c,'abilities',classAbilitiesPanel(c))}
     ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
@@ -801,7 +841,6 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  </article>`).join("");
  installPortraitFallbacks();
  installCharacterTabs();
- installSpellbookSync();
  if(!compareView.hidden)renderComparison();
 }
 
@@ -1501,6 +1540,21 @@ function plannerNpcHtml(npc,data,actions){
         plannerAlternativeHtml(action,sourceKey)+'</div>';
     }).join('')+'</div></article>';
 }
+function plannerLiveDiscoveriesHtml(data){
+  const discoveries=Array.isArray(data?.liveDiscoveries)?data.liveDiscoveries:[];
+  if(!discoveries.length)return '';
+  const groups=new Map();
+  for(const discovery of discoveries){
+    const key=String(discovery.npcId||discovery.npcName||'unbekannt');
+    let group=groups.get(key);
+    if(!group){group={name:discovery.npcName||'Unbekannter Händler',items:[]};groups.set(key,group)}
+    group.items.push(discovery);
+  }
+  return '<section class="planner-status-warning" role="note"><strong>Live beobachtete neue Händlerangebote</strong><span>Diese Lerngegenstände wurden im aktuellen Forever-Build tatsächlich beim Händler gesehen, sind im zugrunde liegenden Rezeptkatalog aber noch nicht eindeutig zugeordnet. Sie werden deshalb angezeigt, aber nicht automatisch als lernbare Erledigung ausgewählt.</span>'+
+    [...groups.values()].map(group=>'<div><strong>'+esc(group.name)+'</strong><span>'+
+      group.items.map(item=>esc(item.itemName)+(item.itemID?' · Item '+esc(item.itemID):'')+(Number.isFinite(Number(item.priceCopper))?' · '+esc(plannerPrice(item.priceCopper)):'')).join('<br>')+
+    '</span></div>').join('')+'</section>';
+}
 function plannerCategoryFilters(data){
   const categories=Array.isArray(data?.categories)?data.categories:[];
   return '<fieldset class="planner-filters"><legend>Was soll berücksichtigt werden?</legend><div class="planner-filter-grid">'+categories.map(category=>
@@ -1524,7 +1578,7 @@ function renderLocationPlanner(){
     '<div class="planner-fields"><label class="planner-field"><span>Charakter</span><select id="plannerCharacter"><option value="">Charakter wählen …</option>'+
       characters.map(character=>'<option value="'+esc(character.slug)+'"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+
     '</select></label><label class="planner-field"><span>Ort</span><select id="plannerLocation"'+(!plannerState.character?' disabled':'')+'><option value="">Ort wählen …</option>'+
-      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.actionCount+' Erledigung'+(location.actionCount===1?'':'en')+'</option>').join('')+
+      locations.map(location=>'<option value="'+esc(location.name)+'"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.actionCount+' Erledigung'+(location.actionCount===1?'':'en')+(Number(location.discoveryCount)>0?' · '+location.discoveryCount+' Live-Fund'+(location.discoveryCount===1?'':'e'):'')+'</option>').join('')+
     '</select></label></div></section>';
   let characterSummary='';
   if(selectedCharacter){
@@ -1539,7 +1593,7 @@ function renderLocationPlanner(){
           ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Klassenfähigkeit #'+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+(ability.inferredFromHigherRank===true?'<small>durch höheren bekannten Rang mitgelernt</small>':'')+'</span>').join('')
           :'<span><strong>Noch keine Klassenränge im synchronisierten Spellbook</strong></span>')+
         '</div></details>'
-      :'<small>Persönlicher Lernstand noch offen · im Charakterreiter „Klassenfähigkeiten“ einmal mit <strong>/dalton</strong> synchronisieren.</small>';
+      :'<small>Persönlicher Lernstand noch offen · für vollständige Daten das WoW-Forever-AddOn über CurseForge installieren; nach der ersten Synchronisation wird der Lernstand automatisch übernommen.</small>';
     characterSummary='<section class="planner-character"><div><span class="planner-kicker">AKTUELLER STAND</span><h3>'+esc(selectedCharacter.name)+' · Level '+esc(selectedCharacter.level??'–')+'</h3>'+(professionText?'<p>'+esc(professionText)+'</p>':'')+learnedClassDetails+'</div>'+
       '<div class="planner-character-count"><strong>'+esc(data.counts?.availableNow??0)+'</strong><span>aktuell mögliche Erledigungen an allen verfügbaren Orten</span></div></section>';
   }
@@ -1561,7 +1615,7 @@ function renderLocationPlanner(){
     const classStatusWarning=unverifiedClassCount
       ?'<div class="planner-status-warning" role="note"><strong>Persönlicher Klassen-Lernstand offen</strong><span>'+unverifiedClassCount+' Klassenfähigkeit'+(unverifiedClassCount===1?'':'en')+' ist hier grundsätzlich lernbar, aber der persönliche Spellbook-Stand dieses Charakters wird von der Online-Profilquelle derzeit nicht geliefert. Diese Einträge werden deshalb nicht automatisch ausgewählt.</span></div>'
       :'';
-    body=plannerCategoryFilters(data)+classStatusWarning+
+    body=plannerCategoryFilters(data)+classStatusWarning+plannerLiveDiscoveriesHtml(data)+
       '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
       plannerSelectionHtml(data)+
       (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':

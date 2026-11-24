@@ -57,13 +57,16 @@ export function mergeProfiles(previous,latest){
     const old=bySlug.get(c.slug);
     if(!old)return c;
     if(c.scrapeOk===false)return {...old,scrapeOk:false,scrapeError:c.scrapeError};
-    if(c.knownClassAbilitiesVerified===false&&old.knownClassAbilitiesVerified===true){
+    if(c.knownClassAbilitiesVerified===false&&old.knownClassAbilitiesVerified===true&&old.knownClassAbilitiesSource==='WoW-Spellbook'){
       return {
         ...c,
         knownClassAbilities:Array.isArray(old.knownClassAbilities)?old.knownClassAbilities:[],
-        knownClassAbilitiesVerified:false,
+        knownClassAbilitiesVerified:true,
         knownClassAbilitiesSource:old.knownClassAbilitiesSource||null,
-        knownClassAbilitiesCheckedAt:c.knownClassAbilitiesCheckedAt||old.knownClassAbilitiesCheckedAt||null
+        knownClassAbilitiesCapturedAt:old.knownClassAbilitiesCapturedAt||null,
+        knownClassAbilitiesSyncedAt:old.knownClassAbilitiesSyncedAt||null,
+        knownClassAbilitiesCapturedLevel:old.knownClassAbilitiesCapturedLevel??null,
+        knownClassAbilitiesCheckedAt:old.knownClassAbilitiesCapturedAt||old.knownClassAbilitiesCheckedAt||c.knownClassAbilitiesCheckedAt||null
       };
     }
     return c;

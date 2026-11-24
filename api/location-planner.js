@@ -1,17 +1,48 @@
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildLocationPlanner} from '../scripts/location-planner.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
+import {applyLearningSourceEvidence,learningSourceEvidenceForIndex,liveKnowledgeDiscoveries} from '../scripts/learning-source-evidence.mjs';
+import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
+import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
+import {preferredGermanGameName} from '../scripts/player-terminology.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
 }
 function hasFiniteNumber(value){
   return value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
+}
+function normalizeText(value){
+  return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
+}
+function discoveryZone(discovery={}){
+  const location=discovery.location||{};
+  const mapId=Number(location.uiMapId);
+  return preferredGermanGameName('zone',Number.isInteger(mapId)?mapId:null,location.zone)||location.zone||null;
+}
+function publicDiscovery(discovery={}){
+  return {
+    build:discovery.build||null,
+    npcId:discovery.npcId??null,
+    npcName:discovery.npcName||'Unbekannter Händler',
+    location:{
+      zone:discoveryZone(discovery),
+      x:hasFiniteNumber(discovery?.location?.x)?Number(discovery.location.x):null,
+      y:hasFiniteNumber(discovery?.location?.y)?Number(discovery.location.y):null,
+      uiMapId:Number.isInteger(Number(discovery?.location?.uiMapId))?Number(discovery.location.uiMapId):null
+    },
+    itemID:discovery.itemID??null,
+    itemName:discovery.itemName||'Unbekannter Gegenstand',
+    priceCopper:hasFiniteNumber(discovery.priceCopper)?Math.round(Number(discovery.priceCopper)):null,
+    firstSeenAt:discovery.firstSeenAt||null,
+    lastSeenAt:discovery.lastSeenAt||null,
+    classification:discovery.classification||'unresolved-learning-item'
+  };
 }
 function npcRenderSource({displayId,renderSourceUrl}={}){
   if(typeof renderSourceUrl==='string'&&/^https:\/\/(?:render\.worldofwarcraft\.com\/forever-eu\/|render(?:-eu)?\.worldofwarcraft\.com\/(?:eu\/)?npcs\/)/.test(renderSourceUrl))return renderSourceUrl;
@@ -113,17 +144,27 @@ export default async function handler(req,res){
     const url=queryUrl(req);
     const character=(url.searchParams.get('character')||'').trim()||null;
     const location=(url.searchParams.get('location')||'').trim()||null;
-    if(!foreverDbConfigured()){
+    const remoteReady=foreverDbConfigured();
+    const recipeIndex=remoteReady
+      ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:workshopProfessionSlugs(stored.data)})
+      :await getCachedForeverDbMasterRecipeIndex();
+    if(!recipeIndex){
       const base=buildLocationPlanner(stored.data,{recipes:[],professions:[]},{characterSlug:character,location});
       return res.status(200).json({
         ...base,
         catalog:{connected:false,complete:false,build:null,generatedAt:null},
-        reason:'ForeverDB ist derzeit nicht verbunden.'
+        reason:'ForeverDB ist derzeit nicht verbunden und es liegt kein gecachter Rezept-Master vor.'
       });
     }
-    const recipeIndex=await getForeverDbMasterRecipeIndex({
-      seedProfessionSlugs:workshopProfessionSlugs(stored.data)
-    });
+    const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+    const [addonStates,liveKnowledge]=await Promise.all([
+      loadAddonSyncStates(characterSlugs),
+      loadLiveKnowledge({build:recipeIndex?.build||null})
+    ]);
+    const evaluatedRecipeIndex=applyLearningSourceEvidence(
+      recipeIndex,
+      learningSourceEvidenceForIndex(recipeIndex,addonStates,liveKnowledge)
+    );
     const selectedCharacter=character
       ?(stored.data?.characters||[]).find(entry=>entry?.slug===character)
       :null;
@@ -131,19 +172,49 @@ export default async function handler(req,res){
       ?workshopProfessionSlugs({characters:[selectedCharacter]})
       :[];
     const professionMasters=Object.fromEntries(
-      (recipeIndex?.professions||[])
+      (evaluatedRecipeIndex?.professions||[])
         .filter(profession=>selectedProfessionSlugs.includes(profession?.slug))
         .map(profession=>[profession.slug,{...profession,cached:true}])
     );
     const classMaster=selectedCharacter?.classId
-      ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:recipeIndex?.build||null})
+      ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:evaluatedRecipeIndex?.build||null})
       :null;
-    let planner=buildLocationPlanner(stored.data,recipeIndex,{
+    let planner=buildLocationPlanner(stored.data,evaluatedRecipeIndex,{
       characterSlug:character,
       location,
       professionMasters,
       classMaster
     });
+    const discoveries=liveKnowledgeDiscoveries(recipeIndex,liveKnowledge).map(publicDiscovery);
+    const discoveryZones=new Map();
+    for(const discovery of discoveries){
+      const zone=discovery.location?.zone;
+      if(!zone)continue;
+      const key=normalizeText(zone);
+      let entry=discoveryZones.get(key);
+      if(!entry){entry={name:zone,items:[],npcs:new Set()};discoveryZones.set(key,entry)}
+      entry.items.push(discovery);
+      entry.npcs.add(discovery.npcId||discovery.npcName);
+    }
+    const locations=[...(planner.locations||[])];
+    for(const entry of discoveryZones.values()){
+      const existing=locations.find(candidate=>normalizeText(candidate.name)===normalizeText(entry.name));
+      if(existing)existing.discoveryCount=entry.items.length;
+      else locations.push({name:entry.name,actionCount:0,npcCount:entry.npcs.size,discoveryCount:entry.items.length});
+    }
+    const requestedDiscoveryZone=location
+      ?[...discoveryZones.values()].find(entry=>normalizeText(entry.name)===normalizeText(location))
+      :null;
+    if(!planner.selectedLocation&&requestedDiscoveryZone){
+      planner={...planner,selectedLocation:requestedDiscoveryZone.name,actions:[],npcs:[]};
+    }
+    planner={
+      ...planner,
+      locations:locations.sort((a,b)=>String(a.name).localeCompare(String(b.name),'de')),
+      liveDiscoveries:planner.selectedLocation
+        ?(discoveryZones.get(normalizeText(planner.selectedLocation))?.items||[])
+        :[]
+    };
     const classSpellIds=[
       ...(Array.isArray(planner.actions)?planner.actions.filter(action=>action?.category==='class-abilities').map(action=>action.id):[]),
       ...(Array.isArray(planner.selectedCharacter?.knownClassAbilities)?planner.selectedCharacter.knownClassAbilities.map(entry=>entry?.id):[])
@@ -182,11 +253,14 @@ export default async function handler(req,res){
       ...planner,
       catalog:{
         connected:true,
+        readOnlyCache:!remoteReady,
         complete:recipeIndex?.masterComplete===true&&recipeIndex?.complete===true,
         refreshing:recipeIndex?.refreshing===true,
         build:recipeIndex?.build||null,
         generatedAt:recipeIndex?.generatedAt||null,
-        recipeCount:Array.isArray(recipeIndex?.recipes)?recipeIndex.recipes.length:0,
+        recipeCount:Array.isArray(evaluatedRecipeIndex?.recipes)?evaluatedRecipeIndex.recipes.length:0,
+        learningSourceEvidence:evaluatedRecipeIndex?.learningSourceEvidence||null,
+        liveKnowledge:publicLiveKnowledgeSummary(liveKnowledge),
         professionMasterCount:professionMasterValues.filter(value=>value&&!value.error).length,
         professionMasterErrors,
         professionRankCount:professionRanks.length,

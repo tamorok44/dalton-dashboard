@@ -13,8 +13,11 @@ import {
   workshopLearningCandidates
 } from '../scripts/workshop-core.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
+import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
+import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
+import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -114,7 +117,11 @@ function publicLearningSource(source){
     costs:Array.isArray(source.costs)?source.costs.map(cost=>({name:cost?.name||null,quantity:cost?.quantity??null})):[],
     reputationFaction:source.reputationFaction||null,
     dropChance:source.dropChance??null,
-    observations:source.observations??null
+    observations:source.observations??null,
+    offerStatus:source.offerStatus||null,
+    offerEvidenceSource:source.offerEvidenceSource||null,
+    offerObservedOn:source.offerObservedOn||null,
+    offerBuild:source.offerBuild||null
   };
 }
 async function archiveWorkshopItemIcon(item){
@@ -192,18 +199,33 @@ export default async function handler(req,res){
       let source='blizzard-known';
       const remoteErrors=[];
       let recipeIndex=null,remoteRecipe=null;
-      if(remoteReady){
-        try{
-          const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
-          recipeIndex=index;
-          enrichWorkshopCatalogWithForeverDb(catalog,index);
-          const remote=await cachedForeverDbItem(itemId,{build:index?.build||null});
-          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
-          source='foreverdb';
-          remoteRecipe=preferredForeverRecipeForItem(index,itemId);
-        }catch(error){
-          remoteErrors.push(String(error.message).slice(0,180));
+      try{
+        const index=remoteReady
+          ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
+          :await getCachedForeverDbMasterRecipeIndex();
+        if(index){
+          {
+            const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+            const [addonStates,liveKnowledge]=await Promise.all([
+              loadAddonSyncStates(characterSlugs),
+              loadLiveKnowledge({build:index?.build||null})
+            ]);
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,liveKnowledge));
+          }
+          enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
+          remoteRecipe=preferredForeverRecipeForItem(recipeIndex,itemId);
+          if(remoteReady){
+            const remote=await cachedForeverDbItem(itemId,{build:recipeIndex?.build||null});
+            item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
+            source='foreverdb';
+          }else{
+            const cachedLocal=catalog.byItemId.get(itemId)||local;
+            if(cachedLocal)item=publicItem(cachedLocal);
+            source='foreverdb-cache';
+          }
         }
+      }catch(error){
+        remoteErrors.push(String(error.message).slice(0,180));
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
       const plan=buildProductionPlan(catalog,itemId,quantity);
@@ -249,13 +271,23 @@ export default async function handler(req,res){
     }
 
     let recipeIndex=null,remoteError=null;
-    if(remoteReady){
-      try{
-        recipeIndex=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
+    try{
+      const index=remoteReady
+        ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
+        :await getCachedForeverDbMasterRecipeIndex();
+      if(index){
+        {
+            const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+            const [addonStates,liveKnowledge]=await Promise.all([
+              loadAddonSyncStates(characterSlugs),
+              loadLiveKnowledge({build:index?.build||null})
+            ]);
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,liveKnowledge));
+          }
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
-      }catch(error){
-        remoteError=String(error.message).slice(0,180);
       }
+    }catch(error){
+      remoteError=String(error.message).slice(0,180);
     }
     const publicCatalog=publicWorkshopCatalog(catalog);
     const masterItems=recipeIndex?workshopItemsFromRecipeIndex(catalog,recipeIndex):[];
