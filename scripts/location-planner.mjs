@@ -15,6 +15,9 @@ function text(value){return typeof value==='string'?value.trim():''}
 function norm(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
 }
+function zoneNorm(value){
+  return norm(value).replace(/^(?:die|der|das)\s+/,'');
+}
 function recipeKey(recipe){
   const id=integer(recipe?.id);
   if(id)return 'recipe:'+id;
@@ -52,14 +55,14 @@ function sourceZone(source={}){
   const location=source?.location||{};
   return preferredGermanGameName('zone',integer(location.uiMapId),text(location.zone))||text(location.zone);
 }
-function sourceAtZone(source,zone){return norm(sourceZone(source))===norm(zone)}
+function sourceAtZone(source,zone){return zoneNorm(sourceZone(source))===zoneNorm(zone)}
 function sourceNpcKey(source={}){
   const id=integer(source?.id);
   if(id)return 'npc:'+id;
   const location=source?.location||{};
   return 'npc-name:'+[
     norm(source?.name),
-    norm(sourceZone(source)),
+    zoneNorm(sourceZone(source)),
     finite(location.x)??'',
     finite(location.y)??''
   ].join('|');
@@ -357,7 +360,7 @@ function buildLocations(candidates){
     for(const source of action.sources){
       const zone=sourceZone(source);
       if(!zone)continue;
-      const key=norm(zone);
+      const key=zoneNorm(zone);
       let entry=zones.get(key);
       if(!entry){entry={name:zone,actionKeys:new Set(),npcKeys:new Set()};zones.set(key,entry)}
       entry.actionKeys.add(action.key);
@@ -371,10 +374,10 @@ function buildLocations(candidates){
   })).sort((a,b)=>a.name.localeCompare(b.name,'de'));
 }
 function mergeKnownLocations(actionLocations,knownLocations=[]){
-  const zones=new Map(asArray(actionLocations).map(entry=>[norm(entry?.name),{...entry}]).filter(([key])=>key));
+  const zones=new Map(asArray(actionLocations).map(entry=>[zoneNorm(entry?.name),{...entry}]).filter(([key])=>key));
   for(const value of asArray(knownLocations)){
     const name=text(typeof value==='string'?value:value?.name);
-    const key=norm(name);
+    const key=zoneNorm(name);
     if(!key||zones.has(key))continue;
     zones.set(key,{name,actionCount:0,npcCount:0});
   }
@@ -541,7 +544,7 @@ export function buildLocationPlanner(data={},recipeIndex={},{
     ...verifiedExtraActions(character,extraActions)
   ]);
   const locations=mergeKnownLocations(buildLocations(candidates),knownLocations);
-  const canonicalLocation=locations.find(entry=>norm(entry.name)===norm(location))?.name||null;
+  const canonicalLocation=locations.find(entry=>zoneNorm(entry.name)===zoneNorm(location))?.name||null;
   const actions=canonicalLocation?choosePreferredSources(candidates,canonicalLocation):[];
   const npcs=canonicalLocation?groupByNpc(actions):[];
   const knownPrices=actions.filter(action=>action.source.priceCopper!==null).length;
