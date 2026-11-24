@@ -27,6 +27,7 @@ PLIST="$HOME/Library/LaunchAgents/de.dalton.dashboard.bridge.plist"
 mkdir -p "$TARGET_DIR" "$HOME/Library/LaunchAgents"
 cp "$SOURCE" "$TARGET"
 chmod 700 "$TARGET"
+xattr -dr com.apple.quarantine "$TARGET_DIR" >/dev/null 2>&1 || true
 
 "$TARGET" --enroll "$CODE"
 
