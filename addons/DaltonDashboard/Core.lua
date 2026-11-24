@@ -90,6 +90,9 @@ function ns.StoreSection(name, payload)
   payload.capturedAt = payload.capturedAt or ns.Now()
   db[name] = payload
   db.meta.lastUpdatedAt = payload.capturedAt
+  if type(ns.RelaySectionChanged) == "function" then
+    ns.RelaySectionChanged(name)
+  end
 end
 
 function ns.RecordError(where, err)
