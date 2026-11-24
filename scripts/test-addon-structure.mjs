@@ -76,6 +76,10 @@ assert.ok(relay.includes('contentChecksum')&&relay.includes('lastAckContentHash'
 assert.ok(relay.includes('capturedAt = true')&&relay.includes('resetSeconds = true'),'Flüchtige Zeitwerte dürfen den fachlichen Relay-Fingerprint nicht verändern');
 assert.ok(!relay.includes('OnUpdate'),'Relay darf keine permanente OnUpdate-Schleife verwenden');
 assert.ok(relay.includes('HUB_NAME = "Cole Dalton"'),'Cole ist der lokale Relay-Hub');
+assert.ok(relay.includes('value = value:gsub("%-", " ")'),'Forever-Namen wie Cole-Dalton müssen zu Cole Dalton normalisiert werden');
+assert.ok(relay.includes('return name .. " " .. second'),'Der Forever-Zweitname muss Teil der Dalton-Identität bleiben');
+const characterSource=readFileSync(root+'/Modules/Character.lua','utf8');
+assert.ok(characterSource.includes('fullName = name .. " " .. second'),'SavedVariables müssen den vollständigen Forever-Charakternamen speichern');
 for(const name of ['Cole Dalton','Chucky Dalton','Dolly Dalton','Viola Dalton'])assert.ok(relay.toLowerCase().includes(name.toLowerCase()),'Dalton-Roster fehlt: '+name);
 assert.ok(relay.includes('payload.inventory = nil')&&relay.includes('payload.economy = nil'),'Empfangene Relay-Daten müssen private Bereiche zusätzlich entfernen');
 
