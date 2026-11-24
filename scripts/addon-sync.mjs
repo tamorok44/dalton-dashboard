@@ -200,8 +200,10 @@ export function publicAddonSyncSummary(state={}){
   const instances=object(sections.instances);
   const hunter=object(sections.hunter);
   const spellbook=object(sections.spellbook);
+  const visitedInstances=visitedInstancesFromLocationHistory(history);
   const lockouts=array(instances.entries).slice(0,40).map(entry=>({
     name:text(entry?.name,160),
+    difficultyID:integer(entry?.difficultyID),
     difficultyName:text(entry?.difficultyName,120),
     resetAt:epochIso(entry?.resetAt??entry?.lock?.resetAt),
     locked:entry?.locked===true,
@@ -237,8 +239,8 @@ export function publicAddonSyncSummary(state={}){
       };
     })():null,
     locationHistoryCount:array(history.entries).length,
-    visitedInstances:visitedInstancesFromLocationHistory(history),
-    visitedInstanceCount:visitedInstancesFromLocationHistory(history).length,
+    visitedInstances,
+    visitedInstanceCount:visitedInstances.length,
     lockoutCount:finite(instances.count)??lockouts.length,
     lockouts,
     hunterCaptured:Boolean(Object.keys(hunter).length),
