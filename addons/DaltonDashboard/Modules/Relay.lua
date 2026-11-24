@@ -472,6 +472,10 @@ function ns.RelaySectionChanged(section)
   })[section] then return end
 
   local state = relayState()
+  if isHub() then
+    state.pending = false
+    return
+  end
   state.pending = true
   scheduleSend(false)
 end
@@ -490,6 +494,11 @@ function module:Initialize()
   local diagnostics = relayDiagnostics()
   diagnostics.prefixRegistered = true
   diagnostics.role = isHub() and "hub" or "peer"
+  if isHub() then
+    local state = relayState()
+    state.pending = false
+    state.lastOfflineAt = nil
+  end
 end
 
 function module:OnEvent(event, ...)
@@ -543,12 +552,13 @@ function ns.RelayStatus()
   local inbox = DaltonDashboardDB and DaltonDashboardDB.relayInbox or {}
   local count = 0
   for _ in pairs(inbox or {}) do count = count + 1 end
+  local hub = isHub()
   return {
-    role = isHub() and "Hub" or "Peer",
-    pending = state.pending == true,
+    role = hub and "Hub" or "Peer",
+    pending = hub and false or state.pending == true,
     lastAckAt = state.lastAckAt,
     lastAttemptAt = state.lastAttemptAt,
     inboxCount = count,
-    targetVisible = findGroupTarget(HUB_NAME) ~= nil
+    targetVisible = hub or findGroupTarget(HUB_NAME) ~= nil
   }
 end
