@@ -21,7 +21,7 @@ Aktuell werden lokal erfasst:
 
 Das WoW-Addon führt **keinen HTTP-Zugriff** aus und enthält keinen privaten Server-Schlüssel.
 
-Ab Alpha 11 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Relay:
+Ab Beta 1 gibt es für die vier Dalton-Charaktere einen sehr kleinen Ingame-Relay:
 
 - Cole Dalton ist der Relay-Hub.
 - Chucky Dalton, Dolly Dalton und Viola Dalton senden ausschließlich die freigegebenen Dashboard-Bereiche über die offizielle WoW-AddOn-Kommunikation direkt an Cole.
@@ -66,7 +66,7 @@ Optional kann auf jedem Rechner eine kleine lokale Bridge installiert werden. Si
 Die frühere Copy/Paste-Spellbook-Lösung und ein eingebetteter privater Sync-Schlüssel sind nicht mehr Bestandteil des Addons.
 
 
-## Lokaler Alpha-11-Sync-Test
+## Lokaler Beta-1-Sync-Test
 
 Der Companion liegt unter `scripts/dalton-sync-client.mjs`. Ohne Argument sucht er auf macOS und Windows nach der zuletzt geänderten `DaltonDashboard.lua`. Alternativ kann die Datei mit `--file` explizit angegeben werden.
 
