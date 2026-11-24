@@ -74,13 +74,16 @@ async function revokeDevice(config){
   await saveConfig(clean);
   return {revoked:true,characterName:config.characterName||null};
 }
-async function createEnrollment(endpoint,characterSlug,masterToken){
-  if(!masterToken)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
+async function createEnrollment(endpoint,characterSlug,auth,{previewShareUrl=null}={}){
+  if(!auth)throw new Error('Kein berechtigter Hub-Zugang für Einrichtungscodes vorhanden');
   const base=new URL(endpoint);
   base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
+  const cookie=await previewCookie(previewShareUrl);
+  const headers={Authorization:auth,'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION};
+  if(cookie)headers.Cookie=cookie;
   const response=await fetch(base,{
     method:'POST',
-    headers:{Authorization:'Bearer '+masterToken,'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION},
+    headers,
     body:JSON.stringify({action:'create',characterSlug}),
     signal:AbortSignal.timeout(15000)
   });
@@ -117,7 +120,7 @@ function help(){
   console.log('  node scripts/dalton-sync-client.mjs --revoke-device                    # Gerätezugang widerrufen');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
-  console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN nur auf diesem Rechner lokal gesetzt sein.');
+  console.log('Normale Spieler verwenden einen individuellen Gerätezugang; Cole kann damit zusätzlich Peer-Codes erzeugen.');
   console.log('Gold, Taschen und Bank werden vom Standard-Sync niemals übertragen.');
   console.log('Bei geschützten Vercel-Previews kann DALTON_SYNC_PREVIEW_SHARE_URL gesetzt werden.');
 }
@@ -366,7 +369,13 @@ async function main(){
   const options=args(process.argv.slice(2));
   if(options.help){help();return}
   if(options.createEnroll){
-    const created=await createEnrollment(options.endpoint,options.createEnroll,process.env.DALTON_SYNC_TOKEN);
+    const config=await loadConfig();
+    if(config.endpoint&&!process.env.DALTON_SYNC_ENDPOINT)options.endpoint=config.endpoint;
+    const masterToken=process.env.DALTON_SYNC_TOKEN||null;
+    const auth=masterToken?'Bearer '+masterToken:(config.deviceToken?'Device '+config.deviceToken:null);
+    const created=await createEnrollment(options.endpoint,options.createEnroll,auth,{
+      previewShareUrl:options.previewShareUrl||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null
+    });
     console.log('Einrichtungscode für '+String(created.characterName||created.characterSlug)+':');
     console.log(created.code);
     console.log('Gültig für '+Math.round(Number(created.expiresInSeconds||0)/3600)+' Stunden und genau einmal.');
