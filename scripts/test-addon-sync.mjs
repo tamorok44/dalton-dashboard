@@ -3,7 +3,7 @@ import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
 import {previewCookieFromSetCookie,relayCharDbsFromGlobalDb} from './dalton-sync-client.mjs';
-import {trustedCharacterName,trustedCharacterSlugs} from './addon-device-auth.mjs';
+import {deviceMayCreateEnrollment,deviceMaySync,trustedCharacterName,trustedCharacterSlugs} from './addon-device-auth.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
 '  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.11", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
@@ -24,6 +24,16 @@ assert.equal(
 assert.deepEqual(trustedCharacterSlugs(),['cole-dalton','chucky-dalton','dolly-dalton','viola-dalton']);
 assert.equal(trustedCharacterName('chucky-dalton'),'Chucky Dalton');
 assert.equal(trustedCharacterName('fremd'),null);
+const coleDevice={characterSlug:'cole-dalton'};
+const chuckyDevice={characterSlug:'chucky-dalton'};
+assert.equal(deviceMaySync(coleDevice,'cole-dalton','dalton-local-bridge'),true,'Cole darf seinen eigenen Direkt-Sync senden');
+assert.equal(deviceMaySync(coleDevice,'chucky-dalton','dalton-peer-relay'),true,'Cole darf vertrauenswürdigen Peer-Relay senden');
+assert.equal(deviceMaySync(coleDevice,'chucky-dalton','dalton-local-bridge'),false,'Cole darf fremde Direkt-Syncs nicht vortäuschen');
+assert.equal(deviceMaySync(chuckyDevice,'chucky-dalton','dalton-local-bridge'),true,'Peer-Gerät darf nur den eigenen Charakter direkt senden');
+assert.equal(deviceMaySync(chuckyDevice,'dolly-dalton','dalton-peer-relay'),false,'Peer-Gerät darf keinen anderen Dalton relayn');
+assert.equal(deviceMayCreateEnrollment(coleDevice,'dolly-dalton'),true,'Cole-Hub darf Peer-Codes erzeugen');
+assert.equal(deviceMayCreateEnrollment(coleDevice,'cole-dalton'),false,'Cole-Gerät darf sich nicht selbst neu privilegieren');
+assert.equal(deviceMayCreateEnrollment(chuckyDevice,'dolly-dalton'),false,'Peer-Geräte dürfen keine weiteren Geräte freischalten');
 
 const globalRelay={
   relayInbox:{
