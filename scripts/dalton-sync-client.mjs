@@ -47,6 +47,33 @@ async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
   const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null});
   return {...body,configFile:file};
 }
+async function revokeDevice(config){
+  const token=config?.deviceToken;
+  if(!token)return {revoked:false,alreadyAbsent:true};
+  const endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync';
+  const base=new URL(endpoint);
+  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
+  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const headers={
+    Authorization:'Device '+token,
+    'Content-Type':'application/json',
+    'User-Agent':'DaltonDashboardBridge/'+VERSION
+  };
+  if(cookie)headers.Cookie=cookie;
+  const response=await fetch(base,{
+    method:'POST',
+    headers,
+    body:JSON.stringify({action:'revoke'}),
+    signal:AbortSignal.timeout(15000)
+  });
+  const body=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error('Gerätezugang konnte nicht widerrufen werden: '+String(body.error||response.statusText).slice(0,180));
+  const clean={...config};
+  delete clean.deviceToken;
+  clean.revokedAt=new Date().toISOString();
+  await saveConfig(clean);
+  return {revoked:true,characterName:config.characterName||null};
+}
 async function createEnrollment(endpoint,characterSlug,masterToken){
   if(!masterToken)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
   const base=new URL(endpoint);
@@ -65,7 +92,7 @@ function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,character:null,previewShareUrl:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,character:null,previewShareUrl:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
   for(let i=0;i<argv.length;i++){
     const value=argv[i];
     if(value==='--watch')out.watch=true;
@@ -74,6 +101,7 @@ function args(argv){
     else if(value==='--endpoint')out.endpoint=argv[++i]||out.endpoint;
     else if(value==='--enroll')out.enroll=argv[++i]||null;
     else if(value==='--create-enroll')out.createEnroll=argv[++i]||null;
+    else if(value==='--revoke-device')out.revokeDevice=true;
     else if(value==='--character')out.character=argv[++i]||null;
     else if(value==='--preview-share-url')out.previewShareUrl=argv[++i]||null;
     else if(value==='--help')out.help=true;
@@ -86,6 +114,7 @@ function help(){
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
   console.log('  node scripts/dalton-sync-client.mjs --enroll <Einrichtungscode>');
   console.log('  node scripts/dalton-sync-client.mjs --create-enroll <character-slug>   # nur Administrator');
+  console.log('  node scripts/dalton-sync-client.mjs --revoke-device                    # Gerätezugang widerrufen');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN nur auf diesem Rechner lokal gesetzt sein.');
@@ -347,6 +376,13 @@ async function main(){
     const enrolled=await enrollDevice(options.endpoint,options.enroll,options.character,options.previewShareUrl);
     console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
     console.log('Konfiguration: '+enrolled.configFile);
+    return;
+  }
+  if(options.revokeDevice){
+    const config=await loadConfig();
+    const result=await revokeDevice(config);
+    if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
+    else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));
     return;
   }
 
