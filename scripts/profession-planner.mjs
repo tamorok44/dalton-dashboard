@@ -1,5 +1,5 @@
 import {professionSlugFromRecord} from './workshop-foreverdb.mjs';
-import {preferredGermanGameName} from './player-terminology.mjs';
+import {preferredForeverZoneName,foreverZoneIdentity} from './player-terminology.mjs';
 
 function asArray(value){return Array.isArray(value)?value:[]}
 function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
@@ -26,7 +26,7 @@ function sourceVendorKey(source={}){
   const location=source?.location||{};
   return 'vendor-name:'+[
     norm(source?.name),
-    norm(sourceZone(source)),
+    foreverZoneIdentity(sourceZone(source)),
     finite(location.x)??'',
     finite(location.y)??''
   ].join('|');
@@ -39,10 +39,10 @@ function sourceAllowedForCharacter(source,character){
 }
 function sourceZone(source={}){
   const location=source?.location||{};
-  return preferredGermanGameName('zone',integer(location.uiMapId),text(location.zone))||text(location.zone);
+  return preferredForeverZoneName(integer(location.uiMapId),text(location.zone));
 }
 function sourceAtZone(source,zone){
-  return norm(sourceZone(source))===norm(zone);
+  return foreverZoneIdentity(sourceZone(source))===foreverZoneIdentity(zone);
 }
 function publicProfession(profession={}){
   return {
@@ -131,7 +131,7 @@ function buildLocations(candidates){
     for(const source of recipe.sources){
       const zone=sourceZone(source);
       if(!zone)continue;
-      const key=norm(zone);
+      const key=foreverZoneIdentity(zone);
       let entry=zones.get(key);
       if(!entry){entry={name:zone,recipeKeys:new Set(),vendorKeys:new Set()};zones.set(key,entry)}
       entry.recipeKeys.add(recipe.key);
@@ -254,7 +254,7 @@ export function buildProfessionPlanner(data={},recipeIndex={},{
   if(!character)throw new Error('Charakter nicht gefunden');
   const candidates=candidateRecipes(character,recipeIndex);
   const locations=buildLocations(candidates);
-  const canonicalLocation=locations.find(entry=>norm(entry.name)===norm(location))?.name||null;
+  const canonicalLocation=locations.find(entry=>foreverZoneIdentity(entry.name)===foreverZoneIdentity(location))?.name||null;
   const recipes=canonicalLocation?choosePreferredSources(candidates,canonicalLocation):[];
   const vendors=canonicalLocation?groupByVendor(recipes):[];
   const knownPrices=recipes.filter(recipe=>recipe.source.priceCopper!==null).length;

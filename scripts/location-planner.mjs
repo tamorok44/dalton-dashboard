@@ -1,5 +1,5 @@
 import {professionSlugFromRecord} from './workshop-foreverdb.mjs';
-import {preferredGermanGameName} from './player-terminology.mjs';
+import {preferredForeverZoneName,foreverZoneIdentity} from './player-terminology.mjs';
 
 const CATEGORY_DEFS=Object.freeze([
   Object.freeze({id:'class-abilities',label:'Klassenfähigkeiten'}),
@@ -15,9 +15,7 @@ function text(value){return typeof value==='string'?value.trim():''}
 function norm(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
 }
-function zoneNorm(value){
-  return norm(value).replace(/^(?:die|der|das)\s+/,'');
-}
+function zoneNorm(value){return foreverZoneIdentity(value)}
 function recipeKey(recipe){
   const id=integer(recipe?.id);
   if(id)return 'recipe:'+id;
@@ -53,7 +51,7 @@ function compareSourcePrice(a,b){
 }
 function sourceZone(source={}){
   const location=source?.location||{};
-  return preferredGermanGameName('zone',integer(location.uiMapId),text(location.zone))||text(location.zone);
+  return preferredForeverZoneName(integer(location.uiMapId),text(location.zone));
 }
 function sourceAtZone(source,zone){return zoneNorm(sourceZone(source))===zoneNorm(zone)}
 function sourceNpcKey(source={}){
@@ -377,7 +375,7 @@ function buildLocations(candidates){
 function mergeKnownLocations(actionLocations,knownLocations=[]){
   const zones=new Map(asArray(actionLocations).map(entry=>[zoneNorm(entry?.name),{...entry}]).filter(([key])=>key));
   for(const value of asArray(knownLocations)){
-    const name=text(typeof value==='string'?value:value?.name);
+    const name=preferredForeverZoneName(null,text(typeof value==='string'?value:value?.name));
     const key=zoneNorm(name);
     if(!key||zones.has(key))continue;
     zones.set(key,{name,actionCount:0,npcCount:0});

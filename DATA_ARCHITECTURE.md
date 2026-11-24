@@ -91,3 +91,8 @@ Die Änderungschronik speichert fachliche Charakteränderungen. Stammdaten und M
 ### Berufe, Rezepte und Fähigkeiten
 
 Alle Berufe führen die einheitliche UI-Bezeichnung „Rezepte & Fähigkeiten“. Icons werden zentral nach Spielobjekttyp und stabiler ID aufgelöst: Beruf (Skill-Line-ID), hergestellter Gegenstand (Item-ID), nicht herstellende Kenntnis (Blizzard-Rezept-ID), Talent/Zauber/Begleiterfähigkeit (Spell-ID). Eine Rezept-ID darf nie ersatzweise als Spell-ID verwendet werden. Ortsplaner, Charakteransicht, Vergleich und Werkstatt nutzen dieselben registrierten Blob-Icons. Fehlende Quellen zeigen neutrale Platzhalter. Medien bleiben außerhalb des individuellen Lernstands; kalte Abrufe sind serverseitig begrenzt, bereits archivierte Bilder werden wiederverwendet.
+
+
+### Ortsnamen und Identität (24.11.2026)
+
+Die deutsche Forever-Clientbezeichnung ist maßgeblich, einschließlich englischer Eigennamen. Der zentrale Resolver in `scripts/player-terminology.mjs` führt aktuelle, quellengestützte Kartenbezeichnungen und ausschließlich interne historische Aliasnamen. Ortsplaner, Berufsplaner, Werkstatt und AddOn-Standortanzeige verwenden diese gemeinsame Namenslogik. Andere Namen bleiben unverändert; Rohbeobachtungen und Lernziel-IDs werden nicht umgeschrieben.

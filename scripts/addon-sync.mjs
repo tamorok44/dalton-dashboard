@@ -1,3 +1,4 @@
+import {preferredForeverZoneName} from './player-terminology.mjs';
 const SAFE_SECTION_NAMES=Object.freeze([
   'character',
   'spellbook',
@@ -232,13 +233,13 @@ export function publicAddonSyncSummary(state={}){
       const useLastKnown=(currentX===null||currentY===null)&&lastX!==null&&lastY!==null&&sameLocation(location,lastKnown);
       return {
         capturedAt:epochIso(location.capturedAt),
-        zone:text(location.zone,160),
+        zone:preferredForeverZoneName(location.mapID,text(location.zone,160)),
         subZone:text(location.subZone,160),
         mapID:integer(location.mapID)??(useLastKnown?integer(lastKnown.mapID):null),
         x:currentX??(useLastKnown?lastX:null),
         y:currentY??(useLastKnown?lastY:null),
         coordinatesCapturedAt:useLastKnown?epochIso(lastKnown.capturedAt):epochIso(location.capturedAt),
-        bindLocation:text(location.bindLocation,160)
+        bindLocation:preferredForeverZoneName(null,text(location.bindLocation,160))
       };
     })():null,
     locationHistoryCount:array(history.entries).length,

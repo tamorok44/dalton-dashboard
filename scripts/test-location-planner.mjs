@@ -81,7 +81,7 @@ const extraActions=[{
 
 const overview=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster});
 assert.equal(overview.counts.availableNow,7,'Globale Anzahl zählt eindeutige Lernziele – dieselbe Erledigung an mehreren Orten nur einmal');
-assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Eisenschmiede',2],['Sturmwind',6]],
+assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Ironforge',2],['Stormwind',6]],
   'Ortszahlen dürfen dasselbe Lernziel je Ort enthalten, ohne die globale eindeutige Anzahl aufzublähen');
 assert.equal(overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),8,'Ortszählungen können sich wegen alternativer Orte überschneiden');
 assert.ok(overview.counts.availableNow<overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),'Globale Zählung darf überschneidende Ortsangebote niemals doppelt zählen');
@@ -97,7 +97,7 @@ assert.equal(zephras.actions.length,0);
 assert.equal(zephras.npcs.length,0);
 
 const stormwind=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions,classMaster});
-assert.equal(stormwind.selectedLocation,'Sturmwind');
+assert.equal(stormwind.selectedLocation,'Stormwind');
 assert.equal(stormwind.counts.atLocation,6);
 assert.equal(stormwind.actions.some(action=>action.id===106),true,'Normale Rezepte benötigen keine erfundene Charakterlevel-Prüfung');
 assert.equal(stormwind.actions.some(action=>action.name==='Nicht belegte Begleiterfähigkeit'),false,'Unbestätigte Begleiteraktionen bleiben unsichtbar');
@@ -163,7 +163,7 @@ assert.equal(level9.actions.some(action=>action.type==='profession-training'&&ac
 
 const level20Data={...data,characters:[{...baseCharacter,level:20}]};
 const level20=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster});
-assert.ok(level20.locations.some(location=>location.name==='Eschental'),
+assert.ok(level20.locations.some(location=>location.name==='Ashenvale'),
   'Kochkunst-Experte wird erst ab belegtem Charakterlevel 20 als Reiseerledigung freigeschaltet');
 const ashenvale=buildLocationPlanner(level20Data,index,{characterSlug:'cole-dalton',location:'Eschental',professionMasters,extraActions,classMaster});
 const expertCooking=ashenvale.actions.find(action=>action.type==='profession-training'&&action.profession==='Kochkunst');
@@ -186,3 +186,10 @@ assert.deepEqual(knowledgeRecipeRef({id:1838,craftedItem:{id:1251}}),{type:'item
 assert.deepEqual(knowledgeRecipeRef({id:4344}),{type:'recipe',id:4344,iconId:null},'Blizzard-Rezept-ID niemals als Spell-ID interpretieren');
 assert.deepEqual(plannerKnowledgeRef(elixirA),{type:'item',id:501,iconId:null},'Rezept und Produkt teilen die zentrale Item-Bildidentität');
 assert.equal(plannerKnowledgeRef(journeymanAlchemy).type,'profession');
+
+const canonicalCities=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster,knownLocations:['Sturmwind','Stormwind','Eisenschmiede','Ironforge','Eschental','Ashenvale']});
+assert.equal(canonicalCities.locations.filter(x=>['Sturmwind','Stormwind'].includes(x.name)).length,1);
+assert.equal(canonicalCities.locations.filter(x=>['Eisenschmiede','Ironforge'].includes(x.name)).length,1);
+assert.equal(canonicalCities.locations.find(x=>x.name==='Ashenvale')?.actionCount,0);
+assert.equal(canonicalCities.counts.availableNow,overview.counts.availableNow);
+assert.equal(buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Stormwind',professionMasters,extraActions,classMaster}).counts.atLocation,stormwind.counts.atLocation);

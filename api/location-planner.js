@@ -10,7 +10,7 @@ import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex,liveKnowledgeDiscoveries} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
 import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
-import {preferredGermanGameName} from '../scripts/player-terminology.mjs';
+import {preferredForeverZoneName,foreverZoneIdentity} from '../scripts/player-terminology.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
@@ -30,19 +30,19 @@ function numericEntries(value){
     .map(([,entry])=>entry);
 }
 function plannerLocationName(location={}){
-  if(typeof location==='string')return location.trim()||null;
+  if(typeof location==='string')return preferredForeverZoneName(null,location);
   const raw=location&&typeof location==='object'?location:{};
   const mapId=Number(raw.uiMapId??raw.mapID);
   const technical=typeof raw.zone==='string'&&raw.zone.trim()
     ?raw.zone.trim()
     :typeof raw.mapName==='string'&&raw.mapName.trim()?raw.mapName.trim():null;
-  return preferredGermanGameName('zone',Number.isInteger(mapId)?mapId:null,technical)||technical||null;
+  return preferredForeverZoneName(Number.isInteger(mapId)?mapId:null,technical);
 }
 function collectPlannerKnownLocations({recipeIndex={},professionMasters={},classMaster=null,addonStates={},liveKnowledge=[]}={}){
   const zones=new Map();
   const add=location=>{
     const name=plannerLocationName(location);
-    const key=normalizeText(name);
+    const key=foreverZoneIdentity(name);
     if(key&&!zones.has(key))zones.set(key,{name});
   };
   const addSources=sources=>{
@@ -81,7 +81,7 @@ function collectPlannerKnownLocations({recipeIndex={},professionMasters={},class
 function discoveryZone(discovery={}){
   const location=discovery.location||{};
   const mapId=Number(location.uiMapId);
-  return preferredGermanGameName('zone',Number.isInteger(mapId)?mapId:null,location.zone)||location.zone||null;
+  return preferredForeverZoneName(Number.isInteger(mapId)?mapId:null,location.zone);
 }
 function publicDiscovery(discovery={}){
   return {
@@ -241,7 +241,7 @@ export default async function handler(req,res){
     for(const discovery of discoveries){
       const zone=discovery.location?.zone;
       if(!zone)continue;
-      const key=normalizeText(zone);
+      const key=foreverZoneIdentity(zone);
       let entry=discoveryZones.get(key);
       if(!entry){entry={name:zone,items:[],npcs:new Set()};discoveryZones.set(key,entry)}
       entry.items.push(discovery);
@@ -249,12 +249,12 @@ export default async function handler(req,res){
     }
     const locations=[...(planner.locations||[])];
     for(const entry of discoveryZones.values()){
-      const existing=locations.find(candidate=>normalizeText(candidate.name)===normalizeText(entry.name));
+      const existing=locations.find(candidate=>foreverZoneIdentity(candidate.name)===foreverZoneIdentity(entry.name));
       if(existing)existing.discoveryCount=entry.items.length;
       else locations.push({name:entry.name,actionCount:0,npcCount:entry.npcs.size,discoveryCount:entry.items.length});
     }
     const requestedDiscoveryZone=location
-      ?[...discoveryZones.values()].find(entry=>normalizeText(entry.name)===normalizeText(location))
+      ?[...discoveryZones.values()].find(entry=>foreverZoneIdentity(entry.name)===foreverZoneIdentity(location))
       :null;
     if(!planner.selectedLocation&&requestedDiscoveryZone){
       planner={...planner,selectedLocation:requestedDiscoveryZone.name,actions:[],npcs:[]};
@@ -263,7 +263,7 @@ export default async function handler(req,res){
       ...planner,
       locations:locations.sort((a,b)=>String(a.name).localeCompare(String(b.name),'de')),
       liveDiscoveries:planner.selectedLocation
-        ?(discoveryZones.get(normalizeText(planner.selectedLocation))?.items||[])
+        ?(discoveryZones.get(foreverZoneIdentity(planner.selectedLocation))?.items||[])
         :[]
     };
     const classSpellIds=[

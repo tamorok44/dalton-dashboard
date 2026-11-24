@@ -1,3 +1,4 @@
+import {preferredForeverZoneName} from '../scripts/player-terminology.mjs';
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {
   buildWorkshopCatalog,
@@ -102,7 +103,7 @@ function publicLearningSource(source){
     id:source.id??null,
     name:source.name||null,
     location:source.location?{
-      zone:source.location.zone||null,
+      zone:preferredForeverZoneName(source.location.uiMapId,source.location.zone),
       x:source.location.x??null,
       y:source.location.y??null,
       uiMapId:source.location.uiMapId??null,

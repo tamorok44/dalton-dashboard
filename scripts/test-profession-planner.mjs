@@ -32,12 +32,12 @@ const index={recipes};
 const overview=buildProfessionPlanner(data,index,{characterSlug:'cole-dalton'});
 assert.equal(overview.selectedCharacter.name,'Cole Dalton');
 assert.equal(overview.counts.availableNow,3,'Only unknown, skill-eligible, Forever-confirmed vendor recipes count');
-assert.deepEqual(overview.locations.map(x=>[x.name,x.recipeCount]),[['Eisenschmiede',1],['Sturmwind',2]],
+assert.deepEqual(overview.locations.map(x=>[x.name,x.recipeCount]),[['Ironforge',1],['Stormwind',2]],
   'Technical English ForeverDB zone labels are normalized through stable uiMapIds');
 assert.equal(overview.vendors.length,0,'No vendor list before a location is selected');
 
 const stormwind=buildProfessionPlanner(data,index,{characterSlug:'cole-dalton',location:'Sturmwind'});
-assert.equal(stormwind.selectedLocation,'Sturmwind');
+assert.equal(stormwind.selectedLocation,'Stormwind');
 assert.equal(stormwind.counts.atLocation,2);
 assert.equal(stormwind.vendors.length,1,'Coverage preference groups both recipes at the vendor covering the most recipes');
 assert.equal(stormwind.vendors[0].name,'Alfred');
@@ -47,7 +47,7 @@ assert.equal(stormwind.vendors[0].recipes[1].alternatives[0].name,'Berta');
 assert.equal(stormwind.vendors[0].recipes[1].alternatives[0].priceCopper,150,'Cheaper alternative remains visible even when route grouping prefers the higher-coverage vendor');
 assert.equal(stormwind.counts.knownPrices,2);
 assert.equal(stormwind.counts.unknownPrices,0);
-assert.equal(stormwind.vendors[0].location.zone,'Sturmwind');
+assert.equal(stormwind.vendors[0].location.zone,'Stormwind');
 assert.equal(stormwind.vendors[0].recipes[0].source.limitedStock,null,'ForeverDB stock value 0 is not presented as a limited stock of zero');
 
 assert.throws(()=>buildProfessionPlanner(data,index,{characterSlug:'unknown'}),/Charakter nicht gefunden/);

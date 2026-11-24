@@ -3,7 +3,9 @@ import {
   VERIFIED_PLAYER_TERMINOLOGY,
   preferredGermanGameName,
   normalizeVerifiedPlayerTerminology,
-  verifiedPlayerTerm
+  verifiedPlayerTerm,
+  preferredForeverZoneName,
+  foreverZoneIdentity
 } from './player-terminology.mjs';
 
 const professionIds=[129,164,165,171,182,185,186,197,202,333,356,393];
@@ -13,21 +15,17 @@ assert.equal(preferredGermanGameName('profession',171,'Alchimie'),'Alchemie',
   'Official player terminology must override conflicting technical client terminology');
 assert.equal(preferredGermanGameName('profession',171,'Alchemy'),'Alchemie');
 assert.equal(preferredGermanGameName('profession',999999,'Technischer Name'),'Technischer Name');
-assert.equal(verifiedPlayerTerm('zone',1453)?.name,'Sturmwind');
-assert.equal(verifiedPlayerTerm('zone',1455)?.name,'Eisenschmiede');
-assert.equal(verifiedPlayerTerm('zone',1440)?.name,'Eschental');
-assert.equal(preferredGermanGameName('zone',1453,'Stormwind'),'Sturmwind');
-assert.equal(preferredGermanGameName('zone',1455,'Ironforge'),'Eisenschmiede');
-assert.equal(preferredGermanGameName('zone',1440,'Ashenvale'),'Eschental');
-for(const id of [1440,1453,1455]){
-  const zone=verifiedPlayerTerm('zone',id);
-  assert.ok(zone?.sources?.length,'Verified zone term needs an official source');
-  for(const source of zone.sources){
-    const url=new URL(source);
-    assert.equal(url.hostname,'worldofwarcraft.blizzard.com');
-    assert.ok(url.pathname.startsWith('/de-de/'));
-  }
+for(const [id,canonical,legacy] of [[1453,'Stormwind','Sturmwind'],[1455,'Ironforge','Eisenschmiede'],[1440,'Ashenvale','Eschental'],[2521,'Die Insel Zephras','Insel Zephras']]){
+  assert.equal(verifiedPlayerTerm('zone',id)?.name,canonical);
+  assert.equal(preferredGermanGameName('zone',id,canonical),canonical);
+  assert.equal(preferredForeverZoneName(id,legacy),canonical);
+  assert.equal(preferredForeverZoneName(null,legacy),canonical);
+  assert.equal(foreverZoneIdentity(legacy),foreverZoneIdentity(canonical));
+  assert.ok(verifiedPlayerTerm('zone',id)?.sources?.some(source=>new URL(source).hostname==='foreverdb.net'));
 }
+assert.equal(preferredForeverZoneName(1453,'Neuer Clientname'),'Neuer Clientname','A new source label is not overwritten by an old static name');
+assert.equal(preferredForeverZoneName(999999,'Wald von Elwynn'),'Wald von Elwynn','Do not translate other German client labels');
+assert.equal(preferredForeverZoneName(999999,'Winterspring'),'Winterspring','Do not translate English names in German Forever sources');
 assert.ok(VERIFIED_PLAYER_TERMINOLOGY.sources.length>=2);
 for(const source of VERIFIED_PLAYER_TERMINOLOGY.sources){
   const url=new URL(source);

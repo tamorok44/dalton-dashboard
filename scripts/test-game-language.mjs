@@ -54,10 +54,10 @@ for(const forbidden of ['Beißen','Tanz des Täuschers',"diet:Object.freeze(['Fl
   assert.ok(!pets.includes(forbidden),'Unsourced pet game string removed from frontend model: '+forbidden);
 }
 assert.ok(!reputation.includes("name:'Hasserfüllt'")&&!reputation.includes("name:'Freundlich'"),'Reputation stage names are not manually maintained');
-assert.ok(terminology.includes("171:Object.freeze({name:'Alchemie'})"),'Profession 171 uses verified official German Blizzard player terminology');
-assert.ok(terminology.includes("1453:Object.freeze({name:'Sturmwind'"),'Map 1453 uses verified official German Blizzard player terminology');
-assert.ok(terminology.includes("1455:Object.freeze({name:'Eisenschmiede'"),'Map 1455 uses verified official German Blizzard player terminology');
-assert.ok(terminology.includes("1440:Object.freeze({name:'Eschental'"),'Map 1440 uses verified official German Blizzard player terminology');
+assert.ok(terminology.includes("171:Object.freeze({name:'Alchemie'})"),'Profession 171 uses the verified Forever German-client label');
+assert.ok(terminology.includes("1453:Object.freeze({name:'Stormwind'"),'Map 1453 uses the verified Forever German-client label');
+assert.ok(terminology.includes("1455:Object.freeze({name:'Ironforge'"),'Map 1455 uses the verified Forever German-client label');
+assert.ok(terminology.includes("1440:Object.freeze({name:'Ashenvale'"),'Map 1440 uses the verified Forever German-client label');
 assert.ok(!terminology.includes("name:'Alchimie'"),'Technical Alchimie label must not be the verified visible profession term');
 assert.ok(terminology.includes('worldofwarcraft.blizzard.com/de-de/'),'Verified terminology must cite official German Blizzard sources');
 assert.ok(details.includes("preferredGermanGameName('profession',professionId,technicalName)"),'Profession enrichment must prefer verified player terminology over technical localized labels');
