@@ -353,7 +353,7 @@ async function main(){
       if(!records.length)return;
       const deviceToken=config.deviceToken||process.env.DALTON_DEVICE_TOKEN||null;
       const masterToken=process.env.DALTON_SYNC_TOKEN||null;
-      const auth=options.dryRun?null:(deviceToken?'Device '+deviceToken:(masterToken?'Bearer '+masterToken:null));
+      const auth=options.dryRun?null:(masterToken?'Bearer '+masterToken:(deviceToken?'Device '+deviceToken:null));
       if(!options.dryRun&&!auth)throw new Error('Bridge ist noch nicht eingerichtet');
 
       for(const record of records){
