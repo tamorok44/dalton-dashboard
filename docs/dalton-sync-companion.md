@@ -4,12 +4,11 @@ Die Bridge ist bewusst vom WoW-Addon getrennt. Auf Christians Rechner läuft sie
 
 ## Voraussetzungen
 
-- Node.js 22 oder neuer.
-- Das WoW-Addon Dalton Dashboard Sync Alpha 11 ist bei Cole installiert.
-- Christians Master-Hub verwendet weiterhin lokal `DALTON_SYNC_TOKEN`.
-- Chucky, Dolly und Viola erhalten stattdessen jeweils einen einmaligen Einrichtungscode. Daraus wird ein eigener Gerätezugang erzeugt, der ausschließlich den zugeordneten Charakter synchronisieren darf.
-- Für einen Preview-Test kann `DALTON_SYNC_ENDPOINT` auf den Preview-Endpunkt gesetzt werden.
-- Ist der Preview durch Vercel Authentication geschützt, wird zusätzlich `DALTON_SYNC_PREVIEW_SHARE_URL` mit einem temporären Vercel-Share-Link gesetzt. Der Companion holt daraus selbstständig den Zugangscookie.
+- Das WoW-Addon Dalton Dashboard ist installiert.
+- Für die normale Nutzung ist **kein Node.js, Bun oder Terminal** erforderlich: Windows und macOS erhalten jeweils eine eigenständige Bridge-Datei.
+- Jeder Dalton-Spieler erhält einen einmaligen Einrichtungscode. Daraus wird ein eigener Gerätezugang erzeugt, der ausschließlich den zugeordneten Charakter synchronisieren darf.
+- Windows und macOS sind gleichwertig unterstützt. Windows nutzt den Benutzer-Autostart, macOS einen LaunchAgent.
+- Preview-Endpunkt und Vercel-Share-Link sind ausschließlich für interne Tests gedacht und gehören nicht in das spätere Benutzerpaket.
 
 ## Datenschutz
 
@@ -58,3 +57,35 @@ node dalton-sync-client.mjs --watch
 ```
 
 Für Max, Valentin und Stephan bleibt der Ingame-Relay zu Cole der erste Fallback. Wer die optionale Bridge installiert, bekommt zusätzlich den Solo-Weg: Nach `/reload` oder Logout werden die freigegebenen Daten selbst dann hochgeladen, wenn Christian komplett offline ist. Die Windows-Bridge startet über den Benutzer-Autostart ohne sichtbares Fenster; macOS nutzt einen LaunchAgent.
+
+
+## Installation für Spieler
+
+### macOS
+
+1. Bridge-Paket entpacken.
+2. `Installieren.command` starten und den einmaligen Einrichtungscode eingeben.
+3. Die Bridge wird nach `~/Library/Application Support/DaltonDashboardBridge/` installiert.
+4. Ein LaunchAgent startet sie bei jeder Anmeldung automatisch im Hintergrund.
+5. Zusätzlich wird `~/Applications/Dalton Dashboard Bridge deinstallieren.command` angelegt.
+
+Die heruntergeladenen Installationsdateien können danach gelöscht werden.
+
+### Windows
+
+1. Bridge-Paket entpacken.
+2. `Installieren.cmd` starten und den einmaligen Einrichtungscode eingeben.
+3. Die Bridge wird unter `%LOCALAPPDATA%\DaltonDashboardBridge\` installiert.
+4. Eine Verknüpfung im Benutzer-Autostart startet sie künftig unsichtbar.
+5. Im Windows-Startmenü wird **Dalton Dashboard Bridge deinstallieren** angelegt.
+
+Die heruntergeladenen Installationsdateien können danach gelöscht werden.
+
+## Deinstallation und Geräte-Widerruf
+
+Die Deinstallation ist auf beiden Plattformen absichtlich zweistufig abgesichert:
+
+1. Die installierte Bridge widerruft ihren eigenen Gerätezugang serverseitig.
+2. Erst nach erfolgreichem Widerruf werden Autostart, lokale Konfiguration und Bridge-Dateien entfernt.
+
+Dadurch kann eine alte Kopie der lokalen Geräte-Konfiguration nach der Deinstallation nicht weiter synchronisieren. Für den serverseitigen Widerruf ist während der Deinstallation eine Internetverbindung erforderlich. Das WoW-Addon selbst wird durch die Bridge-Deinstallation nicht entfernt und kann unabhängig über CurseForge deinstalliert werden.
