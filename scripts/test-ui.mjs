@@ -394,8 +394,9 @@ assert.ok(!ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some
 assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='abilities'),
   'Every class gets the Klassenfähigkeiten tab');
 const spellbookOpen=ui.classAbilitiesPanel({slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:false,knownClassAbilities:[]});
-assert.ok(spellbookOpen.includes('Persönlicher Lernstand noch nicht synchronisiert'));
-assert.ok(spellbookOpen.includes('/dalton')&&spellbookOpen.includes('Spellbook übernehmen'));
+assert.ok(spellbookOpen.includes('WoW-Forever-AddOn erforderlich'));
+assert.ok(spellbookOpen.includes('CurseForge'));
+assert.ok(!spellbookOpen.includes('/dalton')&&!spellbookOpen.includes('Spellbook übernehmen'),'Dashboard darf keinen manuellen Spellbook-Code mehr verlangen');
 const spellbookVerified=ui.classAbilitiesPanel({
   slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:true,
   knownClassAbilitiesCapturedAt:'2026-11-23T05:55:00.000Z',
@@ -413,6 +414,8 @@ assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterT
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
 assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab)"),'A tab click changes only the selected character card');
+assert.ok(source.includes('function addonDataRequirement'),'AddOn-abhängige Dashboardbereiche verwenden eine zentrale Statuskomponente');
+assert.ok(!source.includes('data-spellbook-code')&&!source.includes('Spellbook übernehmen'),'Manueller Spellbook-Code ist aus der Dashboard-Oberfläche entfernt');
 assert.ok(css.includes('.section h3::before{content:"";display:inline-block;width:7px'));
 assert.ok(css.includes('.details summary::before{content:"›";font-size:1.25rem;line-height:1;color:var(--class,#d6b27a)}'));
 const wowClassColors={mage:'#3fc7eb',hunter:'#aad372',druid:'#ff7c0a'};
