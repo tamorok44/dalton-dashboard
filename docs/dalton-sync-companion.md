@@ -1,11 +1,11 @@
-# Dalton Dashboard Sync Companion · Alpha 10
+# Dalton Dashboard Sync Companion · Alpha 11
 
 Dieses Paket läuft **nur auf Christians Rechner** und ist bewusst vom WoW-Addon getrennt. Die übrigen Spieler benötigen keinen Companion.
 
 ## Voraussetzungen
 
 - Node.js 22 oder neuer.
-- Das WoW-Addon Dalton Dashboard Sync Alpha 10 ist bei Cole installiert.
+- Das WoW-Addon Dalton Dashboard Sync Alpha 11 ist bei Cole installiert.
 - Für einen echten Upload muss lokal die Umgebungsvariable `DALTON_SYNC_TOKEN` gesetzt sein.
 - Für einen Preview-Test kann `DALTON_SYNC_ENDPOINT` auf den Preview-Endpunkt gesetzt werden.
 - Ist der Preview durch Vercel Authentication geschützt, wird zusätzlich `DALTON_SYNC_PREVIEW_SHARE_URL` mit einem temporären Vercel-Share-Link gesetzt. Der Companion holt daraus selbstständig den Zugangscookie.
