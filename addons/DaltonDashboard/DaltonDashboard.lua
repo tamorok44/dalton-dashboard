@@ -75,7 +75,7 @@ local function status()
 
   ns.Chat("Version " .. tostring(ns.VERSION) .. " · Schema " .. tostring(db.schemaVersion))
   ns.Chat(#parts > 0 and table.concat(parts, " · ") or "Noch keine Daten erfasst.")
-  ns.Chat("Das Addon sendet keine Daten ins Internet. Dalton-Gruppenmitglieder können freigegebene Daten ingame an Cole weiterreichen; nur Coles lokaler Sync überträgt sie später zum Dashboard.")
+  ns.Chat("Das Addon sendet selbst keine Daten ins Internet. Freigegebene Dalton-Daten können ingame direkt an Cole weitergereicht oder durch die optionale lokale Bridge synchronisiert werden.")
 end
 
 local function printPerformance()
@@ -116,7 +116,7 @@ local function printRelayStatus()
     ns.Chat("Relay-Rolle: Hub · Cole ist als Empfänger aktiv")
     ns.Chat("Empfangene Dalton-Charaktere im Relay-Postfach: " .. tostring(relay.inboxCount or 0))
   else
-    ns.Chat("Relay-Rolle: Peer · Cole erreichbar: " .. (relay.targetVisible and "ja" or "nein"))
+    ns.Chat("Relay-Rolle: Peer · Direktziel: Cole Dalton · in Gruppe: " .. (relay.targetInGroup and "ja" or "nein"))
     ns.Chat("Ausstehend: " .. (relay.pending and "ja" or "nein") ..
       " · letzter Versuch: " .. tostring(relay.lastAttemptAt or "–") ..
       " · letzte Bestätigung: " .. tostring(relay.lastAckAt or "–"))
