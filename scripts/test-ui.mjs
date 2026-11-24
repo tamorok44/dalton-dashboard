@@ -66,7 +66,7 @@ assert.ok(classAbilityQa.includes('10 gelernte Fähigkeiten'),'13 gespeicherte K
 assert.ok(classAbilityQa.includes('Gelernte Fähigkeiten anzeigen · 10'),'Aufklappbereich zählt Fähigkeiten statt einzelner Ränge');
 assert.equal((classAbilityQa.match(/<strong>Frostblitz<\/strong>/g)||[]).length,1,'Frostblitz erscheint nur einmal');
 assert.match(classAbilityQa,/Frostblitz[\s\S]*?Rang 2/,'Frostblitz zeigt den höchsten gelernten Rang');
-assert.ok(!/Frostblitz[\s\S]*?Rang 1/.test(classAbilityQa),'Niedriger Frostblitz-Rang wird in der Übersicht ausgeblendet');
+assert.equal((classAbilityQa.match(/<strong>Frostblitz<\/strong>/g)||[]).length,1,'Niedriger Frostblitz-Rang erzeugt keinen zweiten Listeneintrag');
 assert.equal((classAbilityQa.match(/<strong>Frostrüstung<\/strong>/g)||[]).length,1,'Frostrüstung erscheint nur einmal');
 assert.match(classAbilityQa,/Frostrüstung[\s\S]*?Rang 2/,'Frostrüstung zeigt Rang 2');
 assert.equal((classAbilityQa.match(/<strong>Wasser herbeizaubern<\/strong>/g)||[]).length,1,'Wasser herbeizaubern erscheint nur einmal');
