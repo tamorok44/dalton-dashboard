@@ -186,52 +186,84 @@ function addonDataRequirement(c,{title='Zusätzliche Spieldaten noch nicht verf�
 
 function formatAddonCoordinate(value){
   const n=Number(value);
-  return Number.isFinite(n)?new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n*100)+' %':null;
+  return Number.isFinite(n)?(n*100).toFixed(1):null;
 }
 function formatAddonDate(value){
   const time=Date.parse(value||'');
   return Number.isFinite(time)?new Date(time).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):null;
 }
-function gameStatusPanel(c,stateOverride=null){
+function addonPresence(c){
+  const state=addonSyncState(c);
+  if(!state)return '';
+  const location=state.currentLocation&&typeof state.currentLocation==='object'?state.currentLocation:null;
+  const bind=location?.bindLocation||null;
+  const place=location?[location.zone,location.subZone].filter(Boolean).join(' · '):'';
+  const x=location?formatAddonCoordinate(location.x):null;
+  const y=location?formatAddonCoordinate(location.y):null;
+  const coords=x&&y?x+' / '+y:'';
+  if(!bind&&!place)return '';
+  return '<div class="character-presence">'+
+    (bind?'<div><small>Ruhestein</small><strong>'+esc(bind)+'</strong></div>':'')+
+    (place?'<div><small>Letzter Standort</small><strong>'+esc(place)+(coords?' · '+esc(coords):'')+'</strong></div>':'')+
+    '</div>';
+}
+function instanceStatusPanel(c,stateOverride=null){
   const state=stateOverride&&typeof stateOverride==='object'?stateOverride:addonSyncState(c);
   if(!state){
-    return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
+    return '<div class="section addon-game-status"><h3>Instanzen &amp; Dungeons</h3>'+
       addonDataRequirement(c,{
-        title:'Spielstatus noch nicht verfügbar',
-        detail:'Ruhestein, Standort und weitere persönliche Spieldaten automatisch hier angezeigt.'
+        title:'Instanzdaten noch nicht verfügbar',
+        detail:'besuchte Instanzen, aktive Bindungen und Bossfortschritte automatisch hier angezeigt.'
       })+'</div>';
   }
 
-  const location=state.currentLocation&&typeof state.currentLocation==='object'?state.currentLocation:null;
-  const place=location
-    ?[location.zone,location.subZone].filter(Boolean).join(' · ')||'noch nicht erfasst'
-    :'noch nicht erfasst';
-  const bind=location?.bindLocation||'noch nicht erfasst';
+  const visited=Array.isArray(state.visitedInstances)?state.visitedInstances:[];
   const lockouts=Array.isArray(state.lockouts)?state.lockouts:[];
-  const received=formatAddonDate(state.receivedAt);
+  const rows=new Map();
+  const rowKey=entry=>{
+    const id=Number(entry?.instanceID);
+    const difficulty=Number(entry?.difficultyID);
+    return Number.isInteger(id)&&id>0?'id:'+id+':'+(Number.isInteger(difficulty)?difficulty:''):String(entry?.name||'').toLocaleLowerCase('de-DE')+':'+String(entry?.difficultyName||'').toLocaleLowerCase('de-DE');
+  };
 
-  const lockoutHtml=lockouts.length
-    ?'<details class="details addon-lockouts" data-detail-key="'+esc(c.slug)+':addon-lockouts"><summary>Aktive Instanzbindungen · '+esc(lockouts.length)+'</summary><div class="addon-lockout-list">'+lockouts.map(entry=>{
-      const progress=Number.isFinite(Number(entry.encounterProgress))&&Number.isFinite(Number(entry.numEncounters))
-        ?Number(entry.encounterProgress)+'/'+Number(entry.numEncounters)+' Bosse'
-        :null;
-      const reset=formatAddonDate(entry.resetAt);
-      const meta=[entry.difficultyName,progress,reset?('Reset '+reset):null,entry.extended?'verlängert':null].filter(Boolean);
-      return '<div class="addon-lockout"><div><strong>'+esc(entry.name)+'</strong>'+(meta.length?'<small>'+esc(meta.join(' · '))+'</small>':'')+'</div>'+
-        '<span>'+(entry.locked===false?'offen':'gebunden')+'</span></div>';
-    }).join('')+'</div></details>'
-    :'';
+  for(const entry of visited){
+    if(!entry?.name)continue;
+    rows.set(rowKey(entry),{...entry,visited:true});
+  }
+  for(const entry of lockouts){
+    if(!entry?.name)continue;
+    const key=rowKey(entry);
+    const previous=rows.get(key)||{};
+    rows.set(key,{...previous,...entry,visited:true,activeBinding:true});
+  }
 
-  return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
-    '<div class="addon-sync-meta"><strong>AddOn synchronisiert</strong>'+(received?'<span>Zuletzt '+esc(received)+'</span>':'')+'</div>'+
-    '<div class="addon-state-grid">'+
-      '<div class="addon-state-card"><small>Ruhestein</small><strong>'+esc(bind)+'</strong></div>'+
-      '<div class="addon-state-card"><small>Letzter Standort</small><strong>'+esc(place)+'</strong></div>'+
-      (Number(c.classId)===3?'<div class="addon-state-card"><small>Begleiterdaten</small><strong>'+(state.hunterCaptured?'erfasst':'noch offen')+'</strong></div>':'')+
-    '</div>'+
-    lockoutHtml+
+  const instances=[...rows.values()].sort((a,b)=>{
+    if(Boolean(a.activeBinding)!==Boolean(b.activeBinding))return a.activeBinding?-1:1;
+    return String(a.name||'').localeCompare(String(b.name||''),'de');
+  });
+  const completedCount=instances.filter(entry=>{
+    const done=Number(entry.encounterProgress),total=Number(entry.numEncounters);
+    return Number.isFinite(done)&&Number.isFinite(total)&&total>0&&done>=total;
+  }).length;
+
+  const list=instances.length?'<div class="addon-instance-list">'+instances.map(entry=>{
+    const done=Number(entry.encounterProgress),total=Number(entry.numEncounters);
+    const hasProgress=Number.isFinite(done)&&Number.isFinite(total)&&total>0;
+    const completed=hasProgress&&done>=total;
+    const type=entry.isRaid===true||entry.instanceType==='raid'?'Raid':entry.instanceType==='party'?'Dungeon':'Instanz';
+    const reset=entry.activeBinding?formatAddonDate(entry.resetAt):null;
+    const meta=[type,entry.difficultyName,reset?('Reset '+reset):null].filter(Boolean);
+    const status=completed?'Abgeschlossen':hasProgress?(done+'/'+total+' Bosse'):entry.activeBinding?'Gebunden':'Besucht';
+    return '<div class="addon-lockout"><div><strong>'+esc(entry.name)+'</strong>'+(meta.length?'<small>'+esc(meta.join(' · '))+'</small>':'')+'</div><span>'+esc(status)+'</span></div>';
+  }).join('')+'</div>':'<p class="knowledge-empty">Noch keine Instanz oder Dungeon im AddOn-Verlauf erfasst.</p>';
+
+  return '<div class="section addon-game-status"><h3>Instanzen &amp; Dungeons</h3>'+
+    '<div class="addon-instance-overview"><strong>'+esc(instances.length)+' erfasst</strong>'+
+      '<span>'+(completedCount?esc(completedCount)+' aktuell als abgeschlossen bestätigt':'Besuche und aktuelle Bossfortschritte aus dem WoW-AddOn')+'</span></div>'+
+    list+
     '</div>';
 }
+function gameStatusPanel(c,stateOverride=null){return instanceStatusPanel(c,stateOverride);}
 
 function classAbilityRankNumber(rank){
   const match=String(rank||'').match(/\d+/);
@@ -695,7 +727,7 @@ function installPortraitFallbacks(){
 
 const baseCharacterTabs=[
   {id:'stats',label:'Charakterwerte'},
-  {id:'game',label:'Spielstatus'},
+  {id:'game',label:'Instanzen & Dungeons'},
   {id:'equipment',label:'Ausrüstung'},
   {id:'talents',label:'Talente'},
   {id:'abilities',label:'Klassenfähigkeiten'},
@@ -839,6 +871,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   </div>
   ${renderPortrait(c)}
   <p class="status activity-note">${lastActivity(c)}</p>
+  ${addonPresence(c)}
   <div class="meta"><span class="pill">${esc(c.gameStringsVerified===true?c.class:'Klasse nicht verfügbar')}</span><span class="pill">${esc(c.gameStringsVerified===true?c.race:'Volk nicht verfügbar')}</span><span class="pill">${esc(c.gameStringsVerified===true?c.faction:'Fraktion nicht verfügbar')} · EU-${esc(c.ruleset?.name||'Regelwerk nicht verfügbar')}</span></div>
   ${c.scrapeOk===false?'<p class="status profile-warning">⚠ Letzter Profilabruf fehlgeschlagen – gespeicherter Stand</p>':''}
   ${experienceProgress(c)}
