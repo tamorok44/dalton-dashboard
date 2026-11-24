@@ -503,8 +503,8 @@ async function main(){
             ' · Transport '+String(record.payload.client?.transport||'unbekannt')+
             ' · Spellbook '+String(result.summary?.spellbookEntryCount??0)+
             ' · Orte '+String(result.summary?.locationHistoryCount??0)+
-            ' · Händler '+String(result.summary?.merchantObservationCount??0)+
-            ' · Lehrer '+String(result.summary?.trainerObservationCount??0));
+            ' · Händler '+String(result.summary?.merchantNpcCount??result.summary?.merchantObservationCount??0)+' NPCs'+
+            ' · Lehrer '+String(result.summary?.trainerNpcCount??result.summary?.trainerObservationCount??0)+' NPCs');
         }catch(error){
           console.error(record.key+': '+String(error.message||error).slice(0,220));
         }
