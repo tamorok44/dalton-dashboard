@@ -131,10 +131,14 @@ jobs:
           Copy-Item bridge/Installieren.cmd dist/bridge-windows/
           Copy-Item bridge/uninstall-windows.ps1 dist/bridge-windows/
           Copy-Item bridge/Deinstallieren.cmd dist/bridge-windows/
+          Copy-Item bridge/create-enroll-windows.ps1 dist/bridge-windows/
+          Copy-Item bridge/Einrichtungscode-erstellen.cmd dist/bridge-windows/
 
           & dist/bridge-windows/DaltonDashboardBridge.exe --help
           if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
           if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--revoke-device" -Quiet)) { throw "Bridge-Quellcode enthält Geräte-Widerruf nicht" }
+          if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--create-enroll" -Quiet)) { throw "Bridge-Quellcode enthält Hub-Einrichtung nicht" }
+          if (-not (Select-String -Path bridge/create-enroll-windows.ps1 -Pattern "cole-dalton" -Quiet)) { throw "Windows-Hub-Helfer ist nicht auf Cole begrenzt" }
           & dist/bridge-windows/DaltonDashboardBridge.exe --dry-run --file scripts/fixtures/bridge-savedvariables.lua
           if ($LASTEXITCODE -ne 0) { throw "Bridge Dry-Run fehlgeschlagen" }
 
@@ -178,11 +182,13 @@ jobs:
           bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-x64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-x64
           cp bridge/Installieren.command dist/bridge-macos/
           cp bridge/Deinstallieren.command dist/bridge-macos/
+          cp bridge/Einrichtungscode-erstellen.command dist/bridge-macos/
           cp bridge/Testen.command dist/bridge-macos/
           chmod +x dist/bridge-macos/*
           grep -q -- "--revoke-device" scripts/dalton-sync-client.mjs
           grep -q "Gerätezugang" bridge/Deinstallieren.command
           grep -q "Gerätezugang" bridge/uninstall-windows.ps1
+          grep -q "cole-dalton" bridge/Einrichtungscode-erstellen.command
           cd dist
           zip -r DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip bridge-macos
           cd ..
