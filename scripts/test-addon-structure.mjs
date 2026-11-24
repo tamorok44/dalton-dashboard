@@ -23,7 +23,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
-assert.ok(toc.includes('## Version: 0.1.0-alpha.8'));
+assert.ok(toc.includes('## Version: 0.1.0-alpha.9'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -61,6 +61,9 @@ assert.ok(bundle.includes('GetPetTrainingPoints'));
 assert.ok(bundle.includes('GetStabledPetList'));
 assert.ok(bundle.includes('moneyCopper'));
 assert.ok(bundle.includes('SCHEMA_VERSION = 1'));
+assert.ok(bundle.includes('debugprofilestop'),'Performance-Messung muss ereignisgesteuert ohne OnUpdate erfolgen');
+assert.ok(bundle.includes('command == "perf"'),'Lokaler Performance-Check muss per /dalton perf verfügbar sein');
+assert.ok(!readFileSync(root+'/Modules/Character.lua','utf8').includes('PLAYER_MONEY'),'Gold darf im normalen Spielbetrieb keine Events verursachen');
 
 for(const unsupported of [
   'LEARNED_SPELL_IN_TAB',
@@ -74,6 +77,8 @@ for(const unsupported of [
 
 const inventory=readFileSync(root+'/Modules/Inventory.lua','utf8');
 assert.ok(!inventory.includes('PLAYER_LOGOUT'),'Inventar darf beim Logout keinen gültigen Snapshot überschreiben');
+assert.ok(inventory.includes('module.events = {}'),'Private Inventardaten dürfen im normalen Spielbetrieb keine automatischen Scans auslösen');
+assert.ok(!inventory.includes('BAG_UPDATE_DELAYED = true'),'BAG_UPDATE_DELAYED darf keinen Vollscan mehr triggern');
 assert.ok(inventory.includes('letzter gültiger Stand bleibt erhalten'),'Inventar muss bei unlesbaren Daten fail-closed bleiben');
 
 assert.ok(!bundle.includes('https://dalton-dashboard-eight.vercel.app/api/addon-sync'),'WoW-Addon darf keinen Netzwerk-Endpunkt enthalten');
