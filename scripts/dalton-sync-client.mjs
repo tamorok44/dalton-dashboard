@@ -10,7 +10,7 @@ import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,publicAddonSyncSummary,addonSyncContentIdentity} from './addon-sync.mjs';
 
 const execFileAsync=promisify(execFile);
-const VERSION='0.1.0-alpha.10';
+const VERSION='0.1.0-alpha.11';
 const TRUSTED_NAMES=new Set(['cole dalton','chucky dalton','dolly dalton','viola dalton']);
 
 function normalizedName(value){return String(value||'').trim().toLocaleLowerCase('de-DE')}
