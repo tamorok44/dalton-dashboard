@@ -6,7 +6,8 @@ import {buildLocationPlanner} from '../scripts/location-planner.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
-import {applyLearningSourceEvidence,loadLearningSourceEvidence} from '../scripts/learning-source-evidence.mjs';
+import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
+import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
@@ -125,7 +126,7 @@ export default async function handler(req,res){
     const recipeIndex=await getForeverDbMasterRecipeIndex({
       seedProfessionSlugs:workshopProfessionSlugs(stored.data)
     });
-    const evaluatedRecipeIndex=applyLearningSourceEvidence(recipeIndex,loadLearningSourceEvidence());
+    const evaluatedRecipeIndex=applyLearningSourceEvidence(recipeIndex,learningSourceEvidenceForIndex(recipeIndex,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
     const selectedCharacter=character
       ?(stored.data?.characters||[]).find(entry=>entry?.slug===character)
       :null;
