@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
-import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot} from './addon-sync.mjs';
+import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
 import {previewCookieFromSetCookie} from './dalton-sync-client.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
-'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.8", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
+'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.9", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
 '  ["character"] = { ["name"] = "Cole Dalton", ["classID"] = 8, ["level"] = 11, ["capturedAt"] = 1795460000 },\n'+
 '  ["spellbook"] = { ["capturedAt"] = 1795460000, ["entryCount"] = 2, ["entries"] = { [1] = { ["spellID"] = 143, ["name"] = "Feuerball", ["rank"] = "Rang 2", ["known"] = true }, [2] = { ["spellID"] = 205, ["name"] = "Frostblitz", ["rank"] = "Rang 2", ["known"] = true } } },\n'+
 '  ["location"] = { ["zone"] = "Insel Zephras", ["subZone"] = "Valanaar", ["mapID"] = 2521, ["x"] = 0.62, ["y"] = 0.73 },\n'+
@@ -27,12 +27,24 @@ assert.equal(parsed.spellbook.entries.length,2);
 assert.equal(parsed.locationHistory.entries.length,1);
 
 const payload=buildSafeAddonSyncPayload(parsed,{syncId:'a'.repeat(64)});
-assert.equal(payload.addon.version,'0.1.0-alpha.8');
+assert.equal(payload.addon.version,'0.1.0-alpha.9');
 assert.equal(payload.sections.character.name,'Cole Dalton');
 assert.ok(!('economy' in payload.sections),'Gold bleibt aus dem Standard-Sync ausgeschlossen');
 assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem Standard-Sync ausgeschlossen');
 
 const normalized=normalizeAddonSyncPayload(payload);
+const sameContentLater=structuredClone(payload);
+sameContentLater.addon.lastUpdatedAt='2026-11-24T10:30:00.000Z';
+sameContentLater.sections.character.capturedAt=1795469999;
+sameContentLater.sections.character.reason='PLAYER_LEVEL_UP';
+sameContentLater.sections.location.capturedAt=1795469999;
+sameContentLater.sections.location.reason='PLAYER_LOGOUT';
+sameContentLater.sections.location.logout=true;
+assert.deepEqual(
+  addonSyncContentIdentity(payload),
+  addonSyncContentIdentity(sameContentLater),
+  'Reine Zeitstempel-, Reason- und Logout-Änderungen dürfen keinen neuen Upload auslösen'
+);
 assert.equal(normalized.sections.interactions.merchantHistory[0].npc.id,257006);
 assert.throws(()=>normalizeAddonSyncPayload({...payload,sections:{...payload.sections,economy:{moneyCopper:1}}}),/Sensibler Bereich/);
 
