@@ -38,7 +38,7 @@ export default async function handler(req,res){
     try{addonSync=await loadPublicAddonSyncStates((result.data?.characters||[]).map(character=>character.slug).filter(Boolean))}catch(error){
       console.warn('Addon-Sync-Status konnte nicht geladen werden:',String(error.message).slice(0,140));
     }
-    const dataVersion=buildDataVersion({data:result.data,petRules});
+    const dataVersion=buildDataVersion({data:result.data,petRules,addonSync});
     return res.status(200).json({...result,questCatalog,petRules,reputationCatalog,petCatalog,addonSync,dataVersion});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);

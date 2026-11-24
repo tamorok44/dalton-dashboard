@@ -1736,7 +1736,8 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
   if(!force&&lastDataVersion&&nextVersion===lastDataVersion)return false;
   lastDataVersion=nextVersion;
   lastGeneratedAt=nextGeneratedAt;
-  render(data,{
+  const renderData={...data,addonSync:payload?.addonSync&&typeof payload.addonSync==='object'?payload.addonSync:{}};
+  render(renderData,{
     live,
     success,
     questCatalog:payload.questCatalog||{},

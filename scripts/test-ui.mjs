@@ -41,7 +41,23 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,applyServerPayload,addonSyncState,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+
+const addonPayloadQa={
+  data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
+  addonSync:{'cole-dalton':{
+    characterSlug:'cole-dalton',receivedAt:'2026-11-24T12:22:51.468Z',syncId:'qa-sync',
+    addonVersion:'0.1.0-beta.1',transport:'dalton-local-bridge',build:'71037',
+    currentLocation:{zone:'Die Insel Zephras',subZone:'Valanaar',bindLocation:'Valanaar'},
+    locationHistoryCount:21,lockoutCount:0,lockouts:[],merchantObservationCount:12,trainerObservationCount:5
+  }},
+  dataVersion:{version:'data-v3|qa-addon-sync'}
+};
+assert.equal(ui.applyServerPayload(addonPayloadQa,{force:true}),true,'Server payload with AddOn state is accepted');
+const addonRendered=nodes.get('#cards').innerHTML;
+assert.ok(addonRendered.includes('AddOn synchronisiert'),'Top-level addonSync survives applyServerPayload and reaches the game-status panel');
+assert.ok(addonRendered.includes('direkte Bridge'),'Cole local bridge transport is rendered');
+assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered instead of the install prompt');
 
 const classAbilityQa=ui.classAbilitiesPanel({
   knownClassAbilitiesVerified:true,
