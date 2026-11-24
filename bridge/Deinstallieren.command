@@ -5,6 +5,7 @@ TARGET_DIR="$HOME/Library/Application Support/DaltonDashboardBridge"
 TARGET="$TARGET_DIR/DaltonDashboardBridge"
 PLIST="$HOME/Library/LaunchAgents/de.dalton.dashboard.bridge.plist"
 INSTALLED_UNINSTALL="$HOME/Applications/Dalton Dashboard Bridge deinstallieren.command"
+INSTALLED_ENROLL_HELPER="$HOME/Applications/Dalton Dashboard Einrichtungscode erstellen.command"
 
 echo "Dalton Dashboard Bridge deinstallieren"
 echo ""
@@ -24,6 +25,7 @@ launchctl bootout "gui/$(id -u)" "$PLIST" >/dev/null 2>&1 || true
 rm -f "$PLIST"
 rm -rf "$TARGET_DIR"
 rm -f "$INSTALLED_UNINSTALL"
+rm -f "$INSTALLED_ENROLL_HELPER"
 
 echo ""
 echo "Dalton Dashboard Bridge wurde vollständig entfernt."
