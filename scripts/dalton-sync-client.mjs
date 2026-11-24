@@ -46,11 +46,25 @@ async function enrollDevice(endpoint,code,character=null){
   const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint});
   return {...body,configFile:file};
 }
+async function createEnrollment(endpoint,characterSlug,masterToken){
+  if(!masterToken)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
+  const base=new URL(endpoint);
+  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
+  const response=await fetch(base,{
+    method:'POST',
+    headers:{Authorization:'Bearer '+masterToken,'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION},
+    body:JSON.stringify({action:'create',characterSlug}),
+    signal:AbortSignal.timeout(15000)
+  });
+  const body=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error('Einrichtungscode konnte nicht erstellt werden: '+String(body.error||response.statusText).slice(0,180));
+  return body;
+}
 function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb?.character?.name))}
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,character:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,character:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
   for(let i=0;i<argv.length;i++){
     const value=argv[i];
     if(value==='--watch')out.watch=true;
@@ -58,6 +72,7 @@ function args(argv){
     else if(value==='--file')out.file=argv[++i]||null;
     else if(value==='--endpoint')out.endpoint=argv[++i]||out.endpoint;
     else if(value==='--enroll')out.enroll=argv[++i]||null;
+    else if(value==='--create-enroll')out.createEnroll=argv[++i]||null;
     else if(value==='--character')out.character=argv[++i]||null;
     else if(value==='--help')out.help=true;
     else throw new Error('Unbekannte Option: '+value);
@@ -67,7 +82,8 @@ function args(argv){
 function help(){
   console.log('Dalton Dashboard Sync Companion '+VERSION);
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
-  console.log('  node scripts/dalton-sync-client.mjs --enroll <Einrichtungscode> [--character <Name>]');
+  console.log('  node scripts/dalton-sync-client.mjs --enroll <Einrichtungscode>');
+  console.log('  node scripts/dalton-sync-client.mjs --create-enroll <character-slug>   # nur Administrator');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN nur auf diesem Rechner lokal gesetzt sein.');
@@ -304,6 +320,13 @@ async function postPayload(endpoint,auth,payload,{cookie=null}={}){
 async function main(){
   const options=args(process.argv.slice(2));
   if(options.help){help();return}
+  if(options.createEnroll){
+    const created=await createEnrollment(options.endpoint,options.createEnroll,process.env.DALTON_SYNC_TOKEN);
+    console.log('Einrichtungscode für '+String(created.characterName||created.characterSlug)+':');
+    console.log(created.code);
+    console.log('Gültig für '+Math.round(Number(created.expiresInSeconds||0)/3600)+' Stunden und genau einmal.');
+    return;
+  }
   if(options.enroll){
     const enrolled=await enrollDevice(options.endpoint,options.enroll,options.character);
     console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
@@ -393,7 +416,7 @@ async function main(){
   process.on('SIGINT',close);
   process.on('SIGTERM',close);
 }
-const invokedDirectly=Boolean(process.argv[1])&&import.meta.url===pathToFileURL(process.argv[1]).href;
+const invokedDirectly=import.meta.main===true||(Boolean(process.argv[1])&&import.meta.url===pathToFileURL(process.argv[1]).href);
 if(invokedDirectly){
   main().catch(error=>{
     console.error('Dalton Sync: '+error.message);
