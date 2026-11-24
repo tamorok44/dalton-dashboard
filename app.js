@@ -198,7 +198,7 @@ function gameStatusPanel(c,stateOverride=null){
     return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
       addonDataRequirement(c,{
         title:'Spielstatus noch nicht verfügbar',
-        detail:'Ruhestein, Standort, Lockouts und weitere persönliche Spieldaten automatisch hier angezeigt.'
+        detail:'Ruhestein, Standort und weitere persönliche Spieldaten automatisch hier angezeigt.'
       })+'</div>';
   }
 
@@ -206,17 +206,12 @@ function gameStatusPanel(c,stateOverride=null){
   const place=location
     ?[location.zone,location.subZone].filter(Boolean).join(' · ')||'noch nicht erfasst'
     :'noch nicht erfasst';
-  const coords=location?[formatAddonCoordinate(location.x),formatAddonCoordinate(location.y)].filter(Boolean).join(' / '):'';
   const bind=location?.bindLocation||'noch nicht erfasst';
   const lockouts=Array.isArray(state.lockouts)?state.lockouts:[];
-  const lockoutCount=Number.isFinite(Number(state.lockoutCount))?Number(state.lockoutCount):lockouts.length;
   const received=formatAddonDate(state.receivedAt);
-  const transportLabel=state.transport==='dalton-local-bridge'?'direkte Bridge':state.transport==='dalton-peer-relay'?'Peer-Relay über Cole':state.transport?'lokaler Sync':null;
-  const version=[state.addonVersion?('AddOn '+state.addonVersion):null,transportLabel,state.build?('Build '+state.build):null,received?('Sync '+received):null].filter(Boolean).join(' · ');
-  const observations=(Number(state.merchantObservationCount)||0)+(Number(state.trainerObservationCount)||0);
 
   const lockoutHtml=lockouts.length
-    ?'<div class="addon-lockout-list">'+lockouts.map(entry=>{
+    ?'<details class="details addon-lockouts" data-detail-key="'+esc(c.slug)+':addon-lockouts"><summary>Aktive Instanzbindungen · '+esc(lockouts.length)+'</summary><div class="addon-lockout-list">'+lockouts.map(entry=>{
       const progress=Number.isFinite(Number(entry.encounterProgress))&&Number.isFinite(Number(entry.numEncounters))
         ?Number(entry.encounterProgress)+'/'+Number(entry.numEncounters)+' Bosse'
         :null;
@@ -224,20 +219,17 @@ function gameStatusPanel(c,stateOverride=null){
       const meta=[entry.difficultyName,progress,reset?('Reset '+reset):null,entry.extended?'verlängert':null].filter(Boolean);
       return '<div class="addon-lockout"><div><strong>'+esc(entry.name)+'</strong>'+(meta.length?'<small>'+esc(meta.join(' · '))+'</small>':'')+'</div>'+
         '<span>'+(entry.locked===false?'offen':'gebunden')+'</span></div>';
-    }).join('')+'</div>'
-    :'<p class="knowledge-empty">'+(lockoutCount===0?'Keine aktiven Lockouts gemeldet.':'Lockout-Details wurden noch nicht vollständig synchronisiert.')+'</p>';
+    }).join('')+'</div></details>'
+    :'';
 
   return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
-    '<div class="addon-sync-meta"><strong>AddOn synchronisiert</strong>'+(version?'<span>'+esc(version)+'</span>':'')+'</div>'+
+    '<div class="addon-sync-meta"><strong>AddOn synchronisiert</strong>'+(received?'<span>Zuletzt '+esc(received)+'</span>':'')+'</div>'+
     '<div class="addon-state-grid">'+
       '<div class="addon-state-card"><small>Ruhestein</small><strong>'+esc(bind)+'</strong></div>'+
-      '<div class="addon-state-card"><small>Letzter Standort</small><strong>'+esc(place)+'</strong>'+(coords?'<span>'+esc(coords)+'</span>':'')+'</div>'+
-      '<div class="addon-state-card"><small>Lockouts</small><strong>'+esc(lockoutCount)+'</strong></div>'+
-      '<div class="addon-state-card"><small>Standort-Historie</small><strong>'+esc(Number(state.locationHistoryCount)||0)+'</strong><span>gespeicherte Ortswechsel</span></div>'+
-      '<div class="addon-state-card"><small>Händler & Lehrer</small><strong>'+esc(observations)+'</strong><span>Live-Beobachtungen</span></div>'+
+      '<div class="addon-state-card"><small>Letzter Standort</small><strong>'+esc(place)+'</strong></div>'+
       (Number(c.classId)===3?'<div class="addon-state-card"><small>Begleiterdaten</small><strong>'+(state.hunterCaptured?'erfasst':'noch offen')+'</strong></div>':'')+
     '</div>'+
-    '<details class="details addon-lockouts" data-detail-key="'+esc(c.slug)+':addon-lockouts"><summary>Lockouts anzeigen · '+esc(lockoutCount)+'</summary>'+lockoutHtml+'</details>'+
+    lockoutHtml+
     '</div>';
 }
 
