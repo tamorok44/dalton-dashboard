@@ -61,6 +61,9 @@ jobs:
       - name: Tests ausführen
         run: npm test
 
+      - name: Bridge-Dry-Run gegen SavedVariables-Fixture
+        run: node scripts/dalton-sync-client.mjs --dry-run --file scripts/fixtures/bridge-savedvariables.lua
+
       - name: Lua-5.1-Syntax prüfen
         shell: bash
         run: |
@@ -124,6 +127,24 @@ jobs:
           bun build scripts/dalton-sync-client.mjs --compile --minify --windows-hide-console --outfile dist/bridge-windows/DaltonDashboardBridge.exe
           Copy-Item bridge/install-windows.ps1 dist/bridge-windows/
           Copy-Item bridge/Installieren.cmd dist/bridge-windows/
+
+          & dist/bridge-windows/DaltonDashboardBridge.exe --help
+          if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
+          & dist/bridge-windows/DaltonDashboardBridge.exe --dry-run --file scripts/fixtures/bridge-savedvariables.lua
+          if ($LASTEXITCODE -ne 0) { throw "Bridge Dry-Run fehlgeschlagen" }
+
+          $p = Start-Process -FilePath "dist/bridge-windows/DaltonDashboardBridge.exe" -ArgumentList "--dry-run","--watch","--file","scripts/fixtures/bridge-savedvariables.lua" -PassThru
+          Start-Sleep -Seconds 4
+          $proc = Get-Process -Id $p.Id
+          $cpu1 = $proc.CPU
+          $wsMb = [Math]::Round($proc.WorkingSet64 / 1MB, 1)
+          Start-Sleep -Seconds 4
+          $proc.Refresh()
+          $cpu2 = $proc.CPU
+          $idleCpu = [Math]::Round(($cpu2 - $cpu1), 3)
+          Write-Host "Bridge Idle-Baseline: Working Set ${wsMb} MB; CPU-Zeit in 4 s: ${idleCpu} s"
+          Stop-Process -Id $p.Id -Force
+
           Compress-Archive -Path dist/bridge-windows/* -DestinationPath dist/DaltonDashboardBridge-Windows-0.1.0-alpha.11.zip -Force
 
       - name: Windows-Bridge bereitstellen
