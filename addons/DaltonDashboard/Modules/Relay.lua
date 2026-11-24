@@ -154,6 +154,66 @@ local function checksum(value)
   end
   return string.format("%08x", hash)
 end
+local VOLATILE_KEYS = {
+  capturedAt = true,
+  reason = true,
+  lastUpdatedAt = true,
+  lastSeenAt = true,
+  closedAt = true,
+  coordinatesCapturedAt = true,
+  lastOpenedAt = true,
+  lastClosedAt = true,
+  resetSeconds = true,
+  logout = true,
+  fingerprint = true
+}
+
+local function contentChecksum(value)
+  local hash = 5381
+  local function add(text)
+    text = tostring(text or "")
+    for index = 1, #text do
+      hash = (hash * 33 + string.byte(text, index)) % 2147483647
+    end
+  end
+  local function visit(current, depth)
+    if depth > 24 then add("<depth>") return end
+    local kind = type(current)
+    add(kind)
+    if kind == "nil" then return end
+    if kind == "string" or kind == "number" or kind == "boolean" then
+      add(":")
+      add(current)
+      return
+    end
+    if kind ~= "table" then return end
+
+    local keys = {}
+    for key in pairs(current) do
+      if not (type(key) == "string" and VOLATILE_KEYS[key]) then
+        keys[#keys + 1] = key
+      end
+    end
+    table.sort(keys, function(a, b)
+      local aa = type(a) .. ":" .. tostring(a)
+      local bb = type(b) .. ":" .. tostring(b)
+      return aa < bb
+    end)
+    add("{")
+    for _, key in ipairs(keys) do
+      add(type(key))
+      add(":")
+      add(key)
+      add("=")
+      visit(current[key], depth + 1)
+      add(";")
+    end
+    add("}")
+  end
+  visit(value, 0)
+  return string.format("%08x", hash)
+end
+
 
 local function encodeSnapshot(snapshot)
   if not (C_EncodingUtil and C_EncodingUtil.SerializeCBOR and C_EncodingUtil.CompressString and C_EncodingUtil.EncodeBase64) then
@@ -346,6 +406,13 @@ local function trySend(force)
 
   local snapshot = relaySnapshot()
   if not snapshot then return end
+  local state = relayState()
+  local contentHash = contentChecksum(snapshot)
+  if not force and state.lastAckContentHash == contentHash then
+    state.pending = false
+    return
+  end
+
   local encoded, err = encodeSnapshot(snapshot)
   if not encoded then
     ns.RecordCompatibility("Relay.Encode", err)
@@ -353,11 +420,6 @@ local function trySend(force)
   end
 
   local hash = checksum(encoded)
-  local state = relayState()
-  if not force and state.lastAckHash == hash then
-    state.pending = false
-    return
-  end
 
   local session = hash .. "-" .. tostring(ns.Now() % 10000)
   local messages = chunkPayload(encoded, session, hash)
@@ -366,9 +428,10 @@ local function trySend(force)
     return
   end
 
-  ns._relaySending = {target = target, session = session, hash = hash, chunks = #messages}
+  ns._relaySending = {target = target, session = session, hash = hash, contentHash = contentHash, chunks = #messages}
   state.pending = true
   state.lastSentHash = hash
+  state.lastSentContentHash = contentHash
   state.lastSentAt = ns.Now()
   state.lastSentChunks = #messages
   sendChunks(target, messages, 1)
@@ -439,6 +502,7 @@ function module:OnEvent(event, ...)
       local state = relayState()
       if (sending and sending.session == session and sending.hash == hash) or state.lastSentHash == hash then
         state.lastAckHash = hash
+        state.lastAckContentHash = sending and sending.contentHash or state.lastSentContentHash
         state.lastAckAt = ns.Now()
         state.pending = false
       end
