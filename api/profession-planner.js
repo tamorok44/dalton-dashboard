@@ -1,6 +1,6 @@
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildProfessionPlanner} from '../scripts/profession-planner.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
@@ -20,23 +20,25 @@ export default async function handler(req,res){
     const url=queryUrl(req);
     const character=(url.searchParams.get('character')||'').trim()||null;
     const location=(url.searchParams.get('location')||'').trim()||null;
-    if(!foreverDbConfigured()){
+    const remoteReady=foreverDbConfigured();
+    const recipeIndex=remoteReady
+      ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:workshopProfessionSlugs(stored.data)})
+      :await getCachedForeverDbMasterRecipeIndex();
+    if(!recipeIndex){
       const base=buildProfessionPlanner(stored.data,{recipes:[]},{characterSlug:character,location});
       return res.status(200).json({
         ...base,
         catalog:{connected:false,complete:false,build:null,generatedAt:null},
-        reason:'ForeverDB ist derzeit nicht verbunden.'
+        reason:'ForeverDB ist derzeit nicht verbunden und es liegt kein gecachter Rezept-Master vor.'
       });
     }
-    const recipeIndex=await getForeverDbMasterRecipeIndex({
-      seedProfessionSlugs:workshopProfessionSlugs(stored.data)
-    });
     const evaluatedRecipeIndex=applyLearningSourceEvidence(recipeIndex,learningSourceEvidenceForIndex(recipeIndex,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
     const planner=buildProfessionPlanner(stored.data,evaluatedRecipeIndex,{characterSlug:character,location});
     return res.status(200).json({
       ...planner,
       catalog:{
         connected:true,
+        readOnlyCache:!remoteReady,
         complete:recipeIndex?.masterComplete===true&&recipeIndex?.complete===true,
         refreshing:recipeIndex?.refreshing===true,
         build:recipeIndex?.build||null,
