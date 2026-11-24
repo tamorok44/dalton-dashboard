@@ -12,6 +12,7 @@ function prefix(){
   return 'dalton-dashboard:live-knowledge:v1:'+environmentScope()+':';
 }
 function indexKey(){return prefix()+'index'}
+function versionKey(){return prefix()+'version'}
 function text(value,max=240){return typeof value==='string'&&value.trim()?value.trim().slice(0,max):null}
 function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)&&n>0?n:null}
@@ -250,6 +251,7 @@ async function ingestSnapshot(snapshot){
     services:snapshot.kind==='trainer'?mergeServiceKnowledge(existing?.services,snapshot):undefined
   };
   await saveRecord(key,record);
+  if(changed)await redis(['SET',versionKey(),snapshot.capturedAt]);
   return {stored:true,duplicate:false,changed,key,record};
 }
 
@@ -309,4 +311,11 @@ export function publicLiveKnowledgeSummary(records=[]){
     knownMerchantOfferCount:merchants.reduce((sum,record)=>sum+(record.offers?.length||0),0),
     trainerServiceCount:trainers.reduce((sum,record)=>sum+(record.services?.length||0),0)
   };
+}
+
+
+export async function loadLiveKnowledgeVersion(){
+  if(!configured())return null;
+  const value=await redis(['GET',versionKey()]);
+  return typeof value==='string'&&value?value:null;
 }
