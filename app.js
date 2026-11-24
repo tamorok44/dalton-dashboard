@@ -192,8 +192,8 @@ function formatAddonDate(value){
   const time=Date.parse(value||'');
   return Number.isFinite(time)?new Date(time).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'}):null;
 }
-function gameStatusPanel(c){
-  const state=addonSyncState(c);
+function gameStatusPanel(c,stateOverride=null){
+  const state=stateOverride&&typeof stateOverride==='object'?stateOverride:addonSyncState(c);
   if(!state){
     return '<div class="section addon-game-status"><h3>Spielstatus</h3>'+
       addonDataRequirement(c,{
