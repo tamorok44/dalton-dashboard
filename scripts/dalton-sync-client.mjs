@@ -297,10 +297,7 @@ export function relayCharDbsFromGlobalDb(globalDb){
     .filter(entry=>entry.charDb&&typeof entry.charDb==='object'&&trustedCharacter(entry.charDb))
     .filter(entry=>normalizedName(entry.charDb.character?.name)!=='cole dalton');
 }
-async function readRelayRecords(file){
-  if(!file)return [];
-  const raw=await fs.readFile(file,'utf8');
-  const globalDb=parseLuaSavedVariable(raw,'DaltonDashboardDB');
+export function relayRecordsFromGlobalDb(globalDb,{source='relay'}={}){
   const records=[];
   for(const {inboxKey,charDb} of relayCharDbsFromGlobalDb(globalDb)){
     if(!charDb||typeof charDb!=='object'||!trustedCharacter(charDb))continue;
@@ -310,7 +307,7 @@ async function readRelayRecords(file){
       records.push(payloadRecord(charDb,{
         key:'relay:'+name,
         transport:'dalton-peer-relay',
-        source:file+'#'+inboxKey,
+        source:source+'#'+inboxKey,
         diagnostics:null
       }));
     }catch(error){
@@ -318,6 +315,12 @@ async function readRelayRecords(file){
     }
   }
   return records.sort((a,b)=>a.key.localeCompare(b.key,'de'));
+}
+async function readRelayRecords(file){
+  if(!file)return [];
+  const raw=await fs.readFile(file,'utf8');
+  const globalDb=parseLuaSavedVariable(raw,'DaltonDashboardDB');
+  return relayRecordsFromGlobalDb(globalDb,{source:file});
 }
 async function readRecords(sources){
   const records=[];
