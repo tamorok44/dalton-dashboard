@@ -13,7 +13,7 @@ import {
   workshopLearningCandidates
 } from '../scripts/workshop-core.mjs';
 import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
-import {getForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
+import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex,cachedForeverDbItemSearch,cachedForeverDbItem} from '../scripts/workshop-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
@@ -198,18 +198,26 @@ export default async function handler(req,res){
       let source='blizzard-known';
       const remoteErrors=[];
       let recipeIndex=null,remoteRecipe=null;
-      if(remoteReady){
-        try{
-          const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
+      try{
+        const index=remoteReady
+          ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
+          :await getCachedForeverDbMasterRecipeIndex();
+        if(index){
           recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
           enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
-          const remote=await cachedForeverDbItem(itemId,{build:recipeIndex?.build||null});
-          item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
-          source='foreverdb';
           remoteRecipe=preferredForeverRecipeForItem(recipeIndex,itemId);
-        }catch(error){
-          remoteErrors.push(String(error.message).slice(0,180));
+          if(remoteReady){
+            const remote=await cachedForeverDbItem(itemId,{build:recipeIndex?.build||null});
+            item=await archiveWorkshopItemIcon(mergeRemoteItem(remote,catalog.byItemId.get(itemId)||local));
+            source='foreverdb';
+          }else{
+            const cachedLocal=catalog.byItemId.get(itemId)||local;
+            if(cachedLocal)item=publicItem(cachedLocal);
+            source='foreverdb-cache';
+          }
         }
+      }catch(error){
+        remoteErrors.push(String(error.message).slice(0,180));
       }
       if(!item)return res.status(404).json({error:'Gegenstand nicht gefunden'});
       const plan=buildProductionPlan(catalog,itemId,quantity);
@@ -255,14 +263,16 @@ export default async function handler(req,res){
     }
 
     let recipeIndex=null,remoteError=null;
-    if(remoteReady){
-      try{
-        const index=await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs});
+    try{
+      const index=remoteReady
+        ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
+        :await getCachedForeverDbMasterRecipeIndex();
+      if(index){
         recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
-      }catch(error){
-        remoteError=String(error.message).slice(0,180);
       }
+    }catch(error){
+      remoteError=String(error.message).slice(0,180);
     }
     const publicCatalog=publicWorkshopCatalog(catalog);
     const masterItems=recipeIndex?workshopItemsFromRecipeIndex(catalog,recipeIndex):[];
