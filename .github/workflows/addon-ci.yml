@@ -172,6 +172,7 @@ jobs:
           bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-arm64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-arm64
           bun build scripts/dalton-sync-client.mjs --compile --minify --target=bun-darwin-x64 --outfile dist/bridge-macos/DaltonDashboardBridge-macos-x64
           cp bridge/Installieren.command dist/bridge-macos/
+          cp bridge/Testen.command dist/bridge-macos/
           chmod +x dist/bridge-macos/*
           cd dist
           zip -r DaltonDashboardBridge-macOS-0.1.0-alpha.11.zip bridge-macos
