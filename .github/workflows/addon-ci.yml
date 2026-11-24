@@ -135,7 +135,7 @@ jobs:
           retention-days: 14
 
   bridge-macos:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Repository auschecken
         uses: actions/checkout@v4
