@@ -85,6 +85,14 @@ assert.deepEqual(overview.locations.map(x=>[x.name,x.actionCount]),[['Eisenschmi
 assert.equal(overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),8,'Ortszählungen können sich wegen alternativer Orte überschneiden');
 assert.ok(overview.counts.availableNow<overview.locations.reduce((sum,entry)=>sum+entry.actionCount,0),'Globale Zählung darf überschneidende Ortsangebote niemals doppelt zählen');
 
+const withKnownZero=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',professionMasters,extraActions,classMaster,knownLocations:['Insel Zephras']});
+assert.equal(withKnownZero.locations.find(entry=>entry.name==='Insel Zephras')?.actionCount,0,'Bekannte Orte bleiben auch ohne aktuelle Erledigung in der Ortsliste');
+const zephras=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Insel Zephras',professionMasters,extraActions,classMaster,knownLocations:['Insel Zephras']});
+assert.equal(zephras.selectedLocation,'Insel Zephras','Ein bekannter Ort mit 0 Erledigungen bleibt auswählbar');
+assert.equal(zephras.counts.atLocation,0);
+assert.equal(zephras.actions.length,0);
+assert.equal(zephras.npcs.length,0);
+
 const stormwind=buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Sturmwind',professionMasters,extraActions,classMaster});
 assert.equal(stormwind.selectedLocation,'Sturmwind');
 assert.equal(stormwind.counts.atLocation,6);
