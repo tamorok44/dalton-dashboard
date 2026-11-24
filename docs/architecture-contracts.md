@@ -73,6 +73,8 @@ Wenn eine Freigabe nötig ist, wird der Antrag zuerst gestellt. Architektur und 
 
 ## 7. Ortsplaner
 
+- Die Ortsauswahl verwendet einen gemeinsamen, dauerhaften Ortskatalog für alle Daltons, unabhängig von Klasse, Beruf, Level und bestätigten aktuellen Erledigungen. Verifizierte Kartenbezeichnungen, sämtliche gemeinsamen Rezept-/Berufs-/Klassenquellen und bekannte AddOn-Orte bilden diesen Katalog. Bereits bekannte Orte bleiben bei temporären Quellausfällen oder auslaufender Standorthistorie auswählbar. Nur die Erledigungszahlen und Angebote sind charakterabhängig; die bloße Existenz eines Orts bestätigt kein NPC-Angebot. Insbesondere muss Die Insel Zephras bei jedem Dalton mit 0 oder mehr Erledigungen auswählbar sein.
+
 - Der Ortsplaner ersetzt den bisherigen Berufsplaner. Er verwendet die aktuellen Blizzard-Charakterdaten und gemeinsame persistente ForeverDB-Master; er führt **keine eigene Kopie** von Rezepten, Fähigkeiten oder NPC-Stammdaten.
 - Oben werden Charakter und Ort gewählt. Darunter stehen die echten Mehrfachfilter **Klassenfähigkeiten**, **Berufsrezepte**, **Berufsausbildung** und **Begleiterfähigkeiten** standardmäßig aktiviert zur Verfügung.
 - Der Ortsplaner zeigt ausschließlich Erledigungen, die der gewählte Charakter **jetzt** am gewählten Ort durchführen kann. Zukünftige Level-, Skill- oder sonstige Fortschrittshinweise gehören nicht in diese Ansicht.

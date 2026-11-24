@@ -1,3 +1,4 @@
+import {collectPlannerKnownLocations,sharedPlannerLocations} from './location-catalog.mjs';
 import {knowledgeRecipeRef,plannerKnowledgeRef} from './knowledge-media.mjs';
 import assert from 'node:assert/strict';
 import {buildLocationPlanner} from './location-planner.mjs';
@@ -193,3 +194,27 @@ assert.equal(canonicalCities.locations.filter(x=>['Eisenschmiede','Ironforge'].i
 assert.equal(canonicalCities.locations.find(x=>x.name==='Ashenvale')?.actionCount,0);
 assert.equal(canonicalCities.counts.availableNow,overview.counts.availableNow);
 assert.equal(buildLocationPlanner(data,index,{characterSlug:'cole-dalton',location:'Stormwind',professionMasters,extraActions,classMaster}).counts.atLocation,stormwind.counts.atLocation);
+
+const sharedWorld=collectPlannerKnownLocations({
+  recipeIndexes:[index],
+  classMasters:[classMaster,{trainers:[{location:{zone:'Darnassus'}}]}],
+  addonStates:{'cole-dalton':{payload:{sections:{locationHistory:{entries:[{zone:'Insel Zephras',mapID:2521}]}}}}}
+});
+assert.ok(sharedWorld.some(entry=>entry.name==='Die Insel Zephras'));
+assert.ok(sharedWorld.some(entry=>entry.name==='Darnassus'));
+assert.ok(collectPlannerKnownLocations().some(entry=>entry.name==='Die Insel Zephras'),'Verified world locations do not depend on any active recipe, class, or AddOn');
+const remembered=new Set();
+const redisStub=async command=>{
+  assert.equal(command[0],'EVAL');
+  for(const name of command.slice(4))remembered.add(name);
+  return [...remembered];
+};
+await sharedPlannerLocations(sharedWorld,{redisImpl:redisStub,enabled:true,scope:'test'});
+const afterSourceOutage=await sharedPlannerLocations([],{redisImpl:redisStub,enabled:true,scope:'test'});
+assert.ok(afterSourceOutage.some(entry=>entry.name==='Darnassus'),'Previously known places survive source outages');
+const roster={...data,characters:[baseCharacter,{...baseCharacter,slug:'other-dalton',name:'Other Dalton',classId:3,knownClassAbilities:[],professions:[]}]};
+const sameWorldForCole=buildLocationPlanner(roster,index,{characterSlug:'cole-dalton',professionMasters,classMaster,knownLocations:afterSourceOutage});
+const sameWorldForOther=buildLocationPlanner(roster,index,{characterSlug:'other-dalton',knownLocations:afterSourceOutage,location:'Die Insel Zephras'});
+assert.deepEqual(sameWorldForCole.locations.map(entry=>entry.name),sameWorldForOther.locations.map(entry=>entry.name),'World locations are shared, independent of learned recipes and class');
+assert.equal(sameWorldForOther.selectedLocation,'Die Insel Zephras');
+assert.equal(sameWorldForOther.counts.atLocation,0);

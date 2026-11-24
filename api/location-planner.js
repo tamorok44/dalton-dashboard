@@ -11,6 +11,7 @@ import {applyLearningSourceEvidence,learningSourceEvidenceForIndex,liveKnowledge
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
 import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
 import {preferredForeverZoneName,foreverZoneIdentity} from '../scripts/player-terminology.mjs';
+import {collectPlannerKnownLocations,sharedPlannerLocations} from '../scripts/location-catalog.mjs';
 
 function queryUrl(req){
   return new URL(req.url||'/api/location-planner','https://dalton-dashboard.local');
@@ -20,63 +21,6 @@ function hasFiniteNumber(value){
 }
 function normalizeText(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
-}
-function numericEntries(value){
-  if(Array.isArray(value))return value;
-  if(!value||typeof value!=='object')return [];
-  return Object.entries(value)
-    .filter(([key])=>/^\d+$/.test(key))
-    .sort((a,b)=>Number(a[0])-Number(b[0]))
-    .map(([,entry])=>entry);
-}
-function plannerLocationName(location={}){
-  if(typeof location==='string')return preferredForeverZoneName(null,location);
-  const raw=location&&typeof location==='object'?location:{};
-  const mapId=Number(raw.uiMapId??raw.mapID);
-  const technical=typeof raw.zone==='string'&&raw.zone.trim()
-    ?raw.zone.trim()
-    :typeof raw.mapName==='string'&&raw.mapName.trim()?raw.mapName.trim():null;
-  return preferredForeverZoneName(Number.isInteger(mapId)?mapId:null,technical);
-}
-function collectPlannerKnownLocations({recipeIndex={},professionMasters={},classMaster=null,addonStates={},liveKnowledge=[]}={}){
-  const zones=new Map();
-  const add=location=>{
-    const name=plannerLocationName(location);
-    const key=foreverZoneIdentity(name);
-    if(key&&!zones.has(key))zones.set(key,{name});
-  };
-  const addSources=sources=>{
-    for(const source of Array.isArray(sources)?sources:[])add(source?.location);
-  };
-  for(const recipe of Array.isArray(recipeIndex?.recipes)?recipeIndex.recipes:[])addSources(recipe?.learning?.sources);
-  for(const profession of Array.isArray(recipeIndex?.professions)?recipeIndex.professions:[]){
-    addSources(profession?.trainers);
-    for(const rank of Array.isArray(profession?.ranks)?profession.ranks:[])addSources(rank?.sources);
-  }
-  for(const master of Object.values(professionMasters||{})){
-    if(!master||master.error)continue;
-    addSources(master.trainers);
-    for(const rank of Array.isArray(master.ranks)?master.ranks:[])addSources(rank?.sources);
-  }
-  if(classMaster){
-    addSources(classMaster.trainers);
-    for(const ability of Array.isArray(classMaster.abilities)?classMaster.abilities:[]){
-      for(const rank of Array.isArray(ability?.ranks)?ability.ranks:[])addSources(rank?.sources);
-    }
-  }
-  for(const record of Array.isArray(liveKnowledge)?liveKnowledge:[]){
-    add(record?.location);
-    add(record?.latestSnapshot?.location);
-  }
-  for(const state of Object.values(addonStates||{})){
-    const sections=state?.payload?.sections||{};
-    add(sections.location);
-    for(const entry of numericEntries(sections?.locationHistory?.entries)){
-      add(entry);
-      add(entry?.location);
-    }
-  }
-  return [...zones.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
 }
 function discoveryZone(discovery={}){
   const location=discovery.location||{};
@@ -195,7 +139,7 @@ export default async function handler(req,res){
       loadAddonSyncStates(characterSlugs)
     ]);
     if(!recipeIndex){
-      const knownLocations=collectPlannerKnownLocations({addonStates});
+      const knownLocations=await sharedPlannerLocations(collectPlannerKnownLocations({addonStates}));
       const base=buildLocationPlanner(stored.data,{recipes:[],professions:[]},{characterSlug:character,location,knownLocations});
       return res.status(200).json({
         ...base,
@@ -219,16 +163,20 @@ export default async function handler(req,res){
         .filter(profession=>selectedProfessionSlugs.includes(profession?.slug))
         .map(profession=>[profession.slug,{...profession,cached:true}])
     );
-    const classMaster=selectedCharacter?.classId
-      ?await cachedForeverDbClassMaster(selectedCharacter.classId,{build:evaluatedRecipeIndex?.build||null})
-      :null;
-    const knownLocations=collectPlannerKnownLocations({
-      recipeIndex:evaluatedRecipeIndex,
-      professionMasters,
-      classMaster,
+    // All roster classes contribute to the same world-location catalog.
+    // Only the selected class contributes actual learning actions.
+    const classIds=[...new Set((stored.data?.characters||[]).map(entry=>Number(entry.classId)).filter(id=>Number.isInteger(id)&&id>0))];
+    const classMasters=await Promise.all(classIds.map(async id=>{
+      try{return await cachedForeverDbClassMaster(id,{build:evaluatedRecipeIndex?.build||null})}
+      catch(error){console.warn('Klassenmaster für Ortskatalog nicht verfügbar:',String(error.message).slice(0,140));return null}
+    }));
+    const classMaster=classMasters[classIds.indexOf(Number(selectedCharacter?.classId))]||null;
+    const knownLocations=await sharedPlannerLocations(collectPlannerKnownLocations({
+      recipeIndexes:[recipeIndex,evaluatedRecipeIndex],
+      classMasters,
       addonStates,
       liveKnowledge
-    });
+    }));
     let planner=buildLocationPlanner(stored.data,evaluatedRecipeIndex,{
       characterSlug:character,
       location,

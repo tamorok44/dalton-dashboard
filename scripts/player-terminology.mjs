@@ -103,3 +103,8 @@ export function normalizeVerifiedPlayerTerminology(data){
     }))
   };
 }
+
+// A verified world location is not conditional on anyone's character progress.
+export function verifiedForeverLocations(){
+  return Object.entries(zoneRecords).map(([id,record])=>({uiMapId:Number(id),name:record.name}));
+}

@@ -96,3 +96,8 @@ Alle Berufe führen die einheitliche UI-Bezeichnung „Rezepte & Fähigkeiten“
 ### Ortsnamen und Identität (24.11.2026)
 
 Die deutsche Forever-Clientbezeichnung ist maßgeblich, einschließlich englischer Eigennamen. Der zentrale Resolver in `scripts/player-terminology.mjs` führt aktuelle, quellengestützte Kartenbezeichnungen und ausschließlich interne historische Aliasnamen. Ortsplaner, Berufsplaner, Werkstatt und AddOn-Standortanzeige verwenden diese gemeinsame Namenslogik. Andere Namen bleiben unverändert; Rohbeobachtungen und Lernziel-IDs werden nicht umgeschrieben.
+
+
+### Gemeinsamer Ortskatalog
+
+`scripts/location-catalog.mjs` vereinigt verifizierte Kartennamen, Roh- und ausgewertete Rezeptquellen, alle Klassenmaster des Rosters und gemeinsame Beobachtungen. Der additive Redis-Ortsindex ist charakterunabhängig und bleibt bei temporärem Quellverlust erhalten; Preview und Produktion sind getrennt. Er speichert ausschließlich Ortsnamen, keine Kopie von NPCs, Rezepten oder Erledigungen. Aliasnamen werden bei jeder Auswertung kanonisiert.
