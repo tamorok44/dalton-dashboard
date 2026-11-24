@@ -105,7 +105,11 @@ function sourceFromObservation(observation={}){
     offerStatus:'present',
     offerEvidenceSource:text(observation?.source)||null,
     offerObservedOn:text(observation?.observedAt??observation?.observedOn)||null,
-    offerBuild:text(observation?.build)||null
+    offerBuild:text(observation?.build)||null,
+    observedRequiredLevel:finite(observation?.requiredLevel),
+    observedRequiredSkillName:text(observation?.requiredSkillName)||null,
+    observedRequiredSkillRank:finite(observation?.requiredSkillRank),
+    observedServiceType:text(observation?.serviceType)||null
   };
 }
 function bestObservation(observations,recipe,source,indexBuild){
@@ -168,6 +172,12 @@ function learningItemTargetName(value){
 }
 function recipeTargetNames(recipe={}){
   return new Set([norm(recipe?.name),norm(recipe?.craftedItem?.name)].filter(Boolean));
+}
+function recipeEvidenceKey(recipe={}){
+  const id=integer(recipe?.id);
+  if(id)return 'recipe:'+id;
+  const crafted=integer(recipe?.craftedItem?.id);
+  return 'recipe:'+text(recipe?.professionSlug)+':'+String(crafted||'')+':'+norm(recipe?.name);
 }
 function recipeItemIds(recipe={}){
   const ids=new Set();
@@ -257,7 +267,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
       const npc=snapshot?.npc||{};
       if(!integer(npc?.id)&&!text(npc?.name))continue;
       const items=numericArray(snapshot?.items);
-      const matchedRecipeIds=new Set();
+      const matchedRecipeKeys=new Set();
       const build=combinedBuild(snapshot,addon);
       const observedAt=isoFromCapturedAt(snapshot?.capturedAt)||state?.receivedAt||null;
       const location=addonLocation(snapshot);
@@ -266,7 +276,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
         const matches=recipes.filter(recipe=>merchantItemMatchesRecipe(item,recipe));
         for(const recipe of matches){
           const recipeId=integer(recipe?.id);
-          if(recipeId)matchedRecipeIds.add(recipeId);
+          matchedRecipeKeys.add(recipeEvidenceKey(recipe));
           observations.push({
             npcId:integer(npc?.id),
             npcName:text(npc?.name)||null,
@@ -292,11 +302,16 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
       // current master already attributes to this same vendor.
       for(const recipe of recipes){
         const recipeId=integer(recipe?.id);
-        if(recipeId&&matchedRecipeIds.has(recipeId))continue;
-        const attributed=asArray(recipe?.learning?.sources).some(source=>
+        if(matchedRecipeKeys.has(recipeEvidenceKey(recipe)))continue;
+        const attributedSources=asArray(recipe?.learning?.sources).filter(source=>
           source?.type==='vendor'&&npcMatchesSource(npc,source)
         );
-        if(!attributed)continue;
+        if(!attributedSources.length)continue;
+        const limited=attributedSources.some(source=>{
+          const stock=finite(source?.limitedStock);
+          return stock!==null&&stock>0;
+        });
+        if(limited)continue;
         observations.push({
           npcId:integer(npc?.id),
           npcName:text(npc?.name)||null,
@@ -344,7 +359,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
             observedAt,
             source:'dalton-addon',
             location,
-            requiredLevel:finite(service?.requiredLevel),
+                    requiredLevel:finite(service?.requiredLevel),
             requiredSkillName:text(service?.requiredSkillName)||text(service?.skillLine)||null,
             requiredSkillRank:finite(service?.requiredSkillRank),
             serviceType:text(service?.serviceType)||null,
@@ -420,7 +435,11 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
           offerStatus:'present',
           offerEvidenceSource:text(observation?.source)||null,
           offerObservedOn:text(observation?.observedAt??observation?.observedOn)||null,
-          offerBuild:text(observation?.build)||null
+          offerBuild:text(observation?.build)||null,
+          observedRequiredLevel:finite(observation?.requiredLevel),
+          observedRequiredSkillName:text(observation?.requiredSkillName)||null,
+          observedRequiredSkillRank:finite(observation?.requiredSkillRank),
+          observedServiceType:text(observation?.serviceType)||null
         });
         continue;
       }
@@ -461,7 +480,10 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
       updatedOn:text(evidenceDocument?.updatedOn)||null,
       observationCount:observations.length,
       blockedSourceCount:blocked,
-      confirmedSourceCount:confirmed
+      confirmedSourceCount:confirmed,
+      addonObservationCount:observations.filter(entry=>entry?.source==='dalton-addon').length,
+      addonPresentCount:observations.filter(entry=>entry?.source==='dalton-addon'&&entry?.status==='present').length,
+      addonAbsentCount:observations.filter(entry=>entry?.source==='dalton-addon'&&entry?.status==='absent').length
     }
   };
 }
