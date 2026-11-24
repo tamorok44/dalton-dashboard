@@ -136,6 +136,264 @@ export function loadLearningSourceEvidence({url=DEFAULT_EVIDENCE_URL}={}){
   }
 }
 
+
+function numericArray(value){
+  if(Array.isArray(value))return value;
+  if(!value||typeof value!=='object')return [];
+  return Object.entries(value)
+    .filter(([key])=>/^\d+$/.test(key))
+    .sort((a,b)=>Number(a[0])-Number(b[0]))
+    .map(([,entry])=>entry);
+}
+function isoFromCapturedAt(value){
+  const n=Number(value);
+  if(Number.isFinite(n)&&n>0)return new Date(n*1000).toISOString();
+  const parsed=Date.parse(value||'');
+  return Number.isFinite(parsed)?new Date(parsed).toISOString():null;
+}
+function combinedBuild(snapshot={},addon={}){
+  const raw=text(snapshot?.build)||text(addon?.build);
+  if(!raw)return null;
+  if(/^\d+$/.test(raw)){
+    const version=text(snapshot?.gameVersion)||text(addon?.gameVersion);
+    return version?version+'.'+raw:raw;
+  }
+  return raw;
+}
+const LEARNING_ITEM_PREFIX=/^(?:rezept|recipe|muster|pattern|pl[aä]ne|plans?|formel|formula|bauplan|schematic|handbuch|manual|entwurf|design)\s*:\s*/i;
+function learningItemTargetName(value){
+  const raw=text(value);
+  if(!raw||!LEARNING_ITEM_PREFIX.test(raw))return null;
+  return norm(raw.replace(LEARNING_ITEM_PREFIX,''));
+}
+function recipeTargetNames(recipe={}){
+  return new Set([norm(recipe?.name),norm(recipe?.craftedItem?.name)].filter(Boolean));
+}
+function recipeItemIds(recipe={}){
+  const ids=new Set();
+  for(const source of asArray(recipe?.learning?.sources)){
+    if(source?.type!=='item')continue;
+    const id=integer(source?.id);
+    if(id)ids.add(id);
+  }
+  for(const item of asArray(recipe?.learning?.recipeItemsHidden)){
+    const id=integer(item?.id);
+    if(id)ids.add(id);
+  }
+  return ids;
+}
+function merchantItemMatchesRecipe(item={},recipe={}){
+  const itemId=integer(item?.itemID??item?.id);
+  if(itemId&&recipeItemIds(recipe).has(itemId))return true;
+  const target=learningItemTargetName(item?.name);
+  return Boolean(target&&recipeTargetNames(recipe).has(target));
+}
+function npcMatchesSource(npc={},source={}){
+  const npcId=integer(npc?.id);
+  const sourceId=integer(source?.id);
+  if(npcId&&sourceId)return npcId===sourceId;
+  return Boolean(norm(npc?.name)&&norm(npc?.name)===norm(source?.name));
+}
+function addonLocation(snapshot={}){
+  const raw=snapshot?.location&&typeof snapshot.location==='object'?snapshot.location:{};
+  const zone=text(raw.zone)||text(raw.mapName)||null;
+  const x=finite(raw.x),y=finite(raw.y);
+  const uiMapId=integer(raw.mapID??raw.uiMapId);
+  const instance=text(raw?.instance?.name??raw.instance)||null;
+  return zone||x!==null||y!==null||uiMapId||instance?{zone,x,y,uiMapId,instance}:null;
+}
+const PROFESSION_BY_SKILL_LINE=new Map([
+  ['alchemy','alchemy'],['alchemie','alchemy'],
+  ['blacksmithing','blacksmithing'],['schmiedekunst','blacksmithing'],
+  ['enchanting','enchanting'],['verzauberkunst','enchanting'],
+  ['engineering','engineering'],['ingenieurskunst','engineering'],
+  ['leatherworking','leatherworking'],['lederverarbeitung','leatherworking'],
+  ['tailoring','tailoring'],['schneiderei','tailoring'],
+  ['herbalism','herbalism'],['krauterkunde','herbalism'],['kräuterkunde','herbalism'],
+  ['mining','mining'],['bergbau','mining'],
+  ['skinning','skinning'],['kurschnerei','skinning'],['kürschnerei','skinning'],
+  ['cooking','cooking'],['kochkunst','cooking'],
+  ['first aid','first-aid'],['erste hilfe','first-aid'],
+  ['fishing','fishing'],['angeln','fishing']
+]);
+function trainerProfessionSlug(service={}){
+  for(const candidate of [service?.skillLine,service?.requiredSkillName]){
+    const key=norm(candidate);
+    if(PROFESSION_BY_SKILL_LINE.has(key))return PROFESSION_BY_SKILL_LINE.get(key);
+  }
+  return null;
+}
+function addonStateList(states){
+  if(Array.isArray(states))return states.filter(Boolean);
+  if(states&&typeof states==='object')return Object.values(states).filter(Boolean);
+  return [];
+}
+function newestByKey(observations=[]){
+  const map=new Map();
+  for(const observation of observations){
+    const key=[
+      observation.sourceType,
+      observation.npcId||norm(observation.npcName),
+      observation.recipeId||observation.craftedItemId||norm(observation.recipeName),
+      observation.build||''
+    ].join('|');
+    const previous=map.get(key);
+    if(!previous||observationDate(observation.observedAt)>observationDate(previous.observedAt))map.set(key,observation);
+  }
+  return [...map.values()];
+}
+
+export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
+  const recipes=asArray(recipeIndex?.recipes);
+  const observations=[];
+
+  for(const state of addonStateList(addonStates)){
+    const payload=state?.payload&&typeof state.payload==='object'?state.payload:state;
+    const addon=payload?.addon||{};
+    const interactions=payload?.sections?.interactions||{};
+
+    for(const snapshot of numericArray(interactions?.merchantHistory)){
+      if(snapshot?.complete!==true)continue;
+      const npc=snapshot?.npc||{};
+      if(!integer(npc?.id)&&!text(npc?.name))continue;
+      const items=numericArray(snapshot?.items);
+      const matchedRecipeIds=new Set();
+      const build=combinedBuild(snapshot,addon);
+      const observedAt=isoFromCapturedAt(snapshot?.capturedAt)||state?.receivedAt||null;
+      const location=addonLocation(snapshot);
+
+      for(const item of items){
+        const matches=recipes.filter(recipe=>merchantItemMatchesRecipe(item,recipe));
+        for(const recipe of matches){
+          const recipeId=integer(recipe?.id);
+          if(recipeId)matchedRecipeIds.add(recipeId);
+          observations.push({
+            npcId:integer(npc?.id),
+            npcName:text(npc?.name)||null,
+            sourceType:'vendor',
+            professionSlug:text(recipe?.professionSlug)||null,
+            recipeId,
+            craftedItemId:integer(recipe?.craftedItem?.id),
+            recipeName:text(recipe?.name)||null,
+            status:'present',
+            priceCopper:finite(item?.priceCopper),
+            build,
+            observedAt,
+            source:'dalton-addon',
+            location,
+            offerItemId:integer(item?.itemID??item?.id),
+            offerItemName:text(item?.name)||null,
+            snapshotComplete:true
+          });
+        }
+      }
+
+      // A complete merchant window can safely disprove only recipes that the
+      // current master already attributes to this same vendor.
+      for(const recipe of recipes){
+        const recipeId=integer(recipe?.id);
+        if(recipeId&&matchedRecipeIds.has(recipeId))continue;
+        const attributed=asArray(recipe?.learning?.sources).some(source=>
+          source?.type==='vendor'&&npcMatchesSource(npc,source)
+        );
+        if(!attributed)continue;
+        observations.push({
+          npcId:integer(npc?.id),
+          npcName:text(npc?.name)||null,
+          sourceType:'vendor',
+          professionSlug:text(recipe?.professionSlug)||null,
+          recipeId,
+          craftedItemId:integer(recipe?.craftedItem?.id),
+          recipeName:text(recipe?.name)||null,
+          status:'absent',
+          build,
+          observedAt,
+          source:'dalton-addon',
+          location,
+          snapshotComplete:true
+        });
+      }
+    }
+
+    for(const snapshot of numericArray(interactions?.trainerHistory)){
+      const npc=snapshot?.npc||{};
+      if(!integer(npc?.id)&&!text(npc?.name))continue;
+      const build=combinedBuild(snapshot,addon);
+      const observedAt=isoFromCapturedAt(snapshot?.capturedAt)||state?.receivedAt||null;
+      const location=addonLocation(snapshot);
+      for(const service of numericArray(snapshot?.services)){
+        const serviceName=norm(service?.name);
+        if(!serviceName)continue;
+        const professionSlug=trainerProfessionSlug(service);
+        const matches=recipes.filter(recipe=>{
+          if(professionSlug&&text(recipe?.professionSlug)!==professionSlug)return false;
+          return recipeTargetNames(recipe).has(serviceName);
+        });
+        for(const recipe of matches){
+          observations.push({
+            npcId:integer(npc?.id),
+            npcName:text(npc?.name)||null,
+            sourceType:'trainer',
+            professionSlug:text(recipe?.professionSlug)||professionSlug||null,
+            recipeId:integer(recipe?.id),
+            craftedItemId:integer(recipe?.craftedItem?.id),
+            recipeName:text(recipe?.name)||null,
+            status:'present',
+            priceCopper:finite(service?.priceCopper),
+            build,
+            observedAt,
+            source:'dalton-addon',
+            location,
+            requiredLevel:finite(service?.requiredLevel),
+            requiredSkillName:text(service?.requiredSkillName)||text(service?.skillLine)||null,
+            requiredSkillRank:finite(service?.requiredSkillRank),
+            serviceType:text(service?.serviceType)||null,
+            snapshotComplete:snapshot?.complete===true
+          });
+        }
+      }
+    }
+  }
+
+  const deduped=newestByKey(observations);
+  return {
+    schemaVersion:1,
+    updatedOn:deduped.map(entry=>entry.observedAt).filter(Boolean).sort().at(-1)||null,
+    observations:deduped,
+    addonObservationCount:deduped.length
+  };
+}
+
+export function mergeLearningSourceEvidence(...documents){
+  const observations=documents.flatMap(document=>asArray(document?.observations));
+  const deduped=new Map();
+  for(const observation of observations){
+    const key=[
+      observation.source||'unknown',
+      observation.sourceType||'source',
+      observation.npcId||norm(observation.npcName),
+      observation.recipeId||observation.craftedItemId||norm(observation.recipeName),
+      observation.status||'unknown',
+      observation.build||'',
+      observation.observedAt||observation.observedOn||''
+    ].join('|');
+    deduped.set(key,observation);
+  }
+  const values=[...deduped.values()];
+  return {
+    schemaVersion:1,
+    updatedOn:values.map(entry=>entry.observedAt||entry.observedOn).filter(Boolean).sort().at(-1)||null,
+    observations:values
+  };
+}
+
+export function learningSourceEvidenceForIndex(recipeIndex={},addonStates=[]){
+  return mergeLearningSourceEvidence(
+    loadLearningSourceEvidence(),
+    buildAddonLearningSourceEvidence(recipeIndex,addonStates)
+  );
+}
+
 export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
   const observations=asArray(evidenceDocument?.observations);
   if(!observations.length)return recipeIndex;
