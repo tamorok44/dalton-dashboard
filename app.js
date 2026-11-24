@@ -1630,7 +1630,7 @@ function renderLocationPlanner(){
   const locations=Array.isArray(data.locations)?data.locations:[];
   const selectedCharacter=data.selectedCharacter||null;
   const selectedLocation=data.selectedLocation||null;
-  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ORT PLANEN</span><h3>Was kannst du hier erledigen?</h3><p>Wähle Charakter und Ort. Der Ortsplaner zeigt nur bestätigte Dinge, die dort mit dem aktuellen Charakterstand sofort möglich sind.</p></div>'+
+  const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ORT PLANEN</span><h3>Was kannst du hier erledigen?</h3><p>Wähle Charakter und Ort. Bekannte Orte bleiben auch dann auswählbar, wenn dort aktuell keine Erledigung möglich ist.</p></div>'+
     '<div class="planner-fields"><label class="planner-field"><span>Charakter</span><select id="plannerCharacter"><option value="">Charakter wählen …</option>'+
       characters.map(character=>'<option value="'+esc(character.slug)+'"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+
     '</select></label><label class="planner-field"><span>Ort</span><select id="plannerLocation"'+(!plannerState.character?' disabled':'')+'><option value="">Ort wählen …</option>'+
@@ -1655,7 +1655,7 @@ function renderLocationPlanner(){
   }
   let body='';
   if(!plannerState.character){
-    body='<div class="planner-placeholder"><strong>Wähle zuerst einen Charakter.</strong><span>Danach werden nur Orte angeboten, an denen aktuell mindestens eine bestätigte Erledigung möglich ist.</span></div>';
+    body='<div class="planner-placeholder"><strong>Wähle zuerst einen Charakter.</strong><span>Danach werden alle dem Ortsplaner bekannten Orte angezeigt – auch Orte mit 0 Erledigungen.</span></div>';
   }else if(!plannerState.location){
     body='<div class="planner-placeholder"><strong>Wähle einen Ort.</strong><span>'+esc(data.counts?.availableNow??0)+' unterschiedliche bestätigte Erledigung'+(data.counts?.availableNow===1?'':'en')+' sind für diesen Charakter aktuell verfügbar.</span></div>';
   }else if(!selectedLocation){
@@ -1671,11 +1671,14 @@ function renderLocationPlanner(){
     const classStatusWarning=unverifiedClassCount
       ?'<div class="planner-status-warning" role="note"><strong>Persönlicher Klassen-Lernstand offen</strong><span>'+unverifiedClassCount+' Klassenfähigkeit'+(unverifiedClassCount===1?'':'en')+' ist hier grundsätzlich lernbar, aber der persönliche Spellbook-Stand dieses Charakters wird von der Online-Profilquelle derzeit nicht geliefert. Diese Einträge werden deshalb nicht automatisch ausgewählt.</span></div>'
       :'';
-    body=plannerCategoryFilters(data)+classStatusWarning+plannerLiveDiscoveriesHtml(data)+
-      '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.</p></div><div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div></section>'+
-      plannerSelectionHtml(data)+
+    const atLocation=Number(data.counts?.atLocation)||0;
+    body=(atLocation?plannerCategoryFilters(data):'')+classStatusWarning+plannerLiveDiscoveriesHtml(data)+
+      '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>'+(atLocation?'Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.':'Der Ort ist im Ortsplaner vorhanden, auch wenn hier für den gewählten Charakter aktuell nichts ansteht.')+'</p></div>'+(atLocation?'<div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div>':'')+'</section>'+
+      (atLocation?plannerSelectionHtml(data):'')+
       (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
-        '<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
+        atLocation===0
+          ?'<div class="planner-placeholder"><strong>Aktuell keine Erledigungen an diesem Ort.</strong><span>'+esc(selectedLocation)+' ist im Ortsplaner vorhanden. Für '+esc(selectedCharacter?.name||'diesen Charakter')+' gibt es hier momentan nur keine bestätigte Erledigung.</span></div>'
+          :'<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
       '<p class="planner-credit">Datenquelle für Klassen-/Lehrer- und Berufsdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a>. Persönlicher Lernstand wird nur dann als bekannt behandelt, wenn er aus dem Charakterprofil tatsächlich ausgelesen wurde.</p>';
   }
   plannerRoot.innerHTML='<div class="planner-shell">'+controls+characterSummary+body+'</div>';
