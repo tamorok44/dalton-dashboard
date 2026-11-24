@@ -13,6 +13,7 @@ const required=[
   'Modules/Instances.lua',
   'Modules/Inventory.lua',
   'Modules/HunterPet.lua',
+  'Modules/Relay.lua',
   'README.md',
   'LICENSE'
 ];
@@ -23,7 +24,7 @@ for(const file of required){
 
 const toc=readFileSync(root+'/DaltonDashboard.toc','utf8');
 assert.ok(toc.includes('## Interface: 16001'));
-assert.ok(toc.includes('## Version: 0.1.0-alpha.9'));
+assert.ok(toc.includes('## Version: 0.1.0-alpha.10'));
 assert.ok(toc.includes('## SavedVariables: DaltonDashboardDB'));
 assert.ok(toc.includes('## SavedVariablesPerCharacter: DaltonDashboardCharDB'));
 
@@ -64,6 +65,15 @@ assert.ok(bundle.includes('SCHEMA_VERSION = 1'));
 assert.ok(bundle.includes('debugprofilestop'),'Performance-Messung muss ereignisgesteuert ohne OnUpdate erfolgen');
 assert.ok(bundle.includes('command == "perf"'),'Lokaler Performance-Check muss per /dalton perf verfügbar sein');
 assert.ok(!readFileSync(root+'/Modules/Character.lua','utf8').includes('PLAYER_MONEY'),'Gold darf im normalen Spielbetrieb keine Events verursachen');
+const relay=readFileSync(root+'/Modules/Relay.lua','utf8');
+assert.ok(relay.includes('C_ChatInfo.RegisterAddonMessagePrefix')&&relay.includes('C_ChatInfo.SendAddonMessage'),'Peer-Relay muss die offizielle AddOn-Kommunikation verwenden');
+assert.ok(relay.includes('C_EncodingUtil.SerializeCBOR')&&relay.includes('C_EncodingUtil.CompressString')&&relay.includes('C_EncodingUtil.EncodeBase64'),'Relay muss vor dem Senden serialisieren, komprimieren und kodieren');
+assert.ok(relay.includes('CHUNK_SIZE = 200')&&relay.includes('MAX_CHUNKS = 220'),'Relay-Pakete bleiben deutlich unter dem WoW-Nachrichtenlimit');
+assert.ok(relay.includes('GROUP_ROSTER_UPDATE'),'Relay darf ohne Polling auf Gruppenänderungen reagieren');
+assert.ok(!relay.includes('OnUpdate'),'Relay darf keine permanente OnUpdate-Schleife verwenden');
+assert.ok(relay.includes('HUB_NAME = "Cole Dalton"'),'Cole ist der lokale Relay-Hub');
+for(const name of ['Cole Dalton','Chucky Dalton','Dolly Dalton','Viola Dalton'])assert.ok(relay.toLowerCase().includes(name.toLowerCase()),'Dalton-Roster fehlt: '+name);
+assert.ok(relay.includes('payload.inventory = nil')&&relay.includes('payload.economy = nil'),'Empfangene Relay-Daten müssen private Bereiche zusätzlich entfernen');
 
 for(const unsupported of [
   'LEARNED_SPELL_IN_TAB',
