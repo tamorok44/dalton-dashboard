@@ -34,8 +34,7 @@ export default async function handler(req,res){
       const token=authToken(req,'Device');
       if(!token)return res.status(401).json({error:'Nicht berechtigt'});
       const revoked=await revokeDeviceToken(token);
-      if(!revoked)return res.status(401).json({error:'Gerätezugang ist ungültig oder bereits widerrufen'});
-      return res.status(200).json({revoked:true});
+      return res.status(200).json({revoked,alreadyRevoked:!revoked});
     }
     const enrolled=await redeemDeviceEnrollment(String(body?.code||''));
     return res.status(200).json({
