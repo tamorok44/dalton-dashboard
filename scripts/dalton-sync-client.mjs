@@ -246,7 +246,7 @@ async function readCharacterRecord(file){
   if(!trustedCharacter(charDb))return null;
   return payloadRecord(charDb,{
     key:'local:'+normalizedName(charDb.character.name),
-    transport:'dalton-sync-companion',
+    transport:'dalton-local-bridge',
     source:file,
     diagnostics:localDiagnosticsSummary(charDb)
   });
