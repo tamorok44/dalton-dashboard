@@ -15,6 +15,7 @@ const required=[
   'Modules/HunterPet.lua',
   'Modules/Relay.lua',
   'README.md',
+  'CHANGELOG.md',
   'LICENSE'
 ];
 
@@ -71,6 +72,8 @@ assert.ok(relay.includes('C_EncodingUtil.SerializeCBOR')&&relay.includes('C_Enco
 assert.ok(relay.includes('CHUNK_SIZE = 200')&&relay.includes('MAX_CHUNKS = 220'),'Relay-Pakete bleiben deutlich unter dem WoW-Nachrichtenlimit');
 assert.ok(relay.includes('GROUP_ROSTER_UPDATE'),'Relay darf ohne Polling auf Gruppenänderungen reagieren');
 assert.ok(relay.includes('findGroupTarget(HUB_NAME) or HUB_NAME'),'Peer-Relay muss Cole auch ausserhalb der Gruppe direkt erreichen können');
+assert.ok(relay.includes('targetInGroup = hub or findGroupTarget(HUB_NAME) ~= nil'),'Status darf Gruppenanwesenheit nicht mit Erreichbarkeit verwechseln');
+assert.ok(!relay.includes('targetVisible ='),'Veraltetes Relay-Statusfeld targetVisible darf nicht zurückkehren');
 assert.ok(relay.includes('OFFLINE_RETRY_SECONDS = 300'),'Offline-Whispers müssen ohne Polling und mit Sperrzeit begrenzt sein');
 assert.ok(relay.includes('contentChecksum')&&relay.includes('lastAckContentHash'),'Relay muss fachlich unveränderte Daten vor Komprimierung erkennen');
 assert.ok(relay.includes('capturedAt = true')&&relay.includes('resetSeconds = true'),'Flüchtige Zeitwerte dürfen den fachlichen Relay-Fingerprint nicht verändern');
@@ -100,5 +103,8 @@ assert.ok(!inventory.includes('BAG_UPDATE_DELAYED = true'),'BAG_UPDATE_DELAYED d
 assert.ok(inventory.includes('letzter gültiger Stand bleibt erhalten'),'Inventar muss bei unlesbaren Daten fail-closed bleiben');
 
 assert.ok(!bundle.includes('https://dalton-dashboard-eight.vercel.app/api/addon-sync'),'WoW-Addon darf keinen Netzwerk-Endpunkt enthalten');
+assert.ok(!bundle.includes('Dalton-Gruppenmitglieder'),'Statushilfe darf den direkten Relay nicht fälschlich auf Gruppenmitglieder beschränken');
+assert.ok(!readFileSync(root+'/README.md','utf8').includes('Ein Versand startet nur, wenn Cole tatsächlich in derselben Gruppe ist'),'README darf den alten Gruppen-Zwang nicht beschreiben');
+assert.ok(readFileSync(root+'/CHANGELOG.md','utf8').includes('0.1.0-alpha.11'),'Release-Paket braucht ein versionsbezogenes Changelog');
 
 console.log('Dalton Dashboard Addon: Struktur, Forever-Events, Privacy-Grenze und Datendomänen: OK');
