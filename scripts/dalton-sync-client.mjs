@@ -199,6 +199,16 @@ async function resolveSources(explicit){
   }
   return {characterFile,relayFile};
 }
+async function resolveSourcesWithRetry(explicit,watchMode){
+  while(true){
+    try{return await resolveSources(explicit)}
+    catch(error){
+      if(!watchMode)throw error;
+      console.error('Dalton Bridge wartet auf WoW-SavedVariables: '+String(error.message||error).slice(0,180));
+      await new Promise(resolve=>setTimeout(resolve,30000));
+    }
+  }
+}
 function localDiagnosticsSummary(charDb){
   const interactions=charDb?.diagnostics?.interactions;
   const relay=charDb?.diagnostics?.relay;
@@ -336,7 +346,7 @@ async function main(){
 
   const config=await loadConfig();
   if(config.endpoint&&!process.env.DALTON_SYNC_ENDPOINT)options.endpoint=config.endpoint;
-  const sources=await resolveSources(options.file);
+  const sources=await resolveSourcesWithRetry(options.file,options.watch);
   if(sources.characterFile)console.log('Eigener Charakter: '+sources.characterFile);
   if(sources.relayFile)console.log('Relay-Postfach: '+sources.relayFile);
 
