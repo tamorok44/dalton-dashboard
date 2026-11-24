@@ -112,12 +112,14 @@ local function printRelayStatus()
     return
   end
   local relay = ns.RelayStatus()
-  ns.Chat("Relay-Rolle: " .. tostring(relay.role) .. " · Cole in Gruppe: " .. (relay.targetVisible and "ja" or "nein"))
-  ns.Chat("Ausstehend: " .. (relay.pending and "ja" or "nein") ..
-    " · letzter Versuch: " .. tostring(relay.lastAttemptAt or "–") ..
-    " · letzte Bestätigung: " .. tostring(relay.lastAckAt or "–"))
   if relay.role == "Hub" then
-    ns.Chat("Empfangene Gruppenmitglieder im Relay-Postfach: " .. tostring(relay.inboxCount or 0))
+    ns.Chat("Relay-Rolle: Hub · Cole ist als Empfänger aktiv")
+    ns.Chat("Empfangene Dalton-Charaktere im Relay-Postfach: " .. tostring(relay.inboxCount or 0))
+  else
+    ns.Chat("Relay-Rolle: Peer · Cole erreichbar: " .. (relay.targetVisible and "ja" or "nein"))
+    ns.Chat("Ausstehend: " .. (relay.pending and "ja" or "nein") ..
+      " · letzter Versuch: " .. tostring(relay.lastAttemptAt or "–") ..
+      " · letzte Bestätigung: " .. tostring(relay.lastAckAt or "–"))
   end
 end
 
