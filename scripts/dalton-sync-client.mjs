@@ -2,7 +2,7 @@
 import {createHash} from 'node:crypto';
 import {existsSync,promises as fs,watch} from 'node:fs';
 import {dirname,basename,join,resolve} from 'node:path';
-import {homedir} from 'node:os';
+import {homedir,platform} from 'node:os';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {pathToFileURL} from 'node:url';
@@ -14,17 +14,51 @@ const VERSION='0.1.0-alpha.10';
 const TRUSTED_NAMES=new Set(['cole dalton','chucky dalton','dolly dalton','viola dalton']);
 
 function normalizedName(value){return String(value||'').trim().toLocaleLowerCase('de-DE')}
+function configFile(){
+  if(platform()==='win32'){
+    const base=process.env.LOCALAPPDATA||join(homedir(),'AppData','Local');
+    return join(base,'DaltonDashboardBridge','config.json');
+  }
+  if(platform()==='darwin')return join(homedir(),'Library','Application Support','DaltonDashboardBridge','config.json');
+  return join(process.env.XDG_CONFIG_HOME||join(homedir(),'.config'),'dalton-dashboard-bridge','config.json');
+}
+async function loadConfig(){
+  try{return JSON.parse(await fs.readFile(configFile(),'utf8'))}catch{return {}}
+}
+async function saveConfig(value){
+  const file=configFile();
+  await fs.mkdir(dirname(file),{recursive:true});
+  await fs.writeFile(file,JSON.stringify(value,null,2)+'\n',{mode:0o600});
+  return file;
+}
+async function enrollDevice(endpoint,code,character=null){
+  const base=new URL(endpoint);
+  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
+  const response=await fetch(base,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION},
+    body:JSON.stringify({code,character}),
+    signal:AbortSignal.timeout(15000)
+  });
+  const body=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error('Einrichtung fehlgeschlagen: '+String(body.error||response.statusText).slice(0,180));
+  const current=await loadConfig();
+  const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint});
+  return {...body,configFile:file};
+}
 function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb?.character?.name))}
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
-  const out={watch:false,dryRun:false,file:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
+  const out={watch:false,dryRun:false,file:null,enroll:null,character:null,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
   for(let i=0;i<argv.length;i++){
     const value=argv[i];
     if(value==='--watch')out.watch=true;
     else if(value==='--dry-run')out.dryRun=true;
     else if(value==='--file')out.file=argv[++i]||null;
     else if(value==='--endpoint')out.endpoint=argv[++i]||out.endpoint;
+    else if(value==='--enroll')out.enroll=argv[++i]||null;
+    else if(value==='--character')out.character=argv[++i]||null;
     else if(value==='--help')out.help=true;
     else throw new Error('Unbekannte Option: '+value);
   }
@@ -33,6 +67,7 @@ function args(argv){
 function help(){
   console.log('Dalton Dashboard Sync Companion '+VERSION);
   console.log('  node scripts/dalton-sync-client.mjs [--file <DaltonDashboard.lua>] [--watch] [--dry-run] [--endpoint <URL>]');
+  console.log('  node scripts/dalton-sync-client.mjs --enroll <Einrichtungscode> [--character <Name>]');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
   console.log('Für echte Übertragung muss DALTON_SYNC_TOKEN nur auf diesem Rechner lokal gesetzt sein.');
@@ -247,11 +282,11 @@ async function previewCookie(shareUrl){
   if(!cookie)throw new Error('Preview-Freigabe hat keinen Vercel-Zugangscookie geliefert');
   return cookie;
 }
-async function postPayload(endpoint,token,payload,{cookie=null}={}){
+async function postPayload(endpoint,auth,payload,{cookie=null}={}){
   const url=new URL(endpoint);
   if(url.protocol!=='https:'&&url.hostname!=='localhost'&&url.hostname!=='127.0.0.1')throw new Error('Sync-Endpunkt muss HTTPS verwenden');
   const headers={
-    Authorization:'Bearer '+token,
+    Authorization:auth,
     'Content-Type':'application/json',
     'User-Agent':'DaltonDashboardSync/'+VERSION
   };
@@ -269,7 +304,15 @@ async function postPayload(endpoint,token,payload,{cookie=null}={}){
 async function main(){
   const options=args(process.argv.slice(2));
   if(options.help){help();return}
+  if(options.enroll){
+    const enrolled=await enrollDevice(options.endpoint,options.enroll,options.character);
+    console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
+    console.log('Konfiguration: '+enrolled.configFile);
+    return;
+  }
 
+  const config=await loadConfig();
+  if(config.endpoint&&!process.env.DALTON_SYNC_ENDPOINT)options.endpoint=config.endpoint;
   const sources=await resolveSources(options.file);
   if(sources.characterFile)console.log('Eigener Charakter: '+sources.characterFile);
   if(sources.relayFile)console.log('Relay-Postfach: '+sources.relayFile);
@@ -285,8 +328,10 @@ async function main(){
     try{
       const records=await readRecords(sources);
       if(!records.length)return;
-      const token=options.dryRun?null:process.env.DALTON_SYNC_TOKEN;
-      if(!options.dryRun&&!token)throw new Error('DALTON_SYNC_TOKEN ist lokal nicht gesetzt');
+      const deviceToken=config.deviceToken||process.env.DALTON_DEVICE_TOKEN||null;
+      const masterToken=process.env.DALTON_SYNC_TOKEN||null;
+      const auth=options.dryRun?null:(deviceToken?'Device '+deviceToken:(masterToken?'Bearer '+masterToken:null));
+      if(!options.dryRun&&!auth)throw new Error('Bridge ist noch nicht eingerichtet');
 
       for(const record of records){
         if(lastHashes.get(record.key)===record.hash)continue;
@@ -304,7 +349,7 @@ async function main(){
         }
 
         try{
-          const result=await postPayload(options.endpoint,token,record.payload,{cookie:previewAuthCookie});
+          const result=await postPayload(options.endpoint,auth,record.payload,{cookie:previewAuthCookie});
           lastHashes.set(record.key,record.hash);
           console.log('Synchronisiert: '+String(result.character?.name||result.character?.slug||record.key)+
             ' · Transport '+String(record.payload.client?.transport||'unbekannt')+
