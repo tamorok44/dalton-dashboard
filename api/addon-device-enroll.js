@@ -1,4 +1,4 @@
-import {createDeviceEnrollment,redeemDeviceEnrollment,masterSyncTokenMatches,previewSetupTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {createDeviceEnrollment,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
 export const config={maxDuration:15};
 
@@ -26,9 +26,16 @@ export default async function handler(req,res){
     const body=await requestBody(req);
     if(body?.action==='create'){
       const token=authToken(req,'Bearer');
-      if(!masterSyncTokenMatches(token)&&!previewSetupTokenMatches(token))return res.status(401).json({error:'Nicht berechtigt'});
+      if(!masterSyncTokenMatches(token))return res.status(401).json({error:'Nicht berechtigt'});
       const created=await createDeviceEnrollment(String(body.characterSlug||''));
       return res.status(200).json(created);
+    }
+    if(body?.action==='revoke'){
+      const token=authToken(req,'Device');
+      if(!token)return res.status(401).json({error:'Nicht berechtigt'});
+      const revoked=await revokeDeviceToken(token);
+      if(!revoked)return res.status(401).json({error:'Gerätezugang ist ungültig oder bereits widerrufen'});
+      return res.status(200).json({revoked:true});
     }
     const enrolled=await redeemDeviceEnrollment(String(body?.code||''));
     return res.status(200).json({
