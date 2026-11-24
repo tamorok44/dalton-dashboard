@@ -24,6 +24,19 @@ export async function loadAddonSyncState(characterSlug){
   return parsed&&typeof parsed==='object'?parsed:null;
 }
 
+export async function loadAddonSyncStates(characterSlugs=[]){
+  const result={};
+  for(const slug of characterSlugs){
+    try{
+      const state=await loadAddonSyncState(slug);
+      if(state)result[slug]=state;
+    }catch(error){
+      console.warn('Addon-Sync-Rohstatus konnte nicht geladen werden:',String(error.message).slice(0,140));
+    }
+  }
+  return result;
+}
+
 export async function loadPublicAddonSyncStates(characterSlugs=[]){
   const result={};
   for(const slug of characterSlugs){
