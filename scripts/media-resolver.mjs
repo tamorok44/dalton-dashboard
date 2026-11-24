@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {loadMediaRecord,saveMediaRecord} from './media-registry.mjs';
+import {loadMediaRecord,saveMediaRecord,loadMediaRecords,mediaField} from './media-registry.mjs';
 
 const MAX_IMAGE_BYTES=5_000_000;
 const ALLOWED_TYPES=new Set(['image/png','image/jpeg','image/webp']);
@@ -90,3 +90,8 @@ export async function resolveMediaAsset({
   await saveMediaRecord(type,id,kind,{sourceUrl,storedUrl:result.url,contentType});
   return result.url;
 }
+
+// The resolver remains the only direct caller of the shared media registry.
+export function mediaIconKey(type,id){return mediaField(type,id,'icon')}
+export async function readIconRecords(refs){return loadMediaRecords(refs)}
+export async function rememberMissingIcon(type,id){return saveMediaRecord(type,id,'icon',{sourceUrl:null,storedUrl:null})}

@@ -1,7 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {configured,redis} from './character-store.mjs';
-import {loadMediaRecords,mediaField,saveMediaRecord} from './media-registry.mjs';
-import {resolveMediaAsset,imageStoreConfigured,sourceImageAllowed} from './media-resolver.mjs';
+import {resolveMediaAsset,imageStoreConfigured,sourceImageAllowed,readIconRecords,mediaIconKey,rememberMissingIcon} from './media-resolver.mjs';
 import {blizzardApiConfigured,fetchForeverMediaIcon,fetchForeverSnapshot} from './blizzard-api.mjs';
 import {collectKnownRecipeRefs,collectLocalizedRefs} from './forever-details.mjs';
 
@@ -35,7 +34,7 @@ async function observedNamespace(characterSlug){
   }
   return null;
 }
-function field(entry){return entry?mediaField(entry.type,entry.id,'icon'):null}
+function field(entry){return entry?mediaIconKey(entry.type,entry.id):null}
 function freshNegative(record){const age=Date.now()-Date.parse(record?.updatedAt||'');return record&&!record.storedUrl&&Number.isFinite(age)&&age>=0&&age<NEGATIVE_TTL}
 export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,maxNew=24}={}){
   const byKey=new Map();
@@ -45,7 +44,7 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
   }
   if(!configured()||!byKey.size)return {};
   let records;
-  try{records=await loadMediaRecords([...byKey.values()])}catch{return {}}
+  try{records=await readIconRecords([...byKey.values()])}catch{return {}}
   const icons=Object.fromEntries(Object.entries(records).filter(([,r])=>r?.storedUrl).map(([key,r])=>[key,r.storedUrl]));
   if(!allowFetch||!imageStoreConfigured())return icons;
   const missing=[...byKey.entries()].filter(([key,entry])=>!icons[key]&&(!freshNegative(records[key])||(entry.iconId&&!records[key]?.sourceUrl))).slice(0,maxNew);
@@ -72,7 +71,7 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
             const url=await resolveMediaAsset({entityType:entry.type,entityId:entry.id,role:'icon',sourceUrl:source});
             if(url)icons[key]=url;
           }else if(namespace){
-            await saveMediaRecord(entry.type,entry.id,'icon',{sourceUrl:null,storedUrl:null});
+            await rememberMissingIcon(entry.type,entry.id);
           }
         }catch{/* Media outage never invalidates game data. */}
       }));
