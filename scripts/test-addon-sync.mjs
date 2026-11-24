@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
-import {previewCookieFromSetCookie} from './dalton-sync-client.mjs';
+import {previewCookieFromSetCookie,relayCharDbsFromGlobalDb} from './dalton-sync-client.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
-'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.9", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
+'  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.10", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
 '  ["character"] = { ["name"] = "Cole Dalton", ["classID"] = 8, ["level"] = 11, ["capturedAt"] = 1795460000 },\n'+
 '  ["spellbook"] = { ["capturedAt"] = 1795460000, ["entryCount"] = 2, ["entries"] = { [1] = { ["spellID"] = 143, ["name"] = "Feuerball", ["rank"] = "Rang 2", ["known"] = true }, [2] = { ["spellID"] = 205, ["name"] = "Frostblitz", ["rank"] = "Rang 2", ["known"] = true } } },\n'+
 '  ["location"] = { ["zone"] = "Insel Zephras", ["subZone"] = "Valanaar", ["mapID"] = 2521, ["x"] = 0.62, ["y"] = 0.73 },\n'+
@@ -21,13 +21,27 @@ assert.equal(
   'Der Companion muss Vercels Preview-Cookie ohne manuelles Browser-Copy extrahieren'
 );
 
+const globalRelay={
+  relayInbox:{
+    chucky:{receivedAt:1795461000,sender:'Chucky Dalton',charDb:{
+      meta:{addonVersion:'0.1.0-alpha.10',gameVersion:'1.60.1',build:'71037',interface:16001,locale:'deDE'},
+      character:{name:'Chucky Dalton',classID:11,level:10},
+      spellbook:{entries:[]}
+    }},
+    outsider:{charDb:{character:{name:'Nicht Dalton',classID:1,level:1}}}
+  }
+};
+const relayDbs=relayCharDbsFromGlobalDb(globalRelay);
+assert.equal(relayDbs.length,1,'Companion übernimmt nur vertrauenswürdige Dalton-Relay-Datensätze');
+assert.equal(relayDbs[0].charDb.character.name,'Chucky Dalton');
+
 const parsed=parseLuaSavedVariable(lua);
 assert.equal(parsed.character.name,'Cole Dalton');
 assert.equal(parsed.spellbook.entries.length,2);
 assert.equal(parsed.locationHistory.entries.length,1);
 
 const payload=buildSafeAddonSyncPayload(parsed,{syncId:'a'.repeat(64)});
-assert.equal(payload.addon.version,'0.1.0-alpha.9');
+assert.equal(payload.addon.version,'0.1.0-alpha.10');
 assert.equal(payload.sections.character.name,'Cole Dalton');
 assert.ok(!('economy' in payload.sections),'Gold bleibt aus dem Standard-Sync ausgeschlossen');
 assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem Standard-Sync ausgeschlossen');
