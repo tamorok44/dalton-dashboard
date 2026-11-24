@@ -41,25 +41,25 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,applyServerPayload,addonSyncState,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
   addonSync:{'cole-dalton':{
     characterSlug:'cole-dalton',receivedAt:'2026-11-24T12:22:51.468Z',syncId:'qa-sync',
     addonVersion:'0.1.0-beta.1',transport:'dalton-local-bridge',build:'71037',
-    currentLocation:{zone:'Die Insel Zephras',subZone:'Valanaar',bindLocation:'Valanaar'},
-    locationHistoryCount:21,lockoutCount:0,lockouts:[],merchantObservationCount:12,trainerObservationCount:5
+    currentLocation:{zone:'Die Insel Zephras',subZone:'Valanaar',x:.621,y:.734,bindLocation:'Valanaar'},
+    visitedInstances:[],visitedInstanceCount:0,lockoutCount:0,lockouts:[],merchantObservationCount:12,trainerObservationCount:5
   }},
   dataVersion:{version:'data-v3|qa-addon-sync'}
 };
 assert.equal(ui.applyServerPayload(addonPayloadQa,{force:true}),true,'Server payload with AddOn state is accepted');
 const addonRendered=nodes.get('#cards').innerHTML;
-assert.ok(addonRendered.includes('AddOn synchronisiert'),'Top-level addonSync survives applyServerPayload and reaches the game-status panel');
-assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered instead of the install prompt');
+assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered directly below the character activity');
+assert.ok(addonRendered.includes('62.1 / 73.4'),'WoW map coordinates are shown in the familiar xx.x / yy.y format without percent signs');
 assert.ok(!addonRendered.includes('direkte Bridge')&&!addonRendered.includes('Build 71037'),'Technical transport/build diagnostics are hidden from the player-facing game status');
 assert.ok(!addonRendered.includes('Standort-Historie')&&!addonRendered.includes('Händler & Lehrer'),'Internal history and live-evidence counters stay out of the player-facing game status');
-assert.ok(!addonRendered.includes('Instanzbindungen'),'Zero instance bindings are not shown at all');
+assert.ok(addonRendered.includes('Instanzen &amp; Dungeons'),'Game tab is now the player-facing instances and dungeons area');
 
 const classAbilityQa=ui.classAbilitiesPanel({
   knownClassAbilitiesVerified:true,
@@ -441,25 +441,33 @@ assert.ok(!ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some
   'Non-hunters do not receive the companion tab');
 assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='abilities'),
   'Every class gets the Klassenfähigkeiten tab');
-assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='game'),
-  'Every character gets the Spielstatus tab');
+assert.ok(ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).some(tab=>tab.id==='game'&&tab.label==='Instanzen & Dungeons'),
+  'Every character gets the Instanzen & Dungeons tab');
 const spellbookOpen=ui.classAbilitiesPanel({slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:false,knownClassAbilities:[]});
 assert.ok(spellbookOpen.includes('WoW-Forever-AddOn erforderlich'));
 assert.ok(spellbookOpen.includes('CurseForge'));
 assert.ok(!spellbookOpen.includes('/dalton')&&!spellbookOpen.includes('Spellbook übernehmen'),'Dashboard darf keinen manuellen Spellbook-Code mehr verlangen');
 const gameStatusMissing=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8});
-assert.ok(gameStatusMissing.includes('WoW-Forever-AddOn erforderlich')&&gameStatusMissing.includes('CurseForge'),'Spielstatus erklärt vor dem ersten Sync die AddOn-Voraussetzung');
+assert.ok(gameStatusMissing.includes('WoW-Forever-AddOn erforderlich')&&gameStatusMissing.includes('CurseForge'),'Instanzbereich erklärt vor dem ersten Sync die AddOn-Voraussetzung');
+const presence=ui.addonPresence({slug:'cole-dalton',name:'Cole Dalton'});
+assert.ok(presence.includes('Ruhestein')&&presence.includes('Valanaar')&&presence.includes('62.1 / 73.4'),'Ruhestein und letzter Standort stehen direkt bei der Charakteraktivität');
 const gameStatusSynced=ui.gameStatusPanel({slug:'cole-dalton',name:'Cole Dalton',classId:8},{
-  receivedAt:'2026-11-24T09:30:00.000Z',addonVersion:'0.1.0-alpha.9',build:'71037',
-  currentLocation:{zone:'Insel Zephras',subZone:'Valanaar',x:.62,y:.73,bindLocation:'Sturmwind'},
-  locationHistoryCount:4,lockoutCount:1,merchantObservationCount:3,trainerObservationCount:1,
-  lockouts:[{name:'Testinstanz',difficultyName:'Normal',resetAt:'2026-11-25T09:30:00.000Z',locked:true}]
+  receivedAt:'2026-11-24T09:30:00.000Z',
+  visitedInstances:[
+    {name:'Die Tiefenmine',instanceType:'party',instanceID:321,difficultyID:1,difficultyName:'Normal',lastSeenAt:'2026-11-23T20:00:00.000Z'},
+    {name:'Der alte Raid',instanceType:'raid',instanceID:654,difficultyID:1,difficultyName:'Normal',lastSeenAt:'2026-11-22T20:00:00.000Z'}
+  ],
+  lockouts:[
+    {name:'Die Tiefenmine',instanceID:321,difficultyID:1,difficultyName:'Normal',resetAt:'2026-11-25T09:30:00.000Z',locked:true,numEncounters:4,encounterProgress:4},
+    {name:'Offene Höhlen',instanceID:999,difficultyID:1,difficultyName:'Normal',locked:true,numEncounters:5,encounterProgress:2}
+  ]
 });
-assert.ok(gameStatusSynced.includes('Sturmwind')&&gameStatusSynced.includes('Insel Zephras')&&gameStatusSynced.includes('Valanaar'));
-assert.ok(!gameStatusSynced.includes('62,0 %')&&!gameStatusSynced.includes('73,0 %'),'Map coordinates are not shown as confusing percentages');
-assert.ok(!gameStatusSynced.includes('Standort-Historie')&&!gameStatusSynced.includes('Händler & Lehrer'),'Internal sync counters are not shown');
-assert.ok(gameStatusSynced.includes('Testinstanz')&&gameStatusSynced.includes('Aktive Instanzbindungen · 1'),'Existing lockouts use the understandable term Instanzbindungen and are only shown when present');
-assert.ok(!gameStatusSynced.includes('Lockouts'),'Technical lockout terminology is not exposed');
+assert.ok(gameStatusSynced.includes('Instanzen &amp; Dungeons')&&gameStatusSynced.includes('3 erfasst'),'Instanzbereich zählt eindeutige besuchte oder aktuell gebundene Instanzen');
+assert.ok(gameStatusSynced.includes('Die Tiefenmine')&&gameStatusSynced.includes('Abgeschlossen'),'Vollständiger Bossfortschritt wird als abgeschlossen bezeichnet');
+assert.ok(gameStatusSynced.includes('Offene Höhlen')&&gameStatusSynced.includes('2/5 Bosse'),'Teilfortschritt bleibt sichtbar');
+assert.ok(gameStatusSynced.includes('Der alte Raid')&&gameStatusSynced.includes('Besucht'),'Historisch erkannte Instanz ohne aktuellen Fortschritt wird nur als besucht bezeichnet');
+assert.ok(!gameStatusSynced.includes('Ruhestein')&&!gameStatusSynced.includes('Letzter Standort'),'Standortdaten sind nicht mehr Teil des Instanz-Reiters');
+assert.ok(!gameStatusSynced.includes('Lockouts'),'Technische Lockout-Terminologie wird nicht angezeigt');
 
 const spellbookVerified=ui.classAbilitiesPanel({
   slug:'cole-dalton',name:'Cole Dalton',knownClassAbilitiesVerified:true,
