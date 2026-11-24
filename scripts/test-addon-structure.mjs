@@ -70,6 +70,8 @@ assert.ok(relay.includes('C_ChatInfo.RegisterAddonMessagePrefix')&&relay.include
 assert.ok(relay.includes('C_EncodingUtil.SerializeCBOR')&&relay.includes('C_EncodingUtil.CompressString')&&relay.includes('C_EncodingUtil.EncodeBase64'),'Relay muss vor dem Senden serialisieren, komprimieren und kodieren');
 assert.ok(relay.includes('CHUNK_SIZE = 200')&&relay.includes('MAX_CHUNKS = 220'),'Relay-Pakete bleiben deutlich unter dem WoW-Nachrichtenlimit');
 assert.ok(relay.includes('GROUP_ROSTER_UPDATE'),'Relay darf ohne Polling auf Gruppenänderungen reagieren');
+assert.ok(relay.includes('findGroupTarget(HUB_NAME) or HUB_NAME'),'Peer-Relay muss Cole auch ausserhalb der Gruppe direkt erreichen können');
+assert.ok(relay.includes('OFFLINE_RETRY_SECONDS = 300'),'Offline-Whispers müssen ohne Polling und mit Sperrzeit begrenzt sein');
 assert.ok(relay.includes('contentChecksum')&&relay.includes('lastAckContentHash'),'Relay muss fachlich unveränderte Daten vor Komprimierung erkennen');
 assert.ok(relay.includes('capturedAt = true')&&relay.includes('resetSeconds = true'),'Flüchtige Zeitwerte dürfen den fachlichen Relay-Fingerprint nicht verändern');
 assert.ok(!relay.includes('OnUpdate'),'Relay darf keine permanente OnUpdate-Schleife verwenden');
