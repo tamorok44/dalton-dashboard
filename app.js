@@ -201,10 +201,17 @@ function addonPresence(c,stateOverride=null){
   const x=location?formatAddonCoordinate(location.x):null;
   const y=location?formatAddonCoordinate(location.y):null;
   const coords=x&&y?x+' / '+y:'';
-  if(!bind&&!place)return '';
+  const merchantNpcCount=Number(state.merchantNpcCount);
+  const trainerNpcCount=Number(state.trainerNpcCount);
+  const npcParts=[];
+  if(Number.isFinite(merchantNpcCount)&&merchantNpcCount>=0)npcParts.push(Math.trunc(merchantNpcCount)+' Händler');
+  if(Number.isFinite(trainerNpcCount)&&trainerNpcCount>=0)npcParts.push(Math.trunc(trainerNpcCount)+' Lehrer');
+  const npcSummary=npcParts.join(' · ');
+  if(!bind&&!place&&!npcSummary)return '';
   return '<div class="character-presence">'+
     (bind?'<div><small>Ruhestein</small><strong>'+esc(bind)+'</strong></div>':'')+
     (place?'<div><small>Letzter Standort</small><strong>'+esc(place)+(coords?' · '+esc(coords):'')+'</strong></div>':'')+
+    (npcSummary?'<div class="character-presence-npcs"><small>Entdeckte NPCs</small><strong>'+esc(npcSummary)+'</strong></div>':'')+
     '</div>';
 }
 function instanceStatusPanel(c,stateOverride=null){
@@ -727,13 +734,13 @@ function installPortraitFallbacks(){
 
 const baseCharacterTabs=[
   {id:'stats',label:'Charakterwerte'},
-  {id:'game',label:'Instanzen & Dungeons'},
   {id:'equipment',label:'Ausrüstung'},
   {id:'talents',label:'Talente'},
   {id:'abilities',label:'Klassenfähigkeiten'},
-  {id:'quests',label:'Quests'},
   {id:'professions',label:'Berufe'},
-  {id:'reputation',label:'Ruf'}
+  {id:'reputation',label:'Ruf'},
+  {id:'quests',label:'Quests'},
+  {id:'game',label:'Instanzen & Dungeons'}
 ];
 const activeCharacterTabs=new Map();
 let displayedQuestCatalog={};
@@ -877,15 +884,15 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${experienceProgress(c)}
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
+    ${characterTabPanel(c,'stats',statsPanel(c,openDetails.has(c.slug+':stats')))}
+    ${characterTabPanel(c,'equipment',equipmentPanel(c,openDetails.has(c.slug+':equipment')))}
     ${characterTabPanel(c,'talents',talentPanel(c))}
-    ${characterTabPanel(c,'game',gameStatusPanel(c))}
     ${characterTabPanel(c,'abilities',classAbilitiesPanel(c))}
     ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
     ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
     ${characterTabPanel(c,'reputation',reputationPanel(c))}
     ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}
-    ${characterTabPanel(c,'stats',statsPanel(c,openDetails.has(c.slug+':stats')))}
-    ${characterTabPanel(c,'equipment',equipmentPanel(c,openDetails.has(c.slug+':equipment')))}
+    ${characterTabPanel(c,'game',gameStatusPanel(c))}
   </div>
  </article>`).join("");
  installPortraitFallbacks();
@@ -900,7 +907,7 @@ function segmentedControl(id,value,options,label){
     '</div>';
 }
 const comparisonState={selected:new Set(),expanded:new Set(['stats','equipment','talents','quests','professions','reputation']),mode:'all'};
-const comparisonSections=[['stats','Charakterwerte'],['equipment','Ausrüstung'],['talents','Talente'],['quests','Quests'],['professions','Berufe'],['reputation','Ruf']];
+const comparisonSections=[['stats','Charakterwerte'],['equipment','Ausrüstung'],['talents','Talente'],['professions','Berufe'],['reputation','Ruf'],['quests','Quests']];
 const compareRoot=document.querySelector('#compareContent');
 const charactersView=document.querySelector('#charactersView');
 const compareView=document.querySelector('#compareView');
