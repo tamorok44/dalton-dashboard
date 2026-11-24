@@ -204,9 +204,11 @@ local function captureMerchant(reason)
         local okLink, value = pcall(GetMerchantItemLink, index)
         if okLink then link = ns.SafeString(value) end
       end
+      local itemID = merchantItemID(link)
+      if not itemID then snapshot.complete = false end
       snapshot.items[#snapshot.items + 1] = {
         index = index,
-        itemID = merchantItemID(link),
+        itemID = itemID,
         link = link,
         name = ns.SafeString(info.name),
         texture = ns.SafeNumber(info.texture),
@@ -225,8 +227,9 @@ local function captureMerchant(reason)
 
   snapshot.api = apiUsed
   storeSnapshot("merchant", snapshot, merchantFingerprint(snapshot))
-  noteCapture("Merchant", true, tostring(count) .. " Einträge über " .. tostring(apiUsed or "unbekannte API"))
-  return true
+  noteCapture("Merchant", true, tostring(count) .. " Einträge über " .. tostring(apiUsed or "unbekannte API") ..
+    (snapshot.complete and " · vollständig" or " · unvollständig"))
+  return true, snapshot.complete
 end
 
 local function captureTrainer(reason)
@@ -326,8 +329,9 @@ local function captureTrainer(reason)
   end
 
   storeSnapshot("trainer", snapshot, trainerFingerprint(snapshot))
-  noteCapture("Trainer", true, tostring(count) .. " Einträge")
-  return true
+  noteCapture("Trainer", true, tostring(count) .. " Einträge" ..
+    (snapshot.complete and " · vollständig" or " · unvollständig"))
+  return true, snapshot.complete
 end
 
 local function markClosed(kind)
@@ -347,13 +351,13 @@ function module:Capture(reason)
 end
 
 local function guardedCapture(kind, fn, reason)
-  local ok, result = pcall(fn, reason)
+  local ok, captured, complete = pcall(fn, reason)
   if not ok then
-    noteCapture(kind, false, result)
-    ns.RecordError("Interactions." .. kind, result)
-    return false
+    noteCapture(kind, false, captured)
+    ns.RecordError("Interactions." .. kind, captured)
+    return false, false
   end
-  return result
+  return captured == true, complete == true
 end
 
 function module:OnEvent(event)
@@ -362,19 +366,23 @@ function module:OnEvent(event)
   if event == "TRAINER_CLOSED" then markClosed("trainer"); return end
 
   if event == "MERCHANT_SHOW" or event == "MERCHANT_UPDATE" then
-    -- Forever marks these events as synchronous; capture once immediately while
-    -- merchant context is guaranteed to exist, then retry briefly for delayed item data.
-    guardedCapture("Merchant", captureMerchant, event .. ":immediate")
-    ns.Schedule(0.15, "interaction-merchant", function()
-      guardedCapture("Merchant", captureMerchant, event .. ":retry")
-    end)
+    -- Forever marks these events as synchronous. Ein zweiter Vollscan ist nur
+    -- nötig, wenn die sofortige Abfrage noch unvollständige Itemdaten lieferte.
+    local _, complete = guardedCapture("Merchant", captureMerchant, event .. ":immediate")
+    if not complete then
+      ns.Schedule(0.15, "interaction-merchant", function()
+        guardedCapture("Merchant", captureMerchant, event .. ":retry")
+      end)
+    end
     return
   end
 
   if event == "TRAINER_SHOW" or event == "TRAINER_UPDATE" then
-    guardedCapture("Trainer", captureTrainer, event .. ":immediate")
-    ns.Schedule(0.15, "interaction-trainer", function()
-      guardedCapture("Trainer", captureTrainer, event .. ":retry")
-    end)
+    local _, complete = guardedCapture("Trainer", captureTrainer, event .. ":immediate")
+    if not complete then
+      ns.Schedule(0.15, "interaction-trainer", function()
+        guardedCapture("Trainer", captureTrainer, event .. ":retry")
+      end)
+    end
   end
 end
