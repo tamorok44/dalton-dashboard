@@ -165,6 +165,8 @@ jobs:
           Copy-Item dist/bridge-windows/install-windows.ps1 "dist/bridge-player-windows/Dalton Dashboard Bridge/"
           Copy-Item dist/bridge-windows/uninstall-windows.ps1 "dist/bridge-player-windows/Dalton Dashboard Bridge/"
           Copy-Item bridge/README-Spieler-Windows.txt "dist/bridge-player-windows/Dalton Dashboard Bridge/README - ZUERST LESEN.txt"
+          Copy-Item bridge-branding.svg "dist/bridge-player-windows/Dalton Dashboard Bridge/Dalton Dashboard Bridge.svg"
+          Copy-Item bridge-tray.svg "dist/bridge-player-windows/Dalton Dashboard Bridge/Dalton Dashboard Kompakt.svg"
           Compress-Archive -Path "dist/bridge-player-windows/Dalton Dashboard Bridge" -DestinationPath dist/DaltonDashboardBridge-Spieler-Windows-0.1.0-beta.1.zip -Force
 
       - name: Windows-Bridge bereitstellen
@@ -216,6 +218,8 @@ jobs:
           cp bridge-macos/Installieren.command "bridge-player-macos/Dalton Dashboard Bridge/"
           cp bridge-macos/Deinstallieren.command "bridge-player-macos/Dalton Dashboard Bridge/"
           cp ../bridge/README-Spieler-macOS.txt "bridge-player-macos/Dalton Dashboard Bridge/README - ZUERST LESEN.txt"
+          cp ../bridge-branding.svg "bridge-player-macos/Dalton Dashboard Bridge/Dalton Dashboard Bridge.svg"
+          cp ../bridge-tray.svg "bridge-player-macos/Dalton Dashboard Bridge/Dalton Dashboard Kompakt.svg"
           chmod +x "bridge-player-macos/Dalton Dashboard Bridge/"*.command "bridge-player-macos/Dalton Dashboard Bridge/"/DaltonDashboardBridge-macos-*
           zip -r DaltonDashboardBridge-Spieler-macOS-0.1.0-beta.1.zip "bridge-player-macos/Dalton Dashboard Bridge"
           cd ..
