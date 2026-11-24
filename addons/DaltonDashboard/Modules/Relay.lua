@@ -559,6 +559,6 @@ function ns.RelayStatus()
     lastAckAt = state.lastAckAt,
     lastAttemptAt = state.lastAttemptAt,
     inboxCount = count,
-    targetVisible = hub or findGroupTarget(HUB_NAME) ~= nil
+    targetInGroup = hub or findGroupTarget(HUB_NAME) ~= nil
   }
 end
