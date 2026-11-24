@@ -3,6 +3,7 @@ import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
 import {previewCookieFromSetCookie,relayCharDbsFromGlobalDb} from './dalton-sync-client.mjs';
+import {trustedCharacterName,trustedCharacterSlugs} from './addon-device-auth.mjs';
 
 const lua='DaltonDashboardCharDB = {\n'+
 '  ["meta"] = { ["addonVersion"] = "0.1.0-alpha.11", ["gameVersion"] = "1.60.1", ["build"] = "71037", ["interface"] = 16001, ["locale"] = "deDE", ["lastUpdatedAt"] = 1795460000 },\n'+
@@ -20,6 +21,9 @@ assert.equal(
   '_vercel_jwt=test-token',
   'Der Companion muss Vercels Preview-Cookie ohne manuelles Browser-Copy extrahieren'
 );
+assert.deepEqual(trustedCharacterSlugs(),['cole-dalton','chucky-dalton','dolly-dalton','viola-dalton']);
+assert.equal(trustedCharacterName('chucky-dalton'),'Chucky Dalton');
+assert.equal(trustedCharacterName('fremd'),null);
 
 const globalRelay={
   relayInbox:{
