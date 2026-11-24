@@ -53,7 +53,7 @@ async function revokeDevice(config){
   const endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync';
   const base=new URL(endpoint);
   base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
-  const cookie=await previewCookie(previewShareUrlOverride||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
   const headers={
     Authorization:'Device '+token,
     'Content-Type':'application/json',
@@ -81,7 +81,7 @@ async function promoteToProduction(config,{endpointOverride=null,previewShareUrl
   if(config.characterSlug!=='cole-dalton')throw new Error('Nur Coles Hub kann auf Produktion umgestellt werden');
   const base=new URL(endpoint);
   base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-promote');
-  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const cookie=await previewCookie(previewShareUrlOverride||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
   const headers={
     Authorization:'Device '+token,
     'Content-Type':'application/json',
