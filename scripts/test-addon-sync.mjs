@@ -70,13 +70,45 @@ assert.ok(!('inventory' in payload.sections),'Taschen und Bank bleiben aus dem S
 const publicState=publicAddonSyncSummary({
   characterSlug:'cole-dalton',
   receivedAt:'2026-11-24T09:30:00.000Z',
-  payload:{...payload,sections:{...payload.sections,instances:{
-    count:1,entries:[{name:'Testinstanz',difficultyName:'Normal',resetAt:1795541400,locked:true,numEncounters:4,encounterProgress:1,instanceID:999}]
-  }}}
+  payload:{...payload,sections:{...payload.sections,
+    location:{
+      zone:'Insel Zephras',subZone:'Valanaar',bindLocation:'Valanaar',
+      x:null,y:null,
+      lastKnownCoordinates:{zone:'Insel Zephras',subZone:'Valanaar',mapID:2521,x:.621,y:.734,capturedAt:1795540000}
+    },
+    locationHistory:{entries:[
+      {capturedAt:1795530000,instance:{name:'Die Tiefenmine',instanceType:'party',instanceID:321,difficultyID:1,difficultyName:'Normal',maxPlayers:5}},
+      {capturedAt:1795535000,instance:{name:'Die Tiefenmine',instanceType:'party',instanceID:321,difficultyID:1,difficultyName:'Normal',maxPlayers:5}},
+      {capturedAt:1795537000,instance:{name:'Die Welt',instanceType:'none',instanceID:1}}
+    ]},
+    interactions:{
+      merchantHistory:[
+        {npc:{id:257006,name:'Nyalah Brightfire'}},
+        {npc:{id:257007,name:'Anderer Händler'}},
+        {npc:{id:257006,name:'Nyalah Brightfire'}}
+      ],
+      trainerHistory:[
+        {npc:{id:123,name:'Lehrer Eins'}},
+        {npc:{id:123,name:'Lehrer Eins'}}
+      ]
+    },
+    instances:{
+      count:1,entries:[{name:'Die Tiefenmine',difficultyID:1,difficultyName:'Normal',resetAt:1795541400,locked:true,numEncounters:4,encounterProgress:1,instanceID:321}]
+    }
+  }}
 });
 assert.equal(publicState.lockouts.length,1);
-assert.equal(publicState.lockouts[0].name,'Testinstanz');
+assert.equal(publicState.lockouts[0].name,'Die Tiefenmine');
+assert.equal(publicState.lockouts[0].difficultyID,1);
 assert.equal(publicState.lockouts[0].encounterProgress,1);
+assert.equal(publicState.currentLocation.x,.621,'Fehlende aktuelle Koordinate nutzt nur die letzte bekannte Koordinate am selben Ort');
+assert.equal(publicState.currentLocation.y,.734);
+assert.equal(publicState.visitedInstanceCount,1,'Mehrere Orts-Historieneinträge derselben Instanz werden zu einem Besuchsstatus verdichtet');
+assert.equal(publicState.visitedInstances[0].name,'Die Tiefenmine');
+assert.equal(publicState.merchantObservationCount,3,'Beobachtungshistorie bleibt vollständig erhalten');
+assert.equal(publicState.merchantNpcCount,2,'Derselbe Händler wird für die NPC-Anzahl nur einmal gezählt');
+assert.equal(publicState.trainerObservationCount,2);
+assert.equal(publicState.trainerNpcCount,1,'Derselbe Lehrer wird für die NPC-Anzahl nur einmal gezählt');
 
 const normalized=normalizeAddonSyncPayload(payload);
 const sameContentLater=structuredClone(payload);
