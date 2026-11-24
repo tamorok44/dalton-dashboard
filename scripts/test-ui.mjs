@@ -719,7 +719,7 @@ assert.equal(manifest.icons.length,1,'Web app manifest exposes one unambiguous p
 assert.equal(manifest.icons[0].src,'/icon.svg');
 assert.equal(manifest.icons[0].purpose,'any','Primary Dalton icon uses the Safari-compatible any purpose');
 assert.ok(heroHtml.includes('<link rel="icon" href="/bridge-tray.svg"'),'Compact variant is used as the browser favicon');
-assert.ok(heroHtml.includes('<link rel="apple-touch-icon" href="/icon.svg" sizes="180x180">'),'iOS receives the Dalton sheriff-star as an explicit Apple touch icon');
+assert.ok(heroHtml.includes('<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=ios-20261124a" sizes="180x180">'),'iOS receives a real PNG Dalton sheriff-star as Apple touch icon');
 assert.equal(manifest.icons[0].purpose,'any','Safari/iOS manifest icon uses the unambiguous any purpose');
 assert.ok(read('sw.js').includes('"/icon.svg","/bridge-tray.svg","/bridge-branding.svg"'),'All Dalton branding icons are available offline');
 const addonCi=read('.github/workflows/addon-ci.yml');
