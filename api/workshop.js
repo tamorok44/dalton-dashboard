@@ -17,6 +17,7 @@ import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex,cached
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
+import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -203,7 +204,14 @@ export default async function handler(req,res){
           ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
           :await getCachedForeverDbMasterRecipeIndex();
         if(index){
-          recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
+          {
+            const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+            const [addonStates,liveKnowledge]=await Promise.all([
+              loadAddonSyncStates(characterSlugs),
+              loadLiveKnowledge({build:index?.build||null})
+            ]);
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,liveKnowledge));
+          }
           enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
           remoteRecipe=preferredForeverRecipeForItem(recipeIndex,itemId);
           if(remoteReady){
@@ -268,7 +276,14 @@ export default async function handler(req,res){
         ?await getForeverDbMasterRecipeIndex({seedProfessionSlugs:daltonProfessionSlugs})
         :await getCachedForeverDbMasterRecipeIndex();
       if(index){
-        recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,await loadAddonSyncStates((stored.data?.characters||[]).map(character=>character.slug).filter(Boolean))));
+        {
+            const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
+            const [addonStates,liveKnowledge]=await Promise.all([
+              loadAddonSyncStates(characterSlugs),
+              loadLiveKnowledge({build:index?.build||null})
+            ]);
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,liveKnowledge));
+          }
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
       }
     }catch(error){
