@@ -70,6 +70,8 @@ assert.ok(relay.includes('C_ChatInfo.RegisterAddonMessagePrefix')&&relay.include
 assert.ok(relay.includes('C_EncodingUtil.SerializeCBOR')&&relay.includes('C_EncodingUtil.CompressString')&&relay.includes('C_EncodingUtil.EncodeBase64'),'Relay muss vor dem Senden serialisieren, komprimieren und kodieren');
 assert.ok(relay.includes('CHUNK_SIZE = 200')&&relay.includes('MAX_CHUNKS = 220'),'Relay-Pakete bleiben deutlich unter dem WoW-Nachrichtenlimit');
 assert.ok(relay.includes('GROUP_ROSTER_UPDATE'),'Relay darf ohne Polling auf Gruppenänderungen reagieren');
+assert.ok(relay.includes('contentChecksum')&&relay.includes('lastAckContentHash'),'Relay muss fachlich unveränderte Daten vor Komprimierung erkennen');
+assert.ok(relay.includes('capturedAt = true')&&relay.includes('resetSeconds = true'),'Flüchtige Zeitwerte dürfen den fachlichen Relay-Fingerprint nicht verändern');
 assert.ok(!relay.includes('OnUpdate'),'Relay darf keine permanente OnUpdate-Schleife verwenden');
 assert.ok(relay.includes('HUB_NAME = "Cole Dalton"'),'Cole ist der lokale Relay-Hub');
 for(const name of ['Cole Dalton','Chucky Dalton','Dolly Dalton','Viola Dalton'])assert.ok(relay.toLowerCase().includes(name.toLowerCase()),'Dalton-Roster fehlt: '+name);
