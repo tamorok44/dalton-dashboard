@@ -19,6 +19,7 @@ function array(value){
 }
 function integer(value){const n=Number(value);return Number.isInteger(n)&&n>0?n:null}
 function finite(value){const n=Number(value);return Number.isFinite(n)?n:null}
+function optionalFinite(value){return value===null||value===undefined||value===''?null:finite(value)}
 function text(value,max=240){return typeof value==='string'&&value.trim()?value.trim().slice(0,max):null}
 function epochIso(value){
   const n=finite(value);
@@ -226,14 +227,16 @@ export function publicAddonSyncSummary(state={}){
     spellbookEntryCount:finite(spellbook.entryCount)??array(spellbook.entries).length,
     currentLocation:location.zone?(()=>{
       const lastKnown=object(location.lastKnownCoordinates);
-      const useLastKnown=(finite(location.x)===null||finite(location.y)===null)&&sameLocation(location,lastKnown);
+      const currentX=optionalFinite(location.x),currentY=optionalFinite(location.y);
+      const lastX=optionalFinite(lastKnown.x),lastY=optionalFinite(lastKnown.y);
+      const useLastKnown=(currentX===null||currentY===null)&&lastX!==null&&lastY!==null&&sameLocation(location,lastKnown);
       return {
         capturedAt:epochIso(location.capturedAt),
         zone:text(location.zone,160),
         subZone:text(location.subZone,160),
         mapID:integer(location.mapID)??(useLastKnown?integer(lastKnown.mapID):null),
-        x:finite(location.x)??(useLastKnown?finite(lastKnown.x):null),
-        y:finite(location.y)??(useLastKnown?finite(lastKnown.y):null),
+        x:currentX??(useLastKnown?lastX:null),
+        y:currentY??(useLastKnown?lastY:null),
         coordinatesCapturedAt:useLastKnown?epochIso(lastKnown.capturedAt):epochIso(location.capturedAt),
         bindLocation:text(location.bindLocation,160)
       };
