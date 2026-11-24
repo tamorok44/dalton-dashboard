@@ -370,6 +370,16 @@ function buildLocations(candidates){
     npcCount:entry.npcKeys.size
   })).sort((a,b)=>a.name.localeCompare(b.name,'de'));
 }
+function mergeKnownLocations(actionLocations,knownLocations=[]){
+  const zones=new Map(asArray(actionLocations).map(entry=>[norm(entry?.name),{...entry}]).filter(([key])=>key));
+  for(const value of asArray(knownLocations)){
+    const name=text(typeof value==='string'?value:value?.name);
+    const key=norm(name);
+    if(!key||zones.has(key))continue;
+    zones.set(key,{name,actionCount:0,npcCount:0});
+  }
+  return [...zones.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+}
 function sourceSummary(source={}){
   const location=source.location||{};
   const stock=finite(source.limitedStock);
@@ -501,7 +511,8 @@ export function buildLocationPlanner(data={},recipeIndex={},{
   location=null,
   professionMasters={},
   classMaster=null,
-  extraActions=[]
+  extraActions=[],
+  knownLocations=[]
 }={}){
   const characters=asArray(data?.characters).map(publicCharacter).sort((a,b)=>a.name.localeCompare(b.name,'de'));
   if(!characterSlug){
@@ -529,7 +540,7 @@ export function buildLocationPlanner(data={},recipeIndex={},{
     ...classTrainingActions(character,classMaster),
     ...verifiedExtraActions(character,extraActions)
   ]);
-  const locations=buildLocations(candidates);
+  const locations=mergeKnownLocations(buildLocations(candidates),knownLocations);
   const canonicalLocation=locations.find(entry=>norm(entry.name)===norm(location))?.name||null;
   const actions=canonicalLocation?choosePreferredSources(candidates,canonicalLocation):[];
   const npcs=canonicalLocation?groupByNpc(actions):[];
