@@ -6,7 +6,7 @@ import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
 import {loadAddonSyncState,saveAddonSyncState} from '../scripts/addon-sync-store.mjs';
 import {ingestAddonLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
-import {authorizeDeviceToken,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {authorizeDeviceToken,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
 export const config={maxDuration:30};
 
@@ -76,8 +76,8 @@ export default async function handler(req,res){
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
-    if(device&&device.characterSlug!==target.slug){
-      return res.status(403).json({error:'Dieser Gerätezugang darf nur '+String(device.characterName||device.characterSlug)+' synchronisieren'});
+    if(device&&!deviceMaySync(device,target.slug,payload.client?.transport)){
+      return res.status(403).json({error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
     }
     const previousState=await loadAddonSyncState(target.slug);
     if(previousState?.payload?.syncId&&previousState.payload.syncId===payload.syncId){
