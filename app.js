@@ -241,16 +241,40 @@ function gameStatusPanel(c,stateOverride=null){
     '</div>';
 }
 
+function classAbilityRankNumber(rank){
+  const match=String(rank||'').match(/\d+/);
+  return match?Number(match[0]):0;
+}
+function highestKnownClassAbilities(entries=[]){
+  const byAbility=new Map();
+  for(const entry of Array.isArray(entries)?entries:[]){
+    if(!Number.isInteger(Number(entry?.id)))continue;
+    const name=String(entry?.name||'').trim();
+    const key=name?name.toLocaleLowerCase('de-DE'):'id:'+Number(entry.id);
+    const current=byAbility.get(key);
+    if(!current){
+      byAbility.set(key,entry);
+      continue;
+    }
+    const currentRank=classAbilityRankNumber(current.rank);
+    const nextRank=classAbilityRankNumber(entry.rank);
+    if(nextRank>currentRank||
+      (nextRank===currentRank&&current.inferredFromHigherRank===true&&entry.inferredFromHigherRank!==true)||
+      (nextRank===currentRank&&current.inferredFromHigherRank===entry.inferredFromHigherRank&&Number(entry.id)>Number(current.id))){
+      byAbility.set(key,entry);
+    }
+  }
+  return [...byAbility.values()]
+    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||classAbilityRankNumber(b.rank)-classAbilityRankNumber(a.rank)||Number(a.id)-Number(b.id));
+}
 function classAbilitiesPanel(c){
-  const abilities=(Array.isArray(c.knownClassAbilities)?c.knownClassAbilities:[])
-    .filter(entry=>Number.isInteger(Number(entry?.id)))
-    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||(a.rank||'').localeCompare(b.rank||'','de')||Number(a.id)-Number(b.id));
+  const abilities=highestKnownClassAbilities(c.knownClassAbilities);
   const verified=c.knownClassAbilitiesVerified===true;
   const captured=Number.isFinite(Date.parse(c.knownClassAbilitiesCapturedAt||''))
     ?new Date(c.knownClassAbilitiesCapturedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
     :null;
   const learned=verified
-    ?'<div class="spellbook-status is-verified"><strong>'+abilities.length+' gelernte Klassenränge</strong><span>Direkt aus dem persönlichen WoW-Spellbook'+(captured?' · Stand '+esc(captured):'')+'</span></div>'+
+    ?'<div class="spellbook-status is-verified"><strong>'+abilities.length+' gelernte Fähigkeiten</strong><span>Je Fähigkeit der höchste bekannte Rang · direkt aus dem persönlichen WoW-Spellbook'+(captured?' · Stand '+esc(captured):'')+'</span></div>'+
       (abilities.length
         ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+abilities.map(entry=>{
           const icon=entry.iconUrl
@@ -260,7 +284,7 @@ function classAbilitiesPanel(c){
             (entry.inferredFromHigherRank===true?'<small>Durch höheren bekannten Rang mitgelernt</small>':'')+
             '</div>'+(entry.rank?'<span class="spellbook-known-rank">'+esc(entry.rank)+'</span>':'')+'</div>';
         }).join('')+'</div></details>'
-        :'<p class="spellbook-empty">Im synchronisierten Spellbook wurden keine Klassenränge gefunden.</p>')
+        :'<p class="spellbook-empty">Im synchronisierten Spellbook wurden keine Klassenfähigkeiten gefunden.</p>')
     :addonDataRequirement(c,{
         title:'Klassenfähigkeiten noch nicht verfügbar',
         detail:'deine persönlichen Klassenfähigkeiten automatisch hier angezeigt.'
