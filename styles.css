@@ -1287,8 +1287,6 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .talent-planner-card p,.talent-planner-card h3,.talent-planner-card h4{margin:0}
 .talent-planner-field{display:grid;gap:5px;min-width:0}
 .talent-planner-field select,.talent-planner-action{width:100%;min-width:0;max-width:100%;min-height:44px;padding:8px 10px;font:inherit;color:var(--cream);background:var(--ink);border:1px solid var(--gold-deep);border-radius:4px}
-.talent-planner-confirm{display:flex;align-items:center;gap:8px;min-height:44px}
-.talent-planner-confirm input{width:18px;height:18px;accent-color:var(--gold);flex:none}
 .talent-planner-action{justify-self:start;width:auto;white-space:normal;cursor:pointer}
 .talent-planner-action:disabled{opacity:.65;cursor:wait}
 .talent-planner-card :focus-visible{outline:2px solid var(--gold);outline-offset:2px}

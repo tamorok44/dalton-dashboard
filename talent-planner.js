@@ -8,7 +8,7 @@ const blocking={
   roster_unavailable:'Der aktuelle Charakterstand ist derzeit nicht erreichbar.',
   invalid_profile:'Wähle ein gültiges Profil.',
   no_approved_recommendation:'Für diese Auswahl gibt es keinen freigegebenen Talentplan.',
-  unverified_legacy_rank:'Prüfe den Vermächtnisrang „Begabt“ im Spiel und bestätige deine Auswahl.',
+  unverified_legacy_rank:'Prüfe den Vermächtnisrang „Talentiert“ im Spiel und bestätige deine Auswahl.',
   unsupported_legacy_rank:'Für diesen Vermächtnisrang ist der Plan nicht freigegeben.',
   unverified_current_catalog:'Der aktuelle Talentkatalog konnte nicht für diesen Plan bestätigt werden.',
   unverified_current_rules:'Die aktuelle Spielversion, Hotfixes und Talentdaten konnten nicht als gemeinsamer Stand bestätigt werden.',
@@ -40,7 +40,7 @@ function storageBinding(storage,identity){
 }
 
 export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,talentGraph,talentNodeDetail,fetchImpl=fetch,storage}){
-  let characters=[],rosterVersion,character='',identity=null,profiles=[],profile=null,rank='',confirmed=false,binding=null;
+  let characters=[],rosterVersion,character='',identity=null,profiles=[],profile=null,rank='',binding=null;
   let busy=false,message='',plan=null,level=10,treeId=null,nodeId=null,requestId=0,expiry=null;
   const warn=code=>blocking[code]||blocking.source_unavailable;
   const clearPlan=()=>{
@@ -51,14 +51,14 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     const reply=await fetchImpl('/api/characters?view=talent-planner&'+new URLSearchParams(query),{cache:'no-store'});
     return reply.json();
   }
-  async function selectCharacter(value,{focus=false}={}){
+  async function selectCharacter(value,{focus=false,keepSelection=false}={}){
     const id=++requestId;
+    const previous=keepSelection?{identity,profile,rank}:null;
     clearPlan();
     character=value;
     identity=null;
     binding=null;
     rank='';
-    confirmed=false;
     profiles=[];
     profile=null;
     message='';
@@ -73,9 +73,9 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
         profiles=result.profiles;
         identity=result.identity;
         binding=identity?storageBinding(storage,identity):null;
-        profile=binding?.profile??(profiles.length===1?profiles[0]:null);
-        rank=binding?.rank?.toString()??'';
-        confirmed=Boolean(binding);
+        const selected=previous&&previous.identity===identity?profiles.find(option=>matches(option,previous.profile)):null;
+        profile=binding?.profile??selected??(profiles.length===1?profiles[0]:null);
+        rank=binding?.rank?.toString()??(selected?previous.rank:'');
         if(binding&&binding.identity!==result.identity)message=warn('binding_unavailable');
         if(!binding&&!profiles.length)message=warn('no_approved_recommendation');
       }
@@ -93,7 +93,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     const id=++requestId;
     clearPlan();
     message='';
-    if(rank===''||!confirmed){
+    if(rank===''){
       message=warn('unverified_legacy_rank');
       render('#talentPlannerLegacy');
       return;
@@ -165,7 +165,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     result.innerHTML=
       '<h3 id="talentPlannerPath" tabindex="-1">'+esc(plan.klass.trees.find(t=>t.id===plan.profile.treeId).name)+' · Planversion '+esc(plan.version)+'</h3>'+
       (rationale?'<p>'+esc(rationale)+'</p>':'')+
-      '<p><strong>Vermächtnisrang „Begabt“ '+esc(plan.legacyRank.rank)+'</strong> · von dir im Spiel bestätigt</p>'+
+      '<p><strong>Vermächtnisrang „Talentiert“ '+esc(plan.legacyRank.rank)+'</strong> · von dir im Spiel bestätigt</p>'+
       '<p><strong>Ist-Abgleich</strong> '+esc(progressText)+'</p>'+
       '<p><strong>Nächster Punkt</strong> '+esc(nextText)+'</p>'+
       (next?'<p class="talent-point-note">Der Abgleich bestätigt keine unverteilten Talentpunkte.</p>':'')+
@@ -199,13 +199,13 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     root.innerHTML='<form class="talent-planner-card">'+
       '<label class="talent-planner-field" for="talentPlannerCharacter">Charakter<select id="talentPlannerCharacter"><option value="">Charakter wählen</option>'+
       displayList('alphabetical',characters,c=>'<option value="'+esc(c.slug)+'"'+(c.slug===character?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
-      (binding?'<p><strong>Gemerkter Plan · Version '+esc(binding.version)+'</strong> · '+esc(profileLabel({...binding.profile,name:profiles.find(value=>matches(value,binding.profile))?.name||'gemerkte Spezialisierung'}))+' · Begabt Rang '+esc(binding.rank)+'</p>':
+      (binding?'<p><strong>Gemerkter Plan · Version '+esc(binding.version)+'</strong> · '+esc(profileLabel({...binding.profile,name:profiles.find(value=>matches(value,binding.profile))?.name||'gemerkte Spezialisierung'}))+' · Talentiert Rang '+esc(binding.rank)+'</p>':
         profiles.length?'<label class="talent-planner-field" for="talentPlannerProfile">Spielprofil und Spezialisierung<select id="talentPlannerProfile"'+disabled+'><option value="">Profil wählen</option>'+
         displayList('fixedControls',profiles,value=>'<option value="'+profiles.indexOf(value)+'"'+(matches(value,profile)?' selected':'')+'>'+esc(profileLabel(value))+'</option>').join('')+'</select></label>':'')+
-      (profile&&!binding?'<label class="talent-planner-field" for="talentPlannerLegacy">Vermächtnisrang „Begabt“<select id="talentPlannerLegacy"'+disabled+'><option value="">Rang im Spiel nachsehen</option>'+
+      (profile&&!binding?'<label class="talent-planner-field" for="talentPlannerLegacy">Vermächtnisrang „Talentiert“<select id="talentPlannerLegacy"'+disabled+'><option value="">Rang im Spiel nachsehen</option>'+
         displayList('fixedControls',[0,1,2,3,4,5],value=>'<option value="'+value+'"'+(rank===String(value)?' selected':'')+'>Rang '+value+'</option>').join('')+
-        '</select></label><label class="talent-planner-confirm"><input id="talentPlannerConfirm" type="checkbox"'+(confirmed?' checked':'')+disabled+'> Ich habe diesen Rang im Spiel geprüft.</label>':'')+
-      (profile?'<button type="submit" class="talent-planner-action"'+disabled+'>'+(binding?'Gemerkten Plan prüfen':'Talentplan prüfen')+'</button>':'')+
+        '</select></label>':'')+
+      (profile?'<button type="submit" class="talent-planner-action"'+disabled+'>'+(binding?'Gemerkten Plan prüfen':'Rang bestätigen und Plan prüfen')+'</button>':'')+
       (binding?'<button type="button" class="talent-planner-action" data-plan-forget'+disabled+'>Bindung lösen</button>':'')+
       '<p id="talentPlannerMessage" role="status" tabindex="-1">'+esc(busy?'Daten werden geprüft …':message)+'</p></form>'+
       (plan?'<section class="talent-planner-card" data-plan-result></section>':'');
@@ -219,14 +219,9 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     });
     root.querySelector('#talentPlannerLegacy')?.addEventListener('change',event=>{
       rank=event.target.value;
-      confirmed=false;
       message='';
       clearPlan();
       render('#talentPlannerLegacy');
-    });
-    root.querySelector('#talentPlannerConfirm')?.addEventListener('change',event=>{
-      confirmed=event.target.checked;
-      if(plan){clearPlan();render('#talentPlannerConfirm')}
     });
     root.querySelector('[data-plan-forget]')?.addEventListener('click',forget);
     renderPath();
@@ -237,7 +232,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     rosterVersion=version;
     characters=roster;
     if(character&&!characters.some(c=>c.slug===character)){selectCharacter('');return}
-    if(character&&changed){selectCharacter(character);return}
+    if(character&&changed){selectCharacter(character,{keepSelection:true});return}
     render();
   }};
 }
