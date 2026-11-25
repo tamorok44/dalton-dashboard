@@ -224,3 +224,14 @@ Originale Forever-Trait-Koordinaten und Baumreihenfolge sind explizite Ausnahme 
 ### Talentbaum: originalgetreue Positionen und vollständige Ränge
 
 Baumreihenfolge links–rechts aus Forever-Klassendaten, keine Alphabetisierung, keine Umordnung nach Lernstand; vier feste Spalten und mindestens sieben feste Reihen einschließlich leerer Felder. Abgleich 25.11.2026 mit wowforeverbuilder.com/talent-calculator/{mage,hunter,druid}/ (Launch-Daten) ergab 155/155 identische Positionen und Maximalränge. Punkt-Gates werden bei Normalisierung mit dem dokumentierten Fünf-Punkte-je-vorheriger-Reihe-Modell abgeglichen; neue widersprüchliche Gate-Schemata werden nicht ungeprüft akzeptiert. Alle Ränge einzeln anzeigen, aktuelle und nächste markieren, Voraussetzungen samt individuellem Status; keine freien Punkte schätzen. Arktische Reichweite: fehlende deutsche Clienttexte nur als ausdrücklich deklarierte deutsche Effektzusammenfassung (10/20 %, exakter aktueller englischer Text als Guard), keine Ausgabe als Originaltext. Pracht der Natur: 10 vorherige Punkte, Erhabenheit der Natur 2/2; exakt diese Kante zusätzlich bestätigt durch https://theforeverera.com/de/talents/druid/natures-splendor/ und https://wowforever.gg/de/talente/druid/. Andere unbekannte zusätzliche Tupelbedingungen weiterhin unbestätigt. Keine Talentplanung.
+
+
+### Magier-Talentbaum: direkter Clientnachweis vom 25.11.2026, 18:42 MEZ
+
+Zwei vom Spieler bereitgestellte Screenshots des deutschen WoW-Forever-Clients (Bildschirmfoto 2026-11-25 um 18.42.06.png und 18.42.14.png) belegen die Baumreihenfolge Arkan – Feuer – Frost und die sichtbare Rasterbelegung (X = Talent, . = leer; sieben Reihen von oben nach unten, vier Spalten von links nach rechts):
+
+- Arkan: XXX. / XXXX / XX.X / XXXX / .XX. / ..X. / .X..
+- Feuer: .XX. / XXX. / XXXX / XXXX / .XX. / ..X. / .X..
+- Frost: XXX. / XXXX / XXX. / XX.X / XXX. / ..X. / .X..
+
+Abgleich mit produktivem Talentkatalog am selben Tag: alle 53 belegten Positionen und leeren Felder stimmen überein. Die Screenshots bestätigen die sichtbare Rastergeometrie, nicht die Namen aller einzelnen Talente; deren Identität bleibt zusätzlich durch den vorherigen Datenquellenabgleich belegt. Arktische Reichweite (Frost, Reihe 4, Spalte 1, Spell 16757): deutscher Talentname, englischer Effekttext für den ersten Rang trotz deutschem Client; Reichweite von Frostbolt, Ice Lance und Blizzard sowie Radius von Frost Nova und Cone of Cold +10 %. Bei 3 vergebenen Frostpunkten fordert das Spiel noch 12 Frostpunkte, also insgesamt 15. Rang 2 (+20 %) bleibt durch die beiden zuvor verglichenen Forever-Quellen belegt, nicht durch diesen Screenshot. Vorhandene explizit gekennzeichnete deutsche Effektzusammenfassungen bleiben bis zum Vorliegen deutscher Originaltexte bestehen; kein nachträgliches Deklarieren einer Übersetzung als Clientoriginal. Keine funktionale Änderung nötig.
