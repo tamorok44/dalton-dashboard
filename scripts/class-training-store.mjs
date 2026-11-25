@@ -197,7 +197,7 @@ async function publicTrainerData({fetchImpl=fetch}={}){
   publicTrainerCache={at:Date.now(),data};
   return data;
 }
-async function publicClassData({fetchImpl=fetch}={}){
+export async function publicClassData({fetchImpl=fetch}={}){
   if(publicClassDataCache&&Date.now()-publicClassDataCache.at<10*60*1000)return publicClassDataCache.data;
   const response=await fetchImpl(new URL('classes.json',PUBLIC_DATA_BASE),{
     headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},

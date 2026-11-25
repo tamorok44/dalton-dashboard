@@ -1,3 +1,4 @@
+import {loadTalentTreeCatalog} from '../scripts/talent-tree-store.mjs';
 import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
 import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {loadCharacters} from '../scripts/character-store.mjs';
@@ -12,6 +13,12 @@ export default async function handler(req,res){
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
   try{
     const result=await loadCharacters();
+    // Loaded only when a Talent tab is opened; no tree data in ordinary refreshes.
+    if(req.query?.view==='talents'){
+      const states=await loadPublicAddonSyncStates((result.data?.characters||[]).map(c=>c.slug).filter(Boolean)).catch(()=>({}));
+      const catalog=await loadTalentTreeCatalog(result.data,states);
+      return res.status(200).json(catalog);
+    }
     const activeQuestIds=[...new Set((result.data?.characters||[]).flatMap(character=>
       (Array.isArray(character.activeQuests)?character.activeQuests:[])
         .map(quest=>Number(quest?.id)).filter(Number.isInteger)

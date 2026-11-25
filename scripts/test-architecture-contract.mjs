@@ -309,3 +309,5 @@ const entryHtml=fs.readFileSync(path.join(root,'index.html'),'utf8');
 assert.deepEqual([...entryHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(m=>m[1].split('?')[0]),orderReview.entryModules,'Review new frontend entry points for sort contract');
 assert.deepEqual([...orderApp.matchAll(/^import .*? from ['"]([^'"]+)['"];/gm)].map(m=>m[1]),orderReview.appImports,'Review new frontend modules for sort contract');
 assert.ok(orderApp.includes("displayList('alphabetical',list,rep=>{"),'Reputation must use central alphabetical order');
+
+assert.ok(orderApp.includes("displayList('talentCoordinates',tree.talents")&&orderApp.includes("displayList('fixedControls',klass.trees"),'Talent trees retain original game geometry and order');

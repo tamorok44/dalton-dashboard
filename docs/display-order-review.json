@@ -23,6 +23,10 @@
     },
     {
       "owner": "sortNamedRecords",
+      "line": "talentCoordinates:list=>[...list].sort((a,b)=>a.row-b.row||a.column-b.column||a.id-b.id),"
+    },
+    {
+      "owner": "sortNamedRecords",
       "line": "text:list=>[...list].sort(compareGermanNames),"
     },
     {
@@ -72,6 +76,62 @@
     {
       "owner": "professionRows",
       "line": "const stageSegments=professionStages.map((end,index)=>{"
+    },
+    {
+      "owner": "talentBuildHint",
+      "line": "return displayOrder('text',[...new Set(Object.values(data?.addonSync||{}).map(s=>String(s?.build||'')).filter(Boolean))]).join('|');"
+    },
+    {
+      "owner": "personalTalentRanks",
+      "line": "const lookup=new Map(klass.trees.flatMap(t=>t.talents.map(n=>[n.profileId,{node:n,tree:t}])));"
+    },
+    {
+      "owner": "personalTalentRanks",
+      "line": "for(const tree of c.talentDetails){"
+    },
+    {
+      "owner": "personalTalentRanks",
+      "line": "for(const entry of tree.talents||[]){"
+    },
+    {
+      "owner": "talentNodeStatus",
+      "line": "const before=tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0);"
+    },
+    {
+      "owner": "talentNodeDetail",
+      "line": "const pre=displayList('alphabetical',node.prerequisites.map(p=>({...p,name:tree.talents.find(n=>n.id===p.id)?.name||'Talent'})),p=>'<li>'+esc(p.name)+' · Rang '+esc(p.rank)+(p.conditionKnown?'':' · genaue Bedingung nicht bestätigt')+'</li>').join('');"
+    },
+    {
+      "owner": "talentGraph",
+      "line": "const rows=Math.max(...tree.talents.map(n=>n.row))+1;"
+    },
+    {
+      "owner": "talentGraph",
+      "line": "const paths=tree.talents.flatMap(n=>n.prerequisites.map(p=>{"
+    },
+    {
+      "owner": "talentPanel",
+      "line": "const tree=klass.trees.find(t=>t.id===picked)||[...klass.trees].sort((a,b)=>(points.get(b.id)||0)-(points.get(a.id)||0))[0];"
+    },
+    {
+      "owner": "talentPanel",
+      "line": "const total=personal.verified?[...points.values()].reduce((sum,p)=>sum+p,0):null;"
+    },
+    {
+      "owner": "bindTalentPanel",
+      "line": "panel.querySelectorAll('[data-talent-tree]').forEach(button=>button.addEventListener('click',()=>{"
+    },
+    {
+      "owner": "bindTalentPanel",
+      "line": "panel.querySelectorAll('[data-talent-node]').forEach(button=>button.addEventListener('click',()=>{"
+    },
+    {
+      "owner": "refreshTalentPanels",
+      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"]').forEach(panel=>{"
+    },
+    {
+      "owner": "loadTalentCatalog",
+      "line": "const classIds=displayOrder('text',[...new Set((displayedData?.characters||[]).map(c=>String(c.classId)))]);"
     },
     {
       "owner": "instanceStatusPanel",
@@ -212,6 +272,10 @@
     {
       "owner": "render",
       "line": "cards.innerHTML=chars.map((c,index)=>`<article class=\"card ${classColor(c)}\">"
+    },
+    {
+      "owner": "render",
+      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));"
     },
     {
       "owner": "segmentedControl",

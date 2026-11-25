@@ -1252,3 +1252,28 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .quest-entry>.quest-marker{box-sizing:border-box;object-fit:contain;padding:6px;background:rgba(16,22,29,.65);image-rendering:pixelated}
 
 .workshop-suggestions[hidden]{display:none}
+
+/* Classic talent grid: one tree at a time in each character card. */
+.talent-browser,.talent-tree-switch,.talent-visual-tree,.talent-grid,.talent-node-detail{min-width:0;max-width:100%}
+.talent-summary{display:grid;gap:4px;margin-bottom:12px;color:var(--cream)}
+.talent-summary small,.talent-point-note,.talent-catalog-notice{color:var(--muted);font-size:var(--type-caption);line-height:1.45;overflow-wrap:anywhere}
+.talent-tree-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-bottom:10px}
+.talent-tree-option{min-width:0;min-height:44px;padding:7px 3px;border:1px solid var(--gold-deep);border-radius:4px;background:var(--ink);color:var(--cream);font:inherit;font-size:var(--type-caption);overflow-wrap:anywhere;display:grid;gap:3px;place-items:center}
+.talent-tree-option.is-active{border-color:var(--class);box-shadow:inset 0 -2px var(--class);background:color-mix(in srgb,var(--class) 12%,var(--ink))}
+.talent-tree-option strong{font-variant-numeric:tabular-nums}
+.talent-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(var(--talent-rows),minmax(48px,1fr));aspect-ratio:4/var(--talent-rows);width:100%;margin:12px auto 4px;max-width:360px;isolation:isolate;align-items:center;justify-items:center}
+.talent-links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
+.talent-connector{stroke:#a88d60;stroke-width:3;fill:none;opacity:.72}.talent-connector.is-uncertain{stroke-dasharray:6 4}
+.talent-node{position:relative;display:grid;place-items:center;width:clamp(36px,12vw,54px);max-width:92%;aspect-ratio:1;padding:2px;border:2px solid #68717d;border-radius:4px;background:#111720;color:var(--cream);cursor:pointer;z-index:1;min-width:0}
+.talent-node .knowledge-icon{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:cover;border:0;border-radius:2px}
+.talent-node.is-learned{border-color:#d6b458}.talent-node.is-unlocked{border-color:#6ab67a}.talent-node.is-locked .knowledge-icon,.talent-node.is-unknown .knowledge-icon{filter:grayscale(.85) brightness(.6)}
+.talent-node.is-selected{outline:2px solid var(--cream);outline-offset:3px}.talent-node:focus-visible{outline:2px solid var(--cream);outline-offset:3px}
+.talent-node-rank{position:absolute;right:-4px;bottom:-4px;padding:1px 3px;border:1px solid currentColor;border-radius:3px;background:#101620;color:#ddd5c5;font-size:11px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.talent-node.is-learned .talent-node-rank{color:#eac56c}.talent-node.is-unlocked .talent-node-rank{color:#86c892}
+.talent-node-detail{border:1px solid var(--gold-deep);border-radius:4px;background:var(--ink);padding:10px;margin-top:10px;overflow-wrap:anywhere}
+.talent-node-detail p,.talent-prerequisites{font-size:var(--type-small);line-height:1.5;color:var(--muted);margin:8px 0}
+.talent-node-detail strong{color:var(--cream)}.talent-detail-state{font-weight:700}
+.talent-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;color:var(--muted);font-size:var(--type-caption)}
+.talent-legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;border:1px solid #68717d;margin-right:5px}
+.talent-legend .is-learned:before{border-color:#d6b458}.talent-legend .is-unlocked:before{border-color:#6ab67a}
+@media(min-width:1100px){.talent-grid{max-width:420px}.talent-node{width:54px}}
