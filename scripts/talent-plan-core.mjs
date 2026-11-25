@@ -3,6 +3,7 @@ const positive=v=>Number.isSafeInteger(v)&&v>0;
 const nonempty=v=>typeof v==='string'&&v.trim().length>0;
 const hash=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
 const array=v=>Array.isArray(v)?v:[];
+export const TALENT_POINT_CALENDAR_REVISION='forever-talented-v1';
 export const TALENT_PROFILE_FIELDS=Object.freeze(['classId','treeId','goal','role','playStyle','priority']);
 export function profileKey(profile){
   if(!profile||!positive(profile.classId)||!positive(profile.treeId))return null;
@@ -11,8 +12,8 @@ export function profileKey(profile){
 }
 function reject(code,point=null){return {ok:false,code,point}}
 // A reviewed rule pack must explicitly bind to a class layout revision and
-// provide the real point schedule and effective minimum-level rule for each
-// talent. No assumed Legacy shift or silent Classic fallback.
+// select the verified point calendar and provide the effective minimum-level
+// rule for each talent. No assumed Legacy shift or silent Classic fallback.
 export function validateTalentPath(plan,master,rules){
   if(!plan||!positive(plan.classId)||!nonempty(plan.id)||!positive(plan.version))return reject('invalid_plan_identity');
   const c=master?.classes?.[plan.classId],revision=master?.classRevisions?.[plan.classId];
@@ -20,11 +21,14 @@ export function validateTalentPath(plan,master,rules){
   if(!rules||rules.status!=='verified'||rules.classId!==plan.classId||rules.catalogRevision!==revision||
     !nonempty(rules.revision)||plan.ruleRevision!==rules.revision||!array(rules.sources).length||
     !rules.sources.every(nonempty)||!nonempty(rules.reviewedAt))return reject('unverified_rules');
-  if(rules.maxPoints!==51||!Array.isArray(rules.pointLevels)||rules.pointLevels.length!==51||
-    !rules.pointLevels.every((v,i)=>positive(v)&&v<=60&&(!i||v>=rules.pointLevels[i-1]))||
+  const talentedRank=rules.legacyTalentedRank;
+  if(rules.pointCalendarRevision!==TALENT_POINT_CALENDAR_REVISION||
+    !Number.isInteger(talentedRank)||talentedRank<0||talentedRank>5||
     rules.gateMode!=='earlier_rows'||!rules.minimumLevelByTalent||typeof rules.minimumLevelByTalent!=='object')return reject('unsupported_rules');
+  const maxPoints=51;
+  const firstPointLevel=10-talentedRank;
   if(plan.requiresRespec!==false)return reject('respec_not_supported');
-  if(!Array.isArray(plan.points)||plan.points.length!==rules.maxPoints)return reject('incomplete_path');
+  if(!Array.isArray(plan.points)||plan.points.length!==maxPoints)return reject('incomplete_path');
   if(!c.trees.some(t=>t.id===plan.treeId))return reject('unknown_specialization');
   const byId=new Map(),ranks=new Map(),history=[];
   for(const tree of c.trees)for(const t of tree.talents){
@@ -32,7 +36,7 @@ export function validateTalentPath(plan,master,rules){
     byId.set(t.id,{...t,treeId:tree.id});
   }
   for(const [index,step] of plan.points.entries()){
-    const point=index+1,level=rules.pointLevels[index],t=byId.get(step?.talentId);
+    const point=index+1,level=firstPointLevel+index,t=byId.get(step?.talentId);
     if(!t)return reject('unknown_talent',point);
     const rank=(ranks.get(t.id)||0)+1;
     if(step.rank!==rank||rank>t.maxRank)return reject('invalid_rank',point);

@@ -1,17 +1,30 @@
 import assert from 'node:assert/strict';
-import {validateTalentPath,resolveApprovedTalentPlan} from './talent-plan-core.mjs';
+import {validateTalentPath,resolveApprovedTalentPlan,TALENT_POINT_CALENDAR_REVISION} from './talent-plan-core.mjs';
 // Synthetic data only: this is not a real class skill recommendation.
 const revision='a'.repeat(64),profile={classId:8,treeId:1,goal:'leveling',role:'damage',playStyle:'mixed',priority:'balanced'};
 const talents=Array.from({length:11},(_,row)=>({id:row+1,row,maxRank:row===10?1:5,requiredPoints:row*5,
   prerequisites:row===1?[{id:1,rank:5,conditionKnown:true}]:[]}));
 const master={stale:false,classes:{8:{trees:[{id:1,talents}]}},classRevisions:{8:revision}};
 const rules={status:'verified',classId:8,catalogRevision:revision,revision:'fixture',clientBuild:'fixture-build',hotfixRevision:'fixture-hotfix',sources:['fixture'],reviewedAt:'fixture',
-  maxPoints:51,pointLevels:Array.from({length:51},(_,i)=>10+i),gateMode:'earlier_rows',
+  pointCalendarRevision:TALENT_POINT_CALENDAR_REVISION,legacyTalentedRank:0,gateMode:'earlier_rows',
   minimumLevelByTalent:Object.fromEntries(talents.map(t=>[t.id,10+5*t.row]))};
 const plan={id:'fixture',version:1,classId:8,treeId:1,catalogRevision:revision,ruleRevision:'fixture',requiresRespec:false,
   points:talents.flatMap(t=>Array.from({length:t.maxRank},(_,i)=>({talentId:t.id,rank:i+1}))),
   status:'approved',profiles:[profile],review:{reviewedAt:'fixture',rationale:'fixture',evidenceIds:['fixture']}};
 assert.equal(validateTalentPath(plan,master,rules).history.length,51);
+// Synthetic minimum levels isolate the calendar from talent-specific gates.
+const calendarRules={...rules,minimumLevelByTalent:Object.fromEntries(talents.map(t=>[t.id,5]))};
+for(let rank=0;rank<=5;rank++){
+  const result=validateTalentPath(plan,master,{...calendarRules,legacyTalentedRank:rank});
+  assert.ok(result.ok);
+  assert.deepEqual(result.history.map(p=>p.level),Array.from({length:51},(_,i)=>10-rank+i));
+}
+for(const rank of [undefined,-1,6,1.5,'2']){
+  assert.equal(validateTalentPath(plan,master,{...rules,legacyTalentedRank:rank}).code,'unsupported_rules');
+}
+assert.equal(validateTalentPath(plan,master,{...rules,pointCalendarRevision:'unknown'}).code,'unsupported_rules');
+assert.deepEqual(validateTalentPath(plan,master,{...rules,legacyTalentedRank:5}),{ok:false,code:'level_gate',point:1});
+
 const now=Date.parse('2026-11-25T12:00:00Z');
 const verification={status:'verified',clientBuild:rules.clientBuild,hotfixRevision:rules.hotfixRevision,
   catalogRevision:revision,checkedAt:'2026-11-25T11:00:00Z',validUntil:'2026-11-25T13:00:00Z'};
