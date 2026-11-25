@@ -55,7 +55,7 @@ export function validateTalentPath(plan,master,rules){
   }
   return {ok:true,history,finalRanks:Object.fromEntries(ranks)};
 }
-export function resolveApprovedTalentPlan(profile,plans,master,rulePacks){
+export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{currentRules,now=Date.now()}={}){
   const key=profileKey(profile);
   if(!key)return reject('invalid_profile');
   const candidates=array(plans).filter(p=>p?.status==='approved'&&p.classId===profile.classId&&p.treeId===profile.treeId&&
@@ -67,5 +67,16 @@ export function resolveApprovedTalentPlan(profile,plans,master,rulePacks){
   const rules=array(rulePacks).filter(r=>r?.revision===plan.ruleRevision&&r.classId===plan.classId);
   if(rules.length!==1)return reject('missing_or_ambiguous_rules');
   const check=validateTalentPath(plan,master,rules[0]);
-  return check.ok?{ok:true,planId:plan.id,version:plan.version,history:check.history}:check;
+  if(!check.ok)return check;
+  // Cache freshness only attests to an acquisition. Release additionally
+  // requires independent, current evidence from a verified rules check.
+  const rule=rules[0];
+  const current=currentRules?.[plan.classId];
+  const checkedAt=Date.parse(current?.checkedAt);
+  const validUntil=Date.parse(current?.validUntil);
+  if(current?.status!=='verified'||!nonempty(current.clientBuild)||!nonempty(current.hotfixRevision)||
+    current.clientBuild!==rule.clientBuild||current.hotfixRevision!==rule.hotfixRevision||
+    current.catalogRevision!==plan.catalogRevision||!Number.isFinite(now)||
+    !(checkedAt<=now&&now<validUntil))return reject('unverified_current_rules');
+  return {ok:true,planId:plan.id,version:plan.version,history:check.history};
 }

@@ -1,13 +1,14 @@
 import {randomUUID,createHash} from 'node:crypto';
 import {configured,redis} from './character-store.mjs';
-import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
+import {compressedMasterKey,decodeCompactMaster,readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {publicClassData,CLASS_BY_ID} from './class-training-store.mjs';
 import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
 
 const LEGACY_KEY='dalton-dashboard:talent-tree-catalog:v2';
 // Preview experiments must not overwrite the production master if Redis is shared.
-const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes'+(process.env.VERCEL_ENV==='preview'?':preview':'');
+const isProduction=process.env.VERCEL_ENV==='production';
+const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes'+(isProduction?'':':preview');
 export const TALENT_CLASS_IDS=Object.freeze(Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 const MAX_AGE=6*60*60*1000;
 const ATTEMPT_SECONDS=MAX_AGE/1000;
@@ -139,20 +140,32 @@ export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,
   const master=await loadTalentMaster({fetchImpl,redisImpl,enabled,now,observedBuilds:hint});
   const projected=projectTalentMaster(master,ids);
   let classes=projected.classes;
-  let stale=master.stale;
   const missing=ids.filter(id=>!classes[id]);
   if(missing.length&&enabled){
-    // Migration fallback for the existing read-only character view only.
-    const legacy=await readCompactMaster(LEGACY_KEY+':'+ids.join('-'),{redisImpl}).catch(()=>null);
+    // Read legacy display data only when necessary. Avoid the generic cache
+    // migration here because it can write to shared production keys.
+    const legacyIds=missing.filter(id=>!master.fallbackClasses?.[id]);
+    let legacy=null;
+    if(isProduction&&legacyIds.length){
+      const key=LEGACY_KEY+':'+ids.join('-');
+      try{
+        const packed=await redisImpl(['GET',compressedMasterKey(key)]);
+        legacy=packed?decodeCompactMaster(packed):JSON.parse(await redisImpl(['GET',key]));
+      }catch{/* A failed migration read must not suppress current classes. */}
+    }
     for(const id of missing){
       const fallback=master.fallbackClasses?.[id]||legacy?.classes?.[id];
       if(fallback)classes={...classes,[id]:fallback};
     }
-    stale=true;
   }
-  const refs=Object.values(classes).flatMap(c=>c.trees.flatMap(t=>t.talents.map(n=>({type:'spell',id:n.spellId,iconId:n.iconId}))));
-  const icons=enabled?await resolveIcons(refs,{characterSlug:data.characters?.[0]?.slug,maxNew:48,allowFetch:!stale}).catch(()=>({})): {};
-  // Keep the existing public response lean; only the character projection has icons.
-  return {checkedAt:master.checkedAt,source:master.source,observedBuilds:master.observedBuilds,stale,
+  const refsFor=entries=>Object.values(entries).flatMap(c=>c.trees.flatMap(t=>
+    t.talents.map(n=>({type:'spell',id:n.spellId,iconId:n.iconId}))));
+  const refs=refsFor(classes);
+  const fetchableKeys=new Set(refsFor(projected.classes).map(n=>mediaIconKey(n.type,n.id)));
+  const icons=enabled?await resolveIcons(refs,{characterSlug:data.characters?.[0]?.slug,maxNew:48,
+    allowFetch:isProduction&&!master.stale,fetchableKeys}).catch(()=>({})): {};
+  // The global flag describes cache age. Fallback provenance is per class.
+  return {checkedAt:master.checkedAt,source:master.source,observedBuilds:master.observedBuilds,stale:master.stale,
+    missingClassIds:missing,fallbackClassIds:missing.filter(id=>classes[id]),
     classes:Object.fromEntries(Object.entries(classes).map(([id,c])=>[id,{...c,trees:c.trees.map(t=>({...t,talents:t.talents.map(n=>({...n,iconUrl:icons[mediaIconKey('spell',n.spellId)]||null}))}))}]))};
 }

@@ -319,7 +319,7 @@ function talentPanel(c){
   const tree=klass.trees.find(t=>t.id===picked)||[...klass.trees].sort((a,b)=>(points.get(b.id)||0)-(points.get(a.id)||0))[0];
   const selected=talentNodeSelection.get(c.slug+':'+tree.id);
   const node=tree.talents.find(n=>n.id===selected)||null;
-  const stale=displayedTalentCatalog.stale===true;
+  const stale=displayedTalentCatalog.stale===true||displayedTalentCatalog.fallbackClassIds?.includes(c.classId)===true;
   const total=personal.verified?[...points.values()].reduce((sum,p)=>sum+p,0):null;
   return '<div class="section talents-section talent-browser"><h3>Talente'+(c.scrapeOk===false?' · letzter bekannter Stand':'')+'</h3>'+
     '<div class="talent-summary"><strong>'+esc(total===null?'Talentstand nicht bestätigt':total+' verteilte Talentpunkte')+'</strong><small>Aktueller Charakterstand · keine Talentplanung</small></div>'+
@@ -358,7 +358,7 @@ function refreshTalentPanels(){
 function loadTalentCatalog(){
   const hint=talentBuildHint(displayedData);
   const classIds=displayOrder('text',[...new Set((displayedData?.characters||[]).map(c=>String(c.classId)))]);
-  const complete=displayedTalentCatalog&&classIds.every(id=>displayedTalentCatalog.classes?.[id]);
+  const complete=displayedTalentCatalog&&classIds.every(id=>displayedTalentCatalog.classes?.[id]||displayedTalentCatalog.missingClassIds?.includes(Number(id)));
   if(complete&&!displayedTalentCatalog.stale&&hint===talentCatalogHint&&Date.now()-talentCatalogLoadedAt<6*60*60*1000)return;
   if(talentCatalogPromise||Date.now()-talentCatalogLoadedAt<15000)return;
   talentCatalogPromise=(async()=>{

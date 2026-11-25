@@ -39,7 +39,7 @@ async function observedNamespace(characterSlug){
 }
 function field(entry){return entry?mediaIconKey(entry.type,entry.id):null}
 function freshNegative(record){const age=Date.now()-Date.parse(record?.updatedAt||'');return record&&!record.storedUrl&&record.lookupPolicy===LOOKUP_POLICY&&Number.isFinite(age)&&age>=0&&age<NEGATIVE_TTL}
-export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,maxNew=24}={}){
+export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,maxNew=24,fetchableKeys=null}={}){
   const byKey=new Map();
   for(const entry of refs.filter(Boolean)){
     const key=field(entry);
@@ -50,7 +50,7 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
   try{records=await readIconRecords([...byKey.values()])}catch{return {}}
   const icons=Object.fromEntries(Object.entries(records).filter(([,r])=>r?.storedUrl).map(([key,r])=>[key,r.storedUrl]));
   if(!allowFetch||!imageStoreConfigured())return icons;
-  const missing=[...byKey.entries()].filter(([key,entry])=>!icons[key]&&(!freshNegative(records[key])||(entry.iconId&&!records[key]?.sourceUrl))).slice(0,maxNew);
+  const missing=[...byKey.entries()].filter(([key,entry])=>!icons[key]&&(!fetchableKeys||fetchableKeys.has(key))&&(!freshNegative(records[key])||(entry.iconId&&!records[key]?.sourceUrl))).slice(0,maxNew);
   if(!missing.length)return icons;
   // No per-character copies or browser source requests. Bound cold work and
   // serialize it across functions; warm path uses a single registry HMGET.

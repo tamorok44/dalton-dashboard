@@ -43,3 +43,53 @@ await loadTalentMaster({...options,observedBuilds:'71092'});
 assert.equal(requests,first);
 assert.equal([...kv.keys()].filter(k=>k.endsWith(':attempt')).length,1);
 console.log('Talent catalog: roster independence, revisions and bounded failure retries: OK');
+
+
+// A failed class remains a display fallback, without changing another class's
+// freshness or causing the Preview request to write shared media or master data.
+const {encodeCompactMaster}=await import('./compact-master-cache.mjs');
+const previousEnv=process.env.VERCEL_ENV;
+let productionCatalog,previewCatalog;
+try{
+  process.env.VERCEL_ENV='production';
+  ({loadTalentTreeCatalog:productionCatalog}=await import('./talent-tree-store.mjs?production'));
+  process.env.VERCEL_ENV='preview';
+  ({loadTalentTreeCatalog:previewCatalog}=await import('./talent-tree-store.mjs?preview'));
+}finally{
+  if(previousEnv===undefined)delete process.env.VERCEL_ENV;
+  else process.env.VERCEL_ENV=previousEnv;
+}
+const {mediaIconKey}=await import('./media-resolver.mjs');
+const fallback=structuredClone(master.classes[8]);
+fallback.classId=2;
+for(const tree of fallback.trees)for(const talent of tree.talents)talent.spellId+=1000;
+const packed=encodeCompactMaster({...master,fallbackClasses:{2:fallback}});
+const roster={characters:[{classId:8},{classId:2},{classId:4}]};
+for(const [loadCatalog,suffix] of [[productionCatalog,''],[previewCatalog,':preview']]){
+  const commands=[];
+  const result=await loadCatalog(roster,{},{
+    enabled:true,now:100,
+    redisImpl:async command=>{
+      commands.push(command);
+      return command[1]==='dalton-dashboard:talent-tree-catalog:v3:all-classes'+suffix+':gz1'?packed:null;
+    },
+    fetchImpl:()=>assert.fail('A warm partial master must not fetch class files'),
+    resolveIcons:async (refs,{allowFetch,fetchableKeys})=>{
+      assert.equal(allowFetch,suffix==='');
+      assert.equal(refs.length,8);
+      assert.equal(fetchableKeys.size,4);
+      assert.ok(fetchableKeys.has(mediaIconKey('spell',201)));
+      assert.ok(!fetchableKeys.has(mediaIconKey('spell',1201)));
+      return {[mediaIconKey('spell',1201)]:'https://example.test/archived.jpg'};
+    }
+  });
+  assert.equal(result.stale,false);
+  assert.deepEqual(result.missingClassIds,[2,4]);
+  assert.deepEqual(result.fallbackClassIds,[2]);
+  assert.ok(result.classes[8]);
+  assert.equal(result.classes[2].trees[0].talents[0].iconUrl,'https://example.test/archived.jpg');
+  assert.equal(result.classes[4],undefined);
+  assert.ok(commands.every(([operation])=>operation==='GET'));
+  assert.equal(commands.length,suffix?1:3);
+}
+console.log('Talent catalog: partial availability, read-only fallbacks and Preview isolation: OK');
