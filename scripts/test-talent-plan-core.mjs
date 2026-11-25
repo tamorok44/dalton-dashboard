@@ -46,6 +46,10 @@ for(const changed of [
   {status:'source_unavailable'}
 ])assert.equal(resolveWith({...verification,...changed}).code,'unverified_current_rules');
 assert.equal(resolveWith(verification,{...master,checkedAt:'2026-11-25T10:30:00Z'}).code,'unverified_current_rules');
+const earlierObservation={...verification,checkedAt:'2026-11-25T05:00:00Z'};
+assert.equal(resolveWith(earlierObservation,{...master,checkedAt:'2026-11-25T06:00:00.001Z'}).planId,plan.id);
+assert.equal(resolveWith(earlierObservation,{...master,checkedAt:'2026-11-25T06:00:00Z'}).code,'unverified_current_rules');
+assert.equal(resolveWith(verification,{...master,checkedAt:'2026-11-25T12:00:00.001Z'}).code,'unverified_current_rules');
 assert.equal(resolveApprovedTalentPlan(profile,[plan,{...plan,version:2}],master,[rules]).code,'ambiguous_recommendation');
 assert.equal(resolveApprovedTalentPlan({...profile,playStyle:'solo'},[plan],master,[rules]).code,'no_approved_recommendation');
 assert.equal(resolveApprovedTalentPlan(profile,[{...plan,status:'research_only'}],master,[rules]).code,'no_approved_recommendation');

@@ -4,14 +4,14 @@ import {compressedMasterKey,decodeCompactMaster,readCompactMaster,writeCompactMa
 import {publicClassData,CLASS_BY_ID} from './class-training-store.mjs';
 import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
+import {TALENT_CATALOG_MAX_AGE_MS,talentCatalogIsFresh} from './talent-rule-watch.mjs';
 
 const LEGACY_KEY='dalton-dashboard:talent-tree-catalog:v2';
 // Preview experiments must not overwrite the production master if Redis is shared.
 const isProduction=process.env.VERCEL_ENV==='production';
 const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes'+(isProduction?'':':preview');
 export const TALENT_CLASS_IDS=Object.freeze(Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
-const MAX_AGE=6*60*60*1000;
-const ATTEMPT_SECONDS=MAX_AGE/1000;
+const ATTEMPT_SECONDS=TALENT_CATALOG_MAX_AGE_MS/1000;
 const arr=v=>Array.isArray(v)?v:[];
 const positive=v=>Number.isSafeInteger(v)&&v>0;
 const word=v=>typeof v==='string'&&v.trim()?v.trim():null;
@@ -103,8 +103,7 @@ export function projectTalentMaster(master,ids){
 export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=configured(),now=Date.now(),observedBuilds=''}={}){
   if(!enabled)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
   let saved=await readCompactMaster(KEY,{redisImpl}).catch(()=>null);
-  const fresh=value=>value&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
-  let stale=!fresh(saved);
+  let stale=!talentCatalogIsFresh(saved?.checkedAt,now);
   // A partial source snapshot is retried at the normal cadence, not on every UI visit.
   if(stale){
     const token=randomUUID();
@@ -121,7 +120,7 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
           candidate.fallbackClasses={...saved?.fallbackClasses,...saved?.classes};
           for(const id of Object.keys(candidate.classes))delete candidate.fallbackClasses[id];
           const written=await writeCompactMaster(KEY,candidate,{redisImpl});
-          if(written==='OK'){saved=candidate;stale=!fresh(saved)}
+          if(written==='OK'){saved=candidate;stale=!talentCatalogIsFresh(saved.checkedAt,now)}
         }
       }catch(error){console.warn('Talentbaum-Katalog nicht aktualisiert:',String(error.message).slice(0,120))}
 

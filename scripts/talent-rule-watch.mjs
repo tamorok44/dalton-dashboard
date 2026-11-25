@@ -1,8 +1,14 @@
 import {createHash} from 'node:crypto';
 
 const MAX_AGE_MS=26*60*60*1000;
+export const TALENT_CATALOG_MAX_AGE_MS=6*60*60*1000;
 const buildId=/^1\.60\.1\.\d+$/;
 const digestId=/^[a-f0-9]{64}$/;
+
+export function talentCatalogIsFresh(checkedAt,now){
+  const age=now-Date.parse(checkedAt);
+  return age>=0&&age<TALENT_CATALOG_MAX_AGE_MS;
+}
 
 // Fingerprint the official article body, including changes to older entries.
 // One shared fetch serves both rule watchers. Navigation and timestamps
@@ -35,5 +41,5 @@ export function currentTalentRulesMatch(observation,rules,master,now=Date.now())
     digestId.test(observation.hotfixRevision)&&observation.clientBuild===rules.clientBuild&&
     observation.hotfixRevision===rules.hotfixRevision&&Number.isFinite(now)&&
     checkedAt<=now&&now-checkedAt<MAX_AGE_MS&&
-    catalogAt>=checkedAt&&catalogAt<=now;
+    catalogAt>=checkedAt&&talentCatalogIsFresh(master?.checkedAt,now);
 }
