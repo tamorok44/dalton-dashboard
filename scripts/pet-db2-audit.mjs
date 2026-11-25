@@ -29,7 +29,9 @@ function csvRows(text,spec,key){
     return spec.filter?Number(field)===spec.value:ids.has(Number(field));
   });
   if(!relevant.length||relevant.some(line=>line.split(',').length!==columns.length))throw Error('db2_missing_or_malformed_rows');
-  if(spec.filter&&relevant.length!==lines.length)throw Error('db2_filter_not_applied');
+  // Wago's textual filters may also return IDs containing the requested digits.
+  // The bounded response is filtered by the exact numeric ID locally, and the
+  // complete resulting row set must still match the reviewed reference.
   return relevant.sort();
 }
 async function inspect(key,spec,build,fetchImpl){
