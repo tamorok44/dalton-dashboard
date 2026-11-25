@@ -54,7 +54,7 @@ export function createTalentPlannerHandler({
       const identity=candidateIdentity&&result.data.characters.filter(c=>characterIdentity(c)===candidateIdentity).length===1?candidateIdentity:null;
       if(!query.tree){
         const profiles=activePlans.flatMap(plan=>plan.profiles.map(profile=>({
-          ...profile,name:plan.treeName,recommendation:plan.review.rationale,supportedLegacyRanks:plan.supportedLegacyRanks
+          ...profile,name:plan.treeName,planId:plan.id,version:plan.version,recommendation:plan.review.rationale,supportedLegacyRanks:plan.supportedLegacyRanks
         })));
         return send(200,{ok:true,profiles,identity});
       }

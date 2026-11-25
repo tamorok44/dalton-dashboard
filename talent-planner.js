@@ -1,7 +1,7 @@
 const labels={
-  leveling:'Leveln',dungeons:'Dungeons',pvp:'PvP',
-  damage:'Schaden',tank:'Tanken',heal:'Heilen',
-  mixed:'Solo und Gruppe',solo:'Solo',group:'Feste Gruppe',balanced:'Ausgewogen'
+  leveling:'Leveln und Questen',dungeons:'Dungeons',pvp:'PvP',
+  damage:'Schaden austeilen',tank:'Tanken',heal:'Heilen',
+  mixed:'Mal alleine, mal gemeinsam',solo:'Meist alleine',group:'Meist gemeinsam',balanced:'Ausgewogen'
 };
 const blocking={
   unknown_character:'Der Charakter gehört nicht zum verfügbaren Roster.',
@@ -15,22 +15,70 @@ const blocking={
   binding_unavailable:'Die gemerkte Planversion ist für diesen Charakter und diese Auswahl derzeit nicht verfügbar.',
   source_unavailable:'Die Datenquellen sind derzeit nicht erreichbar. Der Talentpfad ist gesperrt.'
 };
-const profileLabel=p=>[p.goal,p.role,p.playStyle,p.priority].map(value=>labels[value]||value).join(' · ')+' · '+p.name;
+const profileLabel=p=>[p.goal,p.role,p.playStyle].map(value=>labels[value]||value).join(' · ')+' · '+p.name;
 const treeKeys=['treeId','goal','role','playStyle','priority'];
-const guideFields=[['goal','Was möchtest du hauptsächlich spielen?'],['role','Welche Rolle möchtest du übernehmen?'],['playStyle','Wie spielst du am liebsten?'],['priority','Was ist dir besonders wichtig?']];
+const guideFields=[
+  ['goal','Was möchtest du hauptsächlich machen?'],
+  ['role','Welche Aufgabe möchtest du in der Gruppe übernehmen?'],
+  ['playStyle','Bist du meistens alleine oder gemeinsam unterwegs?']
+];
 const allGoals=['leveling','dungeons','pvp'];
-export function talentGuideOptions(profiles,selection={}){
-  let remaining=profiles;
-  const fields=[];
-  for(const [key,label] of guideFields){
-    const values=key==='goal'?allGoals:[...new Set(remaining.map(p=>p[key]))];
-    if(!values.length)break;
-    const chosen=values.includes(selection[key])?selection[key]:key!=='goal'&&values.length===1?values[0]:'';
-    fields.push({key,label,values,chosen});
-    if(!chosen)return {fields,profiles:[],complete:false};
-    remaining=remaining.filter(p=>p[key]===chosen);
+const pathKey=p=>JSON.stringify([p.planId??null,p.version??null,p.treeId,
+  ...(p.planId?[]:[p.role,p.playStyle,p.priority])]);
+const pathSet=profiles=>JSON.stringify([...new Set(profiles.map(pathKey))].sort());
+const preferredValues={role:['damage','tank','heal'],playStyle:['mixed','solo','group']};
+
+function groupedOptions(profiles,key){
+  const groups=new Map();
+  for(const p of profiles){
+    const value=p[key];
+    if(!groups.has(value))groups.set(value,[]);
+    groups.get(value).push(p);
   }
-  return {fields,profiles:remaining,complete:fields.length===guideFields.length};
+  const order=preferredValues[key]??[];
+  return [...groups.entries()].sort(([a],[b])=>{
+    const rank=v=>order.includes(v)?order.indexOf(v):order.length;
+    return rank(a)-rank(b)||String(a).localeCompare(String(b));
+  });
+}
+
+// Ask only about choices that distinguish approved paths. Editorially balanced
+// profiles are the novice-facing default; priorities remain library metadata.
+// Specialized priorities are not silently substituted for this default.
+export function talentGuideOptions(profiles,selection={}){
+  const goal=allGoals.includes(selection.goal)?selection.goal:'';
+  const fields=[{key:'goal',label:guideFields[0][1],values:allGoals,chosen:goal}];
+  const inferred={};
+  if(!goal)return {fields,profiles:[],complete:false,inferred,unavailable:false};
+  let remaining=profiles.filter(p=>p.goal===goal&&p.priority==='balanced');
+  if(!remaining.length)return {fields,profiles:[],complete:false,inferred,unavailable:true};
+  for(const [key,label] of guideFields.slice(1)){
+    const groups=groupedOptions(remaining,key);
+    if(!groups.length)return {fields,profiles:[],complete:false,inferred,unavailable:true};
+    const values=groups.map(([value])=>value);
+    const distinctPaths=new Set(groups.map(([,items])=>pathSet(items)));
+    if(distinctPaths.size===1){
+      // A single answer, or several answers that lead to exactly the same
+      // plan versions, does not justify a separate question.
+      const chosen=values.includes(selection[key])?selection[key]:values[0];
+      inferred[key]=chosen;
+      remaining=groups.find(([value])=>value===chosen)[1];
+      continue;
+    }
+    const chosen=values.includes(selection[key])?selection[key]:'';
+    fields.push({key,label,values,chosen});
+    if(!chosen)return {fields,profiles:[],complete:false,inferred,unavailable:false};
+    remaining=groups.find(([value])=>value===chosen)[1];
+  }
+  const trees=new Map();
+  for(const p of remaining){
+    if(!trees.has(p.treeId))trees.set(p.treeId,[]);
+    trees.get(p.treeId).push(p);
+  }
+  // An ambiguous specialization is not a valid single recommendation.
+  // Never pick the first distinct path simply because of iteration order.
+  const choices=[...trees.values()].filter(items=>new Set(items.map(pathKey)).size===1).map(items=>items[0]);
+  return {fields,profiles:choices,complete:choices.length>0,inferred,unavailable:!choices.length};
 }
 export function planIsCurrent(plan,now=Date.now()){
   return Boolean(plan&&Date.parse(plan.evidence?.validUntil)>now);
@@ -95,8 +143,10 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
         binding=identity?storageBinding(storage,identity):null;
         const selected=previous&&previous.identity===identity?profiles.find(option=>matches(option,previous.profile)):null;
         selection=binding?.profile??(previous&&previous.identity===identity?previous.selection:{});
-        profile=binding?.profile??selected??null;
-        rank=binding?.rank?.toString()??(selected?previous.rank:'');
+        const guide=talentGuideOptions(profiles,selection);
+        profile=binding?.profile??guide.profiles.find(option=>matches(option,selected))??
+          (guide.profiles.length===1?guide.profiles[0]:null);
+        rank=binding?.rank?.toString()??(selected&&matches(selected,profile)?previous.rank:'');
         if(binding&&binding.identity!==result.identity)message=warn('binding_unavailable');
         if(!binding&&!profiles.length)message=warn('no_approved_recommendation');
       }
@@ -229,18 +279,22 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     if(!character||binding||busy||!profiles.length)return '';
     const guide=talentGuideOptions(profiles,selection);
     const fieldHtml=guide.fields.map(field=>'<label class="talent-planner-field" for="talentGuide-'+field.key+'">'+esc(field.label)+'<select id="talentGuide-'+field.key+'" data-guide-field="'+field.key+'"'+disabled+'><option value="">Bitte wählen</option>'+field.values.map(value=>'<option value="'+esc(value)+'"'+(field.chosen===value?' selected':'')+'>'+esc(labels[value]||value)+'</option>').join('')+'</select></label>').join('');
-    if(!guide.profiles.length)return fieldHtml+(guide.fields.at(-1)?.chosen?'<p>Für diese Ausrichtung ist noch kein fachlich freigegebener Talentplan verfügbar.</p>':'');
-    return fieldHtml+'<label class="talent-planner-field" for="talentPlannerProfile">Spezialisierung<select id="talentPlannerProfile"'+disabled+'><option value="">Spezialisierung wählen</option>'+guide.profiles.map(value=>'<option value="'+profiles.indexOf(value)+'"'+(matches(value,profile)?' selected':'')+'>'+esc(value.name)+'</option>').join('')+'</select></label>'+(guide.profiles.length===1?'<p>Für diese Auswahl ist derzeit '+esc(guide.profiles[0].name)+' als geprüfter Plan verfügbar. Weitere Spezialisierungen werden erst nach fachlicher Freigabe angeboten.</p>':'')+(profile?.recommendation?'<p>'+esc(profile.recommendation)+'</p>':'');
+    if(!guide.profiles.length)return fieldHtml+(guide.unavailable?'<p>Für diese Ausrichtung ist noch kein fachlich freigegebener Talentplan verfügbar.</p>':'');
+    const context=profile?[profile.role,profile.playStyle].map(value=>labels[value]||value).join(' · '):'';
+    const specialization=guide.profiles.length===1
+      ?'<p><strong>Spezialisierung: '+esc(guide.profiles[0].name)+'</strong> · derzeit einziger freigegebener Plan für diese Auswahl.</p>'
+      :'<label class="talent-planner-field" for="talentPlannerProfile">Welche Spezialisierung bevorzugst du?<select id="talentPlannerProfile"'+disabled+'><option value="">Spezialisierung wählen</option>'+guide.profiles.map(value=>'<option value="'+profiles.indexOf(value)+'"'+(matches(value,profile)?' selected':'')+'>'+esc(value.name)+'</option>').join('')+'</select></label><p class="talent-point-note">Eine vergleichende Empfehlung ist für diese Auswahl noch nicht fachlich bestätigt.</p>';
+    return fieldHtml+specialization+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
   }
   function render(focus){
     const disabled=busy?' disabled':'';
     root.innerHTML='<form class="talent-planner-card">'+
-      '<label class="talent-planner-field" for="talentPlannerCharacter">Charakter<select id="talentPlannerCharacter"><option value="">Charakter wählen</option>'+
-      displayList('alphabetical',characters,c=>'<option value="'+esc(c.slug)+'"'+(c.slug===character?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select></label>'+
+      '<label class="talent-planner-field" for="talentPlannerCharacter">Für welchen Charakter möchtest du planen?<select id="talentPlannerCharacter"><option value="">Charakter wählen</option>'+
+      displayList('alphabetical',characters,c=>'<option value="'+esc(c.slug)+'"'+(c.slug===character?' selected':'')+'>'+esc(c.name+(c.class?' · '+c.class:''))+'</option>').join('')+'</select></label>'+
       (binding?'<p><strong>Gemerkter Plan · Version '+esc(binding.version)+'</strong> · '+esc(profileLabel({...binding.profile,name:profiles.find(value=>matches(value,binding.profile))?.name||'gemerkte Spezialisierung'}))+' · Talentiert Rang '+esc(binding.rank)+'</p>':
         renderGuide(disabled))+
       (binding?'<p class="talent-point-note">Nur in diesem Browser gespeichert; keine geräteübergreifende Synchronisierung.</p>':'')+
-      (profile&&!binding?'<label class="talent-planner-field" for="talentPlannerLegacy">Vermächtnisrang „Talentiert“<select id="talentPlannerLegacy"'+disabled+'><option value="">Rang im Spiel nachsehen</option>'+
+      (profile&&!binding?'<p class="talent-point-note">Für die korrekte Anzahl der Talentpunkte benötigen wir noch eine Angabe aus dem Spiel.</p><label class="talent-planner-field" for="talentPlannerLegacy">Vermächtnisrang „Talentiert“<select id="talentPlannerLegacy"'+disabled+'><option value="">Rang im Spiel nachsehen</option>'+
         displayList('fixedControls',[0,1,2,3,4,5],value=>'<option value="'+value+'"'+(rank===String(value)?' selected':'')+'>Rang '+value+'</option>').join('')+
         '</select></label>':'')+
       (profile?'<button type="submit" class="talent-planner-action"'+disabled+'>'+(binding?'Gemerkten Plan prüfen':'Rang bestätigen und Plan prüfen')+'</button>':'')+
@@ -255,12 +309,12 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       for(const [field] of guideFields.slice(index+1))delete selection[field];
       selection[key]=event.target.value;
       const guide=talentGuideOptions(profiles,selection);
-      for(const field of guide.fields)if(field.chosen)selection[field.key]=field.chosen;
       profile=guide.profiles.length===1?guide.profiles[0]:null;
       rank='';message='';clearPlan();render('#talentGuide-'+key);
     }));
     root.querySelector('#talentPlannerProfile')?.addEventListener('change',event=>{
-      profile=profiles[event.target.value]??null;
+      profile=talentGuideOptions(profiles,selection).profiles.find(p=>p===profiles[event.target.value])??null;
+      rank='';
       message='';
       clearPlan();
       render('#talentPlannerProfile');
