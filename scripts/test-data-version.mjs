@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {buildDataVersion} from './data-version.mjs';
+import {buildDataVersion,readCompactVersion} from './data-version.mjs';
 
 const base=buildDataVersion({
   data:{generatedAt:'2026-11-21T05:07:00.000Z'},
@@ -41,3 +41,20 @@ const same=buildDataVersion({
 assert.equal(same.version,base.version,'Identical server data must keep a stable version');
 
 console.log('Data version: character, pet-rule, live-knowledge and AddOn-sync freshness signature: OK');
+
+const fields=new Map();let fullReads=0;
+const redisStub=async ([command,key,field,value])=>{
+  if(command==='HGETALL')return [...fields.entries()].flat();
+  if(command==='HSETNX'){if(!fields.has(field))fields.set(field,value);return 1;}
+  if(command==='HGET')return fields.get(field)||null;
+  throw Error(command);
+};
+const inputs={redisImpl:redisStub,readCharacters:async()=>{fullReads++;return {data:{generatedAt:'2026-11-21T05:07:00.000Z',characters:[{slug:'cole-dalton'},{slug:'dolly-dalton'}]}}},readPet:async()=>{fullReads++;return {checkedAt:'2026-11-21T05:06:30.000Z',rulebookVersion:'2026.11.22.2',overall:'verified'}},readAddon:async slug=>{fullReads++;return slug==='cole-dalton'?{receivedAt:'2026-11-24T12:22:51.468Z',payload:{syncId:'sync-2'}}:null},readLive:async()=>null};
+const initial=await readCompactVersion(inputs);
+assert.equal(initial.version,addonSync.version);
+assert.equal(fullReads,4);
+assert.equal((await readCompactVersion(inputs)).version,initial.version);
+assert.equal(fullReads,4,'Warm polling must not read any full character, pet, or addon payload, including never synced characters');
+fields.set('characters',JSON.stringify({generatedAt:'2026-11-25T05:07:00.000Z',slugs:['cole-dalton','dolly-dalton']}));
+assert.notEqual((await readCompactVersion(inputs)).version,initial.version);
+assert.equal(fullReads,4);

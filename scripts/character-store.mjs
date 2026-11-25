@@ -1,3 +1,4 @@
+import {VERSION_METADATA_KEY,characterVersionMetadata} from './version-metadata.mjs';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {normalizeVerifiedPlayerTerminology} from './player-terminology.mjs';
@@ -47,9 +48,9 @@ export async function manualCooldown(){
 export async function saveCharacters(data,lockToken){
   if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Ungültige Charakterdaten');
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
-  const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('SET', KEYS[2], ARGV[2]) else return redis.error_reply('REFRESH_LOCK_LOST') end";
+  const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then redis.call('SET', KEYS[2], ARGV[2]); redis.call('HSET', KEYS[3], 'characters', ARGV[3]); return 'OK' else return redis.error_reply('REFRESH_LOCK_LOST') end";
   const normalized=normalizeVerifiedPlayerTerminology(data);
-  await redis(['EVAL',lua,2,LOCK,KEY,lockToken,JSON.stringify(normalized)]);
+  await redis(['EVAL',lua,3,LOCK,KEY,VERSION_METADATA_KEY,lockToken,JSON.stringify(normalized),JSON.stringify(characterVersionMetadata(normalized))]);
 }
 export function mergeProfiles(previous,latest){
   const bySlug=new Map((previous.characters||[]).map(c=>[c.slug,c]));

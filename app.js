@@ -1766,6 +1766,7 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
   const nextVersion=payloadDataVersion(payload);
   const nextGeneratedAt=typeof data.generatedAt==='string'?data.generatedAt:null;
   const characterDataChanged=nextGeneratedAt!==lastGeneratedAt;
+  const plannerDataChanged=characterDataChanged||nextVersion!==lastDataVersion;
   if(!force&&lastDataVersion&&nextVersion===lastDataVersion)return false;
   lastDataVersion=nextVersion;
   lastGeneratedAt=nextGeneratedAt;
@@ -1778,7 +1779,7 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
     reputationCatalog:payload.reputationCatalog||{},
     petCatalog:payload.petCatalog||{}
   });
-  if(characterDataChanged){
+  if(plannerDataChanged){
     invalidateWorkshopData({reloadVisible:true});
     invalidateLocationPlannerData({reloadVisible:true});
   }

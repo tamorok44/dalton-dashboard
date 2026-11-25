@@ -1,3 +1,4 @@
+import {VERSION_METADATA_KEY,petVersionMetadata} from './version-metadata.mjs';
 import {configured,redis} from './character-store.mjs';
 import {PET_RULEBOOK_VERSION,publicPetRuleState,verifyPetRulebook} from './pet-rulebook.mjs';
 
@@ -44,7 +45,7 @@ export async function loadPetRuleState(){
 export async function savePetRuleState(state){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!state?.checkedAt||!state?.rulebookVersion)throw new Error('Ungültiger Pet-Regelstatus');
-  await redis(['SET',KEY,JSON.stringify(state)]);
+  await redis(['EVAL',"redis.call('SET',KEYS[1],ARGV[1]); redis.call('HSET',KEYS[2],'pet',ARGV[2]); return 'OK'",2,KEY,VERSION_METADATA_KEY,JSON.stringify(state),JSON.stringify(petVersionMetadata(publicPetRuleState(state)))]);
   return state;
 }
 export function petRuleStateFresh(state,{now=new Date(),maxAgeMs=20*60*60*1000}={}){

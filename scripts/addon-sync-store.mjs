@@ -1,3 +1,4 @@
+import {VERSION_METADATA_KEY,addonVersionField,addonVersionMetadata} from './version-metadata.mjs';
 import {redis,configured} from './character-store.mjs';
 import {publicAddonSyncSummary} from './addon-sync.mjs';
 
@@ -12,7 +13,7 @@ export async function saveAddonSyncState(characterSlug,payload){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
   const state={characterSlug,receivedAt:new Date().toISOString(),payload};
-  await redis(['SET',keyFor(characterSlug),JSON.stringify(state)]);
+  await redis(['EVAL',"redis.call('SET',KEYS[1],ARGV[1]); redis.call('HSET',KEYS[2],ARGV[2],ARGV[3]); return 'OK'",2,keyFor(characterSlug),VERSION_METADATA_KEY,JSON.stringify(state),addonVersionField(characterSlug),JSON.stringify(addonVersionMetadata(state))]);
   return state;
 }
 

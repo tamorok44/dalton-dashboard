@@ -1,3 +1,5 @@
+import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
+import {loadPublicAddonSyncStates} from '../scripts/addon-sync-store.mjs';
 import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {configured,acquireRefreshLock,releaseRefreshLock,manualCooldown} from '../scripts/character-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
@@ -41,9 +43,12 @@ export default async function handler(req,res){
     const {result,petRuleState}=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
     const petRules=publicPetRuleState(petRuleState);
-    const dataVersion=buildDataVersion({data:result.data,petRules});
+    const [addonSync,liveKnowledgeVersion]=await Promise.all([
+      loadPublicAddonSyncStates((result.data?.characters||[]).map(c=>c.slug).filter(Boolean)),loadLiveKnowledgeVersion().catch(()=>null)
+    ]);
+    const dataVersion=buildDataVersion({data:result.data,petRules,addonSync,liveKnowledgeVersion});
     const media=await enrichKnowledgeMedia(result.data,result.petCatalog,{allowFetch:false}).catch(()=>({data:result.data,petCatalog:result.petCatalog}));
-    return res.status(200).json({...result,...media,petRules,dataVersion});
+    return res.status(200).json({...result,...media,petRules,addonSync,dataVersion});
   }catch(error){
     console.error('Live-Abruf oder Speichern fehlgeschlagen:',error);
     return res.status(503).json({error:'Aktualisierung konnte nicht dauerhaft gespeichert werden'});

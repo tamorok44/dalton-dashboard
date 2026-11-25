@@ -1,3 +1,4 @@
+import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
 import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {loadCharacters} from '../scripts/character-store.mjs';
 import {loadQuestCatalogByIds} from '../scripts/quest-catalog-store.mjs';
@@ -39,7 +40,8 @@ export default async function handler(req,res){
     try{addonSync=await loadPublicAddonSyncStates((result.data?.characters||[]).map(character=>character.slug).filter(Boolean))}catch(error){
       console.warn('Addon-Sync-Status konnte nicht geladen werden:',String(error.message).slice(0,140));
     }
-    const dataVersion=buildDataVersion({data:result.data,petRules,addonSync});
+    const liveKnowledgeVersion=await loadLiveKnowledgeVersion().catch(()=>null);
+    const dataVersion=buildDataVersion({data:result.data,petRules,addonSync,liveKnowledgeVersion});
     const media=await enrichKnowledgeMedia(result.data,petCatalog).catch(()=>({data:result.data,petCatalog}));
     return res.status(200).json({...result,...media,questCatalog,petRules,reputationCatalog,addonSync,dataVersion});
   }catch(e){
