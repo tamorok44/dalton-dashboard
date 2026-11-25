@@ -294,7 +294,8 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       (oldDigest&&approval?.from.find(value=>digestForBuild(value)===oldDigest))||null;
     const buildOnly=Boolean(oldDigest&&baselineBuild&&build&&build!==baselineBuild&&digestForBuild(baselineBuild)===oldDigest);
     const approved=Boolean(buildOnly&&approval&&
-      PET_RULEBOOK_VERSION===approval.rulebookVersion&&previousRulebookVersion===approval.fromRulebookVersion&&
+      PET_RULEBOOK_VERSION===approval.rulebookVersion&&
+      [approval.fromRulebookVersion,approval.rulebookVersion].includes(previousRulebookVersion)&&
       approval.from.includes(baselineBuild)&&build===approval.to);
     const nextBaseline=approved||!oldDigest?digest:oldDigest;
     const changed=digest!==nextBaseline;
