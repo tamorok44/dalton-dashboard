@@ -33,6 +33,11 @@ globalThis.fetch=async (url,options={})=>{
   }
   if(op==='EVAL'){
     const key=String(command[3]),token=String(command[4]);
+    if(key.includes(':daily-budget:')){
+      const n=Number(store.get(key)||0);
+      if(n>=Number(token))return redisResult(-1);
+      store.set(key,String(n+1));return redisResult(n+1);
+    }
     if(store.get(key)===token){store.delete(key);return redisResult(1)}
     return redisResult(0);
   }
@@ -117,3 +122,17 @@ assert.equal(legacyReads,1,'Warm compressed master never fetches the large raw J
 assert.equal(fixture.get(legacyKey),JSON.stringify(large),'Legacy master is preserved for rollback');
 await writeCompactMaster(legacyKey,{recipes:[]},{redisImpl:fakeRedis});
 assert.deepEqual(await readCompactMaster(legacyKey,{redisImpl:fakeRedis}),{recipes:[]});
+
+const {reserveForeverDbRequest,foreverDbBudgetKey,FOREVERDB_DAILY_BUDGET}=await import('./foreverdb-budget.mjs');
+const day=new Date('2026-11-25T13:00:00Z');
+const opts={apiKey:'fixture-key',now:day,enabled:true};
+let count=FOREVERDB_DAILY_BUDGET-1;
+const counter=async ([op,script,num,key,limit])=>{
+  assert.equal(key,foreverDbBudgetKey(opts.apiKey,day));
+  assert.ok(!key.includes(opts.apiKey));
+  if(count>=Number(limit))return -1;
+  return ++count;
+};
+assert.equal(await reserveForeverDbRequest({...opts,redisImpl:counter}),FOREVERDB_DAILY_BUDGET);
+await assert.rejects(()=>reserveForeverDbRequest({...opts,redisImpl:counter}),error=>error.code==='FOREVERDB_INTERNAL_QUOTA');
+assert.notEqual(foreverDbBudgetKey(opts.apiKey,day),foreverDbBudgetKey(opts.apiKey,new Date('2026-11-26T00:00:00Z')));

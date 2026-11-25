@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {snapshotsFromAddonPayload} from './live-knowledge-store.mjs';
+import {snapshotsFromAddonPayload,loadLiveKnowledge} from './live-knowledge-store.mjs';
 import {liveKnowledgeDiscoveries,liveKnowledgeAsAddonStates,buildLiveKnowledgeLearningSourceEvidence} from './learning-source-evidence.mjs';
 
 const payload={
@@ -89,3 +89,16 @@ assert.ok(evidence.observations.some(entry=>entry.source==='dalton-addon'&&entry
 assert.ok(evidence.observations.some(entry=>entry.source==='dalton-addon'&&entry.sourceType==='trainer'&&entry.recipeName==='Spinnenwurst'));
 
 console.log('Live-Wissen: Normalisierung, persistierbare Snapshots und unbekannte Lerngegenstände: OK');
+
+const calls=[];const scope=process.env.VERCEL_ENV==='production'?'production':'preview';
+const pref='dalton-dashboard:live-knowledge:v1:'+scope+':record:';
+const current=[pref+'merchant:1.60.1.71037:id-1',pref+'trainer:1.60.1.71037:id-2'];
+const old=pref+'merchant:1.60.1.70999:id-1';
+const found=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
+  calls.push(command);
+  if(command[0]==='SMEMBERS')return [...current,old];
+  if(command[0]==='MGET')return command.slice(1).map(()=>JSON.stringify(records[0]));
+  throw Error(command[0]);
+}});
+assert.equal(found.length,1);
+assert.deepEqual(calls[1],['MGET',current[0]],'Read only matching build and kind, no obsolete snapshot payloads');

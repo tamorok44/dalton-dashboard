@@ -1,3 +1,4 @@
+import {reserveForeverDbRequest} from './foreverdb-budget.mjs';
 const API_BASE='https://foreverdb.net/api/v1';
 const PROFESSION_SLUGS=new Set(['alchemy','blacksmithing','enchanting','engineering','leatherworking','tailoring','herbalism','mining','skinning','cooking','first-aid','fishing']);
 
@@ -23,6 +24,7 @@ function buildUrl(path,params={}){
   return url;
 }
 async function request(path,{params={},fetchImpl=fetch}={}){
+  await reserveForeverDbRequest();
   const response=await fetchImpl(buildUrl(path,params),{
     headers:headers(),
     signal:AbortSignal.timeout(15000)

@@ -282,17 +282,24 @@ export async function ingestAddonLiveKnowledge(payload={}){
   return {stored,duplicates,changed};
 }
 
-export async function loadLiveKnowledge({build=null,kind=null}={}){
-  if(!configured())return [];
-  const members=await redis(['SMEMBERS',indexKey()]);
-  const keys=Array.isArray(members)?members:[];
+export async function loadLiveKnowledge({build=null,kind=null,redisImpl=redis,enabled=configured()}={}){
+  if(!enabled)return [];
+  const members=await redisImpl(['SMEMBERS',indexKey()]);
+  const keys=(Array.isArray(members)?members:[]).filter(key=>{
+    const parts=String(key).slice((prefix()+'record:').length).split(':');
+    return (!kind||parts[0]===kind)&&(!build||parts[1]===encodeURIComponent(build));
+  });
   const result=[];
-  for(const key of keys){
-    const record=await loadRecord(key);
-    if(!record)continue;
-    if(build&&record.build!==build)continue;
-    if(kind&&record.kind!==kind)continue;
-    result.push(record);
+  // Read only the requested build, in bounded batches. Preserve all evidence.
+  for(let i=0;i<keys.length;i+=8){
+    const values=await redisImpl(['MGET',...keys.slice(i,i+8)]);
+    for(const raw of Array.isArray(values)?values:[]){
+      let record;try{record=JSON.parse(raw)}catch{continue}
+      if(!record)continue;
+      if(build&&record.build!==build)continue;
+      if(kind&&record.kind!==kind)continue;
+      result.push(record);
+    }
   }
   return result.sort((a,b)=>String(b.lastObservedAt||'').localeCompare(String(a.lastObservedAt||'')));
 }

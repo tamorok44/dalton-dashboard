@@ -107,7 +107,7 @@ async function saveJson(key,value,{ttl=null}={}){
   await redis(args);
 }
 async function deleteKey(key){
-  if(redisConfigured())await redis(['DEL',key]);
+  if(redisConfigured())await redis(['DEL',key,compressedMasterKey(key)]);
 }
 async function acquireRedisLock(key,seconds){
   if(!redisConfigured())return 'local';
