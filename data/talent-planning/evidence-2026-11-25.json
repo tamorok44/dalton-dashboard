@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-25",
+  "status": "research_only",
+  "publishableRecommendation": false,
+  "scope": "mage_pilot_and_cross_class_evidence_sources",
+  "sources": [
+    {
+      "id": "talentsforever-mage-order",
+      "url": "https://talentsforever.com/mage/leveling",
+      "kind": "planned_allocations",
+      "independenceGroup": "talentsforever-community",
+      "period": {
+        "from": "2026-09-18",
+        "to": "2026-11-04"
+      },
+      "countedAt": "2026-11-05",
+      "sample": {
+        "unit": "ordered_plans",
+        "count": 71372,
+        "minimumOrderedPoints": 10,
+        "uniquePlayersKnown": false
+      },
+      "observations": {
+        "leadingTreeSharePct": {
+          "frost": 46.8,
+          "arcane": 31.1,
+          "fire": 22.1
+        },
+        "frostModalBrackets": [
+          {
+            "levels": [
+              10,
+              19
+            ],
+            "eligiblePlans": 29179,
+            "matchingPlans": 4886,
+            "matchingPct": 16.7
+          },
+          {
+            "levels": [
+              20,
+              29
+            ],
+            "eligiblePlans": 11307,
+            "matchingPlans": 908,
+            "matchingPct": 8
+          },
+          {
+            "levels": [
+              30,
+              39
+            ],
+            "eligiblePlans": 1763,
+            "matchingPlans": 143,
+            "matchingPct": 8.1
+          },
+          {
+            "levels": [
+              40,
+              49
+            ],
+            "matchingPct": null,
+            "status": "insufficient_agreement"
+          }
+        ]
+      },
+      "limitations": [
+        "Pre-launch and launch-day plans, not outcomes",
+        "Visitors may contribute on multiple days",
+        "Conditional bracket samples differ",
+        "No inference of player identities or performance"
+      ],
+      "reuseStatus": "aggregate_research_only; bulk statistics rights not established"
+    },
+    {
+      "id": "wowstats-armory",
+      "url": "https://wowstats.io/forever/statistics/talents",
+      "kind": "observed_character_allocations",
+      "independenceGroup": "blizzard-armory",
+      "snapshotAt": "2026-11-16T07:24:00Z",
+      "sample": {
+        "unit": "character_profiles",
+        "count": 686065,
+        "guilds": 25945,
+        "uniquePlayersKnown": false
+      },
+      "observations": {
+        "mageTreeWithAnyPoints": [
+          {
+            "tree": "frost",
+            "characters": 49477,
+            "sharePct": 77.4
+          },
+          {
+            "tree": "arcane",
+            "characters": 28052,
+            "sharePct": 43.9
+          }
+        ]
+      },
+      "limitations": [
+        "Guild-indexed sample; stale at review",
+        "Tree counts overlap",
+        "No inferred allocation order or play goal",
+        "Profiles may overlap other Armory sources"
+      ],
+      "reuseStatus": "aggregate_research_only; automated access not established"
+    },
+    {
+      "id": "forever-tool-armory",
+      "url": "https://forever-tool.com/en/stats/",
+      "kind": "observed_character_allocations",
+      "independenceGroup": "blizzard-armory",
+      "sample": {
+        "unit": "looked_up_character_profiles",
+        "count": null
+      },
+      "limitations": [
+        "Self-selected lookup sample; higher-level bias",
+        "Primary tree definition differs from WoWStats.io",
+        "Potential overlapping profiles"
+      ],
+      "reuseStatus": "access_and_rights_pending"
+    },
+    {
+      "id": "archon-dungeons",
+      "url": "https://www.archon.gg/wow-forever",
+      "methodologyUrl": "https://www.archon.gg/wow-forever/articles/news/plans-for-wow-forever-launch",
+      "kind": "observed_combat_logs",
+      "independenceGroup": "warcraft-logs",
+      "sampleExample": {
+        "url": "https://www.archon.gg/wow-forever/builds/arcane/mage/leveling-dungeons/talents/dungeon/endgame-dungeons",
+        "unit": "parses",
+        "count": 466,
+        "windowDays": 14,
+        "treePopularityPct": 36.9,
+        "scope": "arcane mage endgame dungeons; top-1000-kills selection",
+        "asObserved": "2026-11-25"
+      },
+      "limitations": [
+        "Parses are not unique players",
+        "Popularity not causal efficacy",
+        "Gear, group, encounter and level confounding",
+        "Not evidence of solo leveling performance"
+      ],
+      "reuseStatus": "access_and_rights_pending"
+    },
+    {
+      "id": "method-mage",
+      "url": "https://www.method.gg/wow-forever/wow-forever-mage-leveling-guide-and-talents",
+      "kind": "expert_guide",
+      "independenceGroup": "method-mage-author",
+      "pilotClaims": [
+        "Frost favored for solo safety",
+        "Prioritizes cast-time reduction then spell hit and freeze synergy",
+        "Defers some critical-damage ranks until related synergies"
+      ],
+      "reuseStatus": "manual_review_only"
+    },
+    {
+      "id": "foreverspec-frost",
+      "url": "https://foreverspec.com/classes/mage/frost/?v=leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverspec-editorial",
+      "layoutIndependenceGroup": "talentsforever-client-export",
+      "guideUpdated": "2026-11-13",
+      "pilotClaims": [
+        "Early freeze-control synergy, earlier Ice Lance",
+        "Mana and hit talents later",
+        "Complete 51-point sequence published; ID mapping and review pending"
+      ],
+      "reuseStatus": "manual_review_only"
+    },
+    {
+      "id": "icyveins-frost",
+      "url": "https://www.icy-veins.com/wow-forever/frost-mage-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icyveins-mage-author",
+      "pilotClaims": [
+        "General-purpose Frost path without mandatory reset",
+        "Optional early Arcane and reset later not eligible in V1"
+      ],
+      "reuseStatus": "manual_review_only"
+    },
+    {
+      "id": "mobalytics-mage",
+      "url": "https://mobalytics.gg/wow-forever/classes/mage-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-mage-author",
+      "guideUpdated": "2026-11-24",
+      "pilotClaims": [
+        "Early Arcane efficiency; Frost gains later synergies",
+        "Different paths for Frost and AoE"
+      ],
+      "reuseStatus": "manual_review_only"
+    },
+    {
+      "id": "wow4ever-aggregator",
+      "url": "https://wow4ever.quest/en/talent-calculator/mage",
+      "kind": "guide_index",
+      "independenceGroup": "derived-from-attributed-authors",
+      "limitations": [
+        "References original authors including Mobalytics; not an extra confirmation"
+      ],
+      "reuseStatus": "source_discovery_only"
+    }
+  ],
+  "pilot": {
+    "classId": 8,
+    "goal": "leveling",
+    "playStyle": "mixed",
+    "priority": "balanced",
+    "specialization": "frost",
+    "mandatoryRespecAllowed": false,
+    "status": "review_required",
+    "findings": [
+      {
+        "id": "early-cast-time",
+        "assessment": "candidate_consensus",
+        "sources": [
+          "method-mage",
+          "foreverspec-frost",
+          "talentsforever-mage-order"
+        ],
+        "notes": "First five ranks of cast-time talent are a candidate; stable-ID mapping and rule validation required."
+      },
+      {
+        "id": "second-block",
+        "assessment": "unresolved_contextual_difference",
+        "sources": [
+          "method-mage",
+          "foreverspec-frost",
+          "talentsforever-mage-order"
+        ],
+        "notes": "Spell hit, early freeze synergies and crit damage receive different priorities. Compare expected usefulness at intermediate levels; no automatic majority decision."
+      }
+    ],
+    "approvedPlanId": null
+  }
+}
