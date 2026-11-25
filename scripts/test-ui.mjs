@@ -995,3 +995,11 @@ const legacyQuest=ui.questsPanel(questMediaFixture,{}, {1:{title:'Testquest',que
 assert.equal(markerCount(legacyQuest),2,'Legacy quest portrait metadata never changes the standard marker');
 assert.ok(!legacyQuest.includes('portrait-test.jpg')&&!legacyQuest.includes('Testgeber'),'Retired optional quest giver display is ignored');
 assert.ok(read('sw.js').includes('"/quest-marker.png"'),'Original marker available offline');
+
+const searchInputBody=source.slice(source.indexOf('function workshopSearchInput('),source.indexOf('function renderWorkshop(){'));
+assert.ok(!searchInputBody.includes('renderWorkshop()'),'Typing never replaces the search input');
+const autoCompleteBody=source.slice(source.indexOf('async function searchWorkshop('),source.indexOf('async function selectWorkshopItem('));
+assert.ok(autoCompleteBody.includes('renderWorkshopSuggestions()')&&!autoCompleteBody.includes('renderWorkshop()')&&!autoCompleteBody.includes('.focus(')&&!autoCompleteBody.includes('setSelectionRange'),'Async suggestions cannot steal focus or reset cursor');
+assert.ok(autoCompleteBody.includes('request===workshopSearchEpoch'),'Out-of-order autocomplete responses are discarded');
+assert.ok(source.includes("if(existingShell&&existingShell.querySelector('#workshopSearch'))")&&source.includes('if(child!==searchPanel)child.remove()'),'Full refresh keeps the original search field mounted');
+assert.ok(css.includes('.workshop-suggestions[hidden]{display:none}'),'Empty result list does not cover the search field');

@@ -1069,6 +1069,7 @@ const workshopState={
   browsePath:[]
 };
 let workshopSearchTimer=null;
+let workshopSearchEpoch=0;
 function workshopNodeAtPath(tree,path=[]){
   let node=tree||{};
   for(const segment of path){
@@ -1223,20 +1224,43 @@ function workshopResultHtml(){
     (result.source==='foreverdb'?'<p class="workshop-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</article>';
 }
+function workshopSuggestionsHtml(){
+  return workshopState.suggestions.map(item=>
+    '<button type="button" data-workshop-suggestion="'+esc(item.id)+'"><span><strong>'+esc(item.name)+'</strong>'+
+    '<small>'+(item.craftable?'✓ '+esc((item.crafters||[]).map(c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
+  ).join('');
+}
+function renderWorkshopSuggestions(){
+  const list=workshopRoot?.querySelector('#workshopSuggestions');
+  if(!list)return;
+  list.innerHTML=workshopSuggestionsHtml();
+  list.hidden=!workshopState.suggestions.length;
+  list.querySelectorAll('[data-workshop-suggestion]').forEach(button=>button.addEventListener('click',()=>selectWorkshopItem(Number(button.dataset.workshopSuggestion))));
+}
+function cancelWorkshopSearch(){
+  clearTimeout(workshopSearchTimer);
+  workshopSearchTimer=null;
+  workshopSearchEpoch++;
+}
+function workshopSearchInput(search){
+  cancelWorkshopSearch();
+  workshopSelectionEpoch++;
+  workshopState.query=search.value;
+  workshopState.suggestions=[];
+  renderWorkshopSuggestions();
+  if(workshopState.query.trim().length<3)return;
+  workshopSearchTimer=setTimeout(()=>searchWorkshop(workshopState.query),350);
+}
 function renderWorkshop(){
   if(!workshopRoot)return;
-  if(workshopState.loading&&!workshopState.overview){
+  const existingShell=workshopRoot.querySelector('.workshop-shell');
+  if(workshopState.loading&&!workshopState.overview&&!existingShell){
     workshopRoot.innerHTML='<p class="compare-empty">Werkstatt wird geladen …</p>';return;
   }
-  if(workshopState.error&&!workshopState.overview){
+  if(workshopState.error&&!workshopState.overview&&!existingShell){
     workshopRoot.innerHTML='<p class="error">'+esc(workshopState.error)+'</p>';return;
   }
   const overview=workshopState.overview||{};
-  const suggestions=workshopState.suggestions.length
-    ?'<div class="workshop-suggestions" role="listbox">'+workshopState.suggestions.map(item=>
-      '<button type="button" data-workshop-suggestion="'+esc(item.id)+'"><span><strong>'+esc(item.name)+'</strong>'+
-      '<small>'+(item.craftable?'✓ '+esc((item.crafters||[]).map(c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
-    ).join('')+'</div>':'';
   const catalogNote=overview.recipeCatalog?.connected
     ?overview.recipeCatalog.complete
       ?'<span class="workshop-source-ok">ForeverDB verbunden · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte · '+esc(overview.recipeCatalog.professionCount||12)+' Berufe</span>'
@@ -1244,24 +1268,42 @@ function renderWorkshop(){
     :overview.foreverDbConfigured
       ?'<span class="workshop-source-note">ForeverDB-Key vorhanden · Rezeptkatalog derzeit nicht erreichbar</span>'
       :'<span class="workshop-source-note">Aktuell Blizzard-Werkstattdaten · ForeverDB noch nicht verbunden</span>';
-  workshopRoot.innerHTML=
+  const markup=
     '<div class="workshop-shell">'+
       '<section class="workshop-search-panel"><div class="workshop-search-head"><div><span class="workshop-kicker">DIREKTER WEG</span><h3>Gegenstand suchen</h3></div>'+catalogNote+'</div>'+
         '<div class="view-filter-row"><span>Anzeige</span>'+segmentedControl('workshop-search-mode',workshopState.searchMode,[['all','Alle'],['craftable','Herstellbar']],'Suchbereich')+'</div>'+
-        '<div class="workshop-search-wrap"><span class="workshop-search-icon" aria-hidden="true">⌕</span><input id="workshopSearch" type="search" autocomplete="off" placeholder="z. B. Kupferbarren" value="'+esc(workshopState.query)+'" aria-label="Gegenstand suchen">'+suggestions+'</div>'+
+        '<div class="workshop-search-wrap"><span class="workshop-search-icon" aria-hidden="true">⌕</span><input id="workshopSearch" type="search" autocomplete="off" placeholder="z. B. Kupferbarren" value="'+esc(workshopState.query)+'" aria-label="Gegenstand suchen"><div id="workshopSuggestions" class="workshop-suggestions" role="listbox" hidden></div></div>'+
       '</section>'+
       '<section class="workshop-browse-panel"><div><span class="workshop-kicker">GEFÜHRTE AUSWAHL</span><h3>Gegenstände durchstöbern</h3><p>'+(workshopState.browseMode==='craftable'?'Nur Gegenstände, die mindestens ein Dalton aktuell herstellen kann.':'Alle herstellbaren Gegenstände aus dem vollständigen Rezeptkatalog.')+'</p><div class="view-filter-row"><span>Anzeige</span>'+segmentedControl('workshop-browse-mode',workshopState.browseMode,[['all','Alle'],['craftable','Herstellbar']],'Dropdown-Katalog')+'</div></div><div class="workshop-browse-fields">'+workshopBrowseHtml()+'</div></section>'+
       workshopResultHtml()+
       ((overview.recipeCatalog?.connected||workshopState.selected?.source==='foreverdb')?'<p class="workshop-global-credit">ForeverDB-Daten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</div>';
+  // Keep the actual input and its ancestors mounted across ALL refreshes.
+  // Replacing or moving a focused search field closes the iOS keyboard.
+  if(existingShell&&existingShell.querySelector('#workshopSearch')){
+    const template=document.createElement('template');
+    template.innerHTML=markup;
+    const nextShell=template.content.firstElementChild;
+    const searchPanel=existingShell.querySelector('.workshop-search-panel');
+    const nextPanel=nextShell.querySelector('.workshop-search-panel');
+    for(const selector of ['.workshop-search-head','.view-filter-row']){
+      searchPanel.querySelector(selector).replaceWith(nextPanel.querySelector(selector));
+    }
+    const input=searchPanel.querySelector('#workshopSearch');
+    if(input.value!==workshopState.query)input.value=workshopState.query;
+    for(const child of [...existingShell.children])if(child!==searchPanel)child.remove();
+    for(const child of [...nextShell.children])if(child!==nextPanel)existingShell.append(child);
+  }else workshopRoot.innerHTML=markup;
+  renderWorkshopSuggestions();
   workshopRoot.querySelectorAll('[data-segmented-control="workshop-search-mode"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{
     const next=button.dataset.segmentedValue==='craftable'?'craftable':'all';
     if(next===workshopState.searchMode)return;
+    cancelWorkshopSearch();
     workshopState.searchMode=next;
     workshopState.suggestions=[];
     const query=workshopState.query;
     renderWorkshop();
-    if(query.trim().length>=2)searchWorkshop(query);
+    if(query.trim().length>=3)searchWorkshop(query);
   }));
   workshopRoot.querySelectorAll('[data-segmented-control="workshop-browse-mode"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{
     workshopState.browseMode=button.dataset.segmentedValue==='all'?'all':'craftable';
@@ -1269,13 +1311,7 @@ function renderWorkshop(){
     renderWorkshop();
   }));
   const search=workshopRoot.querySelector('#workshopSearch');
-  search?.addEventListener('input',()=>{
-    workshopState.query=search.value;
-    clearTimeout(workshopSearchTimer);
-    if(workshopState.query.trim().length<3){workshopState.suggestions=[];renderWorkshop();return;}
-    workshopSearchTimer=setTimeout(()=>searchWorkshop(workshopState.query),350);
-  });
-  workshopRoot.querySelectorAll('[data-workshop-suggestion]').forEach(button=>button.addEventListener('click',()=>selectWorkshopItem(Number(button.dataset.workshopSuggestion))));
+  if(search)search.oninput=()=>workshopSearchInput(search);
   workshopRoot.querySelectorAll('[data-workshop-browse-level]').forEach(select=>select.addEventListener('change',()=>{
     const level=Number(select.dataset.workshopBrowseLevel);
     workshopState.browsePath=[...workshopState.browsePath.slice(0,level),select.value].filter(Boolean);
@@ -1334,22 +1370,26 @@ async function loadWorkshopOverview(){
 }
 async function searchWorkshop(query){
   const current=query.trim();
-  if(current.length<2)return;
-  const epoch=workshopDataEpoch;
+  if(current.length<3)return;
+  const epoch=workshopDataEpoch,request=++workshopSearchEpoch;
+  const mode=workshopState.searchMode;
+  const isCurrent=()=>epoch===workshopDataEpoch&&request===workshopSearchEpoch&&workshopState.query.trim()===current&&workshopState.searchMode===mode;
   try{
-    const mode=workshopState.searchMode;
     const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&scope='+encodeURIComponent(mode));
-    if(epoch!==workshopDataEpoch||workshopState.query.trim()!==current||workshopState.searchMode!==mode)return;
+    if(!isCurrent())return;
     workshopState.suggestions=result.suggestions||[];
   }catch{
-    if(epoch===workshopDataEpoch)workshopState.suggestions=[];
+    if(!isCurrent())return;
+    workshopState.suggestions=[];
   }
-  if(epoch!==workshopDataEpoch)return;
-  renderWorkshop();
-  const input=workshopRoot?.querySelector('#workshopSearch');if(input){input.focus();input.setSelectionRange?.(input.value.length,input.value.length)}
+  // Never rebuild, refocus or reposition the search input on autocomplete.
+  if(isCurrent())renderWorkshopSuggestions();
 }
 async function selectWorkshopItem(itemId,{preserveQuery=false,preserveQuantity=false}={}){
   if(!Number.isInteger(itemId)||itemId<=0)return;
+  cancelWorkshopSearch();
+  workshopState.suggestions=[];
+  renderWorkshopSuggestions();
   const currentItemId=Number(workshopState.selected?.item?.id);
   const changedItem=currentItemId!==itemId;
   if(changedItem&&!preserveQuantity)workshopState.quantity=1;
@@ -1370,6 +1410,7 @@ async function selectWorkshopItem(itemId,{preserveQuery=false,preserveQuantity=f
 function invalidateWorkshopData({reloadVisible=true}={}){
   const selectedId=Number(workshopState.selected?.item?.id);
   workshopDataEpoch++;
+  cancelWorkshopSearch();
   workshopState.overview=null;
   workshopState.loading=false;
   workshopState.error=null;
