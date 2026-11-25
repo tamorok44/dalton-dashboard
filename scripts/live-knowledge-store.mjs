@@ -342,7 +342,7 @@ export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,ena
   if(cached?.build===build&&cached.version===version&&Array.isArray(cached.records))return cached.records;
   const records=(await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled})).map(record=>({
     kind:'merchant',build:record.build,characterSlug:record.characterSlug||null,
-    npc:record.npc,location:record.location,lastObservedAt:record.lastObservedAt,
+    npc:record.npc,location:record.location||null,lastObservedAt:record.lastObservedAt||null,
     latestSnapshot:record.latestSnapshot
   }));
   if(await redisImpl(['GET',versionKey()])===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
