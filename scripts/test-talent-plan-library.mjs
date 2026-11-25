@@ -280,15 +280,18 @@ for(const file of files){
     assert.ok(coverageTree.roles.includes(profile.role)&&coverage.goals.includes(profile.goal),file+' missing coverage');
     assert.ok(!ownProfiles.has(key),file+' repeats a profile');
     ownProfiles.add(key);
-    if(plan.status==='approved'){
+    if(plan.status==='approved'&&plan.active!==false){
       assert.ok(!activeProfiles.has(key),file+' overlaps another approved plan');
       activeProfiles.add(key);
     }
   }
   if(plan.status==='approved'){
+    assert.ok(typeof plan.treeName==='string'&&plan.treeName.trim(),file+' German tree name required');
     const path=JSON.stringify([plan.classId,plan.points.map(({talentId,rank})=>[talentId,rank])]);
-    assert.ok(!activePaths.has(path),file+' duplicates an approved allocation sequence');
-    activePaths.add(path);
+    if(plan.active!==false){
+      assert.ok(!activePaths.has(path),file+' duplicates an active approved allocation sequence');
+      activePaths.add(path);
+    }
     validatePlanEvidence(plan,{evidence,packs},snapshots,file);
     validatedRanks.set(identity,plan.supportedLegacyRanks);
   }else if(plan.status==='research_only'){

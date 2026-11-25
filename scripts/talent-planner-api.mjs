@@ -4,10 +4,14 @@ import {profileKey,resolveApprovedTalentPlan} from './talent-plan-core.mjs';
 import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS} from './talent-rule-watch.mjs';
 import catalog from '../data/talent-planning/release-catalog.json' with {type:'json'};
-import arcanePilot from '../data/talent-planning/mage-arcane-mixed-v1.json' with {type:'json'};
+import {talentPlanLibrary} from './talent-plan-index.mjs';
 
-const plans=[arcanePilot];
-const treeNames={11582:'Arkan'};
+export const PERSONAL_TALENT_MAX_AGE_MS=26*60*60*1000;
+export function isPersonalTalentFresh(character,now){
+  const age=now-Date.parse(character?.scrapedAt);
+  return character?.scrapeOk!==false&&age>=0&&age<PERSONAL_TALENT_MAX_AGE_MS;
+}
+
 const validId=value=>typeof value==='string'&&/^[a-z0-9-]{1,80}$/.test(value);
 const params=['character','tree','goal','role','playStyle','priority','rank','rankSource','planId','version','identity'];
 const preview=()=>process.env.VERCEL_ENV==='preview';
@@ -23,7 +27,7 @@ function characterIdentity(character){
 
 export function createTalentPlannerHandler({
   enabled=preview,roster=loadCharacters,observe=loadPreviewTalentObservation,master=loadTalentMaster,
-  project=loadTalentPlannerClass,clock=Date.now
+  project=loadTalentPlannerClass,clock=Date.now,library=talentPlanLibrary
 }={}){
   return async function handler(req,res){
     const send=(status,body)=>res.status(status).json(body);
@@ -44,24 +48,25 @@ export function createTalentPlannerHandler({
       const matches=result.data.characters.filter(c=>c.slug===query.character);
       if(matches.length!==1)return blocked(404,'unknown_character');
       const character=matches[0];
-      const classPlans=plans.filter(plan=>plan.classId===character.classId);
+      const classPlans=library.filter(plan=>plan.status==='approved'&&plan.classId===character.classId);
+      const activePlans=classPlans.filter(plan=>plan.active!==false);
+      const candidateIdentity=characterIdentity(character);
+      const identity=candidateIdentity&&result.data.characters.filter(c=>characterIdentity(c)===candidateIdentity).length===1?candidateIdentity:null;
       if(!query.tree){
-        const profiles=classPlans.flatMap(plan=>plan.profiles.map(profile=>({
-          ...profile,name:treeNames[profile.treeId],recommendation:plan.review.rationale
+        const profiles=activePlans.flatMap(plan=>plan.profiles.map(profile=>({
+          ...profile,name:plan.treeName,recommendation:plan.review.rationale,supportedLegacyRanks:plan.supportedLegacyRanks
         })));
-        return send(200,{ok:true,profiles,identity:characterIdentity(character)});
+        return send(200,{ok:true,profiles,identity});
       }
       const profile={classId:character.classId,treeId:Number(query.tree),goal:query.goal,
         role:query.role,playStyle:query.playStyle,priority:query.priority};
       const key=profileKey(profile);
       if(!key||!/^\d{1,10}$/.test(query.tree))return blocked(400,'invalid_profile');
-      const candidates=classPlans.filter(plan=>plan.profiles.some(p=>profileKey(p)===key));
-      const identity=characterIdentity(character);
-      if(query.planId!==undefined||query.version!==undefined||query.identity!==undefined){
-        if(!identity||query.identity!==identity||candidates.length!==1||
-           candidates[0].id!==query.planId||String(candidates[0].version)!==query.version){
-          return blocked(409,'binding_unavailable');
-        }
+      const bound=query.planId!==undefined||query.version!==undefined||query.identity!==undefined;
+      const candidates=(bound?classPlans:activePlans).filter(plan=>plan.profiles.some(p=>profileKey(p)===key)&&
+        (!bound||(plan.id===query.planId&&String(plan.version)===query.version)));
+      if(bound&&(!identity||query.identity!==identity||candidates.length!==1)){
+        return blocked(409,'binding_unavailable');
       }
       if(candidates.length!==1)return blocked(409,'no_approved_recommendation');
       if(!/^[0-5]$/.test(query.rank??'')||query.rankSource!=='player_confirmed'){
@@ -83,11 +88,13 @@ export function createTalentPlannerHandler({
         Date.parse(evidence.rulesCheckedAt)+TALENT_RULE_MAX_AGE_MS);
       evidence.validUntil=new Date(expires).toISOString();
       const details=character.talentDetails;
-      const detailsComplete=character.scrapeOk!==false&&character.talentDetailsVerified===true&&
+      const personalFresh=isPersonalTalentFresh(character,clock());
+      const detailsComplete=personalFresh&&character.talentDetailsVerified===true&&
         Array.isArray(details)&&details.length===klass.trees.length&&
         details.every(tree=>Array.isArray(tree?.talents));
-      return send(200,{...plan,profile,identity,klass,evidence,legacyRank:{rank,source:'player_confirmed'},
-        character:{level:character.level,
+      return send(200,{...plan,profile,identity,klass,evidence,recommendation:candidates[0].review.rationale,legacyRank:{rank,source:'player_confirmed'},
+        character:{level:character.level,scrapedAt:character.scrapedAt??null,
+          talentDetailsFresh:personalFresh,personalValidUntil:personalFresh?new Date(Date.parse(character.scrapedAt)+PERSONAL_TALENT_MAX_AGE_MS).toISOString():null,
           talentDetailsVerified:detailsComplete,
           talentDetails:detailsComplete?details.map(tree=>({name:tree.name,spentPoints:tree.spentPoints,
             talents:tree.talents.map(entry=>({id:entry?.id,rank:entry?.rank,spellId:entry?.spellId}))})):null}});

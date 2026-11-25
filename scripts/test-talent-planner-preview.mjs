@@ -3,7 +3,8 @@ import charactersApi from '../api/characters.js';
 import {createTalentPlannerHandler} from './talent-planner-api.mjs';
 import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS} from './talent-rule-watch.mjs';
-import {compareTalentProgress} from '../talent-planner.js';
+import {compareTalentProgress,talentGuideOptions,planIsCurrent} from '../talent-planner.js';
+import {talentPlanLibrary} from './talent-plan-index.mjs';
 import release from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import proofs from '../data/talent-planning/catalog-proofs-2026-11-25.json' with {type:'json'};
 
@@ -16,7 +17,7 @@ const observation={status:'observed',checkedAt,checkedAtMs:start,revisionSince:c
 const master={classes:{[rules.classId]:klass},classMechanicsRevisions:{[rules.classId]:rules.catalogRevision},
   stale:false,checkedAt,sourceRevision:rules.sourceRevision,sourceFreshAt:{raw:checkedAt,localized:checkedAt}};
 const mage={slug:'preview-mage',url:'https://foreverspec.com/de/armory/eu/preview-mage/',level:15,
-  classId:8,blizzardCharacterId:555,talentDetailsVerified:true,talentDetails:[]};
+  classId:8,blizzardCharacterId:555,scrapedAt:checkedAt,talentDetailsVerified:true,talentDetails:[]};
 const warrior={...mage,slug:'preview-warrior',classId:1,blizzardCharacterId:556};
 const query={character:mage.slug,tree:'11582',goal:'leveling',role:'damage',playStyle:'mixed',priority:'balanced',
   rank:'0',rankSource:'player_confirmed'};
@@ -66,6 +67,12 @@ assert.equal(reads,0,'rejected requests and profile discovery do not inspect cat
 const info=(await request({character:mage.slug})).body;
 assert.equal(info.profiles.length,1);
 assert.equal(info.identity,'["eu","",555]');
+assert.equal(info.profiles[0].name,'Arkan');
+assert.deepEqual(info.profiles[0].supportedLegacyRanks,[0]);
+assert.equal(talentGuideOptions(info.profiles).complete,false);
+assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).profiles.length,0);
+assert.equal(talentGuideOptions(info.profiles,{goal:'leveling'}).profiles.length,1);
+assert.equal(talentGuideOptions(info.profiles,{goal:'leveling'}).fields.length,4);
 const good=(await request({...query,planId:'mage-arcane-leveling',version:'1',identity:info.identity})).body;
 assert.equal(good.ok,true);
 assert.equal(good.history.length,51);
@@ -84,6 +91,23 @@ await blocked('unverified_current_rules',query,{clock:()=>start+TALENT_CATALOG_M
 await blocked('source_unavailable',query,{observe:async()=>{throw Error('Redis down')}});
 await blocked('source_unavailable',query,{master:async()=>{throw Error('network down')}});
 
+const [current]=talentPlanLibrary;
+const archived={...current,active:false};
+const newer={...current,version:2};
+const versions=handler({library:[archived,newer]});
+assert.equal((await request(query,{endpoint:versions})).body.version,2);
+assert.equal((await request({...query,planId:current.id,version:'1',identity:info.identity},{endpoint:versions})).body.version,1);
+assert.equal((await request({character:mage.slug},{endpoint:versions})).body.profiles.length,1);
+const newCharacter={...mage,slug:'second-mage',blizzardCharacterId:777};
+assert.equal((await request({character:newCharacter.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,newCharacter]}})})})).body.profiles.length,1);
+assert.equal((await request({character:mage.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,{...mage,slug:'duplicate-id'}]}})})})).body.identity,null);
+const stalePersonal=(await request(query,{endpoint:handler({roster:async()=>({data:{characters:[{...mage,scrapedAt:'2026-11-20T10:00:00Z'}]}})})})).body;
+assert.equal(stalePersonal.ok,true);
+assert.equal(stalePersonal.character.talentDetailsFresh,false);
+assert.equal(stalePersonal.character.personalValidUntil,null);
+assert.equal(good.character.talentDetailsFresh,true);
+assert.equal(planIsCurrent(good,start+1000),true);
+assert.equal(planIsCurrent(good,start+TALENT_CATALOG_MAX_AGE_MS),false);
 const first=good.history[0];
 assert.deepEqual(compareTalentProgress(good.history,{verified:false,ranks:new Map()},15),{status:'unknown'});
 assert.equal(compareTalentProgress(good.history,{verified:true,ranks:new Map([[123,1]])},15).status,'different');
