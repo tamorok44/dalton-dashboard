@@ -150,3 +150,10 @@ export async function fetchForeverDbVendor(id,{fetchImpl=fetch}={}){
 }
 
 export {PROFESSION_SLUGS};
+
+// Documented unfiltered build diff: all pages must be accounted for before
+// absence from the diff can be used as evidence of unchanged game data.
+export async function fetchForeverDbBuildPage(build,{offset=0,fetchImpl=fetch}={}){
+  if(!/^\d+\.\d+\.\d+\.\d+$/.test(String(build)))throw Error('Ungültiger ForeverDB-Build');
+  return request('/builds/'+encodeURIComponent(build),{params:{limit:100,offset},fetchImpl});
+}

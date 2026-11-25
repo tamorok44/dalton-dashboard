@@ -1,3 +1,4 @@
+import {readBuildDelta,unchangedAcrossDelta} from './build-delta.mjs';
 import {readCompactMaster,writeCompactMaster,compressedMasterKey} from './compact-master-cache.mjs';
 import {createHash,randomUUID} from 'node:crypto';
 import {configured as redisConfigured,redis} from './character-store.mjs';
@@ -378,15 +379,43 @@ export async function cachedForeverDbRecipeSearch(itemId,itemName,{fetchImpl=fet
 function buildScopedCacheKey(prefix,id,build){
   return prefix+String(id)+':'+(build?digest(build):'current');
 }
+async function cachedBuildDelta(build,{fetchImpl=fetch}={}){
+  if(!redisConfigured()||!/^\d+\.\d+\.\d+\.\d+$/.test(String(build||'')))return null;
+  const key='dalton-dashboard:foreverdb:build-delta:v1:'+build;
+  const stored=await loadJson(key);if(stored)return stored;
+  const token=await acquireRedisLock(key+':lock',55);if(!token)return null;
+  try{
+    const again=await loadJson(key);if(again)return again;
+    let delta;
+    try{delta=await readBuildDelta(build,{fetchImpl})}catch(error){delta={build,complete:false,reason:'request-failed'}}
+    await saveJson(key,delta,{ttl:delta.complete?7*86400:12*3600});
+    console.info('ForeverDB Build-Differenz:',build,delta.complete?'vollständig: '+delta.total:delta.reason);
+    return delta;
+  }finally{await releaseRedisLock(key+':lock',token).catch(()=>{})}
+}
+async function reuseUnchangedDetail(type,id,build,prefix,{fetchImpl=fetch}={}){
+  if(!build||!redisConfigured())return null;
+  const delta=await cachedBuildDelta(build,{fetchImpl});
+  if(!unchangedAcrossDelta(delta,type,id))return null;
+  const old=await loadJson(buildScopedCacheKey(prefix,id,delta.previousBuild));
+  if(old?.build!==delta.previousBuild||old?.[type]?.id!==id||!fresh(old,24*3600*1000))return null;
+  // Preserve original observation time; do not extend the freshness lifetime.
+  await saveJson(buildScopedCacheKey(prefix,id,build),{...old,build,reusedFromBuild:delta.previousBuild},{ttl:24*3600});
+  return {...old[type],cached:true,reusedFromBuild:delta.previousBuild};
+}
+
 export async function cachedForeverDbItem(itemId,{build=null,fetchImpl=fetch}={}){
   const id=Number(itemId);
   if(!Number.isInteger(id)||id<=0)return null;
   const key=buildScopedCacheKey(ITEM_CACHE_PREFIX,id,build);
   const cached=await loadJson(key);
   if(cached?.item?.id===id)return {...cached.item,cached:true};
+  const reused=await reuseUnchangedDetail('item',id,build,ITEM_CACHE_PREFIX,{fetchImpl}).catch(()=>null);
+  if(reused)return reused;
   const result=await fetchForeverDbItem(id,{fetchImpl});
   if(!result?.item?.id)return null;
-  await saveJson(key,{item:result.item,generatedAt:new Date().toISOString(),build});
+  // Never file a response from another build under a stale recipe-index build.
+  if(!build||result.meta?.build===build)await saveJson(key,{item:result.item,generatedAt:new Date().toISOString(),build},{ttl:24*3600});
   return {...result.item,cached:false};
 }
 export async function cachedForeverDbSpell(spellId,{build=null,fetchImpl=fetch}={}){
@@ -395,9 +424,12 @@ export async function cachedForeverDbSpell(spellId,{build=null,fetchImpl=fetch}=
   const key=buildScopedCacheKey(SPELL_CACHE_PREFIX,id,build);
   const cached=await loadJson(key);
   if(cached?.spell?.id===id)return {...cached.spell,cached:true};
+  const reused=await reuseUnchangedDetail('spell',id,build,SPELL_CACHE_PREFIX,{fetchImpl}).catch(()=>null);
+  if(reused)return reused;
   const result=await fetchForeverDbSpell(id,{fetchImpl});
   if(!result?.spell?.id)return null;
-  await saveJson(key,{spell:result.spell,generatedAt:new Date().toISOString(),build});
+  // Never file a response from another build under a stale recipe-index build.
+  if(!build||result.meta?.build===build)await saveJson(key,{spell:result.spell,generatedAt:new Date().toISOString(),build},{ttl:24*3600});
   return {...result.spell,cached:false};
 }
 export async function cachedForeverDbSpells(spellIds=[],{build=null,fetchImpl=fetch}={}){

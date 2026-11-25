@@ -136,3 +136,16 @@ const counter=async ([op,script,num,key,limit])=>{
 assert.equal(await reserveForeverDbRequest({...opts,redisImpl:counter}),FOREVERDB_DAILY_BUDGET);
 await assert.rejects(()=>reserveForeverDbRequest({...opts,redisImpl:counter}),error=>error.code==='FOREVERDB_INTERNAL_QUOTA');
 assert.notEqual(foreverDbBudgetKey(opts.apiKey,day),foreverDbBudgetKey(opts.apiKey,new Date('2026-11-26T00:00:00Z')));
+
+const {readBuildDelta,unchangedAcrossDelta}=await import('./build-delta.mjs');
+const nextBuild='1.60.1.71091',previousBuild='1.60.1.71037';
+const rows=[{type:'item',change:'changed',itemId:123},{type:'spell',change:'removed',spellId:456},{type:'ability',change:'changed'}];
+const readPage=async()=>({data:{build:nextBuild,previousBuild,changes:rows},meta:{total:rows.length}});
+const delta=await readBuildDelta(nextBuild,{readPage});
+assert.equal(delta.complete,true);
+assert.equal(unchangedAcrossDelta(delta,'item',124),true);
+assert.equal(unchangedAcrossDelta(delta,'item',123),false);
+assert.equal(unchangedAcrossDelta(delta,'spell',457),false,'Unresolved ability/rank changes prevent reuse of old spell data');
+assert.equal((await readBuildDelta(nextBuild,{readPage:async()=>({data:{changes:[]},meta:{total:0}})})).complete,false);
+assert.equal((await readBuildDelta(nextBuild,{readPage:async()=>({data:{build:nextBuild,previousBuild,changes:[{type:'item',change:'changed',id:1}]},meta:{total:1}})})).complete,false,'Generic change-row ID is not a typed entity ID');
+assert.equal((await readBuildDelta(nextBuild,{readPage:async()=>({data:{build:nextBuild,previousBuild,changes:rows},meta:{total:9}}),maxPages:1})).complete,false);
