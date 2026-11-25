@@ -17,6 +17,10 @@ Aktuell werden lokal erfasst:
 - Taschen-/Bank-/Goldinformationen nur noch als lokaler manueller Diagnosebestand über `/dalton scan`; sie werden weder automatisch im Spielbetrieb erfasst noch synchronisiert
 - bei Jägern: aktives Pet, XP, Zufriedenheit, Loyalität, Trainingspunkte, Pet-Spellbook sowie aktive und gestallte Pets soweit der Forever-Client sie liefert
 
+## Verbindliche Zielarchitektur
+
+Der projektweite Architekturvertrag in [`AGENTS.md`](../../AGENTS.md) gilt auch für Add-on, Relay und Companion. Der nachfolgend beschriebene feste Vierer-Roster und Cole als Hub sind der heutige Implementierungsstand, keine dauerhafte Architekturvorgabe. Ziel ist eine konfigurierbare Autorisierung weiterer Charaktere und Relay-Rollen ohne neue Add-on-Version allein wegen neuer Charakternamen. Unbekannte Charaktere bleiben ausgeschlossen; Datenschutz und geringe Ressourcenlast sind unverhandelbar. Bestehende Sync-Wege werden erst nach kontrollierter Migration geändert.
+
 ## Datenschutz und Synchronisierung
 
 Das WoW-Addon führt **keinen HTTP-Zugriff** aus und enthält keinen privaten Server-Schlüssel.
