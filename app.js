@@ -282,18 +282,18 @@ function talentNodeDetail(node,tree,personal,level,catalogStale){
     '<p>Regulär ab Stufe '+esc(node.requiredLevel)+' · '+esc(node.row*5)+' Punkte in vorherigen Reihen dieses Baums</p>'+
     (pre?'<ul class="talent-prerequisites">'+pre+'</ul>':'')+'</div>';
 }
-function talentGraph(tree,personal,level,catalogStale,selectedId){
+function talentGraph(tree,personal,level,catalogStale,selectedId,characterSlug='character'){
   // 4 columns; 1 unit = one cell. SVG connectors only, buttons remain accessible.
   const rows=Math.max(...tree.talents.map(n=>n.row))+1;
+  const arrowId='talent-arrow-'+String(characterSlug).replace(/[^a-z0-9-]/gi,'')+'-'+tree.id;
   const paths=tree.talents.flatMap(n=>n.prerequisites.map(p=>{
     const from=tree.talents.find(t=>t.id===p.id);
     if(!from)return '';
     const x=from.column*100+50,y=from.row*100+50,tx=n.column*100+50,ty=n.row*100+50;
     // Keep connector in inter-row space, underneath buttons.
     const mid=y+(ty-y)/2;
-    return '<path class="talent-connector'+(p.conditionKnown?'':' is-uncertain')+'" d="M '+x+' '+y+' V '+mid+' H '+tx+' V '+(ty-25)+'" marker-end="url(#talent-arrow-'+tree.id+'-'+selectedId+')"/>';
+    return '<path class="talent-connector'+(p.conditionKnown?'':' is-uncertain')+'" d="M '+x+' '+y+' V '+mid+' H '+tx+' V '+(ty-25)+'" marker-end="url(#'+arrowId+')"/>';
   })).join('');
-  const arrowId='talent-arrow-'+tree.id+'-'+selectedId;
   return '<div class="talent-grid" style="--talent-rows:'+rows+'"><svg class="talent-links" viewBox="0 0 400 '+(rows*100)+'" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="'+arrowId+'" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5 Z" fill="#a88d60"/></marker></defs>'+paths+'</svg>'+
     displayList('talentCoordinates',tree.talents,n=>{
       const rank=personal.verified?personal.ranks.get(n.id)||0:null,status=talentNodeStatus(n,tree,personal,level,catalogStale);
@@ -317,7 +317,7 @@ function talentPanel(c){
     (!personal.verified?'<p class="talent-catalog-notice">Persönliche Talentränge konnten nicht vollständig zugeordnet werden. Unbekannte Ränge werden nicht als 0 gewertet.</p>':'')+
     (stale?'<p class="talent-catalog-notice">Talentstruktur: letzter bestätigter Abruf</p>':'')+
     '<div class="talent-tree-switch" role="group" aria-label="Talentbaum">'+displayList('fixedControls',klass.trees,t=>'<button type="button" class="talent-tree-option'+(t.id===tree.id?' is-active':'')+'" data-talent-tree="'+t.id+'" aria-pressed="'+(t.id===tree.id)+'"><span>'+esc(t.name)+'</span><strong>'+esc(personal.verified?points.get(t.id)||0:'–')+'</strong></button>').join('')+'</div>'+
-    '<div class="talent-tree talent-visual-tree"><div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(personal.verified?points.get(tree.id)||0:'–')+' Punkte</span></div>'+talentGraph(tree,personal,c.level,stale,node?.id||0)+'</div>'+
+    '<div class="talent-tree talent-visual-tree"><div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(personal.verified?points.get(tree.id)||0:'–')+' Punkte</span></div>'+talentGraph(tree,personal,c.level,stale,node?.id||0,c.slug)+'</div>'+
     '<div class="talent-legend"><span class="is-learned">Erlernt</span><span class="is-unlocked">Voraussetzungen erfüllt</span><span class="is-locked">Gesperrt</span></div>'+
     '<p class="talent-point-note">Freie Talentpunkte sind nicht bestätigt; die Freischaltung berücksichtigt die bekannten Voraussetzungen.</p>'+
     talentNodeDetail(node,tree,personal,c.level,stale)+
