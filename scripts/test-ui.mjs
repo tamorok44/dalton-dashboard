@@ -270,7 +270,7 @@ const verifiedPetCatalog={
   }
 };
 const verifiedPetRules={
-  rulebookVersion:'2026.11.22.2',checkedAt:'2026-11-22T04:07:00.000Z',overall:'verified',
+  rulebookVersion:HUNTER_PET_RULEBOOK_VERSION,checkedAt:'2026-11-22T04:07:00.000Z',overall:'verified',
   rules:{
     'fox.family.profile':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
     'fox.training':{status:'verified',version:3,evidence:'client',evidenceLabel:'Clientdaten',evidenceNote:'Clientdaten'},
