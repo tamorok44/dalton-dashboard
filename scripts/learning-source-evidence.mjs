@@ -103,6 +103,7 @@ function sourceFromObservation(observation={}){
     displayId:integer(observation?.displayId),
     renderSourceUrl:text(observation?.renderSourceUrl)||null,
     offerStatus:'present',
+    offerObservedFor:observation.characterSlug||null,
     offerEvidenceSource:text(observation?.source)||null,
     offerObservedOn:text(observation?.observedAt??observation?.observedOn)||null,
     offerBuild:text(observation?.build)||null,
@@ -243,6 +244,7 @@ function newestByKey(observations=[]){
   for(const observation of observations){
     const key=[
       observation.sourceType,
+      observation.characterSlug||'',
       observation.npcId||norm(observation.npcName),
       observation.recipeId||observation.craftedItemId||norm(observation.recipeName),
       observation.build||''
@@ -261,6 +263,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
     const payload=state?.payload&&typeof state.payload==='object'?state.payload:state;
     const addon=payload?.addon||{};
     const interactions=payload?.sections?.interactions||{};
+    const observer=text(state?.characterSlug)||null;
 
     for(const snapshot of numericArray(interactions?.merchantHistory)){
       if(snapshot?.complete!==true)continue;
@@ -281,6 +284,8 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
             npcId:integer(npc?.id),
             npcName:text(npc?.name)||null,
             sourceType:'vendor',
+            characterSlug:observer,
+            personalObservation:true,
             professionSlug:text(recipe?.professionSlug)||null,
             recipeId,
             craftedItemId:integer(recipe?.craftedItem?.id),
@@ -316,6 +321,8 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
           npcId:integer(npc?.id),
           npcName:text(npc?.name)||null,
           sourceType:'vendor',
+          characterSlug:observer,
+          personalObservation:true,
           professionSlug:text(recipe?.professionSlug)||null,
           recipeId,
           craftedItemId:integer(recipe?.craftedItem?.id),
@@ -406,6 +413,7 @@ export function liveKnowledgeAsAddonStates(records=[]){
     };
     result.push({
       receivedAt:record.lastObservedAt,
+      characterSlug:record.characterSlug||snapshot.characterSlug||null,
       payload:{
         addon:{gameVersion,build},
         sections:{interactions:record.kind==='merchant'
@@ -471,6 +479,7 @@ export function mergeLearningSourceEvidence(...documents){
     const key=[
       observation.source||'unknown',
       observation.sourceType||'source',
+      observation.characterSlug||'',
       observation.npcId||norm(observation.npcName),
       observation.recipeId||observation.craftedItemId||norm(observation.recipeName),
       observation.status||'unknown',
@@ -495,8 +504,14 @@ export function learningSourceEvidenceForIndex(recipeIndex={},addonStates=[],liv
   );
 }
 
-export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
-  const observations=asArray(evidenceDocument?.observations);
+export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, {characterSlug=null}={}){
+  // A merchant window belongs to its observer, not all players. Old records
+  // with no reliable observer are retained as history, never global overrides.
+  const observations=asArray(evidenceDocument?.observations).filter(observation=>{
+    if(observation?.sourceType!=='vendor')return true;
+    if(observation.characterSlug)return observation.characterSlug===characterSlug;
+    return observation.personalObservation!==true&&observation.source!=='dalton-addon';
+  });
   if(!observations.length)return recipeIndex;
 
   let blocked=0,confirmed=0;
@@ -519,6 +534,7 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}){
           priceCopper:observedPrice!==null?Math.round(observedPrice):source?.priceCopper??null,
           priceSource:observedPrice!==null?'forever-observed':source?.priceSource??null,
           offerStatus:'present',
+          offerObservedFor:observation.characterSlug||null,
           offerEvidenceSource:text(observation?.source)||null,
           offerObservedOn:text(observation?.observedAt??observation?.observedOn)||null,
           offerBuild:text(observation?.build)||null,

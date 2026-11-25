@@ -1149,7 +1149,9 @@ function workshopSourceHtml(source){
     Number.isFinite(Number(source.limitedStock))?'Vorrat '+source.limitedStock:'',
     source.reputationFaction?'Ruf: '+source.reputationFaction:''
   ].filter(Boolean).join(' · ');
-  const evidence=source.evidence==='forever-confirmed'
+  const evidence=source.notEveryoneSees===true
+    ?'<span class="workshop-source-evidence">Spielerabhängiges Angebot</span>'
+    :source.evidence==='forever-confirmed'
     ?'<span class="workshop-source-evidence is-confirmed">In Forever bestätigt</span>'
     :source.evidence==='classic-unconfirmed'
       ?'<span class="workshop-source-evidence is-classic">Classic-Daten · nicht bestätigt</span>'
@@ -1170,8 +1172,8 @@ function workshopLearningHtml(result){
     :'';
   const requirement=skillRequirement+levelRequirement;
   const sources=Array.isArray(result.learningSources)?result.learningSources:[];
-  const confirmed=sources.filter(source=>source.evidence==='forever-confirmed');
-  const other=sources.filter(source=>source.evidence!=='forever-confirmed');
+  const confirmed=sources.filter(source=>source.evidence==='forever-confirmed'&&source.notEveryoneSees!==true);
+  const other=sources.filter(source=>source.evidence!=='forever-confirmed'||source.notEveryoneSees===true);
   const sourceHtml=recipe.learning?.automatic===true
     ?'<div class="workshop-learning-auto">Automatisch gelernt'+requirement+'</div>'
     :sources.length

@@ -61,8 +61,8 @@ function npcKey(npc={}){
   if(integer(npc.id))return 'id-'+integer(npc.id);
   return 'name-'+sha(String(npc.name||'').toLocaleLowerCase('de-DE'));
 }
-function recordKey(kind,build,npc){
-  return prefix()+'record:'+kind+':'+encodeURIComponent(build)+':'+npcKey(npc);
+function recordKey(kind,build,npc,characterSlug=null){
+  return prefix()+'record:'+kind+':'+encodeURIComponent(build)+':'+npcKey(npc)+(kind==='merchant'&&characterSlug?':observer:'+encodeURIComponent(characterSlug):'');
 }
 function offerKey(item={}){
   const id=integer(item.itemID??item.id);
@@ -212,7 +212,7 @@ async function saveRecord(key,value){
 }
 async function ingestSnapshot(snapshot){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
-  const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc);
+  const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
   const existing=await loadRecord(key);
   const id=observationId(snapshot);
   const ids=Array.isArray(existing?.observationIds)?existing.observationIds:[];
@@ -220,6 +220,7 @@ async function ingestSnapshot(snapshot){
 
   const fingerprint=contentFingerprint(snapshot);
   const previous=existing?.latestSnapshot||null;
+  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
   const previousFingerprint=previous?contentFingerprint(previous):null;
   const changed=previousFingerprint!==fingerprint;
   const delta=changed?diff(previous,snapshot):{added:[],removed:[]};
@@ -238,6 +239,7 @@ async function ingestSnapshot(snapshot){
     schemaVersion:SCHEMA_VERSION,
     kind:snapshot.kind,
     build:snapshot.build,
+    characterSlug:snapshot.characterSlug||null,
     npc:snapshot.npc,
     location:snapshot.location||existing?.location||null,
     firstObservedAt:existing?.firstObservedAt||snapshot.capturedAt,
@@ -251,17 +253,17 @@ async function ingestSnapshot(snapshot){
     services:snapshot.kind==='trainer'?mergeServiceKnowledge(existing?.services,snapshot):undefined
   };
   await saveRecord(key,record);
-  if(changed)await redis(['SET',versionKey(),snapshot.capturedAt]);
+  if(changed)await redis(['SET',versionKey(),new Date().toISOString()]);
   return {stored:true,duplicate:false,changed,key,record};
 }
 
-export function snapshotsFromAddonPayload(payload={}){
+export function snapshotsFromAddonPayload(payload={}, {characterSlug=null}={}){
   const addon=payload.addon||{};
   const interactions=payload?.sections?.interactions||{};
   const snapshots=[];
   for(const raw of numericArray(interactions.merchantHistory)){
     const normalized=canonicalSnapshot('merchant',raw,addon);
-    if(normalized)snapshots.push(normalized);
+    if(normalized)snapshots.push({...normalized,characterSlug});
   }
   for(const raw of numericArray(interactions.trainerHistory)){
     const normalized=canonicalSnapshot('trainer',raw,addon);
@@ -270,10 +272,10 @@ export function snapshotsFromAddonPayload(payload={}){
   return snapshots;
 }
 
-export async function ingestAddonLiveKnowledge(payload={}){
+export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null}={}){
   if(!configured())return {stored:0,duplicates:0,changed:0};
   let stored=0,duplicates=0,changed=0;
-  for(const snapshot of snapshotsFromAddonPayload(payload)){
+  for(const snapshot of snapshotsFromAddonPayload(payload,{characterSlug})){
     const result=await ingestSnapshot(snapshot);
     if(result.stored)stored++;
     if(result.duplicate)duplicates++;

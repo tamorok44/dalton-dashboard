@@ -86,6 +86,7 @@ const addonBase={
   ]
 };
 const addonState={
+  characterSlug:'cole-dalton',
   receivedAt:'2026-11-24T08:36:00.000Z',
   payload:{
     addon:{version:'0.1.0-alpha.8',gameVersion:'1.60.1',build:'71037',locale:'deDE'},
@@ -146,7 +147,7 @@ const incompleteOnly=buildAddonLearningSourceEvidence(addonBase,[{
 assert.ok(!incompleteOnly.observations.some(entry=>entry.status==='absent'),
   'Unvollständige Händlerfenster dürfen niemals negative Evidenz erzeugen');
 
-const addonEvaluated=applyLearningSourceEvidence(addonBase,mergeLearningSourceEvidence(addonEvidence));
+const addonEvaluated=applyLearningSourceEvidence(addonBase,mergeLearningSourceEvidence(addonEvidence),{characterSlug:'cole-dalton'});
 assert.equal(addonEvaluated.recipes[0].learning.sources.length,0,
   'Die echte Addon-Beobachtung entfernt Nyalah als Glitschhautmakrelen-Quelle');
 assert.equal(addonEvaluated.recipes[1].learning.sources.some(source=>source.id===257006&&source.priceCopper===500),true,
@@ -155,3 +156,14 @@ assert.equal(addonEvaluated.recipes[2].learning.sources.find(source=>source.id==
 assert.equal(addonEvaluated.recipes[3].learning.sources.find(source=>source.id===257006)?.priceCopper,4000);
 
 console.log('Addon-Liveevidenz: vollständige Händlerfenster, Rezept-Item-Mapping und Traineranforderungen: OK');
+
+const otherView=applyLearningSourceEvidence(addonBase,addonEvidence,{characterSlug:'dolly-dalton'});
+assert.equal(otherView.recipes[0].learning.sources.length,1,'Coles fehlendes Angebot darf bei Dolly nicht gelöscht werden');
+assert.equal(otherView.recipes[2].learning.sources[0].priceCopper,4000,'Coles persönlicher Preis überschreibt nicht Dollys Quelle');
+const sharedView=applyLearningSourceEvidence(addonBase,addonEvidence);
+assert.equal(sharedView.recipes[0].learning.sources.length,1,'Gemeinsamer Katalog bleibt von persönlicher negativer Beobachtung unberührt');
+const anonymous=buildAddonLearningSourceEvidence(addonBase,[{...addonState,characterSlug:null}]);
+assert.equal(applyLearningSourceEvidence(addonBase,anonymous,{characterSlug:'cole-dalton'}).recipes[0].learning.sources.length,1,'Alte Beobachtung ohne Zuordnung bleibt historisch');
+const conflicting=mergeLearningSourceEvidence(addonEvidence,{observations:[{...addonEvidence.observations.find(o=>o.recipeId===200&&o.status==='absent'),characterSlug:'dolly-dalton',status:'present',priceCopper:70}]});
+assert.equal(applyLearningSourceEvidence(addonBase,conflicting,{characterSlug:'cole-dalton'}).recipes[0].learning.sources.length,0);
+assert.equal(applyLearningSourceEvidence(addonBase,conflicting,{characterSlug:'dolly-dalton'}).recipes[0].learning.sources[0].priceCopper,70);

@@ -66,6 +66,8 @@ function sourceNpcKey(source={}){
   ].join('|');
 }
 function sourceAllowedForCharacter(source,character){
+  if(source?.offerObservedFor&&source.offerObservedFor!==character?.slug)return false;
+  if(source?.type==='vendor'&&source.notEveryoneSees===true&&source.offerObservedFor!==character?.slug)return false;
   const faction=norm(character?.faction);
   if(source?.side==='horde'&&/(allianz|alliance)/.test(faction))return false;
   if(source?.side==='alliance'&&/horde/.test(faction))return false;

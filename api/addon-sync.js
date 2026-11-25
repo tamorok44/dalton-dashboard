@@ -92,7 +92,7 @@ export default async function handler(req,res){
     lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
     if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
 
-    const liveKnowledge=await ingestAddonLiveKnowledge(payload);
+    const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug});
     let updated=before;
     let spellbookApplied=false;
     let classMaster=null;

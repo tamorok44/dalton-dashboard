@@ -102,3 +102,8 @@ const found=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enable
 }});
 assert.equal(found.length,1);
 assert.deepEqual(calls[1],['MGET',current[0]],'Read only matching build and kind, no obsolete snapshot payloads');
+
+const personal=snapshotsFromAddonPayload(payload,{characterSlug:'cole-dalton'});
+assert.equal(personal.find(s=>s.kind==='merchant').characterSlug,'cole-dalton');
+const personalRecords=records.map(r=>r.kind==='merchant'?{...r,characterSlug:'cole-dalton'}:r);
+assert.equal(liveKnowledgeAsAddonStates(personalRecords)[0].characterSlug,'cole-dalton');

@@ -223,6 +223,7 @@ function normalizeSource(entry,path){
     pricePerItem,
     stack,
     limitedStock,
+    notEveryoneSees:raw.notEveryoneSees===true||raw.vendor?.notEveryoneSees===true,
     costs:normalizedCosts(raw),
     reputationFaction,
     trainerCostSource,
@@ -293,7 +294,7 @@ function dedupeSources(sources=[]){
     const key=[
       source.type,source.side,source.id,source.name,
       source.location?.uiMapId,source.location?.zone,source.location?.x,source.location?.y,
-      source.priceCopper,source.priceSource,source.evidence
+      source.priceCopper,source.priceSource,source.evidence,source.notEveryoneSees===true
     ].join('|');
     if(seen.has(key))continue;
     seen.add(key);result.push(source);

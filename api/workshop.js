@@ -120,6 +120,8 @@ function publicLearningSource(source){
     dropChance:source.dropChance??null,
     observations:source.observations??null,
     offerStatus:source.offerStatus||null,
+    notEveryoneSees:source.notEveryoneSees===true,
+    offerObservedFor:source.offerObservedFor||null,
     offerEvidenceSource:source.offerEvidenceSource||null,
     offerObservedOn:source.offerObservedOn||null,
     offerBuild:source.offerBuild||null

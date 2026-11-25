@@ -15,7 +15,9 @@
       "note": "Direkte Ingame-Prüfung: Rezept Glitschhautmakrele wird von Nyalah Brightfire nicht angeboten.",
       "location": {
         "zone": "Insel Zephras"
-      }
+      },
+      "characterSlug": "cole-dalton",
+      "personalObservation": true
     },
     {
       "npcId": 257006,
@@ -31,7 +33,9 @@
       "note": "Direkte Ingame-Prüfung: Rezept Geräucherter Weisenfisch wird für 5 Silber angeboten.",
       "location": {
         "zone": "Insel Zephras"
-      }
+      },
+      "characterSlug": "cole-dalton",
+      "personalObservation": true
     },
     {
       "npcId": 257006,
@@ -47,7 +51,9 @@
       "note": "Direkte Ingame-Prüfung: Rezept Weisenfisch Supreme wird für 50 Silber angeboten.",
       "location": {
         "zone": "Insel Zephras"
-      }
+      },
+      "characterSlug": "cole-dalton",
+      "personalObservation": true
     },
     {
       "npcId": 257006,

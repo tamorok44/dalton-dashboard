@@ -150,7 +150,8 @@ export default async function handler(req,res){
     const liveKnowledge=await loadLiveKnowledge({build:recipeIndex?.build||null});
     const evaluatedRecipeIndex=applyLearningSourceEvidence(
       recipeIndex,
-      learningSourceEvidenceForIndex(recipeIndex,addonStates,liveKnowledge)
+      learningSourceEvidenceForIndex(recipeIndex,addonStates,liveKnowledge),
+      {characterSlug:character}
     );
     const selectedCharacter=character
       ?(stored.data?.characters||[]).find(entry=>entry?.slug===character)
