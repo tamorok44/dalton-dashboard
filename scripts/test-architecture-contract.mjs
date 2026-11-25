@@ -234,7 +234,7 @@ assert.ok(!(sourceByFile.get('app.js')||'').includes("return 'Forever-Preis'"),'
 assert.ok((sourceByFile.get('scripts/location-planner.mjs')||'').includes('mergeActionCandidates'),'Location planner must deduplicate learning targets centrally');
 assert.ok((sourceByFile.get('app.js')||'').includes('selected:new Map()'),'Location planner UI must keep at most one source per learning target');
 assert.ok((sourceByFile.get('app.js')||'').includes('plannerCheapestKnownOffer'),'Location planner UI must centralize cheapest-offer selection');
-assert.ok(browserSource.includes("fetch('/api/location-planner?'"),'Location planner frontend must use its server-side API');
+assert.ok(browserSource.includes("cachedViewFetch('/api/location-planner?'"),'Location planner frontend must use its server-side API');
 assert.ok(browserSource.includes('invalidateLocationPlannerData({reloadVisible:true})'),'Character refresh must invalidate the location planner');
 assert.ok(policy.includes('Kategorien und Lernziele bleiben echte Mehrfachauswahlen'),'Location planner checkbox exception must stay documented at learning-target level');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes("entityType:'npc'"),'NPC portraits must use the central entity-based media resolver');

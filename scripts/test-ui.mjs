@@ -647,7 +647,7 @@ assert.ok(source.includes("selectWorkshopItem(selectedId,{preserveQuery:true,pre
 assert.ok(heroHtml.includes('href="#ortsplaner" data-view-link="planner">Ortsplaner</a>'),'Ortsplaner ersetzt den Berufsplaner als Hauptreiter');
 assert.ok(heroHtml.includes('id="plannerView" class="main-view planner-view"')&&heroHtml.includes('aria-label="Ortsplaner"'),'Ortsplaner nutzt den verbindlichen main-view-Vertrag');
 assert.ok(source.includes("location.hash==='#ortsplaner'")&&source.includes("location.hash==='#berufsplaner'"),'Ortsplaner hat eine eigene Hash-Route und übernimmt alte Berufsplaner-Lesezeichen');
-assert.ok(source.includes("fetch('/api/location-planner?'"),'Ortsplaner nutzt die serverseitige Planner-API');
+assert.ok(source.includes("cachedViewFetch('/api/location-planner?'"),'Ortsplaner nutzt die serverseitige Planner-API');
 assert.ok(source.includes('data-location-category')&&source.includes('data-location-action')&&source.includes('data-location-source'),'Kategorien und NPC-Angebote verwenden die vorgesehenen Auswahlkennungen');
 assert.ok(source.includes('selected:new Map()'),'Die manuelle Auswahl bildet genau ein NPC-Angebot je Lernziel ab');
 assert.ok(source.includes('plannerCheapestKnownOffer'),'Die automatische Auswahl verwendet eine zentrale Preislogik');
