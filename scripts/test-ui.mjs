@@ -1003,3 +1003,8 @@ assert.ok(autoCompleteBody.includes('renderWorkshopSuggestions()')&&!autoComplet
 assert.ok(autoCompleteBody.includes('request===workshopSearchEpoch'),'Out-of-order autocomplete responses are discarded');
 assert.ok(source.includes("if(existingShell&&existingShell.querySelector('#workshopSearch'))")&&source.includes('if(child!==searchPanel)child.remove()'),'Full refresh keeps the original search field mounted');
 assert.ok(css.includes('.workshop-suggestions[hidden]{display:none}'),'Empty result list does not cover the search field');
+
+const groupedBasic=ui.professionRows([{id:182,name:'Kräuterkunde',current:65,max:150,iconUrl:'https://blob.example/herbalism.jpg',knownRecipes:[{id:1,name:'Kräuterkunde',iconUrl:'https://blob.example/wrong.jpg',reagents:[]},{id:2,name:'Kräuterkunde',reagents:[]},{id:3,name:'Räucherkerze',craftedItem:{id:3,name:'Räucherkerze'},reagents:[{name:'Friedensblume',quantity:1}]}]}]);
+assert.equal((groupedBasic.match(/<strong>Kräuterkunde<\/strong>/g)||[]).length,1);
+assert.ok(!groupedBasic.includes('wrong.jpg')&&groupedBasic.includes('Rezepte &amp; Fähigkeiten · 2'));
+assert.ok(ui.recipeRows([{name:'Unvollständig',recipeDetailsStatus:'unavailable'}]).includes('Rezeptdetails derzeit nicht vollständig verfügbar'));

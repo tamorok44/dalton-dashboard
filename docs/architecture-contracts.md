@@ -199,3 +199,8 @@ Ein neuer Spielbuild und eine erneute Provider-Zuordnung dürfen eine nachweisli
 ### Unterbrechungsfreie Texteingaben
 
 Die Werkstatt-Suche hält das ursprüngliche Eingabeelement und seine Eltern auch während Datenrefreshs im DOM. Texteingaben und Suchantworten aktualisieren ausschließlich die Vorschlagsliste. Kein erneutes Fokussieren, kein Setzen des Cursors, kein Tastaturverlust. Mindestlänge drei Zeichen, 350 ms Debounce, alte Suchantworten werden über eine Anfragegeneration verworfen. Auswahl eines Gegenstands und fachliche Dateninvalidierung stornieren ausstehende Suchgenerationen. Diese Regel gilt grundsätzlich für zukünftige Live-Suchen, insbesondere auf iOS.
+
+
+### Berufskenntnisse: Identität, Vollständigkeit und Medien
+
+Persönlicher Lernstand bleibt Blizzard-Profilquelle. Fehlende Herstellungsdaten werden beim regulären Refresh aus dem vorhandenen ForeverDB-Rezeptmaster ergänzt (eindeutige Berufs-/Output-Identität oder belegte mehrsprachige Zuordnung; Profil-Rezept-ID ist keine Zauber-ID). Unterschiedliche hergestellte Gegenstände wie Schwacher und Geringer Heiltrank bleiben getrennt. Keine freie Übersetzung, kein Ableiten eines Rezepts allein aus ähnlichen Namen, keine spekulativen Treffer. Frühere vollständige Details dürfen für dieselbe persönliche ID als letzter Stand erhalten bleiben. Nicht belegbare Herstellungsdaten sind ausdrücklich unvollständig. Gleichnamige Grundkenntnisse ohne Herstellung werden nur in der Darstellung zusammengeführt und verwenden das Berufsicon; Roh-IDs bleiben erhalten. Medien bevorzugen das Gegenstandsicon und zugelassene Originalquelle. Keine Bilder aus ähnlich benannten Zaubern. Kein zusätzlicher Vollabruf auf UI-Klick.

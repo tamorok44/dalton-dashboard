@@ -322,7 +322,7 @@ export async function fetchForeverRecipeDetails(recipes,{
         signal:AbortSignal.timeout(15000)
       });
       const body=await parseResponse(response);
-      if(!response.ok)return [recipe.id,null];
+      if(!response.ok||Number(body?.id)!==recipe.id)return [recipe.id,null];
       return [recipe.id,normalizeRecipeDetail(body)];
     }catch{
       return [recipe.id,null];

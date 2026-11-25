@@ -50,7 +50,9 @@ function normalizedRecipe(recipe,detailsById){
     name:detail?.name||recipe?.name||'Unbekannte Kenntnis',
     craftedItem:detail?.craftedItem||null,
     craftedQuantity:detail?.craftedQuantity||null,
-    reagents:asArray(detail?.reagents)
+    reagents:asArray(detail?.reagents),
+    recipeDetailsStatus:detail?.craftedItem?.id&&asArray(detail?.reagents).length?'verified':'unavailable',
+    recipeDetailsSource:detail?'Blizzard Forever':null
   };
 }
 

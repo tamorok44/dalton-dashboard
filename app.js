@@ -102,10 +102,11 @@ function recipeRows(recipes=[]){
       :'';
     const reagents=(recipe?.reagents||[]).filter(x=>x?.name).map(x=>(Number.isFinite(Number(x.quantity))?Math.round(Number(x.quantity))+'× ':'')+x.name);
     const materials=reagents.length?'<span class="recipe-reagents">Materialien: '+esc(reagents.join(' · '))+'</span>':'';
-    const hasDetails=Boolean(crafted||materials);
+    const status=recipe.recipeDetailsStatus==='unavailable'?'<span class="recipe-reagents">Rezeptdetails derzeit nicht vollständig verfügbar</span>':recipe.recipeDetailsStatus==='previous'?'<span class="recipe-reagents">Materialien: letzter bestätigter Stand</span>':'';
+    const hasDetails=Boolean(crafted||materials||status);
     return '<div class="recipe-entry">'+
       '<div class="recipe-name">'+knowledgeIcon(recipe.iconUrl,28)+'<strong>'+esc(recipeName||'Kenntnis')+'</strong></div>'+
-      (hasDetails?'<div class="recipe-meta">'+crafted+materials+'</div>':'')+
+      (hasDetails?'<div class="recipe-meta">'+crafted+materials+status+'</div>':'')+
       '</div>';
   }).join('')+'</div>';
 }
@@ -133,7 +134,14 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
       return '<span class="profession-segment '+(unlocked?'is-unlocked':'is-locked')+'">'+
         '<span class="profession-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
     }).join('');
-    const recipes=Array.isArray(p.knownRecipes)?p.knownRecipes:[];
+    // Group redundant basic profession records only in the display.
+    let basicShown=false;
+    const recipes=(Array.isArray(p.knownRecipes)?p.knownRecipes:[]).flatMap(r=>{
+      const basic=r.knowledgeKind==='profession-basic'||(r.name===p.name&&!r.craftedItem?.id&&!(r.reagents||[]).length);
+      if(!basic)return [r];
+      if(basicShown)return [];
+      basicShown=true;return [{...r,name:p.name,iconUrl:p.iconUrl||null,recipeDetailsStatus:'not-applicable'}];
+    });
     const detailKey=slug+':profession:'+(p.id||p.name||'unknown');
     const knowledge=recipes.length
       ?'<details class="profession-knowledge" data-detail-key="'+esc(detailKey)+'"'+(openDetails.has(detailKey)?' open':'')+'>'+

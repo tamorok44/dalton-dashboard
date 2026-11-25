@@ -114,3 +114,18 @@ assert.equal(preservedLocal.characters[0].knownClassAbilitiesSource,'WoW-Spellbo
 assert.equal(preservedLocal.characters[0].knownClassAbilitiesCapturedAt,'2026-11-23T05:55:00.000Z');
 assert.deepEqual(preservedLocal.characters[0].knownClassAbilities.map(entry=>entry.id),[133]);
 console.log('Forever-Detaildaten: deutsche Rezepte, Talente, Ruf, Quests und persönlicher Spellbook-Status: OK');
+
+const {repairProfessionKnowledge,preserveKnownRecipeDetails}=await import('./profession-knowledge.mjs');
+const raw={characters:[{slug:'cole-dalton',professions:[{id:129,name:'Erste Hilfe',knownRecipes:[{id:54191,name:'Minor Healing Potion',reagents:[]},{id:54192,name:'Geringer Heiltrank',craftedItem:{id:858,name:'Geringer Heiltrank'},reagents:[{id:1,name:'Testmaterial',quantity:1}]}]},{id:182,name:'Kräuterkunde',knownRecipes:[{id:1419,name:'Kräuterkunde'},{id:54115,name:'Kräuterkunde'},{id:52642,name:'Incense Candle',reagents:[]},{id:999,name:'Unbekannt'}]}]}]};
+const master={build:'1.60.1.71091',recipes:[{id:1244431,professionSlug:'first-aid',name:'Schwacher Heiltrank',craftedItem:{id:118,name:'Schwacher Heiltrank'},reagents:[{id:2447,name:'Friedensblume',quantity:1}]},{id:1229705,professionSlug:'herbalism',name:'Räucherkerze',craftedItem:{id:279962,name:'Räucherkerze'},reagents:[{id:2447,name:'Friedensblume',quantity:1}]}]};
+const fixed=repairProfessionKnowledge(raw,master);
+assert.equal(fixed.characters[0].professions[0].knownRecipes[0].craftedItem.id,118);
+assert.equal(fixed.characters[0].professions[0].knownRecipes[1].craftedItem.id,858);
+assert.equal(fixed.characters[0].professions[1].knownRecipes[2].name,'Räucherkerze');
+assert.equal(fixed.characters[0].professions[1].knownRecipes[3].recipeDetailsStatus,'unavailable');
+assert.equal(fixed.characters[0].professions[1].knownRecipes.filter(r=>r.knowledgeKind==='profession-basic').length,2);
+assert.equal(preserveKnownRecipeDetails(raw,fixed).characters[0].professions[0].knownRecipes[0].recipeDetailsStatus,'previous');
+const unrelated={characters:[{slug:'test',professions:[{id:185,name:'Kochkunst',knownRecipes:[{id:999,name:'A new recipe'}]}]}]};
+const newRecipe={id:12345,professionSlug:'cooking',name:'Neues Gericht',englishName:'A new recipe',craftedItem:{id:99999,name:'Neues Gericht'},reagents:[{id:1,name:'Zutat',quantity:1}]};
+assert.equal(repairProfessionKnowledge(unrelated,{recipes:[newRecipe]}).characters[0].professions[0].knownRecipes[0].name,'Neues Gericht');
+assert.equal(repairProfessionKnowledge(unrelated,{recipes:[newRecipe,{...newRecipe,id:12346,craftedItem:{id:99998,name:'Anderes Gericht'}}]}).characters[0].professions[0].knownRecipes[0].recipeDetailsStatus,'unavailable');

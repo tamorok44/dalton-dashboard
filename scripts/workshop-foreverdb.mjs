@@ -393,6 +393,7 @@ export function normalizeForeverDbRecipe(raw={},professionSlug){
   return {
     id:firstInteger(raw.id,raw.recipeId,raw.spellId),
     name:firstText(raw.name,raw.recipeName,makes.item.name)||makes.item.name||('Rezept '+makes.item.id),
+    englishName:firstText(raw.nameEn,raw.englishName,raw.recipeNameEn,raw.names?.en_US,raw.names?.en),
     professionSlug,
     craftedItem:makes.item,
     craftedQuantity:{min:makes.min,max:makes.max,variable:makes.variable},

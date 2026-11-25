@@ -1,3 +1,5 @@
+import {repairProfessionKnowledge,preserveKnownRecipeDetails} from './profession-knowledge.mjs';
+import {getCachedForeverDbMasterRecipeIndex} from './workshop-store.mjs';
 import {refreshCharacters} from './armory-core.mjs';
 import {archiveImages} from './archive-images.mjs';
 import {loadCharacters,saveCharacters,mergeProfiles} from './character-store.mjs';
@@ -63,6 +65,10 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
         .map(detail=>['quest:'+Number(detail.id),detail.title]));
       const localizedNames={...otherLocalizedNames,...questLocalizedNames};
       latest=enrichWithForeverDetails(latest,detailsSnapshot,recipeDetails,localizedNames);
+      // Repair against our current shared cache before falling back to prior details.
+      const recipeMaster=await getCachedForeverDbMasterRecipeIndex().catch(()=>null);
+      latest=repairProfessionKnowledge(latest,recipeMaster);
+      latest=preserveKnownRecipeDetails(latest,previous);
       await reputationCatalogPromise;
     }catch(error){
       console.warn('Erweiterte Forever-Daten konnten nicht vollständig geladen werden:',String(error.message).slice(0,180));

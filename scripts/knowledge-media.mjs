@@ -9,7 +9,7 @@ import {cachedForeverDbItem,cachedForeverDbSpell} from './workshop-store.mjs';
 const NAMESPACE_KEY='dalton-dashboard:knowledge-media:namespace:v1';
 const LOCK_KEY='dalton-dashboard:knowledge-media:batch:v1';
 const NEGATIVE_TTL=7*86400000;
-const LOOKUP_POLICY='blizzard-foreverdb-v2';
+const LOOKUP_POLICY='blizzard-foreverdb-v3';
 // Skill-Line-ID -> basic profession spell, only if Blizzard has no profession media.
 const PROFESSION_SPELLS={171:2259,164:2018,333:7411,202:4036,165:2108,197:3908,182:2366,186:2575,393:8613,185:2550,129:3273,356:7620};
 function positiveId(value){const id=Number(value);return Number.isInteger(id)&&id>0?id:null}
@@ -85,9 +85,13 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
             const result=entry.type==='spell'?await cachedForeverDbSpell(entry.id):await cachedForeverDbItem(entry.id);
             const raw=result?.icon;
             const iconId=positiveId(raw)||positiveId(String(raw||'').match(/(?:^|\/)icons\/(\d+)\.webp$/)?.[1]);
-            const fallback=iconId?'https://render.worldofwarcraft.com/forever-eu/icons/56/'+iconId+'.jpg':raw;
-            if(fallback&&fallback!==source)url=await archive(fallback);
-            if(!url&&sourceImageAllowed(fallback))source=fallback;
+            const candidates=[sourceImageAllowed(raw)?raw:null,iconId?'https://render.worldofwarcraft.com/forever-eu/icons/56/'+iconId+'.jpg':null,iconId?'https://foreverdb.net/icons/'+iconId+'.webp':null].filter(Boolean);
+            for(const fallback of [...new Set(candidates)]){
+              if(fallback===source)continue;
+              try{url=await archive(fallback)}catch{}
+              if(url)break;
+              source=fallback;
+            }
           }
           if(url)icons[key]=url;
           else if(namespace)await rememberMissingIcon(entry.type,entry.id,LOOKUP_POLICY,source);
@@ -110,12 +114,18 @@ export async function enrichKnowledgeMedia(data={},petCatalog={},options={}){
     for(const ability of c.knownClassAbilities||[])if(!ability.iconUrl)refs.push(ref('spell',ability.id,ability.iconId));
   }
   for(const family of Object.values(petCatalog||{}))for(const ability of family?.abilities||[])refs.push(ref('spell',ability.id,ability.iconId));
-  for(const c of chars)for(const p of c.professions||[])for(const r of p.knownRecipes||[])refs.push(knowledgeRecipeRef(r));
+  for(const c of chars)for(const p of c.professions||[])for(const r of p.knownRecipes||[]){
+    if(r.knowledgeKind==='profession-basic')continue;
+    refs.push(knowledgeRecipeRef(r));
+  }
   const icons=await knowledgeIcons(refs,{characterSlug:chars[0]?.slug,...options});
   const attach=(entry,reference)=>({...entry,iconUrl:iconFor(icons,reference)||entry.iconUrl||null});
   const characters=chars.map(c=>({...c,
     ...(Array.isArray(c.professions)?{professions:c.professions.map(p=>({...attach(p,ref('profession',p.id)),
-      ...(Array.isArray(p.knownRecipes)?{knownRecipes:p.knownRecipes.map(r=>attach(r,knowledgeRecipeRef(r)))}:{})
+      ...(Array.isArray(p.knownRecipes)?{knownRecipes:p.knownRecipes.map(r=>{
+        if(r.knowledgeKind==='profession-basic')return {...r,iconUrl:iconFor(icons,ref('profession',p.id))||p.iconUrl||null};
+        return {...r,iconUrl:iconFor(icons,knowledgeRecipeRef(r))||null};
+      })}:{})
     }))}:{}),
     ...(Array.isArray(c.talentDetails)?{talentDetails:c.talentDetails.map(t=>({...t,talents:(t.talents||[]).map(talent=>attach(talent,ref('spell',talent.spellId)))}))}:{}),
     ...(Array.isArray(c.knownClassAbilities)?{knownClassAbilities:c.knownClassAbilities.map(ability=>attach(ability,ref('spell',ability.id,ability.iconId)))}:{})
