@@ -218,8 +218,8 @@
       "rank": 2
     },
     {
-      "talentId": 105765,
-      "rank": 3
+      "talentId": 105770,
+      "rank": 2
     }
   ],
   "expectedDistribution": {
@@ -338,7 +338,7 @@
     {
       "talentId": 105808,
       "count": 1,
-      "reason": "Reichweite der arkanen Ergänzung"
+      "reason": "Arkanen Reihenwert für Meditation erreichen und Reichweite für die Arkanergänzung erhöhen"
     },
     {
       "talentId": 105803,
@@ -347,13 +347,18 @@
     },
     {
       "talentId": 105765,
-      "count": 2,
-      "reason": "Kältekegel für gemischte Inhalte vervollständigen"
+      "count": 1,
+      "reason": "Kältekegel für gemischte Inhalte weiter stärken"
+    },
+    {
+      "talentId": 105770,
+      "count": 1,
+      "reason": "Arktische Reichweite für die Frostrotation und Kontrolle vervollständigen"
     }
   ],
   "research": {
     "reviewedAt": "2026-11-25",
-    "editorialDecision": "Prioritize sustained frost play, useful early damage/control, and group utility without required respec. The first 31 Frost points keep Ice Barrier at the earliest ordinary budget. Later Arcane sustain and Frost utility avoid making an Arcane leveling route the prerequisite.",
+    "editorialDecision": "Sustained Frost play with early control and group utility without respec. Keep the earliest ordinary Ice Barrier unlock and retain the Arcane point required to unlock Meditation. Replace the last Cone of Cold rank with the second Arctic Reach rank for the primary rotation and control spells.",
     "sources": [
       {
         "url": "https://mobalytics.gg/wow-forever/classes/frost-mage-guide-progress",
@@ -392,11 +397,10 @@
       }
     ],
     "unresolved": [
-      "Exact current server layout revision / independent per-rank verification",
-      "Effective level gates and point calendar for all Legacy configurations",
-      "Frostbite and Fingers of Frost interaction: shared chance reported; retain real immobilization for solo quests, do not claim independent proc increase; verify remaining late-game value",
-      "Full comparative assessment of late Arcane first-tier filler and Cone of Cold investment",
-      "Current hotfix dependency revision and release review"
+      "Effective level gates on the current server for all six Legacy ranks, accounting for points banked and perks activated after level-up",
+      "Current build and server layout binding of the source data",
+      "Exact shared proc conditions, charges and behavior on freeze-immune targets on the current server",
+      "Publish only after reviewed class rules and matching hotfix evidence"
     ],
     "approval": null
   }

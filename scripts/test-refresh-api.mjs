@@ -3,6 +3,7 @@ import {PET_DB2_BASELINE,PET_DB2_REVIEWED_BUILD} from './pet-db2-baseline.mjs';
 import {petDb2Url} from './pet-db2-audit.mjs';
 import {createRequire} from 'node:module';
 import handler from '../api/refresh.js';
+import {savePetRuleState} from './pet-rule-store.mjs';
 import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
 const require=createRequire(import.meta.url);
@@ -90,8 +91,13 @@ globalThis.fetch=async (url,options={})=>{
       const keys=JSON.parse(options.body);
       if(keys[3]==='dalton-dashboard:pet-rules:v1'){
         if(failPetRuleSave)return {ok:true,json:async()=>({error:'pet rule write failed'})};
-        petRulesSaved=keys[5];
-        return {ok:true,json:async()=>({result:'OK'})};
+        const next=JSON.parse(keys[5]);
+        const previous=petRulesSaved?JSON.parse(petRulesSaved):null;
+        if(!previous||previous.checkedAt<=next.checkedAt){
+          next.talentRuleObservation=keys[7]==='preview'?previous?.talentRuleObservation:keys[8]?JSON.parse(keys[8]):undefined;
+          petRulesSaved=JSON.stringify(next);
+        }
+        return {ok:true,json:async()=>({result:petRulesSaved})};
       }
       const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
         (lock===keys[6]?(saved=keys[7],'OK'):'ERROR');
@@ -239,6 +245,23 @@ try{
   const throttled=fakeResponse();
   await handler({method:'GET'},throttled);
   assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
+  const priorEnvironment=process.env.VERCEL_ENV;
+  try{
+    const checkedAt='2099-11-25T01:00:00.000Z';
+    const observation={checkedAt,status:'observed',clientBuild:'1.60.1.71091',hotfixRevision:'a'.repeat(64)};
+    const state={checkedAt,rulebookVersion:'test',history:[],talentRuleObservation:observation};
+    process.env.VERCEL_ENV='production';
+    assert.deepEqual(await savePetRuleState(state),state);
+    assert.deepEqual(await savePetRuleState({...state,checkedAt:'2099-11-25T00:00:00.000Z',talentRuleObservation:null}),state);
+    process.env.VERCEL_ENV='preview';
+    const preview=await savePetRuleState({...state,checkedAt:'2099-11-25T02:00:00.000Z',
+      talentRuleObservation:{...observation,status:'source_unavailable'}});
+    assert.deepEqual(preview.talentRuleObservation,observation);
+    assert.deepEqual(preview.history,[]);
+  }finally{
+    if(priorEnvironment===undefined)delete process.env.VERCEL_ENV;
+    else process.env.VERCEL_ENV=priorEnvironment;
+  }
   console.log('Manual API: parallel German Armory fetch, source-backed stats, profession fail-closed behavior and outages: OK');
 }finally{
   globalThis.fetch=originalFetch;

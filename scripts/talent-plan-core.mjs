@@ -1,3 +1,5 @@
+import {currentTalentRulesMatch} from './talent-rule-watch.mjs';
+
 // Pure planning rules. No provider requests, no roster dependency, no runtime AI.
 const positive=v=>Number.isSafeInteger(v)&&v>0;
 const nonempty=v=>typeof v==='string'&&v.trim().length>0;
@@ -59,7 +61,7 @@ export function validateTalentPath(plan,master,rules){
   }
   return {ok:true,history,finalRanks:Object.fromEntries(ranks)};
 }
-export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{currentRules,now=Date.now()}={}){
+export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{ruleObservation,legacyTalentedRank,now=Date.now()}={}){
   const key=profileKey(profile);
   if(!key)return reject('invalid_profile');
   const candidates=array(plans).filter(p=>p?.status==='approved'&&p.classId===profile.classId&&p.treeId===profile.treeId&&
@@ -68,19 +70,14 @@ export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{curren
   const plan=candidates[0];
   if(!nonempty(plan.review?.reviewedAt)||!nonempty(plan.review?.rationale)||
     !array(plan.review?.evidenceIds).length||!plan.review.evidenceIds.every(nonempty))return reject('missing_editorial_review');
-  const rules=array(rulePacks).filter(r=>r?.revision===plan.ruleRevision&&r.classId===plan.classId);
+  if(!Number.isInteger(legacyTalentedRank)||legacyTalentedRank<0||legacyTalentedRank>5)return reject('unverified_legacy_rank');
+  const rules=array(rulePacks).filter(r=>r?.revision===plan.ruleRevision&&r.classId===plan.classId&&
+    r.legacyTalentedRank===legacyTalentedRank);
   if(rules.length!==1)return reject('missing_or_ambiguous_rules');
   const check=validateTalentPath(plan,master,rules[0]);
   if(!check.ok)return check;
   // Cache freshness only attests to an acquisition. Release additionally
   // requires independent, current evidence from a verified rules check.
-  const rule=rules[0];
-  const current=currentRules?.[plan.classId];
-  const checkedAt=Date.parse(current?.checkedAt);
-  const validUntil=Date.parse(current?.validUntil);
-  if(current?.status!=='verified'||!nonempty(current.clientBuild)||!nonempty(current.hotfixRevision)||
-    current.clientBuild!==rule.clientBuild||current.hotfixRevision!==rule.hotfixRevision||
-    current.catalogRevision!==plan.catalogRevision||!Number.isFinite(now)||
-    !(checkedAt<=now&&now<validUntil))return reject('unverified_current_rules');
+  if(!currentTalentRulesMatch(ruleObservation,rules[0],master,now))return reject('unverified_current_rules');
   return {ok:true,planId:plan.id,version:plan.version,history:check.history};
 }

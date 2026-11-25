@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
+import {observeTalentRules,talentHotfixRevision} from './talent-rule-watch.mjs';
 import {inspectPetDb2} from './pet-db2-audit.mjs';
 
 export const PET_RULEBOOK_VERSION=HUNTER_PET_RULEBOOK_VERSION;
@@ -271,14 +272,18 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       signal:AbortSignal.timeout(15000)
     });
     if(!response.ok)throw new Error('HTTP '+response.status);
-    const text=htmlText(await response.text());
+    const html=await response.text();
+    const text=htmlText(html);
+    const talentHotfixEvidence=definition.mode==='hotfix'
+      ?{talentHotfixRevision:talentHotfixRevision(htmlText(html.match(/<section\b[^>]*\bclass=["']blog["'][^>]*>([\s\S]*?)<\/section>/i)?.[1]??''))}
+      :{};
     const semantic=definition.mode==='hotfix'
       ?hotfixEvidence(text,definition.semanticPatterns)
       :markerEvidence(text,definition.semanticPatterns);
     if(!semantic.ok){
       return {
         id,label:definition.label,url:definition.url,status:'review_required',
-        reason:'expected_rule_evidence_missing',missing:semantic.missing,
+        reason:'expected_rule_evidence_missing',missing:semantic.missing,...talentHotfixEvidence,
         baselineDigest:previousSource?.baselineDigest||null,
         baselineBuild:previousSource?.baselineBuild||null
       };
@@ -317,7 +322,7 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       id,label:definition.label,url:definition.url,
       status:changed?'review_required':'verified',
       reason:changed?(buildOnly?'source_build_changed':'source_evidence_changed'):null,
-      digest,baselineDigest:nextBaseline,baselineBuild:approved||!oldDigest?build:baselineBuild,build
+      digest,...talentHotfixEvidence,baselineDigest:nextBaseline,baselineBuild:approved||!oldDigest?build:baselineBuild,build
     };
   }catch(error){
     return {
@@ -358,6 +363,7 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
   return {
     rulebookVersion:PET_RULEBOOK_VERSION,
     checkedAt:now.toISOString(),
+    talentRuleObservation:observeTalentRules(sourceResults,now),
     overall:worstStatus(Object.values(rules).map(rule=>rule.status)),
     rules,
     sources:sourceResults

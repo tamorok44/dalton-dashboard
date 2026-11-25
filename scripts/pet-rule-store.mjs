@@ -45,8 +45,32 @@ export async function loadPetRuleState(){
 export async function savePetRuleState(state){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!state?.checkedAt||!state?.rulebookVersion)throw new Error('Ungültiger Pet-Regelstatus');
-  await redis(['EVAL',"redis.call('SET',KEYS[1],ARGV[1]); redis.call('HSET',KEYS[2],'pet',ARGV[2]); return 'OK'",2,KEY,VERSION_METADATA_KEY,JSON.stringify(state),JSON.stringify(petVersionMetadata(publicPetRuleState(state)))]);
-  return state;
+  const saveIfCurrent=`
+    local raw=redis.call('GET',KEYS[1])
+    local valid,previous=pcall(cjson.decode,raw or '')
+    local next=cjson.decode(ARGV[1])
+    if valid and type(previous)=='table' and type(previous.checkedAt)=='string'
+       and previous.checkedAt>next.checkedAt then
+      return raw
+    end
+    local observation=ARGV[4]
+    if ARGV[3]=='preview' then
+      observation=valid and type(previous)=='table' and type(previous.talentRuleObservation)=='table'
+        and cjson.encode(previous.talentRuleObservation) or ''
+    end
+    local stored=ARGV[1]
+    if observation~='' then
+      stored=string.sub(stored,1,-2)..',"talentRuleObservation":'..observation..'}'
+    end
+    redis.call('SET',KEYS[1],stored)
+    redis.call('HSET',KEYS[2],'pet',ARGV[2])
+    return stored
+  `;
+  const saved=await redis(['EVAL',saveIfCurrent,2,KEY,VERSION_METADATA_KEY,
+    JSON.stringify({...state,talentRuleObservation:undefined}),
+    JSON.stringify(petVersionMetadata(publicPetRuleState(state))),process.env.VERCEL_ENV||'',
+    state.talentRuleObservation?JSON.stringify(state.talentRuleObservation):'']);
+  return JSON.parse(saved);
 }
 export function petRuleStateFresh(state,{now=new Date(),maxAgeMs=20*60*60*1000}={}){
   if(!state||state.rulebookVersion!==PET_RULEBOOK_VERSION)return false;
@@ -58,8 +82,7 @@ export async function ensurePetRuleState({fetchImpl=fetch,force=false,now=new Da
   if(!force&&petRuleStateFresh(previous,{now,maxAgeMs}))return previous;
   const next=await verifyPetRulebook({fetchImpl,previousState:previous,now});
   next.history=appendHistory(previous,next);
-  await savePetRuleState(next);
-  return next;
+  return savePetRuleState(next);
 }
 export async function loadPublicPetRuleState(){
   return publicPetRuleState(await loadPetRuleState());

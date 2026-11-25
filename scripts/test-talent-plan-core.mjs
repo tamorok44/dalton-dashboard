@@ -4,8 +4,8 @@ import {validateTalentPath,resolveApprovedTalentPlan,TALENT_POINT_CALENDAR_REVIS
 const revision='a'.repeat(64),profile={classId:8,treeId:1,goal:'leveling',role:'damage',playStyle:'mixed',priority:'balanced'};
 const talents=Array.from({length:11},(_,row)=>({id:row+1,row,maxRank:row===10?1:5,requiredPoints:row*5,
   prerequisites:row===1?[{id:1,rank:5,conditionKnown:true}]:[]}));
-const master={stale:false,classes:{8:{trees:[{id:1,talents}]}},classRevisions:{8:revision}};
-const rules={status:'verified',classId:8,catalogRevision:revision,revision:'fixture',clientBuild:'fixture-build',hotfixRevision:'fixture-hotfix',sources:['fixture'],reviewedAt:'fixture',
+const master={stale:false,checkedAt:'2026-11-25T11:30:00Z',classes:{8:{trees:[{id:1,talents}]}},classRevisions:{8:revision}};
+const rules={status:'verified',classId:8,catalogRevision:revision,revision:'fixture',clientBuild:'1.60.1.71037',hotfixRevision:'c'.repeat(64),sources:['fixture'],reviewedAt:'fixture',
   pointCalendarRevision:TALENT_POINT_CALENDAR_REVISION,legacyTalentedRank:0,gateMode:'earlier_rows',
   minimumLevelByTalent:Object.fromEntries(talents.map(t=>[t.id,10+5*t.row]))};
 const plan={id:'fixture',version:1,classId:8,treeId:1,catalogRevision:revision,ruleRevision:'fixture',requiresRespec:false,
@@ -26,19 +26,26 @@ assert.equal(validateTalentPath(plan,master,{...rules,pointCalendarRevision:'unk
 assert.deepEqual(validateTalentPath(plan,master,{...rules,legacyTalentedRank:5}),{ok:false,code:'level_gate',point:1});
 
 const now=Date.parse('2026-11-25T12:00:00Z');
-const verification={status:'verified',clientBuild:rules.clientBuild,hotfixRevision:rules.hotfixRevision,
-  catalogRevision:revision,checkedAt:'2026-11-25T11:00:00Z',validUntil:'2026-11-25T13:00:00Z'};
-const resolveWith=current=>resolveApprovedTalentPlan(profile,[plan],master,[rules],{now,currentRules:{8:current}});
+const verification={status:'observed',clientBuild:rules.clientBuild,hotfixRevision:rules.hotfixRevision,
+  checkedAt:'2026-11-25T11:00:00Z'};
+const resolveWith=(observation,catalog=master)=>resolveApprovedTalentPlan(profile,[plan],catalog,[rules],{now,ruleObservation:observation,legacyTalentedRank:0});
 assert.equal(resolveWith(verification).planId,'fixture');
-assert.equal(resolveApprovedTalentPlan(profile,[plan],master,[rules]).code,'unverified_current_rules');
+assert.equal(resolveApprovedTalentPlan(profile,[plan],master,[rules]).code,'unverified_legacy_rank');
+assert.equal(resolveApprovedTalentPlan(profile,[plan],master,[rules],{now,legacyTalentedRank:0}).code,'unverified_current_rules');
+assert.equal(resolveApprovedTalentPlan(profile,[plan],master,[rules],{now,legacyTalentedRank:1,ruleObservation:verification}).code,'missing_or_ambiguous_rules');
+const rankedRules={...calendarRules,legacyTalentedRank:1};
+const ranked=resolveApprovedTalentPlan(profile,[plan],master,[rules,rankedRules],{now,legacyTalentedRank:1,ruleObservation:verification});
+assert.equal(ranked.planId,plan.id);
+assert.equal(ranked.history[0].level,9);
+
 for(const changed of [
-  {clientBuild:'new-build'},
-  {hotfixRevision:'new-hotfix'},
-  {catalogRevision:'b'.repeat(64)},
-  {validUntil:'2026-11-25T12:00:00Z'},
+  {clientBuild:'1.60.1.71091'},
+  {hotfixRevision:'d'.repeat(64)},
+  {checkedAt:'2026-11-24T10:00:00Z'},
   {checkedAt:'2026-11-25T12:00:01Z'},
   {status:'source_unavailable'}
 ])assert.equal(resolveWith({...verification,...changed}).code,'unverified_current_rules');
+assert.equal(resolveWith(verification,{...master,checkedAt:'2026-11-25T10:30:00Z'}).code,'unverified_current_rules');
 assert.equal(resolveApprovedTalentPlan(profile,[plan,{...plan,version:2}],master,[rules]).code,'ambiguous_recommendation');
 assert.equal(resolveApprovedTalentPlan({...profile,playStyle:'solo'},[plan],master,[rules]).code,'no_approved_recommendation');
 assert.equal(resolveApprovedTalentPlan(profile,[{...plan,status:'research_only'}],master,[rules]).code,'no_approved_recommendation');
