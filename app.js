@@ -677,12 +677,12 @@ function questsPanel(c,group,questCatalog={},openDetails=new Set()){
         '<summary>Beschreibung & Gebiet</summary>'+detailRows+
         (detail.description?'<p class="quest-description">'+esc(detail.description)+'</p>':'')+'</details>'
       :'';
-    const image=validBlob(detail?.questImageUrl)?knowledgeIcon(detail.questImageUrl,32,'quest-icon'):'<span class="knowledge-icon quest-icon quest-icon-fallback" aria-hidden="true">!</span>';
-    const start=detail?.questStartName?'<span class="quest-start">'+esc(detail.questImageKind==='item'?'Queststart: ':'Questgeber: ')+esc(detail.questStartName)+(detail.questStartEvidence==='classic-unconfirmed'?' · Classic-Daten, nicht bestätigt':detail.questStartEvidence==='unknown'?' · nicht bestätigt':'')+' · <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></span>':'';
+    const image=validBlob(detail?.questImageUrl)?knowledgeIcon(detail.questImageUrl,32,'quest-icon'):validBlob(detail?.questFallbackIconUrl)?knowledgeIcon(detail.questFallbackIconUrl,32,'quest-icon quest-marker'):'<span class="knowledge-icon quest-icon quest-icon-fallback" aria-hidden="true">!</span>';
+    const start=detail?.questStartName?'<span class="quest-start">'+esc(detail.questImageKind==='item'?'Queststart: ':'Questgeber: ')+esc(detail.questStartName)+(detail.questStartEvidence==='classic-unconfirmed'?' · Classic-Daten, nicht bestätigt':detail.questStartEvidence==='unknown'?' · nicht bestätigt':'')+'</span>':'';
     return '<div class="quest-entry">'+image+'<div class="quest-copy"><strong>'+esc(title)+'</strong>'+start+
       (meta?'<div class="quest-meta">'+meta+'</div>':'')+expandable+'</div></div>';
   }).join('');
-  return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div></div>';
+  return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div>'+(quests.some(q=>questCatalog?.[Number(q.id)]?.questStartSource)?'<div class="quest-start">Questgeberdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></div>':'')+'</div>';
 }
 
 // Technische Slot-IDs steuern nur die Reihenfolge. Sichtbare Slotnamen kommen ausschließlich aus der deutschen Blizzard-Quelle.

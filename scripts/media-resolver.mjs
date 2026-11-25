@@ -98,3 +98,5 @@ export async function rememberMissingIcon(type,id,lookupPolicy,sourceUrl=null){r
 
 export function mediaAssetKey(type,id,role){return mediaField(type,id,role)}
 export async function readAssetRecords(refs){return loadMediaRecords(refs)}
+
+export async function rememberMissingAsset(type,id,role,lookupPolicy){return saveMediaRecord(type,id,role,{sourceUrl:null,storedUrl:null,lookupPolicy})}
