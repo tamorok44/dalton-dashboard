@@ -68,7 +68,7 @@ globalThis.fetch=async (url,options={})=>{
   if(String(url).startsWith('https://test-redis.example.com')){
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
-    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:saved})};
+    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?saved:null})};
     if(op==='SET'){
       let result='OK';
       if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
@@ -86,8 +86,13 @@ globalThis.fetch=async (url,options={})=>{
     }
     if(op==='EVAL'){
       const keys=JSON.parse(options.body);
+      if(keys[3]==='dalton-dashboard:pet-rules:v1'){
+        if(failPetRuleSave)return {ok:true,json:async()=>({error:'pet rule write failed'})};
+        petRulesSaved=keys[5];
+        return {ok:true,json:async()=>({result:'OK'})};
+      }
       const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
-        (lock===keys[5]?(saved=keys[6],'OK'):'ERROR');
+        (lock===keys[6]?(saved=keys[7],'OK'):'ERROR');
       return {ok:true,json:async()=>({result})};
     }
     throw Error('Unexpected Redis command');
