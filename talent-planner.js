@@ -46,11 +46,14 @@ function groupedOptions(profiles,key){
 // profiles are the novice-facing default; priorities remain library metadata.
 // Specialized priorities are not silently substituted for this default.
 export function talentGuideOptions(profiles,selection={}){
-  const goal=allGoals.includes(selection.goal)?selection.goal:'';
-  const fields=[{key:'goal',label:guideFields[0][1],values:allGoals,chosen:goal}];
-  const inferred={};
+  const balanced=profiles.filter(p=>p.priority==='balanced');
+  const goalGroups=allGoals.map(goal=>balanced.filter(p=>p.goal===goal));
+  const identicalGoals=goalGroups.every(group=>group.length>0)&&new Set(goalGroups.map(pathSet)).size===1;
+  const goal=allGoals.includes(selection.goal)?selection.goal:identicalGoals?allGoals[0]:'';
+  const fields=identicalGoals?[]:[{key:'goal',label:guideFields[0][1],values:allGoals,chosen:goal}];
+  const inferred=identicalGoals?{goal}:{};
   if(!goal)return {fields,profiles:[],complete:false,inferred,unavailable:false};
-  let remaining=profiles.filter(p=>p.goal===goal&&p.priority==='balanced');
+  let remaining=balanced.filter(p=>p.goal===goal);
   if(!remaining.length)return {fields,profiles:[],complete:false,inferred,unavailable:true};
   for(const [key,label] of guideFields.slice(1)){
     const groups=groupedOptions(remaining,key);
@@ -80,6 +83,34 @@ export function talentGuideOptions(profiles,selection={}){
   const choices=[...trees.values()].filter(items=>new Set(items.map(pathKey)).size===1).map(items=>items[0]);
   return {fields,profiles:choices,complete:choices.length>0,inferred,unavailable:!choices.length};
 }
+// Bind a comparative editorial decision to the exact available profiles and
+// versions. Adding or replacing a plan invalidates the comparative default.
+export const specializationOptionKey=p=>JSON.stringify([p.classId,p.treeId,p.goal,p.role,p.playStyle,p.priority,p.planId,p.version]);
+export const specializationOptionSet=profiles=>JSON.stringify(profiles.map(specializationOptionKey).sort());
+
+export function specializationRecommendation(choices,advice=[]){
+  if(choices.length===1)return {
+    profile:choices[0],kind:'available',
+    reason:choices[0].summary||choices[0].recommendation||''
+  };
+  if(!choices.length)return null;
+  const optionSet=specializationOptionSet(choices);
+  const reviewed=advice.filter(entry=>Array.isArray(entry.options)&&
+    specializationOptionSet(entry.options)===optionSet&&
+    typeof entry.reason==='string'&&entry.reason.trim()&&
+    Array.isArray(entry.evidenceIds)&&entry.evidenceIds.length&&entry.preferred);
+  if(reviewed.length!==1)return null;
+  const profile=choices.find(p=>specializationOptionKey(p)===specializationOptionKey(reviewed[0].preferred));
+  return profile?{profile,kind:'comparative',reason:reviewed[0].reason}:null;
+}
+
+export function specializationSelection(guide,selection={},advice=[]){
+  const recommended=specializationRecommendation(guide.profiles,advice);
+  const treeId=Number.isSafeInteger(selection.treeId)&&selection.treeId>0
+    ?selection.treeId:recommended?.profile.treeId??null;
+  return {treeId,profile:guide.profiles.find(p=>p.treeId===treeId)??null,recommended};
+}
+
 export function planIsCurrent(plan,now=Date.now()){
   return Boolean(plan&&Date.parse(plan.evidence?.validUntil)>now);
 }
@@ -107,7 +138,7 @@ function storageBinding(storage,identity){
 }
 
 export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,talentGraph,talentNodeDetail,fetchImpl=fetch,storage}){
-  let characters=[],rosterVersion,character='',identity=null,profiles=[],profile=null,rank='',binding=null,selection={};
+  let characters=[],rosterVersion,character='',identity=null,profiles=[],profile=null,rank='',binding=null,selection={},specializations=[],advice=[];
   let busy=false,message='',plan=null,level=10,treeId=null,nodeId=null,requestId=0,expiry=null;
   const warn=code=>blocking[code]||blocking.source_unavailable;
   const clearPlan=()=>{
@@ -127,6 +158,8 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     binding=null;
     rank='';
     profiles=[];
+    specializations=[];
+    advice=[];
     profile=null;
     selection={};
     message='';
@@ -139,13 +172,14 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       if(!result.ok)message=warn(result.code);
       else{
         profiles=result.profiles;
+        specializations=result.specializations??[];
+        advice=result.specializationAdvice??[];
         identity=result.identity;
         binding=identity?storageBinding(storage,identity):null;
         const selected=previous&&previous.identity===identity?profiles.find(option=>matches(option,previous.profile)):null;
         selection=binding?.profile??(previous&&previous.identity===identity?previous.selection:{});
         const guide=talentGuideOptions(profiles,selection);
-        profile=binding?.profile??guide.profiles.find(option=>matches(option,selected))??
-          (guide.profiles.length===1?guide.profiles[0]:null);
+        profile=binding?.profile??specializationSelection(guide,selection,advice).profile;
         rank=binding?.rank?.toString()??(selected&&matches(selected,profile)?previous.rank:'');
         if(binding&&binding.identity!==result.identity)message=warn('binding_unavailable');
         if(!binding&&!profiles.length)message=warn('no_approved_recommendation');
@@ -276,15 +310,28 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     if(focus)result.querySelector(focus)?.focus({preventScroll:true});
   }
   function renderGuide(disabled){
-    if(!character||binding||busy||!profiles.length)return '';
+    if(!character||binding||busy||(!profiles.length&&!specializations.length))return '';
     const guide=talentGuideOptions(profiles,selection);
     const fieldHtml=guide.fields.map(field=>'<label class="talent-planner-field" for="talentGuide-'+field.key+'">'+esc(field.label)+'<select id="talentGuide-'+field.key+'" data-guide-field="'+field.key+'"'+disabled+'><option value="">Bitte wählen</option>'+field.values.map(value=>'<option value="'+esc(value)+'"'+(field.chosen===value?' selected':'')+'>'+esc(labels[value]||value)+'</option>').join('')+'</select></label>').join('');
-    if(!guide.profiles.length)return fieldHtml+(guide.unavailable?'<p>Für diese Ausrichtung ist noch kein fachlich freigegebener Talentplan verfügbar.</p>':'');
+    if(!guide.profiles.length&&!guide.unavailable)return fieldHtml;
+    const {treeId,recommended}=specializationSelection(guide,selection,advice);
+    const options=new Map(specializations.map(p=>[p.treeId,p.name]));
+    for(const p of guide.profiles)options.set(p.treeId,p.name);
     const context=profile?[profile.role,profile.playStyle].map(value=>labels[value]||value).join(' · '):'';
-    const specialization=guide.profiles.length===1
-      ?'<p><strong>Spezialisierung: '+esc(guide.profiles[0].name)+'</strong> · derzeit einziger freigegebener Plan für diese Auswahl.</p>'
-      :'<label class="talent-planner-field" for="talentPlannerProfile">Welche Spezialisierung bevorzugst du?<select id="talentPlannerProfile"'+disabled+'><option value="">Spezialisierung wählen</option>'+guide.profiles.map(value=>'<option value="'+profiles.indexOf(value)+'"'+(matches(value,profile)?' selected':'')+'>'+esc(value.name)+'</option>').join('')+'</select></label><p class="talent-point-note">Eine vergleichende Empfehlung ist für diese Auswahl noch nicht fachlich bestätigt.</p>';
-    return fieldHtml+specialization+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
+    const explanation=recommended
+      ?'<p><strong>Unsere Empfehlung: '+esc(recommended.profile.name)+'</strong></p>'+
+        (recommended.reason?'<p>'+esc(recommended.reason)+'</p>':'')+
+        (recommended.kind==='available'?'<p class="talent-point-note">Derzeit einziger fachlich freigegebener Plan für diese Auswahl; kein abschließender Vergleich aller Spezialisierungen.</p>':'')
+      :guide.unavailable?'<p>Für diese Ausrichtung ist noch kein fachlich freigegebener Talentplan verfügbar.</p>'
+      :'<p class="talent-point-note">Eine vergleichende Empfehlung ist für diese Auswahl noch nicht fachlich bestätigt.</p>';
+    const specialization=options.size
+      ?'<label class="talent-planner-field" for="talentPlannerProfile">Welche Spezialisierung möchtest du spielen?<select id="talentPlannerProfile"'+disabled+'><option value="">Spezialisierung wählen</option>'+[...options].map(([id,name])=>{
+        const available=guide.profiles.some(p=>p.treeId===id);
+        const label=name+(recommended?.profile.treeId===id?' (empfohlen)':available?'':' (Plan noch nicht verfügbar)');
+        return '<option value="'+esc(id)+'"'+(treeId===id?' selected':'')+'>'+esc(label)+'</option>';
+      }).join('')+'</select></label>':'';
+    const missing=treeId&&!profile?'<p role="status">Für deine gewählte Spezialisierung steht bei dieser Ausrichtung noch kein fachlich freigegebener Plan bereit. Wir ersetzen deine Wahl nicht automatisch.</p>':'';
+    return fieldHtml+explanation+specialization+missing+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
   }
   function render(focus){
     const disabled=busy?' disabled':'';
@@ -307,13 +354,17 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       const key=control.dataset.guideField;
       const index=guideFields.findIndex(([field])=>field===key);
       for(const [field] of guideFields.slice(index+1))delete selection[field];
+      delete selection.treeId;
       selection[key]=event.target.value;
       const guide=talentGuideOptions(profiles,selection);
-      profile=guide.profiles.length===1?guide.profiles[0]:null;
+      profile=specializationSelection(guide,selection,advice).profile;
       rank='';message='';clearPlan();render('#talentGuide-'+key);
     }));
     root.querySelector('#talentPlannerProfile')?.addEventListener('change',event=>{
-      profile=talentGuideOptions(profiles,selection).profiles.find(p=>p===profiles[event.target.value])??null;
+      const treeId=Number(event.target.value);
+      if(Number.isSafeInteger(treeId)&&treeId>0)selection.treeId=treeId;
+      else delete selection.treeId;
+      profile=specializationSelection(talentGuideOptions(profiles,selection),selection,advice).profile;
       rank='';
       message='';
       clearPlan();

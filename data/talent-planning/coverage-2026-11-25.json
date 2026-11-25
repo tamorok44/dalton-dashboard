@@ -35,9 +35,9 @@
       {"treeId": 11362, "roles": ["heal"]}
     ],
     "8": [
-      {"treeId": 11582, "roles": ["damage"]},
-      {"treeId": 11594, "roles": ["damage"]},
-      {"treeId": 11601, "roles": ["damage"]}
+      {"treeId": 11582, "treeName": "Arkan", "roles": ["damage"]},
+      {"treeId": 11594, "treeName": "Feuer", "roles": ["damage"]},
+      {"treeId": 11601, "treeName": "Frost", "roles": ["damage"]}
     ],
     "9": [
       {"treeId": 11629, "roles": ["damage"]},

@@ -5,6 +5,7 @@ import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest,talentRevisionDigest
   talentRuleEvidenceDigest,talentSourcePairDigest,talentStructureDigest} from './talent-catalog-proof.mjs';
 import {isTalentClientBuild} from './talent-rule-watch.mjs';
 import {deriveTalentCoverage} from './talent-plan-coverage.mjs';
+import {specializationOptionKey,specializationOptionSet} from '../talent-planner.js';
 import {CLASS_BY_ID} from './class-training-store.mjs';
 
 const folder=new URL('../data/talent-planning/',import.meta.url);
@@ -299,6 +300,32 @@ for(const file of files){
   }
 }
 assert.ok(planCount>0,'The talent plan library must include its pilot');
+// Comparative advice must reference exact active plan versions and explicit
+// editorial comparison evidence; a generic guide link is not a comparison.
+const activeOptions=plans.filter(plan=>plan.status==='approved'&&plan.active!==false)
+  .flatMap(plan=>plan.profiles.map(profile=>({...profile,planId:plan.id,version:plan.version})));
+const adviceSets=new Set();
+for(const entry of release.specializationAdvice??[]){
+  assert.ok(Array.isArray(entry.options)&&entry.options.length>=2&&nonempty(entry.reason)&&date(entry.reviewedAt),
+    'comparative specialization advice requires a reviewed reason and options');
+  const keys=entry.options.map(specializationOptionKey);
+  const set=specializationOptionSet(entry.options);
+  assert.ok(!adviceSets.has(set)&&new Set(keys).size===keys.length,'duplicate comparison');
+  adviceSets.add(set);
+  assert.ok(entry.preferred&&keys.includes(specializationOptionKey(entry.preferred)),'recommendation must be a compared option');
+  assert.equal(new Set(entry.options.map(p=>p.classId)).size,1,'comparison must stay within a class');
+  assert.equal(new Set(entry.options.map(p=>p.goal)).size,1,'comparison must stay within a goal');
+  assert.equal(new Set(entry.options.map(p=>p.treeId)).size,entry.options.length,'distinct specializations required');
+  assert.ok(keys.every(key=>activeOptions.some(p=>specializationOptionKey(p)===key)),'comparison needs active approved plan versions');
+  assert.ok(Array.isArray(entry.evidenceIds)&&entry.evidenceIds.length>=2&&new Set(entry.evidenceIds).size===entry.evidenceIds.length,
+    'comparison needs independent reviewed evidence references');
+  for(const id of entry.evidenceIds){
+    const item=evidence.get(id);
+    assert.ok(item?.kind==='editorial'&&item.planId===entry.preferred.planId&&item.planVersion===entry.preferred.version&&
+      item.reviewedAt<=entry.reviewedAt&&Array.isArray(item.comparedOptions)&&specializationOptionSet(item.comparedOptions)===set,
+      'comparison evidence does not cover the exact options '+id);
+  }
+}
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');

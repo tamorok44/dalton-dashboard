@@ -5,6 +5,7 @@ import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS} from './talent-rule-watch.mjs';
 import catalog from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import {talentPlanLibrary} from './talent-plan-index.mjs';
+import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
 
 export const PERSONAL_TALENT_MAX_AGE_MS=26*60*60*1000;
 export function isPersonalTalentFresh(character,now){
@@ -54,9 +55,18 @@ export function createTalentPlannerHandler({
       const identity=candidateIdentity&&result.data.characters.filter(c=>characterIdentity(c)===candidateIdentity).length===1?candidateIdentity:null;
       if(!query.tree){
         const profiles=activePlans.flatMap(plan=>plan.profiles.map(profile=>({
-          ...profile,name:plan.treeName,planId:plan.id,version:plan.version,recommendation:plan.review.rationale,supportedLegacyRanks:plan.supportedLegacyRanks
+          ...profile,name:plan.treeName,planId:plan.id,version:plan.version,recommendation:plan.review.rationale,
+          summary:plan.review.adviceSummary??plan.review.rationale,supportedLegacyRanks:plan.supportedLegacyRanks
         })));
-        return send(200,{ok:true,profiles,identity});
+        // Names only from reviewed German catalog metadata; no provider
+        // access and no fabricated names for trees still missing a label.
+        const names=new Map((coverage.classes[character.classId]??[])
+          .filter(tree=>typeof tree.treeName==='string'&&tree.treeName.trim())
+          .map(tree=>[tree.treeId,tree.treeName]));
+        for(const plan of classPlans)names.set(plan.treeId,plan.treeName);
+        const specializations=[...names].map(([treeId,name])=>({treeId,name}));
+        const specializationAdvice=(catalog.specializationAdvice??[]).filter(entry=>entry.preferred.classId===character.classId);
+        return send(200,{ok:true,profiles,identity,specializations,specializationAdvice});
       }
       const profile={classId:character.classId,treeId:Number(query.tree),goal:query.goal,
         role:query.role,playStyle:query.playStyle,priority:query.priority};
