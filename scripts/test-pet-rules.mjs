@@ -100,6 +100,11 @@ assert.notEqual(talentChange.talentRuleObservation.hotfixRevision,first.talentRu
 const outsideEdit={...pages,[hotfixPage]:pages[hotfixPage]+'<nav>Changed navigation</nav>'};
 const sameContent=await verifyPetRulebook({fetchImpl:fetchFrom(outsideEdit),previousState:first,now});
 assert.equal(sameContent.talentRuleObservation.hotfixRevision,first.talentRuleObservation.hotfixRevision);
+const legacyArticle={...pages,[hotfixPage]:pages[hotfixPage]
+  .replace('<section class="blog">','<article><div id="blog"><div class="Blog margin-bottom-medium"><div class="detail">&#160;')
+  .replace('</section>','</div></div></div><div class="space-medium"></div></article>')};
+const sameLegacy=await verifyPetRulebook({fetchImpl:fetchFrom(legacyArticle),previousState:first,now});
+assert.equal(sameLegacy.talentRuleObservation.hotfixRevision,first.talentRuleObservation.hotfixRevision);
 const unavailableHotfix=await verifyPetRulebook({fetchImpl:fetchFrom(pages,'24315281'),previousState:first,now});
 assert.equal(unavailableHotfix.talentRuleObservation.status,'source_unavailable');
 assert.equal(unavailableHotfix.talentRuleObservation.hotfixRevision,null);

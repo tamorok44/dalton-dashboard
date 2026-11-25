@@ -276,6 +276,72 @@
       "url": "https://metabot.gg/en/wow-forever/talents/hunter-intimidation",
       "kind": "client_reference",
       "independenceGroup": "metabot-71037-reference"
+    },
+    {
+      "id": "mrronit-arcane-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/mrronit-s-arcane-mage-levelling-guide-1-60",
+      "kind": "expert_guide",
+      "independenceGroup": "mrronit-editorial"
+    },
+    {
+      "id": "arcane-concentration-player-report",
+      "url": "https://us.forums.blizzard.com/en/wow/t/arcane-concentration-bugged-doesnt-do-what-description-says/2410881",
+      "kind": "player_report",
+      "independenceGroup": "blizzard-forum-player-observation"
+    },
+    {
+      "id": "icyveins-fire-pve",
+      "url": "https://www.icy-veins.com/wow-forever/fire-mage-ranged-dps-pve-rotation-cooldowns-abilities",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-fire-editorial"
+    },
+    {
+      "id": "cobalt-frost-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/frost/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "blizzard-forever-hotfix-24315281",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-23-2026",
+      "kind": "official",
+      "independenceGroup": "blizzard-primary"
+    },
+    {
+      "id": "icyveins-protection-dungeons",
+      "url": "https://www.icy-veins.com/wow-forever/protection-warrior-tank-pve-spec-builds-talents",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-warrior-editorial"
+    },
+    {
+      "id": "wowfdb-dungeon-tanks",
+      "url": "https://wowfdb.com/tier-lists/dungeon-tank/",
+      "kind": "expert_guide",
+      "independenceGroup": "wowfdb-level-60-dungeon-editorial"
+    },
+    {
+      "id": "loreforever-dungeon-roles",
+      "url": "https://loreforeverwow.com/guides/wow-forever-best-talent-spec-for-dungeons",
+      "kind": "editorial_review",
+      "independenceGroup": "loreforever-dungeon-report"
+    },
+    {
+      "id": "icyveins-holy-priest",
+      "url": "https://www.icy-veins.com/wow-forever/holy-priest-healer-pve-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-priest-editorial"
+    },
+    {
+      "id": "wowfdb-hunter-tree",
+      "url": "https://wowfdb.com/talents/hunter/",
+      "kind": "client_reference",
+      "independenceGroup": "wowfdb-build-71091"
+    },
+    {
+      "id": "foreverbuilder-intimidation",
+      "url": "https://wowforeverbuilder.com/classes/hunter/talents/intimidation/",
+      "kind": "client_reference",
+      "independenceGroup": "foreverbuilder-client-reference"
     }
   ],
   "pilot": {
@@ -322,7 +388,10 @@
       "status": "research_only",
       "sourceIds": [
         "icyveins-arcane",
-        "mobalytics-arcane-leveling"
+        "mobalytics-arcane-leveling",
+        "mrronit-arcane-leveling",
+        "arcane-concentration-player-report",
+        "talentsforever-mage-order"
       ],
       "proposal": "Compare continuous Arcane with early Precision against an earlier Arcane capstone and later Precision. Evaluate downtime, threat and damage before and after the Arcane Blast and Missile Barrage milestones.",
       "openChecks": [
@@ -360,7 +429,9 @@
         "mobalytics-vareion-hunter",
         "wow-forever-gg-hunter-prerequisites",
         "forevertalents-hunter-prerequisites",
-        "metabot-hunter-intimidation"
+        "metabot-hunter-intimidation",
+        "wowfdb-hunter-tree",
+        "foreverbuilder-intimidation"
       ],
       "proposal": "Compare early pet utility and mobility with an earlier direct pet-damage investment while retaining the timely Summon Hawk milestone. Compare low and high pet-threat encounters separately.",
       "openChecks": [
@@ -376,6 +447,97 @@
           "catalogMinimumLevel": 25
         }
       ]
+    },
+    {
+      "id": "mage-arcane-dungeons",
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "archon-dungeons",
+        "mrronit-arcane-leveling"
+      ],
+      "proposal": "Prüfe für wechselnde Gegnerstufen, Bedrohung und Unterbrechungen in Dungeons, wann frühere Präzision den späteren Arkan-Meilenstein rechtfertigt.",
+      "openChecks": [
+        "Stichprobe und Instanzstufe so wählen, dass sich Lernpfade statt nur Endspielverteilungen vergleichen lassen."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "mage-fire-dungeons",
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "icyveins-fire-pve",
+        "mobalytics-fire"
+      ],
+      "proposal": "Vergleiche gegnerabhängig ein tiefes Feuerprofil mit einem Frostfeuerblitzprofil für gemischte Einzelziel- und Gruppenphasen.",
+      "openChecks": [
+        "Zauberzugang auf Zwischenstufen, Trefferchance, Flächenbedrohung und Spielbarkeit vor Stufe 40."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "mage-frost-pvp",
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "control",
+      "sourceIds": [
+        "cobalt-frost-pvp",
+        "blizzard-forever-hotfix-24315281"
+      ],
+      "releaseBlocker": "frost_proc_and_charge_behavior_unverified",
+      "proposal": "Bewerte Kontrollfenster, Überleben und Schaden im Gruppen-PvP unter den aktuellen Regeln.",
+      "openChecks": [
+        "Clientbeobachtung zu Erfrierung, Eisigen Fingern, geteilten Abklingeffekten von Wurzeln und Verbrauch der Ladungen bei Mehrzielen."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "warrior-protection-dungeons",
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "icyveins-protection-dungeons",
+        "wowfdb-dungeon-tanks"
+      ],
+      "proposal": "Vergleiche die Forever-Dungeon-Route mit günstigerem Wutverbrauch und Kiten gegen einen Schutzpfad mit früherer defensiver Absicherung.",
+      "openChecks": [
+        "Wut, Mehrzielbedrohung und Defensive an früheren Stufen prüfen. Die beiden Quellen bewerten vor allem Endspiel."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "priest-holy-dungeons",
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "icyveins-holy-priest",
+        "loreforever-dungeon-roles"
+      ],
+      "proposal": "Bewerte Mana, Schutz und kurze Heilfenster bei Dungeon-Gruppen und prüfe Disziplin-Nebenpunkte.",
+      "openChecks": [
+        "Begründete Vergabe für die tatsächlichen Dungeon-Stufen mit dokumentierter Heilerrolle und freien Punkten."
+      ],
+      "status": "research_only"
     }
   ]
 }

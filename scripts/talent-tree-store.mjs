@@ -143,6 +143,18 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
   // are not evidence that the cached source was extracted from those builds.
   return {...saved,stale,latestObservedBuilds:observedBuilds};
 }
+const refsFor=entries=>Object.values(entries).flatMap(c=>c.trees.flatMap(t=>
+  t.talents.map(n=>({type:'spell',id:n.spellId,iconId:n.iconId}))));
+function withTalentIcons(klass,icons){
+  return {...klass,trees:klass.trees.map(tree=>({...tree,talents:tree.talents.map(node=>({
+    ...node,iconUrl:icons[mediaIconKey('spell',node.spellId)]||null
+  }))}))};
+}
+export async function loadTalentPlannerClass(klass){
+  const icons=await knowledgeIcons(refsFor({[klass.classId]:klass}),{allowFetch:false});
+  return withTalentIcons(klass,icons);
+}
+
 export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,redisImpl=redis,enabled=configured(),resolveIcons=knowledgeIcons,now=Date.now()}={}){
   const ids=[...new Set(arr(data?.characters).map(c=>c.classId).filter(positive))].sort((a,b)=>a-b);
   if(!ids.length)return {classes:{},stale:true};
@@ -169,8 +181,6 @@ export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,
       if(fallback)classes={...classes,[id]:fallback};
     }
   }
-  const refsFor=entries=>Object.values(entries).flatMap(c=>c.trees.flatMap(t=>
-    t.talents.map(n=>({type:'spell',id:n.spellId,iconId:n.iconId}))));
   const refs=refsFor(classes);
   const fetchableKeys=new Set(refsFor(projected.classes).map(n=>mediaIconKey(n.type,n.id)));
   const icons=enabled?await resolveIcons(refs,{characterSlug:data.characters?.[0]?.slug,maxNew:48,
@@ -178,5 +188,5 @@ export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,
   // The global flag describes cache age. Fallback provenance is per class.
   return {checkedAt:master.checkedAt,source:master.source,observedBuilds:master.observedBuilds,stale:master.stale,
     missingClassIds:missing,fallbackClassIds:missing.filter(id=>classes[id]),
-    classes:Object.fromEntries(Object.entries(classes).map(([id,c])=>[id,{...c,trees:c.trees.map(t=>({...t,talents:t.talents.map(n=>({...n,iconUrl:icons[mediaIconKey('spell',n.spellId)]||null}))}))}]))};
+    classes:Object.fromEntries(Object.entries(classes).map(([id,c])=>[id,withTalentIcons(c,icons)]))};
 }

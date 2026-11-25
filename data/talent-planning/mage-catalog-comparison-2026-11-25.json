@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "mage_talent_source_comparison",
+  "date": "2026-11-25",
+  "build": "1.60.1.71091",
+  "talentCount": 53,
+  "primary": {
+    "rawUrl": "https://foreverdb.net/data/classes.json",
+    "localizedUrl": "https://foreverdb.net/data/l10n/de/classes.json",
+    "rawSha256": "fbd82d1f06dab479257171a10c5a594c52b9ca2b8b7b9aea451054cf638edbaf",
+    "localizedSha256": "896bbec766c6b1cba0eeb673322fc8b1b0e8b8073e1bb34bbf2109b8a952c8e0",
+    "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+    "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+    "normalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293"
+  },
+  "independent": {
+    "url": "https://theforeverera.com/en/talents/mage/",
+    "captureSha256": "83cbc804062abc24c849a70df92e0ee475d954b0363d38d1c27e37b2effcc2ec",
+    "normalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293"
+  },
+  "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a"
+}

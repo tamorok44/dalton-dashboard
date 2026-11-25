@@ -1,5 +1,6 @@
 import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';
 import {reputationStages,reputationColors} from './reputation-data.js';
+import {createTalentPlanner} from './talent-planner.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColorsById={8:'mage',3:'hunter',11:'druid'};
@@ -268,11 +269,11 @@ function talentNodeStatus(node,tree,personal,level,catalogStale=false){
   // This is a prerequisite state, NOT confirmation of free talent points.
   return 'unlocked';
 }
-function talentNodeDetail(node,tree,personal,level,catalogStale){
+function talentNodeDetail(node,tree,personal,level,catalogStale,{planned=false}={}){
   if(!node)return '<p class="knowledge-empty">Tippe auf ein Talent, um seine Ränge und Voraussetzungen zu sehen.</p>';
   const rank=personal.verified?personal.ranks.get(node.id)||0:null;
   const status=talentNodeStatus(node,tree,personal,level,catalogStale);
-  const label={learned:'Erlernt',unlocked:'Voraussetzungen erfüllt',locked:'Noch gesperrt',unknown:'Freischaltung nicht bestätigt'}[status];
+  const label={learned:planned?'Auf dieser Stufe im Plan':'Erlernt',unlocked:'Voraussetzungen erfüllt',locked:'Noch gesperrt',unknown:'Freischaltung nicht bestätigt'}[status];
   const pre=displayList('alphabetical',node.prerequisites.map(p=>({...p,name:tree.talents.find(n=>n.id===p.id)?.name||'Talent'})),p=>{
     const met=personal.verified&&p.conditionKnown?(personal.ranks.get(p.id)||0)>=p.rank:null;
     return '<li>'+esc(p.name)+' · Rang '+esc(p.rank)+(met===null?' · nicht bestätigt':met?' · erfüllt':' · fehlt')+'</li>';
@@ -282,7 +283,7 @@ function talentNodeDetail(node,tree,personal,level,catalogStale){
   const rankRows=displayList('fixedControls',Array.from({length:node.maxRank},(_,i)=>i+1),i=>{
     const desc=node.descriptions?.[i-1]||'Deutscher Originaltext derzeit nicht verfügbar.';
     const provenance=node.descriptionSources?.[i-1];
-    return '<div class="talent-rank-description'+(i===rank?' is-current':'')+'"><strong>Rang '+i+(i===rank?' · aktuell':rank!==null&&i===rank+1?' · nächster Rang':'')+'</strong><p>'+esc(desc)+'</p>'+
+    return '<div class="talent-rank-description'+(i===rank?' is-current':'')+'"><strong>Rang '+i+(i===rank?(planned?' · geplant':' · aktuell'):!planned&&rank!==null&&i===rank+1?' · nächster Rang':'')+'</strong><p>'+esc(desc)+'</p>'+
       (provenance&&provenance!=='ForeverDB deutscher Clienttext'?'<small>'+esc(provenance)+'</small>':'')+'</div>';
   }).join('');
   return '<div class="talent-node-detail"><div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(node.iconUrl,36)+'<strong>'+esc(node.name)+'</strong></span><span>'+esc(rank===null?'Rang unbekannt':rank+'/'+node.maxRank)+'</span></div>'+
@@ -1115,12 +1116,26 @@ const workshopRoot=document.querySelector('#workshopContent');
 const workshopView=document.querySelector('#workshopView');
 const plannerRoot=document.querySelector('#plannerContent');
 const plannerView=document.querySelector('#plannerView');
+const talentPlannerView=document.querySelector('#talentPlannerView');
+const talentPlannerLink=document.querySelector('[data-view-link="talentPlanner"]');
+let talentPlannerEnabled=false,talentPlanner=null;
+function showTalentPlanner(){
+  if(!talentPlanner){
+    let storage;
+    try{storage=window.localStorage}catch{/* Browser storage can be unavailable. */}
+    talentPlanner=createTalentPlanner(document.querySelector('#talentPlannerContent'),{
+      esc,displayList,personalTalentRanks,talentGraph,talentNodeDetail,storage
+    });
+  }
+  talentPlanner.show(displayedData?.characters||[],displayedData?.generatedAt);
+}
 function setMainView(view){
-  const compare=view==='compare',workshop=view==='workshop',planner=view==='planner';
-  charactersView.hidden=compare||workshop||planner;
+  const compare=view==='compare',workshop=view==='workshop',planner=view==='planner',talents=view==='talentPlanner';
+  charactersView.hidden=compare||workshop||planner||talents;
   compareView.hidden=!compare;
   workshopView.hidden=!workshop;
   plannerView.hidden=!planner;
+  talentPlannerView.hidden=!talents;
   document.querySelectorAll('[data-view-link]').forEach(a=>{
     const on=a.dataset.viewLink===view;a.classList.toggle('is-active',on);
     if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
@@ -1128,9 +1143,12 @@ function setMainView(view){
   if(compare)renderComparison();
   if(workshop)loadWorkshopOverview();
   if(planner)loadLocationPlanner();
+  if(talents)showTalentPlanner();
 }
 function syncMainView(){
-  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':(location.hash==='#ortsplaner'||location.hash==='#berufsplaner')?'planner':'characters';
+  const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':
+    (location.hash==='#ortsplaner'||location.hash==='#berufsplaner')?'planner':
+      talentPlannerEnabled&&location.hash==='#talentplaner'?'talentPlanner':'characters';
   setMainView(view);
 }
 window.addEventListener('hashchange',syncMainView);
@@ -2046,6 +2064,14 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
     viewResponseCache.clear();
     invalidateWorkshopData({reloadVisible:true});
     invalidateLocationPlannerData({reloadVisible:true});
+  }
+  const previewEnabled=payload.talentPlannerPreview===true;
+  const previewChanged=previewEnabled!==talentPlannerEnabled;
+  talentPlannerEnabled=previewEnabled;
+  talentPlannerLink.hidden=!previewEnabled;
+  if(previewChanged&&location.hash==='#talentplaner')syncMainView();
+  if(characterDataChanged&&talentPlanner&&!talentPlannerView.hidden){
+    showTalentPlanner();
   }
   return true;
 }

@@ -1279,3 +1279,19 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 @media(min-width:1100px){.talent-grid{max-width:420px}.talent-node{width:54px}}
 
 .talent-rank-list{display:grid;gap:8px;margin-top:12px}.talent-rank-description{border:1px solid var(--gold-deep);border-radius:4px;padding:8px;min-width:0}.talent-rank-description.is-current{border-color:var(--class)}.talent-rank-description small{font-size:var(--type-caption);color:var(--muted)}.talent-rank-description p{margin:5px 0 0}.talent-requirements{margin-top:10px}.talent-grid,.talent-tree-switch{direction:ltr}
+
+.main-nav-link[hidden]{display:none}
+.talent-planner-view{--class:var(--gold)}
+#talentPlannerContent{display:grid;gap:14px;max-width:870px;margin-inline:auto}
+.talent-planner-card{display:grid;gap:12px;min-width:0;padding:clamp(12px,3vw,22px);border:1px solid var(--gold-deep);border-radius:5px;background:var(--ink);color:var(--cream)}
+.talent-planner-card p,.talent-planner-card h3,.talent-planner-card h4{margin:0}
+.talent-planner-field{display:grid;gap:5px;min-width:0}
+.talent-planner-field select,.talent-planner-action{width:100%;min-width:0;max-width:100%;min-height:44px;padding:8px 10px;font:inherit;color:var(--cream);background:var(--ink);border:1px solid var(--gold-deep);border-radius:4px}
+.talent-planner-confirm{display:flex;align-items:center;gap:8px;min-height:44px}
+.talent-planner-confirm input{width:18px;height:18px;accent-color:var(--gold);flex:none}
+.talent-planner-action{justify-self:start;width:auto;white-space:normal;cursor:pointer}
+.talent-planner-action:disabled{opacity:.65;cursor:wait}
+.talent-planner-card :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#talentPlannerMessage:empty{display:none}
+.talent-planner-steps{margin:0;padding-inline-start:2em}
+.talent-planner-steps li{padding:3px 0;overflow-wrap:anywhere}

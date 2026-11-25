@@ -7,7 +7,7 @@
     "1": [
       {"treeId": 11650, "roles": ["damage"]},
       {"treeId": 11657, "roles": ["damage"]},
-      {"treeId": 11670, "roles": ["tank"]}
+      {"treeId": 11670, "roles": ["tank"], "roleEvidence": ["icyveins-protection-dungeons", "wowfdb-dungeon-tanks"]}
     ],
     "2": [
       {"treeId": 11486, "roles": ["heal"]},
@@ -26,7 +26,7 @@
     ],
     "5": [
       {"treeId": 11608, "roles": ["heal"]},
-      {"treeId": 11615, "roles": ["heal"]},
+      {"treeId": 11615, "roles": ["heal"], "roleEvidence": ["icyveins-holy-priest", "loreforever-dungeon-roles"]},
       {"treeId": 11622, "roles": ["damage"]}
     ],
     "7": [

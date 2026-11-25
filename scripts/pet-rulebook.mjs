@@ -220,7 +220,7 @@ const reviewedBuildTransitions=Object.freeze({
 
 function decodeEntities(value){
   return String(value||'')
-    .replace(/&nbsp;/gi,' ')
+    .replace(/&nbsp;|&#160;|&#xa0;/gi,' ')
     .replace(/&amp;/gi,'&')
     .replace(/&quot;/gi,'"')
     .replace(/&#39;|&apos;/gi,"'")
@@ -243,6 +243,13 @@ function htmlText(html){
 }
 function normalized(value){
   return String(value||'').toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+}
+function hotfixArticleBody(html){
+  const news=html.match(/<section\b[^>]*\bclass=["']blog["'][^>]*>([\s\S]*?)<\/section>/i)?.[1];
+  if(news)return htmlText(news);
+  // worldofwarcraft.blizzard.com serves the same article in a legacy wrapper.
+  const gameSite=html.match(/<div\s+id=["']blog["']>\s*<div\s+class=["']Blog\b[^"']*["']>\s*<div\s+class=["']detail["']>([\s\S]*?)<\/article>/i)?.[1];
+  return htmlText(gameSite);
 }
 function sha(value){
   return createHash('sha256').update(String(value)).digest('hex');
@@ -275,7 +282,7 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
     const html=await response.text();
     const text=htmlText(html);
     const talentHotfixEvidence=definition.mode==='hotfix'
-      ?{talentHotfixRevision:talentHotfixRevision(htmlText(html.match(/<section\b[^>]*\bclass=["']blog["'][^>]*>([\s\S]*?)<\/section>/i)?.[1]??''))}
+      ?{talentHotfixRevision:talentHotfixRevision(hotfixArticleBody(html))}
       :{};
     const semantic=definition.mode==='hotfix'
       ?hotfixEvidence(text,definition.semanticPatterns)
@@ -338,6 +345,12 @@ function worstStatus(statuses){
   if(statuses.includes('review_required'))return 'review_required';
   if(statuses.includes('source_unavailable'))return 'source_unavailable';
   return 'verified';
+}
+
+export async function checkTalentRuleSources({fetchImpl=fetch,now=new Date()}={}){
+  const ids=['foreverDbBuild','blizzardHotfix','bindFox'];
+  const results=await Promise.all(ids.map(id=>inspectSource(id,sources[id],{fetchImpl})));
+  return observeTalentRules(Object.fromEntries(ids.map((id,index)=>[id,results[index]])),now);
 }
 
 export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=new Date()}={}){
