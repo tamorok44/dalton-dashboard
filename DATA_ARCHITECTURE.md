@@ -2,7 +2,11 @@
 
 ## Ziel
 
-Das Dashboard trennt konsequent zwischen **Stammdaten eines WoW-Spielobjekts**, **dem individuellen Zustand eines Dalton-Charakters** und **Medienassets**. Ein Objekt soll im System nicht erst dadurch eine eigene Identität bekommen, dass ein Dalton es zum ersten Mal trägt, entdeckt, lernt oder zähmt.
+Das Dashboard trennt konsequent zwischen **Stammdaten eines WoW-Spielobjekts**, **dem individuellen Zustand eines registrierten Charakters** und **Medienassets**. Ein Objekt soll im System nicht erst dadurch eine eigene Identität bekommen, dass ein Dalton es zum ersten Mal trägt, entdeckt, lernt oder zähmt.
+
+## Rosterunabhängigkeit (verbindlich seit 25.11.2026)
+
+Es gilt zusätzlich der projektweite Architekturvertrag in `AGENTS.md`: Der Charakterbestand ist dynamisch und darf die Vollständigkeit des Spielkatalogs nicht bestimmen. Alle Forever-Klassen und Völker müssen im Modell unterstützt werden; fehlende verifizierte Stammdaten werden additiv ergänzt. Spieler und Charaktere sind getrennte Identitäten. Neue registrierte Charaktere und bereits unterstützte Klassen benötigen keinen grundlegenden Schemaumbau. Bestehende Roster-Bindungen sind technische Altlasten, die kontrolliert abgelöst werden.
 
 ## Verbindliches Identitätsmodell
 
