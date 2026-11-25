@@ -29,3 +29,37 @@ assert.equal(validateTalentPath(tooEarly,master,{...rules,minimumLevelByTalent:{
 const unclear=structuredClone(master);unclear.classes[8].trees[0].talents[1].prerequisites[0].conditionKnown=false;
 assert.equal(validateTalentPath(plan,unclear,rules).code,'unverified_prerequisite');
 console.log('Talent planner: every allocation, unique recommendation and fail-closed rules: OK');
+
+ 
+// Pilot candidate: selected numeric constraints observed from the current
+// displayed German class master on 25 Nov 2026. Test fixture only, not a
+// separate runtime master, verified server layout, or approved rule pack.
+const {readFileSync}=await import('node:fs');
+const pilot=JSON.parse(readFileSync(new URL('../data/talent-planning/mage-frost-mixed-v1.json',import.meta.url),'utf8'));
+const pilotRevision='b'.repeat(64);
+const fixtureTrees=[
+  {id:11582,rows:[
+    [105813,0,5],[105810,1,5],[105809,1,2],[105812,1,2],[105808,2,2],[105803,3,3,[[105810,5]]]
+  ]},
+  {id:11594,rows:[]},
+  {id:11601,rows:[
+    [105779,0,5],[105778,0,3],[105774,1,3],[105767,2,1],[105777,1,5],
+    [105768,3,3],[105769,3,1],[105764,4,2,[[105767,1]]],
+    [105766,4,1],[105772,2,3],[105770,3,2],[105771,2,3],[105765,4,3],[105762,6,1,[[105766,1]]]
+  ]}
+].map(({id,rows})=>({id,talents:rows.map(([id,row,maxRank,pre=[]])=>({
+  id,row,maxRank,requiredPoints:row*5,prerequisites:pre.map(([id,rank])=>({id,rank,conditionKnown:true}))
+}))}));
+const pilotMaster={stale:false,classes:{8:{trees:fixtureTrees}},classRevisions:{8:pilotRevision}};
+const pilotRules={...rules,catalogRevision:pilotRevision,revision:'synthetic-standard-schedule-only',
+  minimumLevelByTalent:Object.fromEntries(fixtureTrees.flatMap(t=>t.talents.map(n=>[n.id,10+5*n.row])))};
+const structuralOnly=validateTalentPath({...pilot,catalogRevision:pilotRevision,ruleRevision:pilotRules.revision},pilotMaster,pilotRules);
+assert.equal(structuralOnly.ok,true,JSON.stringify(structuralOnly));
+assert.equal(structuralOnly.history.length,51);
+assert.equal(structuralOnly.history.find(s=>s.talentId===105767).level,20);
+assert.equal(structuralOnly.history.find(s=>s.talentId===105764).level,30);
+assert.equal(structuralOnly.history.find(s=>s.talentId===105762).level,40);
+const distribution=Object.fromEntries(fixtureTrees.map(t=>[t.id,structuralOnly.history.filter(s=>s.treeId===t.id).length]));
+assert.deepEqual(distribution,pilot.expectedDistribution);
+assert.equal(resolveApprovedTalentPlan(pilot.profiles[0],[pilot],pilotMaster,[pilotRules]).code,'no_approved_recommendation');
+console.log('Mage Frost pilot: 51 allocations valid in observed-constraint fixture; research candidate cannot be released: OK');
