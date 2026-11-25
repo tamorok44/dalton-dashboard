@@ -90,9 +90,52 @@ function craftedQuantityText(quantity){
   if(Number.isFinite(min)&&Number.isFinite(max)&&min!==max)return ' × '+Math.round(min)+'–'+Math.round(max);
   return '';
 }
+// Central display sorting contract. Never depend on API insertion order.
+const germanNameCollator=new Intl.Collator('de-DE',{sensitivity:'base',numeric:true});
+const germanExactCollator=new Intl.Collator('de-DE',{sensitivity:'variant',numeric:true});
+function compareGermanNames(a,b){
+  const left=String(a??''),right=String(b??'');
+  return germanNameCollator.compare(left,right)||germanExactCollator.compare(left,right);
+}
+function compareNamedRecords(a,b){
+  return compareGermanNames(a?.name,b?.name)||compareGermanNames(a?.id??a?.slug,b?.id??b?.slug);
+}
+function sortNamedRecords(list=[]){return [...list].sort(compareNamedRecords)}
+// Stable IDs first. Preserve established gathering order; secondary
+// professions follow the resource chain Angeln -> Kochkunst -> Erste Hilfe.
+const professionOrder=[
+  [182,'Kräuterkunde'],[393,'Kürschnerei'],[186,'Bergbau'],
+  [171,'Alchemie'],[202,'Ingenieurskunst'],[165,'Lederverarbeitung'],
+  [164,'Schmiedekunst'],[197,'Schneiderei'],[333,'Verzauberkunst']
+];
+const professionOrderById=new Map(professionOrder.map(([id],i)=>[id,i]));
+const professionOrderByName=new Map(professionOrder.map(([,name],i)=>[name,i]));
+professionOrderByName.set('Alchimie',professionOrderById.get(171));
+for(const [id,name,rank] of [[356,'Angeln',100],[185,'Kochkunst',110],[129,'Erste Hilfe',120]]){
+  professionOrderById.set(id,rank);professionOrderByName.set(name,rank);
+}
+function sortProfessionsForDisplay(list=[]){
+  const order=p=>professionOrderById.get(Number(p?.id))??professionOrderByName.get(p?.name)??50;
+  return [...list].sort((a,b)=>order(a)-order(b)||compareNamedRecords(a,b));
+}
+function professionKnowledgeForDisplay(p){
+  let basicShown=false;
+  // Select a deterministic representative before collapsing basic ranks.
+  return sortNamedRecords(Array.isArray(p?.knownRecipes)?p.knownRecipes:[]).flatMap(r=>{
+    const basic=r.knowledgeKind==='profession-basic'||(r.name===p.name&&!r.craftedItem?.id&&!(r.reagents||[]).length);
+    if(!basic)return [r];
+    if(basicShown)return [];
+    basicShown=true;return [{...r,name:p.name,iconUrl:p.iconUrl||null,recipeDetailsStatus:'not-applicable'}];
+  });
+}
+function sortQuestRecords(quests,group,catalog={}){
+  const title=q=>catalog?.[q.id]?.title||q.name||'';
+  const openCount=q=>group?.byId?.get(Number(q.id))?.open?.length??0;
+  return [...quests].sort((a,b)=>openCount(b)-openCount(a)||compareGermanNames(title(a),title(b))||compareGermanNames(a.id,b.id));
+}
 function recipeRows(recipes=[]){
   if(!recipes.length)return '<p class="knowledge-empty">Blizzard meldet derzeit keine einzelnen Kenntnisse.</p>';
-  return '<div class="knowledge-list">'+recipes.map(recipe=>{
+  return '<div class="knowledge-list">'+sortNamedRecords(recipes).map(recipe=>{
     const recipeName=String(recipe?.name||'').trim();
     const craftedName=String(recipe?.craftedItem?.name||'').trim();
     const craftedQuantity=craftedQuantityText(recipe?.craftedQuantity);
@@ -110,16 +153,6 @@ function recipeRows(recipes=[]){
       '</div>';
   }).join('')+'</div>';
 }
-const gatheringProfessions=new Set(['Kräuterkunde','Kürschnerei','Bergbau']);
-const secondaryProfessionOrder=new Map([['Angeln',100],['Kochkunst',110],['Erste Hilfe',120]]);
-function sortProfessionsForDisplay(list=[]){
-  return list.map((profession,index)=>({profession,index})).sort((a,b)=>{
-    const an=a.profession?.name||'',bn=b.profession?.name||'';
-    const ap=secondaryProfessionOrder.has(an)?secondaryProfessionOrder.get(an):(gatheringProfessions.has(an)?0:10);
-    const bp=secondaryProfessionOrder.has(bn)?secondaryProfessionOrder.get(bn):(gatheringProfessions.has(bn)?0:10);
-    return ap-bp||a.index-b.index;
-  }).map(entry=>entry.profession);
-}
 function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()){
   if(!list.length)return row('Berufe','nicht verfügbar');
   return sortProfessionsForDisplay(list).map(p=>{
@@ -134,14 +167,7 @@ function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()
       return '<span class="profession-segment '+(unlocked?'is-unlocked':'is-locked')+'">'+
         '<span class="profession-segment-fill" style="width:'+pct.toFixed(2)+'%"></span></span>';
     }).join('');
-    // Group redundant basic profession records only in the display.
-    let basicShown=false;
-    const recipes=(Array.isArray(p.knownRecipes)?p.knownRecipes:[]).flatMap(r=>{
-      const basic=r.knowledgeKind==='profession-basic'||(r.name===p.name&&!r.craftedItem?.id&&!(r.reagents||[]).length);
-      if(!basic)return [r];
-      if(basicShown)return [];
-      basicShown=true;return [{...r,name:p.name,iconUrl:p.iconUrl||null,recipeDetailsStatus:'not-applicable'}];
-    });
+    const recipes=professionKnowledgeForDisplay(p);
     const detailKey=slug+':profession:'+(p.id||p.name||'unknown');
     const knowledge=recipes.length
       ?'<details class="profession-knowledge" data-detail-key="'+esc(detailKey)+'"'+(openDetails.has(detailKey)?' open':'')+'>'+
@@ -306,7 +332,7 @@ function highestKnownClassAbilities(entries=[]){
     }
   }
   return [...byAbility.values()]
-    .sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||classAbilityRankNumber(b.rank)-classAbilityRankNumber(a.rank)||Number(a.id)-Number(b.id));
+    .sort(compareNamedRecords);
 }
 function classAbilitiesPanel(c){
   const abilities=highestKnownClassAbilities(c.knownClassAbilities);
@@ -565,7 +591,7 @@ function hunterPetsPanel(c){
     :'';
   const localizedFamily=active?.family?.slug?displayedPetCatalog?.[active.family.slug]||null:null;
   const localizedAbilities=Array.isArray(localizedFamily?.abilities)
-    ?localizedFamily.abilities.filter(ability=>ability?.name).sort((a,b)=>(Number(a.requiredLevel)||999)-(Number(b.requiredLevel)||999)||Number(a.id)-Number(b.id))
+    ?localizedFamily.abilities.filter(ability=>ability?.name).sort((a,b)=>(Number(a.requiredLevel)||999)-(Number(b.requiredLevel)||999)||compareNamedRecords(a,b))
     :[];
   const abilityBaseName=ability=>String(ability?.name||'').replace(/\s+Rang\s+\d+$/i,'').trim();
   const knownLevels=localizedAbilities.filter(ability=>Number.isInteger(Number(ability.requiredLevel)));
@@ -577,12 +603,12 @@ function hunterPetsPanel(c){
       if(!prior||Number(ability.requiredLevel)>Number(prior.requiredLevel))currentByAbility.set(key,ability);
     }
   }
-  const currentAbilities=[...currentByAbility.values()].sort((a,b)=>Number(a.requiredLevel)-Number(b.requiredLevel));
+  const currentAbilities=sortNamedRecords([...currentByAbility.values()]);
   const futureAbilities=knownLevels.filter(ability=>!Number.isInteger(petLevel)||Number(ability.requiredLevel)>petLevel)
     .sort((a,b)=>Number(a.requiredLevel)-Number(b.requiredLevel)||Number(a.id)-Number(b.id));
   const nextLevel=futureAbilities.length?Number(futureAbilities[0].requiredLevel):null;
-  const nextAbilities=Number.isInteger(nextLevel)?futureAbilities.filter(ability=>Number(ability.requiredLevel)===nextLevel):[];
-  const laterAbilities=Number.isInteger(nextLevel)?futureAbilities.filter(ability=>Number(ability.requiredLevel)>nextLevel):futureAbilities;
+  const nextAbilities=Number.isInteger(nextLevel)?sortNamedRecords(futureAbilities.filter(ability=>Number(ability.requiredLevel)===nextLevel)):[];
+  const laterAbilities=sortNamedRecords(Number.isInteger(nextLevel)?futureAbilities.filter(ability=>Number(ability.requiredLevel)>nextLevel):futureAbilities);
   const abilityCard=(ability,state)=>{
     const required=Number(ability.requiredLevel);
     const remaining=Number.isInteger(petLevel)&&Number.isInteger(required)?Math.max(0,required-petLevel):null;
@@ -647,7 +673,7 @@ function questGroupStatus(chars=[]){
     }
   }
   const ordered=[...byId.values()].filter(entry=>entry.open.length).sort((a,b)=>
-    b.open.length-a.open.length||String(a.name||'').localeCompare(String(b.name||''),'de')
+    b.open.length-a.open.length||compareNamedRecords(a,b)
   );
   return {
     byId,
@@ -656,11 +682,7 @@ function questGroupStatus(chars=[]){
   };
 }
 function questsPanel(c,group,questCatalog={},openDetails=new Set()){
-  const quests=[...(Array.isArray(c.activeQuests)?c.activeQuests:[])].sort((a,b)=>{
-    const ar=group?.rank?.get(Number(a?.id))??Number.MAX_SAFE_INTEGER;
-    const br=group?.rank?.get(Number(b?.id))??Number.MAX_SAFE_INTEGER;
-    return ar-br||String(a?.name||'').localeCompare(String(b?.name||''),'de');
-  });
+  const quests=sortQuestRecords(Array.isArray(c.activeQuests)?c.activeQuests:[],group,questCatalog);
   const stale=(c.questsVerified===false?' · letzter bekannter Stand':'')+
     (group?.completedFresh===false?' · Abschlussstatus letzter bekannter Stand':'');
   if(!quests.length)return '<div class="section quests-section"><h3>Aktive Quests · 0'+stale+'</h3><p class="knowledge-empty">Keine aktiven Quests gemeldet.</p></div>';
@@ -863,7 +885,7 @@ function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog
  displayedReputationCatalog=reputationCatalog||{build:null,expected:0,records:{}};
  displayedPetCatalog=petCatalog||{};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
- const chars=[...(data.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+ const chars=sortNamedRecords(data.characters||[]);
  const questStatus=questGroupStatus(chars);
 
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
@@ -1009,19 +1031,20 @@ function cmpSectionRows(id,chars){
     push('Bekannte abgeschlossene Quests',c=>cmpEntry(Array.isArray(c.completedQuestIds)?c.completedQuestIds.length:'–',null,'',c.completedQuestsVerified!==true),{comparable:false});
     const ids=new Map();
     for(const c of chars)for(const q of c.activeQuests||[])if(Number.isInteger(Number(q.id)))ids.set(Number(q.id),displayedQuestCatalog?.[q.id]?.title||q.name||'Quest '+q.id);
-    for(const [id,name] of [...ids].sort((a,b)=>a[1].localeCompare(b[1],'de')))push(name,c=>{
+    for(const {id,name} of sortQuestRecords([...ids].map(([id,name])=>({id,name})),questGroupStatus(chars),displayedQuestCatalog))push(name,c=>{
       if((c.activeQuests||[]).some(q=>Number(q.id)===id))return cmpEntry('Offen',null,'',c.questsVerified===false);
       if((c.completedQuestIds||[]).some(q=>Number(q)===id))return cmpEntry('Abgeschlossen',null,'',c.completedQuestsVerified!==true);
       return cmpEntry(c.questsVerified===true&&c.completedQuestsVerified===true?'Nicht aktiv':'Unbekannt',null,'',true);
     },{comparable:false});
   }
   if(id==='professions'){
-    const names=[...new Set(chars.flatMap(c=>(c.professions||[]).map(p=>p.name)))];
-    const ordered=sortProfessionsForDisplay(names.map(name=>({name}))).map(p=>p.name);
+    const professions=chars.flatMap(c=>c.professions||[]);
+    const ordered=[...new Set(sortProfessionsForDisplay(professions).map(p=>p.name))];
     for(const name of ordered){
       push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,'',p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)},{iconUrl:chars.flatMap(c=>c.professions||[]).find(p=>p.name===name&&p.iconUrl)?.iconUrl});
-      const recipes=[...new Set(chars.flatMap(c=>((c.professions||[]).find(p=>p.name===name)?.knownRecipes||[]).map(r=>r.name)))].sort((a,b)=>a.localeCompare(b,'de'));
-      for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false,iconUrl:chars.flatMap(c=>(c.professions||[]).find(p=>p.name===name)?.knownRecipes||[]).find(r=>r.name===recipe&&r.iconUrl)?.iconUrl});
+      const knowledge=sortNamedRecords(professions.filter(p=>p.name===name).flatMap(professionKnowledgeForDisplay));
+      const recipes=[...new Set(knowledge.map(r=>r.name))];
+      for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false,iconUrl:knowledge.find(r=>r.name===recipe&&r.iconUrl)?.iconUrl});
     }
   }
   if(id==='reputation'){
@@ -1036,7 +1059,7 @@ function cmpSectionRows(id,chars){
 }
 function renderComparison(){
   if(!compareRoot||!displayedData)return;
-  const all=[...(displayedData.characters||[])].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  const all=sortNamedRecords(displayedData.characters||[]);
   const selected=all.filter(c=>comparisonState.selected.has(c.slug));
   const choices='<fieldset class="compare-choices"><legend>Charaktere auswählen · '+selected.length+' von '+all.length+'</legend>'+all.map(c=>
     '<label class="compare-choice"><input type="checkbox" data-compare-character="'+esc(c.slug)+'" '+(comparisonState.selected.has(c.slug)?'checked':'')+'><span>'+esc(c.name)+'</span></label>'

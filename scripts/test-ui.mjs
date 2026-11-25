@@ -41,7 +41,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1008,3 +1008,24 @@ const groupedBasic=ui.professionRows([{id:182,name:'Kräuterkunde',current:65,ma
 assert.equal((groupedBasic.match(/<strong>Kräuterkunde<\/strong>/g)||[]).length,1);
 assert.ok(!groupedBasic.includes('wrong.jpg')&&groupedBasic.includes('Rezepte &amp; Fähigkeiten · 2'));
 assert.ok(ui.recipeRows([{name:'Unvollständig',recipeDetailsStatus:'unavailable'}]).includes('Rezeptdetails derzeit nicht vollständig verfügbar'));
+
+const sortFixture=['Erste Hilfe','Alchemie','Bergbau','Kräuterkunde','Angeln','Kochkunst','Kürschnerei','Lederverarbeitung'];
+const expectedOrder=['Kräuterkunde','Kürschnerei','Bergbau','Alchemie','Lederverarbeitung','Angeln','Kochkunst','Erste Hilfe'];
+for(let i=0;i<sortFixture.length;i++){
+ const shuffled=[...sortFixture.slice(i),...sortFixture.slice(0,i)];
+ assert.deepEqual(orderedNames(shuffled),expectedOrder);
+ assert.deepEqual(orderedNames(shuffled.reverse()),expectedOrder);
+}
+const orderRecipes=[{id:30,name:'Zangenhappen'},{id:10,name:'Einfaches Lagerfeuer'},{id:20,name:'Glänzender Kleinfisch'}];
+assert.equal(ui.recipeRows(orderRecipes),ui.recipeRows([...orderRecipes].reverse()),'Recipe rendering independent of incoming order');
+assert.deepEqual(ui.sortNamedRecords(orderRecipes).map(x=>x.name),['Einfaches Lagerfeuer','Glänzender Kleinfisch','Zangenhappen']);
+const questOrderFixture=[{id:1,name:'A Englisch'},{id:2,name:'Z Englisch'},{id:3,name:'B Englisch'}];
+const questOrderCatalog={1:{title:'Zuerst?'},2:{title:'Abenteuer'},3:{title:'Mitte'}};
+const questOrderGroup={byId:new Map([[1,{open:[1]}],[2,{open:[1]}],[3,{open:[1,2]}]])};
+assert.deepEqual(ui.sortQuestRecords(questOrderFixture,questOrderGroup,questOrderCatalog).map(x=>x.id),[3,2,1],'Quest grouping uses open counts and displayed localized title');
+assert.deepEqual(ui.sortQuestRecords([...questOrderFixture].reverse(),questOrderGroup,questOrderCatalog).map(x=>x.id),[3,2,1]);
+const rankFixture=[{id:1,name:'Frostblitz',rank:'Rang 1'},{id:2,name:'Frostblitz',rank:'Rang 2'},{id:3,name:'Arkane Intelligenz',rank:''}];
+assert.deepEqual(ui.highestKnownClassAbilities(rankFixture),ui.highestKnownClassAbilities([...rankFixture].reverse()));
+assert.deepEqual(ui.highestKnownClassAbilities(rankFixture).map(x=>x.id),[3,2]);
+const comparisonFixture=[{slug:'cole-dalton',name:'Cole Dalton',professions:[{id:185,name:'Kochkunst',current:143,max:150,knownRecipes:orderRecipes}]}];
+assert.deepEqual(ui.cmpSectionRows('professions',comparisonFixture),ui.cmpSectionRows('professions',[{...comparisonFixture[0],professions:[{...comparisonFixture[0].professions[0],knownRecipes:[...orderRecipes].reverse()}]}]));
