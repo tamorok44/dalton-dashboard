@@ -203,6 +203,19 @@ const sources=Object.freeze({
 
 export const PET_RULE_SOURCES=sources;
 
+// Eine neue Regelwerk-Version ist keine pauschale Freigabe aller Quellen.
+// Ausschließlich dokumentierte Übergänge dürfen einen alten Fingerabdruck ersetzen;
+// die bisherige Semantik muss sich dabei bytegenau (nach Normalisierung) bestätigen.
+// ForeverDBs globaler Build-Wächter und sämtliche anderen Quellen bleiben unverändert.
+const reviewedBuildTransitions=Object.freeze({
+  bindFox:Object.freeze({
+    rulebookVersion:'2026.11.25.1',
+    fromRulebookVersion:'2026.11.22.2',
+    from:Object.freeze(['1.60.1.70959','1.60.1.71037']),
+    to:'1.60.1.71091'
+  })
+});
+
 function decodeEntities(value){
   return String(value||'')
     .replace(/&nbsp;/gi,' ')
@@ -250,7 +263,7 @@ function hotfixEvidence(text,patterns){
   if(!relevant.length)return {ok:false,evidence:semantics.evidence,missing:'pet-relevant hotfix lines'};
   return {ok:true,evidence:[...semantics.evidence,...relevant.map(normalized).sort()]};
 }
-async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,sameRulebook=false}={}){
+async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,previousRulebookVersion=null}={}){
   try{
     const response=await fetchImpl(definition.url,{
       headers:{'user-agent':'Mozilla/5.0 (compatible; DaltonDashboard/1.0; +https://dalton-dashboard-eight.vercel.app)','accept':'text/html,application/xhtml+xml'},
@@ -265,25 +278,48 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       return {
         id,label:definition.label,url:definition.url,status:'review_required',
         reason:'expected_rule_evidence_missing',missing:semantic.missing,
-        baselineDigest:sameRulebook?previousSource?.baselineDigest:null
+        baselineDigest:previousSource?.baselineDigest||null,
+        baselineBuild:previousSource?.baselineBuild||null
       };
     }
     const build=definition.buildPattern?.exec(text)?.[1]||null;
-    const digest=sha([...semantic.evidence,build?'build='+build:''].filter(Boolean).join('\n'));
-    const baselineDigest=sameRulebook&&previousSource?.baselineDigest?previousSource.baselineDigest:digest;
-    const changed=Boolean(sameRulebook&&previousSource?.baselineDigest&&digest!==previousSource.baselineDigest);
+    // Der alte Fox-Marker kann die Buildnummer zusätzlich im Treffertext enthalten.
+    // Rekonstruktion ersetzt ausschließlich die erkannte vollständige Buildkennung;
+    // alle übrigen normalisierten Zeichen müssen dem alten Digest entsprechen.
+    const digestForBuild=value=>{
+      const evidence=id==='bindFox'&&build&&value&&value!==build
+        ?semantic.evidence.map(marker=>marker.replaceAll(build,value))
+        :semantic.evidence;
+      return sha([...evidence,value?'build='+value:''].filter(Boolean).join('\n'));
+    };
+    const digest=digestForBuild(build);
+    const oldDigest=previousSource?.baselineDigest||null;
+    const approval=reviewedBuildTransitions[id];
+    // Legacy-Speicherstände kennen baselineBuild noch nicht. Ein explizit geprüfter
+    // Vorgänger wird nur akzeptiert, wenn er den gespeicherten Digest exakt reproduziert.
+    const baselineBuild=previousSource?.baselineBuild||
+      (oldDigest&&previousSource?.build&&digestForBuild(previousSource.build)===oldDigest?previousSource.build:null)||
+      (oldDigest&&approval?.from.find(value=>digestForBuild(value)===oldDigest))||null;
+    const buildOnly=Boolean(oldDigest&&baselineBuild&&build&&build!==baselineBuild&&digestForBuild(baselineBuild)===oldDigest);
+    const approved=Boolean(buildOnly&&approval&&
+      PET_RULEBOOK_VERSION===approval.rulebookVersion&&
+      [approval.fromRulebookVersion,approval.rulebookVersion].includes(previousRulebookVersion)&&
+      approval.from.includes(baselineBuild)&&build===approval.to);
+    const nextBaseline=approved||!oldDigest?digest:oldDigest;
+    const changed=digest!==nextBaseline;
     return {
       id,label:definition.label,url:definition.url,
       status:changed?'review_required':'verified',
-      reason:changed?'source_evidence_changed':null,
-      digest,baselineDigest,build
+      reason:changed?(buildOnly?'source_build_changed':'source_evidence_changed'):null,
+      digest,baselineDigest:nextBaseline,baselineBuild:approved||!oldDigest?build:baselineBuild,build
     };
   }catch(error){
     return {
       id,label:definition.label,url:definition.url,status:'source_unavailable',
       reason:String(error?.message||error).slice(0,180),
-      baselineDigest:sameRulebook?previousSource?.baselineDigest:null,
-      build:sameRulebook?previousSource?.build:null
+      baselineDigest:previousSource?.baselineDigest||null,
+      baselineBuild:previousSource?.baselineBuild||null,
+      build:previousSource?.build||null
     };
   }
 }
@@ -294,9 +330,8 @@ function worstStatus(statuses){
 }
 
 export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=new Date()}={}){
-  const sameRulebook=previousState?.rulebookVersion===PET_RULEBOOK_VERSION;
   const sourceEntries=await Promise.all(Object.entries(sources).map(async([id,definition])=>[
-    id,await inspectSource(id,definition,{fetchImpl,previousSource:previousState?.sources?.[id],sameRulebook})
+    id,await inspectSource(id,definition,{fetchImpl,previousSource:previousState?.sources?.[id],previousRulebookVersion:previousState?.rulebookVersion})
   ]));
   const sourceResults=Object.fromEntries(sourceEntries);
   const rules=Object.fromEntries(Object.entries(PET_RULES).map(([id,rule])=>{
