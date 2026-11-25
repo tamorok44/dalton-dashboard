@@ -255,8 +255,56 @@ function newestByKey(observations=[]){
   return [...map.values()];
 }
 
+
+ // Index candidates once; the existing exact matching predicates remain the
+ // final authority. Preserve original order for equal-priority observations.
+function addIndexed(map,key,value){
+  if(key===null||key===undefined||key==='')return;
+  let list=map.get(key);if(!list){list=[];map.set(key,list)}list.push(value);
+}
+function orderedCandidates(order,...lists){
+  return [...new Set(lists.flat())].sort((a,b)=>order.get(a)-order.get(b));
+}
+function recipeLookup(recipes){
+  const order=new Map(),items=new Map(),names=new Map(),vendorsById=new Map(),vendorsByName=new Map();
+  recipes.forEach((recipe,i)=>{
+    order.set(recipe,i);
+    for(const itemId of recipeItemIds(recipe))addIndexed(items,itemId,recipe);
+    for(const name of recipeTargetNames(recipe))addIndexed(names,name,recipe);
+    for(const source of asArray(recipe?.learning?.sources)){
+      if(source?.type!=='vendor')continue;
+      addIndexed(vendorsById,integer(source?.id),recipe);
+      addIndexed(vendorsByName,norm(source?.name),recipe);
+    }
+  });
+  return {
+    merchant(item){
+      const itemId=integer(item?.itemID??item?.id),name=learningItemTargetName(item?.name);
+      return orderedCandidates(order,items.get(itemId)||[],names.get(name)||[]).filter(recipe=>merchantItemMatchesRecipe(item,recipe));
+    },
+    vendor(npc){
+      return orderedCandidates(order,vendorsById.get(integer(npc?.id))||[],vendorsByName.get(norm(npc?.name))||[]);
+    },
+    trainer(name,profession){
+      return (names.get(name)||[]).filter(recipe=>!profession||text(recipe?.professionSlug)===profession);
+    }
+  };
+}
+function observationLookup(observations){
+  const order=new Map(),ids=new Map(),items=new Map(),names=new Map();
+  observations.forEach((observation,i)=>{
+    order.set(observation,i);
+    const rid=integer(observation?.recipeId),item=integer(observation?.craftedItemId),name=norm(observation?.recipeName);
+    if(rid!==null)addIndexed(ids,rid,observation);
+    else if(item!==null)addIndexed(items,item,observation);
+    else if(name)addIndexed(names,name,observation);
+  });
+  return recipe=>orderedCandidates(order,ids.get(integer(recipe?.id))||[],items.get(integer(recipe?.craftedItem?.id))||[],names.get(norm(recipe?.name))||[]).filter(observation=>targetMatches(observation,recipe));
+}
+
 export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
   const recipes=asArray(recipeIndex?.recipes);
+  const lookup=recipeLookup(recipes);
   const observations=[];
 
   for(const state of addonStateList(addonStates)){
@@ -276,7 +324,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
       const location=addonLocation(snapshot);
 
       for(const item of items){
-        const matches=recipes.filter(recipe=>merchantItemMatchesRecipe(item,recipe));
+        const matches=lookup.merchant(item);
         for(const recipe of matches){
           const recipeId=integer(recipe?.id);
           matchedRecipeKeys.add(recipeEvidenceKey(recipe));
@@ -305,7 +353,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
 
       // A complete merchant window can safely disprove only recipes that the
       // current master already attributes to this same vendor.
-      for(const recipe of recipes){
+      for(const recipe of lookup.vendor(npc)){
         const recipeId=integer(recipe?.id);
         if(matchedRecipeKeys.has(recipeEvidenceKey(recipe)))continue;
         const attributedSources=asArray(recipe?.learning?.sources).filter(source=>
@@ -347,10 +395,7 @@ export function buildAddonLearningSourceEvidence(recipeIndex={},addonStates=[]){
         const serviceName=norm(service?.name);
         if(!serviceName)continue;
         const professionSlug=trainerProfessionSlug(service);
-        const matches=recipes.filter(recipe=>{
-          if(professionSlug&&text(recipe?.professionSlug)!==professionSlug)return false;
-          return recipeTargetNames(recipe).has(serviceName);
-        });
+        const matches=lookup.trainer(serviceName,professionSlug);
         for(const recipe of matches){
           observations.push({
             npcId:integer(npc?.id),
@@ -432,6 +477,7 @@ export function buildLiveKnowledgeLearningSourceEvidence(recipeIndex={},records=
 
 export function liveKnowledgeDiscoveries(recipeIndex={},records=[]){
   const recipes=asArray(recipeIndex?.recipes);
+  const lookup=recipeLookup(recipes);
   const discoveries=[];
   for(const record of asArray(records)){
     if(record?.kind!=='merchant'||!record?.latestSnapshot?.complete)continue;
@@ -439,7 +485,7 @@ export function liveKnowledgeDiscoveries(recipeIndex={},records=[]){
     for(const item of asArray(snapshot.entries)){
       const target=learningItemTargetName(item?.name);
       if(!target)continue;
-      const matched=recipes.some(recipe=>merchantItemMatchesRecipe(item,recipe));
+      const matched=lookup.merchant(item).length>0;
       if(matched)continue;
       discoveries.push({
         build:record.build||null,
@@ -515,11 +561,13 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, 
   if(!observations.length)return recipeIndex;
 
   let blocked=0,confirmed=0;
+  const lookup=observationLookup(observations.filter(observation=>['present','absent'].includes(observation?.status)&&evidenceBuildApplies(observation,recipeIndex?.build)));
   const recipes=asArray(recipeIndex?.recipes).map(recipe=>{
+    const relevant=lookup(recipe);
     const learning=recipe?.learning||{};
     const sources=[];
     for(const source of asArray(learning.sources)){
-      const observation=bestObservation(observations,recipe,source,recipeIndex?.build);
+      const observation=bestObservation(relevant,recipe,source,recipeIndex?.build);
       if(observation?.status==='absent'){
         blocked++;
         continue;
@@ -550,7 +598,7 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, 
 
     const existingKeys=new Set(sources.map(sourceKey).filter(Boolean));
     const directDecisions=new Map();
-    for(const observation of observations){
+    for(const observation of relevant){
       if(!['present','absent'].includes(observation?.status)||
         !evidenceBuildApplies(observation,recipeIndex?.build)||
         !targetMatches(observation,recipe))continue;

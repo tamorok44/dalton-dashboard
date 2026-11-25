@@ -26,16 +26,11 @@ export async function loadAddonSyncState(characterSlug){
 }
 
 export async function loadAddonSyncStates(characterSlugs=[]){
-  const result={};
-  for(const slug of characterSlugs){
-    try{
-      const state=await loadAddonSyncState(slug);
-      if(state)result[slug]=state;
-    }catch(error){
-      console.warn('Addon-Sync-Rohstatus konnte nicht geladen werden:',String(error.message).slice(0,140));
-    }
-  }
-  return result;
+  const entries=await Promise.all([...new Set(characterSlugs)].map(async slug=>{
+    try{return [slug,await loadAddonSyncState(slug)]}
+    catch(error){console.warn('Addon-Sync-Rohstatus konnte nicht geladen werden:',String(error.message).slice(0,140));return [slug,null]}
+  }));
+  return Object.fromEntries(entries.filter(([,state])=>state));
 }
 
 export async function loadPublicAddonSyncStates(characterSlugs=[]){

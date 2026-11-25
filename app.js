@@ -1289,17 +1289,39 @@ function renderWorkshop(){
   });
 }
 let workshopDataEpoch=0;
-async function workshopFetch(url){
-  const response=await fetch(url,{cache:'no-store'});
-  if(!response.ok)throw new Error('Werkstatt HTTP '+response.status);
-  return response.json();
+let workshopSelectionEpoch=0;
+// Short-lived per-version cache: no durable stale game state or extra Redis traffic.
+const viewResponseCache=new Map();
+const VIEW_CACHE_TTL=60000,VIEW_CACHE_LIMIT=48;
+function cachedViewFetch(url){
+  const key=url,now=Date.now(),known=viewResponseCache.get(key);
+  if(known&&(known.pending||known.until>now))return known.promise;
+  const entry={pending:true,until:0,promise:null};
+  entry.promise=(async()=>{
+    const response=await fetch(url,{cache:'no-store'});
+    if(!response.ok)throw new Error('Dashboard HTTP '+response.status);
+    return response.json();
+  })().then(data=>{
+    entry.pending=false;entry.until=Date.now()+VIEW_CACHE_TTL;
+    if(data?.catalog?.refreshing||data?.recipeCatalog?.refreshing||data?.remoteError){
+      if(viewResponseCache.get(key)===entry)viewResponseCache.delete(key);
+    }
+    return data;
+  }).catch(error=>{
+    if(viewResponseCache.get(key)===entry)viewResponseCache.delete(key);
+    throw error;
+  });
+  viewResponseCache.set(key,entry);
+  while(viewResponseCache.size>VIEW_CACHE_LIMIT)viewResponseCache.delete(viewResponseCache.keys().next().value);
+  return entry.promise;
 }
+async function workshopFetch(url){return cachedViewFetch(url)}
 async function loadWorkshopOverview(){
   if(workshopState.overview||workshopState.loading)return;
   const epoch=workshopDataEpoch;
   workshopState.loading=true;workshopState.error=null;renderWorkshop();
   try{
-    const overview=await workshopFetch('/api/workshop?t='+Date.now());
+    const overview=await workshopFetch('/api/workshop');
     if(epoch!==workshopDataEpoch)return;
     workshopState.overview=overview;
   }catch(error){
@@ -1314,7 +1336,7 @@ async function searchWorkshop(query){
   const epoch=workshopDataEpoch;
   try{
     const mode=workshopState.searchMode;
-    const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&scope='+encodeURIComponent(mode)+'&t='+Date.now());
+    const result=await workshopFetch('/api/workshop?q='+encodeURIComponent(current)+'&scope='+encodeURIComponent(mode));
     if(epoch!==workshopDataEpoch||workshopState.query.trim()!==current||workshopState.searchMode!==mode)return;
     workshopState.suggestions=result.suggestions||[];
   }catch{
@@ -1330,18 +1352,18 @@ async function selectWorkshopItem(itemId,{preserveQuery=false,preserveQuantity=f
   const changedItem=currentItemId!==itemId;
   if(changedItem&&!preserveQuantity)workshopState.quantity=1;
   const quantity=workshopState.quantity;
-  const epoch=workshopDataEpoch;
+  const epoch=workshopDataEpoch,selectionEpoch=++workshopSelectionEpoch;
   try{
-    const result=await workshopFetch('/api/workshop?item='+itemId+'&quantity='+quantity+'&t='+Date.now());
-    if(epoch!==workshopDataEpoch)return;
+    const result=await workshopFetch('/api/workshop?item='+itemId+'&quantity='+quantity);
+    if(epoch!==workshopDataEpoch||selectionEpoch!==workshopSelectionEpoch)return;
     workshopState.selected=result;
     workshopState.suggestions=[];
     if(!preserveQuery)workshopState.query=result.item?.name||workshopState.query;
   }catch{
-    if(epoch!==workshopDataEpoch)return;
+    if(epoch!==workshopDataEpoch||selectionEpoch!==workshopSelectionEpoch)return;
     workshopState.selected=null;workshopState.error='Gegenstand konnte nicht geladen werden.';
   }
-  if(epoch===workshopDataEpoch)renderWorkshop();
+  if(epoch===workshopDataEpoch&&selectionEpoch===workshopSelectionEpoch)renderWorkshop();
 }
 function invalidateWorkshopData({reloadVisible=true}={}){
   const selectedId=Number(workshopState.selected?.item?.id);
@@ -1728,10 +1750,7 @@ async function loadLocationPlanner({force=false}={}){
     const params=new URLSearchParams();
     if(plannerState.character)params.set('character',plannerState.character);
     if(plannerState.location)params.set('location',plannerState.location);
-    params.set('t',Date.now());
-    const response=await fetch('/api/location-planner?'+params.toString(),{cache:'no-store'});
-    if(!response.ok)throw new Error('Ortsplaner HTTP '+response.status);
-    const result=await response.json();
+    const result=await cachedViewFetch('/api/location-planner?'+params.toString());
     if(epoch!==plannerEpoch)return;
     plannerState.data=result;
     if(plannerState.character&&!result.selectedCharacter){
@@ -1783,6 +1802,7 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
     petCatalog:payload.petCatalog||{}
   });
   if(plannerDataChanged){
+    viewResponseCache.clear();
     invalidateWorkshopData({reloadVisible:true});
     invalidateLocationPlannerData({reloadVisible:true});
   }

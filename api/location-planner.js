@@ -130,6 +130,10 @@ export default async function handler(req,res){
     const url=queryUrl(req);
     const character=(url.searchParams.get('character')||'').trim()||null;
     const location=(url.searchParams.get('location')||'').trim()||null;
+    // The initial character picker does not need any game-master data.
+    if(!character){
+      return res.status(200).json(buildLocationPlanner(stored.data,{recipes:[],professions:[]}));
+    }
     const remoteReady=foreverDbConfigured();
     const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
     const [recipeIndex,addonStates]=await Promise.all([

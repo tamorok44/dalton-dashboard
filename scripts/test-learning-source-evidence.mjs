@@ -167,3 +167,10 @@ assert.equal(applyLearningSourceEvidence(addonBase,anonymous,{characterSlug:'col
 const conflicting=mergeLearningSourceEvidence(addonEvidence,{observations:[{...addonEvidence.observations.find(o=>o.recipeId===200&&o.status==='absent'),characterSlug:'dolly-dalton',status:'present',priceCopper:70}]});
 assert.equal(applyLearningSourceEvidence(addonBase,conflicting,{characterSlug:'cole-dalton'}).recipes[0].learning.sources.length,0);
 assert.equal(applyLearningSourceEvidence(addonBase,conflicting,{characterSlug:'dolly-dalton'}).recipes[0].learning.sources[0].priceCopper,70);
+
+// A large catalog must not change the exact result of personal evidence.
+const unrelated=Array.from({length:2300},(_,i)=>({id:10000+i,name:'Unrelated '+i,professionSlug:'cooking',craftedItem:{id:40000+i,name:'Other '+i},learning:{sources:[vendor(40000+i,'Other vendor '+i,50)]}}));
+const expanded={...addonBase,recipes:[...addonBase.recipes,...unrelated]};
+const expandedEvidence=buildAddonLearningSourceEvidence(expanded,[addonState]);
+assert.deepEqual(expandedEvidence,addonEvidence,'Indexing must not broaden or lose exact evidence matches');
+assert.deepEqual(applyLearningSourceEvidence(expanded,expandedEvidence,{characterSlug:'cole-dalton'}).recipes.slice(0,addonBase.recipes.length),addonEvaluated.recipes);
