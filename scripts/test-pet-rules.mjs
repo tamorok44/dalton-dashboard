@@ -159,3 +159,39 @@ assert.equal(client.rules['pet.expertise'].evidenceLabel,'Offiziell');
 assert.equal(client.rules['pet.focus'].evidenceLabel,'Clientdaten');
 assert.equal(client.rules['pet.health.global'].evidenceLabel,'Offiziell');
 console.log('Pet-Regelwerk: Skalierung, Crit-Quelle, Autoattack-Crit, Expertise, Fokus, Buildwechsel und Fail-closed-Verhalten: OK');
+
+/* Migration aus dem produktiven Regelwerk: nur die belegte Bind-Buildnummer,
+   niemals ein geänderter Aussageinhalt oder ein anderer Quellen-Digest. */
+const legacy=JSON.parse(JSON.stringify(first));
+legacy.rulebookVersion='2026.11.22.2';
+for(const source of Object.values(legacy.sources))delete source.baselineBuild;
+const foxBuildPages={...pages,
+  'bindonforever.com/pets/fox':pages['bindonforever.com/pets/fox'].replace('1.60.1.70959','1.60.1.71091')
+};
+const migrated=await verifyPetRulebook({fetchImpl:fetchFrom(foxBuildPages),previousState:legacy,now});
+assert.equal(migrated.sources.bindFox.status,'verified');
+assert.equal(migrated.sources.bindFox.baselineBuild,'1.60.1.71091');
+assert.notEqual(migrated.sources.bindFox.baselineDigest,legacy.sources.bindFox.baselineDigest);
+assert.equal(migrated.sources.blizzardHotfix.baselineDigest,legacy.sources.blizzardHotfix.baselineDigest);
+const nextFoxBuild={...foxBuildPages,'bindonforever.com/pets/fox':foxBuildPages['bindonforever.com/pets/fox'].replace('71091','71092')};
+const future=await verifyPetRulebook({fetchImpl:fetchFrom(nextFoxBuild),previousState:migrated,now});
+assert.equal(future.sources.bindFox.status,'review_required');
+assert.equal(future.sources.bindFox.reason,'source_build_changed');
+assert.equal(future.sources.bindFox.baselineBuild,'1.60.1.71091');
+const foxSemanticChange={...foxBuildPages,'bindonforever.com/pets/fox':foxBuildPages['bindonforever.com/pets/fox'].replace('50% dodge','60% dodge')};
+const badFox=await verifyPetRulebook({fetchImpl:fetchFrom(foxSemanticChange),previousState:legacy,now});
+assert.equal(badFox.sources.bindFox.status,'review_required');
+assert.equal(badFox.sources.bindFox.baselineDigest,legacy.sources.bindFox.baselineDigest);
+const otherChanged=await verifyPetRulebook({fetchImpl:fetchFrom({...changedHotfix,...{ 'bindonforever.com/pets/fox':foxBuildPages['bindonforever.com/pets/fox']}}),previousState:legacy,now});
+assert.equal(otherChanged.sources.blizzardHotfix.status,'review_required','Global version bump must never rebaseline unrelated changed sources');
+assert.equal(otherChanged.sources.bindFox.status,'verified');
+const legacyOffline=await verifyPetRulebook({fetchImpl:fetchFrom(foxBuildPages,'bindonforever.com'),previousState:legacy,now});
+assert.equal(legacyOffline.sources.bindFox.status,'source_unavailable');
+assert.equal(legacyOffline.sources.bindFox.baselineDigest,legacy.sources.bindFox.baselineDigest);
+const retry=await verifyPetRulebook({fetchImpl:fetchFrom(foxBuildPages),previousState:legacyOffline,now});
+assert.equal(retry.sources.bindFox.status,'verified');
+const globalStillBlocked=await verifyPetRulebook({fetchImpl:fetchFrom({...foxBuildPages,'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('71037','71091')}),previousState:legacy,now});
+assert.equal(globalStillBlocked.sources.foreverDbBuild.status,'review_required');
+assert.equal(globalStillBlocked.rules['pet.focus'].status,'review_required');
+assert.equal(globalStillBlocked.rules['fox.family.profile'].status,'review_required');
+console.log('Gezielte Buildmigration und Erhalt anderer Baselines: OK');
