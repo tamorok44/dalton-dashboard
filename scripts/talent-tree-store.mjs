@@ -1,11 +1,13 @@
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
 import {configured,redis} from './character-store.mjs';
 import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
-import {publicClassData} from './class-training-store.mjs';
+import {publicClassData,CLASS_BY_ID} from './class-training-store.mjs';
 import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
 
-const KEY='dalton-dashboard:talent-tree-catalog:v2';
+const LEGACY_KEY='dalton-dashboard:talent-tree-catalog:v2';
+const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes';
+export const TALENT_CLASS_IDS=Object.freeze(Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 const MAX_AGE=6*60*60*1000;
 const arr=v=>Array.isArray(v)?v:[];
 const positive=v=>Number.isSafeInteger(v)&&v>0;
@@ -69,33 +71,83 @@ async function fetchGermanClassData(fetchImpl=fetch){
   if(!response.ok)throw Error('ForeverDB deutsche Klassendaten HTTP '+response.status);
   return response.json();
 }
-export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,redisImpl=redis,enabled=configured(),resolveIcons=knowledgeIcons,now=Date.now()}={}){
-  const ids=[...new Set(arr(data?.characters).map(c=>c.classId).filter(positive))].sort((a,b)=>a-b);
-  if(!ids.length)return {classes:{},stale:true};
-  const builds=[...new Set(Object.values(addonSync||{}).map(s=>String(s?.build||'')).filter(b=>/^\d{4,8}$|^\d+\.\d+\.\d+\.\d+$/.test(b)))].sort();
-  const hint=builds.join('|');
-  const key=KEY+':'+ids.join('-');
-  let saved=enabled?await readCompactMaster(key,{redisImpl}).catch(()=>null):null;
-  const fresh=value=>value&&ids.every(id=>value.classes?.[id]?.trees?.length===3)&&value.observedBuilds===hint&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
+// The source content fingerprint is not a verified client build or Hotfix revision.
+function canonical(value){
+  if(Array.isArray(value))return value.map(canonical);
+  if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])]));
+  return value;
+}
+export function buildTalentMaster(raw,de,{now=Date.now(),observedBuilds=''}={}){
+  const classes=normalizeTalentTrees(raw,de,TALENT_CLASS_IDS);
+  const classRevisions={};
+  for(const [id,c] of Object.entries(classes)){
+    const source=arr(raw).find(x=>x.id===Number(id));
+    // Include source effects and prerequisite tuples, even when localized texts
+    // are missing or an extra condition is not understood.
+    const rawNodes=arr(source?.trees).flatMap(t=>arr(t.talents)).sort((a,b)=>a.id-b.id)
+      .map(t=>({id:t.id,effects:t.d??null,pre:t.pre}));
+    classRevisions[id]=createHash('sha256').update(JSON.stringify(canonical({class:c,rawNodes}))).digest('hex');
+  }
+  return {classes,classRevisions,expectedClassIds:[...TALENT_CLASS_IDS],
+    missingClassIds:TALENT_CLASS_IDS.filter(id=>!classes[id]),checkedAt:new Date(now).toISOString(),
+    observedBuilds,source:'ForeverDB.net',verifiedClientBuild:null};
+}
+export function projectTalentMaster(master,ids){
+  const wanted=new Set(ids);
+  return {...master,classes:Object.fromEntries(Object.entries(master?.classes||{}).filter(([id])=>wanted.has(Number(id)))),
+    classRevisions:Object.fromEntries(Object.entries(master?.classRevisions||{}).filter(([id])=>wanted.has(Number(id))))};
+}
+export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=configured(),now=Date.now(),observedBuilds=''}={}){
+  if(!enabled)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
+  let saved=await readCompactMaster(KEY,{redisImpl}).catch(()=>null);
+  const fresh=value=>value&&TALENT_CLASS_IDS.every(id=>value.classes?.[id]?.trees?.length===3&&value.classRevisions?.[id])&&value.observedBuilds===observedBuilds&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
+  const recentAttempt=value=>value&&value.observedBuilds===observedBuilds&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
   let stale=!fresh(saved);
-  if(stale&&enabled){
-    const token=randomUUID(),lock=key+':lock';
+  // A partial source snapshot is retried at the normal cadence, not on every UI visit.
+  if(stale&&!recentAttempt(saved)){
+    const token=randomUUID(),lock=KEY+':lock';
     const acquired=await redisImpl(['SET',lock,token,'NX','EX',45]).catch(()=>null);
     if(acquired==='OK'){
       try{
         const [raw,de]=await Promise.all([publicClassData({fetchImpl}),fetchGermanClassData(fetchImpl)]);
-        const classes=normalizeTalentTrees(raw,de,ids);
-        if(ids.every(id=>classes[id])){
-          saved={classes,checkedAt:new Date(now).toISOString(),observedBuilds:hint,source:'ForeverDB.net'};
-          await writeCompactMaster(key,saved,{redisImpl});stale=false;
+        const candidate=buildTalentMaster(raw,de,{now,observedBuilds});
+        if(Object.keys(candidate.classes).length){
+          // Retain previously observed classes only as explicitly stale display
+          // fallbacks; never treat them as part of the current source snapshot.
+          candidate.fallbackClasses={...saved?.fallbackClasses,...saved?.classes};
+          for(const id of Object.keys(candidate.classes))delete candidate.fallbackClasses[id];
+          const written=await writeCompactMaster(KEY,candidate,{redisImpl});
+          if(written==='OK'){saved=candidate;stale=!fresh(saved)}
         }
       }catch(error){console.warn('Talentbaum-Katalog nicht aktualisiert:',String(error.message).slice(0,120))}
       finally{await redisImpl(['EVAL',"if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",1,lock,token]).catch(()=>{})}
     }
   }
-  if(!saved)return {classes:{},stale:true};
-  // Canonical spell identity; one archive across classes and characters.
-  const refs=Object.values(saved.classes).flatMap(c=>c.trees.flatMap(t=>t.talents.map(n=>({type:'spell',id:n.spellId,iconId:n.iconId}))));
+  if(!saved)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
+  return {...saved,stale};
+}
+export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,redisImpl=redis,enabled=configured(),resolveIcons=knowledgeIcons,now=Date.now()}={}){
+  const ids=[...new Set(arr(data?.characters).map(c=>c.classId).filter(positive))].sort((a,b)=>a-b);
+  if(!ids.length)return {classes:{},stale:true};
+  const builds=[...new Set(Object.values(addonSync||{}).map(s=>String(s?.build||'')).filter(b=>/^\d{4,8}$|^\d+\.\d+\.\d+\.\d+$/.test(b)))].sort();
+  const hint=builds.join('|');
+  const master=await loadTalentMaster({fetchImpl,redisImpl,enabled,now,observedBuilds:hint});
+  const projected=projectTalentMaster(master,ids);
+  let classes=projected.classes;
+  let stale=master.stale;
+  const missing=ids.filter(id=>!classes[id]);
+  if(missing.length&&enabled){
+    // Migration fallback for the existing read-only character view only.
+    const legacy=await readCompactMaster(LEGACY_KEY+':'+ids.join('-'),{redisImpl}).catch(()=>null);
+    for(const id of missing){
+      const fallback=master.fallbackClasses?.[id]||legacy?.classes?.[id];
+      if(fallback)classes={...classes,[id]:fallback};
+    }
+    stale=true;
+  }
+  const refs=Object.values(classes).flatMap(c=>c.trees.flatMap(t=>t.talents.map(n=>({type:'spell',id:n.spellId,iconId:n.iconId}))));
   const icons=enabled?await resolveIcons(refs,{characterSlug:data.characters?.[0]?.slug,maxNew:48,allowFetch:!stale}).catch(()=>({})): {};
-  return {...saved,stale,classes:Object.fromEntries(Object.entries(saved.classes).map(([id,c])=>[id,{...c,trees:c.trees.map(t=>({...t,talents:t.talents.map(n=>({...n,iconUrl:icons[mediaIconKey('spell',n.spellId)]||null}))}))}]))};
+  // Keep the existing public response lean; only the character projection has icons.
+  return {checkedAt:master.checkedAt,source:master.source,observedBuilds:master.observedBuilds,stale,
+    classes:Object.fromEntries(Object.entries(classes).map(([id,c])=>[id,{...c,trees:c.trees.map(t=>({...t,talents:t.talents.map(n=>({...n,iconUrl:icons[mediaIconKey('spell',n.spellId)]||null}))}))}]))};
 }
