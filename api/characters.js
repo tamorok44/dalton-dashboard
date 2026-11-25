@@ -1,4 +1,3 @@
-import {enrichQuestMedia} from '../scripts/quest-media.mjs';
 import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
 import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
 import {loadCharacters} from '../scripts/character-store.mjs';
@@ -44,7 +43,6 @@ export default async function handler(req,res){
     const liveKnowledgeVersion=await loadLiveKnowledgeVersion().catch(()=>null);
     const dataVersion=buildDataVersion({data:result.data,petRules,addonSync,liveKnowledgeVersion});
     const media=await enrichKnowledgeMedia(result.data,petCatalog).catch(()=>({data:result.data,petCatalog}));
-    questCatalog=await enrichQuestMedia(questCatalog).catch(()=>questCatalog);
     return res.status(200).json({...result,...media,questCatalog,petRules,reputationCatalog,addonSync,dataVersion});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);

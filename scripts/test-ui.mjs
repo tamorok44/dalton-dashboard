@@ -988,14 +988,10 @@ assert.ok(typeGuide.includes('Western-/Titelschrift')&&typeGuide.includes('Infor
 console.log('UI QA: per-character tabs, hunter companion, simplified XP, stats, profession order, quest details, rarity and gear: OK');
 
 const questMediaFixture={slug:'cole-dalton',activeQuests:[{id:1,name:'Testquest'},{id:2,name:'Andere Quest'}]};
-const questMediaHtml=ui.questsPanel(questMediaFixture,{}, {1:{title:'Testquest',questImageUrl:'https://test.public.blob.vercel-storage.com/media/npc/54/portrait-test.jpg',questStartName:'Testgeber',questImageKind:'npc',questStartEvidence:'classic-unconfirmed',questStartSource:'ForeverDB.net'}});
-assert.ok(questMediaHtml.includes('class="knowledge-icon quest-icon"'));
-assert.ok(questMediaHtml.includes('quest-icon quest-marker'));
-assert.ok(questMediaHtml.includes('Classic-Daten, nicht bestätigt'));
-assert.ok(questMediaHtml.includes('https://foreverdb.net'));
-
-const noQuestDetails=ui.questsPanel(questMediaFixture,{},{});
-assert.equal((noQuestDetails.match(/src="\/quest-marker.png"/g)||[]).length,2,'Every quest uses the same bundled original marker without any catalog data');
-const oneQuestDetails=ui.questsPanel(questMediaFixture,{}, {2:{title:'Andere Quest'}});
-assert.equal((oneQuestDetails.match(/src="\/quest-marker.png"/g)||[]).length,2,'Partial quest catalog cannot introduce a second fallback style');
+const markerCount=html=>(html.match(/src="\/quest-marker.png"/g)||[]).length;
+assert.equal(markerCount(ui.questsPanel(questMediaFixture,{},{})),2,'Standard marker without quest details');
+assert.equal(markerCount(ui.questsPanel(questMediaFixture,{}, {1:{title:'Testquest',description:'Testbeschreibung',area:'Testgebiet'}})),2,'Partial catalog uses same marker');
+const legacyQuest=ui.questsPanel(questMediaFixture,{}, {1:{title:'Testquest',questImageUrl:'https://test.public.blob.vercel-storage.com/media/npc/54/portrait-test.jpg',questStartName:'Testgeber',questStartSource:'ForeverDB.net'}});
+assert.equal(markerCount(legacyQuest),2,'Legacy quest portrait metadata never changes the standard marker');
+assert.ok(!legacyQuest.includes('portrait-test.jpg')&&!legacyQuest.includes('Testgeber'),'Retired optional quest giver display is ignored');
 assert.ok(read('sw.js').includes('"/quest-marker.png"'),'Original marker available offline');

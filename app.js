@@ -677,12 +677,11 @@ function questsPanel(c,group,questCatalog={},openDetails=new Set()){
         '<summary>Beschreibung & Gebiet</summary>'+detailRows+
         (detail.description?'<p class="quest-description">'+esc(detail.description)+'</p>':'')+'</details>'
       :'';
-    const image=validBlob(detail?.questImageUrl)?knowledgeIcon(detail.questImageUrl,32,'quest-icon'):knowledgeIcon('/quest-marker.png',32,'quest-icon quest-marker');
-    const start=detail?.questStartName?'<span class="quest-start">'+esc(detail.questImageKind==='item'?'Queststart: ':'Questgeber: ')+esc(detail.questStartName)+(detail.questStartEvidence==='classic-unconfirmed'?' · Classic-Daten, nicht bestätigt':detail.questStartEvidence==='unknown'?' · nicht bestätigt':'')+'</span>':'';
-    return '<div class="quest-entry">'+image+'<div class="quest-copy"><strong>'+esc(title)+'</strong>'+start+
+    const image=knowledgeIcon('/quest-marker.png',32,'quest-icon quest-marker');
+    return '<div class="quest-entry">'+image+'<div class="quest-copy"><strong>'+esc(title)+'</strong>'+
       (meta?'<div class="quest-meta">'+meta+'</div>':'')+expandable+'</div></div>';
   }).join('');
-  return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div>'+(quests.some(q=>questCatalog?.[Number(q.id)]?.questStartSource)?'<div class="quest-start">Questgeberdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></div>':'')+'</div>';
+  return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div>'+'</div>';
 }
 
 // Technische Slot-IDs steuern nur die Reihenfolge. Sichtbare Slotnamen kommen ausschließlich aus der deutschen Blizzard-Quelle.
@@ -729,9 +728,6 @@ function renderPortrait(c){
   return '<figure class="portrait '+(scene?scene.className:'')+'">'+portraitBadge(scene)+'<img class="character-render" src="'+esc(image+'?v='+version)+'" data-fallback="'+esc(avatar?avatar+'?v='+version:'')+'" alt="'+esc('Charakterbild von '+c.name)+'" loading="lazy" decoding="async"><figcaption>'+(c.imageVerified===false?'Letztes bekanntes Charakterbild':'Charakterbild · nach letztem Logout')+'</figcaption></figure>';
 }
 function installPortraitFallbacks(){
-  cards.querySelectorAll('img.quest-icon:not(.quest-marker)').forEach(img=>img.addEventListener('error',()=>{
-    img.classList.add('quest-marker');img.src='/quest-marker.png';
-  },{once:true}));
   cards.querySelectorAll('img.character-render').forEach(img=>img.addEventListener('error',()=>{
     const fallback=img.dataset.fallback;
     if(fallback && img.src!==fallback){img.src=fallback;img.dataset.fallback='';return}

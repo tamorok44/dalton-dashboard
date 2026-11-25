@@ -290,3 +290,7 @@ for(const name of tokenOnlyViews){
 }
 
 console.log('Architecture contract: global language, media, CI and view rules: OK');
+
+assert.ok(!sourceByFile.has('scripts/quest-media.mjs'),'No quest-specific external media enrichment');
+for(const name of ['api/characters.js','api/refresh.js'])assert.ok(!(sourceByFile.get(name)||'').includes('enrichQuestMedia'),'Quest marker must not trigger database or API reads');
+assert.ok((sourceByFile.get('app.js')||'').includes("knowledgeIcon('/quest-marker.png',32,'quest-icon quest-marker')"),'All quests use the bundled standard marker');

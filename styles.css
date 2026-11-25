@@ -1250,5 +1250,3 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 /* Quest icons use the shared knowledge-icon treatment; no external image loads. */
 .quest-entry>.quest-icon{width:32px;height:32px;flex:0 0 32px;object-fit:cover;align-self:flex-start}
 .quest-entry>.quest-marker{box-sizing:border-box;object-fit:contain;padding:6px;background:rgba(16,22,29,.65);image-rendering:pixelated}
-.quest-start{display:block;color:var(--muted);font-size:var(--type-caption);overflow-wrap:anywhere;line-height:1.35;margin-top:2px}
-.quest-start a{color:inherit;text-decoration:underline}

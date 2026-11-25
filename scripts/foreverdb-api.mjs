@@ -157,10 +157,3 @@ export async function fetchForeverDbBuildPage(build,{offset=0,fetchImpl=fetch}={
   if(!/^\d+\.\d+\.\d+\.\d+$/.test(String(build)))throw Error('Ungültiger ForeverDB-Build');
   return request('/builds/'+encodeURIComponent(build),{params:{limit:100,offset},fetchImpl});
 }
-
-export async function fetchForeverDbQuest(id,{fetchImpl=fetch}={}){
-  const numeric=Number(id);
-  if(!Number.isSafeInteger(numeric)||numeric<=0)throw Error('Ungültige ForeverDB Quest-ID');
-  const payload=await request('/quests/'+numeric,{fetchImpl});
-  return {quest:payload?.data??null,meta:payload?.meta||null};
-}
