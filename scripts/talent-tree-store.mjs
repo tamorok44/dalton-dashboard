@@ -5,7 +5,7 @@ import {publicClassData} from './class-training-store.mjs';
 import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
 
-const KEY='dalton-dashboard:talent-tree-catalog:v1';
+const KEY='dalton-dashboard:talent-tree-catalog:v2';
 const MAX_AGE=6*60*60*1000;
 const arr=v=>Array.isArray(v)?v:[];
 const positive=v=>Number.isSafeInteger(v)&&v>0;
@@ -28,11 +28,32 @@ export function normalizeTalentTrees(classes,localized,classIds){
         if(!positive(t.id)||!positive(t.df)||!positive(t.sp)||!title||!Number.isInteger(t.row)||t.row<0||t.row>10||!Number.isInteger(t.col)||t.col<0||t.col>3||!positive(t.max)||t.max>10||!positive(t.lv)||allIds.has(t.id)||profileIds.has(t.df)||positions.has(cell(t.row,t.col))||arr(t.ranks).length!==t.max||!t.ranks.every(positive)||!Array.isArray(t.pre)){
           valid=false;break;
         }
-        const pre=t.pre.map(p=>Array.isArray(p)&&positive(p[0])&&positive(p[1])?{id:p[0],rank:p[1],conditionKnown:p.length===2}:null);
+        // Compare the extracted point gate with the independently documented
+        // earlier-row rule. Reject inconsistent future source schemas.
+        const requiredPoints=t.row===0?0:t.gate?.[0];
+        if(requiredPoints!==t.row*5){valid=false;break}
+        const pre=t.pre.map(p=>{
+          if(!Array.isArray(p)||!positive(p[0])||!positive(p[1]))return null;
+          // Nature's Splendor: the extra tuple value does not add a separately
+          // documented player requirement; exact edge corroborated independently.
+          const verifiedEdge=id===11&&tree.id===11328&&t.id===104928&&p.length===3&&p[0]===104927&&p[1]===2&&p[2]===1;
+          return {id:p[0],rank:p[1],conditionKnown:p.length===2||verifiedEdge,...(verifiedEdge?{evidence:'https://theforeverera.com/de/talents/druid/natures-splendor/'}:{})};
+        });
         if(pre.some(p=>!p)){valid=false;break}
         positions.add(cell(t.row,t.col));allIds.add(t.id);profileIds.add(t.df);
-        talents.push({id:t.id,profileId:t.df,name:title,row:t.row,column:t.col,maxRank:t.max,requiredLevel:t.lv,spellId:t.sp,rankSpellIds:t.ranks,iconId:positive(t.ic)?t.ic:null,
-          descriptions:Array.from({length:t.max},(_,i)=>word(translated?.d?.[i])),prerequisites:pre});
+        const descriptions=Array.from({length:t.max},(_,i)=>word(translated?.d?.[i]));
+        const descriptionSources=descriptions.map(d=>d?'ForeverDB deutscher Clienttext':null);
+        // Explicit German effect summary, NOT a purported original tooltip.
+        // Match exact spell, rank count AND current source effect text; changed
+        // game data cannot silently inherit this verified fallback.
+        const arctic=id===8&&tree.id===11601&&t.sp===16757&&t.max===2&&
+          [10,20].every((v,i)=>t.d?.[i]===('Increases the range of your Frostbolt, Ice Lance, and Blizzard spells and the radius of your Frost Nova and Cone of Cold spells by '+v+'%.'));
+        if(arctic)for(const [i,v] of [10,20].entries())if(!descriptions[i]){
+          descriptions[i]='Reichweite von Frostblitz, Eislanze und Blizzard sowie Radius von Frostnova und Kältekegel jeweils um '+v+' % erhöht.';
+          descriptionSources[i]='Geprüfte deutsche Effektzusammenfassung (kein Originaltext)';
+        }
+        talents.push({id:t.id,profileId:t.df,name:title,row:t.row,column:t.col,maxRank:t.max,requiredLevel:t.lv,requiredPoints,spellId:t.sp,rankSpellIds:t.ranks,iconId:positive(t.ic)?t.ic:null,
+          descriptions,descriptionSources,prerequisites:pre});
       }
       if(!valid)break;
       const byId=new Map(talents.map(t=>[t.id,t]));

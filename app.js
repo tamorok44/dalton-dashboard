@@ -262,7 +262,8 @@ function talentNodeStatus(node,tree,personal,level,catalogStale=false){
   if(rank>0)return 'learned';
   if(catalogStale)return 'unknown';
   const before=tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0);
-  if(before<node.row*5||node.prerequisites.some(p=>p.conditionKnown&&(personal.ranks.get(p.id)||0)<p.rank))return 'locked';
+  const required=node.requiredPoints??node.row*5;
+  if(before<required||node.prerequisites.some(p=>p.conditionKnown&&(personal.ranks.get(p.id)||0)<p.rank))return 'locked';
   if(node.prerequisites.some(p=>!p.conditionKnown)||!Number.isInteger(Number(level))||Number(level)<node.requiredLevel)return 'unknown';
   // This is a prerequisite state, NOT confirmation of free talent points.
   return 'unlocked';
@@ -272,19 +273,27 @@ function talentNodeDetail(node,tree,personal,level,catalogStale){
   const rank=personal.verified?personal.ranks.get(node.id)||0:null;
   const status=talentNodeStatus(node,tree,personal,level,catalogStale);
   const label={learned:'Erlernt',unlocked:'Voraussetzungen erfüllt',locked:'Noch gesperrt',unknown:'Freischaltung nicht bestätigt'}[status];
-  const next=rank===null?null:Math.min(rank+1,node.maxRank);
-  const description=(i)=>node.descriptions?.[i-1]||'Deutscher Originaltext derzeit nicht verfügbar.';
-  const pre=displayList('alphabetical',node.prerequisites.map(p=>({...p,name:tree.talents.find(n=>n.id===p.id)?.name||'Talent'})),p=>'<li>'+esc(p.name)+' · Rang '+esc(p.rank)+(p.conditionKnown?'':' · genaue Bedingung nicht bestätigt')+'</li>').join('');
+  const pre=displayList('alphabetical',node.prerequisites.map(p=>({...p,name:tree.talents.find(n=>n.id===p.id)?.name||'Talent'})),p=>{
+    const met=personal.verified&&p.conditionKnown?(personal.ranks.get(p.id)||0)>=p.rank:null;
+    return '<li>'+esc(p.name)+' · Rang '+esc(p.rank)+(met===null?' · nicht bestätigt':met?' · erfüllt':' · fehlt')+'</li>';
+  }).join('');
+  const required=node.requiredPoints??node.row*5;
+  const before=personal.verified?tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0):null;
+  const rankRows=displayList('fixedControls',Array.from({length:node.maxRank},(_,i)=>i+1),i=>{
+    const desc=node.descriptions?.[i-1]||'Deutscher Originaltext derzeit nicht verfügbar.';
+    const provenance=node.descriptionSources?.[i-1];
+    return '<div class="talent-rank-description'+(i===rank?' is-current':'')+'"><strong>Rang '+i+(i===rank?' · aktuell':rank!==null&&i===rank+1?' · nächster Rang':'')+'</strong><p>'+esc(desc)+'</p>'+
+      (provenance&&provenance!=='ForeverDB deutscher Clienttext'?'<small>'+esc(provenance)+'</small>':'')+'</div>';
+  }).join('');
   return '<div class="talent-node-detail"><div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(node.iconUrl,36)+'<strong>'+esc(node.name)+'</strong></span><span>'+esc(rank===null?'Rang unbekannt':rank+'/'+node.maxRank)+'</span></div>'+
     '<p class="talent-detail-state">'+esc(label)+'</p>'+
-    (rank>0?'<p><strong>Aktueller Rang '+rank+'</strong><br>'+esc(description(rank))+'</p>':'')+
-    (next!==null&&rank<node.maxRank?'<p><strong>'+(rank===0?'Rang 1':'Nächster Rang '+next)+'</strong><br>'+esc(description(next))+'</p>':rank===null?'<p><strong>Rang 1</strong><br>'+esc(description(1))+'</p>':'')+
-    '<p>Regulär ab Stufe '+esc(node.requiredLevel)+' · '+esc(node.row*5)+' Punkte in vorherigen Reihen dieses Baums</p>'+
-    (pre?'<ul class="talent-prerequisites">'+pre+'</ul>':'')+'</div>';
+    '<div class="talent-requirements"><strong>Voraussetzungen</strong><p>Regulär ab Stufe '+esc(node.requiredLevel)+' · '+esc(required)+' Punkte in vorherigen Reihen dieses Baums'+(before===null?'':' ('+before+' vorhanden)')+'</p>'+
+    (pre?'<ul class="talent-prerequisites">'+pre+'</ul>':'')+'</div>'+
+    '<div class="talent-rank-list" aria-label="Alle Talentränge">'+rankRows+'</div></div>';
 }
 function talentGraph(tree,personal,level,catalogStale,selectedId,characterSlug='character'){
   // 4 columns; 1 unit = one cell. SVG connectors only, buttons remain accessible.
-  const rows=Math.max(...tree.talents.map(n=>n.row))+1;
+  const rows=Math.max(7,...tree.talents.map(n=>n.row+1));
   const arrowId='talent-arrow-'+String(characterSlug).replace(/[^a-z0-9-]/gi,'')+'-'+tree.id;
   const paths=tree.talents.flatMap(n=>n.prerequisites.map(p=>{
     const from=tree.talents.find(t=>t.id===p.id);
@@ -294,7 +303,7 @@ function talentGraph(tree,personal,level,catalogStale,selectedId,characterSlug='
     const mid=y+(ty-y)/2;
     return '<path class="talent-connector'+(p.conditionKnown?'':' is-uncertain')+'" d="M '+x+' '+y+' V '+mid+' H '+tx+' V '+(ty-25)+'" marker-end="url(#'+arrowId+')"/>';
   })).join('');
-  return '<div class="talent-grid" style="--talent-rows:'+rows+'"><svg class="talent-links" viewBox="0 0 400 '+(rows*100)+'" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="'+arrowId+'" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5 Z" fill="#a88d60"/></marker></defs>'+paths+'</svg>'+
+  return '<div class="talent-grid" dir="ltr" style="--talent-rows:'+rows+'"><svg class="talent-links" viewBox="0 0 400 '+(rows*100)+'" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="'+arrowId+'" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5 Z" fill="#a88d60"/></marker></defs>'+paths+'</svg>'+
     displayList('talentCoordinates',tree.talents,n=>{
       const rank=personal.verified?personal.ranks.get(n.id)||0:null,status=talentNodeStatus(n,tree,personal,level,catalogStale);
       const rankLabel=rank===null?'?/'+n.maxRank:rank+'/'+n.maxRank;
@@ -316,13 +325,13 @@ function talentPanel(c){
     '<div class="talent-summary"><strong>'+esc(total===null?'Talentstand nicht bestätigt':total+' verteilte Talentpunkte')+'</strong><small>Aktueller Charakterstand · keine Talentplanung</small></div>'+
     (!personal.verified?'<p class="talent-catalog-notice">Persönliche Talentränge konnten nicht vollständig zugeordnet werden. Unbekannte Ränge werden nicht als 0 gewertet.</p>':'')+
     (stale?'<p class="talent-catalog-notice">Talentstruktur: letzter bestätigter Abruf</p>':'')+
-    '<div class="talent-tree-switch" role="group" aria-label="Talentbaum">'+displayList('fixedControls',klass.trees,t=>'<button type="button" class="talent-tree-option'+(t.id===tree.id?' is-active':'')+'" data-talent-tree="'+t.id+'" aria-pressed="'+(t.id===tree.id)+'"><span>'+esc(t.name)+'</span><strong>'+esc(personal.verified?points.get(t.id)||0:'–')+'</strong></button>').join('')+'</div>'+
+    '<div class="talent-tree-switch" dir="ltr" role="group" aria-label="Talentbaum">'+displayList('fixedControls',klass.trees,t=>'<button type="button" class="talent-tree-option'+(t.id===tree.id?' is-active':'')+'" data-talent-tree="'+t.id+'" aria-pressed="'+(t.id===tree.id)+'"><span>'+esc(t.name)+'</span><strong>'+esc(personal.verified?points.get(t.id)||0:'–')+'</strong></button>').join('')+'</div>'+
     '<div class="talent-tree talent-visual-tree"><div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(personal.verified?points.get(tree.id)||0:'–')+' Punkte</span></div>'+talentGraph(tree,personal,c.level,stale,node?.id||0,c.slug)+'</div>'+
     '<div class="talent-legend"><span class="is-learned">Erlernt</span><span class="is-unlocked">Voraussetzungen erfüllt</span><span class="is-locked">Gesperrt</span></div>'+
     '<p class="talent-point-note">Freie Talentpunkte sind nicht bestätigt; die Freischaltung berücksichtigt die bekannten Voraussetzungen.</p>'+
     talentNodeDetail(node,tree,personal,c.level,stale)+
     (!personal.verified?learnedTalentList(c):'')+
-    '<p class="workshop-credit">Talentstruktur und Originaltexte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></p></div>';
+    '<p class="workshop-credit">Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></p></div>';
 }
 function bindTalentPanel(panel,c){
   if(!panel||!c)return;

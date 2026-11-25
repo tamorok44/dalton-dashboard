@@ -1277,3 +1277,5 @@ footer p{color:#928e8b;line-height:1.5;margin:9px 0 0;font-size:var(--type-small
 .talent-legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;border:1px solid #68717d;margin-right:5px}
 .talent-legend .is-learned:before{border-color:#d6b458}.talent-legend .is-unlocked:before{border-color:#6ab67a}
 @media(min-width:1100px){.talent-grid{max-width:420px}.talent-node{width:54px}}
+
+.talent-rank-list{display:grid;gap:8px;margin-top:12px}.talent-rank-description{border:1px solid var(--gold-deep);border-radius:4px;padding:8px;min-width:0}.talent-rank-description.is-current{border-color:var(--class)}.talent-rank-description small{font-size:var(--type-caption);color:var(--muted)}.talent-rank-description p{margin:5px 0 0}.talent-requirements{margin-top:10px}.talent-grid,.talent-tree-switch{direction:ltr}

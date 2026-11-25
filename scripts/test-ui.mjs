@@ -1053,3 +1053,6 @@ const visual=ui.talentPanel(talentChar);assert.ok(visual.includes('5/5')&&visual
 assert.ok(!visual.includes('Talentplanung aktivieren'));assert.equal(ui.personalTalentRanks({...talentChar,talentDetails:[{name:'Arkan',spentPoints:5,talents:[{id:999,rank:5}]}]},talentCatalogFixture.classes[8]).verified,false);
 assert.ok(ui.talentPanel({...talentChar,talentDetailsVerified:false}).includes('?/5'));
 assert.equal(ui.talentNodeStatus({...talentCatalogFixture.classes[8].trees[0].talents[1],prerequisites:[{id:101,rank:5,conditionKnown:false}]},talentCatalogFixture.classes[8].trees[0],personal,15),'unknown');
+
+assert.ok(ui.talentGraph(talentCatalogFixture.classes[8].trees[0],personal,15,false,0).includes('dir="ltr"'));
+assert.ok(ui.talentGraph(talentCatalogFixture.classes[8].trees[0],personal,15,false,0).includes('--talent-rows:7'));

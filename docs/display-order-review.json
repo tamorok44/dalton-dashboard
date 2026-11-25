@@ -99,11 +99,15 @@
     },
     {
       "owner": "talentNodeDetail",
-      "line": "const pre=displayList('alphabetical',node.prerequisites.map(p=>({...p,name:tree.talents.find(n=>n.id===p.id)?.name||'Talent'})),p=>'<li>'+esc(p.name)+' · Rang '+esc(p.rank)+(p.conditionKnown?'':' · genaue Bedingung nicht bestätigt')+'</li>').join('');"
+      "line": "const pre=displayList('alphabetical',node.prerequisites.map(p=>({...p,name:tree.talents.find(n=>n.id===p.id)?.name||'Talent'})),p=>{"
+    },
+    {
+      "owner": "talentNodeDetail",
+      "line": "const before=personal.verified?tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0):null;"
     },
     {
       "owner": "talentGraph",
-      "line": "const rows=Math.max(...tree.talents.map(n=>n.row))+1;"
+      "line": "const rows=Math.max(7,...tree.talents.map(n=>n.row+1));"
     },
     {
       "owner": "talentGraph",
