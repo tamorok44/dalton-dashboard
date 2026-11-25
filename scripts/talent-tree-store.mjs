@@ -1,7 +1,7 @@
 import {randomUUID,createHash} from 'node:crypto';
 import {configured,redis} from './character-store.mjs';
 import {compressedMasterKey,decodeCompactMaster,readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
-import {publicClassData,CLASS_BY_ID} from './class-training-store.mjs';
+import {fetchPublicClassFile,CLASS_BY_ID} from './class-training-store.mjs';
 import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS,talentCatalogIsFresh} from './talent-rule-watch.mjs';
@@ -69,10 +69,15 @@ export function normalizeTalentTrees(classes,localized,classIds){
   }
   return result;
 }
-async function fetchGermanClassData(fetchImpl=fetch){
-  const response=await fetchImpl('https://foreverdb.net/data/l10n/de/classes.json',{headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},signal:AbortSignal.timeout(12000)});
-  if(!response.ok)throw Error('ForeverDB deutsche Klassendaten HTTP '+response.status);
-  return response.json();
+async function captureClassFile(path,fetchImpl,clock){
+  const response=await fetchPublicClassFile(path,{fetchImpl,cache:'no-cache'});
+  if(!response.ok)throw Error('ForeverDB Klassendaten '+path+' HTTP '+response.status);
+  const body=await response.text();
+  const receivedAt=clock();
+  const age=response.headers?.get('age');
+  if(age!==null&&age!==undefined&&!/^\d+$/.test(age))throw Error('Ungültiges Cache-Alter der Klassendaten');
+  const freshAt=receivedAt-1000*Number(age??0);
+  return {data:JSON.parse(body),digest:createHash('sha256').update(body).digest('hex'),freshAt};
 }
 // The source content fingerprint is not a verified client build or Hotfix revision.
 function canonical(value){
@@ -100,7 +105,7 @@ export function projectTalentMaster(master,ids){
   return {...master,classes:Object.fromEntries(Object.entries(master?.classes||{}).filter(([id])=>wanted.has(Number(id)))),
     classRevisions:Object.fromEntries(Object.entries(master?.classRevisions||{}).filter(([id])=>wanted.has(Number(id))))};
 }
-export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=configured(),now=Date.now(),observedBuilds=''}={}){
+export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=configured(),clock=Date.now,now=clock(),observedBuilds=''}={}){
   if(!enabled)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
   let saved=await readCompactMaster(KEY,{redisImpl}).catch(()=>null);
   let stale=!talentCatalogIsFresh(saved?.checkedAt,now);
@@ -112,15 +117,24 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
     const acquired=await redisImpl(['SET',KEY+':attempt',token,'NX','EX',ATTEMPT_SECONDS]).catch(()=>null);
     if(acquired==='OK'){
       try{
-        const [raw,de]=await Promise.all([publicClassData({fetchImpl}),fetchGermanClassData(fetchImpl)]);
-        const candidate=buildTalentMaster(raw,de,{now,observedBuilds});
+        const [raw,localized]=await Promise.all([
+          captureClassFile('classes.json',fetchImpl,clock),
+          captureClassFile('l10n/de/classes.json',fetchImpl,clock)
+        ]);
+        const candidate=buildTalentMaster(raw.data,localized.data,{
+          now:Math.min(raw.freshAt,localized.freshAt),observedBuilds
+        });
+        candidate.sourceRevision=createHash('sha256').update(raw.digest+localized.digest).digest('hex');
+        candidate.sourceFreshAt={
+          raw:new Date(raw.freshAt).toISOString(),localized:new Date(localized.freshAt).toISOString()
+        };
         if(Object.keys(candidate.classes).length){
           // Retain previously observed classes only as explicitly stale display
           // fallbacks; never treat them as part of the current source snapshot.
           candidate.fallbackClasses={...saved?.fallbackClasses,...saved?.classes};
           for(const id of Object.keys(candidate.classes))delete candidate.fallbackClasses[id];
           const written=await writeCompactMaster(KEY,candidate,{redisImpl});
-          if(written==='OK'){saved=candidate;stale=!talentCatalogIsFresh(saved.checkedAt,now)}
+          if(written==='OK'){saved=candidate;stale=!talentCatalogIsFresh(saved.checkedAt,clock())}
         }
       }catch(error){console.warn('Talentbaum-Katalog nicht aktualisiert:',String(error.message).slice(0,120))}
 

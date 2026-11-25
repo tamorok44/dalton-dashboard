@@ -197,12 +197,16 @@ async function publicTrainerData({fetchImpl=fetch}={}){
   publicTrainerCache={at:Date.now(),data};
   return data;
 }
+export function fetchPublicClassFile(path,{fetchImpl=fetch,cache}={}){
+  return fetchImpl(new URL(path,PUBLIC_DATA_BASE),{
+    headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},
+    signal:AbortSignal.timeout(15000),
+    ...(cache?{cache}:{})
+  });
+}
 export async function publicClassData({fetchImpl=fetch}={}){
   if(publicClassDataCache&&Date.now()-publicClassDataCache.at<10*60*1000)return publicClassDataCache.data;
-  const response=await fetchImpl(new URL('classes.json',PUBLIC_DATA_BASE),{
-    headers:{Accept:'application/json','User-Agent':'Dalton-Dashboard/1.0 (+https://dalton-dashboard-eight.vercel.app)'},
-    signal:AbortSignal.timeout(15000)
-  });
+  const response=await fetchPublicClassFile('classes.json',{fetchImpl});
   if(!response.ok)throw new Error('ForeverDB öffentliche Klassendaten HTTP '+response.status);
   const data=await response.json();
   publicClassDataCache={at:Date.now(),data:Array.isArray(data)?data:[]};

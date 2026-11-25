@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {publicClassData} from './class-training-store.mjs';
 import {normalizeTalentTrees,buildTalentMaster,projectTalentMaster,loadTalentMaster,TALENT_CLASS_IDS} from './talent-tree-store.mjs';
 const node=(id,row,col)=>({id,df:id+100,sp:id+200,row,col,max:1,lv:10+5*row,...(row?{gate:[row*5,row-1]}:{}),ranks:[id+200],pre:[],ic:999});
 const raw=[{id:8,trees:[{id:1,talents:[node(1,0,0),{...node(2,1,3),pre:[[1,1,1]]}]},{id:2,talents:[node(3,0,0)]},{id:3,talents:[node(4,0,0)]}]}];
@@ -43,6 +44,57 @@ await loadTalentMaster({...options,observedBuilds:'71092'});
 assert.equal(requests,first);
 assert.equal([...kv.keys()].filter(k=>k.endsWith(':attempt')).length,1);
 console.log('Talent catalog: roster independence, revisions and bounded failure retries: OK');
+
+// The class-training process cache may contain a different revision.
+await publicClassData({fetchImpl:async()=>new Response(JSON.stringify(changed))});
+kv.clear();
+let received=0;
+const coldOptions={enabled:true,redisImpl,now:10_000,clock:()=>10_000+received*1000};
+const fetched=[];
+const cold=await loadTalentMaster({...coldOptions,fetchImpl:async(url,options)=>{
+  fetched.push(new URL(url).pathname);
+  assert.equal(options.cache,'no-cache');
+  const original=new URL(url).pathname==='/data/classes.json';
+  return {ok:true,headers:new Headers(original?{age:'5'}:{}),text:async()=>{
+    received++;
+    return JSON.stringify(original?raw:de);
+  }};
+}});
+assert.equal(new Set(fetched).size,2);
+assert.equal(cold.classRevisions[8],master.classRevisions[8]);
+assert.match(cold.sourceRevision,/^[a-f0-9]{64}$/);
+assert.equal(Date.parse(cold.sourceFreshAt.raw),7000);
+assert.equal(Date.parse(cold.sourceFreshAt.localized),12000);
+assert.equal(cold.checkedAt,cold.sourceFreshAt.raw);
+assert.equal(cold.stale,false);
+
+kv.clear();
+const alternate=await loadTalentMaster({...coldOptions,fetchImpl:async url=>
+  new Response(JSON.stringify(new URL(url).pathname==='/data/classes.json'?changed:de))});
+assert.notEqual(alternate.sourceRevision,cold.sourceRevision);
+
+kv.clear();
+let unblock;
+const barrier=new Promise(resolve=>{unblock=resolve});
+let signalStarted;
+const started=new Promise(resolve=>{signalStarted=resolve});
+let parallelRequests=0;
+const parallel={...coldOptions,now:12_000,fetchImpl:async url=>{
+  parallelRequests++;
+  signalStarted();
+  await barrier;
+  return new Response(JSON.stringify(new URL(url).pathname==='/data/classes.json'?raw:de));
+}};
+const winner=loadTalentMaster(parallel);
+await started;
+assert.equal((await loadTalentMaster(parallel)).stale,true);
+assert.equal(parallelRequests,2);
+unblock();
+assert.equal((await winner).sourceRevision,cold.sourceRevision);
+assert.equal((await loadTalentMaster(parallel)).sourceRevision,cold.sourceRevision);
+assert.equal(parallelRequests,2);
+
+
 
 
 // A failed class remains a display fallback, without changing another class's

@@ -107,6 +107,23 @@ const higherBind={...pages,'bindonforever.com/pets/fox':pages['bindonforever.com
 const mismatched=await verifyPetRulebook({fetchImpl:fetchFrom(higherBind),previousState:first,now});
 assert.equal(mismatched.talentRuleObservation.status,'review_required');
 assert.equal(mismatched.talentRuleObservation.clientBuild,'1.60.1.99999');
+const futurePages={...pages,'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('1.60.1.71091','2.1.0.17')};
+let futureDb2Calls=0;
+const futureState=await verifyPetRulebook({fetchImpl:async url=>{
+  if(String(url).startsWith('https://wago.tools/db2/'))futureDb2Calls++;
+  return fetchFrom(futurePages)(url);
+},now});
+assert.equal(futureState.talentRuleObservation.clientBuild,'2.1.0.17');
+assert.equal(futureState.talentRuleObservation.status,'observed');
+assert.equal(futureDb2Calls,0);
+const newerBranch={...pages,'bindonforever.com/pets/fox':pages['bindonforever.com/pets/fox'].replace('1.60.1.70959','1.61.0.12')};
+const branchState=await verifyPetRulebook({fetchImpl:fetchFrom(newerBranch),now});
+assert.equal(branchState.talentRuleObservation.clientBuild,'1.61.0.12');
+assert.equal(branchState.talentRuleObservation.status,'review_required');
+const unknown=await verifyPetRulebook({fetchImpl:fetchFrom(pages,'foreverdb.net/changelog'),now});
+assert.equal(unknown.talentRuleObservation.status,'source_unavailable');
+assert.equal(unknown.talentRuleObservation.revisionSince,null);
+
 
 assert.equal(first.rulebookVersion,PET_RULEBOOK_VERSION);
 assert.equal(first.overall,'verified');

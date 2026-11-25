@@ -94,7 +94,19 @@ globalThis.fetch=async (url,options={})=>{
         const next=JSON.parse(keys[5]);
         const previous=petRulesSaved?JSON.parse(petRulesSaved):null;
         if(!previous||previous.checkedAt<=next.checkedAt){
-          next.talentRuleObservation=keys[7]==='preview'?previous?.talentRuleObservation:keys[8]?JSON.parse(keys[8]):undefined;
+          const latest=previous?.talentRuleObservation;
+          let observation=keys[7]==='preview'?latest:keys[8]?JSON.parse(keys[8]):undefined;
+          if(keys[7]!=='preview'&&Number.isFinite(observation?.checkedAtMs)&&Number.isFinite(latest?.checkedAtMs)){
+            const elapsed=observation.checkedAtMs-latest.checkedAtMs;
+            const same=observation.status===latest.status&&observation.clientBuild===latest.clientBuild&&
+              observation.hotfixRevision===latest.hotfixRevision;
+            if(elapsed<0)observation=latest;
+            else if(elapsed===0&&!same)observation={...observation,status:'review_required',revisionSince:null};
+            else if(same&&observation.status==='observed'&&latest.revisionSince&&elapsed<keys[9]){
+              observation={...observation,revisionSince:latest.revisionSince};
+            }
+          }
+          next.talentRuleObservation=observation;
           petRulesSaved=JSON.stringify(next);
         }
         return {ok:true,json:async()=>({result:petRulesSaved})};
@@ -258,6 +270,30 @@ try{
       talentRuleObservation:{...observation,status:'source_unavailable'}});
     assert.deepEqual(preview.talentRuleObservation,observation);
     assert.deepEqual(preview.history,[]);
+    process.env.VERCEL_ENV='production';
+    const productionSave=(time,{status='observed',digest=observation.hotfixRevision}={})=>savePetRuleState({
+      ...state,checkedAt:time,talentRuleObservation:{
+        checkedAt:time,checkedAtMs:Date.parse(time),revisionSince:status==='observed'?time:null,
+        status,clientBuild:observation.clientBuild,hotfixRevision:digest
+      }
+    });
+    const t1='2099-11-25T03:00:00.000Z',t2='2099-11-25T04:00:00.000Z';
+    await productionSave(t1);
+    const repeated=await productionSave(t2);
+    assert.equal(repeated.talentRuleObservation.checkedAt,t2);
+    assert.equal(repeated.talentRuleObservation.revisionSince,t1);
+    assert.deepEqual(await productionSave(t1,{digest:'b'.repeat(64)}),repeated);
+    const conflict=await productionSave(t2,{digest:'b'.repeat(64)});
+    assert.equal(conflict.talentRuleObservation.status,'review_required');
+    assert.equal(conflict.talentRuleObservation.revisionSince,null);
+    const recoveredAt='2099-11-25T05:00:00.000Z';
+    assert.equal((await productionSave(recoveredAt)).talentRuleObservation.revisionSince,recoveredAt);
+    await productionSave('2099-11-25T06:00:00.000Z',{status:'source_unavailable',digest:null});
+    const afterOutage='2099-11-25T07:00:00.000Z';
+    assert.equal((await productionSave(afterOutage)).talentRuleObservation.revisionSince,afterOutage);
+    const afterExpiry='2099-11-26T09:00:00.000Z';
+    assert.equal((await productionSave(afterExpiry)).talentRuleObservation.revisionSince,afterExpiry);
+
   }finally{
     if(priorEnvironment===undefined)delete process.env.VERCEL_ENV;
     else process.env.VERCEL_ENV=priorEnvironment;

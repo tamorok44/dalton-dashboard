@@ -154,9 +154,9 @@ const sources=Object.freeze({
     mode:'markers',
     semanticPatterns:Object.freeze([
       /build\s+changelog/i,
-      /data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+1\.60\.1\.\d+,?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
+      /data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+\d+(?:\.\d+){3},?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
     ]),
-    buildPattern:/data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+(1\.60\.1\.\d+),?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
+    buildPattern:/data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+(\d+(?:\.\d+){3})(?!\d|\.\d),?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
   }),
   bindFox:Object.freeze({
     label:'Bind on Forever · Fox',
@@ -171,7 +171,7 @@ const sources=Object.freeze({
       /dash[\s\S]{0,180}?rank\s+1\s+30[\s\S]{0,160}?rank\s+2\s+40[\s\S]{0,160}?rank\s+3\s+50/i,
       /fox\s+pets?\s+eat\s+meat/i
     ]),
-    buildPattern:/build\s+(1\.60\.1\.\d+)/i
+    buildPattern:/build\s+(\d+(?:\.\d+){3})(?!\d|\.\d)/i
   }),
   sixtyToolsPets:Object.freeze({
     label:'60.tools · WoW Forever Hunter Pets',
@@ -345,8 +345,9 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
     id,await inspectSource(id,definition,{fetchImpl,previousSource:previousState?.sources?.[id],previousRulebookVersion:previousState?.rulebookVersion})
   ]));
   const sourceResults=Object.fromEntries(sourceEntries);
+  const talentRuleObservation=observeTalentRules(sourceResults,now);
   const builds=['foreverDbBuild','bindFox'].map(id=>sourceResults[id]?.build).filter(b=>/^1\.60\.1\.\d+$/.test(b||''));
-  const latestBuild=builds.sort((a,b)=>Number(b.split('.').at(-1))-Number(a.split('.').at(-1)))[0];
+  const latestBuild=talentRuleObservation.clientBuild||builds.sort((a,b)=>Number(b.split('.').at(-1))-Number(a.split('.').at(-1)))[0];
   Object.assign(sourceResults,await inspectPetDb2({build:latestBuild,fetchImpl}));
   const rules=Object.fromEntries(Object.entries(PET_RULES).map(([id,rule])=>{
     const statuses=rule.sourceIds.map(sourceId=>sourceResults[sourceId]?.status||'source_unavailable');
@@ -363,7 +364,7 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
   return {
     rulebookVersion:PET_RULEBOOK_VERSION,
     checkedAt:now.toISOString(),
-    talentRuleObservation:observeTalentRules(sourceResults,now),
+    talentRuleObservation,
     overall:worstStatus(Object.values(rules).map(rule=>rule.status)),
     rules,
     sources:sourceResults

@@ -1,3 +1,4 @@
+import {TALENT_RULE_MAX_AGE_MS} from './talent-rule-watch.mjs';
 import {VERSION_METADATA_KEY,petVersionMetadata} from './version-metadata.mjs';
 import {configured,redis} from './character-store.mjs';
 import {PET_RULEBOOK_VERSION,publicPetRuleState,verifyPetRulebook} from './pet-rulebook.mjs';
@@ -53,10 +54,28 @@ export async function savePetRuleState(state){
        and previous.checkedAt>next.checkedAt then
       return raw
     end
+    local prior=valid and type(previous)=='table' and previous.talentRuleObservation or nil
     local observation=ARGV[4]
     if ARGV[3]=='preview' then
-      observation=valid and type(previous)=='table' and type(previous.talentRuleObservation)=='table'
-        and cjson.encode(previous.talentRuleObservation) or ''
+      observation=type(prior)=='table' and cjson.encode(prior) or ''
+    elseif observation~='' and type(prior)=='table' then
+      local current=cjson.decode(observation)
+      if type(prior.checkedAtMs)=='number' and type(current.checkedAtMs)=='number' then
+        if prior.checkedAtMs>current.checkedAtMs then
+          observation=cjson.encode(prior)
+        else
+          local same=prior.status==current.status and prior.clientBuild==current.clientBuild
+            and prior.hotfixRevision==current.hotfixRevision
+          if prior.checkedAtMs==current.checkedAtMs and not same then
+            current.status='review_required'
+            current.revisionSince=cjson.null
+          elseif same and current.status=='observed' and type(prior.revisionSince)=='string'
+             and current.checkedAtMs-prior.checkedAtMs<tonumber(ARGV[5]) then
+            current.revisionSince=prior.revisionSince
+          end
+          observation=cjson.encode(current)
+        end
+      end
     end
     local stored=ARGV[1]
     if observation~='' then
@@ -69,7 +88,7 @@ export async function savePetRuleState(state){
   const saved=await redis(['EVAL',saveIfCurrent,2,KEY,VERSION_METADATA_KEY,
     JSON.stringify({...state,talentRuleObservation:undefined}),
     JSON.stringify(petVersionMetadata(publicPetRuleState(state))),process.env.VERCEL_ENV||'',
-    state.talentRuleObservation?JSON.stringify(state.talentRuleObservation):'']);
+    state.talentRuleObservation?JSON.stringify(state.talentRuleObservation):'',TALENT_RULE_MAX_AGE_MS]);
   return JSON.parse(saved);
 }
 export function petRuleStateFresh(state,{now=new Date(),maxAgeMs=20*60*60*1000}={}){

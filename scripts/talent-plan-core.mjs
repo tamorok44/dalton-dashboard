@@ -26,7 +26,7 @@ export function validateTalentPath(plan,master,rules){
   const talentedRank=rules.legacyTalentedRank;
   if(rules.pointCalendarRevision!==TALENT_POINT_CALENDAR_REVISION||
     !Number.isInteger(talentedRank)||talentedRank<0||talentedRank>5||
-    rules.gateMode!=='earlier_rows'||!rules.minimumLevelByTalent||typeof rules.minimumLevelByTalent!=='object')return reject('unsupported_rules');
+    rules.gateMode!=='earlier_rows'||!['immediate','bankable'].includes(rules.pointSpendMode)||!rules.minimumLevelByTalent||typeof rules.minimumLevelByTalent!=='object')return reject('unsupported_rules');
   const maxPoints=51;
   const firstPointLevel=10-talentedRank;
   if(plan.requiresRespec!==false)return reject('respec_not_supported');
@@ -38,12 +38,14 @@ export function validateTalentPath(plan,master,rules){
     byId.set(t.id,{...t,treeId:tree.id});
   }
   for(const [index,step] of plan.points.entries()){
-    const point=index+1,level=firstPointLevel+index,t=byId.get(step?.talentId);
+    const point=index+1,availableAt=firstPointLevel+index,t=byId.get(step?.talentId);
     if(!t)return reject('unknown_talent',point);
     const rank=(ranks.get(t.id)||0)+1;
     if(step.rank!==rank||rank>t.maxRank)return reject('invalid_rank',point);
     const minLevel=rules.minimumLevelByTalent[t.id];
     if(!positive(minLevel)||minLevel>60)return reject('unverified_level_gate',point);
+    const level=rules.pointSpendMode==='bankable'
+      ?Math.max(availableAt,minLevel,history.at(-1)?.level??0):availableAt;
     if(level<minLevel)return reject('level_gate',point);
     if(!Number.isSafeInteger(t.requiredPoints)||t.requiredPoints<0)return reject('unverified_tree_gate',point);
     const priorPoints=[...ranks.entries()].reduce((sum,[id,n])=>{
@@ -71,6 +73,7 @@ export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{ruleOb
   if(!nonempty(plan.review?.reviewedAt)||!nonempty(plan.review?.rationale)||
     !array(plan.review?.evidenceIds).length||!plan.review.evidenceIds.every(nonempty))return reject('missing_editorial_review');
   if(!Number.isInteger(legacyTalentedRank)||legacyTalentedRank<0||legacyTalentedRank>5)return reject('unverified_legacy_rank');
+  if(!array(plan.supportedLegacyRanks).includes(legacyTalentedRank))return reject('unsupported_legacy_rank');
   const rules=array(rulePacks).filter(r=>r?.revision===plan.ruleRevision&&r.classId===plan.classId&&
     r.legacyTalentedRank===legacyTalentedRank);
   if(rules.length!==1)return reject('missing_or_ambiguous_rules');

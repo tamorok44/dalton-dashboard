@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "kind": "talent_coverage_matrix",
+  "goals": ["leveling", "dungeons", "pvp"],
+  "deferredGoals": ["raid"],
+  "classes": {
+    "1": [
+      {"treeId": 11650, "roles": ["damage"]},
+      {"treeId": 11657, "roles": ["damage"]},
+      {"treeId": 11670, "roles": ["tank"]}
+    ],
+    "2": [
+      {"treeId": 11486, "roles": ["heal"]},
+      {"treeId": 11541, "roles": ["tank"]},
+      {"treeId": 11559, "roles": ["damage"]}
+    ],
+    "3": [
+      {"treeId": 11372, "roles": ["damage"], "levelingResearch": ["hunter-beast-mastery-leveling"]},
+      {"treeId": 11371, "roles": ["damage"]},
+      {"treeId": 11370, "roles": ["damage"]}
+    ],
+    "4": [
+      {"treeId": 11580, "roles": ["damage"]},
+      {"treeId": 11573, "roles": ["damage"]},
+      {"treeId": 11572, "roles": ["damage"]}
+    ],
+    "5": [
+      {"treeId": 11608, "roles": ["heal"]},
+      {"treeId": 11615, "roles": ["heal"]},
+      {"treeId": 11622, "roles": ["damage"]}
+    ],
+    "7": [
+      {"treeId": 11326, "roles": ["damage"]},
+      {"treeId": 11363, "roles": ["damage"]},
+      {"treeId": 11362, "roles": ["heal"]}
+    ],
+    "8": [
+      {"treeId": 11582, "roles": ["damage"], "levelingResearch": ["mage-arcane-leveling"]},
+      {"treeId": 11594, "roles": ["damage"]},
+      {"treeId": 11601, "roles": ["damage"], "levelingResearch": ["mage-frost-leveling-mixed-balanced"]}
+    ],
+    "9": [
+      {"treeId": 11629, "roles": ["damage"]},
+      {"treeId": 11636, "roles": ["damage"]},
+      {"treeId": 11637, "roles": ["damage"]}
+    ],
+    "11": [
+      {"treeId": 11328, "roles": ["damage"]},
+      {"treeId": 11347, "roles": ["damage", "tank"]},
+      {"treeId": 11340, "roles": ["heal"]}
+    ]
+  }
+}

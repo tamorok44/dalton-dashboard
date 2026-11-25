@@ -204,6 +204,36 @@
         "References original authors including Mobalytics; not an extra confirmation"
       ],
       "reuseStatus": "source_discovery_only"
+    },
+    {
+      "id": "icyveins-arcane",
+      "url": "https://www.icy-veins.com/wow-forever/arcane-mage-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-arcane-editorial"
+    },
+    {
+      "id": "mobalytics-arcane-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/arcane-mage-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "progress-avoid-editorial"
+    },
+    {
+      "id": "icyveins-beast-mastery",
+      "url": "https://www.icy-veins.com/wow-forever/beast-mastery-hunter-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-beast-mastery-editorial"
+    },
+    {
+      "id": "mobalytics-vareion-hunter",
+      "url": "https://mobalytics.gg/wow-forever/classes/hunter-leveling-1-60-vareion",
+      "kind": "expert_guide",
+      "independenceGroup": "vareion-editorial"
+    },
+    {
+      "id": "wow-forever-gg-hunter-prerequisites",
+      "url": "https://wow-forever.gg/talents/hunter/b/v9_50.1-163.305311210103/",
+      "kind": "client_reference",
+      "independenceGroup": "wow-forever-gg-talent-calculator"
     }
   ],
   "pilot": {
@@ -237,5 +267,67 @@
       }
     ],
     "approvedPlanId": null
-  }
+  },
+  "candidateTracks": [
+    {
+      "id": "mage-arcane-leveling",
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-arcane",
+        "mobalytics-arcane-leveling"
+      ],
+      "proposal": "Compare continuous Arcane with early Precision against an earlier Arcane capstone and later Precision. Evaluate downtime, threat and damage before and after the Arcane Blast and Missile Barrage milestones.",
+      "openChecks": [
+        "Chronological ranks and spell synergies including the November hotfixes",
+        "Comparable downtime and threat for solo and dungeon pulls",
+        "Minimum levels and exact release revisions"
+      ],
+      "observedMilestones": [
+        {
+          "talentId": 105806,
+          "catalogMinimumLevel": 20
+        },
+        {
+          "talentId": 113627,
+          "catalogMinimumLevel": 25
+        },
+        {
+          "talentId": 105798,
+          "catalogMinimumLevel": 40
+        }
+      ]
+    },
+    {
+      "id": "hunter-beast-mastery-leveling",
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "solo",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-beast-mastery",
+        "mobalytics-vareion-hunter",
+        "wow-forever-gg-hunter-prerequisites"
+      ],
+      "proposal": "Compare early pet utility and mobility with an earlier direct pet-damage investment while retaining the timely Summon Hawk milestone. Compare low and high pet-threat encounters separately.",
+      "openChecks": [
+        "Chronological points and Hunter talent IDs on the current build",
+        "Benefit and opportunity cost of pet revival, mobility and cleansing",
+        "Current pet and Summon Hawk behavior, minimum levels and exact release revisions",
+        "The export models Intimidation and Bestial Wrath as a cycle. Independently verify whether Bestial Swiftness is an alternative prerequisite in the current client before publishing a complete path."
+      ],
+      "observedMilestones": [
+        {
+          "talentId": 104966,
+          "catalogMinimumLevel": 25
+        }
+      ]
+    }
+  ]
 }
