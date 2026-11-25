@@ -1,6 +1,8 @@
 # Die Daltons – WoW Forever Dashboard
 
-Western-Dashboard für vier Dalton-Charaktere. Statische Website mit Vercel-Funktionen, Upstash Redis und Vercel Blob.
+Erweiterbares Western-Gruppendashboard für WoW Forever; die vier ursprünglichen Daltons sind der aktuelle Bestand, keine technische Grenze. Statische Website mit Vercel-Funktionen, Upstash Redis und Vercel Blob.
+
+Die projektweit verbindliche Zielarchitektur und Pflichtprüfung für Erweiterbarkeit von Charakteren, Klassen, Datenhaltung und Sync stehen in `AGENTS.md`. Bestehende feste Roster-/Relay-Annahmen sind technische Altlasten und werden kontrolliert abgelöst; die Dokumentation der aktuellen Implementierung ist keine Ausnahme von der Zielvorgabe.
 
 Verbindliche UI- und Responsive-Regeln für bestehende und neue Hauptreiter stehen in `UI_CI.md`. Der CI-Test `scripts/test-layout-contract.mjs` verhindert seitenweiten horizontalen Mobile-Overflow und erlaubt horizontales Scrollen nur in ausdrücklich freigegebenen Innencontainern.
 
