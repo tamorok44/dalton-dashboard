@@ -4,7 +4,7 @@ import {foreverDbConfigured} from '../scripts/foreverdb-api.mjs';
 import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex} from '../scripts/workshop-store.mjs';
 import {workshopProfessionSlugs} from '../scripts/workshop-core.mjs';
 import {buildLocationPlanner} from '../scripts/location-planner.mjs';
-import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
+import {cachedForeverDbClassMaster,cachedForeverDbClassLocations,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex,liveKnowledgeDiscoveries} from '../scripts/learning-source-evidence.mjs';
@@ -166,17 +166,17 @@ export default async function handler(req,res){
     // All roster classes contribute to the same world-location catalog.
     // Only the selected class contributes actual learning actions.
     const classIds=[...new Set((stored.data?.characters||[]).map(entry=>Number(entry.classId)).filter(id=>Number.isInteger(id)&&id>0))];
-    const classMasters=await Promise.all(classIds.map(async id=>{
-      try{return await cachedForeverDbClassMaster(id,{build:evaluatedRecipeIndex?.build||null})}
-      catch(error){console.warn('Klassenmaster für Ortskatalog nicht verfügbar:',String(error.message).slice(0,140));return null}
-    }));
-    const classMaster=classMasters[classIds.indexOf(Number(selectedCharacter?.classId))]||null;
-    const knownLocations=await sharedPlannerLocations(collectPlannerKnownLocations({
-      recipeIndexes:[recipeIndex,evaluatedRecipeIndex],
-      classMasters,
-      addonStates,
-      liveKnowledge
-    }));
+    const selectedClassId=Number(selectedCharacter?.classId)||null;
+    const build=evaluatedRecipeIndex?.build||null;
+    const classMaster=selectedClassId
+      ?await cachedForeverDbClassMaster(selectedClassId,{build}).catch(()=>null):null;
+    const classLocations=await Promise.all(classIds.map(id=>
+      cachedForeverDbClassLocations(id,{build,classMaster:id===selectedClassId?classMaster:null}).catch(()=>[])
+    ));
+    const knownLocations=await sharedPlannerLocations([
+      ...collectPlannerKnownLocations({recipeIndexes:[recipeIndex,evaluatedRecipeIndex],classMasters:classMaster?[classMaster]:[],addonStates,liveKnowledge}),
+      ...classLocations.flat()
+    ]);
     let planner=buildLocationPlanner(stored.data,evaluatedRecipeIndex,{
       characterSlug:character,
       location,

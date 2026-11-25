@@ -1,3 +1,5 @@
+import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
+import {collectPlannerKnownLocations} from './location-catalog.mjs';
 import {redis,configured as redisConfigured} from './character-store.mjs';
 import {foreverDbConfigured,fetchForeverDbClass} from './foreverdb-api.mjs';
 import {CLASSIC_CLASS_TRAINER_COSTS} from './class-training-classic-costs.mjs';
@@ -436,19 +438,31 @@ export async function cachedForeverDbClassMaster(classId,{build=null,fetchImpl=f
   if(!slug)return null;
   const key=CACHE_PREFIX+slug+':'+(build||'current');
   if(redisConfigured()){
-    const raw=await redis(['GET',key]);
-    if(raw){
-      try{
-        const parsed=JSON.parse(raw);
-        if(parsed?.classMaster?.slug===slug&&Array.isArray(parsed.classMaster.abilities)&&parsed.classMaster.abilities.length){
-          return {...parsed.classMaster,cached:true};
-        }
-      }catch{}
+    const parsed=await readCompactMaster(key);
+    if(parsed?.classMaster?.slug===slug&&Array.isArray(parsed.classMaster.abilities)&&parsed.classMaster.abilities.length){
+      return {...parsed.classMaster,cached:true};
     }
   }
   if(!foreverDbConfigured())return null;
   const result=await fetchForeverDbClassMaster(classId,{fetchImpl});
   if(!result.classMaster?.slug)return null;
-  if(redisConfigured())await redis(['SET',key,JSON.stringify({classMaster:result.classMaster,generatedAt:new Date().toISOString(),build:build||result.build||null})]);
+  if(redisConfigured())await writeCompactMaster(key,{classMaster:result.classMaster,generatedAt:new Date().toISOString(),build:build||result.build||null});
   return {...result.classMaster,cached:false};
+}
+
+// A class's world locations are a tiny build-scoped projection. The planner
+// only needs the selected class's large ability master after this index exists.
+export async function cachedForeverDbClassLocations(classId,{build=null,fetchImpl=fetch,classMaster=null}={}){
+  const slug=CLASS_BY_ID[Number(classId)];
+  if(!slug)return [];
+  const key=CACHE_PREFIX+slug+':'+(build||'current')+':locations:v1';
+  if(redisConfigured()&&!classMaster){
+    const raw=await redis(['GET',key]);
+    if(raw){try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))return parsed}catch{}}
+  }
+  const master=classMaster||await cachedForeverDbClassMaster(classId,{build,fetchImpl});
+  if(!master)return [];
+  const names=collectPlannerKnownLocations({classMasters:[master]});
+  if(redisConfigured())await redis(['SET',key,JSON.stringify(names)]);
+  return names;
 }

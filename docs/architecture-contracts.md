@@ -157,3 +157,8 @@ Der Ortsplaner und die Werkstatt müssen während längerer Spielsitzungen mit e
 ### Redis-Bandbreite / P0 (25.11.2026)
 
 Die Versionsprüfung lädt ausschließlich die atomar mit den Originaldaten gepflegte kompakte Versionsmetadaten-Hashmap und die Livewissen-Version. Legacy-Daten werden einmalig mit HSETNX migriert; auch fehlende AddOn-Syncs werden als null gespeichert, nicht bei jedem Poll erneut gesucht. Charakter-, Pet- und AddOn-Schreibvorgänge aktualisieren die Metadaten gemeinsam mit ihrem Originalpayload. `/api/characters`, `/api/refresh` und `/api/data-version` müssen dieselben Versionsbestandteile liefern (inkl. Livewissen und AddOn). Jede fachliche Versionsänderung invalidiert Werkstatt und Ortsplaner. Keine häufigen Vollabrufe zur bloßen Versionskontrolle.
+
+
+### Redis-Bandbreite / P1
+
+Große Rezept-Master, Rezept-Entwürfe und buildbezogene Klassenmaster werden verlustfrei gzip-komprimiert in versionierten Redis-Schlüsseln gespeichert. Bestehende unkomprimierte Schlüssel bleiben als Rollback-Bestand erhalten und werden im warmen Pfad nicht mehr gelesen. Keine zusätzlichen ForeverDB-Abfragen zur Migration. Die Ortsliste verwendet je Klasse eine kleine buildbezogene Ortsprojektion und lädt nur den vollständigen Master der tatsächlich ausgewählten Klasse. Es bleiben alle gemeinsamen Orte erhalten. Cache-Formate dürfen keine fachliche Evidenz, Namen oder IDs verändern.

@@ -97,3 +97,23 @@ if(previous.token===undefined)delete process.env.KV_REST_API_TOKEN;else process.
 if(previous.apiKey===undefined)delete process.env.FOREVERDB_API_KEY;else process.env.FOREVERDB_API_KEY=previous.apiKey;
 
 console.log('ForeverDB budget: distributed master lock, 30-minute meta cache, stale fallback and warm zero-request path: OK');
+
+// Legacy JSON master can be migrated without a ForeverDB request, with byte-for-byte semantic fidelity.
+const {readCompactMaster,writeCompactMaster,compressedMasterKey}=await import('./compact-master-cache.mjs');
+const large={recipes:Array.from({length:300},(_,i)=>({id:i,name:'Testrezept '+i,source:{name:'Bekannter Händler',zone:'Stormwind',evidence:'forever-confirmed'}}))};
+const legacyKey='test-large-master';
+const fixture=new Map([[legacyKey,JSON.stringify(large)]]);
+let legacyReads=0;
+const fakeRedis=async ([op,key,value,...args])=>{
+  if(op==='GET'){if(key===legacyKey)legacyReads++;return fixture.get(key)||null}
+  if(op==='SET'){if(args.includes('NX')&&fixture.has(key))return null;fixture.set(key,value);return 'OK'}
+  throw Error(op);
+};
+assert.deepEqual(await readCompactMaster(legacyKey,{redisImpl:fakeRedis,log:()=>{}}),large);
+assert.equal(legacyReads,1);
+assert.ok(fixture.get(compressedMasterKey(legacyKey)).length<fixture.get(legacyKey).length/2);
+assert.deepEqual(await readCompactMaster(legacyKey,{redisImpl:fakeRedis}),large);
+assert.equal(legacyReads,1,'Warm compressed master never fetches the large raw JSON');
+assert.equal(fixture.get(legacyKey),JSON.stringify(large),'Legacy master is preserved for rollback');
+await writeCompactMaster(legacyKey,{recipes:[]},{redisImpl:fakeRedis});
+assert.deepEqual(await readCompactMaster(legacyKey,{redisImpl:fakeRedis}),{recipes:[]});

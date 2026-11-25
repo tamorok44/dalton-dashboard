@@ -1,3 +1,4 @@
+import {readCompactMaster,writeCompactMaster,compressedMasterKey} from './compact-master-cache.mjs';
 import {createHash,randomUUID} from 'node:crypto';
 import {configured as redisConfigured,redis} from './character-store.mjs';
 import {
@@ -179,7 +180,7 @@ export async function getForeverDbRecipeIndex({professionSlugs=[],force=false,fe
   return {...index,cached:false};
 }
 async function loadMaster(){
-  const parsed=await loadJson(MASTER_KEY);
+  const parsed=redisConfigured()?await readCompactMaster(MASTER_KEY):null;
   return parsed?hydrateRecipeIndex(parsed):null;
 }
 export async function getCachedForeverDbMasterRecipeIndex(){
@@ -187,18 +188,18 @@ export async function getCachedForeverDbMasterRecipeIndex(){
   return master?{...master,cached:true,refreshing:false,masterComplete:master.complete===true}:null;
 }
 async function loadDraft(){
-  const parsed=await loadJson(MASTER_DRAFT_KEY);
+  const parsed=redisConfigured()?await readCompactMaster(MASTER_DRAFT_KEY,{ttl:24*60*60}):null;
   return parsed?hydrateRecipeIndex(parsed):null;
 }
 async function persistMaster(index){
   const serial=serializableRecipeIndex({...index,complete:true});
-  await saveJson(MASTER_KEY,serial);
-  await deleteKey(MASTER_DRAFT_KEY);
+  if(redisConfigured())await writeCompactMaster(MASTER_KEY,serial);
+  if(redisConfigured())await redis(['DEL',MASTER_DRAFT_KEY,compressedMasterKey(MASTER_DRAFT_KEY)]);
   return hydrateRecipeIndex(serial);
 }
 async function persistDraft(index){
   const serial=serializableRecipeIndex({...index,complete:false});
-  await saveJson(MASTER_DRAFT_KEY,serial,{ttl:24*60*60});
+  if(redisConfigured())await writeCompactMaster(MASTER_DRAFT_KEY,serial,{ttl:24*60*60});
   return hydrateRecipeIndex(serial);
 }
 async function seedDraftFromExistingScope(seedProfessionSlugs=[]){
