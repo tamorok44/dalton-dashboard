@@ -1,4 +1,4 @@
-export const HUNTER_PET_RULEBOOK_VERSION='2026.11.25.1';
+export const HUNTER_PET_RULEBOOK_VERSION='2026.11.25.2';
 // Versioniertes Forever-Jägerwissen. Live-Zustand eines konkreten Tiers kommt ausschließlich von Blizzard.
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({

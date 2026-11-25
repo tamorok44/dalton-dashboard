@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {PET_DB2_BASELINE} from './pet-db2-baseline.mjs';
+import {petDb2Url} from './pet-db2-audit.mjs';
 import {PET_RULEBOOK_VERSION,verifyPetRulebook,publicPetRuleState} from './pet-rulebook.mjs';
 
 const pages={
@@ -15,10 +17,10 @@ const pages={
 <h1>Build changelog</h1>
 <p>What each WoW Forever client build added, removed or changed.</p>
 <ul>
-<li>Build 1.60.1.71037 (2026-11-22): 9 spells (9 changed); 80 items (3 added, 77 changed); 1 armor set (1 changed).</li>
+<li>Build 1.60.1.71091 (2026-11-22): 9 spells (9 changed); 80 items (3 added, 77 changed); 1 armor set (1 changed).</li>
 <li>Build 1.60.1.70959 (2026-11-18): 1 class ability (1 changed); 2 talents (2 changed).</li>
 </ul>
-<p>Data from the WoW Forever client, build 1.60.1.71037, extracted 2026-11-22.</p>
+<p>Data from the WoW Forever client, build 1.60.1.71091, extracted 2026-11-22.</p>
 </main>`,
   'wowhead.com/forever/guide/classes/hunter/survival/overview-pve-dps':`
     <main>Stamina: Every 1 player Stamina gives the pet 2 Health.
@@ -62,10 +64,18 @@ const pages={
     30% of your Armor
     1 Hunter Stamina = 2 Pet Health.`
 };
-function fetchFrom(currentPages,failPart=null){
+function fetchFrom(currentPages,failPart=null,alterDb2=null){
   return async url=>{
     const text=String(url);
     if(failPart&&text.includes(failPart))throw new Error('source offline');
+    if(text.startsWith('https://wago.tools/db2/')){
+      const build=new URL(text).searchParams.get('build');
+      const match=Object.entries(PET_DB2_BASELINE).find(([,spec])=>petDb2Url(spec,build)===text);
+      if(!match)return {ok:false,status:404,text:async()=>''};
+      const [key,spec]=match;
+      const content=[spec.header,...spec.rows].join('\n');
+      return {ok:true,status:200,text:async()=>alterDb2?alterDb2(key,content):content};
+    }
     const key=Object.keys(currentPages).find(part=>text.includes(part));
     if(!key)return {ok:false,status:404,text:async()=>''};
     return {ok:true,status:200,text:async()=>currentPages[key]};
@@ -80,7 +90,7 @@ assert.ok(Object.values(first.rules).every(rule=>rule.status==='verified'));
 assert.ok(Object.values(first.sources).every(source=>source.status==='verified'));
 assert.equal(first.sources.bindFox.build,'1.60.1.70959');
 assert.equal(first.sources.efficientPets.build,'70959');
-assert.equal(first.sources.foreverDbBuild.build,'1.60.1.71037');
+assert.equal(first.sources.foreverDbBuild.build,'1.60.1.71091');
 assert.equal(first.rules['pet.scaling'].evidence,'reference_model');
 assert.equal(first.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
 assert.equal(first.rules['pet.crit.inheritance'].evidence,'official');
@@ -111,15 +121,15 @@ const historicalBuildOnly={...pages,
 };
 const historicalState=await verifyPetRulebook({fetchImpl:fetchFrom(historicalBuildOnly),previousState:first,now:new Date('2026-11-22T06:37:00.000Z')});
 assert.equal(historicalState.sources.foreverDbBuild.status,'verified','Historical changelog rows do not masquerade as a current-build change');
-assert.equal(historicalState.sources.foreverDbBuild.build,'1.60.1.71037');
+assert.equal(historicalState.sources.foreverDbBuild.build,'1.60.1.71091');
 
 const changedBuild={...pages,
-  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('1.60.1.71037','1.60.1.71038')
+  'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('1.60.1.71091','1.60.1.71092')
 };
 const buildState=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild),previousState:first,now:new Date('2026-11-22T07:07:00.000Z')});
-assert.equal(buildState.sources.foreverDbBuild.status,'review_required','A new current client build needs explicit review');
+assert.equal(buildState.sources.foreverDbBuild.status,'verified','Build discovery does not constitute a mechanics change');
 for(const id of ['fox.family.profile','fox.training','pet.scaling','pet.focus']){
-  assert.equal(buildState.rules[id].status,'review_required',id+' is tied to the reviewed client build');
+  assert.equal(buildState.rules[id].status,'verified',id+' remains verified if all reviewed DB2 fields are identical');
 }
 assert.equal(buildState.rules['pet.health.global'].status,'verified','Official health hotfix remains valid across a pure client-build change');
 assert.equal(buildState.rules['pet.crit.inheritance'].status,'verified','Official crit source rule is not downgraded by the build gate alone');
@@ -175,9 +185,10 @@ assert.notEqual(migrated.sources.bindFox.baselineDigest,legacy.sources.bindFox.b
 assert.equal(migrated.sources.blizzardHotfix.baselineDigest,legacy.sources.blizzardHotfix.baselineDigest);
 const nextFoxBuild={...foxBuildPages,'bindonforever.com/pets/fox':foxBuildPages['bindonforever.com/pets/fox'].replace('71091','71092')};
 const future=await verifyPetRulebook({fetchImpl:fetchFrom(nextFoxBuild),previousState:migrated,now});
-assert.equal(future.sources.bindFox.status,'review_required');
-assert.equal(future.sources.bindFox.reason,'source_build_changed');
-assert.equal(future.sources.bindFox.baselineBuild,'1.60.1.71091');
+assert.equal(future.sources.bindFox.status,'verified');
+assert.equal(future.sources.bindFox.reason,null);
+assert.equal(future.sources.bindFox.baselineBuild,'1.60.1.71092');
+assert.equal(future.sources.db2Focus.build,'1.60.1.71092');
 const foxSemanticChange={...foxBuildPages,'bindonforever.com/pets/fox':foxBuildPages['bindonforever.com/pets/fox'].replace('50% dodge','60% dodge')};
 const badFox=await verifyPetRulebook({fetchImpl:fetchFrom(foxSemanticChange),previousState:legacy,now});
 assert.equal(badFox.sources.bindFox.status,'review_required');
@@ -190,8 +201,25 @@ assert.equal(legacyOffline.sources.bindFox.status,'source_unavailable');
 assert.equal(legacyOffline.sources.bindFox.baselineDigest,legacy.sources.bindFox.baselineDigest);
 const retry=await verifyPetRulebook({fetchImpl:fetchFrom(foxBuildPages),previousState:legacyOffline,now});
 assert.equal(retry.sources.bindFox.status,'verified');
-const globalStillBlocked=await verifyPetRulebook({fetchImpl:fetchFrom({...foxBuildPages,'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('71037','71091')}),previousState:legacy,now});
-assert.equal(globalStillBlocked.sources.foreverDbBuild.status,'review_required');
-assert.equal(globalStillBlocked.rules['pet.focus'].status,'review_required');
-assert.equal(globalStillBlocked.rules['fox.family.profile'].status,'review_required');
-console.log('Gezielte Buildmigration und Erhalt anderer Baselines: OK');
+// Change a real field independent of the order of columns.
+const changedTraining=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='effect17253'?body+'\n'+PET_DB2_BASELINE.effect17253.rows[0]:body),previousState:legacy,now});
+assert.equal(changedTraining.rules['fox.training'].status,'review_required');
+assert.equal(changedTraining.rules['fox.family.profile'].status,'verified');
+assert.equal(changedTraining.rules['pet.focus'].status,'verified');
+const changedFamily=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='family'?body.replace(',458223,',',458224,'):body),previousState:legacy,now});
+assert.equal(changedFamily.rules['fox.family.profile'].status,'review_required');
+assert.equal(changedFamily.rules['fox.training'].status,'review_required');
+assert.equal(changedFamily.rules['pet.scaling'].status,'verified');
+const failedDb2=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,'wago.tools'),previousState:legacy,now});
+assert.equal(failedDb2.rules['pet.focus'].status,'source_unavailable');
+assert.equal(failedDb2.rules['pet.health.global'].status,'verified');
+const missingBuild=await verifyPetRulebook({fetchImpl:fetchFrom({...pages,'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('71091','71037')}),previousState:legacy,now});
+assert.equal(missingBuild.rules['fox.family.profile'].status,'source_unavailable');
+const schemaChange=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='scaling'?'unknown_column,'+body:body),previousState:legacy,now});
+assert.equal(schemaChange.rules['pet.scaling'].status,'review_required');
+assert.equal(schemaChange.rules['pet.focus'].status,'review_required');
+assert.equal(schemaChange.rules['fox.training'].status,'verified');
+const focusMutation=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='focus'?body.replace(PET_DB2_BASELINE.focus.rows[0],PET_DB2_BASELINE.focus.rows[0].split(',').map((v,i)=>i===PET_DB2_BASELINE.focus.header.split(',').indexOf('RegenCombat')?'9':v).join(',')):body),previousState:legacy,now});
+assert.equal(focusMutation.rules['pet.focus'].status,'review_required');
+assert.equal(focusMutation.rules['pet.scaling'].status,'verified');
+console.log('Feldweise DB2-Prüfung, gezielte Sperren und Erhalt anderer Baselines: OK');

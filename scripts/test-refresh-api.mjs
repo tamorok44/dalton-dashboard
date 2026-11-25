@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {PET_DB2_BASELINE,PET_DB2_REVIEWED_BUILD} from './pet-db2-baseline.mjs';
+import {petDb2Url} from './pet-db2-audit.mjs';
 import {createRequire} from 'node:module';
 import handler from '../api/refresh.js';
 import {imageStoreConfigured} from '../scripts/archive-images.mjs';
@@ -98,6 +100,11 @@ globalThis.fetch=async (url,options={})=>{
     throw Error('Unexpected Redis command');
   }
   const sourceUrl=String(url);
+  if(sourceUrl.startsWith('https://wago.tools/db2/')){
+    const spec=Object.values(PET_DB2_BASELINE).find(spec=>petDb2Url(spec,PET_DB2_REVIEWED_BUILD)===sourceUrl);
+    assert.ok(spec,'Only the reviewed DB2 datasets are requested');
+    return {ok:true,status:200,text:async()=>[spec.header,...spec.rows].join('\n')};
+  }
   if(sourceUrl.includes('worldofwarcraft.blizzard.com/en-us/news/24315281'))return {ok:true,status:200,text:async()=>'<li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li>'};
   if(sourceUrl.includes('us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes'))return {ok:true,status:200,text:async()=>`Pets now correctly benefit from Expertise.
 Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.`};
@@ -106,10 +113,10 @@ Fixed an issue where pets were only ever inheriting the player's Melee Critical 
 <h1>Build changelog</h1>
 <p>What each WoW Forever client build added, removed or changed.</p>
 <ul>
-<li>Build 1.60.1.71037 (2026-11-22): 9 spells (9 changed); 80 items (3 added, 77 changed); 1 armor set (1 changed).</li>
+<li>Build 1.60.1.71091 (2026-11-22): 9 spells (9 changed); 80 items (3 added, 77 changed); 1 armor set (1 changed).</li>
 <li>Build 1.60.1.70959 (2026-11-18): 1 class ability (1 changed); 2 talents (2 changed).</li>
 </ul>
-<p>Data from the WoW Forever client, build 1.60.1.71037, extracted 2026-11-22.</p>
+<p>Data from the WoW Forever client, build 1.60.1.71091, extracted 2026-11-22.</p>
 </main>`};
   if(sourceUrl.includes('wowhead.com/forever/guide/classes/hunter/survival'))return {ok:true,status:200,text:async()=>`Stamina: Every 1 player Stamina gives the pet 2 Health.
 Armor: Pet gains 30% of the player's Armor.
@@ -176,7 +183,7 @@ try{
   assert.equal(result.payload.petRules.rules['pet.crit.inheritance'].evidence,'official');
   assert.equal(result.payload.petRules.rules['pet.expertise'].evidence,'official');
   assert.equal(result.payload.petRules.rules['pet.autoswing.crit'].evidence,'measured');
-  assert.equal(result.payload.petRules.sources.foreverDbBuild.build,'1.60.1.71037');
+  assert.equal(result.payload.petRules.sources.foreverDbBuild.build,'1.60.1.71091');
   assert.ok(Array.isArray(result.payload.petRules.history)&&result.payload.petRules.history.length>0,'Rule state transitions are persisted and exposed');
   assert.ok(result.payload.changes>0,'Manual refresh reports meaningful changes');
   assert.equal(history.length,1,'Manual refresh appends one change batch');
