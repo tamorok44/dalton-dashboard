@@ -9,6 +9,7 @@ const LEGACY_KEY='dalton-dashboard:talent-tree-catalog:v2';
 const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes';
 export const TALENT_CLASS_IDS=Object.freeze(Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 const MAX_AGE=6*60*60*1000;
+const ATTEMPT_SECONDS=MAX_AGE/1000;
 const arr=v=>Array.isArray(v)?v:[];
 const positive=v=>Number.isSafeInteger(v)&&v>0;
 const word=v=>typeof v==='string'&&v.trim()?v.trim():null;
@@ -100,13 +101,14 @@ export function projectTalentMaster(master,ids){
 export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=configured(),now=Date.now(),observedBuilds=''}={}){
   if(!enabled)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
   let saved=await readCompactMaster(KEY,{redisImpl}).catch(()=>null);
-  const fresh=value=>value&&TALENT_CLASS_IDS.every(id=>value.classes?.[id]?.trees?.length===3&&value.classRevisions?.[id])&&value.observedBuilds===observedBuilds&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
-  const recentAttempt=value=>value&&value.observedBuilds===observedBuilds&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
+  const fresh=value=>value&&now-Date.parse(value.checkedAt)>=0&&now-Date.parse(value.checkedAt)<MAX_AGE;
   let stale=!fresh(saved);
   // A partial source snapshot is retried at the normal cadence, not on every UI visit.
-  if(stale&&!recentAttempt(saved)){
-    const token=randomUUID(),lock=KEY+':lock';
-    const acquired=await redisImpl(['SET',lock,token,'NX','EX',45]).catch(()=>null);
+  if(stale){
+    const token=randomUUID();
+    // A persistent global attempt budget also covers failures and changing rosters.
+    // At most one attempt per six hours across all instances; two public files.
+    const acquired=await redisImpl(['SET',KEY+':attempt',token,'NX','EX',ATTEMPT_SECONDS]).catch(()=>null);
     if(acquired==='OK'){
       try{
         const [raw,de]=await Promise.all([publicClassData({fetchImpl}),fetchGermanClassData(fetchImpl)]);
@@ -120,11 +122,11 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
           if(written==='OK'){saved=candidate;stale=!fresh(saved)}
         }
       }catch(error){console.warn('Talentbaum-Katalog nicht aktualisiert:',String(error.message).slice(0,120))}
-      finally{await redisImpl(['EVAL',"if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",1,lock,token]).catch(()=>{})}
+
     }
   }
   if(!saved)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
-  return {...saved,stale};
+  return {...saved,stale,observedBuilds};
 }
 export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,redisImpl=redis,enabled=configured(),resolveIcons=knowledgeIcons,now=Date.now()}={}){
   const ids=[...new Set(arr(data?.characters).map(c=>c.classId).filter(positive))].sort((a,b)=>a-b);
