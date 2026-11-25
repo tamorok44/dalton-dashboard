@@ -1,16 +1,13 @@
 import {randomUUID} from 'node:crypto';
 import {configured,redis} from './character-store.mjs';
 import {foreverDbConfigured,fetchForeverDbQuest} from './foreverdb-api.mjs';
-import {blizzardApiConfigured,fetchForeverCreatureDisplay,fetchForeverMediaIcon} from './blizzard-api.mjs';
+import {blizzardApiConfigured,fetchForeverCreatureDisplay,fetchForeverCreaturePortrait,fetchForeverMediaIcon} from './blizzard-api.mjs';
 import {imageStoreConfigured,resolveMediaAsset,readAssetRecords,mediaAssetKey,sourceImageAllowed,rememberMissingAsset} from './media-resolver.mjs';
 import {classicNpcDisplayId} from './classic-npc-display-ids.mjs';
 
 const KEY='dalton-dashboard:quest-start-media:v1';
 const LOCK=KEY+':lock';
 const DAY=86400000;
-// Warcraft Wiki's archived WoW quest marker; verified PNG from the named file.
-const QUEST_MARKER={type:'ui',id:'quest-available',role:'icon'};
-const QUEST_MARKER_SOURCE='https://warcraft.wiki.gg/images/5/51/Availablequesticon.png';
 function id(value){const n=Number(value);return Number.isSafeInteger(n)&&n>0?n:null}
 function text(value){return typeof value==='string'&&value.trim()?value.trim().slice(0,200):null}
 function field(q){return q.locale+':'+q.namespace+':'+q.id}
@@ -35,7 +32,7 @@ export function questStartMediaReference(quest,expectedId){
 }
 function parse(raw){try{return JSON.parse(raw)}catch{return null}}
 function fresh(record){const age=Date.now()-Date.parse(record?.checkedAt||'');return Number.isFinite(age)&&age>=0&&age<(record?.ref?7:1)*DAY}
-function freshNegative(record){const age=Date.now()-Date.parse(record?.updatedAt||'');return record&&!record.storedUrl&&age>=0&&age<(record.sourceUrl?7:1)*DAY}
+function freshNegative(record){const age=Date.now()-Date.parse(record?.updatedAt||'');return record&&!record.storedUrl&&record.lookupPolicy!=='quest-source-v1'&&age>=0&&age<(record.sourceUrl?7:1)*DAY}
 async function sourceFor(ref,namespace){
   if(ref.type==='item'){
     return blizzardApiConfigured()?fetchForeverMediaIcon('item',ref.id,{namespace}):null;
@@ -43,7 +40,12 @@ async function sourceFor(ref,namespace){
   // Forever display data wins; the existing Classic visual fallback never
   // invents the relationship between a quest and its giver.
   const display=(blizzardApiConfigured()?await fetchForeverCreatureDisplay(ref.id,{namespace}).catch(()=>null):null)||classicNpcDisplayId(ref.id);
-  return display?'https://render-eu.worldofwarcraft.com/npcs/zoom/creature-display-'+display+'.jpg':null;
+  if(!display)return null;
+  const official=blizzardApiConfigured()?await fetchForeverCreaturePortrait(display,{namespace}).catch(()=>null):null;
+  if(sourceImageAllowed(official))return official;
+  // Only use the legacy renderer for an actually known Classic visual identity.
+  const classic=classicNpcDisplayId(ref.id);
+  return classic?'https://render-eu.worldofwarcraft.com/npcs/zoom/creature-display-'+classic+'.jpg':null;
 }
 export async function enrichQuestMedia(catalog={}, {allowFetch=true,maxNew=4}={}){
   const entries=Object.values(catalog).filter(q=>id(q?.id)&&q.locale==='de_DE'&&/^static-[a-z0-9._]+-forever-eu$/i.test(q.namespace||''));
@@ -74,28 +76,24 @@ export async function enrichQuestMedia(catalog={}, {allowFetch=true,maxNew=4}={}
       const r=records[field(q)];
       if(r?.ref&&!refs.has(refKey(r.ref)))refs.set(refKey(r.ref),{ref:r.ref,namespace:q.namespace});
     }
-    const markerKey=refKey(QUEST_MARKER);
-    const assets=await readAssetRecords([...refs.values()].map(x=>x.ref).concat(QUEST_MARKER));
+    const assets=await readAssetRecords([...refs.values()].map(x=>x.ref));
     const images=Object.fromEntries(Object.entries(assets).filter(([,r])=>r?.storedUrl).map(([k,r])=>[k,r.storedUrl]));
     // Cold image work is independently bounded and serialized; warm reads use one HMGET.
-    if(canFetch&&!locked&&[...refs.keys(),markerKey].some(k=>!images[k]&&!freshNegative(assets[k])))locked=(await redis(['SET',LOCK,token,'NX','EX',60]))==='OK';
+    if(canFetch&&!locked&&[...refs.keys()].some(k=>!images[k]&&!freshNegative(assets[k])))locked=(await redis(['SET',LOCK,token,'NX','EX',60]))==='OK';
     if(canFetch&&locked){
-      if(!images[markerKey]&&!freshNegative(assets[markerKey])){
-        try{const url=await resolveMediaAsset({entityType:QUEST_MARKER.type,entityId:QUEST_MARKER.id,role:QUEST_MARKER.role,sourceUrl:QUEST_MARKER_SOURCE});if(url)images[markerKey]=url}catch{}
-      }
       await Promise.all([...refs.entries()].filter(([k])=>!images[k]&&!freshNegative(assets[k])).slice(0,maxNew).map(async ([k,{ref,namespace}])=>{
         try{
           const source=await sourceFor(ref,namespace);
           if(sourceImageAllowed(source)){
             const url=await resolveMediaAsset({entityType:ref.type,entityId:ref.id,role:ref.role,sourceUrl:source});
             if(url)images[k]=url;
-          }else await rememberMissingAsset(ref.type,ref.id,ref.role,'quest-source-v1');
+          }else await rememberMissingAsset(ref.type,ref.id,ref.role,'quest-source-v2');
         }catch{/* Fallback stays visible. */}
       }));
     }
     return Object.fromEntries(Object.entries(catalog).map(([key,q])=>{
       const r=records[field(q)],start=r?.ref;
-      return [key,{...q,questImageUrl:start?images[refKey(start)]||null:null,questFallbackIconUrl:images[markerKey]||null,questImageKind:start?.type||null,questStartName:start?.name||null,questStartEvidence:start?.evidence||null,questStartSource:start?'ForeverDB.net':null}];
+      return [key,{...q,questImageUrl:start?images[refKey(start)]||null:null,questImageKind:start?.type||null,questStartName:start?.name||null,questStartEvidence:start?.evidence||null,questStartSource:start?'ForeverDB.net':null}];
     }));
   }finally{
     if(locked)await redis(['EVAL',"if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end",1,LOCK,token]).catch(()=>{});

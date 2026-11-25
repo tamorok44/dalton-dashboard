@@ -990,8 +990,12 @@ console.log('UI QA: per-character tabs, hunter companion, simplified XP, stats, 
 const questMediaFixture={slug:'cole-dalton',activeQuests:[{id:1,name:'Testquest'},{id:2,name:'Andere Quest'}]};
 const questMediaHtml=ui.questsPanel(questMediaFixture,{}, {1:{title:'Testquest',questImageUrl:'https://test.public.blob.vercel-storage.com/media/npc/54/portrait-test.jpg',questStartName:'Testgeber',questImageKind:'npc',questStartEvidence:'classic-unconfirmed',questStartSource:'ForeverDB.net'}});
 assert.ok(questMediaHtml.includes('class="knowledge-icon quest-icon"'));
-assert.ok(questMediaHtml.includes('quest-icon-fallback'));
+assert.ok(questMediaHtml.includes('quest-icon quest-marker'));
 assert.ok(questMediaHtml.includes('Classic-Daten, nicht bestätigt'));
 assert.ok(questMediaHtml.includes('https://foreverdb.net'));
 
-assert.ok(ui.questsPanel(questMediaFixture,{}, {2:{title:'Andere Quest',questFallbackIconUrl:'https://test.public.blob.vercel-storage.com/media/ui/quest-available/icon-test.png'}}).includes('quest-icon quest-marker'));
+const noQuestDetails=ui.questsPanel(questMediaFixture,{},{});
+assert.equal((noQuestDetails.match(/src="\/quest-marker.png"/g)||[]).length,2,'Every quest uses the same bundled original marker without any catalog data');
+const oneQuestDetails=ui.questsPanel(questMediaFixture,{}, {2:{title:'Andere Quest'}});
+assert.equal((oneQuestDetails.match(/src="\/quest-marker.png"/g)||[]).length,2,'Partial quest catalog cannot introduce a second fallback style');
+assert.ok(read('sw.js').includes('"/quest-marker.png"'),'Original marker available offline');

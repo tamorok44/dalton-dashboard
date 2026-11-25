@@ -436,3 +436,20 @@ export async function fetchForeverCreatureDisplay(id,{namespace,fetchImpl=fetch,
   const ids=[...new Set((Array.isArray(body?.creature_displays)?body.creature_displays:[]).map(entry=>Number(entry?.id)).filter(n=>Number.isSafeInteger(n)&&n>0))];
   return ids.length===1?ids[0]:null;
 }
+
+// The official creature-display media endpoint supplies the actual image URL.
+export async function fetchForeverCreaturePortrait(displayId,{namespace,fetchImpl=fetch,locale='de_DE'}={}){
+  const id=Number(displayId);
+  if(!Number.isSafeInteger(id)||id<=0)return null;
+  const url=gameDataUrl('/data/wow/media/creature-display/'+id,namespace,locale);
+  const {token}=await accessToken(fetchImpl);
+  const response=await fetchImpl(url,{headers:{authorization:'Bearer '+token,accept:'application/json'},signal:AbortSignal.timeout(5000)});
+  if(!response.ok)return null;
+  const body=await parseResponse(response);
+  const assets=Array.isArray(body?.assets)?body.assets:[];
+  for(const key of ['portrait','zoom','main']){
+    const value=assets.find(a=>a?.key===key&&typeof a.value==='string')?.value;
+    if(value&&/^https:\/\//.test(value))return value;
+  }
+  return null;
+}
