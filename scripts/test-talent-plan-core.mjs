@@ -6,7 +6,7 @@ const talents=Array.from({length:11},(_,row)=>({id:row+1,row,maxRank:row===10?1:
   prerequisites:row===1?[{id:1,rank:5,conditionKnown:true}]:[]}));
 const sourceRevision='e'.repeat(64);
 const catalogTime=(checkedAt,localized=checkedAt)=>({checkedAt,sourceFreshAt:{raw:checkedAt,localized}});
-const master={stale:false,sourceRevision,...catalogTime('2026-11-25T11:30:00Z'),classes:{8:{trees:[{id:1,talents}]}},classRevisions:{8:revision}};
+const master={stale:false,sourceRevision,...catalogTime('2026-11-25T11:30:00Z'),classes:{8:{trees:[{id:1,talents}]}},classMechanicsRevisions:{8:revision}};
 const rules={status:'verified',classId:8,catalogRevision:revision,revision:'fixture',clientBuild:'1.60.1.71037',hotfixRevision:'c'.repeat(64),sources:['fixture'],reviewedAt:'fixture',
   pointCalendarRevision:TALENT_POINT_CALENDAR_REVISION,legacyTalentedRank:0,gateMode:'earlier_rows',pointSpendMode:'immediate',sourceRevision,
   minimumLevelByTalent:Object.fromEntries(talents.map(t=>[t.id,10+5*t.row]))};
@@ -106,7 +106,7 @@ const fixtureTrees=[
 ].map(({id,rows})=>({id,talents:rows.map(([id,row,maxRank,pre=[]])=>({
   id,row,maxRank,requiredPoints:row*5,prerequisites:pre.map(([id,rank])=>({id,rank,conditionKnown:true}))
 }))}));
-const pilotMaster={stale:false,classes:{8:{trees:fixtureTrees}},classRevisions:{8:pilotRevision}};
+const pilotMaster={stale:false,classes:{8:{trees:fixtureTrees}},classMechanicsRevisions:{8:pilotRevision}};
 const pilotRules={...rules,catalogRevision:pilotRevision,revision:'synthetic-standard-schedule-only',
   minimumLevelByTalent:Object.fromEntries(fixtureTrees.flatMap(t=>t.talents.map(n=>[n.id,10+5*n.row])))};
 const structuralOnly=validateTalentPath({...pilot,catalogRevision:pilotRevision,ruleRevision:pilotRules.revision},pilotMaster,pilotRules);

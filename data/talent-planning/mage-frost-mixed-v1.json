@@ -402,6 +402,11 @@
       "Exact shared proc conditions, charges and behavior on freeze-immune targets on the current server",
       "Publish only after reviewed class rules and matching hotfix evidence"
     ],
-    "approval": null
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    }
   }
 }

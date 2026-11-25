@@ -1,6 +1,106 @@
 {
   "schemaVersion": 1,
   "kind": "talent_release_catalog",
-  "evidence": [],
-  "rulePacks": []
+  "evidence": [
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "reviewedAt": "2026-11-25",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "ec8a6d6ea09ef8695518ac7eb8c862ee6b39fb92f396eb34a0ebbeaf67ad038d",
+      "id": "mage-rank0-catalog-71091",
+      "kind": "client",
+      "url": "https://theforeverera.com/en/talents/mage/",
+      "sourceCaptureSha256": "83cbc804062abc24c849a70df92e0ee475d954b0363d38d1c27e37b2effcc2ec",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "claim": "Build-labelled 1.60.1.71091 independent Mage export. All 53 talent IDs, tree grouping, rows, maximum ranks, point gates and prerequisites match the captured source pair. The standard calendar is one point per level from 10, capped at 51; the 18 used talents have the corresponding row minimums in the source pair. The reviewed route allocates one point per level."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "reviewedAt": "2026-11-25",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "ec8a6d6ea09ef8695518ac7eb8c862ee6b39fb92f396eb34a0ebbeaf67ad038d",
+      "id": "mage-arcane-rank0-hotfix-nov23",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-23-2026",
+      "claim": "Review of the complete official hotfix article through November 23. The Arcane Blast duration fix and the split of Arcane Concentration proc chance across cast and bolts were considered. The route claims no extra bolt proc, no downranking payoff, and no unevidenced resistance-to-damage conversion."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "reviewedAt": "2026-11-25",
+      "kind": "editorial",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "id": "arcane-rank0-editorial-icyveins",
+      "url": "https://www.icy-veins.com/wow-forever/arcane-mage-leveling/",
+      "claim": "Independent guide supports the Arcane Blast and Missile Barrage interaction, in-combat sustain, and delaying other trees until Arcane Power. It favors earlier Precision; this route deliberately trades early hit for uninterrupted Arcane milestones in the chosen profile."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "reviewedAt": "2026-11-25",
+      "kind": "editorial",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "id": "arcane-rank0-editorial-avoid",
+      "url": "https://mobalytics.gg/wow-forever/classes/arcane-mage-guide-progress",
+      "claim": "Separate editorial reference supports the three core Arcane additions and presents a viable early-Precision alternative. The approved allocation is the Dalton editorial choice for the exact mixed-leveling profile."
+    }
+  ],
+  "rulePacks": [
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "revision": "mage-arcane-rank0-71091-v1",
+      "status": "verified",
+      "reviewedAt": "2026-11-25",
+      "sources": [
+        "mage-rank0-catalog-71091",
+        "mage-arcane-rank0-hotfix-nov23"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105778": 10,
+        "105795": 10,
+        "105796": 10,
+        "105798": 40,
+        "105799": 35,
+        "105800": 30,
+        "105801": 30,
+        "105803": 25,
+        "105804": 25,
+        "105805": 25,
+        "105806": 20,
+        "105807": 20,
+        "105808": 20,
+        "105809": 15,
+        "105810": 15,
+        "105812": 15,
+        "105813": 10,
+        "113627": 25
+      }
+    }
+  ]
 }

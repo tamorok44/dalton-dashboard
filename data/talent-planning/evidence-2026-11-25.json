@@ -234,6 +234,48 @@
       "url": "https://wow-forever.gg/talents/hunter/b/v9_50.1-163.305311210103/",
       "kind": "client_reference",
       "independenceGroup": "wow-forever-gg-talent-calculator"
+    },
+    {
+      "id": "icyveins-fire",
+      "url": "https://www.icy-veins.com/wow-forever/fire-mage-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-fire-editorial"
+    },
+    {
+      "id": "mobalytics-fire",
+      "url": "https://mobalytics.gg/wow-forever/classes/fire-mage-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "progress-avoid-editorial"
+    },
+    {
+      "id": "icyveins-feral",
+      "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-feral-editorial"
+    },
+    {
+      "id": "mobalytics-feral-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/druid-leveling-guide-1-60",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-druid-editorial"
+    },
+    {
+      "id": "icyveins-feral-pve",
+      "url": "https://www.icy-veins.com/wow-forever/feral-druid-melee-dps-and-tank-pve-guide/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-feral-editorial"
+    },
+    {
+      "id": "forevertalents-hunter-prerequisites",
+      "url": "https://forevertalents.net/talents/hunter/",
+      "kind": "client_reference",
+      "independenceGroup": "forevertalents-client-reference"
+    },
+    {
+      "id": "metabot-hunter-intimidation",
+      "url": "https://metabot.gg/en/wow-forever/talents/hunter-intimidation",
+      "kind": "client_reference",
+      "independenceGroup": "metabot-71037-reference"
     }
   ],
   "pilot": {
@@ -276,6 +318,7 @@
       "goal": "leveling",
       "role": "damage",
       "playStyle": "mixed",
+      "priority": "balanced",
       "status": "research_only",
       "sourceIds": [
         "icyveins-arcane",
@@ -309,18 +352,23 @@
       "goal": "leveling",
       "role": "damage",
       "playStyle": "solo",
+      "priority": "balanced",
+      "releaseBlocker": "hunter_prerequisite_semantics_unverified",
       "status": "research_only",
       "sourceIds": [
         "icyveins-beast-mastery",
         "mobalytics-vareion-hunter",
-        "wow-forever-gg-hunter-prerequisites"
+        "wow-forever-gg-hunter-prerequisites",
+        "forevertalents-hunter-prerequisites",
+        "metabot-hunter-intimidation"
       ],
       "proposal": "Compare early pet utility and mobility with an earlier direct pet-damage investment while retaining the timely Summon Hawk milestone. Compare low and high pet-threat encounters separately.",
       "openChecks": [
         "Chronological points and Hunter talent IDs on the current build",
         "Benefit and opportunity cost of pet revival, mobility and cleansing",
         "Current pet and Summon Hawk behavior, minimum levels and exact release revisions",
-        "The export models Intimidation and Bestial Wrath as a cycle. Independently verify whether Bestial Swiftness is an alternative prerequisite in the current client before publishing a complete path."
+        "The export models Intimidation and Bestial Wrath as a cycle. Independently verify whether Bestial Swiftness is an alternative prerequisite in the current client before publishing a complete path.",
+        "Two published calculators report an alternative edge. The build-71091 TraitEdge export was inaccessible, and the public source tuple does not encode the operator. Review exact client edge type or a reproducible live allocation."
       ],
       "observedMilestones": [
         {

@@ -15,7 +15,7 @@
       {"treeId": 11559, "roles": ["damage"]}
     ],
     "3": [
-      {"treeId": 11372, "roles": ["damage"], "levelingResearch": ["hunter-beast-mastery-leveling"]},
+      {"treeId": 11372, "roles": ["damage"]},
       {"treeId": 11371, "roles": ["damage"]},
       {"treeId": 11370, "roles": ["damage"]}
     ],
@@ -35,9 +35,9 @@
       {"treeId": 11362, "roles": ["heal"]}
     ],
     "8": [
-      {"treeId": 11582, "roles": ["damage"], "levelingResearch": ["mage-arcane-leveling"]},
+      {"treeId": 11582, "roles": ["damage"]},
       {"treeId": 11594, "roles": ["damage"]},
-      {"treeId": 11601, "roles": ["damage"], "levelingResearch": ["mage-frost-leveling-mixed-balanced"]}
+      {"treeId": 11601, "roles": ["damage"]}
     ],
     "9": [
       {"treeId": 11629, "roles": ["damage"]},
@@ -46,7 +46,7 @@
     ],
     "11": [
       {"treeId": 11328, "roles": ["damage"]},
-      {"treeId": 11347, "roles": ["damage", "tank"]},
+      {"treeId": 11347, "roles": ["damage", "tank"], "roleEvidence": ["icyveins-feral-pve", "mobalytics-feral-leveling"]},
       {"treeId": 11340, "roles": ["heal"]}
     ]
   }

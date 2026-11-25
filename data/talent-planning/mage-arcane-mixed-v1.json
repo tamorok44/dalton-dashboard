@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11582,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -347,10 +347,32 @@
     ],
     "editorialDecision": "Keep the Arcane capstone at the first ordinary level and compare the delayed Precision choice against the early hit alternative.",
     "unresolved": [
-      "Chronological ranks and spell synergies including the November hotfixes",
-      "Comparable downtime and threat for solo and dungeon pulls",
-      "Minimum levels and exact release revisions"
+      "Vermächtnisränge 1–5 benötigen separate bestätigte Mindeststufen.",
+      "Der Pfad ist nur für das geprüfte gemischte Levelprofil freigegeben."
     ],
-    "approval": null
+    "approval": {
+      "reviewedAt": "2026-11-25",
+      "legacyTalentedRanks": [
+        0
+      ]
+    },
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    }
+  },
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-arcane-rank0-71091-v1",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-25",
+    "rationale": "Für gemischtes Leveln mit gewöhnlich gleichstufigen Zielen hält der Pfad die Arkan-Meilensteine auf 20, 25 und 40 erreichbar. Frühe Freizauber, Geschosssalve, Arkane Meditation sowie Widerstands- und Bedrohungseffekte geben mehrere unabhängige Vorteile. Späte Präzision kostet früher Trefferchance, verschiebt aber die Arkan-Meilensteine nicht. Die Empfehlung setzt keine Zauber niedrigen Rangs, keine mehrfach proccenden Arkane Geschosse und keinen ungeklärten Bonus gegen Ziele ohne Widerstand voraus. Für überwiegend höherstufige Ziele muss die frühere Präzision separat bewertet werden.",
+    "evidenceIds": [
+      "arcane-rank0-editorial-icyveins",
+      "arcane-rank0-editorial-avoid"
+    ]
   }
 }

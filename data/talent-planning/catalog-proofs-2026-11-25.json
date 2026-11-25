@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "kind": "talent_catalog_proofs",
+  "capturedOn": "2026-11-25",
+  "sourcePairs": [
+    {
+      "revision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "rawSha256": "fbd82d1f06dab479257171a10c5a594c52b9ca2b8b7b9aea451054cf638edbaf",
+      "localizedSha256": "896bbec766c6b1cba0eeb673322fc8b1b0e8b8073e1bb34bbf2109b8a952c8e0"
+    }
+  ],
+  "catalogs": [
+    {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "proof": {
+        "classId": 8,
+        "trees": [
+          {
+            "id": 11582,
+            "talents": [
+              {"id":105798,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":12042,"rankSpellIds":[12042],"prerequisites":[{"id":105801,"rank":1,"conditionKnown":true}],"effectRevision":"5ee2124f49f27242981d3a063d010cdb8b7cd6a47c8dfc7338e28f13f32f14e8"},
+              {"id":105799,"row":5,"maxRank":3,"requiredLevel":35,"requiredPoints":25,"spellId":15058,"rankSpellIds":[15058,15058,15058],"prerequisites":[],"effectRevision":"2c060b5436d5de8022a5c2ff7804d0c6edcc1905921f52f71a7c34ccb7113c77"},
+              {"id":105800,"row":4,"maxRank":5,"requiredLevel":30,"requiredPoints":20,"spellId":11232,"rankSpellIds":[11232,11232,11232,11232,11232],"prerequisites":[],"effectRevision":"35d2cea196106909413db3cdcd32eff145f1f7bb2294606c7d4f7351b862ad92"},
+              {"id":105801,"row":4,"maxRank":1,"requiredLevel":30,"requiredPoints":20,"spellId":12043,"rankSpellIds":[12043],"prerequisites":[],"effectRevision":"537f404a633b068aa9b3a985688970dbf35c17df8aafa9a1148c3d16ddf56536"},
+              {"id":105802,"row":0,"maxRank":3,"requiredLevel":10,"requiredPoints":0,"spellId":28574,"rankSpellIds":[28574,28574,28574],"prerequisites":[],"effectRevision":"e014253fa5c02395f2ca083df7cfdd46a11c309e1c7b141792d6bc40f50241e8"},
+              {"id":105803,"row":3,"maxRank":3,"requiredLevel":25,"requiredPoints":15,"spellId":18462,"rankSpellIds":[18462,18462,18462],"prerequisites":[{"id":105810,"rank":5,"conditionKnown":true}],"effectRevision":"cd064a48f67a3a13be12e5beaad9304e0c2b15f01ef4a5002f779d3ac3941a88"},
+              {"id":105804,"row":3,"maxRank":2,"requiredLevel":25,"requiredPoints":15,"spellId":11255,"rankSpellIds":[11255,11255],"prerequisites":[],"effectRevision":"f96ee7a2461c71f86bf5f9dc471ccd622cd4b19cd7c7ebbf8ef1dd74b36fb814"},
+              {"id":105805,"row":3,"maxRank":2,"requiredLevel":25,"requiredPoints":15,"spellId":11252,"rankSpellIds":[11252,11252],"prerequisites":[],"effectRevision":"36de1d517db3151d5d14eb0b1d4b0104e78dc7b893282cb562a8744e22ca8757"},
+              {"id":105806,"row":2,"maxRank":1,"requiredLevel":20,"requiredPoints":10,"spellId":400574,"rankSpellIds":[400574],"prerequisites":[],"effectRevision":"54ecc5497273b7e3a0ba3a5a55f31fbd377d51a35c4b8e3e123bd733774bd9fe"},
+              {"id":105807,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":11242,"rankSpellIds":[11242,11242,11242],"prerequisites":[],"effectRevision":"7dd403d6308029f43dc2b4b86115b9eeae55c4c9a74e0c4a30bae07b98582930"},
+              {"id":105808,"row":2,"maxRank":2,"requiredLevel":20,"requiredPoints":10,"spellId":11247,"rankSpellIds":[11247,11247],"prerequisites":[],"effectRevision":"9795e9642d67035cf4ae0b4056c26fb59cc7c4dbb656342a33831cf5343e0559"},
+              {"id":105809,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":400588,"rankSpellIds":[400588,400588],"prerequisites":[],"effectRevision":"455dc81c4775c33963d96cc1b6411099edd8919ca97196ce9e80cdac0faec460"},
+              {"id":105810,"row":1,"maxRank":5,"requiredLevel":15,"requiredPoints":5,"spellId":11213,"rankSpellIds":[11213,11213,11213,11213,11213],"prerequisites":[],"effectRevision":"f3fc8d8f440672d217ffbdf2b963349d6634ec354551c0d96a00044c0f603287"},
+              {"id":105811,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":29441,"rankSpellIds":[29441,29441],"prerequisites":[],"effectRevision":"3b3de1587b7df81f0ade531a4dbc2da8ccc1053a446066b7206d27650d634a03"},
+              {"id":105812,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":11210,"rankSpellIds":[11210,11210],"prerequisites":[],"effectRevision":"7280cf890b6352f05899ce06eb113283628cef5a15d19b0fde0b57ad0fb4e326"},
+              {"id":105813,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":11237,"rankSpellIds":[11237,11237,11237,11237,11237],"prerequisites":[],"effectRevision":"fa74a793356eb330e37268e6f06a48c354e0c3982ff59e3cf9e73ed4c96f1c19"},
+              {"id":105815,"row":0,"maxRank":2,"requiredLevel":10,"requiredPoints":0,"spellId":6057,"rankSpellIds":[6057,6057],"prerequisites":[],"effectRevision":"d76ec07ddedc0e25681870338ae80cbe3594b9220d713bd109c60e37c163adb6"},
+              {"id":113627,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":1326079,"rankSpellIds":[1326079],"prerequisites":[{"id":105806,"rank":1,"conditionKnown":true}],"effectRevision":"fa10b40e3c8f3457d086c605d49945db5616709126bdd3aa29d153c84648d22f"}
+            ]
+          },
+          {
+            "id": 11594,
+            "talents": [
+              {"id":105781,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":11129,"rankSpellIds":[11129],"prerequisites":[{"id":105784,"rank":3,"conditionKnown":true}],"effectRevision":"a0e06439783e718be914e65d2348aec91a2cde30b2e1738dbfc0e2c20c18ff79"},
+              {"id":105782,"row":5,"maxRank":3,"requiredLevel":35,"requiredPoints":25,"spellId":11124,"rankSpellIds":[11124,11124,11124],"prerequisites":[],"effectRevision":"1ca59bccd632f987a5b031f3d24f4530c7b003cac8395602a4db1799acf355bc"},
+              {"id":105783,"row":4,"maxRank":1,"requiredLevel":30,"requiredPoints":20,"spellId":11113,"rankSpellIds":[11113],"prerequisites":[],"effectRevision":"3e7babfb3fcd8a1f2d3a334a65f6a9c70fa1e9562a39c72359de00392ede6cce"},
+              {"id":105784,"row":4,"maxRank":3,"requiredLevel":30,"requiredPoints":20,"spellId":11115,"rankSpellIds":[11115,11115,11115],"prerequisites":[],"effectRevision":"0bf0823f7e2149f3630abf76cb614cdea12836b4d73887b83be5e3a9b0ea19ed"},
+              {"id":105785,"row":3,"maxRank":3,"requiredLevel":25,"requiredPoints":15,"spellId":29074,"rankSpellIds":[29074,29074,29074],"prerequisites":[],"effectRevision":"673d8363e7dc7d676bba0f9639f788b5403abb4c588793acb5c60742d356d6ce"},
+              {"id":105786,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":400624,"rankSpellIds":[400624],"prerequisites":[{"id":105790,"rank":1,"conditionKnown":true}],"effectRevision":"23e1d3c9ddde9262d8fdfb80f6f2cf95b4240a1e120c965fc091fde96f82f6f5"},
+              {"id":105787,"row":3,"maxRank":2,"requiredLevel":25,"requiredPoints":15,"spellId":11094,"rankSpellIds":[11094,11094],"prerequisites":[],"effectRevision":"6cb0636dada76a95c81f859cce0ffb1cd770437944e60245c213e29857bf1787"},
+              {"id":105788,"row":3,"maxRank":3,"requiredLevel":25,"requiredPoints":15,"spellId":11095,"rankSpellIds":[11095,11095,11095],"prerequisites":[],"effectRevision":"fce3f8c84c6cd3300906fdff668682ff8b623f525257f33bd158f16d39c92e54"},
+              {"id":105789,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":11083,"rankSpellIds":[11083,11083,11083],"prerequisites":[],"effectRevision":"a4d1b2c7fddfb04770440440bb4bb4e48fa36f043192c700b6fd713ff04a7a6b"},
+              {"id":105790,"row":2,"maxRank":1,"requiredLevel":20,"requiredPoints":10,"spellId":11366,"rankSpellIds":[11366],"prerequisites":[],"effectRevision":"3cb926070ea25f588b072f2644b16c4a8c6a48ae76e2852625dae1be3aed3483"},
+              {"id":105791,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":11108,"rankSpellIds":[11108,11108,11108],"prerequisites":[],"effectRevision":"a88c6dec519c534a9e5928f4e94a25d25d7406c3c5507ed3b5e806be618ea3cb"},
+              {"id":105792,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":11103,"rankSpellIds":[11103,11103,11103],"prerequisites":[],"effectRevision":"05459c31f110c0c75dc4c15bc6ef9bec8945f95bf8bfee4ecf9f3e30bfe899db"},
+              {"id":105793,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":11100,"rankSpellIds":[11100,11100],"prerequisites":[],"effectRevision":"209df122024a2a8068c9e004e2ad4ec65b49ab7b59dcada9c43f39bdf604ee1e"},
+              {"id":105794,"row":1,"maxRank":5,"requiredLevel":15,"requiredPoints":5,"spellId":11119,"rankSpellIds":[11119,11119,11119,11119,11119],"prerequisites":[],"effectRevision":"435297d2f772072492520790cee442f40160fb90256cc5a299f2d633f6d875e3"},
+              {"id":105795,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":11069,"rankSpellIds":[11069,11069,11069,11069,11069],"prerequisites":[],"effectRevision":"1aa42ba77f68d317eb4dcff8a71fd69ba51d205296b1afc4f33996dbb2910c62"},
+              {"id":105796,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":18459,"rankSpellIds":[18459,18459,18459,18459,18459],"prerequisites":[],"effectRevision":"bd33d1982331844ed4e2eb1db2082971bc4d9cea6d61675848619214bb167448"},
+              {"id":105797,"row":2,"maxRank":2,"requiredLevel":20,"requiredPoints":10,"spellId":11078,"rankSpellIds":[11078,11078],"prerequisites":[],"effectRevision":"fd20b7f313dcbb1b7936a626c346f2abc96f38929b19b5d3d89567aac699ee84"}
+            ]
+          },
+          {
+            "id": 11601,
+            "talents": [
+              {"id":105762,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":11426,"rankSpellIds":[11426],"prerequisites":[{"id":105766,"rank":1,"conditionKnown":true}],"effectRevision":"8e891d11bc001df0fda27c3faea8b358a31afb0a169be6e2bf136c0dc86b6cd7"},
+              {"id":105763,"row":5,"maxRank":5,"requiredLevel":35,"requiredPoints":25,"spellId":11180,"rankSpellIds":[11180,11180,11180,11180,11180],"prerequisites":[],"effectRevision":"32dc636a0865a9580dc6aef3b976f2151a8d69b4cd2d8173e7526a00a4668fb7"},
+              {"id":105764,"row":4,"maxRank":2,"requiredLevel":30,"requiredPoints":20,"spellId":400647,"rankSpellIds":[400647,400647],"prerequisites":[{"id":105767,"rank":1,"conditionKnown":true}],"effectRevision":"e8a8ff765454b6930e2adee61b9d1e57c93d48cb5df53081b83e784284f2309a"},
+              {"id":105765,"row":4,"maxRank":3,"requiredLevel":30,"requiredPoints":20,"spellId":11190,"rankSpellIds":[11190,11190,11190],"prerequisites":[],"effectRevision":"83921edbff0062834220f60bcc2fe1c5cf92557376420bff7b1d62ecf508e02f"},
+              {"id":105766,"row":4,"maxRank":1,"requiredLevel":30,"requiredPoints":20,"spellId":12472,"rankSpellIds":[12472],"prerequisites":[],"effectRevision":"74a4f75ab97d0beeb3451a035bf3d25e442a995816dc0dbd6b859f81b6a1252e"},
+              {"id":105767,"row":2,"maxRank":1,"requiredLevel":20,"requiredPoints":10,"spellId":1312002,"rankSpellIds":[1312002],"prerequisites":[],"effectRevision":"21a524aea3a08901343bc5e13ebc6bcafa25f04548e86fce2c1d44924446b2a1"},
+              {"id":105768,"row":3,"maxRank":3,"requiredLevel":25,"requiredPoints":15,"spellId":11170,"rankSpellIds":[11170,11170,11170],"prerequisites":[],"effectRevision":"d961a8a5bedea141802f2cd5fc799421ca4e4878b2903184cd4e2b7b730a3a89"},
+              {"id":105769,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":11958,"rankSpellIds":[11958],"prerequisites":[],"effectRevision":"00b41b172f37cb00f60cfbc969a8e803288077b5b9b4bac50f1271a11c5e761a"},
+              {"id":105770,"row":3,"maxRank":2,"requiredLevel":25,"requiredPoints":15,"spellId":16757,"rankSpellIds":[16757,16757],"prerequisites":[],"effectRevision":"0437a51dcd7e17513d3b060cad17b91bef1c27b75932962363f883e27c78cd99"},
+              {"id":105771,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":11185,"rankSpellIds":[11185,11185,11185],"prerequisites":[],"effectRevision":"c63b2af9a0c87bbcdf1442c7351376579e7731e3ec74e36f279c54c7ade47214"},
+              {"id":105772,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":11160,"rankSpellIds":[11160,11160,11160],"prerequisites":[],"effectRevision":"a55a9a7c01d32ba89c9849e311e34795e3009811d10aed406d475c1316e05cba"},
+              {"id":105774,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":11071,"rankSpellIds":[11071,11071,11071],"prerequisites":[],"effectRevision":"d8affc16b06ad51dc46afd4d7779152e66a689b8cd465c26a48392788a8239b0"},
+              {"id":105775,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":11165,"rankSpellIds":[11165,11165],"prerequisites":[],"effectRevision":"61792b304db44b0878a9ceafa20c47526c5759fa7fa56547c4ed2e6068421894"},
+              {"id":105776,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":11175,"rankSpellIds":[11175,11175,11175],"prerequisites":[],"effectRevision":"d580411188a475f9dbe7dd4383a6a13ed954d6af1b882153d7c8bb68a901ae86"},
+              {"id":105777,"row":1,"maxRank":5,"requiredLevel":15,"requiredPoints":5,"spellId":11207,"rankSpellIds":[11207,11207,11207,11207,11207],"prerequisites":[],"effectRevision":"3e9a401914cc4e3851adc0b68788ef8fc527009b16e272e189c013a6b7e28fb0"},
+              {"id":105778,"row":0,"maxRank":3,"requiredLevel":10,"requiredPoints":0,"spellId":29438,"rankSpellIds":[29438,29438,29438],"prerequisites":[],"effectRevision":"d9d7d9006a5090d6a7fa5c3f3036a9c785f46b0eb27a44e0ccfc0697952a6629"},
+              {"id":105779,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":11070,"rankSpellIds":[11070,11070,11070,11070,11070],"prerequisites":[],"effectRevision":"0191f0fc5b068da3fe18f12cdf08568d271f60326293c11d1ca69fa099a1cbeb"},
+              {"id":105780,"row":0,"maxRank":2,"requiredLevel":10,"requiredPoints":0,"spellId":11189,"rankSpellIds":[11189,11189],"prerequisites":[],"effectRevision":"2c90200c0b2636bc737a8ee2bebd2f83b6f29a0abf77acc9a974a57dea789fc6"}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "proof": {
+        "classId": 11,
+        "trees": [
+          {
+            "id": 11328,
+            "talents": [
+              {"id":104923,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":16814,"rankSpellIds":[16814,16814,16814,16814,16814],"prerequisites":[],"effectRevision":"6f214cd4ca28609b8eb69da7fe0cd9ab7b9536fc50abcaa998c201f79a662ece"},
+              {"id":104924,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":1223081,"rankSpellIds":[1223081,1223081,1223081,1223081,1223081],"prerequisites":[],"effectRevision":"568f8a16f62f6f526a00a73515d372c393aad0277b46a0306925e3c3d304ccf6"},
+              {"id":104925,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":16845,"rankSpellIds":[16845,16845,16845],"prerequisites":[],"effectRevision":"9c76d15f884e8128efc3e4949e79ccfa7f03800a93a9587b7ec740e79cdb0b17"},
+              {"id":104926,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":16918,"rankSpellIds":[16918,16918,16918],"prerequisites":[],"effectRevision":"c74da1d802d0034a6dbb88208f63d41f0c0fadf821897c96d8ff5687102f0487"},
+              {"id":104927,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":1223082,"rankSpellIds":[1223082,1223082],"prerequisites":[],"effectRevision":"cb46f0815dca3714497d3f4cb39f56fe63da7ee1f5c17de728a571063f053adf"},
+              {"id":104928,"row":2,"maxRank":1,"requiredLevel":20,"requiredPoints":10,"spellId":1223083,"rankSpellIds":[1223083],"prerequisites":[{"id":104927,"rank":2,"conditionKnown":true}],"effectRevision":"e09496b5d2ddd920e11302fb1cba536147973afd4902be2632272fd8f76b83a3"},
+              {"id":104929,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":16819,"rankSpellIds":[16819,16819],"prerequisites":[],"effectRevision":"1fd26e3b3005551e7923bb6f961813f7781f123a0d8f44239c9281f97f98ba32"},
+              {"id":104930,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":5570,"rankSpellIds":[5570],"prerequisites":[],"effectRevision":"6ee32b4314dd0f2d427d90ccd1f3b8cb721f53f95861667d3df4072e382c2614"},
+              {"id":104931,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":16821,"rankSpellIds":[16821,16821],"prerequisites":[],"effectRevision":"3b98fab3d6bef2ef95fac3c4240fc9e1f9b8d6f198d55da9cf5226e75977c32b"},
+              {"id":104932,"row":3,"maxRank":5,"requiredLevel":25,"requiredPoints":15,"spellId":16909,"rankSpellIds":[16909,16909,16909,16909,16909],"prerequisites":[{"id":104931,"rank":2,"conditionKnown":true}],"effectRevision":"288659766890afbb80bd5531fa0aacced8cd13ae83cdae2a35ba27502cde09b0"},
+              {"id":104933,"row":3,"maxRank":5,"requiredLevel":25,"requiredPoints":15,"spellId":16850,"rankSpellIds":[16850,16850,16850,16850,16850],"prerequisites":[],"effectRevision":"e7e8f974eba356d17911ec1f581ab02cc716eb959660f9c66bf2d32407f6aad7"},
+              {"id":104934,"row":4,"maxRank":1,"requiredLevel":30,"requiredPoints":20,"spellId":16880,"rankSpellIds":[16880],"prerequisites":[],"effectRevision":"48b5a641a24ac25ad2f9b4231bcfaf8b53ae0dfab5fd7f7ef53b3815a94075c3"},
+              {"id":104935,"row":4,"maxRank":3,"requiredLevel":30,"requiredPoints":20,"spellId":408248,"rankSpellIds":[408248,408248,408248],"prerequisites":[],"effectRevision":"c51bf2c5ea943b2ba864a1c09a5e90b16cf8666622287126a0a52567bbda04b6"},
+              {"id":104936,"row":5,"maxRank":5,"requiredLevel":35,"requiredPoints":25,"spellId":16896,"rankSpellIds":[16896,16896,16896,16896,16896],"prerequisites":[],"effectRevision":"0bf46558917ff8188bc55a382448f4b80ea08248d7b2e8017392e03f52116047"},
+              {"id":104937,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":24858,"rankSpellIds":[24858],"prerequisites":[],"effectRevision":"457277e30e0edc64145a7a55733ef311ded2d575f83aaaed8d5897f0af862a20"},
+              {"id":110844,"row":4,"maxRank":2,"requiredLevel":30,"requiredPoints":20,"spellId":17245,"rankSpellIds":[17245,17245],"prerequisites":[],"effectRevision":"42b7906ea64ba7183d14e9b1941f5219c88a60b07747aacfd04fe2fe1ed9378e"}
+            ]
+          },
+          {
+            "id": 11340,
+            "talents": [
+              {"id":104909,"row":4,"maxRank":2,"requiredLevel":30,"requiredPoints":20,"spellId":17123,"rankSpellIds":[17123,17123],"prerequisites":[],"effectRevision":"2eaf953b60a7999c5d016d1f98597bd7a2a625cc084143293e483cdd596f7f06"},
+              {"id":104910,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":408120,"rankSpellIds":[408120],"prerequisites":[{"id":104911,"rank":3,"conditionKnown":true}],"effectRevision":"ef397ceda9b2691bd3141a643318a1fe8ee24fd0577926853a2cdcee7dbf84ef"},
+              {"id":104911,"row":4,"maxRank":3,"requiredLevel":30,"requiredPoints":20,"spellId":1309631,"rankSpellIds":[1309631,1309631,1309631],"prerequisites":[],"effectRevision":"31c29296caa6a16905ccf9eb1cad06a6a92f51e26c7a956966a61fd6267bbe35"},
+              {"id":104912,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":18562,"rankSpellIds":[18562],"prerequisites":[],"effectRevision":"57b2bbff401b7fba23472415b890680f230ffdda5252d5113c615fe767f6f70f"},
+              {"id":104913,"row":5,"maxRank":5,"requiredLevel":35,"requiredPoints":25,"spellId":17074,"rankSpellIds":[17074,17074,17074,17074,17074],"prerequisites":[{"id":104914,"rank":3,"conditionKnown":true}],"effectRevision":"4b11e4887ea4e09c1af5f491b99ca6a6ee5a538c8146f7b1cc769ffc1d3a9555"},
+              {"id":104914,"row":3,"maxRank":3,"requiredLevel":25,"requiredPoints":15,"spellId":17111,"rankSpellIds":[17111,17111,17111],"prerequisites":[],"effectRevision":"6b7f614d5e82e62a3579cf363a8ee4cc8ac471dfd6e227c553a4fafae54fc03e"},
+              {"id":104915,"row":3,"maxRank":5,"requiredLevel":25,"requiredPoints":15,"spellId":24968,"rankSpellIds":[24968,24968,24968,24968,24968],"prerequisites":[],"effectRevision":"7f4e645197c2b06ab8fd322cd28b98627f2303927450462d6c2aec001381303d"},
+              {"id":104916,"row":2,"maxRank":5,"requiredLevel":20,"requiredPoints":10,"spellId":17104,"rankSpellIds":[17104,17104,17104,17104,17104],"prerequisites":[],"effectRevision":"b369100fea7d9fc33f17c63409290cba19836e7e0c5a81404fcd30f58c5eae6d"},
+              {"id":104917,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":17118,"rankSpellIds":[17118,17118,17118],"prerequisites":[],"effectRevision":"6e89c2ef7ed599f9016bd5772e1a57f6dc1ab6fa6727c61e3d6f876c56d7e156"},
+              {"id":104918,"row":2,"maxRank":1,"requiredLevel":20,"requiredPoints":10,"spellId":1328621,"rankSpellIds":[1328621],"prerequisites":[],"effectRevision":"1e37235213f9799f982ae8e0911e8d14d37826e07173a3663d40803d62ac561b"},
+              {"id":104919,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":16833,"rankSpellIds":[16833,16833,16833],"prerequisites":[],"effectRevision":"f2e382add494ec37be2c56539a7ba77058b7ce8f2b1e83372411528cdd64c6a0"},
+              {"id":104920,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":17106,"rankSpellIds":[17106,17106,17106],"prerequisites":[],"effectRevision":"4bc48acdb13a159f8cb707591e00c0d4cc77e4a1fb84d13088182a242f615bad"},
+              {"id":104921,"row":4,"maxRank":1,"requiredLevel":30,"requiredPoints":20,"spellId":17116,"rankSpellIds":[17116],"prerequisites":[{"id":104922,"rank":5,"conditionKnown":true}],"effectRevision":"7b11c39654cc2b73865d5d4a68bee0e93e6a008b7a9c9e2ac3d1b64f0803ed32"},
+              {"id":104922,"row":1,"maxRank":5,"requiredLevel":15,"requiredPoints":5,"spellId":17069,"rankSpellIds":[17069,17069,17069,17069,17069],"prerequisites":[],"effectRevision":"f49f31682c9bf6794e8f2c50dca8cbf13f239d1db9cea99520774795da4f07a0"},
+              {"id":104957,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":17063,"rankSpellIds":[17063,17063,17063,17063,17063],"prerequisites":[],"effectRevision":"8cefa4ab1e57e0033786c5700bbfc502c5c912ad529cc42076d6b6159ccebdc3"},
+              {"id":104958,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":17003,"rankSpellIds":[17003,17003,17003,17003,17003],"prerequisites":[],"effectRevision":"0879d55b90e9c059b5fd16e0f59d65f9898b15d0d6ed579018428394fa1d80ed"}
+            ]
+          },
+          {
+            "id": 11347,
+            "talents": [
+              {"id":104938,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":16934,"rankSpellIds":[16934,16934,16934,16934,16934],"prerequisites":[],"effectRevision":"f37f513dec6fa44aac0765286b8d4683d11554eaa853c49cf668f1255a670afc"},
+              {"id":104939,"row":0,"maxRank":5,"requiredLevel":10,"requiredPoints":0,"spellId":17056,"rankSpellIds":[17056,17056,17056,17056,17056],"prerequisites":[],"effectRevision":"c79a63dd7b2eadc20d1ebed342f0a1ba28ac7eabc8fdf441e41755a982a21503"},
+              {"id":104940,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":16947,"rankSpellIds":[16947,16947,16947],"prerequisites":[],"effectRevision":"bf06d5891cf9cbc05d64337ca01afb3eb98a6dce2f6c24b07784f180a8410b99"},
+              {"id":104941,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":16940,"rankSpellIds":[16940,16940],"prerequisites":[],"effectRevision":"3cb4866c4b5a9df7aa5d9cddb29c02d32f494841650fdb5c30398bda6fb83a11"},
+              {"id":104942,"row":1,"maxRank":3,"requiredLevel":15,"requiredPoints":5,"spellId":16929,"rankSpellIds":[16929,16929,16929],"prerequisites":[],"effectRevision":"b72487f6a5ae056818445898140f9aa547ea5f46b3fe3a6b1d368e3a518c2fe1"},
+              {"id":104943,"row":1,"maxRank":2,"requiredLevel":15,"requiredPoints":5,"spellId":17002,"rankSpellIds":[17002,17002],"prerequisites":[],"effectRevision":"72aa574a6bf46467db58f41dd0c86ad2f3cb3a100c7598a594d8a94c7fdf1b52"},
+              {"id":104944,"row":2,"maxRank":1,"requiredLevel":20,"requiredPoints":10,"spellId":1238122,"rankSpellIds":[1238122],"prerequisites":[],"effectRevision":"ec26857d5e50a8d6d8019f3d3ec34f6da927e8c399f84d9ccb8381486ecc2e36"},
+              {"id":104945,"row":2,"maxRank":3,"requiredLevel":20,"requiredPoints":10,"spellId":16966,"rankSpellIds":[16966,16966,16966],"prerequisites":[],"effectRevision":"275a597670fabfc6252c6d85807807d16ef1549ca2fa89db90db9a0b93dbb8ee"},
+              {"id":104946,"row":2,"maxRank":2,"requiredLevel":20,"requiredPoints":10,"spellId":16942,"rankSpellIds":[16942,16942],"prerequisites":[],"effectRevision":"d702cf1e64b356029157df29c32d1c1f53ea5b43195968dc374d6a4559af4adc"},
+              {"id":104947,"row":3,"maxRank":2,"requiredLevel":25,"requiredPoints":15,"spellId":16958,"rankSpellIds":[16958,16958],"prerequisites":[{"id":104946,"rank":2,"conditionKnown":true}],"effectRevision":"ed5e4093ef6c7fd1a10c2c31e4f7f43d263d7854d4678a93648c9fdc5dd74131"},
+              {"id":104948,"row":2,"maxRank":2,"requiredLevel":20,"requiredPoints":10,"spellId":16998,"rankSpellIds":[16998,16998],"prerequisites":[],"effectRevision":"ab8bd0d829e72d7e47cb83e46054581be297d39a21dce449610a4c22a6c93645"},
+              {"id":104949,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":1328617,"rankSpellIds":[1328617],"prerequisites":[{"id":104948,"rank":2,"conditionKnown":true}],"effectRevision":"614dbcefd293592b71ebe30d543304d359a59ded779b89cc814220cf11dd7467"},
+              {"id":104950,"row":4,"maxRank":2,"requiredLevel":30,"requiredPoints":20,"spellId":1223242,"rankSpellIds":[1223242,1223242],"prerequisites":[],"effectRevision":"079f84d1428e78c27cac2caee92168add45e228daa19e3c4e388d75b0f4f8058"},
+              {"id":104951,"row":3,"maxRank":1,"requiredLevel":25,"requiredPoints":15,"spellId":1328613,"rankSpellIds":[1328613],"prerequisites":[],"effectRevision":"968c254db9d772c80a36939e2d616fcdaabfbe449d93826733f0a11162e00450"},
+              {"id":104952,"row":3,"maxRank":3,"requiredLevel":25,"requiredPoints":15,"spellId":16972,"rankSpellIds":[16972,16972,16972],"prerequisites":[],"effectRevision":"faf8a538495b550dba4a403f90c7f05f0a0e57c6574f542cc79daf26d6725821"},
+              {"id":104953,"row":5,"maxRank":5,"requiredLevel":35,"requiredPoints":25,"spellId":1223246,"rankSpellIds":[1223246,1223246,1223246,1223246,1223246],"prerequisites":[{"id":104952,"rank":3,"conditionKnown":true}],"effectRevision":"69527bd37c4363be9e5b1890480d8048a799e326fbbbb05205105df8d3c397af"},
+              {"id":104954,"row":5,"maxRank":5,"requiredLevel":35,"requiredPoints":25,"spellId":417051,"rankSpellIds":[417051,417051,417051,417051,417051],"prerequisites":[],"effectRevision":"c9c34696e5bd557b6b9eeae3f177ebcaac7b40b2dcd5d35fa576e77510fc257f"},
+              {"id":104955,"row":4,"maxRank":1,"requiredLevel":30,"requiredPoints":20,"spellId":17007,"rankSpellIds":[17007],"prerequisites":[],"effectRevision":"4ca6c8afefb11074f67f194a7023d89858ddf5dcee507e0fc19a3cb874df1ced"},
+              {"id":104956,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":407995,"rankSpellIds":[407995],"prerequisites":[{"id":104955,"rank":1,"conditionKnown":true}],"effectRevision":"f6a03af798d61ddc79b7cb6518a21d0fb6c56cc46be2e5553a2cc95585357a0c"},
+              {"id":113563,"row":6,"maxRank":1,"requiredLevel":40,"requiredPoints":30,"spellId":1322605,"rankSpellIds":[1322605],"prerequisites":[{"id":104951,"rank":1,"conditionKnown":true}],"effectRevision":"4434799e53aac3ebddae55b667061154115f3321a1d30a81971589aacd935348"}
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

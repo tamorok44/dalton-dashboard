@@ -22,6 +22,23 @@ assert.deepEqual(projectTalentMaster(master,[8,2]).classes,master.classes);
 assert.equal(master.classRevisions[8],buildTalentMaster(reordered,de,{now:1}).classRevisions[8]);
 const changed=structuredClone(raw);changed[0].trees[0].talents[0].d=['changed'];
 assert.notEqual(master.classRevisions[8],buildTalentMaster(changed,de).classRevisions[8]);
+assert.notEqual(master.classMechanicsRevisions[8],buildTalentMaster(changed,de).classMechanicsRevisions[8]);
+assert.equal(master.classMechanicsRevisions[8],buildTalentMaster(reordered,de).classMechanicsRevisions[8]);
+const translation=structuredClone(de);
+translation[8].talents[1].d=['Geänderter deutscher Text'];
+assert.notEqual(master.classRevisions[8],buildTalentMaster(raw,translation).classRevisions[8]);
+assert.equal(master.classMechanicsRevisions[8],buildTalentMaster(raw,translation).classMechanicsRevisions[8]);
+assert.deepEqual(projectTalentMaster(master,[2]).classMechanicsRevisions,{});
+const twoClasses=[...raw,{...structuredClone(raw[0]),id:2}];
+const twoTranslations={...de,2:de[8]};
+const classPair=buildTalentMaster(twoClasses,twoTranslations);
+const secondChanged=structuredClone(twoClasses);
+secondChanged[1].trees[0].talents[0].d=['Unterschiedliche Wirkung'];
+const classPairChanged=buildTalentMaster(secondChanged,twoTranslations);
+assert.equal(classPair.classMechanicsRevisions[8],classPairChanged.classMechanicsRevisions[8]);
+assert.notEqual(classPair.classMechanicsRevisions[2],classPairChanged.classMechanicsRevisions[2]);
+
+
 
 // Shared request budget: repeated failed requests and different roster build
 // hints cannot bypass the six-hour attempt marker.

@@ -4,6 +4,7 @@ import {compressedMasterKey,decodeCompactMaster,readCompactMaster,writeCompactMa
 import {fetchPublicClassFile,CLASS_BY_ID} from './class-training-store.mjs';
 import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
+import {buildTalentCatalogProof,talentRevisionDigest,talentSourcePairDigest} from './talent-catalog-proof.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS,talentCatalogIsFresh} from './talent-rule-watch.mjs';
 
 const LEGACY_KEY='dalton-dashboard:talent-tree-catalog:v2';
@@ -80,30 +81,27 @@ async function captureClassFile(path,fetchImpl,clock){
   return {data:JSON.parse(body),digest:createHash('sha256').update(body).digest('hex'),freshAt};
 }
 // The source content fingerprint is not a verified client build or Hotfix revision.
-function canonical(value){
-  if(Array.isArray(value))return value.map(canonical);
-  if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])]));
-  return value;
-}
 export function buildTalentMaster(raw,de,{now=Date.now(),observedBuilds=''}={}){
   const classes=normalizeTalentTrees(raw,de,TALENT_CLASS_IDS);
-  const classRevisions={};
+  const classRevisions={},classMechanicsRevisions={};
   for(const [id,c] of Object.entries(classes)){
     const source=arr(raw).find(x=>x.id===Number(id));
     // Include source effects and prerequisite tuples, even when localized texts
     // are missing or an extra condition is not understood.
     const rawNodes=arr(source?.trees).flatMap(t=>arr(t.talents)).sort((a,b)=>a.id-b.id)
       .map(t=>({id:t.id,effects:t.d??null,pre:t.pre}));
-    classRevisions[id]=createHash('sha256').update(JSON.stringify(canonical({class:c,rawNodes}))).digest('hex');
+    classRevisions[id]=talentRevisionDigest({class:c,rawNodes});
+    classMechanicsRevisions[id]=talentRevisionDigest(buildTalentCatalogProof(c,source));
   }
-  return {classes,classRevisions,expectedClassIds:[...TALENT_CLASS_IDS],
+  return {classes,classRevisions,classMechanicsRevisions,expectedClassIds:[...TALENT_CLASS_IDS],
     missingClassIds:TALENT_CLASS_IDS.filter(id=>!classes[id]),checkedAt:new Date(now).toISOString(),
     observedBuilds,source:'ForeverDB.net',verifiedClientBuild:null};
 }
 export function projectTalentMaster(master,ids){
   const wanted=new Set(ids);
   return {...master,classes:Object.fromEntries(Object.entries(master?.classes||{}).filter(([id])=>wanted.has(Number(id)))),
-    classRevisions:Object.fromEntries(Object.entries(master?.classRevisions||{}).filter(([id])=>wanted.has(Number(id))))};
+    classRevisions:Object.fromEntries(Object.entries(master?.classRevisions||{}).filter(([id])=>wanted.has(Number(id)))),
+    classMechanicsRevisions:Object.fromEntries(Object.entries(master?.classMechanicsRevisions||{}).filter(([id])=>wanted.has(Number(id))))};
 }
 export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=configured(),clock=Date.now,now=clock(),observedBuilds=''}={}){
   if(!enabled)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
@@ -124,7 +122,7 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
         const candidate=buildTalentMaster(raw.data,localized.data,{
           now:Math.min(raw.freshAt,localized.freshAt),observedBuilds
         });
-        candidate.sourceRevision=createHash('sha256').update(raw.digest+localized.digest).digest('hex');
+        candidate.sourceRevision=talentSourcePairDigest(raw.digest,localized.digest);
         candidate.sourceFreshAt={
           raw:new Date(raw.freshAt).toISOString(),localized:new Date(localized.freshAt).toISOString()
         };

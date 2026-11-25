@@ -18,7 +18,7 @@ function reject(code,point=null){return {ok:false,code,point}}
 // rule for each talent. No assumed Legacy shift or silent Classic fallback.
 export function validateTalentPath(plan,master,rules){
   if(!plan||!positive(plan.classId)||!nonempty(plan.id)||!positive(plan.version))return reject('invalid_plan_identity');
-  const c=master?.classes?.[plan.classId],revision=master?.classRevisions?.[plan.classId];
+  const c=master?.classes?.[plan.classId],revision=master?.classMechanicsRevisions?.[plan.classId];
   if(!c||!hash(revision)||plan.catalogRevision!==revision||master.stale!==false)return reject('unverified_current_catalog');
   if(!rules||rules.status!=='verified'||rules.classId!==plan.classId||rules.catalogRevision!==revision||
     !nonempty(rules.revision)||plan.ruleRevision!==rules.revision||!array(rules.sources).length||
@@ -41,13 +41,13 @@ export function validateTalentPath(plan,master,rules){
     const point=index+1,availableAt=firstPointLevel+index,t=byId.get(step?.talentId);
     if(!t)return reject('unknown_talent',point);
     const rank=(ranks.get(t.id)||0)+1;
-    if(step.rank!==rank||rank>t.maxRank)return reject('invalid_rank',point);
+    if(!positive(t.maxRank)||step.rank!==rank||rank>t.maxRank)return reject('invalid_rank',point);
     const minLevel=rules.minimumLevelByTalent[t.id];
     if(!positive(minLevel)||minLevel>60)return reject('unverified_level_gate',point);
     const level=rules.pointSpendMode==='bankable'
       ?Math.max(availableAt,minLevel,history.at(-1)?.level??0):availableAt;
     if(level<minLevel)return reject('level_gate',point);
-    if(!Number.isSafeInteger(t.requiredPoints)||t.requiredPoints<0)return reject('unverified_tree_gate',point);
+    if(!Number.isSafeInteger(t.row)||t.row<0||t.row>10||t.requiredPoints!==t.row*5)return reject('unverified_tree_gate',point);
     const priorPoints=[...ranks.entries()].reduce((sum,[id,n])=>{
       const prior=byId.get(id);
       return sum+(prior.treeId===t.treeId&&prior.row<t.row?n:0);
@@ -55,7 +55,10 @@ export function validateTalentPath(plan,master,rules){
     if(priorPoints<t.requiredPoints)return reject('tree_gate',point);
     if(!Array.isArray(t.prerequisites))return reject('unverified_prerequisite',point);
     for(const pre of t.prerequisites){
-      if(pre.conditionKnown!==true||!byId.has(pre.id)||!positive(pre.rank))return reject('unverified_prerequisite',point);
+      const required=byId.get(pre?.id);
+      if(pre?.conditionKnown!==true||!required||required.treeId!==t.treeId||!positive(pre.rank)||pre.rank>required.maxRank){
+        return reject('unverified_prerequisite',point);
+      }
       if((ranks.get(pre.id)||0)<pre.rank)return reject('prerequisite',point);
     }
     ranks.set(t.id,rank);
