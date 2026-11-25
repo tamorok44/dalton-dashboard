@@ -115,7 +115,7 @@ const fake=async ([op,key,...args])=>{
  if(op==='GET')return key.endsWith(':version')?'v1':cache.get(key)||null;
  if(op==='SET'){cache.set(key,args[0]);return 'OK'}
  if(op==='SMEMBERS')return [...current,old];
- if(op==='MGET')return args.map(()=>JSON.stringify(oldRecord));
+ if(op==='MGET')return [key,...args].map(()=>JSON.stringify(oldRecord));
  throw Error(op);
 };
 const history=await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true});
