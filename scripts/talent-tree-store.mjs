@@ -6,7 +6,8 @@ import {knowledgeIcons} from './knowledge-media.mjs';
 import {mediaIconKey} from './media-resolver.mjs';
 
 const LEGACY_KEY='dalton-dashboard:talent-tree-catalog:v2';
-const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes';
+// Preview experiments must not overwrite the production master if Redis is shared.
+const KEY='dalton-dashboard:talent-tree-catalog:v3:all-classes'+(process.env.VERCEL_ENV==='preview'?':preview':'');
 export const TALENT_CLASS_IDS=Object.freeze(Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 const MAX_AGE=6*60*60*1000;
 const ATTEMPT_SECONDS=MAX_AGE/1000;
@@ -126,7 +127,9 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
     }
   }
   if(!saved)return {classes:{},classRevisions:{},missingClassIds:[...TALENT_CLASS_IDS],stale:true};
-  return {...saved,stale,observedBuilds};
+  // Keep the build observations from the source acquisition; later roster hints
+  // are not evidence that the cached source was extracted from those builds.
+  return {...saved,stale,latestObservedBuilds:observedBuilds};
 }
 export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,redisImpl=redis,enabled=configured(),resolveIcons=knowledgeIcons,now=Date.now()}={}){
   const ids=[...new Set(arr(data?.characters).map(c=>c.classId).filter(positive))].sort((a,b)=>a-b);
