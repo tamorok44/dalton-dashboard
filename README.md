@@ -46,7 +46,7 @@ Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.
 - Das Regelwerk beobachtet aktuell:
   - die offizielle Blizzard-Forever-Hotfixseite,
   - Blizzards Forever-Beta-Entwicklungsnotizen für Krit-Quelllogik und Expertise,
-  - ForeverDB als aktuellen Clientbuild-Prüfanker; geprüfte Baseline am 22.11.2026: **1.60.1.71037**,
+  - ForeverDB und Bind on Forever zur Ermittlung des neuesten sichtbaren Clientbuilds; Wago DB2 für die regelbezogene Feldprüfung (geprüfte Referenz **1.60.1.71091**, identisch zu **1.60.1.71037**),
   - Wowheads Forever-Hunter-Skalierungsregeln,
   - die Forever-Hunter-Community-Dokumentation als zweite Skalierungs- und Fokusquelle,
   - einen separaten Clientdaten-Audit des WoW-Forever-Simulators für Fokus,
@@ -54,11 +54,11 @@ Regelbasierte Begleiterdaten werden strikt von Blizzard-Livedaten getrennt.
   - Bind on Forever für Fuchsfamilie und Ausbildungsstufen,
   - 60.tools und StatRat für clientbasierte Familienmodifikatoren,
   - Efficient Games für Ausbildungsstufen und bekannte Trainingspunktkosten.
-- Quellen werden nicht automatisch „neu angelernt“. Der erste geprüfte Fingerabdruck einer Quelle bleibt auch bei einer neuen Regelwerk-Version erhalten. Änderungen an Aussage oder Build lösen `review_required` aus; nachweisbare reine Buildänderungen erhalten den Grund `source_build_changed`. Ein fehlender erwarteter Marker bleibt gesperrt.
-- Regelwerk 2026.11.25.1: Ausschließlich für Bind on Forever/Fox ist der Übergang von 1.60.1.70959 bzw. 1.60.1.71037 auf 1.60.1.71091 hinterlegt. Eine Migration ist nur zulässig, wenn die aktuell extrahierten semantischen Marker mit dem alten gespeicherten Fingerabdruck exakt übereinstimmen. Der globale ForeverDB-Buildanker bleibt auf seiner bisherigen Baseline, da der vollständige Vergleich aller relevanten Tabellen noch nicht verifiziert wurde. Andere Quellen werden nicht neu initialisiert. Künftige Übergänge brauchen eine eigene explizite Freigabe.
+- Quellen werden nicht automatisch „neu angelernt“. Der erste geprüfte semantische Fingerabdruck bleibt versionsübergreifend erhalten; geänderte Aussagen bleiben gesperrt. Reine Buildnummer-Änderungen bei Bind on Forever/Fox bzw. Efficient Pets können nur bei exakt reproduzierbarem altem Fingerabdruck ohne Inhaltsänderung übernommen werden.
+- Regelwerk 2026.11.25.2: 19 kleine DB2-Abfragen (CreatureFamily 319, SpellEffect 17223 und 415429, PowerType 3, SkillLineAbility 3016, SpellPower, SpellLevels und die Effekte der zwölf Fuchs-Fähigkeitsränge) vergleichen die ausgewählten Zeilen des aktuellen Builds mit der fest versionierten Referenz in `scripts/pet-db2-baseline.mjs`. Die vier fachlichen Prüfgruppen sind Familienprofil, Ausbildung, Skalierungsstruktur und Fokus. Unveränderte Zeilen bleiben auch bei einem neuen Build freigegeben; fehlende, geänderte oder nicht abrufbare Daten sperren die abhängigen Regeln. Die skalierenden Serverkoeffizienten bleiben ein Referenzmodell; sie werden durch die Client-Aura nicht numerisch bestätigt. Der reine Buildanker ist keine hinreichende Evidenz. Bestehende Hotfix-/Guide- und Messungsprüfungen bleiben erhalten.
 - Ist eine benötigte Quelle nicht erreichbar, erhält die betroffene Regel `source_unavailable`.
 - Bei `review_required` oder `source_unavailable` gilt **fail closed**: Der betreffende regelbasierte Wert wird im Dashboard ausgeblendet. Es wird niemals mit einer möglicherweise veralteten Formel weitergerechnet.
-- Eine bestätigte Änderung wird erst durch eine bewusst neue Regelwerk-Version mit gezielter Quellenmigration im Repository freigegeben. Historische Regelversionen und nicht geprüfte Quellenbaselines werden nicht stillschweigend überschrieben.
+- Eine bestätigte fachliche Änderung wird erst durch eine bewusst neue Regelwerk-Version mit gezielter Quellenmigration bzw. neuer geprüfter DB2-Referenz im Repository freigegeben. Historische Regelversionen und nicht geprüfte Quellenbaselines werden nicht stillschweigend überschrieben.
 - Ein vorübergehender Quellenausfall kann sich bei einem späteren erfolgreichen Prüfzyklus automatisch erholen; dann wird der Wert ohne Codeänderung wieder freigegeben. Eine echte inhaltliche Abweichung (`review_required`) bleibt dagegen gesperrt, bis eine bewusst geprüfte neue Regelwerk-Version veröffentlicht wurde.
 - Jeder relevante Status-, Versions- oder Evidenzwechsel wird im Redis-Regelstatus protokolliert und im Begleiterbereich als **Regelstatus-Protokoll** angezeigt.
 - Eine serverseitige, nicht veröffentlichte Blizzard-Änderung kann technisch nicht vor ihrer Beobachtbarkeit garantiert erkannt werden. Das System minimiert dieses Restrisiko, indem es keine unbestätigten Ableitungen anzeigt.
