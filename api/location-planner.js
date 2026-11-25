@@ -9,7 +9,7 @@ import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex,liveKnowledgeDiscoveries} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
-import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
+import {loadLiveKnowledge,loadHistoricalMerchantKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
 import {preferredForeverZoneName,foreverZoneIdentity} from '../scripts/player-terminology.mjs';
 import {collectPlannerKnownLocations,sharedPlannerLocations} from '../scripts/location-catalog.mjs';
 
@@ -151,10 +151,13 @@ export default async function handler(req,res){
         reason:'ForeverDB ist derzeit nicht verbunden und es liegt kein gecachter Rezept-Master vor.'
       });
     }
-    const liveKnowledge=await loadLiveKnowledge({build:recipeIndex?.build||null});
+    const [liveKnowledge,historicalMerchants]=await Promise.all([
+      loadLiveKnowledge({build:recipeIndex?.build||null}),
+      loadHistoricalMerchantKnowledge(recipeIndex?.build||null)
+    ]);
     const evaluatedRecipeIndex=applyLearningSourceEvidence(
       recipeIndex,
-      learningSourceEvidenceForIndex(recipeIndex,addonStates,liveKnowledge),
+      learningSourceEvidenceForIndex(recipeIndex,addonStates,[...liveKnowledge,...historicalMerchants]),
       {characterSlug:character}
     );
     const selectedCharacter=character

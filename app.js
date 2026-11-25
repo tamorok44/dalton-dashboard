@@ -1150,7 +1150,9 @@ function workshopSourceHtml(source){
     Number.isFinite(Number(source.limitedStock))?'Vorrat '+source.limitedStock:'',
     source.reputationFaction?'Ruf: '+source.reputationFaction:''
   ].filter(Boolean).join(' · ');
-  const evidence=source.notEveryoneSees===true
+  const evidence=source.offerStatus==='needs-recheck'||source.evidence==='disputed'
+    ?'<span class="workshop-source-evidence">Widersprüchliche Sichtung · erneute Prüfung nötig</span>'
+    :source.notEveryoneSees===true
     ?'<span class="workshop-source-evidence">Spielerabhängiges Angebot</span>'
     :source.evidence==='forever-confirmed'
     ?'<span class="workshop-source-evidence is-confirmed">In Forever bestätigt</span>'

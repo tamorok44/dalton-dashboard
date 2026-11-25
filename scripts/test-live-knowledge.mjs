@@ -107,3 +107,18 @@ const personal=snapshotsFromAddonPayload(payload,{characterSlug:'cole-dalton'});
 assert.equal(personal.find(s=>s.kind==='merchant').characterSlug,'cole-dalton');
 const personalRecords=records.map(r=>r.kind==='merchant'?{...r,characterSlug:'cole-dalton'}:r);
 assert.equal(liveKnowledgeAsAddonStates(personalRecords)[0].characterSlug,'cole-dalton');
+
+const historicalCalls=[];const {loadHistoricalMerchantKnowledge}=await import('./live-knowledge-store.mjs');
+const cache=new Map();const oldRecord={...records[0],build:'1.60.1.70999',changes:[{large:'history'}]};
+const fake=async ([op,key,...args])=>{
+ historicalCalls.push([op,key,...args]);
+ if(op==='GET')return key.endsWith(':version')?'v1':cache.get(key)||null;
+ if(op==='SET'){cache.set(key,args[0]);return 'OK'}
+ if(op==='SMEMBERS')return [...current,old];
+ if(op==='MGET')return args.map(()=>JSON.stringify(oldRecord));
+ throw Error(op);
+};
+const history=await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true});
+assert.equal(history.length,1);assert.equal(history[0].build,'1.60.1.70999');assert.equal(history[0].changes,undefined);
+assert.deepEqual(await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true}),history);
+assert.equal(historicalCalls.filter(c=>c[0]==='MGET').length,1,'Historical snapshots are not downloaded on every click');

@@ -1,9 +1,10 @@
+import {hydrateRecipeIndex} from './workshop-foreverdb.mjs';
 import {readFileSync} from 'node:fs';
 
 const DEFAULT_EVIDENCE_URL=new URL('../data/learning-source-evidence.json',import.meta.url);
 
 function asArray(value){return Array.isArray(value)?value:[]}
-function integer(value){const n=Number(value);return Number.isInteger(n)?n:null}
+function integer(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isInteger(n)?n:null}
 function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function text(value){return typeof value==='string'?value.trim():''}
 function norm(value){
@@ -39,7 +40,7 @@ function targetMatches(observation,recipe){
   const professionSlug=text(observation?.professionSlug);
   if(professionSlug&&professionSlug!==text(recipe?.professionSlug))return false;
   const recipeName=norm(observation?.recipeName);
-  if(recipeName&&recipeName!==norm(recipe?.name))return false;
+  if(recipeId===null&&recipeName&&recipeName!==norm(recipe?.name))return false;
   return recipeId!==null||craftedItemId!==null||Boolean(recipeName);
 }
 function sourceMatches(observation,source){
@@ -48,7 +49,7 @@ function sourceMatches(observation,source){
   const sourceType=text(observation?.sourceType);
   if(sourceType&&sourceType!==text(source?.type))return false;
   const npcName=norm(observation?.npcName);
-  if(npcName&&npcName!==norm(source?.name))return false;
+  if(npcId===null&&npcName&&npcName!==norm(source?.name))return false;
   return npcId!==null||Boolean(npcName);
 }
 function observationSourceKey(observation={}){
@@ -553,21 +554,35 @@ export function learningSourceEvidenceForIndex(recipeIndex={},addonStates=[],liv
 export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, {characterSlug=null}={}){
   // A merchant window belongs to its observer, not all players. Old records
   // with no reliable observer are retained as history, never global overrides.
-  const observations=asArray(evidenceDocument?.observations).filter(observation=>{
+  const all=asArray(evidenceDocument?.observations);
+  const observations=all.filter(observation=>{
     if(observation?.sourceType!=='vendor')return true;
     if(observation.characterSlug)return observation.characterSlug===characterSlug;
     return observation.personalObservation!==true&&observation.source!=='dalton-addon';
   });
-  if(!observations.length)return recipeIndex;
-
-  let blocked=0,confirmed=0;
+  // Contradictions remain warning evidence even outside the original build or observer.
+  const warnings=all.filter(o=>o?.sourceType==='vendor'&&o.status==='absent'&&(o.source==='dalton-live'||(o.source==='dalton-addon'&&o.snapshotComplete===true)));
+  if(!observations.length&&!warnings.length)return recipeIndex;
+  let blocked=0,confirmed=0,disputed=0;
+  const warningLookup=observationLookup(warnings);
   const lookup=observationLookup(observations.filter(observation=>['present','absent'].includes(observation?.status)&&evidenceBuildApplies(observation,recipeIndex?.build)));
   const recipes=asArray(recipeIndex?.recipes).map(recipe=>{
     const relevant=lookup(recipe);
+    const warningCandidates=warningLookup(recipe);
     const learning=recipe?.learning||{};
     const sources=[];
     for(const source of asArray(learning.sources)){
-      const observation=bestObservation(relevant,recipe,source,recipeIndex?.build);
+      const personal=characterSlug&&source?.type==='vendor'
+        ?bestObservation(relevant.filter(o=>o.characterSlug===characterSlug),recipe,source,recipeIndex?.build):null;
+      const observation=personal||bestObservation(relevant,recipe,source,recipeIndex?.build);
+      const conflict=source?.type==='vendor'&&warningCandidates.some(o=>sourceMatches(o,source));
+      const personallyReconfirmed=personal?.status==='present'&&Boolean(buildNumber(personal.build));
+      const globallyReconfirmed=observation?.status==='present'&&observation?.availabilityScope==='all-players'&&Boolean(buildNumber(observation.build))&&warningCandidates.filter(o=>sourceMatches(o,source)).every(o=>observationDate(observation.observedAt??observation.observedOn)>observationDate(o.observedAt??o.observedOn));
+      if(conflict&&observation?.status!=='absent'&&!personallyReconfirmed&&!globallyReconfirmed){
+        disputed++;
+        sources.push({...source,evidence:'disputed',offerStatus:'needs-recheck',priceCopper:null,pricePerItem:null,priceSource:null});
+        continue;
+      }
       if(observation?.status==='absent'){
         blocked++;
         continue;
@@ -596,7 +611,9 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, 
       sources.push(source);
     }
 
-    const existingKeys=new Set(sources.map(sourceKey).filter(Boolean));
+    // Rejected sources must not be reintroduced by a secondary decision.
+    const existingKeys=new Set(asArray(learning.sources).map(sourceKey).filter(Boolean));
+    for(const source of sources)existingKeys.add(sourceKey(source));
     const directDecisions=new Map();
     for(const observation of relevant){
       if(!['present','absent'].includes(observation?.status)||
@@ -615,6 +632,14 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, 
       if(existingKeys.has(key)||observation?.status!=='present')continue;
       const source=sourceFromObservation(observation);
       if(!source)continue;
+      const conflict=source.type==='vendor'&&warningCandidates.some(o=>sourceMatches(o,source));
+      const own=Boolean(characterSlug&&observation.characterSlug===characterSlug&&buildNumber(observation.build));
+      if(conflict&&!own){
+        disputed++;
+        sources.push({...source,evidence:'disputed',offerStatus:'needs-recheck',priceCopper:null,pricePerItem:null,priceSource:null});
+        existingKeys.add(key);
+        continue;
+      }
       sources.push(source);
       existingKeys.add(key);
       confirmed++;
@@ -622,7 +647,8 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, 
     return {...recipe,learning:{...learning,sources}};
   });
 
-  return {
+  // Keep the item lookup used by the workshop consistent with evaluated recipes.
+  return hydrateRecipeIndex({
     ...recipeIndex,
     recipes,
     learningSourceEvidence:{
@@ -630,10 +656,11 @@ export function applyLearningSourceEvidence(recipeIndex={},evidenceDocument={}, 
       updatedOn:text(evidenceDocument?.updatedOn)||null,
       observationCount:observations.length,
       blockedSourceCount:blocked,
+      disputedSourceCount:disputed,
       confirmedSourceCount:confirmed,
       addonObservationCount:observations.filter(entry=>entry?.source==='dalton-addon').length,
       addonPresentCount:observations.filter(entry=>entry?.source==='dalton-addon'&&entry?.status==='present').length,
       addonAbsentCount:observations.filter(entry=>entry?.source==='dalton-addon'&&entry?.status==='absent').length
     }
-  };
+  });
 }

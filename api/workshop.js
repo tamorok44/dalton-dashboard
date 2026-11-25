@@ -18,7 +18,7 @@ import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex,cached
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
-import {loadLiveKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
+import {loadLiveKnowledge,loadHistoricalMerchantKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -209,11 +209,12 @@ export default async function handler(req,res){
         if(index){
           {
             const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
-            const [addonStates,liveKnowledge]=await Promise.all([
+            const [addonStates,liveKnowledge,historicalMerchants]=await Promise.all([
               loadAddonSyncStates(characterSlugs),
-              loadLiveKnowledge({build:index?.build||null})
+              loadLiveKnowledge({build:index?.build||null}),
+              loadHistoricalMerchantKnowledge(index?.build||null)
             ]);
-            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,liveKnowledge));
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,[...liveKnowledge,...historicalMerchants]));
           }
           enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
           remoteRecipe=preferredForeverRecipeForItem(recipeIndex,itemId);
@@ -281,11 +282,12 @@ export default async function handler(req,res){
       if(index){
         {
             const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
-            const [addonStates,liveKnowledge]=await Promise.all([
+            const [addonStates,liveKnowledge,historicalMerchants]=await Promise.all([
               loadAddonSyncStates(characterSlugs),
-              loadLiveKnowledge({build:index?.build||null})
+              loadLiveKnowledge({build:index?.build||null}),
+              loadHistoricalMerchantKnowledge(index?.build||null)
             ]);
-            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,liveKnowledge));
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,[...liveKnowledge,...historicalMerchants]));
           }
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
       }

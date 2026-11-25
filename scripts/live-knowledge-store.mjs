@@ -1,3 +1,4 @@
+import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
 import {redis,configured} from './character-store.mjs';
 
@@ -284,11 +285,12 @@ export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null}=
   return {stored,duplicates,changed};
 }
 
-export async function loadLiveKnowledge({build=null,kind=null,redisImpl=redis,enabled=configured()}={}){
+export async function loadLiveKnowledge({build=null,kind=null,historicalMerchantsOnly=false,redisImpl=redis,enabled=configured()}={}){
   if(!enabled)return [];
   const members=await redisImpl(['SMEMBERS',indexKey()]);
   const keys=(Array.isArray(members)?members:[]).filter(key=>{
     const parts=String(key).slice((prefix()+'record:').length).split(':');
+    if(historicalMerchantsOnly)return parts[0]==='merchant'&&parts[1]!==encodeURIComponent(build);
     return (!kind||parts[0]===kind)&&(!build||parts[1]===encodeURIComponent(build));
   });
   const result=[];
@@ -298,7 +300,8 @@ export async function loadLiveKnowledge({build=null,kind=null,redisImpl=redis,en
     for(const raw of Array.isArray(values)?values:[]){
       let record;try{record=JSON.parse(raw)}catch{continue}
       if(!record)continue;
-      if(build&&record.build!==build)continue;
+      if(historicalMerchantsOnly){if(record.kind!=='merchant'||record.build===build||record.latestSnapshot?.complete!==true)continue;}
+      else if(build&&record.build!==build)continue;
       if(kind&&record.kind!==kind)continue;
       result.push(record);
     }
@@ -327,4 +330,21 @@ export async function loadLiveKnowledgeVersion(){
   if(!configured())return null;
   const value=await redis(['GET',versionKey()]);
   return typeof value==='string'&&value?value:null;
+}
+
+ // Historical merchant snapshots remain conflict evidence across builds.
+ // Cache only the relevant projection, never the complete change log.
+export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,enabled=configured()}={}){
+  if(!enabled||!build)return [];
+  const version=await redisImpl(['GET',versionKey()]);
+  const key=prefix()+'merchant-conflict-history:v1';
+  const cached=await readCompactMaster(key,{redisImpl});
+  if(cached?.build===build&&cached.version===version&&Array.isArray(cached.records))return cached.records;
+  const records=(await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled})).map(record=>({
+    kind:'merchant',build:record.build,characterSlug:record.characterSlug||null,
+    npc:record.npc,location:record.location,lastObservedAt:record.lastObservedAt,
+    latestSnapshot:record.latestSnapshot
+  }));
+  if(await redisImpl(['GET',versionKey()])===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
+  return records;
 }

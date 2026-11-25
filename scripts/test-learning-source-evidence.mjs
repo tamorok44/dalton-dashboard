@@ -174,3 +174,24 @@ const expanded={...addonBase,recipes:[...addonBase.recipes,...unrelated]};
 const expandedEvidence=buildAddonLearningSourceEvidence(expanded,[addonState]);
 assert.deepEqual(expandedEvidence,addonEvidence,'Indexing must not broaden or lose exact evidence matches');
 assert.deepEqual(applyLearningSourceEvidence(expanded,expandedEvidence,{characterSlug:'cole-dalton'}).recipes.slice(0,addonBase.recipes.length),addonEvaluated.recipes);
+
+// Historical and other-player contradictions never become confirmed purchases.
+const changedBuild={...addonBase,build:'1.60.1.71091'};
+for(const slug of ['cole-dalton','dolly-dalton','chucky-dalton','viola-dalton',null]){
+  const result=applyLearningSourceEvidence(changedBuild,addonEvidence,{characterSlug:slug});
+  assert.equal(result.recipes[0].learning.sources[0].evidence,'disputed');
+  assert.equal(result.recipes[0].learning.sources[0].offerStatus,'needs-recheck');
+  assert.equal(result.recipes[0].learning.sources[0].priceCopper,null);
+  assert.equal(result.byItem.get(787)[0],result.recipes[0]);
+}
+assert.equal(otherView.recipes[0].learning.sources[0].evidence,'disputed');
+assert.equal(sharedView.recipes[0].learning.sources[0].evidence,'disputed');
+assert.equal(nextBuild.recipes[0].learning.sources[0].evidence,'disputed');
+assert.equal(nextBuild.recipes[0].learning.sources[1].evidence,'forever-confirmed');
+const absent=addonEvidence.observations.find(o=>o.recipeId===200&&o.status==='absent');
+const verified=mergeLearningSourceEvidence(addonEvidence,{observations:[{...absent,characterSlug:'dolly-dalton',build:changedBuild.build,status:'present',priceCopper:70,observedAt:'2026-11-25T12:00:00Z'}]});
+assert.equal(applyLearningSourceEvidence(changedBuild,verified,{characterSlug:'dolly-dalton'}).recipes[0].learning.sources[0].evidence,'forever-confirmed');
+assert.equal(applyLearningSourceEvidence(changedBuild,verified,{characterSlug:'cole-dalton'}).recipes[0].learning.sources[0].evidence,'disputed');
+assert.equal(applyLearningSourceEvidence(changedBuild,verified).recipes[0].learning.sources[0].evidence,'disputed');
+const renamed={...changedBuild,recipes:changedBuild.recipes.map(r=>r.id===200?{...r,name:'New locale label',learning:{sources:[{...r.learning.sources[0],name:'Renamed NPC'}]}}:r)};
+assert.equal(applyLearningSourceEvidence(renamed,addonEvidence,{characterSlug:'cole-dalton'}).recipes[0].learning.sources[0].evidence,'disputed');
