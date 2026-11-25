@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-frost-leveling-mixed-balanced",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11601,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "points": [
+    {
+      "talentId": 105779,
+      "rank": 1
+    },
+    {
+      "talentId": 105779,
+      "rank": 2
+    },
+    {
+      "talentId": 105779,
+      "rank": 3
+    },
+    {
+      "talentId": 105779,
+      "rank": 4
+    },
+    {
+      "talentId": 105779,
+      "rank": 5
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105774,
+      "rank": 1
+    },
+    {
+      "talentId": 105774,
+      "rank": 2
+    },
+    {
+      "talentId": 105774,
+      "rank": 3
+    },
+    {
+      "talentId": 105767,
+      "rank": 1
+    },
+    {
+      "talentId": 105777,
+      "rank": 1
+    },
+    {
+      "talentId": 105777,
+      "rank": 2
+    },
+    {
+      "talentId": 105777,
+      "rank": 3
+    },
+    {
+      "talentId": 105777,
+      "rank": 4
+    },
+    {
+      "talentId": 105768,
+      "rank": 1
+    },
+    {
+      "talentId": 105768,
+      "rank": 2
+    },
+    {
+      "talentId": 105768,
+      "rank": 3
+    },
+    {
+      "talentId": 105777,
+      "rank": 5
+    },
+    {
+      "talentId": 105769,
+      "rank": 1
+    },
+    {
+      "talentId": 105764,
+      "rank": 1
+    },
+    {
+      "talentId": 105764,
+      "rank": 2
+    },
+    {
+      "talentId": 105766,
+      "rank": 1
+    },
+    {
+      "talentId": 105772,
+      "rank": 1
+    },
+    {
+      "talentId": 105772,
+      "rank": 2
+    },
+    {
+      "talentId": 105772,
+      "rank": 3
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105770,
+      "rank": 1
+    },
+    {
+      "talentId": 105771,
+      "rank": 1
+    },
+    {
+      "talentId": 105765,
+      "rank": 1
+    },
+    {
+      "talentId": 105762,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105808,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    },
+    {
+      "talentId": 105765,
+      "rank": 2
+    },
+    {
+      "talentId": 105765,
+      "rank": 3
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 18,
+    "11594": 0,
+    "11601": 33
+  },
+  "catalogObservation": {
+    "source": "https://dalton-dashboard-eight.vercel.app/api/characters?view=talents",
+    "checkedAt": "2026-11-25T17:24:34.289Z",
+    "observedAddonBuild": "71091",
+    "verifiedClientBuild": null,
+    "limitations": "Read-only current displayed class master; AddOn build hint does not establish a verified master layout revision."
+  },
+  "rationaleBlocks": [
+    {
+      "talentId": 105779,
+      "count": 5,
+      "reason": "Kernzauber schneller wirken"
+    },
+    {
+      "talentId": 105778,
+      "count": 2,
+      "reason": "Verfehlungen beim Questen reduzieren"
+    },
+    {
+      "talentId": 105774,
+      "count": 3,
+      "reason": "Echte Gegnerkontrolle und Vorbereitung der Eislanze"
+    },
+    {
+      "talentId": 105767,
+      "count": 1,
+      "reason": "Gefrorene Ziele nutzen"
+    },
+    {
+      "talentId": 105777,
+      "count": 4,
+      "reason": "Kritischen Frostschaden vorbereiten"
+    },
+    {
+      "talentId": 105768,
+      "count": 3,
+      "reason": "Krit-Synergie gegen gefrorene Ziele"
+    },
+    {
+      "talentId": 105777,
+      "count": 1,
+      "reason": "Krit-Synergie vervollständigen"
+    },
+    {
+      "talentId": 105769,
+      "count": 1,
+      "reason": "Notfallfähigkeit"
+    },
+    {
+      "talentId": 105764,
+      "count": 2,
+      "reason": "Frost-Synergie auch ohne tatsächlich eingefrorene Ziele"
+    },
+    {
+      "talentId": 105766,
+      "count": 1,
+      "reason": "Frost-Abklingzeiten zurücksetzen und Eisbarriere vorbereiten"
+    },
+    {
+      "talentId": 105772,
+      "count": 3,
+      "reason": "Mana und Bedrohung im Gruppenspiel reduzieren"
+    },
+    {
+      "talentId": 105778,
+      "count": 1,
+      "reason": "Zusätzliche Trefferchance gegen höherstufige Gegner"
+    },
+    {
+      "talentId": 105770,
+      "count": 1,
+      "reason": "Reichweite und Kontrolle"
+    },
+    {
+      "talentId": 105771,
+      "count": 1,
+      "reason": "Blizzard mit Verlangsamung für Gruppenpulls"
+    },
+    {
+      "talentId": 105765,
+      "count": 1,
+      "reason": "Kältekegel als flexible Ergänzung"
+    },
+    {
+      "talentId": 105762,
+      "count": 1,
+      "reason": "Schutz und Frostschaden"
+    },
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Arkanen Nebenbaum ohne späte Zauberstab-Spezialisierung öffnen"
+    },
+    {
+      "talentId": 105810,
+      "count": 5,
+      "reason": "Freizauber zur Ressourcenentlastung"
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Frostblitz-Proc für Arkane Geschosse"
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Widerstandsreduktion und geringere Arkanspruch-Bedrohung"
+    },
+    {
+      "talentId": 105808,
+      "count": 1,
+      "reason": "Reichweite der arkanen Ergänzung"
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Regeneration während des Wirkens"
+    },
+    {
+      "talentId": 105765,
+      "count": 2,
+      "reason": "Kältekegel für gemischte Inhalte vervollständigen"
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-25",
+    "editorialDecision": "Prioritize sustained frost play, useful early damage/control, and group utility without required respec. The first 31 Frost points keep Ice Barrier at the earliest ordinary budget. Later Arcane sustain and Frost utility avoid making an Arcane leveling route the prerequisite.",
+    "sources": [
+      {
+        "url": "https://mobalytics.gg/wow-forever/classes/frost-mage-guide-progress",
+        "author": "Avoid",
+        "date": "2026-11-25",
+        "contribution": "Support for early Frostbolt, hit, Frostbite, Ice Lance and Shatter prioritization."
+      },
+      {
+        "url": "https://www.method.gg/wow-forever/wow-forever-mage-leveling-guide-and-talents",
+        "author": "Celz",
+        "date": "2026-11-14",
+        "contribution": "Frost for solo control, hit chance, critical-strike synergies, Frost capstone and Arcane sustain."
+      },
+      {
+        "url": "https://www.icy-veins.com/wow-forever/frost-mage-leveling/",
+        "author": "Teloril",
+        "date": "2026-11-17",
+        "contribution": "Mixed-play focus and resource/threat tradeoffs. Explicit warning about shared Frostbite/Fingers of Frost proc chance; no additive proc bonus assumed."
+      },
+      {
+        "url": "https://foreverspec.com/classes/mage/frost/?v=leveling",
+        "date": "2026-11-13",
+        "contribution": "Alternative full Frost path; earlier Frostbite and Ice Lance, later Arcane sustain."
+      },
+      {
+        "url": "https://talentsforever.com/mage/leveling",
+        "contribution": "Historical ordered build sample; early talent consensus support only, not causality."
+      },
+      {
+        "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-10-2026",
+        "contribution": "Review current server hotfixes, including Frost Nova break behavior and changes affecting mage mechanics."
+      },
+      {
+        "url": "https://foreverdb.net/classes",
+        "contribution": "Current class source and skill mechanics cross-reference."
+      }
+    ],
+    "unresolved": [
+      "Exact current server layout revision / independent per-rank verification",
+      "Effective level gates and point calendar for all Legacy configurations",
+      "Frostbite and Fingers of Frost interaction: shared chance reported; retain real immobilization for solo quests, do not claim independent proc increase; verify remaining late-game value",
+      "Full comparative assessment of late Arcane first-tier filler and Cone of Cold investment",
+      "Current hotfix dependency revision and release review"
+    ],
+    "approval": null
+  }
+}
