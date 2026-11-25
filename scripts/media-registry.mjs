@@ -35,7 +35,7 @@ export async function saveMediaRecord(entityType,entityId,role,record={}){
 }
 
 export async function loadMediaRecords(refs=[]){
-  const unique=[...new Set(refs.map(ref=>mediaField(ref.type,ref.id,'icon')).filter(Boolean))];
+  const unique=[...new Set(refs.map(ref=>mediaField(ref.type,ref.id,ref.role||'icon')).filter(Boolean))];
   if(!configured()||!unique.length)return {};
   const values=await redis(['HMGET',MEDIA_KEY,...unique]);
   return Object.fromEntries(unique.map((key,i)=>{try{return [key,JSON.parse(values?.[i]||'null')]}catch{return [key,null]}}));

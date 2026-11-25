@@ -423,3 +423,16 @@ export async function fetchForeverMediaIcon(type,id,{namespace,fetchImpl=fetch,l
   const body=await parseResponse(response);
   return (Array.isArray(body?.assets)?body.assets:[]).find(asset=>asset?.key==='icon'&&typeof asset.value==='string')?.value||null;
 }
+
+// Use the observed Forever static namespace, never Retail creature IDs.
+export async function fetchForeverCreatureDisplay(id,{namespace,fetchImpl=fetch,locale='de_DE'}={}){
+  if(!Number.isSafeInteger(Number(id))||Number(id)<=0)return null;
+  const url=gameDataUrl('/data/wow/creature/'+Number(id),namespace,locale);
+  const {token}=await accessToken(fetchImpl);
+  const response=await fetchImpl(url,{headers:{authorization:'Bearer '+token,accept:'application/json'},signal:AbortSignal.timeout(5000)});
+  if(!response.ok)return null;
+  const body=await parseResponse(response);
+  if(Number(body?.id)!==Number(id))return null;
+  const ids=[...new Set((Array.isArray(body?.creature_displays)?body.creature_displays:[]).map(entry=>Number(entry?.id)).filter(n=>Number.isSafeInteger(n)&&n>0))];
+  return ids.length===1?ids[0]:null;
+}

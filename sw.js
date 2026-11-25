@@ -1,5 +1,5 @@
-const CACHE="daltons-personal-stock-v70";
-const ASSETS=["/","/styles.css?v=personal-stock-20261125a","/app.js?v=personal-stock-20261125a","/hunter-pets.js","/reputation-data.js","/icon.svg","/android-icon.svg","/android-icon-maskable.svg","/apple-touch-icon.png?v=ios-20261124c","/bridge-tray.svg","/bridge-branding.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=wow-colors-20261121a","/scene-dolly.svg?v=wow-colors-20261121a","/scene-chucky.svg?v=wow-colors-20261121a","/scene-viola.svg?v=wow-colors-20261121a"];
+const CACHE="daltons-quest-media-v71";
+const ASSETS=["/","/styles.css?v=quest-media-20261125a","/app.js?v=quest-media-20261125a","/hunter-pets.js","/reputation-data.js","/icon.svg","/android-icon.svg","/android-icon-maskable.svg","/apple-touch-icon.png?v=ios-20261124c","/bridge-tray.svg","/bridge-branding.svg","/dalton-crest.svg","/level-sheriff.svg?v=level-sheriff-20261120b","/skyborne-horizon.svg?v=mainstreet-20261120c","/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c","/scene-cole.svg?v=wow-colors-20261121a","/scene-dolly.svg?v=wow-colors-20261121a","/scene-chucky.svg?v=wow-colors-20261121a","/scene-viola.svg?v=wow-colors-20261121a"];
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
