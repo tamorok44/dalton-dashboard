@@ -283,7 +283,15 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       };
     }
     const build=definition.buildPattern?.exec(text)?.[1]||null;
-    const digestForBuild=value=>sha([...semantic.evidence,value?'build='+value:''].filter(Boolean).join('\n'));
+    // Der alte Fox-Marker kann die Buildnummer zusätzlich im Treffertext enthalten.
+    // Rekonstruktion ersetzt ausschließlich die erkannte vollständige Buildkennung;
+    // alle übrigen normalisierten Zeichen müssen dem alten Digest entsprechen.
+    const digestForBuild=value=>{
+      const evidence=id==='bindFox'&&build&&value&&value!==build
+        ?semantic.evidence.map(marker=>marker.replaceAll(build,value))
+        :semantic.evidence;
+      return sha([...evidence,value?'build='+value:''].filter(Boolean).join('\n'));
+    };
     const digest=digestForBuild(build);
     const oldDigest=previousSource?.baselineDigest||null;
     const approval=reviewedBuildTransitions[id];
