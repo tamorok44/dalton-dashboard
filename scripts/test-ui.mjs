@@ -41,7 +41,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1029,3 +1029,17 @@ assert.deepEqual(ui.highestKnownClassAbilities(rankFixture),ui.highestKnownClass
 assert.deepEqual(ui.highestKnownClassAbilities(rankFixture).map(x=>x.id),[3,2]);
 const comparisonFixture=[{slug:'cole-dalton',name:'Cole Dalton',professions:[{id:185,name:'Kochkunst',current:143,max:150,knownRecipes:orderRecipes}]}];
 assert.deepEqual(ui.cmpSectionRows('professions',comparisonFixture),ui.cmpSectionRows('professions',[{...comparisonFixture[0],professions:[{...comparisonFixture[0].professions[0],knownRecipes:[...orderRecipes].reverse()}]}]));
+
+const repOrderFixture=['Ironforge','Zirkel des Cenarius','Darnassus','Stormwind','Gnomeregangnome','Kirin Tor','Der Hohe Orden','Druiden der Nachtklaue'].map((name,i)=>({id:i+1,name,standing:{tier:3,value:i*100,max:3000,name:'Neutral'}}));
+const repExpected=['Darnassus','Der Hohe Orden','Druiden der Nachtklaue','Gnomeregangnome','Ironforge','Kirin Tor','Stormwind','Zirkel des Cenarius'];
+assert.deepEqual(ui.displayOrder('alphabetical',repOrderFixture).map(r=>r.name),repExpected);
+for(let i=0;i<repOrderFixture.length;i++){
+ const shuffled=[...repOrderFixture.slice(i),...repOrderFixture.slice(0,i)].reverse();
+ assert.equal(ui.reputationPanel({reputations:shuffled}),ui.reputationPanel({reputations:repOrderFixture}));
+ assert.deepEqual(ui.cmpSectionRows('reputation',[{slug:'cole-dalton',reputations:shuffled}]),ui.cmpSectionRows('reputation',[{slug:'cole-dalton',reputations:repOrderFixture}]));
+}
+const talentFixture=[{name:'Feuer',spentPoints:2,talents:[{name:'Zündeln',rank:1},{name:'Entzünden',rank:1}]},{name:'Arkan',spentPoints:1,talents:[{name:'Arkane Konzentration',rank:1}]}];
+assert.equal(ui.talentPanel({talentDetails:talentFixture}),ui.talentPanel({talentDetails:[...talentFixture].reverse().map(t=>({...t,talents:[...t.talents].reverse()}))}));
+assert.throws(()=>ui.displayList('unknown-policy',[],x=>x),/Unbekannte Anzeigesortierung/);
+assert.deepEqual(ui.displayOrder('searchRelevance',repOrderFixture),repOrderFixture,'Search ranking stays intact');
+assert.deepEqual(ui.displayOrder('rankedOffers',repOrderFixture),repOrderFixture,'Preferred offers are not changed by display');

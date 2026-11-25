@@ -294,3 +294,18 @@ console.log('Architecture contract: global language, media, CI and view rules: O
 assert.ok(!sourceByFile.has('scripts/quest-media.mjs'),'No quest-specific external media enrichment');
 for(const name of ['api/characters.js','api/refresh.js'])assert.ok(!(sourceByFile.get(name)||'').includes('enrichQuestMedia'),'Quest marker must not trigger database or API reads');
 assert.ok((sourceByFile.get('app.js')||'').includes("knowledgeIcon('/quest-marker.png',32,'quest-icon quest-marker')"),'All quests use the bundled standard marker');
+
+
+// DISPLAY ORDER CONTRACT: unreviewed direct list transformations cannot pass CI.
+const orderReview=JSON.parse(fs.readFileSync(path.join(root,'docs/display-order-review.json'),'utf8'));
+const orderApp=sourceByFile.get('app.js');
+let orderOwner='<module>';
+const directListSites=orderApp.split('\n').flatMap(l=>{
+  const m=l.match(/^(?:async )?function (\w+)\(/);if(m)orderOwner=m[1];
+  const line=l.trim();return /\.(?:map|flatMap|sort|forEach|reduce)\s*\(|\bfor\s*\(|\bwhile\s*\(/.test(line)?[{owner:orderOwner,line}]:[];
+});
+assert.deepEqual(directListSites,orderReview.entries,'Unreviewed list transformation: use displayList/displayOrder or document a reviewed functional/fixed exception; do not blindly regenerate inventory');
+const entryHtml=fs.readFileSync(path.join(root,'index.html'),'utf8');
+assert.deepEqual([...entryHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(m=>m[1].split('?')[0]),orderReview.entryModules,'Review new frontend entry points for sort contract');
+assert.deepEqual([...orderApp.matchAll(/^import .*? from ['"]([^'"]+)['"];/gm)].map(m=>m[1]),orderReview.appImports,'Review new frontend modules for sort contract');
+assert.ok(orderApp.includes("displayList('alphabetical',list,rep=>{"),'Reputation must use central alphabetical order');

@@ -57,9 +57,9 @@ function statsPanel(c,open=false){
   const fresh=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:[]);
   const byEnum=new Map(details.map(entry=>[entry.enum,entry]));
   const main=mainStatEnums.map(key=>byEnum.get(key)).filter(Boolean);
-  const rest=details.filter(entry=>!mainStatEnums.includes(entry.enum));
+  const rest=displayOrder('alphabetical',details.filter(entry=>!mainStatEnums.includes(entry.enum)));
   const mainHtml=main.map(entry=>statTile(entry,!fresh.has(entry.enum),true)).join('');
-  const restHtml=rest.map(entry=>statTile(entry,!fresh.has(entry.enum),false)).join('');
+  const restHtml=displayList('alphabetical',rest,entry=>statTile(entry,!fresh.has(entry.enum),false)).join('');
   if(!details.length)return '<div class="section character-stats"><h3>Charakterwerte</h3><p class="knowledge-empty">Deutsche Blizzard-Bezeichnungen sind für diesen Stand nicht bestätigt.</p></div>';
   return '<div class="section character-stats"><h3>Charakterwerte'+(c.scrapeOk!==false&&c.statsVerified?'':' · teilweise letzter Stand')+'</h3>'+
     '<div class="stat-grid stat-grid-main">'+mainHtml+'</div>'+
@@ -98,9 +98,33 @@ function compareGermanNames(a,b){
   return germanNameCollator.compare(left,right)||germanExactCollator.compare(left,right);
 }
 function compareNamedRecords(a,b){
-  return compareGermanNames(a?.name,b?.name)||compareGermanNames(a?.id??a?.slug,b?.id??b?.slug);
+  return compareGermanNames(a?.name,b?.name)||compareGermanNames(a?.id??a?.slug??a?.key,b?.id??b?.slug??b?.key)||compareGermanNames(a?.key,b?.key);
 }
 function sortNamedRecords(list=[]){return [...list].sort(compareNamedRecords)}
+// Every data-driven list uses an explicit, reviewed presentation policy.
+// Search relevance and functional/structural order are deliberate exceptions.
+const displayOrderPolicies=Object.freeze({
+  alphabetical:sortNamedRecords,
+  text:list=>[...list].sort(compareGermanNames),
+  professions:sortProfessionsForDisplay,
+  quests:(list,context)=>sortQuestRecords(list,context.group,context.catalog),
+  classAbilities:highestKnownClassAbilities,
+  instances:list=>[...list].sort((a,b)=>Number(Boolean(b.activeBinding))-Number(Boolean(a.activeBinding))||compareNamedRecords(a,b)),
+  materialBranches:list=>[...list].sort((a,b)=>compareNamedRecords(a.item,b.item)),
+  discoveries:list=>[...list].sort((a,b)=>compareGermanNames(a.itemName,b.itemName)||compareGermanNames(a.itemID,b.itemID)),
+  plannerActions:list=>[...list].sort((a,b)=>compareGermanNames(a.category,b.category)||compareGermanNames(a.profession,b.profession)||compareNamedRecords(a,b)),
+  searchRelevance:list=>[...list],
+  // Provider offers already ordered by verified price and coverage.
+  rankedOffers:list=>[...list],
+  fixedControls:list=>[...list]
+});
+function displayOrder(policy,list=[],context={}){
+  if(!Object.hasOwn(displayOrderPolicies,policy))throw new Error('Unbekannte Anzeigesortierung: '+policy);
+  return displayOrderPolicies[policy](Array.isArray(list)?list:[],context);
+}
+function displayList(policy,list,renderEntry,context={}){
+  return displayOrder(policy,list,context).map(renderEntry);
+}
 // Stable IDs first. Preserve established gathering order; secondary
 // professions follow the resource chain Angeln -> Kochkunst -> Erste Hilfe.
 const professionOrder=[
@@ -135,7 +159,7 @@ function sortQuestRecords(quests,group,catalog={}){
 }
 function recipeRows(recipes=[]){
   if(!recipes.length)return '<p class="knowledge-empty">Blizzard meldet derzeit keine einzelnen Kenntnisse.</p>';
-  return '<div class="knowledge-list">'+sortNamedRecords(recipes).map(recipe=>{
+  return '<div class="knowledge-list">'+displayList('alphabetical',recipes,recipe=>{
     const recipeName=String(recipe?.name||'').trim();
     const craftedName=String(recipe?.craftedItem?.name||'').trim();
     const craftedQuantity=craftedQuantityText(recipe?.craftedQuantity);
@@ -143,7 +167,7 @@ function recipeRows(recipes=[]){
     const crafted=craftedName&&(!sameAsRecipe||craftedQuantity)
       ?'<span class="recipe-crafted">Erstellt: <strong>'+esc(craftedName)+esc(craftedQuantity)+'</strong></span>'
       :'';
-    const reagents=(recipe?.reagents||[]).filter(x=>x?.name).map(x=>(Number.isFinite(Number(x.quantity))?Math.round(Number(x.quantity))+'× ':'')+x.name);
+    const reagents=displayList('alphabetical',(recipe?.reagents||[]).filter(x=>x?.name),x=>(Number.isFinite(Number(x.quantity))?Math.round(Number(x.quantity))+'× ':'')+x.name);
     const materials=reagents.length?'<span class="recipe-reagents">Materialien: '+esc(reagents.join(' · '))+'</span>':'';
     const status=recipe.recipeDetailsStatus==='unavailable'?'<span class="recipe-reagents">Rezeptdetails derzeit nicht vollständig verfügbar</span>':recipe.recipeDetailsStatus==='previous'?'<span class="recipe-reagents">Materialien: letzter bestätigter Stand</span>':'';
     const hasDetails=Boolean(crafted||materials||status);
@@ -155,7 +179,7 @@ function recipeRows(recipes=[]){
 }
 function professionRows(list=[],previousOnly=false,slug='',openDetails=new Set()){
   if(!list.length)return row('Berufe','nicht verfügbar');
-  return sortProfessionsForDisplay(list).map(p=>{
+  return displayList('professions',list,p=>{
     const current=p.current==null?NaN:Number(p.current),max=p.max==null?NaN:Number(p.max);
     const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0;
     const currentSkill=valid?Math.max(0,current):0;
@@ -195,9 +219,9 @@ function talentPanel(c){
   if(!active.length){
     return '<div class="section"><h3>Talente'+(c.talentDetailsVerified===false?' · letzter bekannter Stand':'')+'</h3><div class="rows">'+row('Verteilung',c.talents||'noch keine verteilt')+'</div></div>';
   }
-  const body=active.map(tree=>'<div class="talent-tree">'+
+  const body=displayList('alphabetical',active,tree=>'<div class="talent-tree">'+
     '<div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(tree.spentPoints)+' '+(Number(tree.spentPoints)===1?'Punkt':'Punkte')+'</span></div>'+
-    '<div class="talent-list">'+(tree.talents||[]).map(talent=>'<div class="talent-entry">'+
+    '<div class="talent-list">'+displayList('alphabetical',tree.talents||[],talent=>'<div class="talent-entry">'+
       '<div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(talent.iconUrl,28)+'<strong>'+esc(talent.name)+'</strong></span>'+(Number.isFinite(Number(talent.rank))?'<span>Rang '+esc(talent.rank)+'</span>':'')+'</div>'+
       (talent.description?'<p>'+esc(talent.description)+'</p>':'')+
     '</div>').join('')+'</div></div>').join('');
@@ -280,16 +304,13 @@ function instanceStatusPanel(c,stateOverride=null){
     rows.set(key,{...previous,...entry,visited:true,activeBinding:true});
   }
 
-  const instances=[...rows.values()].sort((a,b)=>{
-    if(Boolean(a.activeBinding)!==Boolean(b.activeBinding))return a.activeBinding?-1:1;
-    return String(a.name||'').localeCompare(String(b.name||''),'de');
-  });
+  const instances=displayOrder('instances',[...rows.values()]);
   const completedCount=instances.filter(entry=>{
     const done=Number(entry.encounterProgress),total=Number(entry.numEncounters);
     return Number.isFinite(done)&&Number.isFinite(total)&&total>0&&done>=total;
   }).length;
 
-  const list=instances.length?'<div class="addon-instance-list">'+instances.map(entry=>{
+  const list=instances.length?'<div class="addon-instance-list">'+displayList('instances',instances,entry=>{
     const done=Number(entry.encounterProgress),total=Number(entry.numEncounters);
     const hasProgress=Number.isFinite(done)&&Number.isFinite(total)&&total>0;
     const completed=hasProgress&&done>=total;
@@ -343,7 +364,7 @@ function classAbilitiesPanel(c){
   const learned=verified
     ?'<div class="spellbook-status is-verified"><strong>'+abilities.length+' gelernte Fähigkeiten</strong><span>Je Fähigkeit der höchste bekannte Rang · direkt aus dem persönlichen WoW-Spellbook'+(captured?' · Stand '+esc(captured):'')+'</span></div>'+
       (abilities.length
-        ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+abilities.map(entry=>{
+        ?'<details class="details spellbook-known" open><summary>Gelernte Fähigkeiten anzeigen · '+abilities.length+'</summary><div class="spellbook-known-list">'+displayList('alphabetical',abilities,entry=>{
           const icon=entry.iconUrl
             ?'<img class="spellbook-ability-icon" src="'+esc(entry.iconUrl)+'" alt="" width="36" height="36" loading="lazy">'
             :'<span class="spellbook-ability-icon is-fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h5.2c1.1 0 1.8.5 1.8 1.5v13c0-1-.7-1.5-1.8-1.5H5z"/><path d="M19 4.5h-5.2c-1.1 0-1.8.5-1.8 1.5v13c0-1 .7-1.5 1.8-1.5H19z"/><path d="M8 8h2M14 8h2"/></svg></span>';
@@ -391,7 +412,7 @@ function reputationPanel(c){
   const list=Array.isArray(c.reputations)?c.reputations:[];
   if(!list.length)return '';
   const columns='repeat(4,minmax(0,1fr)) 2fr 4fr 7fr minmax(7px,.333fr)';
-  const rows=list.map(rep=>{
+  const rows=displayList('alphabetical',list,rep=>{
     const standing=rep.standing||{},index=reputationStageIndex(standing);
     const currentStage=index>=0?reputationStages[index]:null;
     const currentColor=reputationColor(currentStage);
@@ -547,7 +568,7 @@ function hunterPetCombatPanel(c,active){
 function hunterPetsPanel(c){
   const group=c.hunterPets&&typeof c.hunterPets==='object'?c.hunterPets:{active:[],stable:[]};
   const activeList=Array.isArray(group.active)?group.active:[];
-  const stableList=Array.isArray(group.stable)?group.stable:[];
+  const stableList=displayOrder('alphabetical',group.stable);
   const active=activeList.find(pet=>pet?.active===true)||activeList[0]||null;
   const verified=c.hunterPetsVerified===true&&c.scrapeOk!==false;
   const staleLabel=verified?'':' · letzter bestätigter Stand';
@@ -621,13 +642,13 @@ function hunterPetsPanel(c){
       (ability.description?'<p>'+esc(ability.description)+'</p>':'')+'</div>';
   };
   const currentHtml=currentAbilities.length
-    ?'<div class="pet-training-group is-now">'+currentAbilities.map(ability=>abilityCard(ability,'now')).join('')+'</div>'
+    ?'<div class="pet-training-group is-now">'+displayList('alphabetical',currentAbilities,ability=>abilityCard(ability,'now')).join('')+'</div>'
     :'<div class="pet-training-group is-now"><div class="stat-tile pet-training-empty"><small>JETZT ERLERNBAR</small><span>Auf dieser Stufe ist keine neue Fähigkeit verfügbar.</span></div></div>';
   const nextHtml=nextAbilities.length
-    ?'<div class="pet-training-group is-next">'+nextAbilities.map(ability=>abilityCard(ability,'next')).join('')+'</div>'
+    ?'<div class="pet-training-group is-next">'+displayList('alphabetical',nextAbilities,ability=>abilityCard(ability,'next')).join('')+'</div>'
     :'';
   const laterHtml=laterAbilities.length
-    ?'<details class="details pet-training-later"><summary>Spätere Fähigkeiten und Ränge · '+laterAbilities.length+'</summary><div class="pet-training-later-list">'+laterAbilities.map(ability=>abilityCard(ability,'later')).join('')+'</div></details>'
+    ?'<details class="details pet-training-later"><summary>Spätere Fähigkeiten und Ränge · '+laterAbilities.length+'</summary><div class="pet-training-later-list">'+displayList('alphabetical',laterAbilities,ability=>abilityCard(ability,'later')).join('')+'</div></details>'
     :'';
   const training=active&&family
     ?(trainingAllowed&&localizedAbilities.length
@@ -641,7 +662,7 @@ function hunterPetsPanel(c){
       '<div><strong>Treue & Ausbildungspunkte</strong><span>Treue, Zufriedenheit, freie/verbrauchte Ausbildungspunkte und das tatsächlich gelernte Pet-Zauberbuch veröffentlicht Blizzard derzeit nicht in der Online-Armory. Deshalb werden dafür keine Schätzwerte angezeigt.</span></div>'+
     '</div></div>':'';
   const stable='<div class="pet-subsection"><div class="pet-subsection-head"><div><span class="pet-overline">STALL</span><h4>Weitere gezähmte Begleiter · '+stableList.length+'</h4></div></div>'+
-    (stableList.length?'<div class="pet-stable-list">'+stableList.map(hunterPetMiniCard).join('')+'</div>':'<p class="knowledge-empty">Noch kein weiterer Begleiter eingestallt.</p>')+'</div>';
+    (stableList.length?'<div class="pet-stable-list">'+displayList('alphabetical',stableList,hunterPetMiniCard).join('')+'</div>':'<p class="knowledge-empty">Noch kein weiterer Begleiter eingestallt.</p>')+'</div>';
   const combat=active?hunterPetCombatPanel(c,active):'';
   return '<div class="section hunter-pets-section"><h3>Begleiter'+staleLabel+'</h3>'+petRuleBanner()+hero+combat+familyProfile+training+care+stable+'</div>';
 }
@@ -686,13 +707,13 @@ function questsPanel(c,group,questCatalog={},openDetails=new Set()){
   const stale=(c.questsVerified===false?' · letzter bekannter Stand':'')+
     (group?.completedFresh===false?' · Abschlussstatus letzter bekannter Stand':'');
   if(!quests.length)return '<div class="section quests-section"><h3>Aktive Quests · 0'+stale+'</h3><p class="knowledge-empty">Keine aktiven Quests gemeldet.</p></div>';
-  const rows=quests.map(quest=>{
+  const rows=displayList('quests',quests,quest=>{
     const id=Number(quest?.id);
     const status=group?.byId?.get(id);
     const detail=questCatalog?.[id]||questCatalog?.[String(id)]||null;
     const title=detail?.title||quest.name;
-    const alsoOpen=(status?.open||[]).filter(other=>other.slug!==c.slug).map(shortCharacterName);
-    const completedBy=(status?.completed||[]).filter(other=>other.slug!==c.slug).map(shortCharacterName);
+    const alsoOpen=displayList('alphabetical',(status?.open||[]).filter(other=>other.slug!==c.slug),shortCharacterName);
+    const completedBy=displayList('alphabetical',(status?.completed||[]).filter(other=>other.slug!==c.slug),shortCharacterName);
     const meta=[
       alsoOpen.length?'<span class="quest-shared">Auch offen: '+esc(alsoOpen.join(' · '))+'</span>':'',
       completedBy.length?'<span class="quest-completed">Bereits abgeschlossen: '+esc(completedBy.join(' · '))+'</span>':''
@@ -710,7 +731,7 @@ function questsPanel(c,group,questCatalog={},openDetails=new Set()){
     const image=knowledgeIcon('/quest-marker.png',32,'quest-icon quest-marker');
     return '<div class="quest-entry">'+image+'<div class="quest-copy"><strong>'+esc(title)+'</strong>'+
       (meta?'<div class="quest-meta">'+meta+'</div>':'')+expandable+'</div></div>';
-  }).join('');
+  },{group,catalog:questCatalog}).join('');
   return '<div class="section quests-section"><h3>Aktive Quests · '+quests.length+stale+'</h3><div class="quest-list">'+rows+'</div>'+'</div>';
 }
 
@@ -885,7 +906,7 @@ function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog
  displayedReputationCatalog=reputationCatalog||{build:null,expected:0,records:{}};
  displayedPetCatalog=petCatalog||{};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
- const chars=sortNamedRecords(data.characters||[]);
+ const chars=displayOrder('alphabetical',data.characters||[]);
  const questStatus=questGroupStatus(chars);
 
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
@@ -997,7 +1018,7 @@ function cmpSectionRows(id,chars){
     }
     const orderedEnums=[
       ...mainStatEnums.filter(key=>namesByEnum.has(key)),
-      ...[...namesByEnum.keys()].filter(key=>!mainStatEnums.includes(key))
+      ...displayOrder('alphabetical',[...namesByEnum].filter(([key])=>!mainStatEnums.includes(key)).map(([key,name])=>({id:key,name}))).map(entry=>entry.id)
     ];
     for(const enumKey of orderedEnums){
       const label=namesByEnum.get(enumKey);
@@ -1019,10 +1040,10 @@ function cmpSectionRows(id,chars){
   }
   if(id==='talents'){
     push('Talentverteilung',c=>cmpEntry(c.talents||'Nicht verfügbar',null,'',c.talentsVerified===false));
-    const trees=[...new Set(chars.flatMap(c=>(c.talentDetails||[]).map(t=>t.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+    const trees=[...new Set(chars.flatMap(c=>(c.talentDetails||[]).map(t=>t.name)))].sort(compareGermanNames);
     for(const tree of trees){
       push('Talentbaum: '+tree,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree);return t?cmpEntry(t.spentPoints+' Punkte',t.spentPoints,'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false});
-      const talents=[...new Set(chars.flatMap(c=>((c.talentDetails||[]).find(t=>t.name===tree)?.talents||[]).map(t=>t.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+      const talents=[...new Set(chars.flatMap(c=>((c.talentDetails||[]).find(t=>t.name===tree)?.talents||[]).map(t=>t.name)))].sort(compareGermanNames);
       for(const name of talents)push('↳ '+name,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree)?.talents?.find(x=>x.name===name);return t?cmpEntry('Rang '+(t.rank??'–'),t.rank,t.description||'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false,iconUrl:chars.flatMap(c=>(c.talentDetails||[]).find(x=>x.name===tree)?.talents||[]).find(t=>t.name===name&&t.iconUrl)?.iconUrl});
     }
   }
@@ -1048,7 +1069,7 @@ function cmpSectionRows(id,chars){
     }
   }
   if(id==='reputation'){
-    const names=[...new Set(chars.flatMap(c=>(c.reputations||[]).map(r=>r.name)))].sort((a,b)=>a.localeCompare(b,'de'));
+    const names=displayOrder('text',[...new Set(chars.flatMap(c=>(c.reputations||[]).map(r=>r.name)))]);
     for(const name of names)push(name,c=>{const r=(c.reputations||[]).find(x=>x.name===name);if(!r)return cmpEntry('–',null,'',c.reputationsVerified!==true);
       const st=r.standing||{},stage=reputationStageIndex(st),v=cmpNumber(st.value),max=cmpNumber(st.max);
       const score=stage<0?null:stage*100000+(v!==null&&max>0?v/max*1000:0);
@@ -1059,7 +1080,7 @@ function cmpSectionRows(id,chars){
 }
 function renderComparison(){
   if(!compareRoot||!displayedData)return;
-  const all=sortNamedRecords(displayedData.characters||[]);
+  const all=displayOrder('alphabetical',displayedData.characters||[]);
   const selected=all.filter(c=>comparisonState.selected.has(c.slug));
   const choices='<fieldset class="compare-choices"><legend>Charaktere auswählen · '+selected.length+' von '+all.length+'</legend>'+all.map(c=>
     '<label class="compare-choice"><input type="checkbox" data-compare-character="'+esc(c.slug)+'" '+(comparisonState.selected.has(c.slug)?'checked':'')+'><span>'+esc(c.name)+'</span></label>'
@@ -1110,7 +1131,7 @@ function workshopNodeAtPath(tree,path=[]){
   return node||{};
 }
 function workshopCategoryKeys(node){
-  return Object.keys(node||{}).filter(key=>key!=='_items').sort((a,b)=>a.localeCompare(b,'de'));
+  return displayOrder('text',Object.keys(node||{}).filter(key=>key!=='_items'));
 }
 function workshopBrowseHtml(){
   const tree=workshopState.browseMode==='all'
@@ -1130,13 +1151,13 @@ function workshopBrowseHtml(){
   const items=Array.isArray(node?._items)?node._items:[];
   if(items.length){
     html+='<label class="workshop-field"><span>Gegenstand</span><select id="workshopBrowseItem"><option value="">Bitte wählen …</option>'+
-      items.map(item=>'<option value="'+esc(item.id)+'">'+esc(item.name)+'</option>').join('')+'</select></label>';
+      displayList('alphabetical',items,item=>'<option value="'+esc(item.id)+'">'+esc(item.name)+'</option>').join('')+'</select></label>';
   }
   return html||'<p class="workshop-muted">'+(workshopState.browseMode==='all'?'Noch keine Gegenstände im vollständigen Rezeptkatalog verfügbar.':'Noch keine aktuell herstellbaren Gegenstände kategorisiert.')+'</p>';
 }
 function workshopCrafterText(crafters=[]){
   if(!crafters.length)return 'Keiner der Daltons kann diesen Gegenstand aktuell herstellen.';
-  return crafters.map(c=>c.name+(c.profession?' · '+c.profession:'')+(Number.isFinite(Number(c.skill))?' '+c.skill+'/'+(c.skillCap??'–'):'')).join(' · ');
+  return displayList('alphabetical',crafters,c=>c.name+(c.profession?' · '+c.profession:'')+(Number.isFinite(Number(c.skill))?' '+c.skill+'/'+(c.skillCap??'–'):'')).join(' · ');
 }
 function workshopCopper(value){
   const n=Math.max(0,Math.round(Number(value)||0));
@@ -1146,7 +1167,7 @@ function workshopCopper(value){
 function workshopLearningCandidatesHtml(result){
   const list=Array.isArray(result.learningCandidates)?result.learningCandidates:[];
   if(!list.length)return '<p class="workshop-muted">Keiner der Daltons besitzt aktuell den passenden Beruf.</p>';
-  return '<div class="workshop-learning-candidates">'+list.map(candidate=>{
+  return '<div class="workshop-learning-candidates">'+displayList('alphabetical',list,candidate=>{
     const status=candidate.status==='can-learn-now'
       ?'<span class="workshop-learning-state is-ready">Jetzt lernbar</span>'
       :candidate.status==='skill-gap'
@@ -1213,8 +1234,8 @@ function workshopLearningHtml(result){
     ?'<div class="workshop-learning-auto">Automatisch gelernt'+requirement+'</div>'
     :sources.length
       ?'<div class="workshop-source-groups">'+
-        (confirmed.length?'<div><h5>In WoW Forever bestätigt · '+confirmed.length+'</h5>'+confirmed.map(workshopSourceHtml).join('')+'</div>':'')+
-        (other.length?'<details class="workshop-source-unconfirmed"><summary>Weitere Quellen · '+other.length+'</summary>'+other.map(workshopSourceHtml).join('')+'</details>':'')+
+        (confirmed.length?'<div><h5>In WoW Forever bestätigt · '+confirmed.length+'</h5>'+displayList('alphabetical',confirmed,workshopSourceHtml).join('')+'</div>':'')+
+        (other.length?'<details class="workshop-source-unconfirmed"><summary>Weitere Quellen · '+other.length+'</summary>'+displayList('alphabetical',other,workshopSourceHtml).join('')+'</details>':'')+
         '</div>'
       :'<p>'+esc(result.learningSourcesReason||'ForeverDB kennt derzeit keine konkrete Bezugsquelle.')+'</p>';
   return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4>'+
@@ -1232,7 +1253,7 @@ function workshopTreeHtml(node,depth=0){
     ?'<div class="workshop-node-meta"><span>'+esc(node.recipe.profession||'Beruf')+'</span><span>'+esc(node.recipe.craftsRequired)+'× Herstellung</span>'+
       (node.recipe.yieldPerCraft?.variable?'<span>Ausbeute '+esc(node.recipe.yieldPerCraft.min)+'–'+esc(node.recipe.yieldPerCraft.max)+'</span>':'')+'</div>'
     :'';
-  const children=(node.materials||[]).map(child=>workshopTreeHtml(child,depth+1)).join('');
+  const children=displayList('materialBranches',node.materials||[],child=>workshopTreeHtml(child,depth+1)).join('');
   return '<div class="workshop-tree-node" style="--workshop-depth:'+depth+'"><div class="workshop-node-card">'+
     '<div class="workshop-node-title"><strong>'+esc(node.quantity)+'× '+esc(node.item.name)+'</strong>'+status+'</div>'+recipe+'</div>'+
     (children?'<div class="workshop-tree-children">'+children+'</div>':'')+'</div>';
@@ -1250,15 +1271,15 @@ function workshopResultHtml(){
     '<p>'+esc(workshopCrafterText(topCrafters))+'</p></div>'+
     (craftable?'<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label>':'')+'</div>'+
     (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
-    (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+base.map(material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
+    (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+displayList('alphabetical',base,material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
     (!craftable?workshopLearningHtml(result):'')+
     (result.source==='foreverdb'?'<p class="workshop-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</article>';
 }
 function workshopSuggestionsHtml(){
-  return workshopState.suggestions.map(item=>
+  return displayList('searchRelevance',workshopState.suggestions,item=>
     '<button type="button" data-workshop-suggestion="'+esc(item.id)+'"><span><strong>'+esc(item.name)+'</strong>'+
-    '<small>'+(item.craftable?'✓ '+esc((item.crafters||[]).map(c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
+    '<small>'+(item.craftable?'✓ '+esc(displayList('alphabetical',item.crafters||[],c=>c.name).join(' · ')):'Kein Dalton-Crafter')+'</small></span><span aria-hidden="true">›</span></button>'
   ).join('');
 }
 function renderWorkshopSuggestions(){
@@ -1550,7 +1571,7 @@ function plannerAlternativeHtml(action,currentSourceKey){
   const alternatives=plannerOffers(action).filter(source=>source.key!==currentSourceKey);
   if(!alternatives.length)return '';
   return '<details class="planner-alternatives"><summary>Auch hier erhältlich · '+alternatives.length+'</summary><div class="planner-alternative-list">'+
-    alternatives.map(source=>{
+    displayList('rankedOffers',alternatives,source=>{
       const coords=plannerCoords(source.location);
       const meta=[source.role,source.location?.zone,coords,plannerPrice(source.priceCopper),plannerPriceSourceLabel(source,{short:true})].filter(Boolean).join(' · ');
       return '<div class="planner-alternative"><strong>'+esc(source.name||'NPC')+'</strong><span>'+esc(meta)+'</span></div>';
@@ -1631,7 +1652,7 @@ function plannerSelectionHtml(data){
       else if(provenance==='unknown'){group.unverifiedTotal+=price;unverifiedTotal+=price}
     }else{group.unknown++;unknown++}
   }
-  const groups=[...byNpc.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  const groups=displayOrder('alphabetical',[...byNpc.values()]);
   const estimated=classicTotal>0||unverifiedTotal>0;
   const totalLabel=unknown?'Bekannte Kosten':estimated?'Voraussichtliche Gesamtkosten':'Gesamtkosten';
   const totalNotes=[];
@@ -1649,7 +1670,7 @@ function plannerSelectionHtml(data){
       if(group.unverifiedTotal>0)groupNotes.push(workshopCopper(group.unverifiedTotal)+' Preisquelle offen');
       if(group.unknown)groupNotes.push(group.unknown+' ohne Preis');
       return '<article class="planner-route-stop"><div class="planner-route-head"><div><strong>'+esc(group.name)+'</strong>'+(meta?'<span>'+esc(meta)+'</span>':'')+'</div><span>'+group.actions.length+' Erledigung'+(group.actions.length===1?'':'en')+'</span></div>'+
-        '<div class="planner-route-recipes">'+group.actions.map(action=>{
+        '<div class="planner-route-recipes">'+displayList('plannerActions',group.actions,action=>{
           const priceLabel=plannerPriceSourceLabel(action.source,{short:true});
           return '<div><span>'+esc(action.name)+'</span><strong>'+esc(plannerPrice(action.source?.priceCopper))+(priceLabel?'<small>'+esc(priceLabel)+'</small>':'')+'</strong></div>';
         }).join('')+'</div>'+
@@ -1680,7 +1701,7 @@ function plannerNpcHtml(npc,data,actions){
     ?'<img class="planner-npc-avatar" src="'+esc(npc.avatarUrl)+'" alt="" width="48" height="48" loading="lazy">'
     :'<span class="planner-npc-avatar is-fallback" aria-hidden="true">'+esc(initials)+'</span>';
   return '<article class="planner-vendor"><div class="planner-vendor-head"><div class="planner-npc-heading">'+avatar+'<div><span class="planner-kicker">'+esc(npc.role||'ANLAUFSTELLE')+'</span><h3>'+esc(npc.name||'Unbekannter NPC')+'</h3>'+(meta?'<p>'+esc(meta)+'</p>':'')+'</div></div><span class="planner-vendor-count">'+actions.length+' Erledigung'+(actions.length===1?'':'en')+'</span></div>'+
-    '<div class="planner-recipe-list">'+actions.map(action=>{
+    '<div class="planner-recipe-list">'+displayList('plannerActions',actions,action=>{
       const sourceKey=action.source?.key||npc.key;
       const checked=plannerState.selected.get(action.key)===sourceKey;
       const stock=Number(action.source?.limitedStock);
@@ -1704,13 +1725,13 @@ function plannerLiveDiscoveriesHtml(data){
     group.items.push(discovery);
   }
   return '<section class="planner-status-warning" role="note"><strong>Live beobachtete neue Händlerangebote</strong><span>Diese Lerngegenstände wurden im aktuellen Forever-Build tatsächlich beim Händler gesehen, sind im zugrunde liegenden Rezeptkatalog aber noch nicht eindeutig zugeordnet. Sie werden deshalb angezeigt, aber nicht automatisch als lernbare Erledigung ausgewählt.</span>'+
-    [...groups.values()].map(group=>'<div><strong>'+esc(group.name)+'</strong><span>'+
-      group.items.map(item=>esc(item.itemName)+(item.itemID?' · Item '+esc(item.itemID):'')+(Number.isFinite(Number(item.priceCopper))?' · '+esc(plannerPrice(item.priceCopper)):'')).join('<br>')+
+    displayList('alphabetical',[...groups.values()],group=>'<div><strong>'+esc(group.name)+'</strong><span>'+
+      displayList('discoveries',group.items,item=>esc(item.itemName)+(item.itemID?' · Item '+esc(item.itemID):'')+(Number.isFinite(Number(item.priceCopper))?' · '+esc(plannerPrice(item.priceCopper)):'')).join('<br>')+
     '</span></div>').join('')+'</section>';
 }
 function plannerCategoryFilters(data){
   const categories=Array.isArray(data?.categories)?data.categories:[];
-  return '<fieldset class="planner-filters"><legend>Was soll berücksichtigt werden?</legend><div class="planner-filter-grid">'+categories.map(category=>
+  return '<fieldset class="planner-filters"><legend>Was soll berücksichtigt werden?</legend><div class="planner-filter-grid">'+displayList('fixedControls',categories,category=>
     '<label class="planner-filter"><input type="checkbox" data-location-category="'+esc(category.id)+'"'+(plannerState.categories.has(category.id)?' checked':'')+'><span><strong>'+esc(category.label)+'</strong><small>'+esc(category.actionCount??0)+' hier verfügbar</small></span></label>'
   ).join('')+'</div><p>Alle Kategorien sind vorausgewählt. Lehrer, Lernlevel und Angebot sind bestätigt. Klassenfähigkeiten mit noch nicht automatisch auslesbarem persönlichem Lernstand werden sichtbar gekennzeichnet und bei „Alle sichtbaren auswählen“ ausgelassen.</p></fieldset>';
 }
@@ -1723,8 +1744,8 @@ function renderLocationPlanner(){
   if(plannerState.error&&!plannerState.data){
     plannerRoot.innerHTML='<p class="error">'+esc(plannerState.error)+'</p>';return;
   }
-  const characters=Array.isArray(data.characters)?data.characters:[];
-  const locations=Array.isArray(data.locations)?data.locations:[];
+  const characters=displayOrder('alphabetical',data.characters);
+  const locations=displayOrder('alphabetical',data.locations);
   const selectedCharacter=data.selectedCharacter||null;
   const selectedLocation=data.selectedLocation||null;
   const controls='<section class="planner-controls"><div class="planner-control-copy"><span class="planner-kicker">ORT PLANEN</span><h3>Was kannst du hier erledigen?</h3><p>Wähle Charakter und Ort. Bekannte Orte bleiben auch bei 0 Erledigungen auswählbar; angezeigt werden dort weiterhin nur bestätigte Dinge, die mit dem aktuellen Charakterstand sofort möglich sind.</p></div>'+
@@ -1735,7 +1756,7 @@ function renderLocationPlanner(){
     '</select></label></div></section>';
   let characterSummary='';
   if(selectedCharacter){
-    const professionText=(selectedCharacter.professions||[]).map(p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
+    const professionText=displayList('professions',selectedCharacter.professions||[],p=>p.name+' '+(p.current??'–')+'/'+(p.max??'–')).join(' · ');
     const learnedClassAbilities=Array.isArray(selectedCharacter.knownClassAbilities)?selectedCharacter.knownClassAbilities:[];
     const spellbookCaptured=Number.isFinite(Date.parse(selectedCharacter.knownClassAbilitiesCapturedAt||''))
       ?new Date(selectedCharacter.knownClassAbilitiesCapturedAt).toLocaleString('de-DE',{dateStyle:'medium',timeStyle:'short'})
@@ -1743,7 +1764,7 @@ function renderLocationPlanner(){
     const learnedClassDetails=selectedCharacter.knownClassAbilitiesVerified
       ?'<details class="planner-known-abilities"><summary>Bereits gelernte Klassenränge · '+esc(learnedClassAbilities.length)+(spellbookCaptured?' · Stand '+esc(spellbookCaptured):'')+'</summary><div class="planner-known-ability-list">'+
         (learnedClassAbilities.length
-          ?learnedClassAbilities.map(ability=>'<span><strong>'+esc(ability.name||('Klassenfähigkeit #'+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+(ability.inferredFromHigherRank===true?'<small>durch höheren bekannten Rang mitgelernt</small>':'')+'</span>').join('')
+          ?displayList('alphabetical',learnedClassAbilities,ability=>'<span><strong>'+esc(ability.name||('Klassenfähigkeit #'+ability.id))+'</strong>'+(ability.rank?'<small>'+esc(ability.rank)+'</small>':'')+(ability.inferredFromHigherRank===true?'<small>durch höheren bekannten Rang mitgelernt</small>':'')+'</span>').join('')
           :'<span><strong>Noch keine Klassenränge im synchronisierten Spellbook</strong></span>')+
         '</div></details>'
       :'<small>Persönlicher Lernstand noch offen · für vollständige Daten das WoW-Forever-AddOn über CurseForge installieren; nach der ersten Synchronisation wird der Lernstand automatisch übernommen.</small>';
@@ -1772,7 +1793,7 @@ function renderLocationPlanner(){
     body=(atLocation?plannerCategoryFilters(data):'')+classStatusWarning+plannerLiveDiscoveriesHtml(data)+
       '<section class="planner-location-summary"><div><span class="planner-kicker">'+esc(selectedLocation)+'</span><h3>'+visible.length+' Erledigung'+(visible.length===1?'':'en')+' bei '+npcs.length+' Station'+(npcs.length===1?'':'en')+'</h3><p>'+(atLocation?'Jede Erledigung zählt nur einmal. Mehrere bestätigte Angebote bleiben bei ihren jeweiligen NPCs sichtbar; die automatische Auswahl nimmt den günstigsten bestätigten Preis.':'Der Ort ist im Ortsplaner vorhanden, auch wenn hier für den gewählten Charakter aktuell nichts ansteht.')+'</p></div>'+(atLocation?'<div class="planner-list-actions"><button type="button" data-planner-select-all>Alle sichtbaren auswählen</button><button type="button" data-planner-clear>Auswahl leeren</button></div>':'')+'</section>'+
       (atLocation?plannerSelectionHtml(data):'')+
-      (visible.length?'<div class="planner-vendors">'+npcs.map(npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
+      (visible.length?'<div class="planner-vendors">'+displayList('alphabetical',npcs,npc=>plannerNpcHtml(npc,data,npc.actions)).join('')+'</div>':
         atLocation===0
           ?'<div class="planner-placeholder"><strong>Aktuell keine Erledigungen an diesem Ort.</strong><span>'+esc(selectedLocation)+' ist im Ortsplaner vorhanden. Für '+esc(selectedCharacter?.name||'diesen Charakter')+' gibt es hier momentan nur keine bestätigte Erledigung.</span></div>'
           :'<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+

@@ -1,0 +1,468 @@
+{
+  "description": "Reviewed direct transforms and loops in app.js. New data-driven rendering must use displayList/displayOrder. Existing entries cover static UI structure, state transforms, calculations, already ordered intermediate lists, event binding and named policy implementations. Do not regenerate this inventory without reviewing semantics.",
+  "entries": [
+    {
+      "owner": "statsPanel",
+      "line": "const byEnum=new Map(details.map(entry=>[entry.enum,entry]));"
+    },
+    {
+      "owner": "statsPanel",
+      "line": "const main=mainStatEnums.map(key=>byEnum.get(key)).filter(Boolean);"
+    },
+    {
+      "owner": "statsPanel",
+      "line": "const mainHtml=main.map(entry=>statTile(entry,!fresh.has(entry.enum),true)).join('');"
+    },
+    {
+      "owner": "professionScale",
+      "line": "professionStages.map(end=>'<span>'+end+'</span>').join('')+"
+    },
+    {
+      "owner": "sortNamedRecords",
+      "line": "function sortNamedRecords(list=[]){return [...list].sort(compareNamedRecords)}"
+    },
+    {
+      "owner": "sortNamedRecords",
+      "line": "text:list=>[...list].sort(compareGermanNames),"
+    },
+    {
+      "owner": "sortNamedRecords",
+      "line": "instances:list=>[...list].sort((a,b)=>Number(Boolean(b.activeBinding))-Number(Boolean(a.activeBinding))||compareNamedRecords(a,b)),"
+    },
+    {
+      "owner": "sortNamedRecords",
+      "line": "materialBranches:list=>[...list].sort((a,b)=>compareNamedRecords(a.item,b.item)),"
+    },
+    {
+      "owner": "sortNamedRecords",
+      "line": "discoveries:list=>[...list].sort((a,b)=>compareGermanNames(a.itemName,b.itemName)||compareGermanNames(a.itemID,b.itemID)),"
+    },
+    {
+      "owner": "sortNamedRecords",
+      "line": "plannerActions:list=>[...list].sort((a,b)=>compareGermanNames(a.category,b.category)||compareGermanNames(a.profession,b.profession)||compareNamedRecords(a,b)),"
+    },
+    {
+      "owner": "displayList",
+      "line": "return displayOrder(policy,list,context).map(renderEntry);"
+    },
+    {
+      "owner": "displayList",
+      "line": "const professionOrderById=new Map(professionOrder.map(([id],i)=>[id,i]));"
+    },
+    {
+      "owner": "displayList",
+      "line": "const professionOrderByName=new Map(professionOrder.map(([,name],i)=>[name,i]));"
+    },
+    {
+      "owner": "displayList",
+      "line": "for(const [id,name,rank] of [[356,'Angeln',100],[185,'Kochkunst',110],[129,'Erste Hilfe',120]]){"
+    },
+    {
+      "owner": "sortProfessionsForDisplay",
+      "line": "return [...list].sort((a,b)=>order(a)-order(b)||compareNamedRecords(a,b));"
+    },
+    {
+      "owner": "professionKnowledgeForDisplay",
+      "line": "return sortNamedRecords(Array.isArray(p?.knownRecipes)?p.knownRecipes:[]).flatMap(r=>{"
+    },
+    {
+      "owner": "sortQuestRecords",
+      "line": "return [...quests].sort((a,b)=>openCount(b)-openCount(a)||compareGermanNames(title(a),title(b))||compareGermanNames(a.id,b.id));"
+    },
+    {
+      "owner": "professionRows",
+      "line": "const stageSegments=professionStages.map((end,index)=>{"
+    },
+    {
+      "owner": "instanceStatusPanel",
+      "line": "for(const entry of visited){"
+    },
+    {
+      "owner": "instanceStatusPanel",
+      "line": "for(const entry of lockouts){"
+    },
+    {
+      "owner": "highestKnownClassAbilities",
+      "line": "for(const entry of Array.isArray(entries)?entries:[]){"
+    },
+    {
+      "owner": "highestKnownClassAbilities",
+      "line": ".sort(compareNamedRecords);"
+    },
+    {
+      "owner": "reputationPanel",
+      "line": "const segments=reputationStages.map((stage,i)=>{"
+    },
+    {
+      "owner": "totalXpAtLevel",
+      "line": "for(let current=1;current<target;current++)total+=Number(xpToNextByLevel[current])||0;"
+    },
+    {
+      "owner": "petAbilityCard",
+      "line": "const ranks=[...(ability?.ranks||[])].sort((a,b)=>a.level-b.level);"
+    },
+    {
+      "owner": "hunterPetsPanel",
+      "line": "?localizedFamily.abilities.filter(ability=>ability?.name).sort((a,b)=>(Number(a.requiredLevel)||999)-(Number(b.requiredLevel)||999)||compareNamedRecords(a,b))"
+    },
+    {
+      "owner": "hunterPetsPanel",
+      "line": "for(const ability of knownLevels.filter(ability=>Number(ability.requiredLevel)<=petLevel)){"
+    },
+    {
+      "owner": "hunterPetsPanel",
+      "line": ".sort((a,b)=>Number(a.requiredLevel)-Number(b.requiredLevel)||Number(a.id)-Number(b.id));"
+    },
+    {
+      "owner": "questGroupStatus",
+      "line": "for(const character of chars){"
+    },
+    {
+      "owner": "questGroupStatus",
+      "line": "for(const quest of Array.isArray(character.activeQuests)?character.activeQuests:[]){"
+    },
+    {
+      "owner": "questGroupStatus",
+      "line": "for(const id of Array.isArray(character.completedQuestIds)?character.completedQuestIds:[]){"
+    },
+    {
+      "owner": "questGroupStatus",
+      "line": "const ordered=[...byId.values()].filter(entry=>entry.open.length).sort((a,b)=>"
+    },
+    {
+      "owner": "questGroupStatus",
+      "line": "rank:new Map(ordered.map((entry,index)=>[entry.id,index])),"
+    },
+    {
+      "owner": "equipmentPanel",
+      "line": "for(const item of c.equipment||[]){"
+    },
+    {
+      "owner": "equipmentPanel",
+      "line": "const rows=equipmentSlotOrder.map(slotType=>{"
+    },
+    {
+      "owner": "installPortraitFallbacks",
+      "line": "cards.querySelectorAll('img.character-render').forEach(img=>img.addEventListener('error',()=>{"
+    },
+    {
+      "owner": "characterTabsNav",
+      "line": "return '<div class=\"character-tabs\" role=\"tablist\" aria-label=\"Details von '+esc(c.name)+'\">'+characterTabsFor(c).map(tab=>{"
+    },
+    {
+      "owner": "setActiveCharacterTab",
+      "line": "cards.querySelectorAll('[data-character-tab]').forEach(button=>{"
+    },
+    {
+      "owner": "setActiveCharacterTab",
+      "line": "cards.querySelectorAll('[data-character-panel]').forEach(panel=>{"
+    },
+    {
+      "owner": "installCharacterTabs",
+      "line": "cards.querySelectorAll('button[data-character-tab]').forEach(button=>"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "const priorBySlug=new Map((displayedData.characters||[]).map(c=>[c.slug,c]));"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "return {...data,characters:(data.characters||[]).map(c=>{"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "for(const [key,value] of Object.entries(prior.stats||{})){"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "for(const [key,value] of Object.entries(prior.statsByEnum||{})){"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "const detailByEnum=new Map((prior.statsDetails||[]).filter(x=>x?.enum).map(x=>[x.enum,x]));"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));"
+    },
+    {
+      "owner": "keepNewestProfiles",
+      "line": "const mergedProfessions=(c.professions||[]).map(p=>{"
+    },
+    {
+      "owner": "render",
+      "line": "const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));"
+    },
+    {
+      "owner": "render",
+      "line": "const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);"
+    },
+    {
+      "owner": "render",
+      "line": "const avg=levels.length?(levels.reduce((a,b)=>a+b,0)/levels.length).toFixed(1):\"–\";"
+    },
+    {
+      "owner": "render",
+      "line": "summary.innerHTML=[[\"Gruppenlevel\",levels.length?`${min}–${max}`:\"–\"],[\"Durchschnitt\",avg],[\"Abstand\",levels.length?`${max-min} Level`:\"–\"],[\"Charaktere\",chars.length]].map(([a,b])=>`<div class=\"stat\"><small>${a}</small><strong>${b}</strong></div>`).join(\"\");"
+    },
+    {
+      "owner": "render",
+      "line": "cards.innerHTML=chars.map((c,index)=>`<article class=\"card ${classColor(c)}\">"
+    },
+    {
+      "owner": "segmentedControl",
+      "line": "options.map(([optionValue,optionLabel])=>'<button type=\"button\" class=\"segmented-option '+(value===optionValue?'is-active':'')+'\" data-segmented-value=\"'+esc(optionValue)+'\" role=\"radio\" aria-checked=\"'+(value===optionValue?'true':'false')+'\">'+esc(optionLabel)+'</button>').join('')+"
+    },
+    {
+      "owner": "setMainView",
+      "line": "document.querySelectorAll('[data-view-link]').forEach(a=>{"
+    },
+    {
+      "owner": "cmpTableRow",
+      "line": "const scores=values.map(v=>v?.score).filter(v=>v!==null&&v!==undefined&&Number.isFinite(v));"
+    },
+    {
+      "owner": "cmpTableRow",
+      "line": "return '<tr><th scope=\"row\">'+(iconUrl?'<span class=\"knowledge-title\">'+knowledgeIcon(iconUrl,22)+esc(label)+'</span>':esc(label))+'</th>'+values.map(v=>{"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const push=(label,fn,opts={})=>rows.push(cmpTableRow(label,chars.map(fn),chars,opts));"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const c of chars)for(const entry of Array.isArray(c.statsDetails)?c.statsDetails:[]){"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "...displayOrder('alphabetical',[...namesByEnum].filter(([key])=>!mainStatEnums.includes(key)).map(([key,name])=>({id:key,name}))).map(entry=>entry.id)"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const enumKey of orderedEnums){"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=item?.slotType;if(key&&!m.has(key)&&item.item)m.set(key,item)}return m});"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const slotType of equipmentSlotOrder){"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const label=slots.map(m=>m.get(slotType)?.slot).find(Boolean);"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const trees=[...new Set(chars.flatMap(c=>(c.talentDetails||[]).map(t=>t.name)))].sort(compareGermanNames);"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const tree of trees){"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const talents=[...new Set(chars.flatMap(c=>((c.talentDetails||[]).find(t=>t.name===tree)?.talents||[]).map(t=>t.name)))].sort(compareGermanNames);"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const name of talents)push('↳ '+name,c=>{const t=(c.talentDetails||[]).find(x=>x.name===tree)?.talents?.find(x=>x.name===name);return t?cmpEntry('Rang '+(t.rank??'–'),t.rank,t.description||'',c.talentDetailsVerified===false):cmpEntry('–')},{comparable:false,iconUrl:chars.flatMap(c=>(c.talentDetails||[]).find(x=>x.name===tree)?.talents||[]).find(t=>t.name===name&&t.iconUrl)?.iconUrl});"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const c of chars)for(const q of c.activeQuests||[])if(Number.isInteger(Number(q.id)))ids.set(Number(q.id),displayedQuestCatalog?.[q.id]?.title||q.name||'Quest '+q.id);"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const {id,name} of sortQuestRecords([...ids].map(([id,name])=>({id,name})),questGroupStatus(chars),displayedQuestCatalog))push(name,c=>{"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const professions=chars.flatMap(c=>c.professions||[]);"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const ordered=[...new Set(sortProfessionsForDisplay(professions).map(p=>p.name))];"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const name of ordered){"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "push(name,c=>{const p=(c.professions||[]).find(x=>x.name===name);return p?cmpEntry((p.current??'–')+' / '+(p.max??'–'),p.current,'',p.unverified||c.scrapeOk===false):cmpEntry(c.professionsVerified===true?'Nicht erlernt':'–',null,'',c.professionsVerified!==true)},{iconUrl:chars.flatMap(c=>c.professions||[]).find(p=>p.name===name&&p.iconUrl)?.iconUrl});"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const knowledge=sortNamedRecords(professions.filter(p=>p.name===name).flatMap(professionKnowledgeForDisplay));"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const recipes=[...new Set(knowledge.map(r=>r.name))];"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const recipe of recipes)push('↳ '+recipe,c=>{const p=(c.professions||[]).find(x=>x.name===name);const r=p?.knownRecipes?.find(x=>x.name===recipe);return cmpEntry(r?'Erlernt':(c.professionDetailsVerified===true?'Nicht erlernt':'Unbekannt'),null,'',c.professionDetailsVerified!==true)},{comparable:false,iconUrl:knowledge.find(r=>r.name===recipe&&r.iconUrl)?.iconUrl});"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "const names=displayOrder('text',[...new Set(chars.flatMap(c=>(c.reputations||[]).map(r=>r.name)))]);"
+    },
+    {
+      "owner": "cmpSectionRows",
+      "line": "for(const name of names)push(name,c=>{const r=(c.reputations||[]).find(x=>x.name===name);if(!r)return cmpEntry('–',null,'',c.reputationsVerified!==true);"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "const choices='<fieldset class=\"compare-choices\"><legend>Charaktere auswählen · '+selected.length+' von '+all.length+'</legend>'+all.map(c=>"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "'<div class=\"compare-scroll\" tabindex=\"0\" aria-label=\"Vergleichstabelle horizontal scrollen\"><table class=\"compare-table\"><thead><tr><th scope=\"col\">Merkmal</th>'+selected.map(c=>'<th scope=\"col\"><span class=\"compare-character-name\">'+esc(c.name)+'</span><small>'+esc(c.class||'')+' · Level '+esc(c.level??'–')+'</small></th>').join('')+'</tr></thead><tbody>'+"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "comparisonSections.map(([id,label])=>{"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "const visible=comparisonState.mode==='differences'?rows.filter(row=>{const cells=[...row.matchAll(/<span class=\"compare-value\">([^<]*)<\\/span>/g)].map(m=>m[1]);return new Set(cells).size>1;}):rows;"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "compareRoot.querySelectorAll('[data-compare-character]').forEach(input=>input.addEventListener('change',()=>{"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "compareRoot.querySelectorAll('[data-compare-section]').forEach(btn=>btn.addEventListener('click',()=>{"
+    },
+    {
+      "owner": "renderComparison",
+      "line": "compareRoot.querySelectorAll('[data-segmented-control=\"compare-mode\"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{"
+    },
+    {
+      "owner": "workshopNodeAtPath",
+      "line": "for(const segment of path){"
+    },
+    {
+      "owner": "workshopBrowseHtml",
+      "line": "for(let depth=0;depth<5;depth++){"
+    },
+    {
+      "owner": "workshopBrowseHtml",
+      "line": "keys.map(key=>'<option value=\"'+esc(key)+'\"'+(chosen===key?' selected':'')+'>'+esc(key)+'</option>').join('')+'</select></label>';"
+    },
+    {
+      "owner": "renderWorkshopSuggestions",
+      "line": "list.querySelectorAll('[data-workshop-suggestion]').forEach(button=>button.addEventListener('click',()=>selectWorkshopItem(Number(button.dataset.workshopSuggestion))));"
+    },
+    {
+      "owner": "renderWorkshop",
+      "line": "for(const selector of ['.workshop-search-head','.view-filter-row']){"
+    },
+    {
+      "owner": "renderWorkshop",
+      "line": "for(const child of [...existingShell.children])if(child!==searchPanel)child.remove();"
+    },
+    {
+      "owner": "renderWorkshop",
+      "line": "for(const child of [...nextShell.children])if(child!==nextPanel)existingShell.append(child);"
+    },
+    {
+      "owner": "renderWorkshop",
+      "line": "workshopRoot.querySelectorAll('[data-segmented-control=\"workshop-search-mode\"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{"
+    },
+    {
+      "owner": "renderWorkshop",
+      "line": "workshopRoot.querySelectorAll('[data-segmented-control=\"workshop-browse-mode\"] [data-segmented-value]').forEach(button=>button.addEventListener('click',()=>{"
+    },
+    {
+      "owner": "renderWorkshop",
+      "line": "workshopRoot.querySelectorAll('[data-workshop-browse-level]').forEach(select=>select.addEventListener('change',()=>{"
+    },
+    {
+      "owner": "cachedViewFetch",
+      "line": "while(viewResponseCache.size>VIEW_CACHE_LIMIT)viewResponseCache.delete(viewResponseCache.keys().next().value);"
+    },
+    {
+      "owner": "plannerOffers",
+      "line": "for(const source of [action?.source,...(Array.isArray(action?.alternatives)?action.alternatives:[])]){"
+    },
+    {
+      "owner": "plannerCheapestKnownOffer",
+      "line": "const known=offers.map(source=>({"
+    },
+    {
+      "owner": "plannerCheapestKnownOffer",
+      "line": "const bestTier=Math.min(...known.map(entry=>entry.tier));"
+    },
+    {
+      "owner": "plannerCheapestKnownOffer",
+      "line": "const minimum=Math.min(...trusted.map(entry=>entry.price));"
+    },
+    {
+      "owner": "plannerCheapestKnownOffer",
+      "line": "return trusted.filter(entry=>entry.price===minimum).map(entry=>entry.source).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de'))[0]||null;"
+    },
+    {
+      "owner": "plannerSelectAllVisible",
+      "line": "for(const action of plannerVisibleActions(data)){"
+    },
+    {
+      "owner": "plannerSelectedActions",
+      "line": "for(const action of plannerVisibleActions(data)){"
+    },
+    {
+      "owner": "plannerSelectionHtml",
+      "line": "for(const action of selected){"
+    },
+    {
+      "owner": "plannerSelectionHtml",
+      "line": "'<div class=\"planner-route\">'+groups.map(group=>{"
+    },
+    {
+      "owner": "plannerNpcHtml",
+      "line": "const initials=String(npc.name||'?').split(/\\s+/).filter(Boolean).slice(0,2).map(part=>part[0]?.toLocaleUpperCase('de-DE')||'').join('')||'?';"
+    },
+    {
+      "owner": "plannerLiveDiscoveriesHtml",
+      "line": "for(const discovery of discoveries){"
+    },
+    {
+      "owner": "renderLocationPlanner",
+      "line": "characters.map(character=>'<option value=\"'+esc(character.slug)+'\"'+(plannerState.character===character.slug?' selected':'')+'>'+esc(character.name)+'</option>').join('')+"
+    },
+    {
+      "owner": "renderLocationPlanner",
+      "line": "locations.map(location=>'<option value=\"'+esc(location.name)+'\"'+(plannerState.location===location.name?' selected':'')+'>'+esc(location.name)+' · '+location.actionCount+' Erledigung'+(location.actionCount===1?'':'en')+(Number(location.discoveryCount)>0?' · '+location.discoveryCount+' Live-Fund'+(location.discoveryCount===1?'':'e'):'')+'</option>').join('')+"
+    },
+    {
+      "owner": "renderLocationPlanner",
+      "line": "const visibleKeys=new Set(visible.map(action=>action.key));"
+    },
+    {
+      "owner": "renderLocationPlanner",
+      "line": "const npcs=(Array.isArray(data.npcs)?data.npcs:[]).map(npc=>({"
+    },
+    {
+      "owner": "renderLocationPlanner",
+      "line": "plannerRoot.querySelectorAll('[data-location-category]').forEach(input=>input.addEventListener('change',()=>{"
+    },
+    {
+      "owner": "renderLocationPlanner",
+      "line": "plannerRoot.querySelectorAll('[data-location-action]').forEach(input=>input.addEventListener('change',()=>{"
+    }
+  ],
+  "entryModules": [
+    "/app.js"
+  ],
+  "appImports": [
+    "./hunter-pets.js",
+    "./reputation-data.js"
+  ]
+}
