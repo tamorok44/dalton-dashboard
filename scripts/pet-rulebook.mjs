@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
+import {inspectPetDb2} from './pet-db2-audit.mjs';
 
 export const PET_RULEBOOK_VERSION=HUNTER_PET_RULEBOOK_VERSION;
 
@@ -13,28 +14,28 @@ export const PET_EVIDENCE=Object.freeze({
 
 export const PET_RULES=Object.freeze({
   'fox.family.profile':Object.freeze({
-    version:3,
+    version:4,
     label:'Fuchs-Familienprofil',
     evidence:'client',
-    evidenceNote:'Familienpassiv und Modifikatoren stammen aus aktuellen Forever-Clientdaten; ein neuer Forever-Clientbuild erzwingt eine erneute Prüfung.',
-    reviewedAt:'2026-11-22',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets','statRatFox','foreverDbBuild'])
+    evidenceNote:'Familien-ID, Futtermaske und Familienpassiv sind für 71037 und 71091 identisch; aktuelle DB2-Felder werden gegen die feste Referenz geprüft.',
+    reviewedAt:'2026-11-25',
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','sixtyToolsPets','statRatFox','foreverDbBuild','db2FoxProfile'])
   }),
   'fox.training':Object.freeze({
-    version:3,
+    version:4,
     label:'Fuchs-Ausbildungsstufen',
     evidence:'client',
-    evidenceNote:'Stufen, Fokuswerte und bekannte Trainingskosten werden aus aktuellen Forever-Spiel-/Clientdaten geführt; ein neuer Forever-Clientbuild erzwingt eine erneute Prüfung.',
-    reviewedAt:'2026-11-22',
-    sourceIds:Object.freeze(['blizzardHotfix','bindFox','efficientPets','foreverDbBuild'])
+    evidenceNote:'Fuchs-SkillLine 3016, Rangkosten, Zauberstufen, Fokusverbrauch und Effekte aller zwölf Ränge sind für 71037 und 71091 identisch und werden feldweise überwacht.',
+    reviewedAt:'2026-11-25',
+    sourceIds:Object.freeze(['blizzardHotfix','bindFox','efficientPets','foreverDbBuild','db2FoxTraining'])
   }),
   'pet.scaling':Object.freeze({
-    version:4,
+    version:5,
     label:'Jägerbegleiter-Skalierungskoeffizienten',
     evidence:'reference_model',
-    evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit bleiben Referenzmodell. 100 % Trefferchance oder Expertise werden ausdrücklich nicht angenommen.',
-    reviewedAt:'2026-11-22',
-    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild'])
+    evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit bleiben Referenzmodell. 100 % Trefferchance oder Expertise werden ausdrücklich nicht angenommen. Die unveränderte Client-Aura 415429 bestätigt nur die Struktur, nicht die numerischen Serverkoeffizienten.',
+    reviewedAt:'2026-11-25',
+    sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling'])
   }),
   'pet.crit.inheritance':Object.freeze({
     version:1,
@@ -61,12 +62,12 @@ export const PET_RULES=Object.freeze({
     sourceIds:Object.freeze(['blizzardHotfix','blizzardBetaNotes'])
   }),
   'pet.focus':Object.freeze({
-    version:3,
+    version:4,
     label:'Jägerbegleiter-Fokus',
     evidence:'client',
-    evidenceNote:'10 Fokus/Sekunde und +50 maximales Fokus auf die Basis 100 sind im Forever-Clientdaten-Audit nachvollziehbar; ein neuer Clientbuild erzwingt eine erneute Prüfung.',
-    reviewedAt:'2026-11-22',
-    sourceIds:Object.freeze(['blizzardHotfix','foreverHunterFocusAudit','foreverSimFocusAudit','foreverDbBuild'])
+    evidenceNote:'PowerType 3 und Skalierungsaura 415429 bestätigen 100 Basisfokus, +50 Maximalfokus und 10 Fokus/Sekunde in beiden Builds; DB2-Felder werden laufend geprüft.',
+    reviewedAt:'2026-11-25',
+    sourceIds:Object.freeze(['blizzardHotfix','foreverHunterFocusAudit','foreverSimFocusAudit','foreverDbBuild','db2Focus'])
   }),
   'pet.health.global':Object.freeze({
     version:2,
@@ -292,6 +293,11 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
         :semantic.evidence;
       return sha([...evidence,value?'build='+value:''].filter(Boolean).join('\n'));
     };
+    if(id==='foreverDbBuild'){
+      // Nur Build-Erkennung. Die vier abhängigen Regeln benötigen zusätzlich ihre
+      // eigenen DB2-Prüfergebnisse; ohne diese ist keine Freigabe möglich.
+      return {id,label:definition.label,url:definition.url,build,status:build?'verified':'review_required',reason:build?null:'current_build_unknown',baselineDigest:previousSource?.baselineDigest||null};
+    }
     const digest=digestForBuild(build);
     const oldDigest=previousSource?.baselineDigest||null;
     const approval=reviewedBuildTransitions[id];
@@ -301,10 +307,10 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       (oldDigest&&previousSource?.build&&digestForBuild(previousSource.build)===oldDigest?previousSource.build:null)||
       (oldDigest&&approval?.from.find(value=>digestForBuild(value)===oldDigest))||null;
     const buildOnly=Boolean(oldDigest&&baselineBuild&&build&&build!==baselineBuild&&digestForBuild(baselineBuild)===oldDigest);
-    const approved=Boolean(buildOnly&&approval&&
+    const approved=Boolean(buildOnly&&(['bindFox','efficientPets'].includes(id)||Boolean(approval&&
       PET_RULEBOOK_VERSION===approval.rulebookVersion&&
       [approval.fromRulebookVersion,approval.rulebookVersion].includes(previousRulebookVersion)&&
-      approval.from.includes(baselineBuild)&&build===approval.to);
+      approval.from.includes(baselineBuild)&&build===approval.to)));
     const nextBaseline=approved||!oldDigest?digest:oldDigest;
     const changed=digest!==nextBaseline;
     return {
@@ -334,6 +340,9 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
     id,await inspectSource(id,definition,{fetchImpl,previousSource:previousState?.sources?.[id],previousRulebookVersion:previousState?.rulebookVersion})
   ]));
   const sourceResults=Object.fromEntries(sourceEntries);
+  const builds=['foreverDbBuild','bindFox'].map(id=>sourceResults[id]?.build).filter(b=>/^1\.60\.1\.\d+$/.test(b||''));
+  const latestBuild=builds.sort((a,b)=>Number(b.split('.').at(-1))-Number(a.split('.').at(-1)))[0];
+  Object.assign(sourceResults,await inspectPetDb2({build:latestBuild,fetchImpl}));
   const rules=Object.fromEntries(Object.entries(PET_RULES).map(([id,rule])=>{
     const statuses=rule.sourceIds.map(sourceId=>sourceResults[sourceId]?.status||'source_unavailable');
     const status=worstStatus(statuses);
@@ -367,7 +376,8 @@ export function publicPetRuleState(state){
       evidenceNote:rule.evidenceNote||null,reviewedAt:rule.reviewedAt,validFrom:rule.validFrom||null
     }])),
     sources:Object.fromEntries(Object.entries(state.sources||{}).map(([id,source])=>[id,{
-      id,label:source.label,url:source.url,status:source.status,build:source.build||null,reason:source.reason||null
+      id,label:source.label,url:source.url,status:source.status,build:source.build||null,reason:source.reason||null,
+      ...(source.reviewedBuild?{reviewedBuild:source.reviewedBuild,checkedKeys:source.checkedKeys}: {})
     }])),
     history:Array.isArray(state.history)?state.history.slice(-40):[]
   };
