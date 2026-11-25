@@ -202,6 +202,10 @@ assert.equal(legacyOffline.sources.bindFox.baselineDigest,legacy.sources.bindFox
 const retry=await verifyPetRulebook({fetchImpl:fetchFrom(foxBuildPages),previousState:legacyOffline,now});
 assert.equal(retry.sources.bindFox.status,'verified');
 // Change a real field independent of the order of columns.
+const fuzzyId=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='effect17253'?body+'\n'+PET_DB2_BASELINE.effect17253.rows[0].replace(/,17253$/,',1317253'):body),previousState:legacy,now});
+assert.equal(fuzzyId.rules['fox.training'].status,'verified','Unrelated substring matches do not change the exact ID evidence');
+const missingExact=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='effect17253'?body.replace(/,17253$/,',1317253'):body),previousState:legacy,now});
+assert.equal(missingExact.rules['fox.training'].status,'review_required','A substring match cannot substitute for the exact ID');
 const changedTraining=await verifyPetRulebook({fetchImpl:fetchFrom(changedBuild,null,(key,body)=>key==='effect17253'?body+'\n'+PET_DB2_BASELINE.effect17253.rows[0]:body),previousState:legacy,now});
 assert.equal(changedTraining.rules['fox.training'].status,'review_required');
 assert.equal(changedTraining.rules['fox.family.profile'].status,'verified');
