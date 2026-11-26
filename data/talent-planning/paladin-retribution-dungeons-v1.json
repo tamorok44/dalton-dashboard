@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 2,
   "treeId": 11559,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -333,13 +333,11 @@
     ],
     "editorialDecision": "Dungeon-Vergeltung: acht bisher frühe Schutzpunkte erst nach dem Vergeltungskern, weil Präzision fünf vorherige Schutzpunkte erfordert. Siegel des Befehls 20 statt 28, Buße 30 statt 41 und Entfesselter Zorn 40 statt 48. Frühere Kontrolle gegen späteren Trefferbonus ab 46 abgewogen; kein gemessener DPS-Vorteil. Zweihandwaffe und gezielte Bedrohungskontrolle vorausgesetzt.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
-      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition.",
-      "105696/105702: exakte Schadens- bzw. AP-Skalierung offen. 13.11. Richturteil des Befehls als Nahkampfangriff; andere Richturteile nicht pauschal gleichsetzen. 25.11. Exorzismus-Kritfehler korrigiert. Reguläre CI und Vermächtnisränge 1–5 weiterhin offen."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "113631: zusätzliche Voraussetzung außerhalb der verwendeten Pfade nicht vollständig geklärt.",
+      "Serverseitige Heil-, Schadens-, Angriffskraft- und Proc-Formeln nicht freigegeben; keine universelle Leistungsrangliste."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -377,7 +375,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Vergeltung",
+  "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+  "ruleRevision": "paladin-retribution-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Dungeon-Vergeltung: acht bisher frühe Schutzpunkte erst nach dem Vergeltungskern, weil Präzision fünf vorherige Schutzpunkte erfordert. Siegel des Befehls 20 statt 28, Buße 30 statt 41 und Entfesselter Zorn 40 statt 48. Frühere Kontrolle gegen späteren Trefferbonus ab 46 abgewogen; kein gemessener DPS-Vorteil. Zweihandwaffe und gezielte Bedrohungskontrolle vorausgesetzt.",
+    "adviceSummary": "Dungeon-Schadenspfad mit früher Buße auf 30 und Entfesseltem Zorn 40.",
+    "evidenceIds": [
+      "paladin-retribution-dungeons-rank0-71139-editorial-1",
+      "paladin-retribution-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

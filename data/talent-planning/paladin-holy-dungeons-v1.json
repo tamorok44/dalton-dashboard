@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 2,
   "treeId": 11486,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -342,17 +342,14 @@
     ],
     "editorialDecision": "Gruppenheilung mit Eid des Lichts 25, Heiligem Schock 30 und Lichtwacht 40. Eid auf ein priorisiertes Heilziel, Lichtwacht und Heiligen Schock gezielt für Gruppenschaden kombinieren. Schild-/Schutzpunkte später, ohne ungeklärte Voraussetzung für Boundless Light.",
     "unresolved": [
-      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
-      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Oath of Light: 60 Minuten offiziell am 25.11. bestätigt, Clienttext teils noch 5 Minuten. Heilskalierung bleibt offen; keine globale Freigabe des Talents.",
-      "105696: Richturteil des Befehls seit 13.11. Nahkampfangriff, sonstige Richturteile nach 11.11. nicht pauschal gleichsetzen; numerische Schadensformel/Rundung nicht abschließend bestätigt.",
-      "105702: Angriffskraftminderung qualitativ belegt, widersprüchliche stufenabhängige Zahlen; kein zusätzlicher eigener AP-Bonus übernommen.",
-      "Vermächtnisränge 1–5, vollständige Hotfix-Abhängigkeitsprüfung und CI ausstehend. 113631 nicht benutzt."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "113631: zusätzliche Voraussetzung außerhalb der verwendeten Pfade nicht vollständig geklärt.",
+      "Serverseitige Heil-, Schadens-, Angriffskraft- und Proc-Formeln nicht freigegeben; keine universelle Leistungsrangliste."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
-      "catalogRevision": "dfe974a80f59e6b57d54dcc4914e832a018dbfdcf6863bacc999c9e389ec8415",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     },
     "conflictFollowup": {
@@ -391,7 +388,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Heilig",
+  "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+  "ruleRevision": "paladin-holy-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Gruppenheilung mit Eid des Lichts 25, Heiligem Schock 30 und Lichtwacht 40. Eid auf ein priorisiertes Heilziel, Lichtwacht und Heiligen Schock gezielt für Gruppenschaden kombinieren. Schild-/Schutzpunkte später, ohne ungeklärte Voraussetzung für Boundless Light.",
+    "adviceSummary": "Gruppenheiler mit Eid 25, Heiligem Schock 30 und Lichtwacht 40.",
+    "evidenceIds": [
+      "paladin-holy-dungeons-rank0-71139-editorial-1",
+      "paladin-holy-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

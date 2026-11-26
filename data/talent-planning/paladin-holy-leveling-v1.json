@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 2,
   "treeId": 11486,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -343,16 +343,11 @@
     ],
     "editorialDecision": "Gemischter Heilpfad: fünf frühe Vergeltungspunkte für günstigere Sofortzauber bleiben ein bewusster Kompromiss. Eid des Lichts 30, Heiliger Schock 35, Lichtwacht 45. Siegel des Befehls ab 51 ist eine situative Solooption, kein Heilungsbonus. Für überwiegend Gruppenheilung ist der separate Dungeonpfad früher im Heiligkern.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
-      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition.",
-      "Oath of Light: 60 Minuten offiziell am 25.11. bestätigt, Clienttext teils noch 5 Minuten. Heilskalierung bleibt offen; keine globale Freigabe des Talents.",
-      "105696: Richturteil des Befehls seit 13.11. Nahkampfangriff, sonstige Richturteile nach 11.11. nicht pauschal gleichsetzen; numerische Schadensformel/Rundung nicht abschließend bestätigt.",
-      "105702: Angriffskraftminderung qualitativ belegt, widersprüchliche stufenabhängige Zahlen; kein zusätzlicher eigener AP-Bonus übernommen.",
-      "Vermächtnisränge 1–5, vollständige Hotfix-Abhängigkeitsprüfung und CI ausstehend. 113631 nicht benutzt."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "113631: zusätzliche Voraussetzung außerhalb der verwendeten Pfade nicht vollständig geklärt.",
+      "Serverseitige Heil-, Schadens-, Angriffskraft- und Proc-Formeln nicht freigegeben; keine universelle Leistungsrangliste."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -394,7 +389,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Heilig",
+  "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+  "ruleRevision": "paladin-holy-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Gemischter Heilpfad: fünf frühe Vergeltungspunkte für günstigere Sofortzauber bleiben ein bewusster Kompromiss. Eid des Lichts 30, Heiliger Schock 35, Lichtwacht 45. Siegel des Befehls ab 51 ist eine situative Solooption, kein Heilungsbonus. Für überwiegend Gruppenheilung ist der separate Dungeonpfad früher im Heiligkern.",
+    "adviceSummary": "Gemischter Heil-/Solopfad mit Eid 30, Heiligem Schock 35 und Lichtwacht 45.",
+    "evidenceIds": [
+      "paladin-holy-leveling-rank0-71139-editorial-1",
+      "paladin-holy-leveling-rank0-71139-editorial-2"
+    ]
   }
 }

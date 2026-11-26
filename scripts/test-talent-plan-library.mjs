@@ -211,6 +211,46 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,effects),new RegExp('unresolved source difference '+target));
         scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
       }
+      // Paladin: only the exact affected IDs of this specific path may be reconciled.
+      if(plan.classId===2&&clients[0].paladinEffectResolutions){
+        const expectedIds=[105330,105696,105702].filter(id=>plan.points.some(p=>p.talentId===id)).sort((a,b)=>a-b);
+        const entries=clients[0].paladinEffectResolutions;
+        assert.ok(expectedIds.length);
+        assert.deepEqual(entries.map(d=>d.talentId),expectedIds);
+        for(const detail of entries){
+          const row=effects.rows.find(x=>x.classId===2&&x.id===detail.talentId);
+          assert.ok(row&&row.scopedPaladinResolution);
+          assert.deepEqual(detail,{...row.scopedPaladinResolution,allocationDigest:talentPlanEvidenceDigest(plan)});
+          assert.equal(detail.kind,'paladin_qualitative_effect_reconciliation');
+          assert.equal(detail.clientBuild,pack.clientBuild);
+          assert.equal(detail.sourceRevision,pack.sourceRevision);
+          assert.equal(detail.spellId,proof.trees.flatMap(t=>t.talents).find(n=>n.id===detail.talentId)?.spellId);
+          assert.equal(detail.primaryHash,row.primaryHash);
+          assert.equal(detail.secondaryHash,row.secondaryHash);
+          assert.equal(detail.serverMeasured,false);
+          assert.equal(detail.numericFormulaReleased,false);
+          assert.equal(row.quantitativeClaimVerified,false);
+          assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url==='https://armorywowforever.com/talents/paladin'));
+          assert.ok(detail.sources.some(s=>s.url==='https://wow-forever.gg/talents/paladin/'));
+          if(detail.talentId===105330){
+            assert.equal(row.classification,'official_hotfix');
+            assert.deepEqual(detail.confirmedCore,{durationMinutes:60,oneOathPerCaster:true,healingSpells:['Holy Light','Flash of Light','Holy Shock'],targetedAlly:true});
+            assert.ok(detail.sources.some(s=>s.url==='https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026'));
+          }else if(detail.talentId===105696){
+            assert.equal(row.classification,'numeric_scale_or_rounding');
+            assert.deepEqual(detail.confirmedCore,{possibleAdditionalHolyWeaponDamage:true,commandJudgementMelee:true,commandJudgementOnHit:true,otherJudgementsRanged:true});
+            assert.ok(detail.sources.some(s=>s.url==='https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026'));
+          }else{
+            assert.equal(row.classification,'numeric_scale_or_rounding');
+            assert.deepEqual(detail.confirmedCore,{possibleEnemyAttackPowerReduction:true,damagingMeleeTrigger:true,noOwnAttackPowerBonus:true});
+          }
+          // No general exclusion waiver: the raw conflicting node still fails without this evidence.
+          assert.throws(()=>talentPathScope({...plan,points:[{talentId:detail.talentId,rank:1}]},proof,pathLedger,cross,effects),/unresolved source difference/);
+        }
+        scopedEffects={...effects,rows:effects.rows.filter(x=>x.classId!==2||!expectedIds.includes(x.id))};
+        assert.ok(!plan.points.some(p=>p.talentId===113631));
+        assert.throws(()=>talentPathScope({...plan,points:[...plan.points,{talentId:113631,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
+      }
       const scope=talentPathScope(plan,proof,pathLedger,cross,scopedEffects);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
       assert.ok(scope.excludedConflictIds.length);
@@ -557,7 +597,7 @@ assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==fa
   Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warlock-demonology-leveling",[20,31,0]],["warlock-destruction-leveling",[20,0,31]],["warrior-protection-dungeons",[15,5,31]],["priest-holy-dungeons",[20,31,0]],["priest-shadow-leveling",[20,0,31]],["paladin-retribution-leveling",[12,8,31]],["rogue-combat-leveling",[12,39,0]],["shaman-enhancement-leveling",[20,31,0]]]){
   const p=plans.find(p=>p.id===id);
-  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','warrior-protection-dungeons','rogue-combat-leveling','priest-holy-dungeons'].includes(id);
+  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','warrior-protection-dungeons','rogue-combat-leveling','priest-holy-dungeons','paladin-retribution-leveling'].includes(id);
   assert.ok(p&&p.status===(promoted?'approved':'research_only'));
   if(promoted)assert.deepEqual(p.supportedLegacyRanks,[0]);
   assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,p.version])),[0]);
@@ -568,7 +608,7 @@ for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warl
 assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
 for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
   const candidate=plans.find(p=>p.id===id);
-  const scoped=['paladin-protection-dungeons','hunter-survival-leveling','rogue-assassination-leveling','priest-discipline-dungeons','priest-holy-dungeons'].includes(id);
+  const scoped=['paladin-protection-dungeons','paladin-holy-dungeons','hunter-survival-leveling','rogue-assassination-leveling','priest-discipline-dungeons','priest-holy-dungeons'].includes(id);
   const promoted=scoped||['shaman-elemental-leveling','shaman-restoration-dungeons','warrior-arms-leveling','warrior-fury-leveling'].includes(id);
   assert.ok(candidate&&candidate.status===(promoted?'approved':'research_only'));
   if(promoted){
@@ -863,7 +903,7 @@ for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"1
 
 for(const [id,dist] of [["warrior-arms-dungeons",{"11650":31,"11657":20,"11670":0}],["warrior-arms-pvp",{"11650":31,"11657":20,"11670":0}],["warrior-fury-dungeons",{"11650":20,"11657":31,"11670":0}],["warrior-fury-pvp",{"11650":20,"11657":31,"11670":0}],["warrior-protection-leveling",{"11650":15,"11657":5,"11670":31}],["warrior-protection-pvp",{"11650":15,"11657":5,"11670":31}],["paladin-holy-leveling",{"11486":31,"11541":5,"11559":15}],["paladin-holy-pvp",{"11486":31,"11541":20,"11559":0}],["paladin-protection-leveling",{"11486":15,"11541":31,"11559":5}],["paladin-protection-pvp",{"11486":0,"11541":31,"11559":20}],["paladin-retribution-dungeons",{"11486":12,"11541":8,"11559":31}],["paladin-retribution-pvp",{"11486":0,"11541":20,"11559":31}],["shaman-elemental-dungeons",{"11326":31,"11362":15,"11363":5}],["shaman-elemental-pvp",{"11326":31,"11362":15,"11363":5}],["shaman-enhancement-dungeons",{"11326":17,"11362":0,"11363":34}],["shaman-enhancement-pvp",{"11326":11,"11362":5,"11363":35}],["shaman-restoration-leveling",{"11326":20,"11362":31,"11363":0}],["shaman-restoration-pvp",{"11326":0,"11362":41,"11363":10}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status===(id.startsWith('shaman-')||['warrior-protection-leveling','warrior-protection-pvp','warrior-arms-dungeons','warrior-arms-pvp','warrior-fury-dungeons','warrior-fury-pvp','paladin-protection-leveling'].includes(id)?'approved':'research_only'));
+ assert.ok(p&&p.status===(id.startsWith('shaman-')||id.startsWith('paladin-')||['warrior-protection-leveling','warrior-protection-pvp','warrior-arms-dungeons','warrior-arms-pvp','warrior-fury-dungeons','warrior-fury-pvp','paladin-protection-leveling'].includes(id)?'approved':'research_only'));
  if(id.startsWith('shaman-'))assert.deepEqual(p.supportedLegacyRanks,[0]);
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
@@ -893,8 +933,10 @@ for(const [id,milestones] of [
  ['warlock-demonology-pvp',[[105892,30],[105895,31],[105890,40],[105885,53],[105884,58]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,'research_only');
- assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(p.status,'approved');
+ assert.deepEqual(p.supportedLegacyRanks,[0]);
+ assert.equal(p.research.conflictFollowup.releaseEligible,true);
+ assert.equal(p.research.conflictFollowup.releaseScope,'exact_rank0_path_qualitative_only');
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
@@ -926,7 +968,7 @@ const restoPvp=plans.find(x=>x.id==='druid-restoration-pvp');
 assert.equal(restoPvp.points.filter(x=>x.talentId===104939).length,5);
 assert.ok(!restoPvp.points.some(x=>x.talentId===104938));
 
-// Paladin conflict follow-up: rank zero, research only; avoid disputed Boundless Light prerequisite.
+// Paladin scoped rank-zero approvals; unresolved Boundless Light remains excluded.
 for(const [id,milestones] of [
  ['paladin-holy-leveling',[[105330,30],[105323,35],[105320,45]]],
  ['paladin-holy-dungeons',[[105330,25],[105323,30],[105320,40]]],

@@ -5952,6 +5952,1051 @@
       "url": "https://games.cobaltgraphics.eu/wow-forever/priest/holy/pvp/",
       "claim": "Nov 10 source review supports defensive healing and group support; explicitly not an exact build or performance proof.",
       "id": "priest-holy-pvp-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "1b2171440a6082c6240a588eaa11c1e635f5da79e2fc2b0a7406ee9f0fa4fb25",
+      "id": "paladin-holy-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "d6800ef80bf96db708a93bbe9385b6cb2cb50abf1c21c995ba0392e9903c7f89",
+        "talentIds": [
+          105320,
+          105321,
+          105323,
+          105324,
+          105325,
+          105327,
+          105329,
+          105330,
+          105332,
+          105333,
+          105335,
+          105696,
+          105699,
+          105701,
+          105703,
+          105704,
+          105705,
+          105706,
+          110871,
+          110873
+        ],
+        "excludedConflictIds": [
+          105702,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105330,
+          "spellId": 1328548,
+          "primaryHash": "2548e7d8af515abb253ec313cba63beb644f74aba2abd57f0d4b97dfef67a3f4",
+          "secondaryHash": "b8e0215b3faaacd8aeba8872eef3395b50b92d09b755c899df307ac4c25a16a0",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "durationMinutes": 60,
+            "oneOathPerCaster": true,
+            "healingSpells": [
+              "Holy Light",
+              "Flash of Light",
+              "Holy Shock"
+            ],
+            "targetedAlly": true
+          },
+          "unresolved": "level-dependent healing amounts and server scaling; stale client duration replaced only by official hotfix",
+          "sources": [
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 25 official duration increase to 60 minutes."
+            },
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Exact client build identifies the three spells and one target; tooltip 5 minutes and zero placeholders are not authoritative healing amounts."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Corroborates target, spells and one Oath, level scaling described; duration superseded by official hotfix."
+            }
+          ],
+          "allocationDigest": "d6800ef80bf96db708a93bbe9385b6cb2cb50abf1c21c995ba0392e9903c7f89"
+        },
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105696,
+          "spellId": 20375,
+          "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+          "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleAdditionalHolyWeaponDamage": true,
+            "commandJudgementMelee": true,
+            "commandJudgementOnHit": true,
+            "otherJudgementsRanged": true
+          },
+          "unresolved": "rank- and level-dependent Judgement damage, rounding, proc frequency and actual server calculation",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Seal provides possible additional Holy weapon damage; damage text is a client reference, not a measured formula."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Independent Seal and Vengeance prerequisite description."
+            },
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 11 ranged Judgements; Nov 13 Command explicitly melee/on-hit exception."
+            }
+          ],
+          "allocationDigest": "d6800ef80bf96db708a93bbe9385b6cb2cb50abf1c21c995ba0392e9903c7f89"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "1b2171440a6082c6240a588eaa11c1e635f5da79e2fc2b0a7406ee9f0fa4fb25",
+      "id": "paladin-holy-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-holy-leveling-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-holy-leveling",
+      "planVersion": 1,
+      "allocationDigest": "d6800ef80bf96db708a93bbe9385b6cb2cb50abf1c21c995ba0392e9903c7f89",
+      "url": "https://forever-tavern.com/guides/paladin-leveling-guide/",
+      "claim": "Holy leveling baseline and early healing milestones; our mixed route deliberately spends five early points on instant mana cost, delaying the healing capstone."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-holy-leveling-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-holy-leveling",
+      "planVersion": 1,
+      "allocationDigest": "d6800ef80bf96db708a93bbe9385b6cb2cb50abf1c21c995ba0392e9903c7f89",
+      "url": "https://guildorder.com/de/games/wow_forever/guides/holy-paladin-field-guide",
+      "claim": "Nov 25 direct-healing core, Oath and group healing; mixed solo detour is our own choice."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "6214cdf57fb26bc03862a1f27882ebae6b2ee245ecbadc4f6e688d7a5bdf7488",
+      "id": "paladin-holy-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "b264ef4ac170d515e5151b068236b25b83a9284d4205663712fe3ee4b3f405ef",
+        "talentIds": [
+          105320,
+          105321,
+          105323,
+          105324,
+          105325,
+          105327,
+          105329,
+          105330,
+          105332,
+          105333,
+          105335,
+          105625,
+          105626,
+          105632,
+          105633,
+          105637,
+          105704,
+          110871,
+          110873,
+          110874
+        ],
+        "excludedConflictIds": [
+          105696,
+          105702,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105330,
+          "spellId": 1328548,
+          "primaryHash": "2548e7d8af515abb253ec313cba63beb644f74aba2abd57f0d4b97dfef67a3f4",
+          "secondaryHash": "b8e0215b3faaacd8aeba8872eef3395b50b92d09b755c899df307ac4c25a16a0",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "durationMinutes": 60,
+            "oneOathPerCaster": true,
+            "healingSpells": [
+              "Holy Light",
+              "Flash of Light",
+              "Holy Shock"
+            ],
+            "targetedAlly": true
+          },
+          "unresolved": "level-dependent healing amounts and server scaling; stale client duration replaced only by official hotfix",
+          "sources": [
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 25 official duration increase to 60 minutes."
+            },
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Exact client build identifies the three spells and one target; tooltip 5 minutes and zero placeholders are not authoritative healing amounts."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Corroborates target, spells and one Oath, level scaling described; duration superseded by official hotfix."
+            }
+          ],
+          "allocationDigest": "b264ef4ac170d515e5151b068236b25b83a9284d4205663712fe3ee4b3f405ef"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "6214cdf57fb26bc03862a1f27882ebae6b2ee245ecbadc4f6e688d7a5bdf7488",
+      "id": "paladin-holy-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-holy-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-holy-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "b264ef4ac170d515e5151b068236b25b83a9284d4205663712fe3ee4b3f405ef",
+      "url": "https://guildorder.com/de/games/wow_forever/guides/holy-paladin-field-guide",
+      "claim": "Nov 25 direct-healing milestones, pushback protection, mana regeneration and Oath on tank."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-holy-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-holy-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "b264ef4ac170d515e5151b068236b25b83a9284d4205663712fe3ee4b3f405ef",
+      "url": "https://wowforever.gg/en/guides/paladin-holy/",
+      "claim": "Prioritized ally and party-specific Vigil; no assumed whole-raid heal."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "6214cdf57fb26bc03862a1f27882ebae6b2ee245ecbadc4f6e688d7a5bdf7488",
+      "id": "paladin-holy-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "46c8a19aa681fe726e682598160e2c73a073aaf046a839513c3fcc6f701c17c0",
+        "talentIds": [
+          105320,
+          105321,
+          105323,
+          105324,
+          105325,
+          105327,
+          105329,
+          105330,
+          105332,
+          105333,
+          105335,
+          105625,
+          105626,
+          105632,
+          105633,
+          105637,
+          105704,
+          110871,
+          110873,
+          110874
+        ],
+        "excludedConflictIds": [
+          105696,
+          105702,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105330,
+          "spellId": 1328548,
+          "primaryHash": "2548e7d8af515abb253ec313cba63beb644f74aba2abd57f0d4b97dfef67a3f4",
+          "secondaryHash": "b8e0215b3faaacd8aeba8872eef3395b50b92d09b755c899df307ac4c25a16a0",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "durationMinutes": 60,
+            "oneOathPerCaster": true,
+            "healingSpells": [
+              "Holy Light",
+              "Flash of Light",
+              "Holy Shock"
+            ],
+            "targetedAlly": true
+          },
+          "unresolved": "level-dependent healing amounts and server scaling; stale client duration replaced only by official hotfix",
+          "sources": [
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 25 official duration increase to 60 minutes."
+            },
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Exact client build identifies the three spells and one target; tooltip 5 minutes and zero placeholders are not authoritative healing amounts."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Corroborates target, spells and one Oath, level scaling described; duration superseded by official hotfix."
+            }
+          ],
+          "allocationDigest": "46c8a19aa681fe726e682598160e2c73a073aaf046a839513c3fcc6f701c17c0"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "6214cdf57fb26bc03862a1f27882ebae6b2ee245ecbadc4f6e688d7a5bdf7488",
+      "id": "paladin-holy-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-holy-pvp-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-holy-pvp",
+      "planVersion": 1,
+      "allocationDigest": "46c8a19aa681fe726e682598160e2c73a073aaf046a839513c3fcc6f701c17c0",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/paladin/holy/pvp/",
+      "claim": "Nov 10 support anchor, positioning, Cleanse, Oath and cooldown planning."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-holy-pvp-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-holy-pvp",
+      "planVersion": 1,
+      "allocationDigest": "46c8a19aa681fe726e682598160e2c73a073aaf046a839513c3fcc6f701c17c0",
+      "url": "https://wowforever.gg/en/guides/paladin-holy/",
+      "claim": "Healing and party Vigil; our later Freedom/Protection and stun order emphasizes PvP utility."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "934674ea1f6d1f403d2489eb7d0ae467bc866ec896ec2865908af5c30318a8bc",
+      "id": "paladin-protection-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "a2d512a630e42485ea873af5ddf35ccd0c5998b07ab8bc207067447af4905739",
+        "talentIds": [
+          105625,
+          105626,
+          105627,
+          105628,
+          105630,
+          105632,
+          105634,
+          105638,
+          105696,
+          105699,
+          105700,
+          105701,
+          105703,
+          105705,
+          105706,
+          105707,
+          110874,
+          110875,
+          110878,
+          110879
+        ],
+        "excludedConflictIds": [
+          105330,
+          105702,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105696,
+          "spellId": 20375,
+          "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+          "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleAdditionalHolyWeaponDamage": true,
+            "commandJudgementMelee": true,
+            "commandJudgementOnHit": true,
+            "otherJudgementsRanged": true
+          },
+          "unresolved": "rank- and level-dependent Judgement damage, rounding, proc frequency and actual server calculation",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Seal provides possible additional Holy weapon damage; damage text is a client reference, not a measured formula."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Independent Seal and Vengeance prerequisite description."
+            },
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 11 ranged Judgements; Nov 13 Command explicitly melee/on-hit exception."
+            }
+          ],
+          "allocationDigest": "a2d512a630e42485ea873af5ddf35ccd0c5998b07ab8bc207067447af4905739"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "934674ea1f6d1f403d2489eb7d0ae467bc866ec896ec2865908af5c30318a8bc",
+      "id": "paladin-protection-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-protection-pvp-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-protection-pvp",
+      "planVersion": 1,
+      "allocationDigest": "a2d512a630e42485ea873af5ddf35ccd0c5998b07ab8bc207067447af4905739",
+      "url": "https://mobalytics.gg/wow-forever/classes/protection-paladin-guide",
+      "claim": "Nov 26 Holy Shield, Holy Strike and Seal of Fury core; Command is situational, not a replacement for tanking Seal."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-protection-pvp-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-protection-pvp",
+      "planVersion": 1,
+      "allocationDigest": "a2d512a630e42485ea873af5ddf35ccd0c5998b07ab8bc207067447af4905739",
+      "url": "https://wowforever.gg/en/guides/paladin-protection/",
+      "claim": "Shield-oriented protection and PvP support; no permanent spell block or damage ranking."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "59eb2ca8c92e03214f7cd5bc6cd33a9b7aef359e6cc2fa2495ea7dfb97ed4f71",
+      "id": "paladin-retribution-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "b71d70803fd6bdb1487f922a648766e71b6814940d8e90460349f489b7b6cfbe",
+        "talentIds": [
+          105327,
+          105332,
+          105334,
+          105638,
+          105692,
+          105693,
+          105694,
+          105696,
+          105697,
+          105699,
+          105700,
+          105701,
+          105702,
+          105703,
+          105705,
+          105706,
+          110882,
+          113630
+        ],
+        "excludedConflictIds": [
+          105330,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105696,
+          "spellId": 20375,
+          "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+          "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleAdditionalHolyWeaponDamage": true,
+            "commandJudgementMelee": true,
+            "commandJudgementOnHit": true,
+            "otherJudgementsRanged": true
+          },
+          "unresolved": "rank- and level-dependent Judgement damage, rounding, proc frequency and actual server calculation",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Seal provides possible additional Holy weapon damage; damage text is a client reference, not a measured formula."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Independent Seal and Vengeance prerequisite description."
+            },
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 11 ranged Judgements; Nov 13 Command explicitly melee/on-hit exception."
+            }
+          ],
+          "allocationDigest": "b71d70803fd6bdb1487f922a648766e71b6814940d8e90460349f489b7b6cfbe"
+        },
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105702,
+          "spellId": 9452,
+          "primaryHash": "bf958f097809b3c42703fcdd369d9f33a790aee6000e222a563250de3255c97c",
+          "secondaryHash": "d097ee8c477ddba36677f8e8c953aca4e1d610c8f6f5fe494da35314c97c3558",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleEnemyAttackPowerReduction": true,
+            "damagingMeleeTrigger": true,
+            "noOwnAttackPowerBonus": true
+          },
+          "unresolved": "stufe-dependent attack power reduction, sign/rounding and server formula",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Exact client shows damaging melee attacks may reduce target attack power."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Confirms target AP reduction and removal of own AP bonus; numeric/sign rendering not released."
+            }
+          ],
+          "allocationDigest": "b71d70803fd6bdb1487f922a648766e71b6814940d8e90460349f489b7b6cfbe"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "59eb2ca8c92e03214f7cd5bc6cd33a9b7aef359e6cc2fa2495ea7dfb97ed4f71",
+      "id": "paladin-retribution-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-retribution-leveling-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-retribution-leveling",
+      "planVersion": 1,
+      "allocationDigest": "b71d70803fd6bdb1487f922a648766e71b6814940d8e90460349f489b7b6cfbe",
+      "url": "https://mobalytics.gg/wow-forever/classes/dont-level-your-ret-paladin-wrong-in-wow-forever-whiter",
+      "claim": "Nov 17 Command, movement and deep Retribution core by 40 before secondary trees."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-retribution-leveling-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-retribution-leveling",
+      "planVersion": 1,
+      "allocationDigest": "b71d70803fd6bdb1487f922a648766e71b6814940d8e90460349f489b7b6cfbe",
+      "url": "https://metammo.com/wow-forever/builds/paladin",
+      "claim": "Build 71139: Retribution core and seal switching; own exact chronological progression."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "59eb2ca8c92e03214f7cd5bc6cd33a9b7aef359e6cc2fa2495ea7dfb97ed4f71",
+      "id": "paladin-retribution-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "94097af745559505dfb25c2ce60b6f43355a1db8a7f96d373ce978558334b6ab",
+        "talentIds": [
+          105327,
+          105332,
+          105334,
+          105638,
+          105692,
+          105693,
+          105694,
+          105696,
+          105697,
+          105699,
+          105700,
+          105701,
+          105702,
+          105703,
+          105705,
+          105706,
+          110882,
+          113630
+        ],
+        "excludedConflictIds": [
+          105330,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105696,
+          "spellId": 20375,
+          "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+          "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleAdditionalHolyWeaponDamage": true,
+            "commandJudgementMelee": true,
+            "commandJudgementOnHit": true,
+            "otherJudgementsRanged": true
+          },
+          "unresolved": "rank- and level-dependent Judgement damage, rounding, proc frequency and actual server calculation",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Seal provides possible additional Holy weapon damage; damage text is a client reference, not a measured formula."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Independent Seal and Vengeance prerequisite description."
+            },
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 11 ranged Judgements; Nov 13 Command explicitly melee/on-hit exception."
+            }
+          ],
+          "allocationDigest": "94097af745559505dfb25c2ce60b6f43355a1db8a7f96d373ce978558334b6ab"
+        },
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105702,
+          "spellId": 9452,
+          "primaryHash": "bf958f097809b3c42703fcdd369d9f33a790aee6000e222a563250de3255c97c",
+          "secondaryHash": "d097ee8c477ddba36677f8e8c953aca4e1d610c8f6f5fe494da35314c97c3558",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleEnemyAttackPowerReduction": true,
+            "damagingMeleeTrigger": true,
+            "noOwnAttackPowerBonus": true
+          },
+          "unresolved": "stufe-dependent attack power reduction, sign/rounding and server formula",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Exact client shows damaging melee attacks may reduce target attack power."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Confirms target AP reduction and removal of own AP bonus; numeric/sign rendering not released."
+            }
+          ],
+          "allocationDigest": "94097af745559505dfb25c2ce60b6f43355a1db8a7f96d373ce978558334b6ab"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "59eb2ca8c92e03214f7cd5bc6cd33a9b7aef359e6cc2fa2495ea7dfb97ed4f71",
+      "id": "paladin-retribution-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-retribution-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-retribution-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "94097af745559505dfb25c2ce60b6f43355a1db8a7f96d373ce978558334b6ab",
+      "url": "https://wowforever.gg/en/guides/paladin-retribution/",
+      "claim": "Nov 25 group control and damage, coordinate Repentance and do not break it with AoE."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-retribution-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-retribution-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "94097af745559505dfb25c2ce60b6f43355a1db8a7f96d373ce978558334b6ab",
+      "url": "https://metammo.com/wow-forever/builds/paladin",
+      "claim": "Current build 71139 seal core; this path prioritizes early control over later hit, no DPS superiority asserted."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "7d9472a6e9bf59dccffd94a3548a424eb8c18f6bdf46ba32c6b815032cffeb5e",
+      "id": "paladin-retribution-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "cedcb85720c6000662cc98aa40ec6e874d8f08da5f557847186aa90a1d666312",
+        "talentIds": [
+          105332,
+          105626,
+          105632,
+          105633,
+          105637,
+          105638,
+          105692,
+          105693,
+          105694,
+          105696,
+          105697,
+          105699,
+          105700,
+          105701,
+          105702,
+          105703,
+          105705,
+          105706,
+          110882
+        ],
+        "excludedConflictIds": [
+          105330,
+          113631
+        ],
+        "olderComparisonCaptureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+        "olderBuild": "1.60.1.71091"
+      },
+      "paladinEffectResolutions": [
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105696,
+          "spellId": 20375,
+          "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+          "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleAdditionalHolyWeaponDamage": true,
+            "commandJudgementMelee": true,
+            "commandJudgementOnHit": true,
+            "otherJudgementsRanged": true
+          },
+          "unresolved": "rank- and level-dependent Judgement damage, rounding, proc frequency and actual server calculation",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Seal provides possible additional Holy weapon damage; damage text is a client reference, not a measured formula."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Independent Seal and Vengeance prerequisite description."
+            },
+            {
+              "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+              "claim": "Nov 11 ranged Judgements; Nov 13 Command explicitly melee/on-hit exception."
+            }
+          ],
+          "allocationDigest": "cedcb85720c6000662cc98aa40ec6e874d8f08da5f557847186aa90a1d666312"
+        },
+        {
+          "kind": "paladin_qualitative_effect_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "talentId": 105702,
+          "spellId": 9452,
+          "primaryHash": "bf958f097809b3c42703fcdd369d9f33a790aee6000e222a563250de3255c97c",
+          "secondaryHash": "d097ee8c477ddba36677f8e8c953aca4e1d610c8f6f5fe494da35314c97c3558",
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "confirmedCore": {
+            "possibleEnemyAttackPowerReduction": true,
+            "damagingMeleeTrigger": true,
+            "noOwnAttackPowerBonus": true
+          },
+          "unresolved": "stufe-dependent attack power reduction, sign/rounding and server formula",
+          "sources": [
+            {
+              "url": "https://armorywowforever.com/talents/paladin",
+              "build": "1.60.1.71139",
+              "claim": "Exact client shows damaging melee attacks may reduce target attack power."
+            },
+            {
+              "url": "https://wow-forever.gg/talents/paladin/",
+              "claim": "Confirms target AP reduction and removal of own AP bonus; numeric/sign rendering not released."
+            }
+          ],
+          "allocationDigest": "cedcb85720c6000662cc98aa40ec6e874d8f08da5f557847186aa90a1d666312"
+        }
+      ],
+      "claim": "Exact retained 71139 allocation scope with independently corroborated qualitative effects and official Oath duration where used. No unknown Boundless Light prerequisite, no numeric formula or server measurement."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "7d9472a6e9bf59dccffd94a3548a424eb8c18f6bdf46ba32c6b815032cffeb5e",
+      "id": "paladin-retribution-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 11 ranged Judgements and no Windfury echo; Nov 13 Command melee/on-hit exception; Nov 25 Judgement refresh, Exorcism crit, Libram of Law and Oath 60 minutes. No fixed damage, AP or heal scaling."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-retribution-pvp-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-retribution-pvp",
+      "planVersion": 1,
+      "allocationDigest": "cedcb85720c6000662cc98aa40ec6e874d8f08da5f557847186aa90a1d666312",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/paladin/retribution/pvp/",
+      "claim": "Nov 10 stored-seal pressure, target access, support and defensive cooldown trades."
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "paladin-retribution-pvp-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "paladin-retribution-pvp",
+      "planVersion": 1,
+      "allocationDigest": "cedcb85720c6000662cc98aa40ec6e874d8f08da5f557847186aa90a1d666312",
+      "url": "https://wowforever.gg/en/guides/paladin-retribution/",
+      "claim": "Nov 25 coordinate stuns/Repentance, Freedom and ally healing, avoid forcing seal swaps."
     }
   ],
   "rulePacks": [
@@ -8108,6 +9153,281 @@
         "105866": 10,
         "105867": 10,
         "110855": 10
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-holy-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-holy-leveling-rank0-71139-client",
+        "paladin-holy-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105320": 40,
+        "105321": 35,
+        "105323": 30,
+        "105324": 25,
+        "105325": 20,
+        "105327": 15,
+        "105329": 20,
+        "105330": 25,
+        "105332": 10,
+        "105333": 15,
+        "105335": 10,
+        "105696": 20,
+        "105699": 20,
+        "105701": 15,
+        "105703": 15,
+        "105704": 20,
+        "105705": 15,
+        "105706": 10,
+        "110871": 15,
+        "110873": 25
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-holy-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-holy-dungeons-rank0-71139-client",
+        "paladin-holy-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105320": 40,
+        "105321": 35,
+        "105323": 30,
+        "105324": 25,
+        "105325": 20,
+        "105327": 15,
+        "105329": 20,
+        "105330": 25,
+        "105332": 10,
+        "105333": 15,
+        "105335": 10,
+        "105625": 20,
+        "105626": 10,
+        "105632": 15,
+        "105633": 20,
+        "105637": 15,
+        "105704": 20,
+        "110871": 15,
+        "110873": 25,
+        "110874": 20
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-holy-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-holy-pvp-rank0-71139-client",
+        "paladin-holy-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105320": 40,
+        "105321": 35,
+        "105323": 30,
+        "105324": 25,
+        "105325": 20,
+        "105327": 15,
+        "105329": 20,
+        "105330": 25,
+        "105332": 10,
+        "105333": 15,
+        "105335": 10,
+        "105625": 20,
+        "105626": 10,
+        "105632": 15,
+        "105633": 20,
+        "105637": 15,
+        "105704": 20,
+        "110871": 15,
+        "110873": 25,
+        "110874": 20
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-protection-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-protection-pvp-rank0-71139-client",
+        "paladin-protection-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105625": 20,
+        "105626": 10,
+        "105627": 30,
+        "105628": 30,
+        "105630": 20,
+        "105632": 15,
+        "105634": 25,
+        "105638": 15,
+        "105696": 20,
+        "105699": 20,
+        "105700": 25,
+        "105701": 15,
+        "105703": 15,
+        "105705": 15,
+        "105706": 10,
+        "105707": 10,
+        "110874": 20,
+        "110875": 40,
+        "110878": 25,
+        "110879": 35
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-retribution-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-retribution-leveling-rank0-71139-client",
+        "paladin-retribution-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105327": 15,
+        "105332": 10,
+        "105334": 15,
+        "105638": 15,
+        "105692": 40,
+        "105693": 30,
+        "105694": 30,
+        "105696": 20,
+        "105697": 25,
+        "105699": 20,
+        "105700": 25,
+        "105701": 15,
+        "105702": 20,
+        "105703": 15,
+        "105705": 15,
+        "105706": 10,
+        "110882": 35,
+        "113630": 10
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-retribution-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-retribution-dungeons-rank0-71139-client",
+        "paladin-retribution-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105327": 15,
+        "105332": 10,
+        "105334": 15,
+        "105638": 15,
+        "105692": 40,
+        "105693": 30,
+        "105694": 30,
+        "105696": 20,
+        "105697": 25,
+        "105699": 20,
+        "105700": 25,
+        "105701": 15,
+        "105702": 20,
+        "105703": 15,
+        "105705": 15,
+        "105706": 10,
+        "110882": 35,
+        "113630": 10
+      }
+    },
+    {
+      "classId": 2,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "paladin-retribution-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "paladin-retribution-pvp-rank0-71139-client",
+        "paladin-retribution-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105332": 10,
+        "105626": 10,
+        "105632": 15,
+        "105633": 20,
+        "105637": 15,
+        "105638": 15,
+        "105692": 40,
+        "105693": 30,
+        "105694": 30,
+        "105696": 20,
+        "105697": 25,
+        "105699": 20,
+        "105700": 25,
+        "105701": 15,
+        "105702": 20,
+        "105703": 15,
+        "105705": 15,
+        "105706": 10,
+        "110882": 35
       }
     }
   ],

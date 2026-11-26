@@ -39,3 +39,6 @@ Alle 7 offenen Pfade einzeln aus den gespeicherten 51-Talent-Knoten-Belegen repl
 
 ## Entscheidung
 Fachliche Pfadlogik und Struktur erneut positiv bewertet. Qualitative Mechanik und offizieller Dauer-Hotfix sind belegt. Keine serverseitige Messung, keine numerische Formel oder universelle Leistungsrangliste freigegeben. Die sieben Pfade verbleiben bis zur expliziten, hashgebundenen Aufnahme der drei Effektausnahmen in den strikten Freigabekern und erfolgreicher CI in research_only. Die Negativtests für ungelöste Voraussetzungen, falsche Builds und unbekannte Legacy-Ränge dürfen nicht abgeschwächt werden. Keine Änderung der Produktionsversion.
+
+## Implementierungsentscheidung
+Die beschriebenen Ausnahmen sind nun eng an die sieben Pfade, den exakten Build, die Quellen- und Effekt-Hashes und den jeweiligen Allokationsdigest gebunden. Der Freigabekern erhält keine allgemeine Ausnahme. Die aktualisierten Rank-0-Freigaben werden durch Bibliotheks- und API-Regressionstests geprüft; die Veröffentlichung bleibt bis zur erfolgreichen CI und den weiteren Release-Gates gesperrt.
