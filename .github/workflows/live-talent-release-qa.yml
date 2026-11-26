@@ -1,0 +1,24 @@
+name: Einmalige Live-Quellenfreigabeprüfung
+on:
+  push:
+    branches: [talent-release-live-qa-20261126]
+permissions:
+  contents: read
+jobs:
+  live-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --ignore-scripts
+      - run: node scripts/live-talent-release-qa-once.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: talent-live-release-qa
+          path: live-talent-qa.json
+          if-no-files-found: error
+          retention-days: 14
