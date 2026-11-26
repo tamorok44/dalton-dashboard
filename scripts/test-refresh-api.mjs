@@ -108,6 +108,7 @@ globalThis.fetch=async (url,options={})=>{
   if(sourceUrl.includes('worldofwarcraft.blizzard.com/en-us/news/24315281'))return {ok:true,status:200,text:async()=>'<li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li><li>Fixed an issue where pets had 0% critical strike chance on melee basic attacks.</li>'};
   if(sourceUrl.includes('us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes'))return {ok:true,status:200,text:async()=>`Pets now correctly benefit from Expertise.
 Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.`};
+  if(sourceUrl.includes('wowsims/forever/'))return {ok:true,status:200,text:async()=>"## Count of 2026-11-23 to 2026-11-24\n| 5 | 34 | 15,281 / 53,245 | 28.7% | 6,235 / 25,967 | 24.0% | 16.1% |\nAt 5/5 the white swings' 28.7% is their 12.8% before the hotfix plus the owners' 16.1%.\nThe abilities' slope is 0.93 (0.85 to 1.02, 386 reports)"};
   if(sourceUrl.includes('4evrbugs.com/bug/556'))return {ok:true,status:200,text:async()=>`White swings get none of the crit inherited from the hunter. Claw and Bite crit at about the Hunter's crit chance.`};
   if(sourceUrl.includes('foreverdb.net/changelog'))return {ok:true,status:200,text:async()=>`<main>
 <h1>Build changelog</h1>
@@ -178,7 +179,8 @@ try{
   assert.equal(result.payload.persisted,true);
   assert.ok(saved,'Redis contains a durable snapshot');
   assert.ok(petRulesSaved,'Redis contains a durable Pet rule state');
-  assert.equal(result.payload.petRules.overall,'review_required','Unresolved numeric crit is retained in the rule guard');
+  assert.equal(result.payload.petRules.overall,'verified','Reviewed model and hotfix guard are checked before the profile refresh');
+  assert.equal(result.payload.petRules.rules['pet.scaling.crit'].evidence,'reference_model');
   assert.equal(result.payload.petRules.rules['pet.scaling.health'].status,'verified');
   assert.equal(result.payload.petRules.rules['pet.scaling'].evidence,'reference_model');
   assert.equal(result.payload.petRules.rules['pet.crit.inheritance'].evidence,'official');

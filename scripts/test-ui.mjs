@@ -278,7 +278,7 @@ const verifiedPetRules={
     'pet.scaling.health':{status:'verified',version:1,evidence:'reference_model'},
     'pet.scaling.armor':{status:'verified',version:1,evidence:'reference_model'},
     'pet.scaling.ap':{status:'verified',version:1,evidence:'reference_model'},
-    'pet.scaling.crit':{status:'review_required',version:1,evidence:'reference_model'},
+    'pet.scaling.crit':{status:'verified',version:2,evidence:'reference_model'},
     'pet.crit.inheritance':{status:'verified',version:1,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Höherer Nah-/Fernkampf-Kritwert als Quelle'},
     'pet.autoswing.crit':{status:'verified',version:1,evidence:'measured',evidenceLabel:'Gemessen',evidenceNote:'White-Swing-Abweichung kontrolliert gemessen'},
     'pet.expertise':{status:'verified',version:1,evidence:'official',evidenceLabel:'Offiziell',evidenceNote:'Pets profitieren von Expertise; kein numerischer Faktor'},
@@ -313,7 +313,19 @@ assert.ok(!petPanel.includes('noch nicht aus der Pet-Datenquelle angebunden'),'N
 const combat=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(combat.includes('Gesundheit aus Dolly')&&combat.includes('>+60<'),'30 Stamina produces exactly +60 inherited pet health');
 assert.ok(combat.includes('Rüstung aus Dolly')&&combat.includes('>+76,8<'),'30% of 256 Armor is shown as 76.8 before server rounding');
-assert.ok(!combat.includes('Vererbte Krit-Komponente aus Dolly'),'Numeric crit remains hidden without post-hotfix evidence and unambiguous inputs');
+assert.ok(combat.includes('Krit-Vererbung')&&combat.includes('100 % des höheren Nah-/Fernkampf-Kritwerts')&&combat.includes('Getrennte Ausgangswerte sind online noch nicht verfügbar.'),'Reviewed rule is visible without inventing personal crit');
+const separateCrit=structuredClone(petDolly);
+separateCrit.statsByEnum={...separateCrit.statsByEnum,MELEECRIT:4.5,RANGEDCRIT:7.25};
+separateCrit.statsFreshEnums=[...separateCrit.statsFreshEnums,'MELEECRIT','RANGEDCRIT'];
+assert.equal(hunterPetCombatProfile(separateCrit).inherited.crit.value,7.25);
+assert.ok(ui.hunterPetCombatPanel(separateCrit,separateCrit.hunterPets.active[0]).includes('+7,25 %-Pkt.'));
+separateCrit.statsByEnum.MELEECRIT=8;
+assert.equal(hunterPetCombatProfile(separateCrit).inherited.crit.value,8);
+separateCrit.statsByEnum.RANGEDCRIT=null;
+assert.equal(hunterPetCombatProfile(separateCrit).inherited.crit,null);
+separateCrit.statsByEnum.RANGEDCRIT=7.25;
+separateCrit.statsFreshEnums=separateCrit.statsFreshEnums.filter(x=>x!=='MELEECRIT');
+assert.equal(hunterPetCombatProfile(separateCrit).inherited.crit,null);
 assert.ok(!combat.includes('Kritische Trefferchance aus Dolly'),'Inherited crit must not be presented as the effective pet crit chance');
 assert.ok(combat.includes('tatsächliche Krit-Chance der Autoangriffe'),'Autoattack crit remains semantically separate from inherited crit');
 assert.ok(combat.includes('Forever-Gesundheitsfaktor')&&combat.includes('>115 %<'),'Official 115% global pet health factor is shown');
@@ -363,7 +375,7 @@ critSourceBlocked.rules['pet.crit.inheritance'].status='review_required';
 ui.render(petData,{petRules:critSourceBlocked,petCatalog:verifiedPetCatalog});
 const critBlockedPanel=ui.hunterPetCombatPanel(petDolly,petDolly.hunterPets.active[0]);
 assert.ok(critBlockedPanel.includes('Gesundheit aus Dolly')&&critBlockedPanel.includes('Rüstung aus Dolly'),'Independent scaling contributions remain visible when only the official crit-source rule is blocked');
-assert.ok(!critBlockedPanel.includes('Vererbte Krit-Komponente aus Dolly'),'Crit component fails closed independently when its official source rule is blocked');
+assert.ok(!critBlockedPanel.includes('Krit-Vererbung'),'Crit component fails closed independently when its official source rule is blocked');
 
 const armorOnlyBlocked=structuredClone(verifiedPetRules);
 armorOnlyBlocked.overall='review_required';

@@ -4,6 +4,7 @@ import {petDb2Url} from './pet-db2-audit.mjs';
 import {PET_RULEBOOK_VERSION,verifyPetRulebook,publicPetRuleState} from './pet-rulebook.mjs';
 
 const pages={
+  'raw.githubusercontent.com/wowsims/forever/680ed6f99191ff5884794a3d595176ae1a316353/docs/evidence/EV-0134-hunter-pet-and-hawk-crit-hawk-swing-and-melee-crits-in-live-logs.md':"## Count of 2026-11-23 to 2026-11-24\n| 5 | 34 | 15,281 / 53,245 | 28.7% | 6,235 / 25,967 | 24.0% | 16.1% |\nAt 5/5 the white swings' 28.7% is their 12.8% before the hotfix plus the owners' 16.1%.\nThe abilities' slope is 0.93 (0.85 to 1.02, 386 reports)",
   'worldofwarcraft.blizzard.com/en-us/news/24315281':`
     <main><li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li></main>`,
   'us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes':`
@@ -103,7 +104,7 @@ assert.equal(first.rules['pet.health.global'].evidence,'official');
 assert.equal(first.rules['fox.family.profile'].evidence,'client');
 
 const same=await verifyPetRulebook({fetchImpl:fetchFrom(pages),previousState:first,now:new Date('2026-11-22T05:07:00.000Z')});
-assert.equal(same.overall,'review_required','Unresolved numeric crit stays blocked even with unchanged sources');
+assert.equal(same.overall,'review_required','Missing official hotfix marker keeps crit blocked');
 assert.equal(same.sources.blizzardHotfix.baselineDigest,first.sources.blizzardHotfix.baselineDigest);
 
 const changedHotfix={...pages,
@@ -159,7 +160,16 @@ delete productionLegacy.sources.blizzardHotfix.baselineEvidence;
 const approvedFix=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages),previousState:productionLegacy,now});
 assert.equal(approvedFix.sources.blizzardHotfix.status,'verified','Only exact reviewed hotfix additions migrate the old digest');
 assert.equal(approvedFix.rules['pet.autoswing.crit'].status,'verified');
-assert.equal(approvedFix.rules['pet.scaling.crit'].status,'review_required');
+assert.equal(approvedFix.rules['pet.scaling.crit'].status,'verified');
+assert.equal(approvedFix.rules['pet.scaling.crit'].evidence,'reference_model');
+assert.equal(approvedFix.overall,'verified');
+const missingLogs=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages,'wowsims/forever'),previousState:approvedFix,now});
+assert.equal(missingLogs.rules['pet.scaling.crit'].status,'source_unavailable');
+assert.equal(missingLogs.rules['pet.scaling.health'].status,'verified');
+const changedLogs={...fixedPages,'raw.githubusercontent.com/wowsims/forever/680ed6f99191ff5884794a3d595176ae1a316353/docs/evidence/EV-0134-hunter-pet-and-hawk-crit-hawk-swing-and-melee-crits-in-live-logs.md':fixedPages['raw.githubusercontent.com/wowsims/forever/680ed6f99191ff5884794a3d595176ae1a316353/docs/evidence/EV-0134-hunter-pet-and-hawk-crit-hawk-swing-and-melee-crits-in-live-logs.md'].replace('53,245','53,246')};
+const invalidLogs=await verifyPetRulebook({fetchImpl:fetchFrom(changedLogs),previousState:approvedFix,now});
+assert.equal(invalidLogs.rules['pet.scaling.crit'].status,'review_required');
+assert.equal(invalidLogs.rules['pet.scaling.armor'].status,'verified');
 for(const id of ['fox.family.profile','fox.training','pet.scaling.health','pet.scaling.armor','pet.scaling.ap','pet.crit.inheritance','pet.expertise','pet.focus','pet.health.global'])assert.equal(approvedFix.rules[id].status,'verified',id);
 const failedMigration=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages,'worldofwarcraft.blizzard.com'),previousState:productionLegacy,now});
 assert.equal(failedMigration.sources.blizzardHotfix.status,'source_unavailable');

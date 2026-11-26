@@ -670,6 +670,7 @@ function hunterPetCombatPanel(c,active){
   const healthScalingAllowed=petRuleVerified('pet.scaling.health');
   const armorScalingAllowed=petRuleVerified('pet.scaling.armor');
   const apScalingAllowed=petRuleVerified('pet.scaling.ap');
+  const critAllowed=petRuleVerified('pet.scaling.crit')&&petRuleVerified('pet.crit.inheritance');
   const focusAllowed=petRuleVerified('pet.focus');
   const healthRuleAllowed=petRuleVerified('pet.health.global');
   const inherited=profile.inherited||{};
@@ -679,6 +680,12 @@ function hunterPetCombatPanel(c,active){
   }
   if(armorScalingAllowed&&inherited.armor){
     inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.armor.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong><span>'+esc(petNumber(inherited.armor.input))+(inherited.armor.inputName?' '+esc(inherited.armor.inputName):'')+' × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
+  }
+  if(critAllowed){
+    const value=inherited.crit;
+    inheritedRows.push('<div class="pet-combat-stat'+(value?'':' is-unavailable')+'"><small>Krit-Vererbung</small><strong>'+
+      (value?'+'+esc(petNumber(value.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.':'–')+
+      '</strong><span>100 % des höheren Nah-/Fernkampf-Kritwerts (rechnerisch). '+(value?'Nur vererbter Anteil, keine tatsächliche Krit-Chance.':'Getrennte Ausgangswerte sind online noch nicht verfügbar.')+'</span></div>');
   }
   if(apScalingAllowed)inheritedRows.push('<div class="pet-combat-stat is-unavailable"><small>Angriffskraft aus Dolly</small><strong>–</strong><span>'+esc(inherited.attackPower?.reason||'Der benötigte Ausgangswert ist online nicht eindeutig verfügbar.')+'</span></div>');
   const inheritedBlock=inheritedRows.length
@@ -702,7 +709,7 @@ function hunterPetCombatPanel(c,active){
     '<div class="pet-subsection-head"><div><span class="pet-overline">KAMPFPROFIL</span><h4>Werte & Beiträge</h4></div></div>'+
     '<div class="pet-combat-group"><span class="pet-combat-label">Von Dolly geerbt</span>'+inheritedBlock+'</div>'+
     (modifiersBlock?'<div class="pet-combat-group"><span class="pet-combat-label">Weitere Werte & Talente</span>'+modifiersBlock+'</div>':'')+
-    '<div class="pet-combat-caveat"><strong>Warum fehlen Gesamtleben, Gesamtrüstung und DPS?</strong><span>Blizzard veröffentlicht Slydris’ Grundwerte, aktuell trainierte passive Ränge, Zufriedenheit und die höhere Nah-/Fernkampf-Angriffskraft nicht vollständig online. Trefferchance und Expertise werden ohne belastbaren numerischen Vererbungsfaktor ebenfalls nicht hochgerechnet; die tatsächliche Krit-Chance der Autoangriffe und der genaue Vererbungsfaktor sind nach der Fehlerkorrektur noch nicht hinreichend belegt.</span></div>'+
+    '<div class="pet-combat-caveat"><strong>Warum fehlen Gesamtleben, Gesamtrüstung und DPS?</strong><span>Blizzard veröffentlicht Slydris’ Grundwerte, aktuell trainierte passive Ränge, Zufriedenheit und die höhere Nah-/Fernkampf-Angriffskraft nicht vollständig online. Trefferchance und Expertise werden ohne belastbaren numerischen Vererbungsfaktor ebenfalls nicht hochgerechnet; die tatsächliche Krit-Chance der Autoangriffe wird nicht aus der Vererbung allein berechnet.</span></div>'+
   '</div>';
 }
 

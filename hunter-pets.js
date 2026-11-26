@@ -1,4 +1,4 @@
-export const HUNTER_PET_RULEBOOK_VERSION='2026.11.26.1';
+export const HUNTER_PET_RULEBOOK_VERSION='2026.11.26.2';
 // Versioniertes Forever-Jägerwissen. Live-Zustand eines konkreten Tiers kommt ausschließlich von Blizzard.
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({
@@ -18,7 +18,7 @@ export const hunterPetMechanics=Object.freeze({
   inherited:Object.freeze({
     healthPerHunterStamina:Object.freeze({ruleId:'pet.scaling.health',factor:2,version:1}),
     armorFromHunter:Object.freeze({ruleId:'pet.scaling.armor',factor:0.30,version:1}),
-    critFromHunter:Object.freeze({ruleId:'pet.scaling.crit',sourceRuleId:'pet.crit.inheritance',factor:1,displayKind:'inherited_component',version:2})
+    critFromHunter:Object.freeze({ruleId:'pet.scaling.crit',sourceRuleId:'pet.crit.inheritance',factor:1,displayKind:'inherited_component',version:3})
   }),
   focus:Object.freeze({ruleId:'pet.focus',maximum:150,regenPerSecond:10,version:1}),
   globalHealth:Object.freeze({ruleId:'pet.health.global',factor:1.15,percent:115,version:1})
@@ -55,6 +55,13 @@ function enduranceTraining(character){
 export function hunterPetCombatProfile(character){
   const stamina=freshCharacterStat(character,'STAMINA');
   const armor=freshCharacterStat(character,'ARMOR');
+  // A combined CRITICALSTRIKE enum is not a substitute for the two inputs.
+  const critInput=key=>{
+    const raw=character?.statsByEnum?.[key];
+    return typeof raw==='number'&&Number.isFinite(raw)&&raw>=0&&raw<=100?freshCharacterStat(character,key):null;
+  };
+  const meleeCrit=critInput('MELEECRIT'),rangedCrit=critInput('RANGEDCRIT');
+  const crit=meleeCrit&&rangedCrit?Math.max(meleeCrit.value,rangedCrit.value):null;
   const healthName=(Array.isArray(character?.statsDetails)?character.statsDetails:[])
     .find(entry=>entry?.enum==='HEALTH'&&typeof entry?.name==='string')?.name||null;
   return {
@@ -73,9 +80,12 @@ export function hunterPetCombatProfile(character){
         value:armor.value*hunterPetMechanics.inherited.armorFromHunter.factor,
         unitName:armor.name
       },
-      // The single Armory CRITICALSTRIKE enum does not identify the higher
-      // melee/ranged input. Do not compute a numeric contribution from it.
-      crit:null,
+      crit:crit===null?null:{
+        ruleId:hunterPetMechanics.inherited.critFromHunter.ruleId,
+        factor:hunterPetMechanics.inherited.critFromHunter.factor,
+        input:crit,value:crit*hunterPetMechanics.inherited.critFromHunter.factor,
+        melee:meleeCrit.value,ranged:rangedCrit.value
+      },
       attackPower:{
         ruleId:'pet.scaling.ap',
         value:null,

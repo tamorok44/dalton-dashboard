@@ -53,9 +53,9 @@ export const PET_RULES=Object.freeze({
     reviewedAt:'2026-11-26',sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling'])
   }),
   'pet.scaling.crit':Object.freeze({
-    version:1,label:'Numerische Krit-Vererbung',evidence:'reference_model',
-    evidenceNote:'100 % bleiben historisches Referenzmodell. Nach dem Hotfix vom 25.11. fehlen aktuelle reproduzierbare Messungen und eindeutige getrennte Armory-Eingangswerte.',
-    reviewedAt:'2026-11-26',requiresNewMeasurement:true,sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling','blizzardBetaNotes'])
+    version:2,label:'Numerische Krit-Vererbung',evidence:'reference_model',
+    evidenceNote:'100 % des höheren Nah-/Fernkampf-Kritwerts als durch echte Forever-Kampflogs gestütztes Referenzmodell. WoWSims EV-0134: nach beobachtetem Rollout am 24.11. 28,7 % normale Krits bei Ferocity 5/5 gegenüber zuvor 12,8 % und 16,1 % Owner-Auto-Shot-Krit; 53.245 gelandete Angriffe. Frühere Fähigkeits-Krit-Steigung 0,93 (95%-Intervall 0,85–1,02). Kein exakt isolierter Serverkoeffizient; Build/Relog nicht erfasst. Individueller Beitrag nur mit beiden frischen getrennten Krit-Ausgangswerten, niemals Gesamt-Krit.',
+    reviewedAt:'2026-11-26',sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling','blizzardBetaNotes','wowSimsCritLogs'])
   }),
   'pet.crit.inheritance':Object.freeze({
     version:1,
@@ -117,6 +117,17 @@ const sources=Object.freeze({
     semanticPatterns:Object.freeze([
       /pets?\s+now\s+correctly\s+benefit\s+from\s+expertise/i,
       /pets?[\s\S]{0,180}?only\s+ever\s+inheriting[\s\S]{0,180}?melee\s+critical\s+strike[\s\S]{0,220}?whichever\s+is\s+higher,?\s*melee\s+or\s+ranged/i
+    ])
+  }),
+  wowSimsCritLogs:Object.freeze({
+    label:'WoWSims · Forever-Kampflogs EV-0134 (geprüfter Stand)',
+    url:'https://raw.githubusercontent.com/wowsims/forever/680ed6f99191ff5884794a3d595176ae1a316353/docs/evidence/EV-0134-hunter-pet-and-hawk-crit-hawk-swing-and-melee-crits-in-live-logs.md',
+    mode:'markers',
+    semanticPatterns:Object.freeze([
+      /count of 2026-11-23 to 2026-11-24/i,
+      /\|\s*5\s*\|\s*34\s*\|\s*15,281\s*\/\s*53,245\s*\|\s*28\.7%\s*\|\s*6,235\s*\/\s*25,967\s*\|\s*24\.0%\s*\|\s*16\.1%\s*\|/i,
+      /at 5\/5 the white swings['’] 28\.7% is their 12\.8% before the hotfix plus the owners['’] 16\.1%/i,
+      /abilities['’] slope is 0\.93\s*\(0\.85 to 1\.02, 386 reports\)/i
     ])
   }),
   wowheadScaling:Object.freeze({
@@ -313,8 +324,8 @@ function inspectHotfixEvidence(semantic,previousSource,previousRulebookVersion){
   // evidence minus the specifically reviewed additions. No unknown change
   // can be swallowed by the rulebook version bump.
   const legacy=evidence.filter((line,i)=>i===0||!reviewedHotfixLines.includes(line));
-  const approved=Boolean(oldDigest&&['2026.11.25.3','2026.11.26.1'].includes(previousRulebookVersion)&&
-    PET_RULEBOOK_VERSION==='2026.11.26.1'&&evidence.includes(fixedCritLine)&&sha(legacy.join('\n'))===oldDigest);
+  const approved=Boolean(oldDigest&&['2026.11.25.3','2026.11.26.1','2026.11.26.2'].includes(previousRulebookVersion)&&
+    ['2026.11.26.1','2026.11.26.2'].includes(PET_RULEBOOK_VERSION)&&evidence.includes(fixedCritLine)&&sha(legacy.join('\n'))===oldDigest);
   if(!oldDigest||oldDigest===digest||approved)baselineEvidence=evidence;
   const baselineDigest=(!oldDigest||approved)?digest:oldDigest;
   const changed=digest!==baselineDigest;
@@ -416,7 +427,7 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
         Array.isArray(source.affectedRuleIds)&&!source.affectedRuleIds.includes(id))return 'verified';
       return source?.status||'source_unavailable';
     });
-    if(id==='pet.autoswing.crit'&&sourceResults.blizzardHotfix?.fixedCritPresent!==true&&sourceResults.blizzardHotfix?.status!=='source_unavailable')statuses.push('review_required');
+    if(['pet.autoswing.crit','pet.scaling.crit'].includes(id)&&sourceResults.blizzardHotfix?.fixedCritPresent!==true&&sourceResults.blizzardHotfix?.status!=='source_unavailable')statuses.push('review_required');
     if(rule.requiresNewMeasurement)statuses.push('review_required');
     const status=worstStatus(statuses);
     return [id,{
