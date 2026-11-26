@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {gunzipSync} from 'node:zlib';
 import {dailySnapshotStoreConfigured,saveDailySnapshot} from './daily-snapshot-store.mjs';
-import {dailyRefreshComplete} from '../api/daily-snapshot.js';
+import {dailyRefreshComplete,createDailySnapshotHandler} from '../api/daily-snapshot.js';
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async()=>{throw Error('Real network disabled')};
 for(const key of ['KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','BLOB_STORE_ID','BLOB_READ_WRITE_TOKEN','DALTON_PRIVATE_ARCHIVE_TOKEN','DALTON_SYNC_TOKEN','SPELLBOOK_SYNC_TOKEN','FOREVERDB_API_KEY','BLIZZARD_CLIENT_ID','BLIZZARD_CLIENT_SECRET'])delete process.env[key];
@@ -32,7 +32,40 @@ await assert.rejects(saveDailySnapshot(snapshot,'2026-11-26',{putImpl:async()=>(
 assert.equal(dailyRefreshComplete({archiveStatus:'disabled',refresh:{persisted:true}},false),true);
 assert.equal(dailyRefreshComplete({archiveStatus:'disabled',refresh:{persisted:true}},true),false);
 assert.equal(dailyRefreshComplete({archiveStatus:'failed',refresh:{persisted:true}},true),false);
-console.log('F01: production-only dedicated private archive; missing configuration fails closed: OK');
+// Exercise the real daily handler with no external requests: disabled archive
+// must not block profile updates, failed archive must be retriable, and preview
+// may not enter the production pipeline at all.
+let stored=null,privateConfigured=false,failArchive=false;
+const events=[];
+process.env.CRON_SECRET='isolated-cron';
+const daily=createDailySnapshotHandler({
+  configured:()=>true,blizzardApiConfigured:()=>true,dailySnapshotStoreConfigured:()=>privateConfigured,
+  berlinClock:()=>({date:'2026-11-26',hour:5,minute:7}),
+  getDailySnapshot:async()=>stored,acquireDailySnapshotLock:async()=>{events.push('lock');return 'daily-lock'},
+  releaseDailySnapshotLock:async()=>events.push('release'),
+  ensurePetRuleState:async()=>{events.push('rules');return {}},
+  loadCharacters:async()=>{events.push('roster');return {data:{characters:[{slug:'test'}]}}},
+  fetchForeverSnapshot:async()=>{events.push('raw');return snapshot},
+  saveDailySnapshot:async()=>{events.push('private');if(failArchive)throw Error('fixture archive failed');return meta},
+  registerDailySnapshot:async value=>{events.push('register');stored=structuredClone(value)},
+  refreshDailyCharacters:async()=>{events.push('refresh');return {success:1,persisted:true}},
+  publicPetRuleState:()=>({})
+});
+const runDaily=async()=>{const res=response();await daily({method:'GET',headers:{authorization:'Bearer isolated-cron'}},res);return res};
+const disabled=await runDaily();
+assert.equal(disabled.http,200);assert.equal(stored.archiveStatus,'disabled');assert.equal(stored.refresh.persisted,true);
+assert.deepEqual(events,['lock','rules','refresh','register','release']);
+events.length=0;assert.equal((await runDaily()).value.reason,'already_completed');assert.deepEqual(events,[]);
+privateConfigured=true;failArchive=true;
+const failed=await runDaily();assert.equal(failed.http,503);assert.equal(stored.archiveStatus,'failed');
+assert.equal(stored.refresh.persisted,true);assert.deepEqual(events,['lock','rules','roster','raw','private','register','release']);
+events.length=0;failArchive=false;
+const recovered=await runDaily();assert.equal(recovered.http,200);assert.equal(stored.archiveStatus,'private');
+assert.equal(stored.refresh.persisted,true);assert.deepEqual(events,['lock','rules','roster','raw','private','register','register','release']);
+events.length=0;process.env.VERCEL_ENV='preview';
+assert.equal((await runDaily()).value.reason,'non_production');assert.deepEqual(events,[]);
+process.env.VERCEL_ENV='production';delete process.env.CRON_SECRET;
+console.log('F01: production-only dedicated private archive; disabled/failed/retried daily lifecycle, rule order and preview isolation: OK');
 delete process.env.BLOB_STORE_ID;delete process.env.BLOB_READ_WRITE_TOKEN;delete process.env.DALTON_PRIVATE_ARCHIVE_TOKEN;
 const date=(minutes=0)=>new Date(Date.now()+minutes*60000).toISOString();
 function response(){return {http:200,value:null,setHeader(){},status(n){this.http=n;return this},json(value){this.value=value}}}

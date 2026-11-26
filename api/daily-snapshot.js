@@ -51,7 +51,19 @@ async function refreshDailyCharacters(){
   return refresh;
 }
 
-export default async function handler(req,res){
+const dailyDependencies={configured,blizzardApiConfigured,dailySnapshotStoreConfigured,getDailySnapshot,
+  acquireDailySnapshotLock,releaseDailySnapshotLock,ensurePetRuleState,loadCharacters,
+  fetchForeverSnapshot,saveDailySnapshot,registerDailySnapshot,refreshDailyCharacters,
+  publicPetRuleState,berlinClock};
+
+// Dependency injection is solely for offline lifecycle tests. Production uses
+// the same handler with its normal server dependencies.
+export function createDailySnapshotHandler(overrides={}){
+  const {configured,blizzardApiConfigured,dailySnapshotStoreConfigured,getDailySnapshot,
+    acquireDailySnapshotLock,releaseDailySnapshotLock,ensurePetRuleState,loadCharacters,
+    fetchForeverSnapshot,saveDailySnapshot,registerDailySnapshot,refreshDailyCharacters,
+    publicPetRuleState,berlinClock}={...dailyDependencies,...overrides};
+  return async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
   const secret=process.env.CRON_SECRET;
@@ -85,6 +97,7 @@ export default async function handler(req,res){
           const slugs=current.characters.map(c=>c.slug);
           const snapshot=await fetchForeverSnapshot(slugs);
           meta=await saveDailySnapshot(snapshot,local.date);
+          if(previousRefresh?.persisted===true)meta={...meta,refresh:previousRefresh};
           await registerDailySnapshot(meta);
           saved=true;
         }catch(error){
@@ -121,3 +134,5 @@ export default async function handler(req,res){
     try{await releaseDailySnapshotLock(local.date,dailyLock)}catch(error){console.error('Daily-Snapshot-Sperre konnte nicht freigegeben werden:',error)}
   }
 }
+}
+export default createDailySnapshotHandler();
