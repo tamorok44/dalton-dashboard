@@ -357,6 +357,18 @@ function auditRevalidation(entry,library,catalog,snapshots){
     if(item.kind==='client'){
       assert.equal(item.comparisonDigest,talentStructureDigest(proof),'new client comparison missing or mismatched');
       assert.match(item.sourceCaptureSha256,digest,'new independent capture hash required');
+      const comparison=item.buildComparison;
+      assert.ok(comparison?.status==='structure_matches'&&comparison.build===entry.to.clientBuild&&
+        comparison.classId===next.classId&&comparison.catalogRevision===next.catalogRevision&&
+        comparison.sourceRevision===next.sourceRevision&&comparison.captureSha256===item.sourceCaptureSha256&&
+        comparison.comparisonDigest===item.comparisonDigest,'exact current independent build comparison required');
+      assert.match(comparison.primaryNormalizedSha256,digest);
+      assert.equal(comparison.independentNormalizedSha256,comparison.primaryNormalizedSha256,'independent structure differs');
+      assert.ok(Array.isArray(comparison.unknownPrerequisites)&&comparison.unknownPrerequisites.length===0&&
+        Array.isArray(comparison.cyclicPrerequisites)&&comparison.cyclicPrerequisites.length===0,'unresolved edge in revalidation evidence');
+      assert.equal(comparison.talentCount,proof.trees.flatMap(t=>t.talents).length,'incomplete independent comparison');
+      assert.ok(digest.test(comparison.rawSha256)&&digest.test(comparison.localizedSha256)&&
+        talentSourcePairDigest(comparison.rawSha256,comparison.localizedSha256)===next.sourceRevision,'comparison source hashes mismatch');
     }
     if(item.kind==='official'){
       assert.ok(item.completeHotfixReview===true&&item.hotfixDeltaReviewed===true&&
@@ -458,14 +470,20 @@ if(!process.argv.includes('--coverage'))console.log('Talent release CI: offline 
 
 // A complete hypothetical review is tested without claiming a real build approval.
 const baseTuple=Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,pack[k]]));
-const targetTuple={...baseTuple,clientBuild:'1.60.1.71139',hotfixRevision:'d'.repeat(64),sourceRevision:'e'.repeat(64)};
+const fixtureRawSha='e'.repeat(64),fixtureLocalizedSha='f'.repeat(64);
+const targetTuple={...baseTuple,clientBuild:'1.60.1.71139',hotfixRevision:'d'.repeat(64),sourceRevision:talentSourcePairDigest(fixtureRawSha,fixtureLocalizedSha)};
 const nextPack={...pack,...targetTuple};
 const transitionFixture={status:'verified',planId:publishedFixture.id,planVersion:1,allocationDigest:talentPlanEvidenceDigest(publishedFixture),
   ruleRevision:pack.revision,legacyTalentedRank:0,from:baseTuple,to:targetTuple,reviewedAt:'2026-11-26',
   evidenceIds:['fixture-next-client','fixture-next-official','fixture-next-editorial'],
   scope:{completeHotfixReview:true,classAndSpellDependenciesUnchanged:true,pointCalendarAndGatesUnchanged:true,editorialRecommendationUnchanged:true}};
 const clientFixture={...ruleEvidence,...targetTuple,id:'fixture-next-client',reviewedFrom:baseTuple,reviewedAt:'2026-11-26',
-  ruleDigest:talentRuleEvidenceDigest(nextPack),comparisonDigest:talentStructureDigest(fixtureProof),sourceCaptureSha256:'f'.repeat(64)};
+  ruleDigest:talentRuleEvidenceDigest(nextPack),comparisonDigest:talentStructureDigest(fixtureProof),sourceCaptureSha256:'f'.repeat(64),
+  buildComparison:{status:'structure_matches',build:targetTuple.clientBuild,classId:targetTuple.classId,
+    catalogRevision:targetTuple.catalogRevision,sourceRevision:targetTuple.sourceRevision,captureSha256:'f'.repeat(64),
+    comparisonDigest:talentStructureDigest(fixtureProof),primaryNormalizedSha256:'b'.repeat(64),independentNormalizedSha256:'b'.repeat(64),
+    rawSha256:fixtureRawSha,localizedSha256:fixtureLocalizedSha,unknownPrerequisites:[],cyclicPrerequisites:[],
+    talentCount:fixtureProof.trees.flatMap(t=>t.talents).length}};
 const officialFixture={...clientFixture,id:'fixture-next-official',kind:'official',completeHotfixReview:true,hotfixDeltaReviewed:true};
 const editorialFixture={...editorial,...targetTuple,id:'fixture-next-editorial',reviewedFrom:baseTuple,reviewedAt:'2026-11-26'};
 const transitionCatalog=validateReleaseCatalog({evidence:[ruleEvidence,editorial,clientFixture,officialFixture,editorialFixture],rulePacks:[pack]});
@@ -476,3 +494,7 @@ const missingOfficial={...transitionCatalog,evidence:new Map(transitionCatalog.e
 missingOfficial.evidence.set(officialFixture.id,{...officialFixture,completeHotfixReview:false});
 assert.throws(()=>auditRevalidation(transitionFixture,[{...publishedFixture,status:'approved'}],missingOfficial,transitionSnapshots),/complete hotfix delta/);
 assert.throws(()=>auditRevalidation({...transitionFixture,allocationDigest:'b'.repeat(64)},[{...publishedFixture,status:'approved'}],transitionCatalog,transitionSnapshots),/invalid revalidation/);
+
+const incompleteComparison={...transitionCatalog,evidence:new Map(transitionCatalog.evidence)};
+incompleteComparison.evidence.set(clientFixture.id,{...clientFixture,buildComparison:{...clientFixture.buildComparison,cyclicPrerequisites:[[1,2,1]]}});
+assert.throws(()=>auditRevalidation(transitionFixture,[{...publishedFixture,status:'approved'}],incompleteComparison,transitionSnapshots),/unresolved edge/);

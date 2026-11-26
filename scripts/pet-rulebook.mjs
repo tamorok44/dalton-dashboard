@@ -244,7 +244,7 @@ function htmlText(html){
 function normalized(value){
   return String(value||'').toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
 }
-function hotfixArticleBody(html){
+export function hotfixArticleBody(html){
   const news=html.match(/<section\b[^>]*\bclass=["']blog["'][^>]*>([\s\S]*?)<\/section>/i)?.[1];
   if(news)return htmlText(news);
   // worldofwarcraft.blizzard.com serves the same article in a legacy wrapper.
