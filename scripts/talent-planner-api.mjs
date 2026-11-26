@@ -65,7 +65,8 @@ export function createTalentPlannerHandler({
           .map(tree=>[tree.treeId,tree.treeName]));
         for(const plan of classPlans)names.set(plan.treeId,plan.treeName);
         const specializations=[...names].map(([treeId,name])=>({treeId,name}));
-        const specializationAdvice=(catalog.specializationAdvice??[]).filter(entry=>entry.preferred.classId===character.classId);
+        const specializationAdvice=(catalog.specializationAdvice??[]).filter(entry=>entry.preferred.classId===character.classId&&
+          entry.options.every(option=>profiles.some(p=>p.planId===option.planId&&p.version===option.version&&profileKey(p)===profileKey(option))));
         return send(200,{ok:true,profiles,identity,specializations,specializationAdvice});
       }
       const profile={classId:character.classId,treeId:Number(query.tree),goal:query.goal,

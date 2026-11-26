@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11594,
-  "status": "research_only",
+  "status": "retired",
   "requiresRespec": false,
   "profiles": [
     {
@@ -335,7 +335,7 @@
       "icyveins-fire",
       "mobalytics-fire"
     ],
-    "editorialDecision": "Preserve the standard Heating Up and Combustion milestones and add a late Arcane mana package. Compare early Scorch uptime against faster direct-fire play in short fights.",
+    "editorialDecision": "Superseded by version 2 before publication; retained for research history.",
     "unresolved": [
       "Current build attestation for the exact catalog capture",
       "Heating Up action and proc semantics and the value of early Scorch for mixed play",

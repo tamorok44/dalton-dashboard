@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-fire-leveling-mixed-balanced",
+  "version": 2,
+  "classId": 8,
+  "treeId": 11594,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "points": [
+    {
+      "talentId": 105795,
+      "rank": 1
+    },
+    {
+      "talentId": 105795,
+      "rank": 2
+    },
+    {
+      "talentId": 105795,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 4
+    },
+    {
+      "talentId": 105795,
+      "rank": 5
+    },
+    {
+      "talentId": 105794,
+      "rank": 1
+    },
+    {
+      "talentId": 105794,
+      "rank": 2
+    },
+    {
+      "talentId": 105794,
+      "rank": 3
+    },
+    {
+      "talentId": 105794,
+      "rank": 4
+    },
+    {
+      "talentId": 105794,
+      "rank": 5
+    },
+    {
+      "talentId": 105789,
+      "rank": 1
+    },
+    {
+      "talentId": 105789,
+      "rank": 2
+    },
+    {
+      "talentId": 105797,
+      "rank": 1
+    },
+    {
+      "talentId": 105797,
+      "rank": 2
+    },
+    {
+      "talentId": 105790,
+      "rank": 1
+    },
+    {
+      "talentId": 105786,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105785,
+      "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 2
+    },
+    {
+      "talentId": 105785,
+      "rank": 3
+    },
+    {
+      "talentId": 105789,
+      "rank": 3
+    },
+    {
+      "talentId": 105784,
+      "rank": 1
+    },
+    {
+      "talentId": 105784,
+      "rank": 2
+    },
+    {
+      "talentId": 105784,
+      "rank": 3
+    },
+    {
+      "talentId": 105783,
+      "rank": 1
+    },
+    {
+      "talentId": 105788,
+      "rank": 1
+    },
+    {
+      "talentId": 105788,
+      "rank": 2
+    },
+    {
+      "talentId": 105788,
+      "rank": 3
+    },
+    {
+      "talentId": 105782,
+      "rank": 1
+    },
+    {
+      "talentId": 105782,
+      "rank": 2
+    },
+    {
+      "talentId": 105782,
+      "rank": 3
+    },
+    {
+      "talentId": 105781,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105806,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 18,
+    "11594": 31,
+    "11601": 2
+  },
+  "rationaleBlocks": [
+    {
+      "talentId": 105795,
+      "count": 5,
+      "reason": "Feuerball früh beschleunigen."
+    },
+    {
+      "talentId": 105794,
+      "count": 5,
+      "reason": "Entzünden als Grundlage für kritische Feuertreffer aufbauen."
+    },
+    {
+      "talentId": 105789,
+      "count": 2,
+      "reason": "Zauberunterbrechung und Bedrohung bereits im frühen Spiel reduzieren."
+    },
+    {
+      "talentId": 105797,
+      "count": 2,
+      "reason": "Feuerschlag häufiger und aus größerer Entfernung einsetzen."
+    },
+    {
+      "talentId": 105790,
+      "count": 1,
+      "reason": "Pyroschlag als Eröffnungszauber und Voraussetzung für Aufwärmen freischalten."
+    },
+    {
+      "talentId": 105786,
+      "count": 1,
+      "reason": "Aufwärmen auf Stufe 25 freischalten; kritische Treffer und treffender Feuerschlag verkürzen Pyroschlag."
+    },
+    {
+      "talentId": 105778,
+      "count": 2,
+      "reason": "Trefferchance früh verbessern, auch bei späteren Gruppengegnern."
+    },
+    {
+      "talentId": 105785,
+      "count": 3,
+      "reason": "Bei kritischen Feuer- und Frosttreffern Mana zurückgewinnen."
+    },
+    {
+      "talentId": 105789,
+      "count": 1,
+      "reason": "Schutz vor Zauberunterbrechungen und Bedrohungsreduktion vervollständigen."
+    },
+    {
+      "talentId": 105784,
+      "count": 3,
+      "reason": "Kritische Masse als Voraussetzung des Abschlusses vervollständigen."
+    },
+    {
+      "talentId": 105783,
+      "count": 1,
+      "reason": "Druckwelle für situative Flächenkontrolle und Abstand gewinnen."
+    },
+    {
+      "talentId": 105788,
+      "count": 3,
+      "reason": "Versengen bei länger lebenden Gegnern zuverlässig als eigenen Feuerbonus nutzen."
+    },
+    {
+      "talentId": 105782,
+      "count": 3,
+      "reason": "Feuermacht mit eigenen Feuereffekten stärken, ohne maximale Stapel in jedem Kampf anzunehmen."
+    },
+    {
+      "talentId": 105781,
+      "count": 1,
+      "reason": "Abschlussfähigkeit Verbrennung auf Stufe 42 nach der vorgezogenen Präzision."
+    },
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Arkanen Nebenbaum öffnen und die ergänzenden Arkanzauber gegen Unterbrechungen absichern."
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Geschosssalve als Ergänzung zu Feuerball früh im Nebenbaum freischalten."
+    },
+    {
+      "talentId": 105810,
+      "count": 5,
+      "reason": "Freizauber zur Entlastung des Manahaushalts ausbauen."
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Zauberwiderstände und Bedrohung der Arkanergänzung reduzieren."
+    },
+    {
+      "talentId": 105806,
+      "count": 1,
+      "reason": "Arkanschlag als ergänzende Schadensschule freischalten."
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern vervollständigen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-fire",
+      "mobalytics-fire"
+    ],
+    "editorialDecision": "Prioritize pushback/threat mitigation and earlier hit over a level-40 capstone. Choose fully ranked Improved Scorch for longer targets, without assuming stacks on every short quest fight. Use 18 Arcane points for sustain late.",
+    "unresolved": [
+      "No controlled comparative leveling benchmark; rank 1–5 not released. Live release requires exact existing source-pair and hotfix gates."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Feuer",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-fire-rank0-71091-v2",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Feuer-Alternative für gemischtes Leveln gegen überwiegend gleichstufige Gegner: Beschleuniger, Entzünden, Brennende Seele und verbesserter Feuerschlag bereiten Aufwärmen auf Stufe 25 vor. Zwei Punkte Präzision auf 26–27 verzögern Verbrennung bis 42, dafür verbessern sie die Trefferchance früher. Meister der Elemente, Brennende Seele und später Arkane Meditation berücksichtigen Ressourcen und Gruppenspiel. Verbessertes Versengen wird nur für länger lebende Ziele gewichtet, nicht für jeden kurzen Kampf. Aufwärmen wird anhand des aktuellen deutschen Katalogtexts gewertet: zusätzlicher Stapel bei verursachtem Feuerschlagschaden, kein Anspruch auf Stapel bei verfehlten Zielen, keine unbelegte Zusatz-Auslösung. Kein Anspruch auf messbar schnellsten Pfad.",
+    "adviceSummary": "Feuer ist eine offensive Alternative mit starken Feuerzaubern, kürzerem Pyroschlag durch Aufwärmen und Schutz gegen Zauberunterbrechungen. Präzision und später Arkane Meditation helfen beim gemischten Leveln.",
+    "evidenceIds": [
+      "fire-rank0-editorial-icyveins-v2",
+      "fire-rank0-editorial-avoid-v2"
+    ]
+  }
+}

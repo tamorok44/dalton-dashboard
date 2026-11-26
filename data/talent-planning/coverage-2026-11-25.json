@@ -15,9 +15,9 @@
       {"treeId": 11559, "roles": ["damage"]}
     ],
     "3": [
-      {"treeId": 11372, "roles": ["damage"]},
-      {"treeId": 11371, "roles": ["damage"]},
-      {"treeId": 11370, "roles": ["damage"]}
+      {"treeId": 11372, "treeName": "Tierherrschaft", "roles": ["damage"]},
+      {"treeId": 11371, "treeName": "Treffsicherheit", "roles": ["damage"]},
+      {"treeId": 11370, "treeName": "Überleben", "roles": ["damage"]}
     ],
     "4": [
       {"treeId": 11580, "roles": ["damage"]},
@@ -45,9 +45,9 @@
       {"treeId": 11637, "roles": ["damage"]}
     ],
     "11": [
-      {"treeId": 11328, "roles": ["damage"]},
-      {"treeId": 11347, "roles": ["damage", "tank"], "roleEvidence": ["icyveins-feral-pve", "mobalytics-feral-leveling"]},
-      {"treeId": 11340, "roles": ["heal"]}
+      {"treeId": 11328, "treeName": "Gleichgewicht", "roles": ["damage"]},
+      {"treeId": 11347, "treeName": "Wilder Kampf", "roles": ["damage", "tank"], "roleEvidence": ["icyveins-feral-pve", "mobalytics-feral-leveling"]},
+      {"treeId": 11340, "treeName": "Wiederherstellung", "roles": ["heal"]}
     ]
   }
 }

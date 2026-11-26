@@ -61,6 +61,126 @@
       "id": "arcane-rank0-editorial-avoid",
       "url": "https://mobalytics.gg/wow-forever/classes/arcane-mage-guide-progress",
       "claim": "Separate editorial reference supports the three core Arcane additions and presents a viable early-Precision alternative. The approved allocation is the Dalton editorial choice for the exact mixed-leveling profile."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "id": "mage-fire-rank0-catalog-71091",
+      "kind": "client",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e3fbd04193fe9bc1d7f68377673362c7ad96dc359754b9de36905ba12327d036",
+      "url": "https://theforeverera.com/en/talents/mage/",
+      "sourceCaptureSha256": "83cbc804062abc24c849a70df92e0ee475d954b0363d38d1c27e37b2effcc2ec",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "claim": "Derived minimum gates for every used Fire path talent from the retained build 1.60.1.71091 class proof. The independent comparison already covered all 53 Mage talents. All 51 assignments were checked against this exact proof; no earlier Legacy gate assumed. The German public dashboard catalog returned the Fire effect text on 26 November; the public projection does not prove a new exact source revision. The live gate remains bound to the previously reviewed pair and hotfix digest."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "id": "fire-rank0-editorial-icyveins-v2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-fire-leveling-mixed-balanced",
+      "planVersion": 2,
+      "allocationDigest": "44cff0799de6283bcd5b6b341222bdfce335c2596f6ca604884b77da18462b33",
+      "url": "https://www.icy-veins.com/wow-forever/fire-mage-leveling",
+      "claim": "Indexed guide text supports Heating Up, Fire Blast's additional stack and Missile Barrage/Clearcasting for leveling. Full page fetch failed. Current German displayed talent text independently supports the chosen Fire Blast damage condition, Burning Soul, Precision and Scorch. Editorial route is our own, not a copied guide."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "id": "fire-rank0-editorial-avoid-v2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-fire-leveling-mixed-balanced",
+      "planVersion": 2,
+      "allocationDigest": "44cff0799de6283bcd5b6b341222bdfce335c2596f6ca604884b77da18462b33",
+      "url": "https://mobalytics.gg/wow-forever/classes/fire-mage-guide-progress",
+      "claim": "Indexed chronological guide excerpt (25 November) agrees with points 1–16: Accelerant, Ignite, Burning Soul, Improved Fire Blast, Pyroblast, Heating Up. Published endpoint 12/36/3 differs from our 18/31/2. Our editorial tradeoff is earlier Precision, completed Burning Soul, fully ranked Scorch for longer enemies, later Arcane sustain. No measured speed claim; full page fetch failed."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "id": "arcane-fire-comparison-icyveins-20261126",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "url": "https://www.icy-veins.com/wow-forever/mage-class-overview",
+      "claim": "Indexed overview supports Arcane's early sustain tools; indexed Fire PvE introduction (23 November) warns that leveling directly in Fire is less optimized. Compared here editorially against our exact two available mixed-leveling routes: Arcane Meditation arrives much earlier in Arcane. No source directly benchmarks our two custom paths. Full guide fetch limited.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-arcane-leveling",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-fire-leveling-mixed-balanced",
+          "version": 2
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "id": "arcane-fire-comparison-avoid-20261126",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "url": "https://mobalytics.gg/wow-forever/classes/arcane-mage-guide-progress",
+      "claim": "Indexed guide (25 November) considers Arcane especially fast for experienced mage players. The separate Fire guide describes Heating Up and a direct Fire path. Our preference is for early access to sustain and core Arcane spells rather than a universal speed claim; Frost is not yet a released comparator.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-arcane-leveling",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-fire-leveling-mixed-balanced",
+          "version": 2
+        }
+      ]
     }
   ],
   "rulePacks": [
@@ -101,7 +221,86 @@
         "105813": 10,
         "113627": 25
       }
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71091",
+      "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "revision": "mage-fire-rank0-71091-v2",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "mage-fire-rank0-catalog-71091"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105778": 10,
+        "105781": 40,
+        "105782": 35,
+        "105783": 30,
+        "105784": 30,
+        "105785": 25,
+        "105786": 25,
+        "105788": 25,
+        "105789": 20,
+        "105790": 20,
+        "105794": 15,
+        "105795": 10,
+        "105797": 20,
+        "105803": 25,
+        "105806": 20,
+        "105809": 15,
+        "105810": 15,
+        "105812": 15,
+        "105813": 10
+      }
     }
   ],
-  "specializationAdvice": []
+  "specializationAdvice": [
+    {
+      "options": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-arcane-leveling",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-fire-leveling-mixed-balanced",
+          "version": 2
+        }
+      ],
+      "preferred": {
+        "classId": 8,
+        "treeId": 11582,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "mage-arcane-leveling",
+        "version": 1
+      },
+      "reason": "Für gemischtes Leveln empfehlen wir derzeit Arkan: Arkanschlag, Geschosssalve und frühe Arkane Meditation unterstützen Schaden und Mana bereits auf niedrigen Stufen. Feuer ist eine geprüfte offensive Alternative, bei der wichtige Manavorteile des Arkanbaums erst später verfügbar werden. Die Empfehlung vergleicht die beiden bisher freigegebenen Pfade; Frost ist noch nicht abschließend geprüft.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "arcane-fire-comparison-icyveins-20261126",
+        "arcane-fire-comparison-avoid-20261126"
+      ]
+    }
+  ]
 }
