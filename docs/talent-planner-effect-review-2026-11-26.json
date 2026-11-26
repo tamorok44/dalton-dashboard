@@ -206,7 +206,47 @@
       "independentRankCount": 1,
       "classification": "incomplete_numeric",
       "decision": "Expliziter Schadenswert gegenüber Platzhalter; Dauer, Maximum und geteilte Abklingzeit gleich.",
-      "quantitativeClaimVerified": false
+      "quantitativeClaimVerified": false,
+      "hawkResolution": {
+        "kind": "hunter_hawk_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 104966,
+        "spellId": 1293241,
+        "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+        "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiredBeastMasteryPoints": 15,
+          "baseManaCostPercent": 11,
+          "sharedArcaneShotCooldown": true,
+          "durationSeconds": 18,
+          "maxActiveHawks": 2,
+          "attacksSummonedTargetWithPassivePet": true
+        },
+        "unresolved": "Exact initial hit and melee damage scaling, actual critical strike chance, hit count and encounter damage after Nov 25 not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current source pair agrees on duration, maximum and shared cooldown; numeric hit differs by placeholder."
+          },
+          {
+            "url": "https://talentsforever.com/hunter/talents/summon-hawk",
+            "claim": "Nov 10 hotfix-adjusted spell text corroborates row, 11% base mana, duration, max hawks and shared cooldown. Older damage reference not released."
+          },
+          {
+            "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 10 mana and approximate melee damage tuning; Nov 25 targeting, dismissal and crit bug fixes."
+          },
+          {
+            "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+            "claim": "Official post mirror; no numerical server measurement."
+          }
+        ]
+      }
     },
     {
       "id": 105761,

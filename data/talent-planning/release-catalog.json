@@ -7927,6 +7927,137 @@
       "allocationDigest": "2d51f5c4a3fd6f74a8dab58318c42e3f0dfcbfad9b971cc6f1ec6c6d00d7aad9",
       "url": "https://wow.pushnarity.com/en/forever/builds/rogue-subtlety/",
       "claim": "Alternative 0/20/31 distribution and progression to Death Mark 40, Coup de Grace 43–45; reference for milestones, not evidence of superior PvP performance."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "9e3b6d6c590ff2a3756d381865413e0816cc5b764835598bb26ea78b2ecd7edb",
+      "id": "hunter-survival-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "4b916be55536e656d9f9d4ee5de7313938c7b01d713224dc7fca0c9e81369a48",
+        "talentIds": [
+          104960,
+          104966,
+          104969,
+          104975,
+          104976,
+          104981,
+          104983,
+          104985,
+          104987,
+          104991,
+          104992,
+          104993,
+          104996,
+          105008,
+          105011,
+          110860,
+          110861
+        ],
+        "excludedConflictIds": [
+          104961,
+          104964
+        ],
+        "olderComparisonCaptureSha256": "15eaa6d0fe8abe9a42e1b8b4392ce9638c0cb5ed1897ad801b54ecf7a7bffd1f",
+        "olderBuild": "1.60.1.71091"
+      },
+      "hawkResolution": {
+        "kind": "hunter_hawk_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 104966,
+        "spellId": 1293241,
+        "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+        "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiredBeastMasteryPoints": 15,
+          "baseManaCostPercent": 11,
+          "sharedArcaneShotCooldown": true,
+          "durationSeconds": 18,
+          "maxActiveHawks": 2,
+          "attacksSummonedTargetWithPassivePet": true
+        },
+        "unresolved": "Exact initial hit and melee damage scaling, actual critical strike chance, hit count and encounter damage after Nov 25 not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current source pair agrees on duration, maximum and shared cooldown; numeric hit differs by placeholder."
+          },
+          {
+            "url": "https://talentsforever.com/hunter/talents/summon-hawk",
+            "claim": "Nov 10 hotfix-adjusted spell text corroborates row, 11% base mana, duration, max hawks and shared cooldown. Older damage reference not released."
+          },
+          {
+            "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 10 mana and approximate melee damage tuning; Nov 25 targeting, dismissal and crit bug fixes."
+          },
+          {
+            "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+            "claim": "Official post mirror; no numerical server measurement."
+          }
+        ],
+        "allocationDigest": "4b916be55536e656d9f9d4ee5de7313938c7b01d713224dc7fca0c9e81369a48"
+      },
+      "claim": "Exact retained 71139 scope; Intimidation and Bestial Wrath remain excluded. Hawk qualitative use reconciled, no numeric damage or crit released."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "9e3b6d6c590ff2a3756d381865413e0816cc5b764835598bb26ea78b2ecd7edb",
+      "id": "hunter-survival-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 10 mana and melee tuning; Nov 25 pet basic attack crit and hawk targeting, dismissal and crit corrected. No exact damage or proc prediction."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-survival-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-survival-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "4b916be55536e656d9f9d4ee5de7313938c7b01d713224dc7fca0c9e81369a48",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/survival/talent-builds-pve-dps",
+      "claim": "Nov 17: melee focus, mana management and Hawk as supplemental ability; deeper Survival or weaving depends on equipment and playstyle."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-survival-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-survival-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "4b916be55536e656d9f9d4ee5de7313938c7b01d713224dc7fca0c9e81369a48",
+      "url": "https://www.method.gg/wow-forever/class-guides/survival-hunter/talents",
+      "claim": "Nov 5: melee Hawk has no minimum range; Strider Kick and Expose Prey core at 30, no guaranteed Mongoose Bite proc. Own leveling-dungeon chronology, not an endgame optimum."
     }
   ],
   "rulePacks": [
@@ -10604,6 +10735,43 @@
         "105761": 10,
         "110866": 40,
         "113398": 10
+      }
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "hunter-survival-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "hunter-survival-dungeons-rank0-71139-client",
+        "hunter-survival-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "104960": 10,
+        "104966": 25,
+        "104969": 20,
+        "104975": 15,
+        "104976": 10,
+        "104981": 30,
+        "104983": 30,
+        "104985": 30,
+        "104987": 20,
+        "104991": 20,
+        "104992": 15,
+        "104993": 15,
+        "104996": 10,
+        "105008": 15,
+        "105011": 10,
+        "110860": 30,
+        "110861": 25
       }
     }
   ],

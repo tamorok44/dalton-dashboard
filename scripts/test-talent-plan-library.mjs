@@ -303,6 +303,29 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,scopedEffects),/unresolved source difference 110866/);
         scopedEffects={...scopedEffects,rows:scopedEffects.rows.filter(x=>x!==row)};
       }
+      if(plan.id==='hunter-survival-dungeons'){
+        const row=effects.rows.find(x=>x.classId===3&&x.id===104966),detail=clients[0].hawkResolution;
+        assert.ok(row&&detail&&row.hawkResolution);
+        assert.deepEqual(detail,{...row.hawkResolution,allocationDigest:talentPlanEvidenceDigest(plan)});
+        assert.equal(detail.kind,'hunter_hawk_qualitative_reconciliation');
+        assert.equal(detail.clientBuild,pack.clientBuild);
+        assert.equal(detail.sourceRevision,pack.sourceRevision);
+        assert.equal(detail.spellId,proof.trees.flatMap(t=>t.talents).find(n=>n.id===104966)?.spellId);
+        assert.equal(detail.primaryHash,row.primaryHash);
+        assert.equal(detail.secondaryHash,row.secondaryHash);
+        assert.equal(row.classification,'incomplete_numeric');
+        assert.equal(detail.serverMeasured,false);
+        assert.equal(detail.numericFormulaReleased,false);
+        assert.equal(row.quantitativeClaimVerified,false);
+        assert.deepEqual(detail.confirmedCore,{requiredBeastMasteryPoints:15,baseManaCostPercent:11,sharedArcaneShotCooldown:true,durationSeconds:18,maxActiveHawks:2,attacksSummonedTargetWithPassivePet:true});
+        assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url===pathLedger.sourceUrl));
+        assert.ok(detail.sources.some(s=>s.url==='https://talentsforever.com/hunter/talents/summon-hawk'));
+        assert.ok(detail.sources.some(s=>s.url==='https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026'));
+        assert.equal(plan.points[42].talentId,104966);
+        assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,scopedEffects),/unresolved source difference 104966/);
+        scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
+        for(const id of [104961,104964])assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
+      }
       const scope=talentPathScope(plan,proof,pathLedger,cross,scopedEffects);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
       if(frostScope)assert.deepEqual(scope.excludedConflictIds,[]);else assert.ok(scope.excludedConflictIds.length);
@@ -912,7 +935,7 @@ for(const treeId of [11582,11594,11601])for(const goal of ['leveling','dungeons'
 
 for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hunter-beast-mastery-pvp",[30,0,21]],["hunter-marksmanship-dungeons",[5,41,5]],["hunter-marksmanship-pvp",[0,31,20]],["hunter-survival-dungeons",[16,8,27]],["hunter-survival-pvp",[0,21,30]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status===(['hunter-marksmanship-dungeons','hunter-marksmanship-pvp','hunter-survival-pvp'].includes(id)?'approved':'research_only'));
+  assert.ok(p&&p.status===(['hunter-marksmanship-dungeons','hunter-marksmanship-pvp','hunter-survival-pvp','hunter-survival-dungeons'].includes(id)?'approved':'research_only'));
   assert.deepEqual([11372,11371,11370].map(t=>p.expectedDistribution[t]),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
