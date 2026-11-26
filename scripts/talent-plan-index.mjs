@@ -37,10 +37,11 @@ import plan34 from '../data/talent-planning/warlock-destruction-leveling-v1.json
 import plan35 from '../data/talent-planning/warlock-destruction-pvp-v1.json' with {type:'json'};
 import plan36 from '../data/talent-planning/warrior-arms-dungeons-v1.json' with {type:'json'};
 import plan37 from '../data/talent-planning/warrior-arms-leveling-v1.json' with {type:'json'};
-import plan38 from '../data/talent-planning/warrior-fury-dungeons-v1.json' with {type:'json'};
-import plan39 from '../data/talent-planning/warrior-fury-leveling-v1.json' with {type:'json'};
-import plan40 from '../data/talent-planning/warrior-fury-pvp-v1.json' with {type:'json'};
-import plan41 from '../data/talent-planning/warrior-protection-dungeons-v1.json' with {type:'json'};
-import plan42 from '../data/talent-planning/warrior-protection-leveling-v1.json' with {type:'json'};
-import plan43 from '../data/talent-planning/warrior-protection-pvp-v1.json' with {type:'json'};
-export const talentPlanLibrary=Object.freeze([plan0,plan1,plan2,plan3,plan4,plan5,plan6,plan7,plan8,plan9,plan10,plan11,plan12,plan13,plan14,plan15,plan16,plan17,plan18,plan19,plan20,plan21,plan22,plan23,plan24,plan25,plan26,plan27,plan28,plan29,plan30,plan31,plan32,plan33,plan34,plan35,plan36,plan37,plan38,plan39,plan40,plan41,plan42,plan43]);
+import plan38 from '../data/talent-planning/warrior-arms-pvp-v1.json' with {type:'json'};
+import plan39 from '../data/talent-planning/warrior-fury-dungeons-v1.json' with {type:'json'};
+import plan40 from '../data/talent-planning/warrior-fury-leveling-v1.json' with {type:'json'};
+import plan41 from '../data/talent-planning/warrior-fury-pvp-v1.json' with {type:'json'};
+import plan42 from '../data/talent-planning/warrior-protection-dungeons-v1.json' with {type:'json'};
+import plan43 from '../data/talent-planning/warrior-protection-leveling-v1.json' with {type:'json'};
+import plan44 from '../data/talent-planning/warrior-protection-pvp-v1.json' with {type:'json'};
+export const talentPlanLibrary=Object.freeze([plan0,plan1,plan2,plan3,plan4,plan5,plan6,plan7,plan8,plan9,plan10,plan11,plan12,plan13,plan14,plan15,plan16,plan17,plan18,plan19,plan20,plan21,plan22,plan23,plan24,plan25,plan26,plan27,plan28,plan29,plan30,plan31,plan32,plan33,plan34,plan35,plan36,plan37,plan38,plan39,plan40,plan41,plan42,plan43,plan44]);
