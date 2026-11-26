@@ -17,6 +17,9 @@ const baseline=read('catalog-proofs-2026-11-25.json').catalogs.filter(c=>c.sourc
 assert.equal(ledger.releaseEligible,false);assert.equal(ledger.build,'1.60.1.71139');assert.match(ledger.sourceSha256,/^[a-f0-9]{64}$/);
 assert.equal(ledger.classes.length,9);assert.equal(baseline.length,9);
 const corrected=new Map();
+// The absence of an arrow is not evidence that a server-side condition is absent.
+// Evaluate both plausible Druid graphs, while retaining the stricter condition in the main diagnostic.
+let druidWithoutCondition;
 for(const c of baseline){
  const evidence=ledger.classes.find(x=>x.classId===c.proof.classId);
  assert.equal(evidence.catalogRevision,c.catalogRevision);
@@ -43,6 +46,12 @@ for(const c of baseline){
    assert.equal(evidence.targets.find(t=>t.id===104936).spellId,408258);
    star.maxRank=2;star.rankSpellIds=star.rankSpellIds.slice(0,2);
    dream.spellId=408258;dream.rankSpellIds=null; // not exported per rank; this is not a release proof
+   const condition=nodes.get(104928), prerequisite=nodes.get(104927);
+   assert.deepEqual(condition.prerequisites,[{id:104927,rank:2,conditionKnown:true}]);
+   assert.equal(prerequisite.maxRank,2);
+   assert.deepEqual(evidence.structureDifferences.find(d=>d.id===104928)?.changes.extraPrimaryCondition,[[104927,2,1]]);
+   druidWithoutCondition=structuredClone(proof);
+   druidWithoutCondition.trees.flatMap(t=>t.talents).find(n=>n.id===104928).prerequisites=[];
  }
  corrected.set(proof.classId,proof);
 }
@@ -57,15 +66,25 @@ const rows=plans.map(p=>{
  const unchanged=audit(p,raw),after=audit(p,proof);
  const discrepancies=evidence.effectTextDifferenceIds.filter(id=>used.has(id));
  const structure=evidence.structureDifferences.filter(d=>used.has(d.id)).map(d=>d.id);
+ const druidCondition=p.classId===11?{
+   talentId:104928,prerequisiteId:104927,requiredRank:2,used:used.has(104928),
+   variants:Array.from({length:6},(_,rank)=>[false,true].map(bankable=>{
+     const strict=audit(p,proof,rank,bankable),relaxed=audit(p,druidWithoutCondition,rank,bankable);
+     return {rank,bankable,strict:strict.ok,withoutCondition:relaxed.ok,strictBlocker:strict.code??null,withoutConditionBlocker:relaxed.code??null};
+   })).flat(),verified:false
+ }:null;
+ if(druidCondition) for(const v of druidCondition.variants) assert.ok(!v.strict||v.withoutCondition,'Removing only a prerequisite must not invalidate a legal path');
  assert.equal(after.ok,true,p.id+' exact corrected structure '+JSON.stringify(after));
  const fixedGateBanked=Array.from({length:6},(_,rank)=>{const a=audit(p,proof,rank,true);return {rank,ok:a.ok,lastLevel:a.history?.at(-1)?.level??null}});
  return {id:p.id,version:p.version,classId:p.classId,status:p.status,rawStructure:unchanged.ok?'valid':unchanged.code,
- correctedStructure:'valid',usedEffectDifferences:discrepancies,usedStructuralCorrections:structure,fixedGateBanked,releaseEligible:false};
+ correctedStructure:'valid',usedEffectDifferences:discrepancies,usedStructuralCorrections:structure,druidCondition,fixedGateBanked,releaseEligible:false};
 });
 assert.equal(rows.length,84);assert.equal(rows.filter(r=>r.rawStructure!=='valid').length,1);
 assert.equal(rows.find(r=>r.id==='hunter-beast-mastery-leveling').correctedStructure,'valid');
 assert.equal(rows.filter(r=>r.status==='approved').length,talentPlanLibrary.length);
 assert.ok(rows.every(r=>!r.releaseEligible));
 assert.deepEqual(ledger.talentedPerk.map(x=>[x.rank,x.firstPointLevel]).sort((a,b)=>a[0]-b[0]),[1,2,3,4,5].map(r=>[r,10-r]));
-const summary={activePaths:rows.length,correctedStructureValid:rows.length,unchangedRawValid:rows.filter(r=>r.rawStructure==='valid').length,classes:ledger.classes.length,totalTalents:ledger.classes.reduce((s,c)=>s+c.primaryCount,0),effectTextDifferences:ledger.classes.reduce((s,c)=>s+c.effectTextDifferenceCount,0),pathsWithoutUsedTextDifferences:rows.filter(r=>!r.usedEffectDifferences.length).length,approvedPaths:talentPlanLibrary.length,legacyEffectiveGatesVerified:false,releaseEligible:false};
+const druidConditionRows=rows.filter(r=>r.druidCondition);
+const unresolvedDruidCondition={talentId:104928,prerequisiteId:104927,requiredRank:2,paths:druidConditionRows.length,affectedPaths:druidConditionRows.filter(r=>r.druidCondition.used).map(r=>r.id),differingVariants:druidConditionRows.flatMap(r=>r.druidCondition.variants.filter(v=>v.strict!==v.withoutCondition).map(v=>({id:r.id,...v}))),verified:false};
+const summary={unresolvedDruidCondition,activePaths:rows.length,correctedStructureValid:rows.length,unchangedRawValid:rows.filter(r=>r.rawStructure==='valid').length,classes:ledger.classes.length,totalTalents:ledger.classes.reduce((s,c)=>s+c.primaryCount,0),effectTextDifferences:ledger.classes.reduce((s,c)=>s+c.effectTextDifferenceCount,0),pathsWithoutUsedTextDifferences:rows.filter(r=>!r.usedEffectDifferences.length).length,approvedPaths:talentPlanLibrary.length,legacyEffectiveGatesVerified:false,releaseEligible:false};
 console.log(JSON.stringify(process.argv.includes('--summary')?summary:{summary,rows},null,2));
