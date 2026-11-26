@@ -1074,7 +1074,7 @@ assert.deepEqual(ui.displayOrder('searchRelevance',repOrderFixture),repOrderFixt
 assert.deepEqual(ui.displayOrder('rankedOffers',repOrderFixture),repOrderFixture,'Preferred offers are not changed by display');
 
 const talentCatalogFixture={classes:{8:{classId:8,trees:[{id:1,name:'Arkan',talents:[{id:101,profileId:201,name:'Talent A',row:0,column:0,maxRank:5,requiredLevel:10,spellId:301,rankSpellIds:[301,301,301,301,301],descriptions:['Text'],prerequisites:[]},{id:102,profileId:202,name:'Talent B',row:1,column:2,maxRank:1,requiredLevel:15,spellId:302,rankSpellIds:[302],descriptions:['Text'],prerequisites:[{id:101,rank:5,conditionKnown:true}]}]},{id:2,name:'Feuer',talents:[{id:103,profileId:203,name:'Talent C',row:0,column:1,maxRank:1,requiredLevel:10,spellId:303,rankSpellIds:[303],descriptions:['Text'],prerequisites:[]}]},{id:3,name:'Frost',talents:[{id:104,profileId:204,name:'Talent D',row:0,column:3,maxRank:1,requiredLevel:10,spellId:304,rankSpellIds:[304],descriptions:['Text'],prerequisites:[]}]}]}}};
-const talentChar={slug:'qa',classId:8,level:15,talentDetailsVerified:true,talentDetails:[{name:'Arkan',spentPoints:5,talents:[{id:201,spellId:301,rank:5}]}]};
+const talentChar={slug:'qa',classId:8,level:15,talentDetailsVerified:true,talentDetails:[{name:'Arkan',spentPoints:5,talents:[{id:201,spellId:301,rank:5}]},{name:'Feuer',spentPoints:0,talents:[]},{name:'Frost',spentPoints:0,talents:[]}]};
 ui.setTalentCatalog(talentCatalogFixture);
 const personal=ui.personalTalentRanks(talentChar,talentCatalogFixture.classes[8]);
 assert.equal(personal.verified,true);assert.equal(personal.ranks.get(101),5);assert.equal(ui.talentNodeStatus(talentCatalogFixture.classes[8].trees[0].talents[1],talentCatalogFixture.classes[8].trees[0],personal,15),'unlocked');
@@ -1085,3 +1085,10 @@ assert.equal(ui.talentNodeStatus({...talentCatalogFixture.classes[8].trees[0].ta
 
 assert.ok(ui.talentGraph(talentCatalogFixture.classes[8].trees[0],personal,15,false,0).includes('dir="ltr"'));
 assert.ok(ui.talentGraph(talentCatalogFixture.classes[8].trees[0],personal,15,false,0).includes('--talent-rows:7'));
+
+// An omitted tree or omitted talent array must not be represented as zero.
+for(const details of [[],talentChar.talentDetails.slice(0,1),talentChar.talentDetails.map((t,i)=>i===1?{...t,talents:undefined}:t),[talentChar.talentDetails[0],talentChar.talentDetails[1],talentChar.talentDetails[1]]]){
+ const c={...talentChar,talentDetails:details};
+ assert.equal(ui.personalTalentRanks(c,talentCatalogFixture.classes[8]).verified,false);
+ assert.ok(ui.talentPanel(c).includes('Talentstand nicht bestätigt'));
+}

@@ -5,6 +5,7 @@ import {resolve,extname,sep} from 'node:path';
 import {pathToFileURL,fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
 import {createTalentPlannerHandler} from './talent-planner-api.mjs';
+import {correctTalentDisplay} from './talent-display-corrections.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
 import release from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import proofs from '../data/talent-planning/catalog-proofs-2026-11-25.json' with {type:'json'};
@@ -23,18 +24,23 @@ const roster=Object.keys(coverage.classes).map(id=>({slug:'qa-class-'+id,name:'Q
   url:'https://foreverspec.com/de/armory/eu/qa-class-'+id+'/',blizzardCharacterId:700+Number(id),scrapedAt:new Date().toISOString(),scrapeOk:true,stats:{},statsDetails:[],statsByEnum:{},equipment:[],professions:[],talentDetailsVerified:false}));
 const now=Date.now(),checkedAt=new Date(now).toISOString();
 const observation={status:'observed',checkedAt,checkedAtMs:now,revisionSince:checkedAt,clientBuild:rules.clientBuild,hotfixRevision:rules.hotfixRevision};
-const master={classes:{8:proof},classMechanicsRevisions:{8:rules.catalogRevision},stale:false,checkedAt,sourceRevision:rules.sourceRevision,sourceFreshAt:{raw:checkedAt,localized:checkedAt}};
+const currentProofs=proofs.catalogs.filter(c=>c.sourceRevision===rules.sourceRevision);
+const master={classes:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,c.proof])),classMechanicsRevisions:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,c.catalogRevision])),stale:false,checkedAt,sourceRevision:rules.sourceRevision,sourceFreshAt:{raw:checkedAt,localized:checkedAt}};
 let providerReads=0;
 const handler=createTalentPlannerHandler({enabled:()=>true,roster:async()=>({data:{characters:roster}}),observe:async()=>{providerReads++;return observation},master:async()=>master,clock:()=>now,
  project:async p=>({...p,trees:p.trees.map(t=>{
    const rowColumns=new Map();
-   return {...t,name:coverage.classes[8].find(s=>s.treeId===t.id).treeName,talents:[...t.talents].sort((a,b)=>a.row-b.row||a.id-b.id).map(n=>{
+   return {...t,name:coverage.classes[p.classId].find(s=>s.treeId===t.id).treeName,talents:[...t.talents].sort((a,b)=>a.row-b.row||a.id-b.id).map(n=>{
      const col=rowColumns.get(n.row)||0;rowColumns.set(n.row,col+1);
      // Synthetic coordinates and labels for rendering tests; not a client attestation.
      return {...n,column:col,profileId:n.id,name:'Testtalent '+n.id,descriptions:Array(n.maxRank).fill('Deutscher Testtext für diesen Talentrang.'),descriptionSources:Array(n.maxRank).fill('Testdaten'),iconUrl:null};
    })};
  })})});
-let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[];
+const fixtureClass=p=>({...p,trees:p.trees.map(t=>{const columns=new Map();return {...t,name:coverage.classes[p.classId].find(s=>s.treeId===t.id).treeName,talents:[...t.talents].sort((a,b)=>a.row-b.row||a.id-b.id).map(n=>{const column=columns.get(n.row)||0;columns.set(n.row,column+1);return {...n,column,profileId:n.id,name:'Testtalent '+n.id,descriptions:Array(n.maxRank).fill('Deutscher Testtext'),descriptionSources:Array(n.maxRank).fill('Testdaten'),iconUrl:null}})}})});
+const displayMaster={...master,classes:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,fixtureClass(c.proof)]))};
+const displayCatalog={classes:Object.fromEntries(Object.entries(displayMaster.classes).map(([id,c])=>[id,correctTalentDisplay(c,displayMaster)])),stale:false,missingClassIds:[],fallbackClassIds:[]};
+for(const c of roster.filter(c=>[2,3,11].includes(c.classId))){c.talentDetailsVerified=true;c.talentDetails=displayMaster.classes[c.classId].trees.map(t=>({name:t.name,spentPoints:0,talents:[]}));}
+let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
 const server=createServer(async(req,res)=>{
  try{
@@ -48,6 +54,7 @@ const server=createServer(async(req,res)=>{
    await handler({method:'GET',query},{setHeader(){},status(v){code=v;return this},json(body){const bytes=send(code,body);if(query.tree)pathBytes=Math.max(pathBytes,bytes);else discoveryBytes=Math.max(discoveryBytes,bytes)}});
    return;
  }
+ if(url.pathname==='/api/characters'&&url.searchParams.get('view')==='talents'){displayRequests++;return send(200,displayCatalog)}
  if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},talentPlannerPreview:true});
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
  if(url.pathname.startsWith('/api/')){unexpected.push(url.pathname);return send(404,{ok:false})}
@@ -163,6 +170,47 @@ try{
    await goal.selectOption('dungeons');
    assert.equal(await spec.inputValue(),'11582');
    await page.screenshot({path:resolve(reportDir,item.name+'-guide.png'),fullPage:true});
+   // Exercise newly approved class routes and the actual corrected character view.
+   await choose(7);await goal.selectOption('leveling');await role.selectOption('damage');
+   assert.equal(await spec.inputValue(),'11363','Shaman comparative default');
+   await spec.selectOption('11326');assert.equal(await spec.inputValue(),'11326','Shaman alternative');
+   await spec.selectOption('11363');await rank.selectOption('0');
+   await page.locator('button[type=submit].talent-planner-action').click();
+   await page.locator('[data-plan-result] .talent-grid').waitFor({state:'visible'});
+   assert.equal(await page.locator('.talent-planner-steps li').count(),51);
+   await choose(9);await goal.selectOption('leveling');
+   await spec.selectOption('11637');await rank.selectOption('0');
+   await page.locator('button[type=submit].talent-planner-action').click();
+   await page.locator('[data-plan-result] .talent-grid').waitFor({state:'visible'});
+   assert.equal(await page.locator('.talent-planner-steps li').count(),51);
+   await page.evaluate(()=>{location.hash='#charaktere'});
+   const beforeDisplay=displayRequests,beforePlan=plannerRequests;
+   async function showTalent(classId,id){
+     await page.locator('button[data-character-slug="qa-class-'+classId+'"][data-character-tab="talents"]').click();
+     const panel=page.locator('#qa-class-'+classId+'-panel-talents');
+     await panel.locator('.talent-grid').waitFor({state:'visible'});
+     const tree=displayCatalog.classes[classId].trees.find(t=>t.talents.some(n=>n.id===id));
+     await panel.locator('[data-talent-tree="'+tree.id+'"]').click();
+     await panel.locator('[data-talent-node="'+id+'"]').click();
+     return panel;
+   }
+   const pal=await showTalent(2,105330);
+   assert.ok((await pal.locator('.talent-node-detail').innerText()).includes('60 Minuten'));
+   assert.ok((await pal.locator('.workshop-credit').innerText()).includes('Zephras'));
+   const hunt=await showTalent(3,104964);
+   assert.equal(await hunt.locator('.talent-prerequisites li').count(),1);
+   assert.ok((await hunt.locator('.talent-prerequisites').innerText()).includes('104970'));
+   const druid=await showTalent(11,104936);
+   assert.ok((await druid.locator('.talent-summary').innerText()).includes('Talentstand nicht bestätigt'));
+   assert.ok((await druid.locator('.talent-node-detail').innerText()).includes('Traumzustand'));
+   assert.equal(await druid.locator('.talent-rank-description').count(),5);
+   await druid.locator('[data-talent-node="104933"]').click();
+   assert.equal(await druid.locator('.talent-rank-description').count(),2);
+   assert.ok((await druid.locator('.talent-node-detail').innerText()).includes('15 %'));
+   assert.equal(displayRequests,beforeDisplay+1,'single cached character catalog fetch');
+   assert.equal(plannerRequests,beforePlan,'character view must not trigger plan requests');
+   await page.screenshot({path:resolve(reportDir,item.name+'-hotfix.png'),fullPage:true});
+   result.additionalClassPaths=2;result.correctedCharacterViews=3;result.characterCatalogReads=displayRequests-beforeDisplay;
    assert.deepEqual(errors,[],'browser page errors');
    assert.deepEqual(unexpected,[],'unexpected backend endpoints');
    result.plannerRequests=plannerRequests-baselineRequests;
@@ -177,7 +225,7 @@ try{
  report.discoveryBytes=discoveryBytes;report.pathBytes=pathBytes;report.providerReads=providerReads;
  assert.ok(discoveryBytes>0&&discoveryBytes<20000,'discovery payload budget');
  assert.ok(pathBytes>0&&pathBytes<100000,'plan payload budget');
- assert.equal(providerReads,cases.filter(c=>report.cases.find(x=>x.name===c.name)?.status==='passed').length,'only explicit successful plan requests may inspect rules');
+ assert.equal(providerReads,3*cases.filter(c=>report.cases.find(x=>x.name===c.name)?.status==='passed').length,'only explicit successful plan requests may inspect rules');
  assert.ok(report.cases.every(c=>c.status==='passed'),'browser regression failed');
 }finally{
  writeFileSync(resolve(reportDir,'report.json'),JSON.stringify(report,null,2)+'\n');

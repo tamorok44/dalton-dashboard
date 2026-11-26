@@ -328,3 +328,62 @@ for(const id of ['shaman-enhancement-leveling','warlock-destruction-leveling']){
  await blocked('unsupported_legacy_rank',{...q,rank:'1'},overrides);
 }
 console.log('Additional rank-zero plans and reviewed Shaman comparative choice: OK');
+
+// End-to-end HTTP handler matrix (retained source, simulated current observation).
+// Every research cell must deny before provider access; every approved cell
+// must return precisely the reviewed chronological allocation.
+const {readdirSync:readMatrixDir}=await import('node:fs');
+const planFolder=new URL('../data/talent-planning/',import.meta.url);
+const matrixPlans=readMatrixDir(planFolder).filter(f=>/-v\d+\.json$/.test(f)).map(f=>JSON.parse(readAssistantMatrix(new URL(f,planFolder),'utf8'))).filter(p=>p.active!==false&&p.status!=='retired');
+const {profileKey:matrixProfileKey}=await import('./talent-plan-core.mjs');
+const currentPack=release.rulePacks.find(p=>p.clientBuild==='1.60.1.71139');
+const currentProofs=proofs.catalogs.filter(c=>c.sourceRevision===currentPack.sourceRevision);
+const matrixMaster={...master,classes:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,c.proof])),classMechanicsRevisions:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,c.catalogRevision])),sourceRevision:currentPack.sourceRevision};
+const matrixObservation={...observation,clientBuild:currentPack.clientBuild,hotfixRevision:currentPack.hotfixRevision};
+let matrixReads=0,matrixMasterReads=0,matrixProjects=0,httpCalls=0,eligibleCells=0,deniedCells=0,cells=0,negative=0;
+const config={roster:async()=>({data:{characters:allRoster}}),observe:async()=>{matrixReads++;return matrixObservation},master:async()=>{matrixMasterReads++;return matrixMaster},project:async v=>{matrixProjects++;return v}};
+const endpoint=handler(config);
+const available=talentPlanLibrary.filter(p=>p.active!==false&&p.status==='approved');
+for(const [id,trees] of Object.entries(coverage.classes))for(const tree of trees)for(const role of tree.roles)for(const goal of coverage.goals){
+ const classId=Number(id);
+ const profiles=[...new Map(matrixPlans.flatMap(p=>p.profiles.filter(x=>x.classId===classId&&x.treeId===tree.treeId&&x.role===role&&x.goal===goal)).map(x=>[matrixProfileKey(x),x])).values()];
+ assert.ok(profiles.length);
+ for(let rank=0;rank<=5;rank++){
+   let success=false;cells++;
+   for(const profile of profiles){
+     const expected=available.filter(p=>p.profiles.some(x=>matrixProfileKey(x)===matrixProfileKey(profile)));
+     assert.ok(expected.length<=1);
+     const plan=expected[0],allowed=!!plan&&plan.supportedLegacyRanks.includes(rank);
+     const q={character:'qa-class-'+id,tree:String(tree.treeId),goal,role,playStyle:profile.playStyle,priority:profile.priority,rank:String(rank),rankSource:'player_confirmed'};
+     const before=[matrixReads,matrixMasterReads,matrixProjects];
+     const res=await request(q,{endpoint});httpCalls++;
+     if(allowed){
+       success=true;assert.equal(res.code,200);assert.equal(res.body.ok,true);
+       assert.equal(res.body.planId,plan.id);assert.equal(res.body.version,plan.version);
+       assert.deepEqual(res.body.history.map(({talentId,rank})=>({talentId,rank})),plan.points);
+       assert.deepEqual([matrixReads,matrixMasterReads,matrixProjects],before.map(x=>x+1));
+       const variants=[
+        ['unverified_current_rules',{observe:async()=>({...matrixObservation,clientBuild:'1.60.1.99999'})}],
+        ['unverified_current_rules',{observe:async()=>({...matrixObservation,hotfixRevision:'f'.repeat(64)})}],
+        ['unverified_current_catalog',{master:async()=>({...matrixMaster,stale:true})}],
+        ['unverified_current_rules',{master:async()=>({...matrixMaster,sourceRevision:'f'.repeat(64)})}],
+        ['unverified_current_rules',{observe:async()=>({...matrixObservation,checkedAt:'2020-01-01T00:00:00Z',revisionSince:'2020-01-01T00:00:00Z'})}]
+       ];
+       for(const [code,overrides] of variants){
+         const result=await request(q,{endpoint:handler({...config,...overrides,project:async()=>{throw Error('Denied request must not project')}})});
+         assert.equal(result.body.ok,false);assert.equal(result.body.code,code,plan.id+' '+code);assert.ok(!Object.hasOwn(result.body,'history'));negative++;
+       }
+       const denied=await request(q,{endpoint:handler({...config,enabled:()=>false})});
+       assert.equal(denied.code,404);assert.ok(!Object.hasOwn(denied.body,'history'));negative++;
+     }else{
+       assert.equal(res.code,409);
+       assert.equal(res.body.code,plan?'unsupported_legacy_rank':'no_approved_recommendation');
+       assert.ok(!Object.hasOwn(res.body,'history'));
+       assert.deepEqual([matrixReads,matrixMasterReads,matrixProjects],before,'Rejected profile touched data sources');
+     }
+   }
+   if(success)eligibleCells++;else deniedCells++;
+ }
+}
+assert.equal(cells,504);assert.equal(eligibleCells+deniedCells,cells);
+console.log('DALTON_HTTP_MATRIX '+JSON.stringify({cells,eligibleCells,deniedCells,httpCalls,negativeTests:negative,liveServices:false}));
