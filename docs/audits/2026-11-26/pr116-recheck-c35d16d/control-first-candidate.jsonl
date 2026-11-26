@@ -1,0 +1,17 @@
+{"id":"F01-sdk","oldUpload":{"access":"public","bytes":154,"path":"history/daily/2026/11/26/daltons-full.json.gz"},"newUpload":{"access":"private","bytes":154,"path":"history/daily/2026/11/26/daltons-full.json.gz"},"publicResponseRejected":true,"disabledOrPreviewUploads":0}
+{"id":"F02-contention","status":[200,409,200],"persistedSpellIds":[[133],[133]],"duplicate":true,"lockReleased":true}
+{"id":"F02-F03-partial-and-retry","partial":{"code":503,"ids":[133],"status":null},"newer":[133,143],"retry":[133],"retryDuplicate":false}
+{"id":"F02-hard-process-abort","profilePersisted":true,"statusMissing":true,"lockTtlMs":119894,"immediateRetry":409,"afterExpiry":200}
+{"id":"F02-lost-lock","code":503,"ids":[133],"status":null,"successorLockRetained":true}
+{"id":"F02-lost-reply","code":503,"retry":200,"duplicate":true}
+{"id":"F02-unfenced-live-knowledge","code":503,"observations":1,"rosterChanged":false,"statusChanged":false,"successorLockRetained":true}
+{"id":"F02-lua-no-rollback","statusPersisted":true,"versionError":"WRONGTYPE"}
+{"id":"Security-addon","unauthorizedNoCommands":true,"previewNoProfileOrProductionStatusWrites":true,"previewVersionNamespaced":true}
+{"id":"F01-legacy-and-authorization","legacyPublicReferenceRetained":true,"cronUnauthorized":401,"noWrite":true}
+{"id":"Daily-upload-abort","upload":2,"raw":2,"refresh":1,"profileRepeated":false,"archiveOverwritten":true}
+{"id":"Daily-final-index-abort","upload":1,"raw":1,"refresh":2,"profileRepeated":true,"archiveRepeated":false}
+{"id":"Daily-last-pointer-abort","upload":1,"raw":1,"refresh":1,"dayComplete":true,"lastPointerComplete":false,"retryRepairs":false}
+{"id":"Daily-contention","upload":1,"raw":1,"refresh":1,"second":"daily_snapshot_running","lockReleased":true}
+{"id":"Daily-addon-overlap","attempts":3,"addonStatus":200,"reason":"concurrent_refresh_completed","subsequentCronSkipped":true}
+{"id":"F06-archive-of-failed-endpoints","total":42,"ok":0,"archived":true,"subsequentCronSkipped":true}
+{"id":"offline-check","unexpectedDestinations":0}

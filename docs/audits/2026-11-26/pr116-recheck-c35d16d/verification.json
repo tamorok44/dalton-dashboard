@@ -1,0 +1,89 @@
+{
+  "reviewedCommit": "c35d16d04f143297a1d67f2f2c56ded66ab787f2",
+  "baselineCommit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235",
+  "firstCandidateCommit": "42d651179b0928356568ce882703031e67b4b88e",
+  "previousCandidateCommit": "5a577232d4a07ef8cc032e100fccaed97d77c93d",
+  "priorAuditEvidenceCommit": "512763f0c1dc253e0624384fd3e9bfacb6864071",
+  "independentMatrix": [
+    {
+      "node": "22.23.5",
+      "redis": "7.0.15",
+      "observedGroups": 51
+    },
+    {
+      "node": "22.23.5",
+      "redis": "8.0.2",
+      "observedGroups": 51
+    },
+    {
+      "node": "26.13.1",
+      "redis": "8.0.2",
+      "observedGroups": 51
+    }
+  ],
+  "previousControls": {
+    "firstCandidateGroupsIncludingOfflineCheck": 17,
+    "previousCandidateGroupsPerNodeRuntime": 35
+  },
+  "localRepositorySuite": [
+    {
+      "node": "22.23.5",
+      "redis": "8.0.2",
+      "passed": 162,
+      "failed": 0
+    },
+    {
+      "node": "26.13.1",
+      "redis": "8.0.2",
+      "passed": 162,
+      "failed": 0
+    }
+  ],
+  "repositoryCi": {
+    "run": 45897933765,
+    "conclusion": "failure",
+    "runnerRedis": "7.0.15",
+    "jobs": [
+      {
+        "node": "22.23.5",
+        "job": 140176353551,
+        "passed": 161,
+        "failed": 1
+      },
+      {
+        "node": "26.13.1",
+        "job": 140176353285,
+        "passed": 161,
+        "failed": 1
+      }
+    ],
+    "failingTest": "scripts/test-audit-p0.mjs:232",
+    "assertionPattern": "NOPERM|ACL|permission",
+    "actualRedisErrorPrefix": "ERR The user executing the script can't run this command or subcommand",
+    "independentlyReproducedOnLocalRedis7": true
+  },
+  "otherWorkflows": [
+    {
+      "run": 45897933795,
+      "conclusion": "success"
+    },
+    {
+      "run": 45897933691,
+      "conclusion": "success"
+    }
+  ],
+  "knownNpmVulnerabilities": 0,
+  "vercelReadOnly": {
+    "previewCommit": "c35d16d04f143297a1d67f2f2c56ded66ab787f2",
+    "previewState": "READY",
+    "newestListedProductionCommit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235"
+  },
+  "externalEvidenceLimits": {
+    "documentedReadOnlyUpstashProbeCommit": "18ff714a593a8329b921fdcd17ca9c5c80b3b068",
+    "providerWriteAttempted": false,
+    "providerQuotaMeasured": false,
+    "productionDbRead": false,
+    "privateObjectProviderPermissionsProbed": false,
+    "blobSdkTransport": "stubbed"
+  }
+}
