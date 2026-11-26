@@ -922,6 +922,72 @@
       "url": "https://wowforevertalents.com/priest/",
       "independenceGroup": "wowforevertalents-hotfix-cache",
       "kind": "client_reference"
+    },
+    {
+      "id": "rogue-combat-group-2511",
+      "url": "https://wowforever.gg/en/guides/rogue-combat/",
+      "independenceGroup": "wowforever-gg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-outpost-2311",
+      "url": "https://wofwforever.com/en/guides/wow-forever-rogue-level-60-talents/",
+      "independenceGroup": "outpost-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-assassination-builds-1711",
+      "url": "https://www.wowhead.com/forever/guide/classes/rogue/assassination/talent-builds-pve-dps",
+      "independenceGroup": "wowhead-rogue-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-assassination-pvp-1711",
+      "url": "https://foreverbattlegrounds.com/classes/rogue/assassination/",
+      "independenceGroup": "foreverbattlegrounds-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-assassination-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/assassination/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-perplexity-pvp-2311",
+      "url": "https://mobalytics.gg/wow-forever/profile/perplexity-tdea17/classes/perplexity-s-rogue-pvp-guide-a",
+      "independenceGroup": "perplexity-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-all-leveling-1211",
+      "url": "https://wowforever.be/guides/rogue-leveling/",
+      "independenceGroup": "wowforever-be-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-tavern-leveling",
+      "url": "https://forever-tavern.com/guides/rogue-leveling-guide/",
+      "independenceGroup": "forever-tavern-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-subtlety-pve-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/talents/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-hotfix-2511",
+      "url": "https://www.wowhead.com/de/blue-tracker/topic/us/wow-forever-hotfixes-november-25-2026-2403040",
+      "independenceGroup": "blizzard-blue-post",
+      "kind": "official_hotfix"
+    },
+    {
+      "id": "rogue-client-delta-71139",
+      "url": "https://wowfdb.com/classes/rogue/changes/",
+      "independenceGroup": "wowfdb-client-delta",
+      "kind": "client_reference"
     }
   ],
   "pilot": {
@@ -2109,6 +2175,133 @@
         "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
         "Legacy ranks 1–5 effective gates and comparative performance unverified.",
         "Verify current Vampiric Embrace, Spirit Tap, Dark Inspiration, and Silence behavior; no guarantee of procs."
+      ]
+    },
+    {
+      "id": "rogue-assassination-dungeons",
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-assassination-builds-1711",
+        "rogue-outpost-2311",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Early hit and efficient attacks, then poison and dagger development. Mutilate needs two daggers. Delay capstone versus quest path; no guaranteed poison uptime.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-assassination-pvp",
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-assassination-pvp-1711",
+        "rogue-assassination-pvp-cobalt",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Poison pressure with early Sprint mobility, later Mutilate and defensive Combat tools. No guaranteed control duration.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-combat-dungeons",
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-combat-group-2511",
+        "rogue-outpost-2311",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Sustained Combat and interrupts, Blade Flurry and Adrenaline Rush; cleave only intended targets. Later Assassination energy and poison support.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-combat-pvp",
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-combat-group-2511",
+        "rogue-perplexity-pvp-2311",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Mobility, avoidance and interrupts before Combat capstone; later Subtlety control.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-subtlety-leveling",
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-all-leveling-1211",
+        "mob-rogue-leveling",
+        "rogue-tavern-leveling",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Early cheap strikes and finishers, then stealth, opener and bleed tools. Death Mark later than pure PvP.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-subtlety-dungeons",
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-outpost-2311",
+        "rogue-subtlety-pve-cobalt",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Bleed and opener focused group alternative; retains Preparation and Death Mark, later damage and hit support. No measured sustained boss advantage.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
       ]
     }
   ]

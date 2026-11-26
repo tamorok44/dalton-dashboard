@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-combat-pvp",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11573,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 20,
+    "11573": 31,
+    "11580": 0
+  },
+  "points": [
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 1
+    },
+    {
+      "talentId": 113398,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 3
+    },
+    {
+      "talentId": 105732,
+      "rank": 1
+    },
+    {
+      "talentId": 105732,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 1
+    },
+    {
+      "talentId": 105738,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 3
+    },
+    {
+      "talentId": 105735,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 105733,
+      "rank": 1
+    },
+    {
+      "talentId": 105733,
+      "rank": 2
+    },
+    {
+      "talentId": 105726,
+      "rank": 1
+    },
+    {
+      "talentId": 105726,
+      "rank": 2
+    },
+    {
+      "talentId": 105728,
+      "rank": 1
+    },
+    {
+      "talentId": 105727,
+      "rank": 1
+    },
+    {
+      "talentId": 105727,
+      "rank": 2
+    },
+    {
+      "talentId": 105727,
+      "rank": 3
+    },
+    {
+      "talentId": 105727,
+      "rank": 4
+    },
+    {
+      "talentId": 105740,
+      "rank": 1
+    },
+    {
+      "talentId": 105740,
+      "rank": 2
+    },
+    {
+      "talentId": 105740,
+      "rank": 3
+    },
+    {
+      "talentId": 105740,
+      "rank": 4
+    },
+    {
+      "talentId": 105740,
+      "rank": 5
+    },
+    {
+      "talentId": 105724,
+      "rank": 1
+    },
+    {
+      "talentId": 105760,
+      "rank": 1
+    },
+    {
+      "talentId": 105760,
+      "rank": 2
+    },
+    {
+      "talentId": 105760,
+      "rank": 3
+    },
+    {
+      "talentId": 105760,
+      "rank": 4
+    },
+    {
+      "talentId": 105760,
+      "rank": 5
+    },
+    {
+      "talentId": 105761,
+      "rank": 1
+    },
+    {
+      "talentId": 105761,
+      "rank": 2
+    },
+    {
+      "talentId": 105761,
+      "rank": 3
+    },
+    {
+      "talentId": 105745,
+      "rank": 1
+    },
+    {
+      "talentId": 105745,
+      "rank": 2
+    },
+    {
+      "talentId": 105755,
+      "rank": 1
+    },
+    {
+      "talentId": 105755,
+      "rank": 2
+    },
+    {
+      "talentId": 105755,
+      "rank": 3
+    },
+    {
+      "talentId": 105752,
+      "rank": 1
+    },
+    {
+      "talentId": 105752,
+      "rank": 2
+    },
+    {
+      "talentId": 105754,
+      "rank": 1
+    },
+    {
+      "talentId": 105753,
+      "rank": 1
+    },
+    {
+      "talentId": 105753,
+      "rank": 2
+    },
+    {
+      "talentId": 105752,
+      "rank": 3
+    },
+    {
+      "talentId": 105756,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105741,
+      "count": 2,
+      "reason": "Energiekosten häufiger Angriffe senken."
+    },
+    {
+      "talentId": 113398,
+      "count": 3,
+      "reason": "Ausweichchance ergänzen."
+    },
+    {
+      "talentId": 105732,
+      "count": 2,
+      "reason": "Bewegungseinschränkungen mit Sprinten lösen."
+    },
+    {
+      "talentId": 105738,
+      "count": 3,
+      "reason": "Parieren ausbauen."
+    },
+    {
+      "talentId": 105735,
+      "count": 1,
+      "reason": "Riposte nach Parieren freischalten."
+    },
+    {
+      "talentId": 105737,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105736,
+      "count": 2,
+      "reason": "Sprinten und Entrinnen häufiger einsetzen."
+    },
+    {
+      "talentId": 105733,
+      "count": 2,
+      "reason": "Tritt um eine Schweigeoption erweitern."
+    },
+    {
+      "talentId": 105726,
+      "count": 2,
+      "reason": "Ausweichen und Parieren der Gegner reduzieren."
+    },
+    {
+      "talentId": 105728,
+      "count": 1,
+      "reason": "Klingenwirbel freischalten."
+    },
+    {
+      "talentId": 105727,
+      "count": 4,
+      "reason": "Waffenabhängigen Bonus ergänzen."
+    },
+    {
+      "talentId": 105740,
+      "count": 5,
+      "reason": "Energierückgewinnung und Abklingzeit verbessern."
+    },
+    {
+      "talentId": 105724,
+      "count": 1,
+      "reason": "Adrenalinrausch freischalten."
+    },
+    {
+      "talentId": 105760,
+      "count": 5,
+      "reason": "Hinterhalt- und Blutungsfähigkeiten stärken."
+    },
+    {
+      "talentId": 105761,
+      "count": 3,
+      "reason": "Verstohlenheit verbessern."
+    },
+    {
+      "talentId": 105745,
+      "count": 2,
+      "reason": "Kosten der Eröffnung senken."
+    },
+    {
+      "talentId": 105755,
+      "count": 3,
+      "reason": "Zusätzlichen Combopunkt bei Eröffnungen unterstützen."
+    },
+    {
+      "talentId": 105752,
+      "count": 2,
+      "reason": "Rüstungsdurchdringung und Blutungsschaden ausbauen."
+    },
+    {
+      "talentId": 105754,
+      "count": 1,
+      "reason": "Geisterhaften Stoß freischalten."
+    },
+    {
+      "talentId": 105753,
+      "count": 2,
+      "reason": "Abklingzeit von Verschwinden und Blenden reduzieren."
+    },
+    {
+      "talentId": 105752,
+      "count": 1,
+      "reason": "Gezahnte Klingen vervollständigen."
+    },
+    {
+      "talentId": 105756,
+      "count": 1,
+      "reason": "Verstohlenheitsbewegung verbessern."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "rogue-combat-group-2511",
+      "rogue-perplexity-pvp-2311",
+      "rogue-hotfix-2511"
+    ],
+    "editorialDecision": "Mobility, avoidance and interrupts before Combat capstone; later Subtlety control.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

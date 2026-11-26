@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-subtlety-dungeons",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11572,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 31,
+    "11573": 8,
+    "11580": 12
+  },
+  "points": [
+    {
+      "talentId": 105760,
+      "rank": 1
+    },
+    {
+      "talentId": 105760,
+      "rank": 2
+    },
+    {
+      "talentId": 105760,
+      "rank": 3
+    },
+    {
+      "talentId": 105760,
+      "rank": 4
+    },
+    {
+      "talentId": 105760,
+      "rank": 5
+    },
+    {
+      "talentId": 105761,
+      "rank": 1
+    },
+    {
+      "talentId": 105761,
+      "rank": 2
+    },
+    {
+      "talentId": 105761,
+      "rank": 3
+    },
+    {
+      "talentId": 105745,
+      "rank": 1
+    },
+    {
+      "talentId": 105745,
+      "rank": 2
+    },
+    {
+      "talentId": 105755,
+      "rank": 1
+    },
+    {
+      "talentId": 105755,
+      "rank": 2
+    },
+    {
+      "talentId": 105755,
+      "rank": 3
+    },
+    {
+      "talentId": 105752,
+      "rank": 1
+    },
+    {
+      "talentId": 105752,
+      "rank": 2
+    },
+    {
+      "talentId": 105754,
+      "rank": 1
+    },
+    {
+      "talentId": 105753,
+      "rank": 1
+    },
+    {
+      "talentId": 105753,
+      "rank": 2
+    },
+    {
+      "talentId": 105752,
+      "rank": 3
+    },
+    {
+      "talentId": 105756,
+      "rank": 1
+    },
+    {
+      "talentId": 105746,
+      "rank": 1
+    },
+    {
+      "talentId": 105748,
+      "rank": 1
+    },
+    {
+      "talentId": 105747,
+      "rank": 1
+    },
+    {
+      "talentId": 105747,
+      "rank": 2
+    },
+    {
+      "talentId": 105743,
+      "rank": 1
+    },
+    {
+      "talentId": 105750,
+      "rank": 1
+    },
+    {
+      "talentId": 105750,
+      "rank": 2
+    },
+    {
+      "talentId": 105750,
+      "rank": 3
+    },
+    {
+      "talentId": 105750,
+      "rank": 4
+    },
+    {
+      "talentId": 105750,
+      "rank": 5
+    },
+    {
+      "talentId": 110866,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 2
+    },
+    {
+      "talentId": 105722,
+      "rank": 3
+    },
+    {
+      "talentId": 105722,
+      "rank": 4
+    },
+    {
+      "talentId": 105722,
+      "rank": 5
+    },
+    {
+      "talentId": 105721,
+      "rank": 1
+    },
+    {
+      "talentId": 105721,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 3
+    },
+    {
+      "talentId": 105739,
+      "rank": 1
+    },
+    {
+      "talentId": 105739,
+      "rank": 2
+    },
+    {
+      "talentId": 105739,
+      "rank": 3
+    },
+    {
+      "talentId": 105716,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105760,
+      "count": 5,
+      "reason": "Hinterhalt- und Blutungsfähigkeiten stärken."
+    },
+    {
+      "talentId": 105761,
+      "count": 3,
+      "reason": "Verstohlenheit verbessern."
+    },
+    {
+      "talentId": 105745,
+      "count": 2,
+      "reason": "Kosten der Eröffnung senken."
+    },
+    {
+      "talentId": 105755,
+      "count": 3,
+      "reason": "Zusätzlichen Combopunkt bei Eröffnungen unterstützen."
+    },
+    {
+      "talentId": 105752,
+      "count": 2,
+      "reason": "Rüstungsdurchdringung und Blutungsschaden ausbauen."
+    },
+    {
+      "talentId": 105754,
+      "count": 1,
+      "reason": "Geisterhaften Stoß freischalten."
+    },
+    {
+      "talentId": 105753,
+      "count": 2,
+      "reason": "Abklingzeit von Verschwinden und Blenden reduzieren."
+    },
+    {
+      "talentId": 105752,
+      "count": 1,
+      "reason": "Gezahnte Klingen vervollständigen."
+    },
+    {
+      "talentId": 105756,
+      "count": 1,
+      "reason": "Verstohlenheitsbewegung verbessern."
+    },
+    {
+      "talentId": 105746,
+      "count": 1,
+      "reason": "Vorbereitung freischalten."
+    },
+    {
+      "talentId": 105748,
+      "count": 1,
+      "reason": "Blutsturz freischalten."
+    },
+    {
+      "talentId": 105747,
+      "count": 2,
+      "reason": "Erkennung und Schutz vor Distanzangriffen verbessern."
+    },
+    {
+      "talentId": 105743,
+      "count": 1,
+      "reason": "Konzentration für vorbereitete Combopunkte ergänzen."
+    },
+    {
+      "talentId": 105750,
+      "count": 5,
+      "reason": "Combopunkte aus Shank ausbauen."
+    },
+    {
+      "talentId": 110866,
+      "count": 1,
+      "reason": "Todesmal freischalten."
+    },
+    {
+      "talentId": 105722,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105721,
+      "count": 3,
+      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+    },
+    {
+      "talentId": 105739,
+      "count": 3,
+      "reason": "Zerhäckseln verlängern."
+    },
+    {
+      "talentId": 105716,
+      "count": 1,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 105741,
+      "count": 2,
+      "reason": "Kosten häufiger Angriffe senken."
+    },
+    {
+      "talentId": 105708,
+      "count": 3,
+      "reason": "Ausweiden stärken."
+    },
+    {
+      "talentId": 105737,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "rogue-outpost-2311",
+      "rogue-subtlety-pve-cobalt",
+      "rogue-hotfix-2511"
+    ],
+    "editorialDecision": "Bleed and opener focused group alternative; retains Preparation and Death Mark, later damage and hit support. No measured sustained boss advantage.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

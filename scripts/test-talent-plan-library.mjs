@@ -706,3 +706,11 @@ for(const [id,dist] of [["priest-discipline-leveling",{"11608":33,"11615":18,"11
 for(const treeId of [11608,11615,11622])for(const goal of ['leveling','dungeons','pvp']){
  assert.ok(plans.some(p=>p.classId===5&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Priest research '+treeId+' '+goal);
 }
+
+for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"11580":31}],["rogue-assassination-pvp",{"11572":0,"11573":20,"11580":31}],["rogue-combat-dungeons",{"11572":0,"11573":31,"11580":20}],["rogue-combat-pvp",{"11572":20,"11573":31,"11580":0}],["rogue-subtlety-leveling",{"11572":31,"11573":20,"11580":0}],["rogue-subtlety-dungeons",{"11572":31,"11573":8,"11580":12}]]){
+ const p=plans.find(x=>x.id===id);
+ assert.ok(p&&p.status==='research_only');
+ assert.deepEqual(p.expectedDistribution,dist);
+ assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+}

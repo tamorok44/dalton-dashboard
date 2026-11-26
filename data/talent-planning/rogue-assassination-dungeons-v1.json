@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-assassination-dungeons",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11580,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 0,
+    "11573": 20,
+    "11580": 31
+  },
+  "points": [
+    {
+      "talentId": 105722,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 2
+    },
+    {
+      "talentId": 105722,
+      "rank": 3
+    },
+    {
+      "talentId": 105722,
+      "rank": 4
+    },
+    {
+      "talentId": 105722,
+      "rank": 5
+    },
+    {
+      "talentId": 105721,
+      "rank": 1
+    },
+    {
+      "talentId": 105721,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 3
+    },
+    {
+      "talentId": 105739,
+      "rank": 1
+    },
+    {
+      "talentId": 105739,
+      "rank": 2
+    },
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105716,
+      "rank": 1
+    },
+    {
+      "talentId": 105716,
+      "rank": 2
+    },
+    {
+      "talentId": 105720,
+      "rank": 1
+    },
+    {
+      "talentId": 105720,
+      "rank": 2
+    },
+    {
+      "talentId": 105739,
+      "rank": 3
+    },
+    {
+      "talentId": 105714,
+      "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 2
+    },
+    {
+      "talentId": 105714,
+      "rank": 3
+    },
+    {
+      "talentId": 105714,
+      "rank": 4
+    },
+    {
+      "talentId": 105714,
+      "rank": 5
+    },
+    {
+      "talentId": 113633,
+      "rank": 1
+    },
+    {
+      "talentId": 113633,
+      "rank": 2
+    },
+    {
+      "talentId": 113633,
+      "rank": 3
+    },
+    {
+      "talentId": 113633,
+      "rank": 4
+    },
+    {
+      "talentId": 105712,
+      "rank": 1
+    },
+    {
+      "talentId": 105710,
+      "rank": 1
+    },
+    {
+      "talentId": 105710,
+      "rank": 2
+    },
+    {
+      "talentId": 105710,
+      "rank": 3
+    },
+    {
+      "talentId": 105715,
+      "rank": 1
+    },
+    {
+      "talentId": 113633,
+      "rank": 5
+    },
+    {
+      "talentId": 105709,
+      "rank": 1
+    },
+    {
+      "talentId": 105719,
+      "rank": 1
+    },
+    {
+      "talentId": 105719,
+      "rank": 2
+    },
+    {
+      "talentId": 105719,
+      "rank": 3
+    },
+    {
+      "talentId": 105738,
+      "rank": 1
+    },
+    {
+      "talentId": 105738,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 3
+    },
+    {
+      "talentId": 105735,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 105726,
+      "rank": 1
+    },
+    {
+      "talentId": 105726,
+      "rank": 2
+    },
+    {
+      "talentId": 105730,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105722,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105721,
+      "count": 3,
+      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+    },
+    {
+      "talentId": 105739,
+      "count": 2,
+      "reason": "Zerhäckseln verlängern."
+    },
+    {
+      "talentId": 105741,
+      "count": 2,
+      "reason": "Kosten häufiger Angriffe senken."
+    },
+    {
+      "talentId": 105708,
+      "count": 3,
+      "reason": "Ausweiden stärken."
+    },
+    {
+      "talentId": 105737,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105716,
+      "count": 2,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 105720,
+      "count": 2,
+      "reason": "Energiereserve steigern."
+    },
+    {
+      "talentId": 105739,
+      "count": 1,
+      "reason": "Zerhäckseln vervollständigen."
+    },
+    {
+      "talentId": 105714,
+      "count": 5,
+      "reason": "Giftschaden steigern."
+    },
+    {
+      "talentId": 113633,
+      "count": 4,
+      "reason": "Energierückfluss verbessern."
+    },
+    {
+      "talentId": 105712,
+      "count": 1,
+      "reason": "Toxin freischalten."
+    },
+    {
+      "talentId": 105710,
+      "count": 3,
+      "reason": "Zusätzliche Combopunkte bei kritischen Fähigkeiten unterstützen."
+    },
+    {
+      "talentId": 105715,
+      "count": 1,
+      "reason": "Kaltblütigkeit freischalten."
+    },
+    {
+      "talentId": 113633,
+      "count": 1,
+      "reason": "Unerbittliche Stöße vervollständigen."
+    },
+    {
+      "talentId": 105709,
+      "count": 1,
+      "reason": "Verstümmeln freischalten."
+    },
+    {
+      "talentId": 105719,
+      "count": 3,
+      "reason": "Kritische Dolchfähigkeiten stärken."
+    },
+    {
+      "talentId": 105738,
+      "count": 3,
+      "reason": "Parieren stärken."
+    },
+    {
+      "talentId": 105735,
+      "count": 1,
+      "reason": "Riposte freischalten."
+    },
+    {
+      "talentId": 105736,
+      "count": 2,
+      "reason": "Defensive und Bewegung häufiger einsetzen."
+    },
+    {
+      "talentId": 105726,
+      "count": 2,
+      "reason": "Ausweichen und Parieren der Gegner verringern."
+    },
+    {
+      "talentId": 105730,
+      "count": 1,
+      "reason": "Schaden häufiger Angriffe ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "rogue-assassination-builds-1711",
+      "rogue-outpost-2311",
+      "rogue-hotfix-2511"
+    ],
+    "editorialDecision": "Early hit and efficient attacks, then poison and dagger development. Mutilate needs two daggers. Delay capstone versus quest path; no guaranteed poison uptime.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}
