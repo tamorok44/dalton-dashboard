@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-fire-dungeons",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11594,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 15,
+    "11594": 33,
+    "11601": 3
+  },
+  "points": [
+    {
+      "talentId": 105795,
+      "rank": 1
+    },
+    {
+      "talentId": 105795,
+      "rank": 2
+    },
+    {
+      "talentId": 105795,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 4
+    },
+    {
+      "talentId": 105795,
+      "rank": 5
+    },
+    {
+      "talentId": 105794,
+      "rank": 1
+    },
+    {
+      "talentId": 105794,
+      "rank": 2
+    },
+    {
+      "talentId": 105794,
+      "rank": 3
+    },
+    {
+      "talentId": 105794,
+      "rank": 4
+    },
+    {
+      "talentId": 105794,
+      "rank": 5
+    },
+    {
+      "talentId": 105789,
+      "rank": 1
+    },
+    {
+      "talentId": 105789,
+      "rank": 2
+    },
+    {
+      "talentId": 105797,
+      "rank": 1
+    },
+    {
+      "talentId": 105797,
+      "rank": 2
+    },
+    {
+      "talentId": 105790,
+      "rank": 1
+    },
+    {
+      "talentId": 105786,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105789,
+      "rank": 3
+    },
+    {
+      "talentId": 105785,
+      "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 2
+    },
+    {
+      "talentId": 105785,
+      "rank": 3
+    },
+    {
+      "talentId": 105784,
+      "rank": 1
+    },
+    {
+      "talentId": 105784,
+      "rank": 2
+    },
+    {
+      "talentId": 105784,
+      "rank": 3
+    },
+    {
+      "talentId": 105791,
+      "rank": 1
+    },
+    {
+      "talentId": 105791,
+      "rank": 2
+    },
+    {
+      "talentId": 105782,
+      "rank": 1
+    },
+    {
+      "talentId": 105782,
+      "rank": 2
+    },
+    {
+      "talentId": 105782,
+      "rank": 3
+    },
+    {
+      "talentId": 105788,
+      "rank": 1
+    },
+    {
+      "talentId": 105788,
+      "rank": 2
+    },
+    {
+      "talentId": 105781,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105806,
+      "rank": 1
+    },
+    {
+      "talentId": 105791,
+      "rank": 3
+    },
+    {
+      "talentId": 105788,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105795,
+      "count": 5,
+      "reason": "Feuerball beschleunigen."
+    },
+    {
+      "talentId": 105794,
+      "count": 5,
+      "reason": "Entzünden als Ergänzung zu kritischen Feuerzaubern aufbauen."
+    },
+    {
+      "talentId": 105789,
+      "count": 2,
+      "reason": "Feuerbedrohung und Zauberunterbrechungen früh verringern."
+    },
+    {
+      "talentId": 105797,
+      "count": 2,
+      "reason": "Feuerschlag häufiger und auf größere Entfernung einsetzen."
+    },
+    {
+      "talentId": 105790,
+      "count": 1,
+      "reason": "Pyroschlag freischalten."
+    },
+    {
+      "talentId": 105786,
+      "count": 1,
+      "reason": "Aufwärmen auf 25 freischalten; Feuerschlag muss Schaden verursachen."
+    },
+    {
+      "talentId": 105778,
+      "count": 3,
+      "reason": "Präzision früh vervollständigen, um wechselnde Gegnerstufen in Dungeons zu berücksichtigen."
+    },
+    {
+      "talentId": 105789,
+      "count": 1,
+      "reason": "Brennende Seele vervollständigen."
+    },
+    {
+      "talentId": 105785,
+      "count": 3,
+      "reason": "Mana bei kritischen Feuer- und Frosttreffern teilweise zurückgewinnen."
+    },
+    {
+      "talentId": 105784,
+      "count": 3,
+      "reason": "Kritische Masse als Voraussetzung für den Abschluss ausbauen."
+    },
+    {
+      "talentId": 105791,
+      "count": 2,
+      "reason": "Kritische Trefferchance von Flammenstoß für mehrere Gegner erhöhen."
+    },
+    {
+      "talentId": 105782,
+      "count": 3,
+      "reason": "Feuermacht gegen Ziele mit eigenen Feuereffekten ausbauen."
+    },
+    {
+      "talentId": 105788,
+      "count": 2,
+      "reason": "Feuerverwundbarkeit gegen länger lebende Gegner vorbereiten."
+    },
+    {
+      "talentId": 105781,
+      "count": 1,
+      "reason": "Verbrennung auf Stufe 43 freischalten."
+    },
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Arkanen Nebenbaum öffnen und ergänzende Zauber gegen Unterbrechungen stärken."
+    },
+    {
+      "talentId": 105810,
+      "count": 5,
+      "reason": "Freizauber ausbauen."
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Geschosssalve für Feuerball und ergänzende Zauber nutzen."
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Bedrohung der Arkanergänzung reduzieren."
+    },
+    {
+      "talentId": 105806,
+      "count": 1,
+      "reason": "Arkanschlag als ergänzende Schadensschule freischalten."
+    },
+    {
+      "talentId": 105791,
+      "count": 1,
+      "reason": "Verbesserten Flammenstoß vervollständigen."
+    },
+    {
+      "talentId": 105788,
+      "count": 1,
+      "reason": "Verbessertes Versengen für längere Ziele vervollständigen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-fire-pve",
+      "mobalytics-fire",
+      "cobalt-fire-pve",
+      "wowforeverprogress-fire-pve",
+      "wowhead-fire-leveling-2411"
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    },
+    "editorialDecision": "Direct Fire dungeon progression prioritizes early Precision 3/3, Burning Soul, Master of Elements and Improved Flamestrike for multi-target encounters. Keeps the timely Heating Up unlock. Late Arcane package supports an alternate damage school and free casts, with no Arcane Meditation in this variant. The point sequence is our own; raid guides are not evidence of the best leveling schedule.",
+    "unresolved": [
+      "Exact current build 71139 class proof and complete hotfix delta pending. Structural validation is against retained 71091 proof.",
+      "Compare the gain from earlier hit and Flamestrike with losing Arcane Meditation from the mixed-leveling route; compare sustained dungeon sessions, not only peak damage.",
+      "Check Flamestrike periodic damage and Clearcasting after official hotfixes, Heating Up timing, target fire resistance and longer Scorch fights. No quantitative AoE or threat guarantee.",
+      "Legacy ranks 1–5 minimum levels unverified."
+    ]
+  }
+}

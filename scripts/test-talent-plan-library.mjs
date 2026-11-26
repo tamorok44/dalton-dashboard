@@ -402,6 +402,21 @@ const bearPlan=plans.find(p=>p.id==='druid-feral-dungeons-tank-group-balanced');
 assert.ok(bearPlan&&bearPlan.status==='research_only');
 assert.deepEqual(validatedRanks.get(JSON.stringify([bearPlan.id,bearPlan.version])),[0]);
 assert.ok(!bearPlan.points.some(p=>[104951,113563].includes(p.talentId)),'Bear route deliberately avoids cat-specific mechanic');
+// Distinct goal-specific research paths, no release without full evidence.
+for(const [id,milestones,distribution] of [
+  ['mage-arcane-dungeons',[[105812,15],[105778,20],[105806,22],[105803,27],[113627,30],[105798,42]],[38,10,3]],
+  ['mage-fire-dungeons',[[105786,25],[105778,26],[105791,36],[105781,43]],[15,33,3]]
+]){
+  const candidate=plans.find(p=>p.id===id);
+  assert.ok(candidate&&candidate.status==='research_only');
+  assert.deepEqual(validatedRanks.get(JSON.stringify([id,candidate.version])),[0]);
+  assert.equal(candidate.profiles[0].goal,'dungeons');
+  assert.equal(candidate.profiles[0].playStyle,'group');
+  for(const [talentId,level] of milestones)assert.equal(candidate.points.findIndex(p=>p.talentId===talentId)+10,level,id+' milestone');
+  assert.deepEqual([11582,11594,11601].map(treeId=>candidate.expectedDistribution[treeId]),distribution);
+  const mixed=plans.find(p=>p.classId===candidate.classId&&p.treeId===candidate.treeId&&p.status==='approved'&&p.profiles.some(q=>q.goal==='leveling'));
+  assert.ok(mixed&&JSON.stringify(mixed.points)!==JSON.stringify(candidate.points),'Dungeon answer must change the chronological path');
+}
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');

@@ -408,6 +408,38 @@
       "url": "https://grindclassic.com/wow-forever/leveling/druid/feral/",
       "kind": "expert_guide",
       "independenceGroup": "grindclassic-druid-editorial"
+    },
+    {
+      "id": "wowhead-arcane-leveling-2411",
+      "url": "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-foolipe-editorial",
+      "guideUpdated": "2026-11-24"
+    },
+    {
+      "id": "foreverguide-arcane-dungeons",
+      "url": "https://foreverguide.app/guides/leveling/mage/arcane",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverguide-editorial"
+    },
+    {
+      "id": "cobalt-fire-pve",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/fire/pve/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "wowforeverprogress-fire-pve",
+      "url": "https://wowforeverprogress.com/en/siniflar/mage/fire",
+      "kind": "expert_guide",
+      "independenceGroup": "wowforeverprogress-editorial"
+    },
+    {
+      "id": "wowhead-fire-leveling-2411",
+      "url": "https://www.wowhead.com/forever/guide/classes/mage/fire/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-foolipe-editorial",
+      "guideUpdated": "2026-11-24"
     }
   ],
   "pilot": {
@@ -528,7 +560,11 @@
       "priority": "balanced",
       "sourceIds": [
         "archon-dungeons",
-        "mrronit-arcane-leveling"
+        "mrronit-arcane-leveling",
+        "wowhead-arcane-leveling-2411",
+        "foreverguide-arcane-dungeons",
+        "icyveins-arcane",
+        "mobalytics-arcane-leveling"
       ],
       "proposal": "Prüfe für wechselnde Gegnerstufen, Bedrohung und Unterbrechungen in Dungeons, wann frühere Präzision den späteren Arkan-Meilenstein rechtfertigt.",
       "openChecks": [
@@ -546,7 +582,10 @@
       "priority": "balanced",
       "sourceIds": [
         "icyveins-fire-pve",
-        "mobalytics-fire"
+        "mobalytics-fire",
+        "cobalt-fire-pve",
+        "wowforeverprogress-fire-pve",
+        "wowhead-fire-leveling-2411"
       ],
       "proposal": "Vergleiche gegnerabhängig ein tiefes Feuerprofil mit einem Frostfeuerblitzprofil für gemischte Einzelziel- und Gruppenphasen.",
       "openChecks": [
