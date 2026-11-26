@@ -63,18 +63,6 @@
       "rank": 2
     },
     {
-      "talentId": 105843,
-      "rank": 1
-    },
-    {
-      "talentId": 105843,
-      "rank": 2
-    },
-    {
-      "talentId": 105843,
-      "rank": 3
-    },
-    {
       "talentId": 105846,
       "rank": 1
     },
@@ -85,10 +73,22 @@
     {
       "talentId": 105846,
       "rank": 3
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
     },
     {
       "talentId": 105839,
       "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
     },
     {
       "talentId": 105842,
@@ -236,7 +236,7 @@
     {
       "talentId": 105848,
       "count": 3,
-      "reason": "Heilbedrohung und Kontrollanfälligkeit senken."
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
     },
     {
       "talentId": 105837,
@@ -244,19 +244,24 @@
       "reason": "Intelligenz steigern."
     },
     {
-      "talentId": 105843,
-      "count": 3,
-      "reason": "Manaregeneration beim Zaubern verbessern."
-    },
-    {
       "talentId": 105846,
       "count": 3,
       "reason": "Absorption des Schilds erhöhen."
     },
     {
+      "talentId": 105843,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
       "talentId": 105839,
       "count": 1,
-      "reason": "Seelenwehr freischalten."
+      "reason": "Seelenwehr verkürzt die Abklingzeit und senkt die Manakosten von Machtwort: Schild; Geschwächte Seele bleibt separat zu beachten."
+    },
+    {
+      "talentId": 105843,
+      "count": 1,
+      "reason": "Manaregeneration beim Zaubern verbessern."
     },
     {
       "talentId": 105842,
@@ -266,22 +271,22 @@
     {
       "talentId": 105834,
       "count": 1,
-      "reason": "Sühne als Heiloption freischalten."
+      "reason": "Sühne als kanalisierte Heilung oder situativen Heiligschaden freischalten; Zauberunterbrechung bleibt möglich."
     },
     {
       "talentId": 105835,
       "count": 4,
-      "reason": "Heilungen auf Ziele mit Geschwächter Seele unterstützen."
+      "reason": "Erneuerte Hoffnung verbessert die kritische Heilchance der ausdrücklich genannten Heilzauber auf Zielen mit Geschwächter Seele und verkürzt deren Restdauer."
     },
     {
       "talentId": 105840,
       "count": 3,
-      "reason": "Absorption nach kritischen direkten Heilungen stärken."
+      "reason": "Göttliche Aegis: nichtperiodische kritische Heilungen erzeugen einen zusätzlichen Absorptionsschild; keine garantierte Auslösung oder feste Schildobergrenze voraussetzen."
     },
     {
       "talentId": 105835,
       "count": 1,
-      "reason": "Erneuerte Hoffnung vervollständigen."
+      "reason": "Erneuerte Hoffnung verbessert die kritische Heilchance der ausdrücklich genannten Heilzauber auf Zielen mit Geschwächter Seele und verkürzt deren Restdauer."
     },
     {
       "talentId": 105844,
@@ -306,7 +311,7 @@
     {
       "talentId": 105860,
       "count": 3,
-      "reason": "Rüstungsschutz nach kritischen Heilungen stärken."
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
     },
     {
       "talentId": 105866,
@@ -316,7 +321,7 @@
     {
       "talentId": 105858,
       "count": 3,
-      "reason": "Manakosten zentraler Heilungen verringern."
+      "reason": "Manakosten von geringer Heilung, Heilung, großer Heilung, Sühne und Gebet der Besserung reduzieren; nur erlernte Fähigkeiten nutzen."
     },
     {
       "talentId": 105862,
@@ -330,17 +335,50 @@
       "iv-discipline-priest-leveling",
       "wh-discipline-priest"
     ],
-    "editorialDecision": "Shield-based healer, Meditation, Soul Warding and Penance; different from Holy direct/group healing.",
+    "editorialDecision": "Regelmäßige Dungeonheilung: Schildverbesserung auf 20–22 und Seelenwehr unmittelbar auf 25 (statt 26), dritter Meditationsrang folgt auf 26. Sühne 30, Seele der Macht 40. Erneuerte Hoffnung verkürzt Geschwächte Seele nur über genannte direkte Heilzauber; Divine Aegis nur bei nichtperiodischer kritischer Heilung. Keine unbegrenzte Schildmenge oder garantierte Folge von kritischen Heilungen.",
     "unresolved": [
       "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
       "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Verify shield and Weakened Soul mechanics and undocumented priest changes."
+      "Verify shield and Weakened Soul mechanics and undocumented priest changes.",
+      "105840: Build 71139 zeigt Obergrenze 1200 im Clienttext; unabhängige Quelle bestätigt die Grundwirkung, aber keine exakte stufenabhängige Servergrenze. Nicht numerisch freigeben.",
+      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
       "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+          "contribution": "Aktueller Build 71139; nichtperiodischer kritischer Heal, Absorption und Dauer; feste Obergrenze nicht als stufenunabhängige Serverregel übernehmen."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Qualitative Übereinstimmung bei Divine Aegis, Soul Warding und Renewed Hope; keine zweite vollständige numerische Kappe."
+        },
+        {
+          "url": "https://guildorder.com/games/wow_forever/wiki/discipline-priest-field-guide",
+          "contribution": "25.11.: alternative 33/13/5 Levelroute, Priorität Schild, Sühne, Aegis, Ressourcen; keine gemessene Überlegenheit."
+        },
+        {
+          "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/discipline-priest-pvp-guide/talents/",
+          "contribution": "19.11.: Soul Warding, Inner Focus, Penance, Power Infusion als PvP-Kern."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
