@@ -59,6 +59,7 @@ const phases=[
     "files": [
       "scripts/test-spellbook-sync.mjs",
       "scripts/test-addon-sync.mjs",
+      "scripts/test-audit-p0.mjs",
       "scripts/test-addon-structure.mjs"
     ]
   },

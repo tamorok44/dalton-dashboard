@@ -170,7 +170,7 @@ export async function getDailySnapshot(date){
   return value?JSON.parse(value):null;
 }
 export async function registerDailySnapshot(meta){
-  if(!meta?.date||!meta?.url)throw new Error('Ungültige Snapshot-Metadaten');
+  if(!meta?.date||(!meta?.url&&!['disabled','failed'].includes(meta?.archiveStatus)))throw new Error('Ungültige Snapshot-Metadaten');
   const value=JSON.stringify(meta);
   await redis(['HSET',DAILY_INDEX,meta.date,value]);
   await redis(['SET',DAILY_LAST,value]);

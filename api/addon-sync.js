@@ -73,6 +73,11 @@ export default async function handler(req,res){
   let lockToken=null;
 
   try{
+    // The entire production read/modify/write sequence must use the same lock.
+    // Taking it after reading the roster would allow an older roster to erase
+    // an already successful sync for another character.
+    lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
+    if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
@@ -88,9 +93,6 @@ export default async function handler(req,res){
         summary:publicAddonSyncSummary(previousState)
       });
     }
-
-    lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
-    if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
 
     const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug});
     let updated=before;
@@ -121,7 +123,7 @@ export default async function handler(req,res){
       spellbookApplied=true;
     }
 
-    const state=await saveAddonSyncState(target.slug,payload);
+    const state=await saveAddonSyncState(target.slug,payload,{lockToken:previewIsolated?null:lockToken});
     const character=(updated.characters||before.characters).find(entry=>entry.slug===target.slug)||target;
     return res.status(200).json({
       duplicate:false,

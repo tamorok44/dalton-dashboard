@@ -9,11 +9,18 @@ function keyFor(characterSlug){
   return 'dalton-dashboard:addon-sync:v1:'+environmentScope()+':'+characterSlug;
 }
 
-export async function saveAddonSyncState(characterSlug,payload){
+export async function saveAddonSyncState(characterSlug,payload,{lockToken=null}={}){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
   const state={characterSlug,receivedAt:new Date().toISOString(),payload};
-  await redis(['EVAL',"redis.call('SET',KEYS[1],ARGV[1]); redis.call('HSET',KEYS[2],ARGV[2],ARGV[3]); return 'OK'",2,keyFor(characterSlug),VERSION_METADATA_KEY,JSON.stringify(state),addonVersionField(characterSlug),JSON.stringify(addonVersionMetadata(state))]);
+  const args=[JSON.stringify(state),addonVersionField(characterSlug),JSON.stringify(addonVersionMetadata(state))];
+  const production=environmentScope()==='production';
+  if(production&&!lockToken)throw new Error('Schreibsperre für Addon-Sync erforderlich');
+  const write="redis.call('SET',KEYS[1],ARGV[1]); redis.call('HSET',KEYS[2],ARGV[2],ARGV[3]); return 'OK'";
+  const result=production
+    ?await redis(['EVAL',"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; "+write,3,keyFor(characterSlug),VERSION_METADATA_KEY,'dalton-dashboard:refresh:lock',...args,lockToken])
+    :await redis(['EVAL',write,2,keyFor(characterSlug),VERSION_METADATA_KEY,...args]);
+  if(result!=='OK')throw new Error('Addon-Sync-Status nicht gespeichert');
   return state;
 }
 

@@ -26,8 +26,9 @@ export function berlinClock(date=new Date()){
   }).formatToParts(date).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
   return {date:parts.year+'-'+parts.month+'-'+parts.day,hour:Number(parts.hour),minute:Number(parts.minute)};
 }
-export function dailyRefreshComplete(snapshotMeta){
-  return snapshotMeta?.refresh?.persisted===true;
+export function dailyRefreshComplete(snapshotMeta,archiveConfigured=false){
+  return snapshotMeta?.refresh?.persisted===true&&snapshotMeta.archiveStatus!=='failed'&&
+    !(archiveConfigured&&snapshotMeta.archiveStatus==='disabled');
 }
 
 async function refreshDailyCharacters(){
@@ -55,45 +56,58 @@ export default async function handler(req,res){
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
   const secret=process.env.CRON_SECRET;
   if(!secret||req.headers?.authorization!=='Bearer '+secret)return res.status(401).json({error:'Nicht autorisiert'});
+  if(process.env.VERCEL_ENV!=='production')return res.status(200).json({skipped:true,reason:'non_production'});
   const local=berlinClock();
   if(![5,6].includes(local.hour))return res.status(200).json({skipped:true,reason:'outside_early_morning_window',local});
   if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt'});
   if(!blizzardApiConfigured())return res.status(503).json({error:'Blizzard API-Zugangsdaten fehlen'});
-  if(!dailySnapshotStoreConfigured())return res.status(503).json({error:'Blob-Speicher fehlt'});
+  const archiveConfigured=dailySnapshotStoreConfigured();
 
   const existing=await getDailySnapshot(local.date);
-  if(dailyRefreshComplete(existing))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:existing});
+  if(dailyRefreshComplete(existing,archiveConfigured))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:existing});
 
   const dailyLock=await acquireDailySnapshotLock(local.date);
   if(!dailyLock)return res.status(200).json({pending:true,reason:'daily_snapshot_running'});
   try{
     const secondCheck=await getDailySnapshot(local.date);
-    if(dailyRefreshComplete(secondCheck))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:secondCheck});
+    if(dailyRefreshComplete(secondCheck,archiveConfigured))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:secondCheck});
 
     let meta=secondCheck||existing||null;
+    const previousRefresh=meta?.refresh;
     let petRuleState;
     let saved=false;
-    if(!meta){
+    if(!meta||['disabled','failed'].includes(meta.archiveStatus)){
       // Regelprüfung bewusst vor Snapshot und Profil-Refresh: neue Livewerte dürfen nie mit ungeprüften Pet-Regeln verrechnet werden.
-      petRuleState=await ensurePetRuleState({force:true});
-      const {data:current}=await loadCharacters();
-      const slugs=current.characters.map(c=>c.slug);
-      const snapshot=await fetchForeverSnapshot(slugs);
-      meta=await saveDailySnapshot(snapshot,local.date);
-      await registerDailySnapshot(meta);
-      saved=true;
+      petRuleState=await ensurePetRuleState({force:!meta});
+      if(archiveConfigured){
+        try{
+          const {data:current}=await loadCharacters();
+          const slugs=current.characters.map(c=>c.slug);
+          const snapshot=await fetchForeverSnapshot(slugs);
+          meta=await saveDailySnapshot(snapshot,local.date);
+          await registerDailySnapshot(meta);
+          saved=true;
+        }catch(error){
+          // Do not leak credentials, raw payloads or provider URLs in logs.
+          console.error('Privates Tagesarchiv fehlgeschlagen');
+          meta={date:local.date,createdAt:new Date().toISOString(),archiveStatus:'failed'};
+        }
+      }else{
+        // Fail closed for raw data, but do not disable the dashboard's daily refresh.
+        meta={date:local.date,createdAt:new Date().toISOString(),archiveStatus:'disabled'};
+      }
     }else{
       // Ein bereits archivierter Snapshot wird nie erneut geschrieben. Ein unvollständiger Profil-Refresh darf aber wiederholt werden.
       petRuleState=await ensurePetRuleState({force:false});
     }
 
-    const refresh=await refreshDailyCharacters();
+    const refresh=previousRefresh?.persisted===true?previousRefresh:await refreshDailyCharacters();
     const completedMeta={
       ...meta,
       refresh:{...refresh,attemptedAt:new Date().toISOString()}
     };
     await registerDailySnapshot(completedMeta);
-    return res.status(200).json({
+    return res.status(meta.archiveStatus==='failed'?503:200).json({
       saved,
       retried:!saved,
       snapshot:completedMeta,
