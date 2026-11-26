@@ -862,6 +862,66 @@
       "url": "https://restokins.com/guides/restokin-build.html",
       "independenceGroup": "restokins-editorial",
       "kind": "expert_guide"
+    },
+    {
+      "id": "priest-foreverguide-holy",
+      "url": "https://foreverguide.app/guides/leveling/priest/holy",
+      "independenceGroup": "foreverguide-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-holy-grindclassic",
+      "url": "https://grindclassic.com/wow-forever/leveling/priest/holy/",
+      "independenceGroup": "grindclassic-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-discipline-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/discipline-priest-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-discipline-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/priest/discipline/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-holy-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/priest/holy/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-battlegrounds",
+      "url": "https://foreverbattlegrounds.com/classes/priest/",
+      "independenceGroup": "foreverbattlegrounds-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-shadow-wowhead-pve",
+      "url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds-pve-dps",
+      "independenceGroup": "wowhead-shadow-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-shadow-icyveins-pve",
+      "url": "https://www.icy-veins.com/wow-forever/shadow-priest-ranged-dps-pve-spec-builds-talents",
+      "independenceGroup": "icyveins-shadow-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-shadow-guildorder",
+      "url": "https://guildorder.com/games/wow_forever/wiki/shadow-priest-field-guide",
+      "independenceGroup": "guildorder-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-current-client-71139",
+      "url": "https://wowforevertalents.com/priest/",
+      "independenceGroup": "wowforevertalents-hotfix-cache",
+      "kind": "client_reference"
     }
   ],
   "pilot": {
@@ -1925,6 +1985,109 @@
         "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
         "Legacy ranks 1–5 effective gates and comparative performance unverified.",
         "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "priest-discipline-leveling",
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-discipline-priest",
+        "iv-discipline-priest-leveling",
+        "outpost-priest"
+      ],
+      "proposal": "Mixed healing and questing with early wand investment and later Holy damage/cast-time support. Delays deep Discipline unlocks by two levels.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-discipline-pvp",
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-discipline-pvp-skillcapped",
+        "priest-discipline-pvp-cobalt"
+      ],
+      "proposal": "Defensive Discipline with early control-duration reduction, shield and conditional casting protection; late Holy magic mitigation. No immunity to control or interrupts.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-holy-leveling",
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-foreverguide-holy",
+        "priest-holy-grindclassic",
+        "outpost-priest"
+      ],
+      "proposal": "Healing-first mixed questing; early wand and Spirit Tap, then cast-time and Holy damage, late Meditation. No claim of solo speed superior to Shadow.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-holy-pvp",
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-holy-pvp-cobalt",
+        "priest-battlegrounds"
+      ],
+      "proposal": "Direct and group healing with early defensive Holy choices; later shield and conditional casting protection. Distinct from Discipline.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-shadow-pvp",
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-battlegrounds",
+        "priest-shadow-wowhead-pve",
+        "priest-current-client-71139"
+      ],
+      "proposal": "Shadow pressure, probabilistic control, Silence and later defensive Discipline. Gives up Spirit Tap for PvP control; not a measured best route.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
       ]
     }
   ]

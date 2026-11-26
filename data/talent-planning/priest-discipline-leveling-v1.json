@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-discipline-leveling",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11608,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 33,
+    "11615": 18,
+    "11622": 0
+  },
+  "points": [
+    {
+      "talentId": 105850,
+      "rank": 1
+    },
+    {
+      "talentId": 105850,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105837,
+      "rank": 1
+    },
+    {
+      "talentId": 105837,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105839,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 2
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
+    },
+    {
+      "talentId": 105834,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 2
+    },
+    {
+      "talentId": 105835,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 4
+    },
+    {
+      "talentId": 105840,
+      "rank": 1
+    },
+    {
+      "talentId": 105840,
+      "rank": 2
+    },
+    {
+      "talentId": 105840,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 5
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105836,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 2
+    },
+    {
+      "talentId": 110855,
+      "rank": 3
+    },
+    {
+      "talentId": 110855,
+      "rank": 4
+    },
+    {
+      "talentId": 110855,
+      "rank": 5
+    },
+    {
+      "talentId": 105863,
+      "rank": 1
+    },
+    {
+      "talentId": 105863,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 3
+    },
+    {
+      "talentId": 105863,
+      "rank": 4
+    },
+    {
+      "talentId": 105863,
+      "rank": 5
+    },
+    {
+      "talentId": 105860,
+      "rank": 1
+    },
+    {
+      "talentId": 105860,
+      "rank": 2
+    },
+    {
+      "talentId": 105860,
+      "rank": 3
+    },
+    {
+      "talentId": 105862,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 1
+    },
+    {
+      "talentId": 105857,
+      "rank": 1
+    },
+    {
+      "talentId": 105857,
+      "rank": 2
+    },
+    {
+      "talentId": 105858,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105850,
+      "count": 2,
+      "reason": "Zauberstabschaden für frühe Soloaufgaben erhöhen."
+    },
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Heilbedrohung und Kontrollanfälligkeit senken."
+    },
+    {
+      "talentId": 105837,
+      "count": 2,
+      "reason": "Intelligenz steigern."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Absorption des Schilds erhöhen."
+    },
+    {
+      "talentId": 105839,
+      "count": 1,
+      "reason": "Seelenwehr freischalten."
+    },
+    {
+      "talentId": 105842,
+      "count": 3,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105834,
+      "count": 1,
+      "reason": "Sühne für Heilung und situativen Schaden freischalten."
+    },
+    {
+      "talentId": 105835,
+      "count": 4,
+      "reason": "Heilungen auf Ziele mit Geschwächter Seele unterstützen."
+    },
+    {
+      "talentId": 105840,
+      "count": 3,
+      "reason": "Absorption nach kritischen direkten Heilungen stärken."
+    },
+    {
+      "talentId": 105835,
+      "count": 1,
+      "reason": "Erneuerte Hoffnung vervollständigen."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105836,
+      "count": 1,
+      "reason": "Seele der Macht freischalten."
+    },
+    {
+      "talentId": 110855,
+      "count": 5,
+      "reason": "Kritische Heiligzauber und Heilungen ergänzen."
+    },
+    {
+      "talentId": 105863,
+      "count": 5,
+      "reason": "Zauberzeit von Heiligem Schlag, Heiligem Feuer und zentralen Heilungen verkürzen."
+    },
+    {
+      "talentId": 105860,
+      "count": 3,
+      "reason": "Rüstungsschutz nach kritischen direkten Heilungen ausbauen."
+    },
+    {
+      "talentId": 105862,
+      "count": 1,
+      "reason": "Heilige Nova für situativen Flächenschaden und Gruppenheilung."
+    },
+    {
+      "talentId": 105866,
+      "count": 1,
+      "reason": "Erneuerung ergänzen."
+    },
+    {
+      "talentId": 105857,
+      "count": 2,
+      "reason": "Schaden der betroffenen Heiligzauber erhöhen."
+    },
+    {
+      "talentId": 105858,
+      "count": 1,
+      "reason": "Manakosten zentraler Heilungen ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "wh-discipline-priest",
+      "iv-discipline-priest-leveling",
+      "outpost-priest"
+    ],
+    "editorialDecision": "Mixed healing and questing with early wand investment and later Holy damage/cast-time support. Delays deep Discipline unlocks by two levels.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

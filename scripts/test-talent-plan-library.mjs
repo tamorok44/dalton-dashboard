@@ -687,3 +687,11 @@ for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347"
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
 }
+
+for(const [id,dist] of [["priest-discipline-leveling",{"11608":33,"11615":18,"11622":0}],["priest-discipline-pvp",{"11608":31,"11615":20,"11622":0}],["priest-holy-leveling",{"11608":15,"11615":31,"11622":5}],["priest-holy-pvp",{"11608":20,"11615":31,"11622":0}],["priest-shadow-pvp",{"11608":20,"11615":0,"11622":31}]]){
+ const p=plans.find(x=>x.id===id);
+ assert.ok(p&&p.status==='research_only');
+ assert.deepEqual(p.expectedDistribution,dist);
+ assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+}

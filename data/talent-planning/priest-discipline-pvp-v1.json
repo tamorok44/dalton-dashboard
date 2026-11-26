@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-discipline-pvp",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11608,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 31,
+    "11615": 20,
+    "11622": 0
+  },
+  "points": [
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105845,
+      "rank": 1
+    },
+    {
+      "talentId": 105845,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 2
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
+    },
+    {
+      "talentId": 105839,
+      "rank": 1
+    },
+    {
+      "talentId": 105834,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 2
+    },
+    {
+      "talentId": 105835,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 4
+    },
+    {
+      "talentId": 105835,
+      "rank": 5
+    },
+    {
+      "talentId": 105840,
+      "rank": 1
+    },
+    {
+      "talentId": 105840,
+      "rank": 2
+    },
+    {
+      "talentId": 105840,
+      "rank": 3
+    },
+    {
+      "talentId": 105836,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 2
+    },
+    {
+      "talentId": 110855,
+      "rank": 3
+    },
+    {
+      "talentId": 110855,
+      "rank": 4
+    },
+    {
+      "talentId": 110855,
+      "rank": 5
+    },
+    {
+      "talentId": 105867,
+      "rank": 1
+    },
+    {
+      "talentId": 105867,
+      "rank": 2
+    },
+    {
+      "talentId": 105867,
+      "rank": 3
+    },
+    {
+      "talentId": 105866,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 1
+    },
+    {
+      "talentId": 105863,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 3
+    },
+    {
+      "talentId": 105863,
+      "rank": 4
+    },
+    {
+      "talentId": 105863,
+      "rank": 5
+    },
+    {
+      "talentId": 105864,
+      "rank": 1
+    },
+    {
+      "talentId": 105864,
+      "rank": 2
+    },
+    {
+      "talentId": 105864,
+      "rank": 3
+    },
+    {
+      "talentId": 105864,
+      "rank": 4
+    },
+    {
+      "talentId": 105864,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Dauer ausgewählter Kontrollwirkungen und Bedrohung reduzieren."
+    },
+    {
+      "talentId": 105845,
+      "count": 2,
+      "reason": "Nach erlittenem kritischem Treffer situativen Zauberzeitschutz und Widerstand gegen Unterbrechung ergänzen."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Schildabsorption stärken."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105842,
+      "count": 3,
+      "reason": "Kosten von Sofortzaubern sowie Heiligem Feuer und Heiligem Schlag reduzieren."
+    },
+    {
+      "talentId": 105839,
+      "count": 1,
+      "reason": "Seelenwehr freischalten."
+    },
+    {
+      "talentId": 105834,
+      "count": 1,
+      "reason": "Sühne freischalten."
+    },
+    {
+      "talentId": 105835,
+      "count": 5,
+      "reason": "Erneuerte Hoffnung für passende geschwächte Ziele stärken."
+    },
+    {
+      "talentId": 105840,
+      "count": 3,
+      "reason": "Absorption nach kritischen direkten Heilungen stärken."
+    },
+    {
+      "talentId": 105836,
+      "count": 1,
+      "reason": "Seele der Macht freischalten."
+    },
+    {
+      "talentId": 110855,
+      "count": 5,
+      "reason": "Kritische Heiligzauber ergänzen."
+    },
+    {
+      "talentId": 105867,
+      "count": 3,
+      "reason": "Schutz gegen Zauberzeitverlust; keine Unterbrechungsimmunität annehmen."
+    },
+    {
+      "talentId": 105866,
+      "count": 2,
+      "reason": "Erneuerung stärken."
+    },
+    {
+      "talentId": 105863,
+      "count": 5,
+      "reason": "Zauberzeit zentraler Heilungen verringern."
+    },
+    {
+      "talentId": 105864,
+      "count": 5,
+      "reason": "Erlittenen Zauberschaden senken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "priest-discipline-pvp-skillcapped",
+      "priest-discipline-pvp-cobalt"
+    ],
+    "editorialDecision": "Defensive Discipline with early control-duration reduction, shield and conditional casting protection; late Holy magic mitigation. No immunity to control or interrupts.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}
