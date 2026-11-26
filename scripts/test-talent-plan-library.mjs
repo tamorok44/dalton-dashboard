@@ -919,7 +919,7 @@ for(const [id,milestones] of [
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
-const rogueGroup=plans.find(p=>p.['rogue-combat-dungeons','rogue-combat-leveling','rogue-combat-pvp'].includes(id));
+const rogueGroup=plans.find(p=>p.id==='rogue-combat-dungeons');
 assert.ok(!rogueGroup.points.some(p=>[105735,105738].includes(p.talentId)));
 assert.equal(rogueGroup.points.filter(p=>p.talentId===105740).length,5);
 
