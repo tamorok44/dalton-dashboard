@@ -84,4 +84,5 @@ assert.deepEqual(rows.filter(x=>x.editorialStatus==='approved').map(x=>JSON.stri
 const summary={activePaths:rows.length,primaryValid:rows.filter(x=>x.primaryStructuralStatus==='valid').length,approvedPaths:rows.filter(x=>x.editorialStatus==='approved').length,
  crossBuildCleanClasses:ledger.classes.filter(x=>x.status==='structure_matches').length,issueExposure:ledger.issues.map(i=>({id:i.id,paths:rows.filter(x=>x.issueId===i.id).length,affectedPaths:rows.filter(x=>x.issueId===i.id&&x.affectedTalentIds.length).length})),
  explicitLevelConflicts:rows.flatMap(x=>x.explicitLevelConflicts.map(c=>({id:x.id,...c}))),legacyCalendarConfirmed:true,legacyEffectiveGatesVerified:false,liveReleaseChecked:false};
+assert.deepEqual(summary.explicitLevelConflicts,[],'Explicit milestone in rationale must agree with the chronological rank-0 path');
 console.log(JSON.stringify(process.argv.includes('--summary')?summary:{schemaVersion:1,kind:'talent_release_readiness_diagnostic',summary,rows},null,2));
