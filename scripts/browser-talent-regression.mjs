@@ -165,7 +165,7 @@ try{
    assert.ok(layout.gridScroll<=layout.gridWidth+6,'talent grid overflow '+JSON.stringify(layout));
    assert.ok(layout.minTarget>=32&&layout.domNodes<1500,'touch target / DOM budget '+JSON.stringify(layout));
    assert.ok(layout.documentWidth<=layout.viewport+2,'document horizontal overflow '+JSON.stringify(layout));
-   await page.screenshot({path:resolve(reportDir,item.name+'-plan.png'),fullPage:true});
+   await page.screenshot({path:resolve(reportDir,item.name+'-plan.png'),fullPage:true,scale:'css'});
    if(engine==='chromium'){
      cdp=await context.newCDPSession(page);
      await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
@@ -209,7 +209,7 @@ try{
    await goal.waitFor({state:'visible'});await sleep(180);
    await goal.selectOption('dungeons');
    assert.equal(await spec.inputValue(),'11582');
-   await page.screenshot({path:resolve(reportDir,item.name+'-guide.png'),fullPage:true});
+   await page.screenshot({path:resolve(reportDir,item.name+'-guide.png'),fullPage:true,scale:'css'});
    // Exercise newly approved class routes and the actual corrected character view.
    await choose(7);await goal.selectOption('dungeons');await role.selectOption('damage');
    assert.equal(await spec.inputValue(),'11363','Shaman dungeon comparative default');
@@ -256,7 +256,7 @@ try{
    assert.ok((await druid.locator('.talent-node-detail').innerText()).includes('15 %'));
    assert.equal(displayRequests,beforeDisplay+1,'single cached character catalog fetch');
    assert.equal(plannerRequests,beforePlan,'character view must not trigger plan requests');
-   await page.screenshot({path:resolve(reportDir,item.name+'-hotfix.png'),fullPage:true});
+   await druid.screenshot({path:resolve(reportDir,item.name+'-hotfix.png'),scale:'css'});
    result.additionalClassPaths=2;result.legacyRank5Verified=true;result.correctedCharacterViews=3;result.characterCatalogReads=displayRequests-beforeDisplay;
    assert.deepEqual(errors,[],'browser page errors');
    assert.deepEqual(unexpected,[],'unexpected backend endpoints');
@@ -265,7 +265,7 @@ try{
    result.status='passed';
   }catch(error){
     result.error=String(error.stack||error);
-    await page.screenshot({path:resolve(reportDir,item.name+'-failure.png'),fullPage:true}).catch(()=>{});
+    await page.screenshot({path:resolve(reportDir,item.name+'-failure.png'),fullPage:false,scale:'css'}).catch(()=>{});
     console.error(result.error);
   }finally{report.cases.push(result);await context.close()}
  }
