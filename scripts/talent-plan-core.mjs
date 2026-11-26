@@ -1,4 +1,5 @@
 import {currentTalentRulesMatch} from './talent-rule-watch.mjs';
+import {correctHunterPlanningClass} from './talent-hunter-prerequisite-correction.mjs';
 import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest} from './talent-catalog-proof.mjs';
 
 // Pure planning rules. No provider requests, no roster dependency, no runtime AI.
@@ -33,8 +34,10 @@ export function validateTalentPath(plan,master,rules){
   if(plan.requiresRespec!==false)return reject('respec_not_supported');
   if(!Array.isArray(plan.points)||plan.points.length!==maxPoints)return reject('incomplete_path');
   if(!c.trees.some(t=>t.id===plan.treeId))return reject('unknown_specialization');
+  const effectiveClass=rules.prerequisiteCorrection?correctHunterPlanningClass(plan,master,rules):c;
+  if(!effectiveClass)return reject('unverified_current_rules');
   const byId=new Map(),ranks=new Map(),history=[];
-  for(const tree of c.trees)for(const t of tree.talents){
+  for(const tree of effectiveClass.trees)for(const t of tree.talents){
     if(byId.has(t.id))return reject('ambiguous_talent_id');
     byId.set(t.id,{...t,treeId:tree.id});
   }
@@ -83,6 +86,7 @@ export function compatibleTalentRevalidation(entry,plan,baseline){
 // An equal class hash, a newer build, or an unrelated hotfix is not enough.
 export function selectTalentRulePack(plan,baseline,master,observation,revalidations,now){
   if(currentTalentRulesMatch(observation,baseline,master,now))return baseline;
+  if(baseline.prerequisiteCorrection)return null; // Structural correction requires a new exact review, never automatic transition.
   const reviewed=array(revalidations).filter(entry=>compatibleTalentRevalidation(entry,plan,baseline)&&
     currentTalentRulesMatch(observation,{...baseline,...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,entry.to[k]]))},master,now));
   if(reviewed.length!==1)return null;

@@ -150,7 +150,7 @@ assert.equal(checkedHunter.history.length,51);
 assert.equal(checkedHunter.history.find(p=>p.talentId===104966).level,25);
 assert.equal(checkedHunter.history.find(p=>p.talentId===104961).level,40);
 assert.deepEqual([11372,11371,11370].map(id=>checkedHunter.history.filter(p=>p.treeId===id).length),[31,20,0]);
-assert.equal(resolveApprovedTalentPlan(bmCandidate.profiles[0],[bmCandidate],conditional,[hunterRules]).code,'no_approved_recommendation');
+assert.equal(resolveApprovedTalentPlan(bmCandidate.profiles[0],[{...bmCandidate,status:'research_only'}],conditional,[hunterRules]).code,'no_approved_recommendation');
 console.log('Hunter research: 51-point conditional path; real projected cycle remains blocked: OK');
 
 // Synthetic transition: old plan identity and allocation stay exactly intact.

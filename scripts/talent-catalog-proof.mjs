@@ -51,7 +51,8 @@ export function talentRuleEvidenceDigest(pack){
   return talentRevisionDigest({
     ...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(field=>[field,pack[field]])),
     legacyTalentedRank:pack.legacyTalentedRank,pointCalendarRevision:pack.pointCalendarRevision,
-    pointSpendMode:pack.pointSpendMode,gateMode:pack.gateMode,minimumLevelByTalent:pack.minimumLevelByTalent
+    pointSpendMode:pack.pointSpendMode,gateMode:pack.gateMode,minimumLevelByTalent:pack.minimumLevelByTalent,
+    ...(pack.prerequisiteCorrection?{prerequisiteCorrection:pack.prerequisiteCorrection}:{})
   });
 }
 

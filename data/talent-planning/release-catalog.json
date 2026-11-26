@@ -9331,6 +9331,405 @@
       "allocationDigest": "4d8355c76fa36432f719c5808d3c95c91da567af9fb4c2f124ee6400caa89720",
       "url": "https://mobalytics.gg/wow-forever/classes/restoration-druid-guide-progress",
       "claim": "Current HoT/Swiftmend/Bloom role; Wild Growth requires stationary cast."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "ec3574ca8ff9d8b77a14c7c6f15a9343470cc1dbc97de336789edec9cc181d49",
+      "id": "hunter-beast-mastery-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7",
+        "talentIds": [
+          104960,
+          104961,
+          104962,
+          104963,
+          104964,
+          104966,
+          104967,
+          104969,
+          104970,
+          104975,
+          104976,
+          105002,
+          105005,
+          105008,
+          105009,
+          105011
+        ],
+        "excludedConflictIds": [],
+        "olderComparisonCaptureSha256": "15eaa6d0fe8abe9a42e1b8b4392ce9638c0cb5ed1897ad801b54ecf7a7bffd1f",
+        "olderBuild": "1.60.1.71091"
+      },
+      "hawkResolution": {
+        "kind": "hunter_hawk_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 104966,
+        "spellId": 1293241,
+        "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+        "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiredBeastMasteryPoints": 15,
+          "baseManaCostPercent": 11,
+          "sharedArcaneShotCooldown": true,
+          "durationSeconds": 18,
+          "maxActiveHawks": 2,
+          "attacksSummonedTargetWithPassivePet": true
+        },
+        "unresolved": "Exact initial hit and melee damage scaling, actual critical strike chance, hit count and encounter damage after Nov 25 not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current source pair agrees on duration, maximum and shared cooldown; numeric hit differs by placeholder."
+          },
+          {
+            "url": "https://talentsforever.com/hunter/talents/summon-hawk",
+            "claim": "Nov 10 hotfix-adjusted spell text corroborates row, 11% base mana, duration, max hawks and shared cooldown. Older damage reference not released."
+          },
+          {
+            "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 10 mana and approximate melee damage tuning; Nov 25 targeting, dismissal and crit bug fixes."
+          },
+          {
+            "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+            "claim": "Official post mirror; no numerical server measurement."
+          }
+        ],
+        "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7"
+      },
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7"
+      },
+      "claim": "Retained exact source pair; official Hunter class deep dive, Zephras and current independent talent source confirm conservative acyclic prerequisite. Raw graph retained; no observed server grant or exact Hawk damage."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "ec3574ca8ff9d8b77a14c7c6f15a9343470cc1dbc97de336789edec9cc181d49",
+      "id": "hunter-beast-mastery-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/news/24301515/world-of-warcraft-forever-class-deep-dives-hunter-and-druid",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Official Hunter class deep dive explicitly requires Bestial Swiftness; current Nov 25 hotfix review confirms pet/Hawk corrections and no Intimidation prerequisite reversal. Conservative single edge; no measured server grant."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-beast-mastery-leveling-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-leveling",
+      "planVersion": 1,
+      "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-hunter-leveling-talents/",
+      "claim": "Point 21 Intimidation and 31 Bestial Wrath, supports own solo progression."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-beast-mastery-leveling-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-leveling",
+      "planVersion": 1,
+      "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7",
+      "url": "https://wowfdb.com/talents/hunter/",
+      "claim": "BM leveling order with Hawk, Intimidation and Bestial Wrath; conditional pet uptime."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "d2c0acb60dbf3b5d2291a18c074386121fce459b36d9a78194c102d859551333",
+      "id": "hunter-beast-mastery-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "6e72eb05897c7f0041068af436c9fb716bd8529652c88684431a6d733af469dc",
+        "talentIds": [
+          104960,
+          104961,
+          104962,
+          104964,
+          104966,
+          104967,
+          104969,
+          104970,
+          104975,
+          104976,
+          105002,
+          105004,
+          105008,
+          105009,
+          105011
+        ],
+        "excludedConflictIds": [],
+        "olderComparisonCaptureSha256": "15eaa6d0fe8abe9a42e1b8b4392ce9638c0cb5ed1897ad801b54ecf7a7bffd1f",
+        "olderBuild": "1.60.1.71091"
+      },
+      "hawkResolution": {
+        "kind": "hunter_hawk_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 104966,
+        "spellId": 1293241,
+        "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+        "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiredBeastMasteryPoints": 15,
+          "baseManaCostPercent": 11,
+          "sharedArcaneShotCooldown": true,
+          "durationSeconds": 18,
+          "maxActiveHawks": 2,
+          "attacksSummonedTargetWithPassivePet": true
+        },
+        "unresolved": "Exact initial hit and melee damage scaling, actual critical strike chance, hit count and encounter damage after Nov 25 not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current source pair agrees on duration, maximum and shared cooldown; numeric hit differs by placeholder."
+          },
+          {
+            "url": "https://talentsforever.com/hunter/talents/summon-hawk",
+            "claim": "Nov 10 hotfix-adjusted spell text corroborates row, 11% base mana, duration, max hawks and shared cooldown. Older damage reference not released."
+          },
+          {
+            "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 10 mana and approximate melee damage tuning; Nov 25 targeting, dismissal and crit bug fixes."
+          },
+          {
+            "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+            "claim": "Official post mirror; no numerical server measurement."
+          }
+        ],
+        "allocationDigest": "6e72eb05897c7f0041068af436c9fb716bd8529652c88684431a6d733af469dc"
+      },
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "6e72eb05897c7f0041068af436c9fb716bd8529652c88684431a6d733af469dc"
+      },
+      "claim": "Retained exact source pair; official Hunter class deep dive, Zephras and current independent talent source confirm conservative acyclic prerequisite. Raw graph retained; no observed server grant or exact Hawk damage."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "d2c0acb60dbf3b5d2291a18c074386121fce459b36d9a78194c102d859551333",
+      "id": "hunter-beast-mastery-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/news/24301515/world-of-warcraft-forever-class-deep-dives-hunter-and-druid",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Official Hunter class deep dive explicitly requires Bestial Swiftness; current Nov 25 hotfix review confirms pet/Hawk corrections and no Intimidation prerequisite reversal. Conservative single edge; no measured server grant."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-beast-mastery-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "6e72eb05897c7f0041068af436c9fb716bd8529652c88684431a6d733af469dc",
+      "url": "https://wowfdb.com/talents/hunter/",
+      "claim": "Full BM core, pet critical and frenzy interaction; alternative BM endgame."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-beast-mastery-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "6e72eb05897c7f0041068af436c9fb716bd8529652c88684431a6d733af469dc",
+      "url": "https://foreverwow.com/class-guides/hunter/",
+      "claim": "Role and pet build with Intimidation, Bestial Wrath and Frenzy; actual tank coordination and pull duration matter."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "c1bcc6d08141ffa36d3a2233a367edae3dddafb939d1317e1db986f701a9b3de",
+      "id": "hunter-beast-mastery-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135",
+        "talentIds": [
+          104960,
+          104961,
+          104962,
+          104963,
+          104964,
+          104966,
+          104967,
+          104969,
+          104970,
+          104972,
+          104975,
+          104976,
+          104986,
+          104987,
+          104988,
+          104989,
+          104991,
+          104992,
+          104996,
+          110861
+        ],
+        "excludedConflictIds": [],
+        "olderComparisonCaptureSha256": "15eaa6d0fe8abe9a42e1b8b4392ce9638c0cb5ed1897ad801b54ecf7a7bffd1f",
+        "olderBuild": "1.60.1.71091"
+      },
+      "hawkResolution": {
+        "kind": "hunter_hawk_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 104966,
+        "spellId": 1293241,
+        "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+        "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiredBeastMasteryPoints": 15,
+          "baseManaCostPercent": 11,
+          "sharedArcaneShotCooldown": true,
+          "durationSeconds": 18,
+          "maxActiveHawks": 2,
+          "attacksSummonedTargetWithPassivePet": true
+        },
+        "unresolved": "Exact initial hit and melee damage scaling, actual critical strike chance, hit count and encounter damage after Nov 25 not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current source pair agrees on duration, maximum and shared cooldown; numeric hit differs by placeholder."
+          },
+          {
+            "url": "https://talentsforever.com/hunter/talents/summon-hawk",
+            "claim": "Nov 10 hotfix-adjusted spell text corroborates row, 11% base mana, duration, max hawks and shared cooldown. Older damage reference not released."
+          },
+          {
+            "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 10 mana and approximate melee damage tuning; Nov 25 targeting, dismissal and crit bug fixes."
+          },
+          {
+            "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+            "claim": "Official post mirror; no numerical server measurement."
+          }
+        ],
+        "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135"
+      },
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135"
+      },
+      "claim": "Retained exact source pair; official Hunter class deep dive, Zephras and current independent talent source confirm conservative acyclic prerequisite. Raw graph retained; no observed server grant or exact Hawk damage."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "c1bcc6d08141ffa36d3a2233a367edae3dddafb939d1317e1db986f701a9b3de",
+      "id": "hunter-beast-mastery-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://worldofwarcraft.blizzard.com/en-gb/news/24301515/world-of-warcraft-forever-class-deep-dives-hunter-and-druid",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Official Hunter class deep dive explicitly requires Bestial Swiftness; current Nov 25 hotfix review confirms pet/Hawk corrections and no Intimidation prerequisite reversal. Conservative single edge; no measured server grant."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-beast-mastery-pvp-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-pvp",
+      "planVersion": 1,
+      "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135",
+      "url": "https://wowfdb.com/talents/hunter/",
+      "claim": "Pet core, Intimidation conditional hit, Bestial Wrath and Survival defenses."
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-beast-mastery-pvp-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-pvp",
+      "planVersion": 1,
+      "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135",
+      "url": "https://foreverwow.com/class-guides/hunter/",
+      "claim": "Pet pressure and PvP suitability; defensive secondary options are own progression, no PvP superiority measured."
     }
   ],
   "rulePacks": [
@@ -12460,6 +12859,132 @@
         "104944": 20,
         "104957": 10,
         "104958": 10
+      }
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "hunter-beast-mastery-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "hunter-beast-mastery-leveling-rank0-71139-client",
+        "hunter-beast-mastery-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "104960": 10,
+        "104961": 40,
+        "104962": 35,
+        "104963": 30,
+        "104964": 30,
+        "104966": 25,
+        "104967": 25,
+        "104969": 20,
+        "104970": 20,
+        "104975": 15,
+        "104976": 10,
+        "105002": 25,
+        "105005": 20,
+        "105008": 15,
+        "105009": 15,
+        "105011": 10
+      },
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7"
+      }
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "hunter-beast-mastery-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "hunter-beast-mastery-dungeons-rank0-71139-client",
+        "hunter-beast-mastery-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "104960": 10,
+        "104961": 40,
+        "104962": 35,
+        "104964": 30,
+        "104966": 25,
+        "104967": 25,
+        "104969": 20,
+        "104970": 20,
+        "104975": 15,
+        "104976": 10,
+        "105002": 25,
+        "105004": 25,
+        "105008": 15,
+        "105009": 15,
+        "105011": 10
+      },
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "6e72eb05897c7f0041068af436c9fb716bd8529652c88684431a6d733af469dc"
+      }
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "hunter-beast-mastery-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "hunter-beast-mastery-pvp-rank0-71139-client",
+        "hunter-beast-mastery-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "104960": 10,
+        "104961": 40,
+        "104962": 35,
+        "104963": 30,
+        "104964": 30,
+        "104966": 25,
+        "104967": 25,
+        "104969": 20,
+        "104970": 20,
+        "104972": 15,
+        "104975": 15,
+        "104976": 10,
+        "104986": 20,
+        "104987": 20,
+        "104988": 25,
+        "104989": 25,
+        "104991": 20,
+        "104992": 15,
+        "104996": 10,
+        "110861": 25
+      },
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135"
       }
     }
   ],

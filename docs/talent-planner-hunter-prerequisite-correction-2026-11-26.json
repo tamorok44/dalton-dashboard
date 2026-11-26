@@ -1,0 +1,61 @@
+{
+  "kind": "exact_source_hunter_prerequisite_correction",
+  "revision": "hunter-intimidation-swiftness-71139-v1",
+  "reviewedAt": "2026-11-26",
+  "classId": 3,
+  "clientBuild": "1.60.1.71139",
+  "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+  "official": "https://worldofwarcraft.blizzard.com/en-gb/news/24301515/world-of-warcraft-forever-class-deep-dives-hunter-and-druid",
+  "current": "https://wowfdb.com/talents/hunter/",
+  "talents": "https://talentsforever.com/hunter/talents/intimidation",
+  "zephras": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+  "zephrasCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+  "hotfix": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+  "rawPrerequisites": [
+    {
+      "id": 104961,
+      "rank": 1,
+      "conditionKnown": true
+    },
+    {
+      "id": 104970,
+      "rank": 1,
+      "conditionKnown": true
+    }
+  ],
+  "correctedPrerequisites": [
+    {
+      "id": 104970,
+      "rank": 1,
+      "conditionKnown": true
+    }
+  ],
+  "retainedBestialWrathPrerequisite": [
+    {
+      "id": 104964,
+      "rank": 1,
+      "conditionKnown": true
+    }
+  ],
+  "talentId": 104964,
+  "spellId": 19577,
+  "rawEffectRevision": "90710cc92f5833f10890bd74e32e29990545cace6d0c73beba02b46e9460b62d",
+  "serverGrantObserved": false,
+  "conservativeRule": "Always require Bestial Swiftness. Valid under both single-edge and OR descriptions; official Blizzard confirms Bestial Swiftness as prerequisite, current independent dataset and Zephras agree, the reverse Bestial Wrath edge would make both talents unreachable. Do not waive Bestial Swiftness, no generic OR interpretation.",
+  "sources": [
+    "https://worldofwarcraft.blizzard.com/en-gb/news/24301515/world-of-warcraft-forever-class-deep-dives-hunter-and-druid",
+    "https://wowfdb.com/talents/hunter/",
+    "https://talentsforever.com/hunter/talents/intimidation",
+    "https://wowforever.tools/talent-changes",
+    "https://armorywowforever.com/talents/hunter",
+    "https://www.wofwforever.com/en/guides/wow-forever-hunter-leveling-talents/",
+    "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040"
+  ],
+  "counterEvidence": [
+    "https://wow-forever.gg/talents/hunter/ — OR; the stricter single edge is compatible with it.",
+    "https://foreverdiff.com/talents/hunter/intimidation-1387/ — explicitly old Oct 22 capture; not proof of current AND.",
+    "https://mattjcr.github.io/wowforeverultimatecalculator/en/classes/hunter/talents/intimidation/ — old 70959 extraction reproduces cycle, not observed learning."
+  ]
+}

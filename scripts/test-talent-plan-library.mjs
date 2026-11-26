@@ -1,4 +1,5 @@
 import {talentPathScope} from './talent-path-scope.mjs';
+import {correctHunterPlanningClass,HUNTER_CORRECTION_REVIEW_DIGEST} from './talent-hunter-prerequisite-correction.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {profileKey,resolveApprovedTalentPlan,validateTalentPath,TALENT_POINT_CALENDAR_REVISION,compatibleTalentRevalidation} from './talent-plan-core.mjs';
@@ -65,7 +66,7 @@ function auditPath(plan,pack,proof){
   return validateTalentPath(plan,{
     classes:{[proof.classId]:proof},
     classMechanicsRevisions:{[proof.classId]:talentRevisionDigest(proof)},
-    stale:false
+    stale:false,sourceRevision:pack.sourceRevision
   },pack);
 }
 
@@ -138,7 +139,7 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
       assert.equal(clients[0].sourceCaptureSha256,pathLedger.sourceSha256);
       assert.equal(clients[0].url,pathLedger.sourceUrl);
       // A scoped qualitative decision does not release a disputed damage formula.
-      let scopedEffects=effects,scopedLedger=pathLedger,scopeOptions={};
+      let scopedEffects=effects,scopedLedger=pathLedger,scopedCross=cross,scopedProof=proof,scopeOptions={};
       if(['rogue-assassination-leveling','rogue-assassination-dungeons','rogue-assassination-pvp'].includes(plan.id)){
         const row=effects.rows.find(x=>x.classId===4&&x.id===105709);
         const detail=clients[0].qualitativeAllocationReview;
@@ -391,10 +392,51 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         scopedLedger={...pathLedger,classes:pathLedger.classes.map(c=>c.classId!==11?c:{...c,structureDifferences:c.structureDifferences.filter(x=>x.id!==104928||!expected.includes(x.id))})};
         if(expected.includes(104924))scopeOptions={druidGenesisAllocationDigest:r.allocationDigest};
       }
-      const scope=talentPathScope(plan,proof,scopedLedger,cross,scopedEffects,scopeOptions);
+      const bmScope=/^hunter-beast-mastery-(leveling|dungeons|pvp)$/.test(plan.id);
+      if(bmScope){
+        const d=JSON.parse(readFileSync(new URL('../docs/talent-planner-hunter-prerequisite-correction-2026-11-26.json',import.meta.url),'utf8')),r=clients[0].prerequisiteCorrection;
+        assert.ok(r&&d);
+        assert.deepEqual(r,pack.prerequisiteCorrection);
+        assert.equal(r.reviewDigest,HUNTER_CORRECTION_REVIEW_DIGEST);
+        assert.equal(r.reviewDigest,talentRevisionDigest(d));
+        assert.equal(r.allocationDigest,talentPlanEvidenceDigest(plan));
+        assert.equal(d.official,'https://worldofwarcraft.blizzard.com/en-gb/news/24301515/world-of-warcraft-forever-class-deep-dives-hunter-and-druid');
+        assert.equal(d.current,'https://wowfdb.com/talents/hunter/');
+        assert.equal(d.talents,'https://talentsforever.com/hunter/talents/intimidation');
+        assert.equal(d.hotfix,'https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040');
+        assert.equal(d.zephrasCaptureSha256,pathLedger.sourceSha256);
+        assert.equal(d.serverGrantObserved,false);
+        assert.deepEqual(d.rawPrerequisites,[{id:104961,rank:1,conditionKnown:true},{id:104970,rank:1,conditionKnown:true}]);
+        assert.deepEqual(d.correctedPrerequisites,[{id:104970,rank:1,conditionKnown:true}]);
+        const before=JSON.stringify(proof);
+        const m={classes:{3:proof},classMechanicsRevisions:{3:pack.catalogRevision},sourceRevision:pack.sourceRevision,stale:false};
+        scopedProof=correctHunterPlanningClass(plan,m,pack);
+        assert.ok(scopedProof);
+        assert.equal(JSON.stringify(proof),before);
+        for(const wrong of [{...m,sourceRevision:'f'.repeat(64)},{...m,classMechanicsRevisions:{3:'f'.repeat(64)}}])assert.equal(correctHunterPlanningClass(plan,wrong,pack),null);
+        assert.equal(correctHunterPlanningClass(plan,m,{...pack,legacyTalentedRank:1}),null);
+        assert.equal(correctHunterPlanningClass({...plan,version:2},m,pack),null);
+        assert.equal(correctHunterPlanningClass(plan,m,{...pack,prerequisiteCorrection:{...r,reviewDigest:'f'.repeat(64)}}),null);
+        const altered=structuredClone(m);altered.classes[3].trees.find(t=>t.id===11372).talents.find(n=>n.id===104964).prerequisites=[];
+        assert.equal(correctHunterPlanningClass(plan,altered,pack),null);
+        assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,effects),/unresolved source difference/);
+        const row=effects.rows.find(x=>x.classId===3&&x.id===104966);
+        assert.deepEqual(clients[0].hawkResolution,{...row.hawkResolution,allocationDigest:r.allocationDigest});
+        assert.equal(row.quantitativeClaimVerified,false);
+        assert.equal(row.hawkResolution.serverMeasured,false);
+        assert.equal(row.hawkResolution.numericFormulaReleased,false);
+        assert.equal(plan.points[15].talentId,104966);
+        assert.equal(plan.points[20].talentId,104964);
+        assert.equal(plan.points[30].talentId,104961);
+        scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
+        scopedLedger={...pathLedger,classes:pathLedger.classes.map(c=>c.classId!==3?c:{...c,structureDifferences:c.structureDifferences.filter(x=>x.id!==104964)})};
+        scopedCross={...cross,classes:cross.classes.map(c=>c.classId!==3?c:{...c,changes:c.changes.filter(x=>x.id!==104964),cyclicPrerequisites:c.cyclicPrerequisites.filter(c=>JSON.stringify(c)!=='[104961,104964,104961]')})};
+        assert.equal(auditPath(plan,{...pack,prerequisiteCorrection:undefined},proof).code,'prerequisite','raw graph stays blocked');
+      }
+      const scope=talentPathScope(plan,scopedProof,scopedLedger,scopedCross,scopedEffects,scopeOptions);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
-      if(frostScope)assert.deepEqual(scope.excludedConflictIds,[]);else assert.ok(scope.excludedConflictIds.length);
-      for(const id of scope.excludedConflictIds)assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},proof,scopedLedger,cross,scopedEffects),/unresolved source difference/);
+      if(frostScope||bmScope)assert.deepEqual(scope.excludedConflictIds,[]);else assert.ok(scope.excludedConflictIds.length);
+      for(const id of scope.excludedConflictIds)assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},scopedProof,scopedLedger,scopedCross,scopedEffects),/unresolved source difference/);
     }
     // Explicit, narrowly scoped client-text reconciliation; never a server measurement.
     if(plan.id==='warrior-arms-pvp'&&pack.clientBuild===pathLedger.build){
@@ -775,6 +817,12 @@ for(const plan of plans.filter(p=>p.status!=='retired'&&p.active!==false)){
     legacyAudits.push({planId:plan.id,version:plan.version,status:'catalog_missing',releaseEligible:false,ranks:[]});
     continue;
   }
+  if(/^hunter-beast-mastery-(leveling|dungeons|pvp)$/.test(plan.id)){
+    const raw=compareLegacyHypotheses(plan,proof);
+    assert.equal(raw.releaseEligible,false);
+    legacyAudits.push({planId:plan.id,version:plan.version,status:'raw_graph_conflict_corrected_rank0_only',releaseEligible:false,ranks:[]});
+    continue;
+  }
   const audit=compareLegacyHypotheses(plan,proof);
   assert.equal(audit.releaseEligible,false);
   assert.equal(audit.status,'hypotheses_only',plan.id+' unexpected baseline failure');
@@ -795,7 +843,7 @@ for(const plan of plans.filter(p=>p.status!=='retired'&&p.active!==false)){
   }
   legacyAudits.push(audit);
 }
-assert.ok(legacyAudits.some(a=>a.status==='catalog_missing'),'unverified candidate must not disappear from legacy research');
+assert.equal(legacyAudits.filter(a=>a.status==='raw_graph_conflict_corrected_rank0_only').length,3,'no inference of higher-rank rules from corrected rank zero');
 if(process.argv.includes('--legacy-research')){
   console.log(JSON.stringify({kind:'legacy_gate_hypotheses',releaseEligible:false,
     sources:['https://bindonforever.com/notes/legacy-system','https://www.destructoid.com/how-to-earn-and-spend-legacy-points-in-wow-forever/','https://foreverwow.com/guides/wow-forever-talent-planning/'],
@@ -836,8 +884,8 @@ assert.equal(rows.length,84,'all supported class/spec/role/goal cells');
 assert.ok(rows.every(row=>row.status!=='unresearched'),'every supported coverage cell needs a research candidate');
 for(const row of rows)assert.ok(plans.some(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51&&p.profiles.some(x=>x.classId===row.classId&&x.treeId===row.treeId&&x.role===row.role&&x.goal===row.goal)), 'Missing full 51-point path '+JSON.stringify([row.classId,row.treeId,row.role,row.goal]));
 assert.ok(rows.some(row=>row.status==='structurally_validated'||row.status==='approved'),'verified paths must appear');
-assert.ok(rows.some(row=>row.status==='blocked'&&row.profiles.some(profile=>
-  profile.candidates.some(candidate=>candidate.blockers?.length))),'blocked profiles need a reason');
+assert.ok(rows.every(row=>row.status==='approved'),'all 84 rank-zero coverage cells must be approved');
+assert.ok(rows.every(row=>row.profiles.some(profile=>profile.candidates.some(candidate=>candidate.approvedRanks?.includes(0)&&candidate.blockedRanks?.includes(1)&&candidate.blockers?.length))),'higher ranks remain explicitly blocked');
 const workQueue=deriveTalentWorkQueue(rows);
 assert.equal(workQueue.liveReleaseStatus,'not_checked');
 assert.equal(workQueue.coverageCells,rows.length);
@@ -845,7 +893,8 @@ assert.equal(Object.values(workQueue.coverageByStatus).reduce((a,b)=>a+b,0),rows
 assert.equal(new Set(workQueue.queue.map(a=>JSON.stringify([a.kind,a.identity]))).size,workQueue.queue.length);
 assert.ok(workQueue.queue.some(a=>a.kind==='check_current_release'));
 assert.equal(workQueue.counts.research_profile,0,'all basic coverage cells researched');
-assert.ok(workQueue.queue.some(a=>a.kind==='resolve_blocker'));
+assert.equal(workQueue.counts.resolve_blocker,0);
+assert.ok(workQueue.queue.some(a=>a.kind==='verify_legacy_ranks'));
 if(process.argv.includes('--legacy-research')||process.argv.includes('--current-audit')){}
 else if(process.argv.includes('--work-queue'))console.log(JSON.stringify(workQueue,null,2));
 else if(process.argv.includes('--coverage'))console.log(JSON.stringify(rows,null,2));
@@ -998,13 +1047,14 @@ for(const treeId of [11582,11594,11601])for(const goal of ['leveling','dungeons'
   assert.ok(plans.some(p=>p.classId===8&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Mage coverage '+treeId+' '+goal);
 }
 
-for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hunter-beast-mastery-pvp",[30,0,21]],["hunter-marksmanship-dungeons",[5,41,5]],["hunter-marksmanship-pvp",[0,31,20]],["hunter-survival-dungeons",[16,8,27]],["hunter-survival-pvp",[0,21,30]]]){
+for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[31,20,0]],["hunter-beast-mastery-pvp",[31,0,20]],["hunter-marksmanship-dungeons",[5,41,5]],["hunter-marksmanship-pvp",[0,31,20]],["hunter-survival-dungeons",[16,8,27]],["hunter-survival-pvp",[0,21,30]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status===(['hunter-marksmanship-dungeons','hunter-marksmanship-pvp','hunter-survival-pvp','hunter-survival-dungeons'].includes(id)?'approved':'research_only'));
+  assert.ok(p&&p.status==='approved');
   assert.deepEqual([11372,11371,11370].map(t=>p.expectedDistribution[t]),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
-  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
-  assert.ok(p.points.every(step=>![104961,104964].includes(step.talentId)));
+  const bm=id.startsWith('hunter-beast-mastery-');
+  assert.equal(currentAudit.find(a=>a.id===id)?.status,bm?'primary_structure_blocked':'primary_structure_matches');
+  if(bm){assert.equal(p.points[20].talentId,104964);assert.equal(p.points[30].talentId,104961);}else assert.ok(p.points.every(step=>![104961,104964].includes(step.talentId)));
 }
 
 for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347":0}],["druid-balance-pvp",{"11328":30,"11340":21,"11347":0}],["druid-feral-dungeons-damage",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-damage",{"11328":0,"11340":16,"11347":35}],["druid-feral-leveling-tank",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-tank",{"11328":0,"11340":21,"11347":30}],["druid-restoration-leveling",{"11328":20,"11340":31,"11347":0}],["druid-restoration-pvp",{"11328":8,"11340":32,"11347":11}]]){
