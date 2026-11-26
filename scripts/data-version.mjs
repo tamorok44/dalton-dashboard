@@ -1,3 +1,4 @@
+import {selectVersionEvidence} from './storage-reconciliation.mjs';
 import {VERSION_METADATA_KEY,CORE_COMPACT_KEY,PREVIEW_COMPACT_KEY,versionScope,addonVersionField,characterVersionMetadata,petVersionMetadata,addonVersionMetadata,parseVersionMetadata} from './version-metadata.mjs';
 import {loadCharacters,configured,redis} from './character-store.mjs';
 import {loadPublicPetRuleState} from './pet-rule-store.mjs';
@@ -57,11 +58,17 @@ export async function readCompactVersion({redisImpl=redis,readCharacters=loadCha
     await redisImpl(['HSETNX',VERSION_METADATA_KEY,name,JSON.stringify(value)]);
     return parseVersionMetadata(await redisImpl(['HGET',VERSION_METADATA_KEY,name]));
   }
+  async function reconciled(name,modern,timeField,read){
+    if(modern==null)return field(name,read);
+    const legacy=parseVersionMetadata(fields.get(name));
+    const selected=selectVersionEvidence(modern,legacy,timeField);
+    return selected.conflict?read():selected.value;
+  }
   const [characters,petRules]=await Promise.all([
-    core.characters??field('characters',async()=>characterVersionMetadata((await readCharacters()).data)),
+    reconciled('characters',core.characters,'generatedAt',async()=>characterVersionMetadata((await readCharacters()).data)),
     field('pet',async()=>petVersionMetadata(await readPet()))
   ]);
-  const entries=await Promise.all((characters?.slugs||[]).map(async slug=>[slug,Object.hasOwn(scoped.addon||{},slug)?scoped.addon[slug]:await field(addonVersionField(slug),async()=>addonVersionMetadata(await readAddon(slug)))]));
+  const entries=await Promise.all((characters?.slugs||[]).map(async slug=>[slug,await reconciled(addonVersionField(slug),scoped.addon?.[slug],'receivedAt',async()=>addonVersionMetadata(await readAddon(slug)))]));
   return buildDataVersion({data:characters,petRules,liveKnowledgeVersion,addonSync:Object.fromEntries(entries)});
 }
 export async function loadCurrentDataVersion(){

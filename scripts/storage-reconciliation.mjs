@@ -1,0 +1,77 @@
+// Pure helpers: reconcile v1 and v2 evidence without mutating either store.
+function at(value){const n=Date.parse(value||'');return Number.isFinite(n)?n:-Infinity;}
+export function selectVersionEvidence(modern,legacy,timeField){
+  if(modern==null)return {value:legacy??null,conflict:false};
+  if(legacy==null)return {value:modern,conflict:false};
+  const a=at(modern[timeField]),b=at(legacy[timeField]);
+  if(a>b)return {value:modern,conflict:false};
+  if(b>a)return {value:legacy,conflict:false};
+  // Canonical identity matters; equal timestamps are not a write ordering.
+  const comparable=x=>timeField==='generatedAt'
+    ?JSON.stringify([x.generatedAt,[...(x.slugs||[])].sort()])
+    :JSON.stringify([x.receivedAt,x.syncId??null]);
+  return {value:modern,conflict:comparable(modern)!==comparable(legacy)};
+}
+export function selectDailyReceipt(modern,legacy,date){
+  const valid=x=>x?.date===date&&x.source==='daily'&&x.persisted===true&&
+    Array.isArray(x.roster)&&x.roster.length===x.total&&Number.isInteger(x.success)&&x.success>0&&
+    x.success<=x.total&&Number.isFinite(Date.parse(x.generatedAt));
+  const rows=[modern,legacy].filter(valid).sort((a,b)=>at(b.generatedAt)-at(a.generatedAt));
+  if(rows.length===2&&at(rows[0].generatedAt)===at(rows[1].generatedAt)&&JSON.stringify(rows[0])!==JSON.stringify(rows[1]))return null;
+  return rows[0]??null;
+}
+export function selectDailyPointer(modern,legacy){
+  const rows=[modern,legacy].filter(x=>x!=null);
+  for(const row of rows)if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(row.date||''))throw new Error('Ungültiger Archivzeiger');
+  return rows.sort((a,b)=>b.date.localeCompare(a.date))[0]??null;
+}
+function canonical(value){
+  if(Array.isArray(value))return value.map(canonical);
+  if(!value||typeof value!=='object')return value;
+  return Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])]));
+}
+const same=(a,b)=>JSON.stringify(canonical(a))===JSON.stringify(canonical(b));
+const unique=(entries,key)=>[...new Map(entries.map(value=>[key(value),value])).values()];
+const timeOf=record=>at(record?.latestSnapshot?.capturedAt??record?.lastObservedAt);
+function mergeRows(older=[],latest=[],merchant=false){
+  const rows=new Map();
+  for(const row of older||[])if(row?.key)rows.set(row.key,merchant?{...row,currentlyPresent:false}:{...row});
+  for(const row of latest||[]){
+    if(!row?.key)continue;
+    const before=rows.get(row.key);
+    if(!before){rows.set(row.key,{...row});continue;}
+    const pick=at(row.lastSeenAt)>=at(before.lastSeenAt)?row:before;
+    const first=[row.firstSeenAt,before.firstSeenAt].filter(Boolean).sort()[0];
+    rows.set(row.key,{...before,...pick,...(first?{firstSeenAt:first}:{}),
+      seenCount:Math.max(Number(row.seenCount)||0,Number(before.seenCount)||0),
+      ...(merchant?{currentlyPresent:row.currentlyPresent===true}:{})});
+  }
+  return [...rows.values()];
+}
+export function reconcileKnowledgeRecords(modern,legacy){
+  if(!modern)return legacy??null;
+  if(!legacy||same(modern,legacy))return modern;
+  if(modern.kind!==legacy.kind||modern.build!==legacy.build||String(modern.npc?.id??modern.npc?.name)!==String(legacy.npc?.id??legacy.npc?.name)||
+    (modern.characterSlug??null)!==(legacy.characterSlug??null))throw new Error('MIGRATION_CONFLICT: Beobachtungsidentität');
+  const a=timeOf(modern),b=timeOf(legacy);
+  // An equal-second disagreement without a common ordering is not resolved
+  // by arbitrarily choosing a price. Require explicit reconciliation.
+  if(a===b&&!same(modern.latestSnapshot,legacy.latestSnapshot)){
+    const modernIds=new Set(modern.observationIds||[]),legacyIds=new Set(legacy.observationIds||[]);
+    const modernContains=[...legacyIds].every(id=>modernIds.has(id))&&modernIds.size>legacyIds.size;
+    const legacyContains=[...modernIds].every(id=>legacyIds.has(id))&&legacyIds.size>modernIds.size;
+    if(!modernContains&&!legacyContains)throw new Error('MIGRATION_CONFLICT: widersprüchliche Beobachtungen gleicher Zeit');
+    return mergeEvidence(modernContains?modern:legacy,modernContains?legacy:modern);
+  }
+  return mergeEvidence(a>=b?modern:legacy,a>=b?legacy:modern);
+}
+function mergeEvidence(latest,older){
+  const ids=unique([...(older.observationIds||[]),...(latest.observationIds||[])],x=>x).slice(-160);
+  const changes=unique([...(older.changes||[]),...(latest.changes||[])],x=>JSON.stringify(canonical(x))).sort((a,b)=>at(a.observedAt)-at(b.observedAt)).slice(-40);
+  const first=[older.firstObservedAt,latest.firstObservedAt].filter(Boolean).sort()[0];
+  return {...latest,...(first?{firstObservedAt:first}:{}),observationIds:ids,changes,
+    observationCount:Math.max(ids.length,Number(latest.observationCount)||0,Number(older.observationCount)||0),
+    contentChangeCount:Math.max(changes.length,Number(latest.contentChangeCount)||0,Number(older.contentChangeCount)||0),
+    ...(latest.kind==='merchant'?{offers:mergeRows(older.offers,latest.offers,true)}:{services:mergeRows(older.services,latest.services)}),
+    migrationEvidence:{reconciled:true,countMayBeLowerBound:true}};
+}

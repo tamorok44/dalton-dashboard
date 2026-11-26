@@ -1,5 +1,6 @@
+import {selectDailyReceipt} from './storage-reconciliation.mjs';
 import {rosterMatches} from './daily-roster.mjs';
-import {CORE_COMPACT_KEY,characterVersionMetadata} from './version-metadata.mjs';
+import {VERSION_METADATA_KEY,CORE_COMPACT_KEY,characterVersionMetadata} from './version-metadata.mjs';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {normalizeVerifiedPlayerTerminology} from './player-terminology.mjs';
@@ -74,10 +75,8 @@ export async function saveCharacters(data,lockToken,{dailyReceipt=null}={}){
   if(result!=='OK')throw new Error('Charakterdaten nicht gespeichert');
 }
 export async function loadDailyProfileReceipt(date){
-  const value=await redis(['GET',CORE_COMPACT_KEY]);
-  if(!value)return null;
-  const receipt=JSON.parse(value).dailyReceipt;
-  return receipt?.date===date&&receipt.source==='daily'&&receipt.persisted===true?receipt:null;
+  const [value,legacy]=await Promise.all([redis(['GET',CORE_COMPACT_KEY]),redis(['HGET',VERSION_METADATA_KEY,DAILY_PROFILE_RECEIPT_FIELD])]);
+  return selectDailyReceipt(value?JSON.parse(value).dailyReceipt:null,legacy?JSON.parse(legacy):null,date);
 }
 export function mergeProfiles(previous,latest){
   const bySlug=new Map((previous.characters||[]).map(c=>[c.slug,c]));
