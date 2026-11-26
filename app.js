@@ -2058,11 +2058,11 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
     invalidateWorkshopData({reloadVisible:true});
     invalidateLocationPlannerData({reloadVisible:true});
   }
-  const previewEnabled=payload.talentPlannerPreview===true;
-  const previewChanged=previewEnabled!==talentPlannerEnabled;
-  talentPlannerEnabled=previewEnabled;
-  talentPlannerLink.hidden=!previewEnabled;
-  if(previewChanged&&location.hash==='#talentplaner')syncMainView();
+  const plannerEnabled=payload.talentPlannerEnabled===true||payload.talentPlannerPreview===true;
+  const plannerChanged=plannerEnabled!==talentPlannerEnabled;
+  talentPlannerEnabled=plannerEnabled;
+  talentPlannerLink.hidden=!plannerEnabled;
+  if(plannerChanged&&location.hash==='#talentplaner')syncMainView();
   if(characterDataChanged&&talentPlanner&&!talentPlannerView.hidden){
     showTalentPlanner();
   }

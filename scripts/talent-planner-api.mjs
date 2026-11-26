@@ -2,7 +2,7 @@ import {loadCharacters} from './character-store.mjs';
 import {loadTalentMaster,loadTalentPlannerClass} from './talent-tree-store.mjs';
 import {correctTalentDisplay} from './talent-display-corrections.mjs';
 import {profileKey,resolveApprovedTalentPlan,selectTalentRulePack} from './talent-plan-core.mjs';
-import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
+import {loadPreviewTalentObservation,loadProductionTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS,describeTalentRuleReview} from './talent-rule-watch.mjs';
 import catalog from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import {talentPlanLibrary} from './talent-plan-index.mjs';
@@ -21,6 +21,8 @@ export function isPersonalTalentFresh(character,now){
 const validId=value=>typeof value==='string'&&/^[a-z0-9-]{1,80}$/.test(value);
 const params=['audit','character','tree','goal','role','playStyle','priority','rank','rankSource','planId','version','identity'];
 const preview=()=>process.env.VERCEL_ENV==='preview';
+export const talentPlannerAvailable=()=>preview()||process.env.VERCEL_ENV==='production';
+const observeCurrent=()=>preview()?loadPreviewTalentObservation():loadProductionTalentObservation();
 
 function characterIdentity(character){
   // Forever's Armory addresses characters by region. Include the realm if the
@@ -32,7 +34,7 @@ function characterIdentity(character){
 }
 
 export function createTalentPlannerHandler({
-  enabled=preview,diagnosticsEnabled=preview,roster=loadCharacters,observe=loadPreviewTalentObservation,master=loadTalentMaster,
+  enabled=talentPlannerAvailable,diagnosticsEnabled=preview,roster=loadCharacters,observe=observeCurrent,master=loadTalentMaster,
   project=loadTalentPlannerClass,clock=Date.now,library=effectiveRelease.library,releaseCatalog=effectiveRelease.catalog
 }={}){
   return async function handler(req,res){

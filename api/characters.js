@@ -8,7 +8,7 @@ import {loadPublicReputationCatalog} from '../scripts/reputation-catalog-store.m
 import {loadGermanPetLocalizations} from '../scripts/pet-localization-store.mjs';
 import {buildDataVersion} from '../scripts/data-version.mjs';
 import {loadPublicAddonSyncStates} from '../scripts/addon-sync-store.mjs';
-import talentPlanner from '../scripts/talent-planner-api.mjs';
+import talentPlanner,{talentPlannerAvailable} from '../scripts/talent-planner-api.mjs';
 export default async function handler(req,res){
   if(req.query?.view==='talent-planner')return talentPlanner(req,res);
   res.setHeader('Cache-Control','public, no-store');
@@ -52,8 +52,8 @@ export default async function handler(req,res){
     const liveKnowledgeVersion=await loadLiveKnowledgeVersion().catch(()=>null);
     const dataVersion=buildDataVersion({data:result.data,petRules,addonSync,liveKnowledgeVersion});
     const media=await enrichKnowledgeMedia(result.data,petCatalog).catch(()=>({data:result.data,petCatalog}));
-    const preview=process.env.VERCEL_ENV==='preview'?{talentPlannerPreview:true}:{};
-    return res.status(200).json({...result,...media,questCatalog,petRules,reputationCatalog,addonSync,dataVersion,...preview});
+    const planner=talentPlannerAvailable()?{talentPlannerEnabled:true}:{};
+    return res.status(200).json({...result,...media,questCatalog,petRules,reputationCatalog,addonSync,dataVersion,...planner});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);
     return res.status(503).json({error:'Gespeicherte Charakterdaten derzeit nicht erreichbar'});

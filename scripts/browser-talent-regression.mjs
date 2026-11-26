@@ -59,7 +59,7 @@ const server=createServer(async(req,res)=>{
    return;
  }
  if(url.pathname==='/api/characters'&&url.searchParams.get('view')==='talents'){displayRequests++;return send(200,displayCatalog)}
- if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},talentPlannerPreview:true});
+ if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},talentPlannerEnabled:true});
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
  if(url.pathname.startsWith('/api/')){unexpected.push(url.pathname);return send(404,{ok:false})}
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);

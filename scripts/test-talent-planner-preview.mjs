@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import charactersApi from '../api/characters.js';
-import {createTalentPlannerHandler} from './talent-planner-api.mjs';
-import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
+import {createTalentPlannerHandler,talentPlannerAvailable} from './talent-planner-api.mjs';
+import {loadPreviewTalentObservation,loadProductionTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS} from './talent-rule-watch.mjs';
 import {talentAllocationDifference,compareTalentProgress,talentGuideOptions,talentAssistantGuide,planIsCurrent,specializationRecommendation,specializationSelection} from '../talent-planner.js';
 import {talentPlanLibrary} from './talent-plan-index.mjs';
@@ -45,6 +45,16 @@ assert.equal((await request(query,{endpoint:handler({enabled:()=>false})})).code
 const previous=process.env.VERCEL_ENV;
 try{
   process.env.VERCEL_ENV='production';
+  assert.equal(talentPlannerAvailable(),true);
+  const production=handler({enabled:talentPlannerAvailable});
+  assert.equal((await request({character:mage.slug},{endpoint:production})).code,200);
+  assert.equal((await request({character:mage.slug,audit:'localization'},{endpoint:production})).code,404);
+  assert.equal((await request(query,{endpoint:production})).body.ok,true);
+  reads=0;
+  process.env.VERCEL_ENV='preview';
+  assert.equal(talentPlannerAvailable(),true);
+  process.env.VERCEL_ENV='development';
+  assert.equal(talentPlannerAvailable(),false);
   assert.equal((await request({...query,view:'talent-planner'},{endpoint:charactersApi})).code,404);
 }finally{
   if(previous===undefined)delete process.env.VERCEL_ENV;
@@ -247,7 +257,27 @@ now+=TALENT_CATALOG_MAX_AGE_MS;
 await assert.rejects(call({check:async()=>{throw Error('upstream unavailable')}}),/upstream unavailable/);
 assert.equal(await call(),null,'failed attempts count toward the shared budget');
 assert.equal(calls,2);
-console.log('Talent Preview: roster, exact binding, rank, live gates, no fallback, shared attempt budget and personal progress: OK');
+// Production never accesses the preview namespace. Current daily evidence, even
+// a review_required result, is authoritative and incurs no additional source request.
+for(const status of ['observed','review_required','source_unavailable']){
+  const dailyObservation={...observation,status,checkedAtMs:now,checkedAt:new Date(now).toISOString()};
+  assert.deepEqual(await loadProductionTalentObservation({daily:async()=>({talentRuleObservation:dailyObservation}),clock:()=>now,
+    redisImpl:async()=>{throw Error('unexpected Redis access')},check:async()=>{throw Error('unexpected provider access')}}),dailyObservation);
+}
+const prodCache=new Map();let prodReads=0;
+const prodRedis=async command=>{
+  const [cmd,key,value,,operation,ttl]=command;
+  if(cmd==='GET'){assert.ok(key.endsWith(':production:v1'));return prodCache.get(key)??null;}
+  if(cmd==='SET'){assert.ok(key.endsWith(':production:v1:attempt'));assert.equal(operation,'EX');assert.equal(ttl,21600);
+    if(prodCache.has(key))return null;prodCache.set(key,value);return 'OK';}
+  if(cmd==='EVAL'){const [,,,lock,stored,token,body]=command;assert.ok(stored.endsWith(':production:v1'));assert.equal(prodCache.get(lock),token);prodCache.set(stored,body);return 'OK';}
+  throw Error('unexpected command');
+};
+const prodOptions={daily:async()=>null,clock:()=>now,redisImpl:prodRedis,check:async()=>{prodReads++;return {...observation,checkedAtMs:now,checkedAt:new Date(now).toISOString(),revisionSince:new Date(now).toISOString()}}};
+const prodJoined=await Promise.all([loadProductionTalentObservation(prodOptions),loadProductionTalentObservation(prodOptions)]);
+assert.equal(prodJoined.filter(Boolean).length,1);assert.equal(prodReads,1);
+assert.ok(await loadProductionTalentObservation(prodOptions));assert.equal(prodReads,1);
+console.log('Talent planner: roster, exact binding, rank, live gates, production/preview isolation, shared attempt budget and personal progress: OK');
 
  // An allocation comparison is independent of the number already spent.
 const sampleHistory=[
