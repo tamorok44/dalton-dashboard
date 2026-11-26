@@ -12,10 +12,11 @@ export function deriveTalentCoverage(coverage,tracks,plans,validatedRanks){
       cells.set(JSON.stringify([cell.classId,cell.treeId,goal,role]),cell);
     }
   }
-  const planIds=new Set(plans.map(plan=>plan.id));
+  const activePlans=plans.filter(plan=>plan.status!=='retired'&&plan.active!==false);
+  const planIds=new Set(activePlans.map(plan=>plan.id));
   const subjects=[
     ...tracks.filter(track=>!planIds.has(track.id)).map(track=>({...track,profiles:[track]})),
-    ...plans.filter(plan=>plan.status!=='retired')
+    ...activePlans
   ];
   for(const subject of subjects)for(const profile of subject.profiles){
     const key=profileKey(profile);
@@ -43,4 +44,48 @@ export function deriveTalentCoverage(coverage,tracks,plans,validatedRanks){
     if(levels.indexOf(status)>levels.indexOf(cell.status))cell.status=status;
   }
   return [...cells.values()];
+}
+
+// Offline work queue derived from the validated coverage matrix. A historical
+// editorial approval is NOT a current runtime approval. Live checks are
+// deliberately separate and never performed by this report.
+export function deriveTalentWorkQueue(rows){
+  const actions=new Map();
+  const add=(kind,identity,details,cell)=>{
+    const key=JSON.stringify([kind,identity]);
+    if(!actions.has(key))actions.set(key,{kind,identity,...details,coverage:[]});
+    const action=actions.get(key);
+    const scope={classId:cell.classId,treeId:cell.treeId,goal:cell.goal,role:cell.role};
+    if(!action.coverage.some(c=>JSON.stringify(c)===JSON.stringify(scope)))action.coverage.push(scope);
+  };
+  for(const cell of rows){
+    if(cell.status==='unresearched'){
+      add('research_profile',[cell.classId,cell.treeId,cell.goal,cell.role],{},cell);
+      continue;
+    }
+    for(const profile of cell.profiles){
+      for(const candidate of profile.candidates){
+        const id=[candidate.id,candidate.version];
+        if(candidate.approvedRanks.length){
+          add('check_current_release',id,{historicallyApprovedRanks:candidate.approvedRanks},cell);
+          if(candidate.blockedRanks?.length)add('verify_legacy_ranks',id,{ranks:candidate.blockedRanks},cell);
+          continue;
+        }
+        if(candidate.status==='blocked'){
+          add('resolve_blocker',id,{blockers:candidate.blockers??[]},cell);
+        }else if(candidate.structurallyValidatedRanks.length){
+          add('review_candidate',id,{structurallyValidatedRanks:candidate.structurallyValidatedRanks,blockers:candidate.blockers??[]},cell);
+        }else{
+          add('complete_candidate',id,{blockers:candidate.blockers??[]},cell);
+        }
+      }
+    }
+  }
+  const order=['check_current_release','review_candidate','resolve_blocker','complete_candidate','verify_legacy_ranks','research_profile'];
+  const queue=[...actions.values()].sort((a,b)=>order.indexOf(a.kind)-order.indexOf(b.kind)||
+    JSON.stringify(a.identity).localeCompare(JSON.stringify(b.identity),'en'));
+  const counts=Object.fromEntries(order.map(kind=>[kind,queue.filter(a=>a.kind===kind).length]));
+  return {schemaVersion:1,kind:'talent_development_work_queue',liveReleaseStatus:'not_checked',
+    coverageCells:rows.length,coverageByStatus:Object.fromEntries(levels.map(status=>[status,rows.filter(r=>r.status===status).length])),
+    counts,queue};
 }

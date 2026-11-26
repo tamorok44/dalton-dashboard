@@ -4,7 +4,7 @@ import {profileKey,resolveApprovedTalentPlan,validateTalentPath,TALENT_POINT_CAL
 import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest,talentRevisionDigest,
   talentRuleEvidenceDigest,talentSourcePairDigest,talentStructureDigest} from './talent-catalog-proof.mjs';
 import {isTalentClientBuild} from './talent-rule-watch.mjs';
-import {deriveTalentCoverage} from './talent-plan-coverage.mjs';
+import {deriveTalentCoverage,deriveTalentWorkQueue} from './talent-plan-coverage.mjs';
 import {specializationOptionKey,specializationOptionSet} from '../talent-planner.js';
 import {CLASS_BY_ID} from './class-training-store.mjs';
 
@@ -423,7 +423,16 @@ assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must a
 assert.ok(rows.some(row=>row.status==='structurally_validated'||row.status==='approved'),'verified paths must appear');
 assert.ok(rows.some(row=>row.status==='blocked'&&row.profiles.some(profile=>
   profile.candidates.some(candidate=>candidate.blockers?.length))),'blocked profiles need a reason');
-if(process.argv.includes('--coverage'))console.log(JSON.stringify(rows,null,2));
+const workQueue=deriveTalentWorkQueue(rows);
+assert.equal(workQueue.liveReleaseStatus,'not_checked');
+assert.equal(workQueue.coverageCells,rows.length);
+assert.equal(Object.values(workQueue.coverageByStatus).reduce((a,b)=>a+b,0),rows.length);
+assert.equal(new Set(workQueue.queue.map(a=>JSON.stringify([a.kind,a.identity]))).size,workQueue.queue.length);
+assert.ok(workQueue.queue.some(a=>a.kind==='check_current_release'));
+assert.ok(workQueue.queue.some(a=>a.kind==='research_profile'));
+assert.ok(workQueue.queue.some(a=>a.kind==='resolve_blocker'));
+if(process.argv.includes('--work-queue'))console.log(JSON.stringify(workQueue,null,2));
+else if(process.argv.includes('--coverage'))console.log(JSON.stringify(rows,null,2));
 else console.log('Talent plan library: unique identities, profile coverage and approved paths: OK');
 
 // Synthetic release exercises never enter the repository release catalog.
@@ -481,7 +490,7 @@ const fixtureRows=deriveTalentCoverage(coverage,[],[{...publishedFixture,status:
 const approvedCoverage=fixtureRows.find(row=>row.status==='approved').profiles[0].candidates[0];
 assert.deepEqual(approvedCoverage.approvedRanks,[0]);
 assert.deepEqual(approvedCoverage.blockedRanks,[1,2,3,4,5]);
-if(!process.argv.includes('--coverage'))console.log('Talent release CI: offline proof, exact claims, ranks, prerequisites and row gates: OK');
+if(!process.argv.includes('--coverage')&&!process.argv.includes('--work-queue'))console.log('Talent release CI: offline proof, exact claims, ranks, prerequisites and row gates: OK');
 
 // A complete hypothetical review is tested without claiming a real build approval.
 const baseTuple=Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,pack[k]]));
@@ -513,3 +522,14 @@ assert.throws(()=>auditRevalidation({...transitionFixture,allocationDigest:'b'.r
 const incompleteComparison={...transitionCatalog,evidence:new Map(transitionCatalog.evidence)};
 incompleteComparison.evidence.set(clientFixture.id,{...clientFixture,buildComparison:{...clientFixture.buildComparison,cyclicPrerequisites:[[1,2,1]]}});
 assert.throws(()=>auditRevalidation(transitionFixture,[{...publishedFixture,status:'approved'}],incompleteComparison,transitionSnapshots),/unresolved edge/);
+
+const archivedOnly=deriveTalentCoverage(coverage,[],[{...publishedFixture,status:'approved',active:false}],
+  new Map([[JSON.stringify([publishedFixture.id,publishedFixture.version]),[0]]]));
+assert.ok(archivedOnly.every(row=>row.status==='unresearched'),'archived approvals cannot count as active coverage');
+const retainedTrack={...publishedFixture.profiles[0],id:publishedFixture.id,status:'research_only',openChecks:['new review needed']};
+const trackRows=deriveTalentCoverage(coverage,[retainedTrack],[{...publishedFixture,status:'retired'}],new Map());
+assert.ok(trackRows.some(row=>row.status==='research'),'retired versions must not hide a new research track');
+const fixtureQueue=deriveTalentWorkQueue(fixtureRows);
+assert.equal(fixtureQueue.counts.check_current_release,1);
+assert.deepEqual(fixtureQueue.queue.find(a=>a.kind==='verify_legacy_ranks').ranks,[1,2,3,4,5]);
+assert.equal(fixtureQueue.liveReleaseStatus,'not_checked');
