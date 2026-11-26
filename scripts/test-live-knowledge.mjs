@@ -97,11 +97,12 @@ const old=pref+'merchant:1.60.1.70999:id-1';
 const found=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
   calls.push(command);
   if(command[0]==='SMEMBERS')return [...current,old];
+  if(command[0]==='HKEYS')return [];
   if(command[0]==='MGET')return command.slice(1).map(()=>JSON.stringify(records[0]));
   throw Error(command[0]);
 }});
 assert.equal(found.length,1);
-assert.deepEqual(calls[1],['MGET',current[0]],'Read only matching build and kind, no obsolete snapshot payloads');
+assert.deepEqual(calls.find(c=>c[0]==='MGET'),['MGET',current[0]],'Read only matching build and kind, no obsolete snapshot payloads');
 
 const personal=snapshotsFromAddonPayload(payload,{characterSlug:'cole-dalton'});
 assert.equal(personal.find(s=>s.kind==='merchant').characterSlug,'cole-dalton');
@@ -115,6 +116,8 @@ const fake=async ([op,key,...args])=>{
  if(op==='GET')return key.endsWith(':version')?'v1':cache.get(key)||null;
  if(op==='SET'){cache.set(key,args[0]);return 'OK'}
  if(op==='SMEMBERS')return [...current,old];
+ if(op==='HKEYS')return [];
+ if(op==='HGET')return null;
  if(op==='MGET')return [key,...args].map(()=>JSON.stringify(oldRecord));
  throw Error(op);
 };
@@ -122,3 +125,8 @@ const history=await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fa
 assert.equal(history.length,1);assert.equal(history[0].build,'1.60.1.70999');assert.equal(history[0].changes,undefined);
 assert.deepEqual(await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true}),history);
 assert.equal(historicalCalls.filter(c=>c[0]==='MGET').length,1,'Historical snapshots are not downloaded on every click');
+
+const migratedCalls=[];const modernRecord={...records[0],npc:{id:123,name:'Modern'}};
+const modern=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
+ migratedCalls.push(command);if(command[0]==='SMEMBERS')return [...current,old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];throw Error('Legacy payload must not be read for migrated record: '+command[0]);
+}});assert.equal(modern.length,1);assert.equal(modern[0].npc.id,123);assert.equal(migratedCalls.filter(c=>c[0]==='MGET').length,0);

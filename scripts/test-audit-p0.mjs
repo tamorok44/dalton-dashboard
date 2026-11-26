@@ -11,7 +11,7 @@ import {dailySnapshotStoreConfigured,saveDailySnapshot,recoverDailySnapshot,clas
 import {dailyRefreshComplete,createDailySnapshotHandler,refreshDailyCharacters} from '../api/daily-snapshot.js';
 import {prepareAddonSync,saveAddonSyncState,loadAddonSyncState} from './addon-sync-store.mjs';
 import {saveCharacters,loadDailyProfileReceipt,acquireRefreshLock,releaseRefreshLock} from './character-store.mjs';
-import {registerDailySnapshot,getDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from './history-store.mjs';
+import {registerDailySnapshot,getDailySnapshot,getLastDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from './history-store.mjs';
 import {encodeCompactMaster} from './compact-master-cache.mjs';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload} from './addon-sync.mjs';
@@ -164,7 +164,7 @@ if(!hasRedis){
     process.env.UPSTASH_REDIS_REST_TOKEN='isolated-fixture';
     process.env.DALTON_SYNC_TOKEN='isolated-fixture';
     const {default:addon}=await import('../api/addon-sync.js');
-    const rosterKey='dalton-dashboard:characters:v1',lockKey='dalton-dashboard:refresh:lock',versionKey='dalton-dashboard:data-version:meta:v1';
+    const rosterKey='dalton-dashboard:characters:v1',lockKey='dalton-dashboard:refresh:lock',versionKey='dalton-dashboard:core:compact:v2:production';
     const syncKey=slug=>'dalton-dashboard:addon-sync:v1:production:'+slug;
     cli('SET',rosterKey,JSON.stringify({generatedAt:date(-4),characters:[
       {slug:'audit-one',name:'Audit One',classId:8,level:12},
@@ -182,7 +182,7 @@ if(!hasRedis){
           pauseFirst=false;assert.ok(cli('GET',lockKey));readReached();await continueRead;
         }
         if(op==='GET'&&key.includes('class-master')&&key.endsWith(':gz1'))return Response.json({result:classFixture});
-        if(op==='HMGET')return Response.json({result:cmd.slice(2).map(id=>JSON.stringify({id:Number(id),name:'Feuerball',rank:'Rang'}))});
+        if(op==='HMGET'&&key.includes('class-'))return Response.json({result:cmd.slice(2).map(id=>JSON.stringify({id:Number(id),name:'Feuerball',rank:'Rang'}))});
         const isSync=op==='EVAL'&&cmd[3]?.includes(':addon-sync:');
         if(isSync&&mode==='lose-before'){cli('SET',lockKey,'other-owner');mode=null;}
         if(isSync&&mode==='fail-before'){mode=null;throw Error('fixture interruption before commit');}
@@ -220,41 +220,42 @@ if(!hasRedis){
     assert.deepEqual(ids('audit-one'),[133,143]);assert.equal((await loadAddonSyncState('audit-one')).payload.syncId,'new');
     assert.equal((await call({...old,syncId:'unrecognized-old'})).http,409);
     const snapshotBefore=cli('GET',rosterKey),stateBefore=cli('GET',syncKey('audit-one'));
-    cli('DEL',versionKey);cli('SET',versionKey,'invalid type');
+    cli('DEL',versionKey);cli('HSET',versionKey,'bad','type');
     const third=payload('Audit One','third',[133],now+1);
     assert.equal((await call(third)).http,503);assert.equal(cli('GET',rosterKey),snapshotBefore);assert.equal(cli('GET',syncKey('audit-one')),stateBefore);
     cli('DEL',versionKey);
     cli('ACL','SETUSER','limited-sync','on','>local-fixture-password','~*','+@all','-mset');
-    const beforeACL=[cli('GET',rosterKey),cli('GET',syncKey('audit-one')),cli('HGETALL',versionKey)];
+    const beforeACL=[cli('GET',rosterKey),cli('GET',syncKey('audit-one')),cli('GET',versionKey)];
     restrictedUser='limited-sync';
     const aclFailure=await call(third);
     restrictedUser=null;
-    assert.equal(aclFailure.http,503);assert.match(aclFailure.value.error,/ACL_PREFLIGHT/);
-    assert.deepEqual([cli('GET',rosterKey),cli('GET',syncKey('audit-one')),cli('HGETALL',versionKey)],beforeACL);
+    assert.equal(aclFailure.http,503);assert.match(aclFailure.value.error,/NOPERM|ACL|permission/i);
+    assert.deepEqual([cli('GET',rosterKey),cli('GET',syncKey('audit-one')),cli('GET',versionKey)],beforeACL);
     cli('ACL','DELUSER','limited-sync');
     const observation=payload('Audit One','observation',[133,143],now+2);
     observation.sections.interactions={capturedAt:now+2,trainerHistory:[{capturedAt:now+2,complete:true,npc:{id:12345,name:'Test Trainer'},location:{zone:'Test'},services:[{name:'Test Ability',priceCopper:10}]}]};
     mode='fail-knowledge';
     assert.equal((await call(observation)).http,503);
     assert.equal((await loadAddonSyncState('audit-one')).payload.syncId,'observation');
-    const knowledgeIndex='dalton-dashboard:live-knowledge:v1:production:index';
-    assert.equal(cli('SCARD',knowledgeIndex),0);
+    const knowledgeIndex='dalton-dashboard:live-knowledge:v1:production:records:v2';
+    const knowledgeRecords=()=>cli('HKEYS',knowledgeIndex).filter(key=>key!=='__version:v2');
+    assert.equal(knowledgeRecords().length,0);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,true);
     const later=payload('Audit One','later',[133,143],now+3);
     const repair=await call(later);
     assert.equal(repair.http,200);assert.equal(repair.value.duplicate,false);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
-    assert.equal(cli('SCARD',knowledgeIndex),1);
-    const knowledgeKey=cli('SMEMBERS',knowledgeIndex)[0];
-    const record=cli('GET',knowledgeKey);
+    assert.equal(knowledgeRecords().length,1);
+    const knowledgeKey=knowledgeRecords()[0];
+    const record=cli('HGET',knowledgeIndex,knowledgeKey);
     assert.equal(JSON.parse(record).observationCount,1);
     const restamped=structuredClone(observation);restamped.sections.interactions.trainerHistory[0].capturedAt++;
-    const retry=await call(restamped);assert.equal(retry.value.duplicate,true);assert.equal(cli('GET',knowledgeKey),record);
+    const retry=await call(restamped);assert.equal(retry.value.duplicate,true);assert.equal(cli('HGET',knowledgeIndex,knowledgeKey),record);
     const twoPrices=payload('Audit One','two-prices',[133,143],now+4);
     const trainer=(priceCopper)=>({capturedAt:now+4,complete:true,npc:{id:12345,name:'Test Trainer'},services:[{name:'Test Ability',priceCopper}]});
     twoPrices.sections.interactions={capturedAt:now+4,trainerHistory:[trainer(20),trainer(30)]};
     assert.equal((await call(twoPrices)).http,200);
-    const priced=JSON.parse(cli('GET',knowledgeKey));
+    const priced=JSON.parse(cli('HGET',knowledgeIndex,knowledgeKey));
     assert.equal(priced.observationCount,3);assert.equal(priced.services[0].priceCopper,30);
     assert.ok(priced.changes.some(x=>x.sameSecond===true&&x.previousEntries[0].priceCopper===20&&x.entries[0].priceCopper===30));
     const refreshLock=await acquireRefreshLock();
@@ -269,19 +270,19 @@ if(!hasRedis){
     await registerDailySnapshot({...meta,refresh:actualProof},guard);
     assert.equal((await getDailySnapshot(day)).sha256,meta.sha256);
     const lastKey='dalton-dashboard:history:daily:last:v1';
-    assert.equal(JSON.parse(cli('GET',lastKey)).date,day);
+    assert.equal((await getLastDailySnapshot()).date,day);
     await releaseDailySnapshotLock(day,guard);
     await assert.rejects(registerDailySnapshot({...meta,refresh:actualProof},guard),/DAILY_LOCK_LOST/);
     const aclDay='2026-11-27',aclLock=await acquireDailySnapshotLock(aclDay);
-    cli('ACL','SETUSER','limited-index','on','>local-fixture-password','~*','+@all','-set');
+    cli('ACL','SETUSER','limited-index','on','>local-fixture-password','~*','+@all','-hset');
     restrictedUser='limited-index';
-    await assert.rejects(registerDailySnapshot({date:aclDay,archiveStatus:'disabled'},aclLock),/ACL_PREFLIGHT/);
+    await assert.rejects(registerDailySnapshot({date:aclDay,archiveStatus:'disabled'},aclLock),/NOPERM|ACL|permission/i);
     restrictedUser=null;
-    assert.equal(await getDailySnapshot(aclDay),null);assert.equal(JSON.parse(cli('GET',lastKey)).date,day);
+    assert.equal(await getDailySnapshot(aclDay),null);assert.equal((await getLastDailySnapshot()).date,day);assert.equal(cli('GET',lastKey),null,'legacy pointer is never dual-written');
     cli('ACL','DELUSER','limited-index');await releaseDailySnapshotLock(aclDay,aclLock);
     const older='2026-11-25',olderLock=await acquireDailySnapshotLock(older);
     await registerDailySnapshot({date:older,archiveStatus:'disabled'},olderLock);
-    assert.equal(JSON.parse(cli('GET',lastKey)).date,day,'last pointer cannot move backwards');
+    assert.equal((await getLastDailySnapshot()).date,day,'last pointer cannot move backwards');
     await releaseDailySnapshotLock(older,olderLock);
     console.log('F02/F03/F14 real isolated Redis: contention, lock loss, lost response, stale retry, type preflight, daily proof and atomic index: OK');
   }finally{
