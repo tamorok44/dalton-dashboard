@@ -99,14 +99,14 @@ try{
      else assert.equal(await role.count(),0);
      await spec.waitFor({state:'visible'});
      assert.equal(await page.locator('[data-plan-result]').count(),0);
-     const defaultTree={1:'11670',7:'11363',8:'11582',9:'11637',11:'11347'}[Number(id)];
+     const defaultTree={1:'11670',3:'11371',7:'11363',8:'11582',9:'11637',11:'11347'}[Number(id)];
      const hasDefault=Boolean(defaultTree);
       assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),hasDefault?1:0,'only a reviewed default may enable confirmation');
       if(hasDefault)assert.equal(await spec.inputValue(),defaultTree,'reviewed PvP default');
      assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes([1,3,7,8,9,11].includes(Number(id))?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
    }
    await choose(3);await goal.selectOption('pvp');
-   assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0,'no reviewed comparative hunter PvP default');
+   assert.equal(await spec.inputValue(),'11371','reviewed Hunter PvP default among released paths');
    await spec.selectOption('11371');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
    await spec.selectOption('11370');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
    await spec.selectOption('11372');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);

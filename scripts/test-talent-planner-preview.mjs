@@ -318,6 +318,13 @@ for(const planId of ["shaman-elemental-leveling","shaman-restoration-dungeons"])
 }
 console.log('Shaman: exact-build rank-zero release and higher-rank denial: OK');
 
+const hunterInfo=(await request({character:'qa-class-3'},{endpoint:orientationEndpoint})).body;
+for(const goal of ['leveling','pvp']){
+ const g=talentAssistantGuide(hunterInfo.profiles,{goal,role:'damage'},hunterInfo.specializations);
+ assert.equal(specializationSelection(g,{},hunterInfo.specializationAdvice).profile.treeId,11371);
+ assert.equal(specializationSelection(g,{treeId:11370},hunterInfo.specializationAdvice).profile.treeId,11370);
+ assert.equal(specializationSelection(g,{treeId:11372},hunterInfo.specializationAdvice).profile,null);
+}
 const warriorInfo=(await request({character:'qa-class-1'},{endpoint:orientationEndpoint})).body;
 const warriorGuide=talentAssistantGuide(warriorInfo.profiles,{goal:'leveling',role:'damage'},warriorInfo.specializations);
 assert.equal(specializationSelection(warriorGuide,{},warriorInfo.specializationAdvice).profile.planId,'warrior-arms-leveling');
