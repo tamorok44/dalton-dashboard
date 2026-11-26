@@ -97,6 +97,11 @@ export function createDailySnapshotHandler(overrides={}){
     // process died after committing the profile but before the daily index.
     let meta=existing||null,saved=false,recovered=false;
     const legacyArchive=existing?.legacyArchive??(existing?.url&&!privateArchiveComplete(existing)?{url:existing.url,pathname:existing.pathname??null,sha256:existing.sha256??null,archiveStatus:'legacy_unverified'}:null);
+    const previousArchives=[...(Array.isArray(existing?.previousArchives)?existing.previousArchives:[])];
+    if(privateArchiveComplete(existing)&&!privateArchiveComplete(existing,refresh?.roster)){
+      const {previousArchives:ignored,refresh:oldReceipt,legacyArchive:legacy,...reference}=existing;
+      if(!previousArchives.some(x=>x.pathname===reference.pathname))previousArchives.push(reference);
+    }
     if(!privateArchiveComplete(meta,refresh?.roster)||!profileRefreshComplete(refresh,local.date)){
       const failedMeta=archiveStatus=>({date:local.date,createdAt:new Date().toISOString(),archiveStatus,...(legacyArchive?{legacyArchive}:{})});
       if(!archiveConfigured)meta=failedMeta('disabled');
@@ -127,7 +132,7 @@ export function createDailySnapshotHandler(overrides={}){
         }
       }
     }
-    const completedMeta={...meta,refresh};
+    const completedMeta={...meta,refresh,...(legacyArchive?{legacyArchive}:{}),...(previousArchives.length?{previousArchives}:{})};
     await registerDailySnapshot(completedMeta,dailyLock);
     const complete=dailyRefreshComplete(completedMeta,archiveConfigured)&&rosterMatches(refresh?.roster,identities((await loadCharacters()).data));
     return res.status(complete?200:503).json({saved,recovered,retried:Boolean(existing),snapshot:completedMeta,refresh,petRules:publicPetRuleState(petRuleState)});
