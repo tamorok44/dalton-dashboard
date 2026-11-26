@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-feral-pvp-damage",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11347,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 0,
+    "11340": 21,
+    "11347": 30
+  },
+  "points": [
+    {
+      "talentId": 104938,
+      "rank": 1
+    },
+    {
+      "talentId": 104938,
+      "rank": 2
+    },
+    {
+      "talentId": 104938,
+      "rank": 3
+    },
+    {
+      "talentId": 104938,
+      "rank": 4
+    },
+    {
+      "talentId": 104938,
+      "rank": 5
+    },
+    {
+      "talentId": 104943,
+      "rank": 1
+    },
+    {
+      "talentId": 104943,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 3
+    },
+    {
+      "talentId": 104948,
+      "rank": 1
+    },
+    {
+      "talentId": 104948,
+      "rank": 2
+    },
+    {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 2
+    },
+    {
+      "talentId": 104949,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 3
+    },
+    {
+      "talentId": 104947,
+      "rank": 1
+    },
+    {
+      "talentId": 104955,
+      "rank": 1
+    },
+    {
+      "talentId": 104947,
+      "rank": 2
+    },
+    {
+      "talentId": 104950,
+      "rank": 1
+    },
+    {
+      "talentId": 104950,
+      "rank": 2
+    },
+    {
+      "talentId": 104951,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 2
+    },
+    {
+      "talentId": 104953,
+      "rank": 3
+    },
+    {
+      "talentId": 104953,
+      "rank": 4
+    },
+    {
+      "talentId": 104953,
+      "rank": 5
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    },
+    {
+      "talentId": 104916,
+      "rank": 5
+    },
+    {
+      "talentId": 104914,
+      "rank": 1
+    },
+    {
+      "talentId": 104921,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104938,
+      "count": 5,
+      "reason": "Wut- und Energiekosten häufiger Form-Fähigkeiten senken"
+    },
+    {
+      "talentId": 104943,
+      "count": 2,
+      "reason": "Ausweichchance verbessern und Bewegung in Katzengestalt vorbereiten"
+    },
+    {
+      "talentId": 104942,
+      "count": 3,
+      "reason": "Basisrüstung für Katzen- und Bärengestalt verbessern"
+    },
+    {
+      "talentId": 104948,
+      "count": 2,
+      "reason": "Schaden häufiger Formangriffe erhöhen und Aufschlitzen vorbereiten"
+    },
+    {
+      "talentId": 104944,
+      "count": 1,
+      "reason": "Wilde Attacke für Annäherung und Unterbrechungen freischalten"
+    },
+    {
+      "talentId": 104946,
+      "count": 2,
+      "reason": "Kritchance in beiden Formen für Blutraserei vorbereiten"
+    },
+    {
+      "talentId": 104949,
+      "count": 1,
+      "reason": "Aufschlitzen als stapelbare Blutung und Bedrohungsquelle freischalten"
+    },
+    {
+      "talentId": 104952,
+      "count": 3,
+      "reason": "Angriffskraft und Voraussetzung für Beißen und Reißen stärken"
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Wut beziehungsweise Combopunkte bei kritischen Treffern unterstützen"
+    },
+    {
+      "talentId": 104955,
+      "count": 1,
+      "reason": "Kritchance der Gruppe erhöhen und Urtümlichen Biss vorbereiten"
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Combopunkt- und Wutunterstützung vervollständigen"
+    },
+    {
+      "talentId": 104950,
+      "count": 2,
+      "reason": "Kritischen Nahkampfschaden und situative Heilung verbessern"
+    },
+    {
+      "talentId": 104951,
+      "count": 1,
+      "reason": "Wilden Biss verbessern und Machtverschiebung vorbereiten"
+    },
+    {
+      "talentId": 104953,
+      "count": 5,
+      "reason": "Schaden gegen blutende Gegner in beiden Rollen verbessern"
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Ressourcenreserve durch Intelligenz ergänzen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Zauberzeit unterstützender Heilungen verkürzen."
+    },
+    {
+      "talentId": 104920,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern ausbauen."
+    },
+    {
+      "talentId": 104916,
+      "count": 2,
+      "reason": "Heilwirkung steigern."
+    },
+    {
+      "talentId": 104912,
+      "count": 1,
+      "reason": "Rasche Heilung freischalten."
+    },
+    {
+      "talentId": 104916,
+      "count": 3,
+      "reason": "Heilwirkung vervollständigen."
+    },
+    {
+      "talentId": 104914,
+      "count": 1,
+      "reason": "Verjüngung ergänzen."
+    },
+    {
+      "talentId": 104921,
+      "count": 1,
+      "reason": "Schnelligkeit der Natur freischalten."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "druid-feral-pvp-skillcapped",
+      "druid-feral-pvp-cobalt"
+    ],
+    "editorialDecision": "Feral pressure and control, followed by emergency healing; deliberately gives up capstones.",
+    "unresolved": [
+      "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

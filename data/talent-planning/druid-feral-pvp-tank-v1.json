@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-feral-pvp-tank",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11347,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 0,
+    "11340": 21,
+    "11347": 30
+  },
+  "points": [
+    {
+      "talentId": 104938,
+      "rank": 1
+    },
+    {
+      "talentId": 104938,
+      "rank": 2
+    },
+    {
+      "talentId": 104938,
+      "rank": 3
+    },
+    {
+      "talentId": 104938,
+      "rank": 4
+    },
+    {
+      "talentId": 104938,
+      "rank": 5
+    },
+    {
+      "talentId": 104940,
+      "rank": 1
+    },
+    {
+      "talentId": 104940,
+      "rank": 2
+    },
+    {
+      "talentId": 104940,
+      "rank": 3
+    },
+    {
+      "talentId": 104943,
+      "rank": 1
+    },
+    {
+      "talentId": 104943,
+      "rank": 2
+    },
+    {
+      "talentId": 104948,
+      "rank": 1
+    },
+    {
+      "talentId": 104948,
+      "rank": 2
+    },
+    {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 2
+    },
+    {
+      "talentId": 104949,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 3
+    },
+    {
+      "talentId": 104947,
+      "rank": 1
+    },
+    {
+      "talentId": 104955,
+      "rank": 1
+    },
+    {
+      "talentId": 104947,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 3
+    },
+    {
+      "talentId": 104954,
+      "rank": 1
+    },
+    {
+      "talentId": 104954,
+      "rank": 2
+    },
+    {
+      "talentId": 104954,
+      "rank": 3
+    },
+    {
+      "talentId": 104954,
+      "rank": 4
+    },
+    {
+      "talentId": 104954,
+      "rank": 5
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    },
+    {
+      "talentId": 104916,
+      "rank": 5
+    },
+    {
+      "talentId": 104914,
+      "rank": 1
+    },
+    {
+      "talentId": 104921,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104938,
+      "count": 5,
+      "reason": "Kosten zentraler Formfähigkeiten reduzieren."
+    },
+    {
+      "talentId": 104940,
+      "count": 3,
+      "reason": "Prankenhieb früh für Gruppenbedrohung und Schaden stärken."
+    },
+    {
+      "talentId": 104943,
+      "count": 2,
+      "reason": "Ausweichen in Bärengestalt und Beweglichkeit beim Questen verbessern."
+    },
+    {
+      "talentId": 104948,
+      "count": 2,
+      "reason": "Häufige Formangriffe stärken und Aufschlitzen vorbereiten."
+    },
+    {
+      "talentId": 104944,
+      "count": 1,
+      "reason": "Wilde Attacke für Annäherung und Unterbrechung."
+    },
+    {
+      "talentId": 104946,
+      "count": 2,
+      "reason": "Kritische Trefferchance und Voraussetzung für Blutraserei."
+    },
+    {
+      "talentId": 104949,
+      "count": 1,
+      "reason": "Aufschlitzen als stapelbare Bedrohungsquelle auf Stufe 25."
+    },
+    {
+      "talentId": 104942,
+      "count": 3,
+      "reason": "Basisrüstung in Gestalt erhöhen."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Zusätzliche Wut bei kritischen Treffern vorbereiten."
+    },
+    {
+      "talentId": 104955,
+      "count": 1,
+      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Wutunterstützung vervollständigen."
+    },
+    {
+      "talentId": 104952,
+      "count": 3,
+      "reason": "Angriffskraft in Gestalt und Voraussetzung für Beißen und Reißen."
+    },
+    {
+      "talentId": 104954,
+      "count": 5,
+      "reason": "Ausweichen und Wut in Bärengestalt vor dem Abschluss ausbauen."
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Ressourcenreserve durch Intelligenz ergänzen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Zauberzeit unterstützender Heilungen verkürzen."
+    },
+    {
+      "talentId": 104920,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern ausbauen."
+    },
+    {
+      "talentId": 104916,
+      "count": 2,
+      "reason": "Heilwirkung steigern."
+    },
+    {
+      "talentId": 104912,
+      "count": 1,
+      "reason": "Rasche Heilung freischalten."
+    },
+    {
+      "talentId": 104916,
+      "count": 3,
+      "reason": "Heilwirkung vervollständigen."
+    },
+    {
+      "talentId": 104914,
+      "count": 1,
+      "reason": "Verjüngung ergänzen."
+    },
+    {
+      "talentId": 104921,
+      "count": 1,
+      "reason": "Schnelligkeit der Natur freischalten."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "druid-feral-pvp-cobalt",
+      "druid-resto-pvp-skillcapped"
+    ],
+    "editorialDecision": "Objective and flag carrier research rather than ordinary dungeon tanking; durability and emergency healing.",
+    "unresolved": [
+      "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

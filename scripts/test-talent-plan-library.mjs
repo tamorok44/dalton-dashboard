@@ -679,3 +679,11 @@ for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hu
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
   assert.ok(p.points.every(step=>![104961,104964].includes(step.talentId)));
 }
+
+for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347":0}],["druid-balance-pvp",{"11328":30,"11340":21,"11347":0}],["druid-feral-dungeons-damage",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-damage",{"11328":0,"11340":21,"11347":30}],["druid-feral-leveling-tank",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-tank",{"11328":0,"11340":21,"11347":30}],["druid-restoration-leveling",{"11328":20,"11340":31,"11347":0}],["druid-restoration-pvp",{"11328":8,"11340":32,"11347":11}]]){
+ const p=plans.find(x=>x.id===id);
+ assert.ok(p&&p.status==='research_only');
+ assert.deepEqual(p.expectedDistribution,dist);
+ assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+}

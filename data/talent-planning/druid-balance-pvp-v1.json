@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-balance-pvp",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11328,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 30,
+    "11340": 21,
+    "11347": 0
+  },
+  "points": [
+    {
+      "talentId": 104923,
+      "rank": 1
+    },
+    {
+      "talentId": 104923,
+      "rank": 2
+    },
+    {
+      "talentId": 104923,
+      "rank": 3
+    },
+    {
+      "talentId": 104923,
+      "rank": 4
+    },
+    {
+      "talentId": 104923,
+      "rank": 5
+    },
+    {
+      "talentId": 104925,
+      "rank": 1
+    },
+    {
+      "talentId": 104925,
+      "rank": 2
+    },
+    {
+      "talentId": 104925,
+      "rank": 3
+    },
+    {
+      "talentId": 104929,
+      "rank": 1
+    },
+    {
+      "talentId": 104929,
+      "rank": 2
+    },
+    {
+      "talentId": 104927,
+      "rank": 1
+    },
+    {
+      "talentId": 104927,
+      "rank": 2
+    },
+    {
+      "talentId": 104928,
+      "rank": 1
+    },
+    {
+      "talentId": 104931,
+      "rank": 1
+    },
+    {
+      "talentId": 104931,
+      "rank": 2
+    },
+    {
+      "talentId": 104930,
+      "rank": 1
+    },
+    {
+      "talentId": 104932,
+      "rank": 1
+    },
+    {
+      "talentId": 104932,
+      "rank": 2
+    },
+    {
+      "talentId": 104932,
+      "rank": 3
+    },
+    {
+      "talentId": 104932,
+      "rank": 4
+    },
+    {
+      "talentId": 104932,
+      "rank": 5
+    },
+    {
+      "talentId": 104934,
+      "rank": 1
+    },
+    {
+      "talentId": 104935,
+      "rank": 1
+    },
+    {
+      "talentId": 104935,
+      "rank": 2
+    },
+    {
+      "talentId": 104935,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 2
+    },
+    {
+      "talentId": 104924,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 4
+    },
+    {
+      "talentId": 104924,
+      "rank": 5
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    },
+    {
+      "talentId": 104916,
+      "rank": 5
+    },
+    {
+      "talentId": 104914,
+      "rank": 1
+    },
+    {
+      "talentId": 104921,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104923,
+      "count": 5,
+      "reason": "Zorn und laut Hotfix vom 25.11. auch Sternenfeuer beschleunigen; deutsche Bezeichnung prüfen."
+    },
+    {
+      "talentId": 104925,
+      "count": 3,
+      "reason": "Manakosten von Schadenszaubern senken."
+    },
+    {
+      "talentId": 104929,
+      "count": 2,
+      "reason": "Reichweite und Trefferchance erhöhen."
+    },
+    {
+      "talentId": 104927,
+      "count": 2,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 104928,
+      "count": 1,
+      "reason": "Dauer periodischer Effekte verlängern."
+    },
+    {
+      "talentId": 104931,
+      "count": 2,
+      "reason": "Mondfeuer stärken und Sternenfeuer laut Hotfix gegen Zauberzeitverlust absichern."
+    },
+    {
+      "talentId": 104930,
+      "count": 1,
+      "reason": "Insektenschwarm freischalten."
+    },
+    {
+      "talentId": 104932,
+      "count": 5,
+      "reason": "Kritischen Arkane- und Naturschaden stärken."
+    },
+    {
+      "talentId": 104934,
+      "count": 1,
+      "reason": "Zaubertempo nach geeigneten kritischen Treffern unterstützen."
+    },
+    {
+      "talentId": 104935,
+      "count": 3,
+      "reason": "Sternenfeuer nach Zorn beschleunigen; neuer dauerhafter Zorn-Kritbonus laut Hotfix."
+    },
+    {
+      "talentId": 104924,
+      "count": 5,
+      "reason": "Periodischen Schaden und Heilung steigern."
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Ressourcenreserve durch Intelligenz ergänzen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Zauberzeit unterstützender Heilungen verkürzen."
+    },
+    {
+      "talentId": 104920,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern ausbauen."
+    },
+    {
+      "talentId": 104916,
+      "count": 2,
+      "reason": "Heilwirkung steigern."
+    },
+    {
+      "talentId": 104912,
+      "count": 1,
+      "reason": "Rasche Heilung freischalten."
+    },
+    {
+      "talentId": 104916,
+      "count": 3,
+      "reason": "Heilwirkung vervollständigen."
+    },
+    {
+      "talentId": 104914,
+      "count": 1,
+      "reason": "Verjüngung ergänzen."
+    },
+    {
+      "talentId": 104921,
+      "count": 1,
+      "reason": "Schnelligkeit der Natur freischalten."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "druid-balance-pvp-cobalt",
+      "druid-balance-pvp-restokins",
+      "official-balance-2511"
+    ],
+    "editorialDecision": "Restokin pressure and emergency healing; trades Moonkin for Nature's Swiftness. Reassess after hotfix.",
+    "unresolved": [
+      "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

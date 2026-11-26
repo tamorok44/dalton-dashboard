@@ -826,6 +826,42 @@
       "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/survival-hunter-pvp-guide/talents/",
       "kind": "expert_guide",
       "independenceGroup": "skillcapped-editorial"
+    },
+    {
+      "id": "druid-feral-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/feral-druid-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-feral-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/druid/feral/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-resto-pvp-wowhead",
+      "url": "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/talent-builds-pve-healer",
+      "independenceGroup": "wowhead-restoration-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-resto-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/restoration-druid-pvp-guide/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-balance-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/druid/balance/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-balance-pvp-restokins",
+      "url": "https://restokins.com/guides/restokin-build.html",
+      "independenceGroup": "restokins-editorial",
+      "kind": "expert_guide"
     }
   ],
   "pilot": {
@@ -1727,6 +1763,168 @@
         "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
         "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
         "Compare earlier Scatter Shot versus deep Survival timing; trap shared cooldown and interrupt/control rules need independent current evidence."
+      ]
+    },
+    {
+      "id": "druid-balance-dungeons",
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-balance-druid",
+        "mob-balance-druid",
+        "official-balance-2511"
+      ],
+      "proposal": "Earlier mana and group support before Moonkin; avoid changed Improved Starfire and former Moonfury.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-balance-pvp",
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-balance-pvp-cobalt",
+        "druid-balance-pvp-restokins",
+        "official-balance-2511"
+      ],
+      "proposal": "Restokin pressure and emergency healing; trades Moonkin for Nature's Swiftness. Reassess after hotfix.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-dungeons-damage",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-feral-pve",
+        "mobalytics-feral-leveling"
+      ],
+      "proposal": "Cat-oriented group damage with emergency Bear utility; Shifting Power cost not assumed.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-pvp-damage",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-feral-pvp-skillcapped",
+        "druid-feral-pvp-cobalt"
+      ],
+      "proposal": "Feral pressure and control, followed by emergency healing; deliberately gives up capstones.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-leveling-tank",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "leveling",
+      "role": "tank",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-feral-pve",
+        "grindclassic-feral-leveling"
+      ],
+      "proposal": "Bear-first leveling with earlier cross-form utility than the dedicated dungeon path.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-pvp-tank",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-feral-pvp-cobalt",
+        "druid-resto-pvp-skillcapped"
+      ],
+      "proposal": "Objective and flag carrier research rather than ordinary dungeon tanking; durability and emergency healing.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-restoration-leveling",
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-druid-leveling",
+        "mob-restoration-druid"
+      ],
+      "proposal": "Early damage for questing, then healing milestones; not pure solo-speed.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-restoration-pvp",
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-resto-pvp-wowhead",
+        "druid-resto-pvp-skillcapped"
+      ],
+      "proposal": "Mobile healer with Feral Charge, emergency healing, and periodic healing.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
       ]
     }
   ]
