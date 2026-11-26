@@ -300,3 +300,8 @@ Vier weitere vollständige 51-Punkte-Forschungspfade ohne Umskillen: Gebrechen P
 ### Magier: vollständige Zielabdeckung (26.11.2026)
 
 Drei zusätzliche eigenständige 51-Punkte-Forschungspfade: Arkan PvP 31/0/20 mit verbessertem Gegenzauber, Geistesgegenwart 30, Arkaner Macht 40 und später Frostkontrolle; Feuer PvP 0/31/20 mit Aufwärmen 25, Verbrennung 40 und später Eisblock; Frost Dungeons 18/0/33 mit früher Präzision, kontrolliertem Blizzard, Frost-Manatalenten und später Arkaner Meditation. Die 153 neuen Vergaben wurden gegen den exakten Primärproof 71139 geprüft. Quellen: Cobalt Arkan/Feuer PvP, Forever Hub Arkan und Magier, Undying Feuer, Outpost Level 60, Icy Veins Frost. Die Quellen stützen Ausrichtungen, nicht eine gemessene Überlegenheit der eigenen Punktfolge. Keine Annahme unabhängiger Frostprocs oder garantierter Feuerkrits. Alle neun Magier-Zielkombinationen sind damit strukturell ausgearbeitet; neue Pfade bleiben research_only. Die vier vorhandenen Freigaben bleiben unverändert. Keine zusätzlichen Laufzeitabfragen.
+
+
+### Abgleich mit der dashboardweiten Eigenentwicklungs-Vorgabe (26.11.2026)
+
+Hauptzweig mit neuer Erklärlogik in den isolierten Talentplaner-Zweig integriert: AGENTS, README, Erklärtexte in Charaktertalenten, Werkstatt, Ortsplaner, Footer und UI-Regressionstests. Talentplaner beschreibt die eigene charakterbezogene Empfehlungs- und Vergleichslogik, ForeverDB bleibt transparente Quelle der Talentstruktur und deutschen Texte. PWA-Cache v90 und einheitlicher Assetstand 20261126f behalten den Talentplaner als Cache-Asset. Keine Produktionsfreigabe, keine Änderungen an Datenhaltung oder Regelpaketen.

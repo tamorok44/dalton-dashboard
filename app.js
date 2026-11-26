@@ -332,7 +332,7 @@ function talentPanel(c){
     '<p class="talent-point-note">Freie Talentpunkte sind nicht bestätigt; die Freischaltung berücksichtigt die bekannten Voraussetzungen.</p>'+
     talentNodeDetail(node,tree,personal,c.level,stale)+
     (!personal.verified?learnedTalentList(c):'')+
-    '<p class="workshop-credit">Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></p></div>';
+    '<p class="workshop-credit">Eigene Darstellung des persönlichen Talentstands. Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></p></div>';
 }
 function bindTalentPanel(panel,c){
   if(!panel||!c)return;
@@ -1406,7 +1406,7 @@ function workshopLearningHtml(result){
         (confirmed.length?'<div><h5>In WoW Forever bestätigt · '+confirmed.length+'</h5>'+displayList('alphabetical',confirmed,workshopSourceHtml).join('')+'</div>':'')+
         (other.length?'<details class="workshop-source-unconfirmed"><summary>Weitere Quellen · '+other.length+'</summary>'+displayList('alphabetical',other,workshopSourceHtml).join('')+'</details>':'')+
         '</div>'
-      :'<p>'+esc(result.learningSourcesReason||'ForeverDB kennt derzeit keine konkrete Bezugsquelle.')+'</p>';
+      :'<p>'+esc(result.learningSourcesReason||'Derzeit ist keine konkrete Bezugsquelle bekannt.')+'</p>';
   return '<section class="workshop-learning"><h4>Wer könnte es lernen?</h4>'+
     '<p class="workshop-recipe-line"><span class="knowledge-title">'+knowledgeIcon(result.item?.iconUrl,28)+'<strong>'+esc(recipe.name||result.item?.name||'Rezept')+'</strong></span>'+requirement+'</p>'+
     workshopLearningCandidatesHtml(result)+
@@ -1442,7 +1442,7 @@ function workshopResultHtml(){
     (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
     (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+displayList('alphabetical',base,material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
     (!craftable?workshopLearningHtml(result):'')+
-    (result.source==='foreverdb'?'<p class="workshop-credit">Datenquelle: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
+    (result.source==='foreverdb'?'<p class="workshop-credit">Rezeptdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</article>';
 }
 function workshopSuggestionsHtml(){
@@ -1484,11 +1484,11 @@ function renderWorkshop(){
   const overview=workshopState.overview||{};
   const catalogNote=overview.recipeCatalog?.connected
     ?overview.recipeCatalog.complete
-      ?'<span class="workshop-source-ok">ForeverDB verbunden · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte · '+esc(overview.recipeCatalog.professionCount||12)+' Berufe</span>'
+      ?'<span class="workshop-source-ok">Rezeptkatalog · '+esc(overview.recipeCatalog.recipeCount||0)+' Rezepte · '+esc(overview.recipeCatalog.professionCount||12)+' Berufe</span>'
       :'<span class="workshop-source-note">Vollkatalog wird aufgebaut · '+esc(overview.recipeCatalog.refreshProgress?.completed||overview.recipeCatalog.professionCount||0)+'/'+esc(overview.recipeCatalog.refreshProgress?.total||12)+' Berufe</span>'
     :overview.foreverDbConfigured
-      ?'<span class="workshop-source-note">ForeverDB-Key vorhanden · Rezeptkatalog derzeit nicht erreichbar</span>'
-      :'<span class="workshop-source-note">Aktuell Blizzard-Werkstattdaten · ForeverDB noch nicht verbunden</span>';
+      ?'<span class="workshop-source-note">Vollständiger Rezeptkatalog derzeit nicht erreichbar</span>'
+      :'<span class="workshop-source-note">Rezeptkatalog eingeschränkt · verfügbare Charakterdaten</span>';
   const markup=
     '<div class="workshop-shell">'+
       '<section class="workshop-search-panel"><div class="workshop-search-head"><div><span class="workshop-kicker">DIREKTER WEG</span><h3>Gegenstand suchen</h3></div>'+catalogNote+'</div>'+
@@ -1497,7 +1497,7 @@ function renderWorkshop(){
       '</section>'+
       '<section class="workshop-browse-panel"><div><span class="workshop-kicker">GEFÜHRTE AUSWAHL</span><h3>Gegenstände durchstöbern</h3><p>'+(workshopState.browseMode==='craftable'?'Nur Gegenstände, die mindestens ein Dalton aktuell herstellen kann.':'Alle herstellbaren Gegenstände aus dem vollständigen Rezeptkatalog.')+'</p><div class="view-filter-row"><span>Anzeige</span>'+segmentedControl('workshop-browse-mode',workshopState.browseMode,[['all','Alle'],['craftable','Herstellbar']],'Dropdown-Katalog')+'</div></div><div class="workshop-browse-fields">'+workshopBrowseHtml()+'</div></section>'+
       workshopResultHtml()+
-      ((overview.recipeCatalog?.connected||workshopState.selected?.source==='foreverdb')?'<p class="workshop-global-credit">ForeverDB-Daten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
+      ((overview.recipeCatalog?.connected||workshopState.selected?.source==='foreverdb')?'<p class="workshop-global-credit">Eigenständige Dalton-Werkstatt: charakterbezogene Herstellungs- und Materialplanung. Rezeptdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a>, ergänzt durch eigene Erhebungen und Prüfungen.</p>':'')+
     '</div>';
   // Keep the actual input and its ancestors mounted across ALL refreshes.
   // Replacing or moving a focused search field closes the iOS keyboard.
@@ -1966,7 +1966,7 @@ function renderLocationPlanner(){
         atLocation===0
           ?'<div class="planner-placeholder"><strong>Aktuell keine Erledigungen an diesem Ort.</strong><span>'+esc(selectedLocation)+' ist im Ortsplaner vorhanden. Für '+esc(selectedCharacter?.name||'diesen Charakter')+' gibt es hier momentan nur keine bestätigte Erledigung.</span></div>'
           :'<div class="planner-placeholder"><strong>Mit diesen Filtern bleibt nichts übrig.</strong><span>Aktiviere mindestens eine Kategorie mit verfügbaren Erledigungen.</span></div>')+
-      '<p class="planner-credit">Datenquelle für Klassen-/Lehrer- und Berufsdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a>. Persönlicher Lernstand wird nur dann als bekannt behandelt, wenn er aus dem Charakterprofil tatsächlich ausgelesen wurde.</p>';
+      '<p class="planner-credit">Eigenständiger Dalton-Ortsplaner: charakterbezogene Auswahl, Preisvergleich und Planung. Klassen-, Lehrer- und Berufsdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a>, ergänzt durch eigene Beobachtungen und Prüfungen. Der persönliche Lernstand gilt nur als bekannt, wenn er tatsächlich ausgelesen wurde.</p>';
   }
   plannerRoot.innerHTML='<div class="planner-shell">'+controls+characterSummary+body+'</div>';
   plannerRoot.querySelector('#plannerCharacter')?.addEventListener('change',event=>{

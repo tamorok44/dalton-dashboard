@@ -647,6 +647,9 @@ assert.ok(!/\.vital:last-child\s+strong\s*\{\s*color:\s*var\(--class\)/.test(css
 // Golden sheriff-star header and daylight/western landscape should not regress.
 const heroHtml=read('index.html'),crest=read('dalton-crest.svg'),sky=read('skyborne-horizon.svg'),icon=read('icon.svg'),trayIcon=read('bridge-tray.svg'),bridgeBranding=read('bridge-branding.svg'),manifest=JSON.parse(read('manifest.webmanifest'));
 assert.ok(heroHtml.includes('data-view-link="workshop"'),'Werkstatt ist dritter Hauptreiter');
+assert.ok(heroHtml.includes('Eigenentwicklung für WoW Forever')&&heroHtml.includes('Datenbasis:'),'Dashboard unterscheidet Eigenentwicklung und Datenherkunft');
+assert.ok(source.includes('Rezeptkatalog · ')&&!source.includes('ForeverDB verbunden · ')&&!source.includes('ForeverDB-Key vorhanden'),'Werkstatt zeigt fachlichen Katalogstatus statt technischem Verbindungsstatus');
+assert.ok(source.includes('Eigenständige Dalton-Werkstatt')&&source.includes('Eigenständiger Dalton-Ortsplaner')&&source.includes('https://foreverdb.net'),'Eigene Planung und externe Quellen bleiben transparent getrennt');
 assert.ok(heroHtml.includes('id="workshopView" class="main-view workshop-view"'),'Werkstatt nutzt verbindlichen main-view-Vertrag');
 assert.ok(source.includes("location.hash==='#werkstatt'?'workshop'"),'Werkstatt hat eigene Hash-Route');
 assert.ok(source.includes("workshopFetch('/api/workshop"),'Werkstatt nutzt serverseitige API');
