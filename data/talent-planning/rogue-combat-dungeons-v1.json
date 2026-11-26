@@ -55,20 +55,20 @@
       "rank": 3
     },
     {
-      "talentId": 105738,
+      "talentId": 105732,
       "rank": 1
     },
     {
-      "talentId": 105738,
+      "talentId": 105732,
       "rank": 2
     },
     {
-      "talentId": 105738,
-      "rank": 3
+      "talentId": 105759,
+      "rank": 1
     },
     {
-      "talentId": 105735,
-      "rank": 1
+      "talentId": 105759,
+      "rank": 2
     },
     {
       "talentId": 105736,
@@ -83,16 +83,16 @@
       "rank": 1
     },
     {
+      "talentId": 108100,
+      "rank": 1
+    },
+    {
       "talentId": 105730,
       "rank": 1
     },
     {
       "talentId": 105730,
       "rank": 2
-    },
-    {
-      "talentId": 105730,
-      "rank": 3
     },
     {
       "talentId": 105726,
@@ -123,14 +123,6 @@
       "rank": 2
     },
     {
-      "talentId": 105733,
-      "rank": 1
-    },
-    {
-      "talentId": 105733,
-      "rank": 2
-    },
-    {
       "talentId": 105740,
       "rank": 1
     },
@@ -141,6 +133,14 @@
     {
       "talentId": 105740,
       "rank": 3
+    },
+    {
+      "talentId": 105740,
+      "rank": 4
+    },
+    {
+      "talentId": 105740,
+      "rank": 5
     },
     {
       "talentId": 105724,
@@ -236,7 +236,7 @@
     {
       "talentId": 105708,
       "count": 3,
-      "reason": "Schaden von Ausweiden stärken."
+      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
     },
     {
       "talentId": 105737,
@@ -244,19 +244,14 @@
       "reason": "Trefferchance erhöhen."
     },
     {
-      "talentId": 105738,
+      "talentId": 105732,
       "count": 2,
-      "reason": "Parierchance verbessern."
+      "reason": "Verbessertes Sprinten für Bewegungsprobleme."
     },
     {
-      "talentId": 105738,
-      "count": 1,
-      "reason": "Abwehr vervollständigen."
-    },
-    {
-      "talentId": 105735,
-      "count": 1,
-      "reason": "Riposte für Gelegenheiten nach dem Parieren freischalten."
+      "talentId": 105759,
+      "count": 2,
+      "reason": "Composure verstärkt die Energiekostenreduktion von Poised; seit 25.11. wird Poised auch durch Sap/Distract in Verstohlenheit verbraucht."
     },
     {
       "talentId": 105736,
@@ -269,8 +264,13 @@
       "reason": "Ausweichen ergänzen."
     },
     {
+      "talentId": 108100,
+      "count": 1,
+      "reason": "Energiekosten von Ausweiden senken."
+    },
+    {
       "talentId": 105730,
-      "count": 3,
+      "count": 2,
       "reason": "Schaden häufiger Angriffe erhöhen."
     },
     {
@@ -281,7 +281,7 @@
     {
       "talentId": 105728,
       "count": 1,
-      "reason": "Klingenwirbel auf 30 freischalten."
+      "reason": "Klingenwirbel für kontrollierte Mehrzielkämpfe; seit Hotfix 20.11. auch Shank-Schaden auf ein zusätzliches Ziel, keine ungewollten Pulls."
     },
     {
       "talentId": 113635,
@@ -291,17 +291,12 @@
     {
       "talentId": 105727,
       "count": 2,
-      "reason": "Waffenabhängigen Bonus ergänzen."
-    },
-    {
-      "talentId": 105733,
-      "count": 2,
-      "reason": "Tritt mit Schweigeeffekt für geeignete Gruppenfeinde verbessern."
+      "reason": "Hack and Slash: waffenabhängigen Zusatzangriff bzw. Kritbonus passend zur Ausrüstung unterstützen."
     },
     {
       "talentId": 105740,
-      "count": 3,
-      "reason": "Energiegewinn und Abklingzeit des Stiefel-/Messerangriffs ausbauen."
+      "count": 5,
+      "reason": "Flash of Steel verstärkt Shanks Energierückgewinnung und verkürzt seine Abklingzeit."
     },
     {
       "talentId": 105724,
@@ -346,17 +341,51 @@
       "rogue-outpost-2311",
       "rogue-hotfix-2511"
     ],
-    "editorialDecision": "Sustained Combat and interrupts, Blade Flurry and Adrenaline Rush; cleave only intended targets. Later Assassination energy and poison support.",
+    "editorialDecision": "Dungeon-Kampf mit Tank: vier Parade-/Riposte-Punkte durch Sprint- und Eröffnungsnutzen ersetzt, Flawless Execution ab 25, Flash of Steel vollständig 35–39. Klingenwirbel 30, Adrenalinrausch 40. Regulärer Tritt bleibt; verbessertes Tritt-Schweigen als Alternative bei vielen Zauberern. Kein absichtliches Tanken zur Auslösung von Riposte. Diese Änderung folgt der Spielrolle, nicht dem bloßen Umgehen eines Datenkonflikts.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim.",
+      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
+      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
+      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wow-forever.gg/talents/rogue/",
+          "contribution": "Talentfunktionen, Voraussetzungen Riposte, Venom und Todesmal, Coup de Grace und Boot Knife; keine unabhängige numerische Servermessung."
+        },
+        {
+          "url": "https://endgametools.com/en/wow-forever/news/wow-forever-rogue",
+          "contribution": "Build 71139 ausgewiesen; Shank ab 24 und neue Talentkerne; kein Beweis der exakten Serverkoeffizienten."
+        },
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/combat-rogue-guide",
+          "contribution": "25.11.: Flawless Execution und Flash of Steel als Ressourcenmechaniken."
+        },
+        {
+          "url": "https://forever-hub.com/en/guides/combat-rogue-guide",
+          "contribution": "20.11.: Klingenwirbel, Adrenalinrausch, Shank und Ausweiden."
+        }
+      ],
+      "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "rawAudit": {
+        "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
