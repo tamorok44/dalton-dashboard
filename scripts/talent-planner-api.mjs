@@ -9,6 +9,7 @@ import {talentPlanLibrary} from './talent-plan-index.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
 import {deriveLegacyRelease} from './talent-legacy-release.mjs';
 import {auditTalentLocalization} from './talent-localization-audit.mjs';
+import {resolvePersonalTalentState} from '../talent-personal-state.js';
 const effectiveRelease=deriveLegacyRelease(talentPlanLibrary,catalog);
 
 export const PERSONAL_TALENT_MAX_AGE_MS=26*60*60*1000;
@@ -118,14 +119,14 @@ export function createTalentPlannerHandler({
       evidence.validUntil=new Date(expires).toISOString();
       const details=character.talentDetails;
       const personalFresh=isPersonalTalentFresh(character,clock());
-      const detailsComplete=corrected.personalMappingUnverified!==true&&personalFresh&&character.talentDetailsVerified===true&&
-        Array.isArray(details)&&details.length===klass.trees.length&&
-        details.every(tree=>Array.isArray(tree?.talents));
+      const personal=personalFresh?resolvePersonalTalentState(character,klass):{verified:false};
+      const detailsComplete=personal.verified===true;
       return send(200,{...plan,profile,identity,klass,evidence,recommendation:candidates[0].review.rationale,legacyRank:{rank,source:'player_confirmed'},
         legacyGateEvidence:rank>0?{kind:'official_and_client_data_derived',serverGrantObserved:false,assumesRankActiveThroughout:true}:null,
         character:{level:character.level,scrapedAt:character.scrapedAt??null,
           talentDetailsFresh:personalFresh,personalValidUntil:personalFresh?new Date(Date.parse(character.scrapedAt)+PERSONAL_TALENT_MAX_AGE_MS).toISOString():null,
-          talentDetailsVerified:detailsComplete,
+          talentDetailsVerified:detailsComplete,talentDetailsCoverage:detailsComplete?personal.coverage:null,
+          talentsVerified:detailsComplete&&character.talentsVerified===true,talents:detailsComplete?character.talents??null:null,
           talentDetails:detailsComplete?details.map(tree=>({name:tree.name,spentPoints:tree.spentPoints,
             talents:tree.talents.map(entry=>({id:entry?.id,rank:entry?.rank,spellId:entry?.spellId}))})):null}});
     }catch{

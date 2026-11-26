@@ -40,6 +40,8 @@ const fixtureClass=p=>({...p,trees:p.trees.map(t=>{const columns=new Map();retur
 const displayMaster={...master,classes:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,fixtureClass(c.proof)]))};
 const displayCatalog={classes:Object.fromEntries(Object.entries(displayMaster.classes).map(([id,c])=>[id,correctTalentDisplay(c,displayMaster)])),stale:false,missingClassIds:[],fallbackClassIds:[]};
 for(const c of roster.filter(c=>[2,3,11].includes(c.classId))){c.talentDetailsVerified=true;c.talentDetails=displayMaster.classes[c.classId].trees.map(t=>({name:t.name,spentPoints:0,talents:[]}));}
+const mageCharacter=roster.find(c=>c.classId===8),mageFrost=displayMaster.classes[8].trees.find(t=>t.id===11601),mageNode=mageFrost.talents.find(n=>n.id===105779);
+mageCharacter.talentDetailsVerified=true;mageCharacter.talentsVerified=true;mageCharacter.talents='Frost: 3';mageCharacter.talentDetails=[{name:'Frost',spentPoints:3,talents:[{id:mageNode.profileId,rank:3,spellId:mageNode.rankSpellIds[0]}]}];
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
 const server=createServer(async(req,res)=>{
@@ -73,6 +75,7 @@ if(engine==='webkit')cases.push({name:'iphone',options:{...pw.devices['iPhone 13
 // Offline app-shell assets must include new imports; no live data are cached.
 const shell=readFileSync(resolve(root,'sw.js'),'utf8'),index=readFileSync(resolve(root,'index.html'),'utf8');
 assert.ok(shell.includes('"/talent-text-quality.js"'),'localization helper not precached');
+assert.ok(shell.includes('"/talent-personal-state.js"'),'personal state helper not precached');
 for(const asset of [...index.matchAll(/(?:src|href)="(\/(?:app\.js|styles\.css)\?v=[^"]+)"/g)].map(m=>m[1]))assert.ok(shell.includes('"'+asset+'"'),'app-shell cache/version mismatch '+asset);
 const scriptBytes=readFileSync(resolve(root,'talent-planner.js'));
 const report={engine,platform:process.platform,fixture:'synthetic roster and graph labels/coordinates, real approved plan engine; no live services',rawScriptBytes:scriptBytes.length,gzipScriptBytes:gzipSync(scriptBytes).length,cases:[]};
@@ -141,6 +144,7 @@ try{
    await rank.selectOption('5');await page.locator('button[type=submit].talent-planner-action').click();
    await page.locator('[data-plan-result] .talent-grid').waitFor({state:'visible'});
    assert.equal(await page.locator('.talent-planner-steps li').count(),11);
+   assert.ok((await page.locator('[data-plan-result]').innerText()).includes('Die erlernten Talente weichen vom chronologischen Plan ab.'));
    assert.ok((await page.locator('[data-plan-result]').innerText()).includes('keine eigene Live-Lernprobe')||(await page.locator('[data-plan-result]').innerText()).includes('nicht durch eine eigene Live-Lernprobe'));
    await page.locator('#talentPlannerLevel').selectOption('54');assert.equal(await page.locator('.talent-planner-steps li').count(),50);
    await page.locator('#talentPlannerLevel').selectOption('55');assert.equal(await page.locator('.talent-planner-steps li').count(),51);

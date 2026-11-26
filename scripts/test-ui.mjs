@@ -6,6 +6,7 @@ import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunte
 import {reputationStages,reputationColors} from '../reputation-data.js';
 import {createTalentPlanner} from '../talent-planner.js';
 import {displayedTalentText} from '../talent-text-quality.js';
+import {resolvePersonalTalentState} from '../talent-personal-state.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
@@ -35,7 +36,8 @@ const executableSource=source
   .replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'')
   .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'')
   .replace("import {createTalentPlanner} from './talent-planner.js';\n",'')
-  .replace("import {displayedTalentText} from './talent-text-quality.js';\n",'');
+  .replace("import {displayedTalentText} from './talent-text-quality.js';\n",'')
+  .replace("import {resolvePersonalTalentState} from './talent-personal-state.js';\n",'');
 const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
@@ -45,7 +47,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1112,3 +1114,15 @@ const aliasChar={talentDetailsVerified:true,talentDetails:[{name:'Verstärk',spe
 assert.equal(ui.personalTalentRanks(aliasChar,{trees:[aliasTree]}).verified,true);
 assert.equal(ui.personalTalentRanks({...aliasChar,talentDetails:[{...aliasChar.talentDetails[0],name:'Verstärkung'}]},{trees:[aliasTree]}).verified,true);
 assert.equal(ui.personalTalentRanks({...aliasChar,talentDetails:[{...aliasChar.talentDetails[0],name:'Nicht zugeordnet'}]},{trees:[aliasTree]}).verified,false);
+
+// The actual official snapshot omits unused trees. Trust it only when the
+// verified summary, every reported tree total and unique ID/spell all match.
+const sparseTalentChar={...talentChar,talentsVerified:true,talents:'Arkan: 5',talentDetails:talentChar.talentDetails.slice(0,1)};
+const sparseClass=talentCatalogFixture.classes[8];
+const sparseState=ui.personalTalentRanks(sparseTalentChar,sparseClass);
+assert.equal(sparseState.verified,true);assert.equal(sparseState.coverage,'verified_reported_trees');assert.equal(sparseState.ranks.get(101),5);assert.equal(sparseState.points.get(2),0);assert.equal(sparseState.points.get(3),0);
+for(const c of [{...sparseTalentChar,talentsVerified:false},{...sparseTalentChar,talents:'Arkan: 6'},{...sparseTalentChar,talentDetails:[]},{...sparseTalentChar,talentDetails:[{...sparseTalentChar.talentDetails[0],talents:[{id:201,rank:5}]}]},{...sparseTalentChar,talentDetails:[{...sparseTalentChar.talentDetails[0],talents:[{id:201,rank:5,spellId:999}]}]},{...sparseTalentChar,talentDetails:[{...sparseTalentChar.talentDetails[0],spentPoints:4}]},{...sparseTalentChar,talentDetails:[sparseTalentChar.talentDetails[0],sparseTalentChar.talentDetails[0]]}])assert.equal(ui.personalTalentRanks(c,sparseClass).verified,false);
+assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true}).verified,false);
+assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[102]}).verified,true);
+assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[101]}).verified,false);
+console.log('Sparse verified Armory snapshot, exact ID/rank/spell, scoped ambiguous mapping: OK');

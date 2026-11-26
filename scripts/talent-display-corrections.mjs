@@ -67,7 +67,7 @@ export function correctTalentDisplay(klass,master){
  const found=new Set(klass.trees.flatMap(t=>t.talents.map(n=>n.id)));
  if(!Object.keys(table).every(k=>found.has(Number(k))))return klass;
  return {...klass,displayCorrection:true,
-   ...(id===11?{personalMappingUnverified:true}:{}),
+   ...(id===11?{personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[104936]}:{}),
    trees:klass.trees.map(t=>({...t,...treeLabel(t,id),talents:t.talents.map(n=>{
      const node=table[n.id]?table[n.id](n):n;
      return numericIds.includes(n.id)?{...node,reviewNotice:[node.reviewNotice,numericNotice].filter(Boolean).join(' ')}:node;

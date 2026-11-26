@@ -82,18 +82,6 @@
       "line": "return displayOrder('text',[...new Set(Object.values(data?.addonSync||{}).map(s=>String(s?.build||'')).filter(Boolean))]).join('|');"
     },
     {
-      "owner": "personalTalentRanks",
-      "line": "const lookup=new Map(klass.trees.flatMap(t=>t.talents.map(n=>[n.profileId,{node:n,tree:t}])));"
-    },
-    {
-      "owner": "personalTalentRanks",
-      "line": "for(const tree of c.talentDetails){"
-    },
-    {
-      "owner": "personalTalentRanks",
-      "line": "for(const entry of tree.talents||[]){"
-    },
-    {
       "owner": "talentNodeStatus",
       "line": "const before=tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0);"
     },
@@ -533,6 +521,7 @@
     "./hunter-pets.js",
     "./reputation-data.js",
     "./talent-planner.js",
-    "./talent-text-quality.js"
+    "./talent-text-quality.js",
+    "./talent-personal-state.js"
   ]
 }

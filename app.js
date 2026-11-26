@@ -2,6 +2,7 @@ import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunte
 import {reputationStages,reputationColors} from './reputation-data.js';
 import {createTalentPlanner} from './talent-planner.js';
 import {displayedTalentText} from './talent-text-quality.js';
+import {resolvePersonalTalentState} from './talent-personal-state.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColorsById={8:'mage',3:'hunter',11:'druid'};
@@ -237,27 +238,7 @@ let displayedTalentCatalog=null,talentCatalogPromise=null,talentCatalogLoadedAt=
 function talentBuildHint(data){
   return displayOrder('text',[...new Set(Object.values(data?.addonSync||{}).map(s=>String(s?.build||'')).filter(Boolean))]).join('|');
 }
-function personalTalentRanks(c,klass){
-  const ranks=new Map(),points=new Map();
-  if(klass.personalMappingUnverified===true||c.talentDetailsVerified!==true||!Array.isArray(c.talentDetails)||c.talentDetails.length!==klass.trees.length)return {verified:false,ranks,points};
-  const lookup=new Map(klass.trees.flatMap(t=>t.talents.map(n=>[n.profileId,{node:n,tree:t}])));
-  for(const tree of c.talentDetails){
-    const name=tree.name;
-    const actual=klass.trees.find(t=>t.name===name||t.sourceName===name);
-    if(!actual||!Number.isInteger(tree.spentPoints)||tree.spentPoints<0||!Array.isArray(tree.talents))return {verified:false,ranks:new Map(),points:new Map()};
-    let total=0;
-    for(const entry of tree.talents||[]){
-      const match=lookup.get(Number(entry.id)),rank=Number(entry.rank);
-      if(!match||match.tree.id!==actual.id||!Number.isInteger(rank)||rank<1||rank>match.node.maxRank||ranks.has(match.node.id)||(entry.spellId&&!match.node.rankSpellIds.includes(Number(entry.spellId)))){
-        return {verified:false,ranks:new Map(),points:new Map()};
-      }
-      ranks.set(match.node.id,rank);total+=rank;
-    }
-    if(total!==tree.spentPoints||points.has(actual.id))return {verified:false,ranks:new Map(),points:new Map()};
-    points.set(actual.id,total);
-  }
-  return {verified:true,ranks,points};
-}
+function personalTalentRanks(c,klass){return resolvePersonalTalentState(c,klass);}
 function effectiveTalentLevel(node,personal){
   const rank=personal?.plannedLegacyRank;
   return Number.isInteger(rank)&&rank>=1&&rank<=5&&node.requiredLevel===10+(node.requiredPoints??node.row*5)?node.requiredLevel-rank:node.requiredLevel;
@@ -331,7 +312,8 @@ function talentPanel(c){
     '<div class="talent-summary"><strong>'+esc(total===null?'Talentstand nicht bestätigt':total+' verteilte Talentpunkte')+'</strong><small>Aktueller Charakterstand · keine Talentplanung</small></div>'+
     (!personal.verified?'<p class="talent-catalog-notice">Persönliche Talentränge konnten nicht vollständig zugeordnet werden. Unbekannte Ränge werden nicht als 0 gewertet.</p>':'')+
     (stale?'<p class="talent-catalog-notice">Talentstruktur: letzter bestätigter Abruf</p>':'')+
-    (klass.personalMappingUnverified?'<p class="talent-catalog-notice">Der Gleichgewichtsbaum wurde durch einen Hotfix geändert. Persönliche Ränge werden erst nach bestätigter neuer Datenzuordnung wieder angezeigt.</p>':'')+
+    (klass.personalMappingUnverified?'<p class="talent-catalog-notice">Die persönliche Zuordnung von Traumzustand ist noch nicht bestätigt. '+(personal.verified?'Die gemeldeten übrigen Talentränge sind eindeutig zugeordnet.':'Ein nicht eindeutig zuordenbarer Talentstand bleibt gesperrt.')+'</p>':'')+
+    (personal.coverage==='verified_reported_trees'?'<p class="talent-catalog-notice">Gemeldeter Talentstand der Armory: Nicht aufgeführte Bäume enthalten laut diesem Datensatz keine verteilten Punkte.</p>':'')+
     '<div class="talent-tree-switch" dir="ltr" role="group" aria-label="Talentbaum">'+displayList('fixedControls',klass.trees,t=>'<button type="button" class="talent-tree-option'+(t.id===tree.id?' is-active':'')+'" data-talent-tree="'+t.id+'" aria-pressed="'+(t.id===tree.id)+'"><span>'+esc(t.name)+'</span><strong>'+esc(personal.verified?points.get(t.id)||0:'–')+'</strong></button>').join('')+'</div>'+
     '<div class="talent-tree talent-visual-tree"><div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(personal.verified?points.get(tree.id)||0:'–')+' Punkte</span></div>'+talentGraph(tree,personal,c.level,stale,node?.id||0,c.slug)+'</div>'+
     '<div class="talent-legend"><span class="is-learned">Erlernt</span><span class="is-unlocked">Voraussetzungen erfüllt</span><span class="is-locked">Gesperrt</span></div>'+
