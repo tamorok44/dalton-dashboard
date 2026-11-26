@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
-import {profileKey,resolveApprovedTalentPlan,validateTalentPath,TALENT_POINT_CALENDAR_REVISION} from './talent-plan-core.mjs';
+import {profileKey,resolveApprovedTalentPlan,validateTalentPath,TALENT_POINT_CALENDAR_REVISION,compatibleTalentRevalidation} from './talent-plan-core.mjs';
 import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest,talentRevisionDigest,
   talentRuleEvidenceDigest,talentSourcePairDigest,talentStructureDigest} from './talent-catalog-proof.mjs';
 import {isTalentClientBuild} from './talent-rule-watch.mjs';
@@ -326,6 +326,66 @@ for(const entry of release.specializationAdvice??[]){
       'comparison evidence does not cover the exact options '+id);
   }
 }
+// No revalidation is implicitly generated. A reviewer supplies a new exact
+// capture, complete official delta review and per-plan editorial evidence.
+function auditRevalidation(entry,library,catalog,snapshots){
+  const plan=library.find(p=>p.id===entry.planId&&p.version===entry.planVersion&&p.status==='approved');
+  assert.ok(plan,'revalidation needs an existing approved plan version');
+  const baseline=catalog.packs.get(ruleKey(plan.classId,plan.ruleRevision,entry.legacyTalentedRank));
+  assert.ok(baseline&&plan.supportedLegacyRanks.includes(entry.legacyTalentedRank)&&compatibleTalentRevalidation(entry,plan,baseline),
+    'invalid revalidation identity, baseline, scope or allocation');
+  assert.ok(validTuple(entry.to)&&date(entry.reviewedAt),'invalid target tuple/date');
+  const next={...baseline,...entry.to,reviewedAt:entry.reviewedAt,sources:entry.evidenceIds};
+  // Reject arbitrary rule overrides hidden in the target.
+  assert.deepEqual(Object.keys(entry.to).sort(),[...TALENT_RULE_BINDING_FIELDS].sort());
+  assert.deepEqual(Object.keys(entry.from).sort(),[...TALENT_RULE_BINDING_FIELDS].sort());
+  const proof=snapshots.get(proofKey(next.classId,next.catalogRevision,next.sourceRevision));
+  assert.ok(proof,'revalidation missing exact new catalog proof');
+  const kinds=new Set();
+  for(const id of entry.evidenceIds){
+    const item=catalog.evidence.get(id);
+    assert.ok(item&&sameTuple(item,next)&&item.reviewedAt<=entry.reviewedAt&&item.reviewedAt>=baseline.reviewedAt&&
+      sameTuple(item.reviewedFrom??{},baseline),'revalidation evidence not bound to exact transition '+id);
+    kinds.add(item.kind);
+    if(item.kind==='editorial'){
+      assert.ok(item.planId===plan.id&&item.planVersion===plan.version&&item.allocationDigest===entry.allocationDigest,
+        'revalidation editorial path mismatch');
+    }else{
+      assert.equal(item.legacyTalentedRank,entry.legacyTalentedRank);
+      assert.equal(item.ruleDigest,talentRuleEvidenceDigest(next));
+    }
+    if(item.kind==='client'){
+      assert.equal(item.comparisonDigest,talentStructureDigest(proof),'new client comparison missing or mismatched');
+      assert.match(item.sourceCaptureSha256,digest,'new independent capture hash required');
+    }
+    if(item.kind==='official'){
+      assert.ok(item.completeHotfixReview===true&&item.hotfixDeltaReviewed===true&&
+        item.hotfixRevision===entry.to.hotfixRevision,'complete hotfix delta evidence required');
+    }
+  }
+  assert.ok(['client','official','editorial'].every(kind=>kinds.has(kind)),'revalidation missing evidence kind');
+  const checkedAt='2026-01-01T00:00:00.000Z';
+  const master={classes:{[next.classId]:proof},classMechanicsRevisions:{[next.classId]:next.catalogRevision},
+    stale:false,checkedAt,sourceRevision:next.sourceRevision,sourceFreshAt:{raw:checkedAt,localized:checkedAt}};
+  const observation={status:'observed',checkedAt,revisionSince:checkedAt,clientBuild:next.clientBuild,hotfixRevision:next.hotfixRevision};
+  const baselineProof=snapshots.get(proofKey(baseline.classId,baseline.catalogRevision,baseline.sourceRevision));
+  assert.ok(baselineProof,'revalidation missing original catalog proof');
+  const original=auditPath(plan,baseline,baselineProof);
+  assert.ok(original.ok,'revalidation original path invalid');
+  for(const profile of plan.profiles){
+    const result=resolveApprovedTalentPlan(profile,[plan],master,[baseline],{ruleObservation:observation,
+      legacyTalentedRank:entry.legacyTalentedRank,now:Date.parse(checkedAt),revalidations:[entry]});
+    assert.ok(result.ok,'revalidation live gate failed '+JSON.stringify(result));
+    assert.deepEqual(result.history,original.history,'revalidation must preserve the chronological path');
+  }
+}
+const revalidationKeys=new Set();
+for(const entry of release.revalidations??[]){
+  const key=JSON.stringify([entry.planId,entry.planVersion,entry.legacyTalentedRank,entry.to?.clientBuild,entry.to?.hotfixRevision,entry.to?.sourceRevision]);
+  assert.ok(!revalidationKeys.has(key),'ambiguous revalidation');
+  revalidationKeys.add(key);
+  auditRevalidation(entry,plans,{evidence,packs},snapshots);
+}
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');
@@ -391,3 +451,24 @@ const approvedCoverage=fixtureRows.find(row=>row.status==='approved').profiles[0
 assert.deepEqual(approvedCoverage.approvedRanks,[0]);
 assert.deepEqual(approvedCoverage.blockedRanks,[1,2,3,4,5]);
 if(!process.argv.includes('--coverage'))console.log('Talent release CI: offline proof, exact claims, ranks, prerequisites and row gates: OK');
+
+// A complete hypothetical review is tested without claiming a real build approval.
+const baseTuple=Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,pack[k]]));
+const targetTuple={...baseTuple,clientBuild:'1.60.1.71139',hotfixRevision:'d'.repeat(64),sourceRevision:'e'.repeat(64)};
+const nextPack={...pack,...targetTuple};
+const transitionFixture={status:'verified',planId:publishedFixture.id,planVersion:1,allocationDigest:talentPlanEvidenceDigest(publishedFixture),
+  ruleRevision:pack.revision,legacyTalentedRank:0,from:baseTuple,to:targetTuple,reviewedAt:'2026-11-26',
+  evidenceIds:['fixture-next-client','fixture-next-official','fixture-next-editorial'],
+  scope:{completeHotfixReview:true,classAndSpellDependenciesUnchanged:true,pointCalendarAndGatesUnchanged:true,editorialRecommendationUnchanged:true}};
+const clientFixture={...ruleEvidence,...targetTuple,id:'fixture-next-client',reviewedFrom:baseTuple,reviewedAt:'2026-11-26',
+  ruleDigest:talentRuleEvidenceDigest(nextPack),comparisonDigest:talentStructureDigest(fixtureProof),sourceCaptureSha256:'f'.repeat(64)};
+const officialFixture={...clientFixture,id:'fixture-next-official',kind:'official',completeHotfixReview:true,hotfixDeltaReviewed:true};
+const editorialFixture={...editorial,...targetTuple,id:'fixture-next-editorial',reviewedFrom:baseTuple,reviewedAt:'2026-11-26'};
+const transitionCatalog=validateReleaseCatalog({evidence:[ruleEvidence,editorial,clientFixture,officialFixture,editorialFixture],rulePacks:[pack]});
+const transitionSnapshots=indexCatalogProofs([{...tuple,proof:fixtureProof},{...targetTuple,proof:fixtureProof}]);
+auditRevalidation(transitionFixture,[{...publishedFixture,status:'approved'}],transitionCatalog,transitionSnapshots);
+assert.throws(()=>auditRevalidation(transitionFixture,[{...publishedFixture,status:'approved'}],transitionCatalog,fixtureSnapshots),/missing exact new catalog proof/);
+const missingOfficial={...transitionCatalog,evidence:new Map(transitionCatalog.evidence)};
+missingOfficial.evidence.set(officialFixture.id,{...officialFixture,completeHotfixReview:false});
+assert.throws(()=>auditRevalidation(transitionFixture,[{...publishedFixture,status:'approved'}],missingOfficial,transitionSnapshots),/complete hotfix delta/);
+assert.throws(()=>auditRevalidation({...transitionFixture,allocationDigest:'b'.repeat(64)},[{...publishedFixture,status:'approved'}],transitionCatalog,transitionSnapshots),/invalid revalidation/);

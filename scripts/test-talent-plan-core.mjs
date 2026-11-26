@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {validateTalentPath,resolveApprovedTalentPlan,TALENT_POINT_CALENDAR_REVISION} from './talent-plan-core.mjs';
+import {talentPlanEvidenceDigest,TALENT_RULE_BINDING_FIELDS} from './talent-catalog-proof.mjs';
 // Synthetic data only: this is not a real class skill recommendation.
 const revision='a'.repeat(64),profile={classId:8,treeId:1,goal:'leveling',role:'damage',playStyle:'mixed',priority:'balanced'};
 const talents=Array.from({length:11},(_,row)=>({id:row+1,row,maxRank:row===10?1:5,requiredPoints:row*5,
@@ -151,3 +152,27 @@ assert.equal(checkedHunter.history.find(p=>p.talentId===104961).level,40);
 assert.deepEqual([11372,11371,11370].map(id=>checkedHunter.history.filter(p=>p.treeId===id).length),[31,20,0]);
 assert.equal(resolveApprovedTalentPlan(bmCandidate.profiles[0],[bmCandidate],conditional,[hunterRules]).code,'no_approved_recommendation');
 console.log('Hunter research: 51-point conditional path; real projected cycle remains blocked: OK');
+
+// Synthetic transition: old plan identity and allocation stay exactly intact.
+const tupleOf=value=>Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(key=>[key,value[key]]));
+const nextTuple={...tupleOf(rules),clientBuild:'1.60.1.71139',hotfixRevision:'a'.repeat(64),sourceRevision:'b'.repeat(64)};
+const transitionObservation={...verification,clientBuild:nextTuple.clientBuild,hotfixRevision:nextTuple.hotfixRevision};
+const transitionMaster={...master,sourceRevision:nextTuple.sourceRevision};
+const transition={status:'verified',planId:plan.id,planVersion:plan.version,allocationDigest:talentPlanEvidenceDigest(plan),ruleRevision:rules.revision,
+  legacyTalentedRank:0,from:tupleOf(rules),to:nextTuple,reviewedAt:rules.reviewedAt,evidenceIds:['client','official','editorial'],
+  scope:{completeHotfixReview:true,classAndSpellDependenciesUnchanged:true,pointCalendarAndGatesUnchanged:true,editorialRecommendationUnchanged:true}};
+const resolveTransition=(revalidations,options={})=>resolveApprovedTalentPlan(profile,[plan],options.master??transitionMaster,[rules],
+  {now,ruleObservation:options.observation??transitionObservation,legacyTalentedRank:0,revalidations});
+assert.equal(resolveTransition([]).code,'unverified_current_rules');
+assert.equal(resolveTransition([transition]).ok,true);
+assert.equal(resolveTransition([transition]).version,plan.version);
+assert.deepEqual(resolveTransition([transition]).history,resolveWith(verification).history);
+for(const invalid of [{...transition,status:'pending'},{...transition,planVersion:2},{...transition,allocationDigest:'a'.repeat(64)},
+  {...transition,legacyTalentedRank:1},{...transition,from:{...transition.from,sourceRevision:'f'.repeat(64)}},
+  {...transition,scope:{...transition.scope,completeHotfixReview:false}},
+  {...transition,to:{...nextTuple,catalogRevision:'d'.repeat(64)}},{...transition,evidenceIds:['client','official']}])assert.equal(resolveTransition([invalid]).code,'unverified_current_rules');
+assert.equal(resolveTransition([transition,transition]).code,'unverified_current_rules');
+assert.equal(resolveTransition([transition],{observation:{...transitionObservation,hotfixRevision:'f'.repeat(64)}}).code,'unverified_current_rules');
+assert.equal(resolveTransition([transition],{master:{...transitionMaster,sourceRevision:'f'.repeat(64)}}).code,'unverified_current_rules');
+assert.equal(resolveTransition([transition],{master:{...transitionMaster,stale:true}}).code,'unverified_current_catalog');
+console.log('Reviewed exact transition preserves plan identity; unknown updates fail closed: OK');

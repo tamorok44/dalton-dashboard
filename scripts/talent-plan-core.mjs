@@ -1,4 +1,5 @@
 import {currentTalentRulesMatch} from './talent-rule-watch.mjs';
+import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest} from './talent-catalog-proof.mjs';
 
 // Pure planning rules. No provider requests, no roster dependency, no runtime AI.
 const positive=v=>Number.isSafeInteger(v)&&v>0;
@@ -66,7 +67,30 @@ export function validateTalentPath(plan,master,rules){
   }
   return {ok:true,history,finalRanks:Object.fromEntries(ranks)};
 }
-export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{ruleObservation,legacyTalentedRank,now=Date.now()}={}){
+const tupleEqual=(a,b)=>TALENT_RULE_BINDING_FIELDS.every(key=>a?.[key]===b?.[key]);
+export function compatibleTalentRevalidation(entry,plan,baseline){
+  return entry?.status==='verified'&&entry.planId===plan.id&&entry.planVersion===plan.version&&
+    entry.allocationDigest===talentPlanEvidenceDigest(plan)&&entry.legacyTalentedRank===baseline.legacyTalentedRank&&
+    entry.ruleRevision===baseline.revision&&tupleEqual(entry.from,baseline)&&
+    entry.to?.classId===baseline.classId&&entry.to?.catalogRevision===baseline.catalogRevision&&
+    !tupleEqual(entry.from,entry.to)&&nonempty(entry.reviewedAt)&&entry.reviewedAt>=baseline.reviewedAt&&
+    array(entry.evidenceIds).length>=3&&new Set(entry.evidenceIds).size===entry.evidenceIds.length&&entry.evidenceIds.every(nonempty)&&
+    entry.scope?.completeHotfixReview===true&&entry.scope?.classAndSpellDependenciesUnchanged===true&&
+    entry.scope?.pointCalendarAndGatesUnchanged===true&&entry.scope?.editorialRecommendationUnchanged===true;
+}
+
+// Only explicitly reviewed exact transitions can preserve a plan version.
+// An equal class hash, a newer build, or an unrelated hotfix is not enough.
+export function selectTalentRulePack(plan,baseline,master,observation,revalidations,now){
+  if(currentTalentRulesMatch(observation,baseline,master,now))return baseline;
+  const reviewed=array(revalidations).filter(entry=>compatibleTalentRevalidation(entry,plan,baseline)&&
+    currentTalentRulesMatch(observation,{...baseline,...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,entry.to[k]]))},master,now));
+  if(reviewed.length!==1)return null;
+  const entry=reviewed[0];
+  return {...baseline,...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,entry.to[k]])),
+    reviewedAt:entry.reviewedAt,sources:entry.evidenceIds};
+}
+export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{ruleObservation,legacyTalentedRank,now=Date.now(),revalidations=[]}={}){
   const key=profileKey(profile);
   if(!key)return reject('invalid_profile');
   const candidates=array(plans).filter(p=>p?.status==='approved'&&p.classId===profile.classId&&p.treeId===profile.treeId&&
@@ -84,6 +108,6 @@ export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{ruleOb
   if(!check.ok)return check;
   // Cache freshness only attests to an acquisition. Release additionally
   // requires independent, current evidence from a verified rules check.
-  if(!currentTalentRulesMatch(ruleObservation,rules[0],master,now))return reject('unverified_current_rules');
+  if(!selectTalentRulePack(plan,rules[0],master,ruleObservation,revalidations,now))return reject('unverified_current_rules');
   return {ok:true,planId:plan.id,version:plan.version,history:check.history};
 }
