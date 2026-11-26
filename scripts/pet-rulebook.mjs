@@ -30,12 +30,32 @@ export const PET_RULES=Object.freeze({
     sourceIds:Object.freeze(['blizzardHotfix','bindFox','efficientPets','foreverDbBuild','db2FoxTraining'])
   }),
   'pet.scaling':Object.freeze({
-    version:5,
-    label:'Jägerbegleiter-Skalierungskoeffizienten',
+    version:6,
+    label:'Jägerbegleiter-Skalierungskoeffizienten (Übersicht)',
     evidence:'reference_model',
     evidenceNote:'2 Gesundheit je Ausdauer, 30 % Rüstung, 10 % der höheren AP und 100 % Krit bleiben Referenzmodell. 100 % Trefferchance oder Expertise werden ausdrücklich nicht angenommen. Die unveränderte Client-Aura 415429 bestätigt nur die Struktur, nicht die numerischen Serverkoeffizienten.',
     reviewedAt:'2026-11-25',
     sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling'])
+  }),
+  'pet.scaling.health':Object.freeze({
+    version:1,label:'Gesundheitsvererbung',evidence:'reference_model',
+    evidenceNote:'2 Gesundheit je Ausdauer des Jägers; keine Aussage über Gesamtgesundheit.',
+    reviewedAt:'2026-11-26',sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling'])
+  }),
+  'pet.scaling.armor':Object.freeze({
+    version:1,label:'Rüstungsvererbung',evidence:'reference_model',
+    evidenceNote:'30 % der Jägerrüstung als rechnerischer Beitrag vor Rundung.',
+    reviewedAt:'2026-11-26',sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling'])
+  }),
+  'pet.scaling.ap':Object.freeze({
+    version:1,label:'Angriffskraftvererbung',evidence:'reference_model',
+    evidenceNote:'10 % der höheren Angriffskraft als Referenzmodell; getrennte Armory-Ausgangswerte fehlen.',
+    reviewedAt:'2026-11-26',sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling'])
+  }),
+  'pet.scaling.crit':Object.freeze({
+    version:1,label:'Numerische Krit-Vererbung',evidence:'reference_model',
+    evidenceNote:'100 % bleiben historisches Referenzmodell. Nach dem Hotfix vom 25.11. fehlen aktuelle reproduzierbare Messungen und eindeutige getrennte Armory-Eingangswerte.',
+    reviewedAt:'2026-11-26',requiresNewMeasurement:true,sourceIds:Object.freeze(['blizzardHotfix','wowheadScaling','foreverHunterScalingAudit','foreverDbBuild','db2Scaling','blizzardBetaNotes'])
   }),
   'pet.crit.inheritance':Object.freeze({
     version:1,
@@ -46,12 +66,13 @@ export const PET_RULES=Object.freeze({
     sourceIds:Object.freeze(['blizzardHotfix','blizzardBetaNotes'])
   }),
   'pet.autoswing.crit':Object.freeze({
-    version:1,
+    version:2,
     label:'Autoattack-Krit',
-    evidence:'measured',
-    evidenceNote:'Kontrollierte Community-Messungen zeigen, dass White-Swings die geerbte Krit-Komponente aktuell nicht zuverlässig widerspiegeln. Diese Evidenz dient nur als Warn-/Sperrhinweis, nicht als Berechnungsformel.',
-    reviewedAt:'2026-11-22',
-    sourceIds:Object.freeze(['foreverBug556'])
+    evidence:'official',
+    evidenceNote:'Blizzard bestätigt am 25.11. die Behebung des Fehlers mit 0 % Krit bei normalen Nahkampfangriffen. Keine neue numerische Krit-Chance dokumentiert; Fehlerbericht #556 ist historisch und als behoben markiert.',
+    reviewedAt:'2026-11-26',
+    validFrom:'2026-11-25',
+    sourceIds:Object.freeze(['blizzardHotfix'])
   }),
   'pet.expertise':Object.freeze({
     version:1,
@@ -96,15 +117,6 @@ const sources=Object.freeze({
     semanticPatterns:Object.freeze([
       /pets?\s+now\s+correctly\s+benefit\s+from\s+expertise/i,
       /pets?[\s\S]{0,180}?only\s+ever\s+inheriting[\s\S]{0,180}?melee\s+critical\s+strike[\s\S]{0,220}?whichever\s+is\s+higher,?\s*melee\s+or\s+ranged/i
-    ])
-  }),
-  foreverBug556:Object.freeze({
-    label:'4evrbugs #556 · Pet Autoattack Crit',
-    url:'https://4evrbugs.com/bug/556',
-    mode:'markers',
-    semanticPatterns:Object.freeze([
-      /white\s+swings\s+get\s+none\s+of\s+the\s+crit\s+inherited\s+from\s+the\s+hunter/i,
-      /claw\s+and\s+bite\s+crit\s+at\s+about\s+the\s+hunter(?:'|’)?s\s+crit\s+chance/i
     ])
   }),
   wowheadScaling:Object.freeze({
@@ -264,6 +276,57 @@ function hotfixEvidence(text,patterns){
   if(!relevant.length)return {ok:false,evidence:semantics.evidence,missing:'pet-relevant hotfix lines'};
   return {ok:true,evidence:[...semantics.evidence,...relevant.map(normalized).sort()]};
 }
+// Exact reviewed additions, not a blanket digest reset. The identical Hunter/Warlock
+// sentence can occur twice. The Hawk lines concern summoned hawks, not tamed pets.
+const reviewedHotfixLines=Object.freeze([
+  'fixed an issue where pets had 0% critical strike chance on melee basic attacks.',
+  "summoned hawks now attack the target they're summoned on even if the player's pet is set to passive.",
+  'summoned hawks are now dismissed when the dismiss pet spell is completed.'
+]);
+const fixedCritLine=reviewedHotfixLines[0];
+function changedEvidence(before,after){
+  const counts=new Map();
+  for(const line of before)counts.set(line,(counts.get(line)||0)-1);
+  for(const line of after)counts.set(line,(counts.get(line)||0)+1);
+  return [...counts].filter(([,n])=>n!==0).map(([line])=>line);
+}
+function hotfixRuleScope(line){
+  // Only unambiguous single-topic sentences are scoped. Unknown, mixed or
+  // broad pet changes conservatively block every hotfix-dependent rule.
+  if(line===fixedCritLine)return ['pet.scaling','pet.scaling.crit','pet.crit.inheritance','pet.autoswing.crit'];
+  if(reviewedHotfixLines.slice(1).includes(line))return [];
+  if(/^hunter pets? now (?:gain|gains) (?:a different amount of|\d+\s*%) armor from (?:their|its) owner\.$/.test(line))
+    return ['pet.scaling','pet.scaling.armor'];
+  if(/^hunter pets? now (?:gain|gains) (?:a different amount of|\d+\s*%) attack power from (?:their|its) owner\.$/.test(line))
+    return ['pet.scaling','pet.scaling.ap'];
+  if(/^hunter pets? now (?:gain|gains) (?:a different amount of|\d+\s*%) critical strike chance from (?:their|its) owner\.$/.test(line))
+    return ['pet.scaling','pet.scaling.crit','pet.crit.inheritance','pet.autoswing.crit'];
+  return null;
+}
+function inspectHotfixEvidence(semantic,previousSource,previousRulebookVersion){
+  const evidence=semantic.evidence;
+  const digest=sha(evidence.join('\n'));
+  const oldDigest=previousSource?.baselineDigest||null;
+  let baselineEvidence=Array.isArray(previousSource?.baselineEvidence)&&sha(previousSource.baselineEvidence.join('\n'))===oldDigest
+    ?previousSource.baselineEvidence:null;
+  // A legacy digest is migrated only when it exactly matches the current
+  // evidence minus the specifically reviewed additions. No unknown change
+  // can be swallowed by the rulebook version bump.
+  const legacy=evidence.filter((line,i)=>i===0||!reviewedHotfixLines.includes(line));
+  const approved=Boolean(oldDigest&&['2026.11.25.3','2026.11.26.1'].includes(previousRulebookVersion)&&
+    PET_RULEBOOK_VERSION==='2026.11.26.1'&&evidence.includes(fixedCritLine)&&sha(legacy.join('\n'))===oldDigest);
+  if(!oldDigest||oldDigest===digest||approved)baselineEvidence=evidence;
+  const baselineDigest=(!oldDigest||approved)?digest:oldDigest;
+  const changed=digest!==baselineDigest;
+  let affectedRuleIds=null;
+  if(changed&&baselineEvidence){
+    const changes=changedEvidence(baselineEvidence,evidence).map(hotfixRuleScope);
+    if(changes.every(scope=>scope!==null))affectedRuleIds=[...new Set(changes.flat())];
+  }
+  return {status:changed?'review_required':'verified',reason:changed?'source_evidence_changed':null,
+    digest,baselineDigest,baselineEvidence,affectedRuleIds,
+    fixedCritPresent:evidence.includes(fixedCritLine),reviewedTransition:approved?'2026.11.25.3→2026.11.26.1':null};
+}
 async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,previousRulebookVersion=null}={}){
   try{
     const response=await fetchImpl(definition.url,{
@@ -280,9 +343,11 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
         id,label:definition.label,url:definition.url,status:'review_required',
         reason:'expected_rule_evidence_missing',missing:semantic.missing,
         baselineDigest:previousSource?.baselineDigest||null,
+        baselineEvidence:previousSource?.baselineEvidence||null,
         baselineBuild:previousSource?.baselineBuild||null
       };
     }
+    if(id==='blizzardHotfix')return {id,label:definition.label,url:definition.url,build:null,...inspectHotfixEvidence(semantic,previousSource,previousRulebookVersion)};
     const build=definition.buildPattern?.exec(text)?.[1]||null;
     // Der alte Fox-Marker kann die Buildnummer zusätzlich im Treffertext enthalten.
     // Rekonstruktion ersetzt ausschließlich die erkannte vollständige Buildkennung;
@@ -324,6 +389,7 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       id,label:definition.label,url:definition.url,status:'source_unavailable',
       reason:String(error?.message||error).slice(0,180),
       baselineDigest:previousSource?.baselineDigest||null,
+      baselineEvidence:previousSource?.baselineEvidence||null,
       baselineBuild:previousSource?.baselineBuild||null,
       build:previousSource?.build||null
     };
@@ -344,7 +410,14 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
   const latestBuild=builds.sort((a,b)=>Number(b.split('.').at(-1))-Number(a.split('.').at(-1)))[0];
   Object.assign(sourceResults,await inspectPetDb2({build:latestBuild,fetchImpl}));
   const rules=Object.fromEntries(Object.entries(PET_RULES).map(([id,rule])=>{
-    const statuses=rule.sourceIds.map(sourceId=>sourceResults[sourceId]?.status||'source_unavailable');
+    const statuses=rule.sourceIds.map(sourceId=>{
+      const source=sourceResults[sourceId];
+      if(sourceId==='blizzardHotfix'&&source?.status==='review_required'&&
+        Array.isArray(source.affectedRuleIds)&&!source.affectedRuleIds.includes(id))return 'verified';
+      return source?.status||'source_unavailable';
+    });
+    if(id==='pet.autoswing.crit'&&sourceResults.blizzardHotfix?.fixedCritPresent!==true&&sourceResults.blizzardHotfix?.status!=='source_unavailable')statuses.push('review_required');
+    if(rule.requiresNewMeasurement)statuses.push('review_required');
     const status=worstStatus(statuses);
     return [id,{
       id,label:rule.label,version:rule.version,status,
@@ -377,6 +450,8 @@ export function publicPetRuleState(state){
     }])),
     sources:Object.fromEntries(Object.entries(state.sources||{}).map(([id,source])=>[id,{
       id,label:source.label,url:source.url,status:source.status,build:source.build||null,reason:source.reason||null,
+      ...(Array.isArray(source.affectedRuleIds)?{affectedRuleIds:source.affectedRuleIds}:{}),
+      ...(source.reviewedTransition?{reviewedTransition:source.reviewedTransition}:{}),
       ...(source.reviewedBuild?{reviewedBuild:source.reviewedBuild,checkedKeys:source.checkedKeys}: {})
     }])),
     history:Array.isArray(state.history)?state.history.slice(-40):[]
