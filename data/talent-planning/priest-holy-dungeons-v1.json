@@ -241,7 +241,7 @@
     {
       "talentId": 105860,
       "count": 3,
-      "reason": "Rüstungsschutz nach kritischen direkten Heilungen ausbauen."
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
     },
     {
       "talentId": 105862,
@@ -256,12 +256,12 @@
     {
       "talentId": 105858,
       "count": 3,
-      "reason": "Manakosten zentraler Heilzauber reduzieren."
+      "reason": "Manakosten von geringer Heilung, Heilung, großer Heilung, Sühne und Gebet der Besserung reduzieren; nur erlernte Fähigkeiten nutzen."
     },
     {
       "talentId": 105856,
       "count": 1,
-      "reason": "Eigene Heilung bei Blitzheilung auf andere ergänzen."
+      "reason": "Holy Binding: Blitzheilung auf einen anderen Verbündeten heilt auch den Priester, nicht bei Selbstheilung."
     },
     {
       "talentId": 105866,
@@ -271,7 +271,7 @@
     {
       "talentId": 105855,
       "count": 2,
-      "reason": "Mana bei geeigneten wechselnden Heilzaubern unterstützen."
+      "reason": "Litanei des Lichts: Manarückgewinn bei Wechsel des gewirkten Heilzaubers; nicht bei jedem Tick oder ausgelösten Heileffekt voraussetzen."
     },
     {
       "talentId": 105854,
@@ -296,7 +296,7 @@
     {
       "talentId": 105851,
       "count": 1,
-      "reason": "Gebet der Besserung auf 40 freischalten."
+      "reason": "Gebet der Besserung: Heilung bei erlittenem Schaden oder nichtperiodischer Heilung; begrenzte Sprünge, keine feste Heilmenge oder garantierte Zielwahl."
     },
     {
       "talentId": 105849,
@@ -306,7 +306,7 @@
     {
       "talentId": 105848,
       "count": 3,
-      "reason": "Heilbedrohung verringern."
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
     },
     {
       "talentId": 105837,
@@ -340,17 +340,50 @@
       "forever-tavern-priest",
       "outpost-priest"
     ],
-    "editorialDecision": "Continuous Holy healer path, not a respec route. Early heal cast time and Inspiration, Improved Healing, Litany of Light, Prayer of Mending 40, then Discipline mana/threat and shield options.",
+    "editorialDecision": "Durchgängiger Heilig-Dungeonpfad: direkte und Gruppenheilung, Inspiration, günstigere Heilungen, Holy Binding und Litanei auf 30–31; Gebet der Besserung auf 40, danach Disziplin-Ressourcen. Heilzauber nur nach Bedarf wechseln; nicht unnötig zaubern, um Litanei auszulösen. Holy Reach ist situative Alternative zu später Intelligenz, keine gemessene Überlegenheit.",
     "unresolved": [
       "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
       "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
-      "Current server healing coefficients and per-spell mana returns, especially Litany of Light; avoid assuming the same spell alternation works with all triggered heals."
+      "Current server healing coefficients and per-spell mana returns, especially Litany of Light; avoid assuming the same spell alternation works with all triggered heals.",
+      "105851: Build 71139 zeigt einen skalierten Heilwert; unabhängige aktuelle Messung der tatsächlichen Heilskalierung fehlt. Keine exakte Heilformel freigeben.",
+      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
       "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+          "contribution": "Aktueller Build 71139 und Cache vom 25.11.; direkte Heilung oder Schaden als Auslöser, Sprungmechanik, Spirit of Redemption als Voraussetzung; keine unabhängig gemessene Skalierungsformel."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/holy-priest/rotation-and-playstyle",
+          "contribution": "10.11.: Gebet der Besserung, bedarfsgerechter Heilzauberwechsel und Manaregeneration; Endgame-Guide kein Beweis unserer Levelchronologie."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Litanei, Holy Binding, Improved Healing und Searing Light: qualitative Talentfunktionen."
+        },
+        {
+          "url": "https://undying.app/classes/priest/holy",
+          "contribution": "15.11.: tiefer Holy-Kern mit Prayer of Mending, Holy Binding, Litany und Discipline-Ressourcen; situative Alternative Holy Reach."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
