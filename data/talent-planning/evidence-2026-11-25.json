@@ -706,6 +706,48 @@
       "kind": "expert_guide",
       "independenceGroup": "cobalt-editorial",
       "guideUpdated": "2026-11-03"
+    },
+    {
+      "id": "cobalt-warlock-demonology-pve-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/demonology/pve/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "cobalt-warlock-destruction-pve-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/destruction/pve/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "cobalt-warlock-affliction-pvp-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/affliction/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "foreverbattlegrounds-warlock-affliction-pvp",
+      "url": "https://foreverbattlegrounds.com/classes/warlock/affliction/",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverbattlegrounds-editorial",
+      "guideUpdated": "2026-11-11"
+    },
+    {
+      "id": "mobalytics-warlock-destruction-pvp",
+      "url": "https://mobalytics.gg/wow-forever/classes/destruction-warlock-pvp-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-warlock-pvp-editorial",
+      "guideUpdated": "2026-11-15"
+    },
+    {
+      "id": "cobalt-warlock-destruction-pvp-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/destruction/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
     }
   ],
   "pilot": {
@@ -1346,6 +1388,86 @@
         "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
         "November 25 pet crit corrections; no exact pet-damage or PvP performance claim.",
         "Compare with 21/30/0 Soul Link/Siphon Life alternative and confirm defensive effects; ranks 1–5 not verified."
+      ]
+    },
+    {
+      "id": "warlock-affliction-pvp",
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-warlock-affliction-pvp-20261110",
+        "foreverbattlegrounds-warlock-affliction-pvp"
+      ],
+      "proposal": "Pressure and control in battlegrounds, prioritizing Curse of Exhaustion at 25, Siphon Life at 30 and Wrack at 40, followed by defense and active-demon support. No required sacrifice.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "The cited PvP build uses sacrifice; our active-demon alternative needs comparative testing. Channel pushback protection is not silence or interrupt immunity."
+      ]
+    },
+    {
+      "id": "warlock-demonology-dungeons",
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-warlock-demonology-pve-20261110",
+        "outpost-warlock-dungeon-20261123"
+      ],
+      "proposal": "Fire-oriented active-demon group route, with Demonic Pact before the Destruction investment. Keep the tank's threat role; no guaranteed stacking or same-demon sacrifice carryover.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "November 25 pet crit corrections; verify Imp uptime, threat and choice of sacrifice target."
+      ]
+    },
+    {
+      "id": "warlock-destruction-dungeons",
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-warlock-destruction-pve-20261110",
+        "outpost-warlock-dungeon-20261123"
+      ],
+      "proposal": "Direct fire damage and multi-target utility for ordinary leveling dungeons, not a pure raid build or unconditional AoE spam. Prioritize a sustainable rotation; sacrifice remains optional.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "Review target-lifetime dependence, threat, exact Shadow and Flame interactions and demon choice."
+      ]
+    },
+    {
+      "id": "warlock-destruction-pvp",
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-warlock-destruction-pvp",
+        "cobalt-warlock-destruction-pvp-20261110"
+      ],
+      "proposal": "Burst and survival research route for battlegrounds, using Molten Skin and Aftermath before Conflagrate, with drain sustain later. Situational Pyroclasm rather than an assumed guaranteed stun.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "Confirm the proc and consumption order of Shadowburn, Conflagrate and Shadow and Flame; do not infer immunity to kicks or silence."
       ]
     }
   ]

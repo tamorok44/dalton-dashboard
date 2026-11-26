@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-affliction-pvp",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11629,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 35,
+    "11636": 16,
+    "11637": 0
+  },
+  "points": [
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105916,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 1
+    },
+    {
+      "talentId": 105918,
+      "rank": 2
+    },
+    {
+      "talentId": 105913,
+      "rank": 1
+    },
+    {
+      "talentId": 105914,
+      "rank": 1
+    },
+    {
+      "talentId": 105914,
+      "rank": 2
+    },
+    {
+      "talentId": 105917,
+      "rank": 1
+    },
+    {
+      "talentId": 105917,
+      "rank": 2
+    },
+    {
+      "talentId": 105912,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 2
+    },
+    {
+      "talentId": 105911,
+      "rank": 3
+    },
+    {
+      "talentId": 105917,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 2
+    },
+    {
+      "talentId": 105910,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 4
+    },
+    {
+      "talentId": 105910,
+      "rank": 5
+    },
+    {
+      "talentId": 105909,
+      "rank": 1
+    },
+    {
+      "talentId": 105923,
+      "rank": 1
+    },
+    {
+      "talentId": 105923,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 3
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 2
+    },
+    {
+      "talentId": 105907,
+      "rank": 3
+    },
+    {
+      "talentId": 105907,
+      "rank": 4
+    },
+    {
+      "talentId": 105907,
+      "rank": 5
+    },
+    {
+      "talentId": 105906,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 2
+    },
+    {
+      "talentId": 105906,
+      "rank": 3
+    },
+    {
+      "talentId": 105906,
+      "rank": 4
+    },
+    {
+      "talentId": 105906,
+      "rank": 5
+    },
+    {
+      "talentId": 105903,
+      "rank": 1
+    },
+    {
+      "talentId": 105903,
+      "rank": 2
+    },
+    {
+      "talentId": 105903,
+      "rank": 3
+    },
+    {
+      "talentId": 105899,
+      "rank": 1
+    },
+    {
+      "talentId": 105899,
+      "rank": 2
+    },
+    {
+      "talentId": 105904,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen."
+    },
+    {
+      "talentId": 105925,
+      "count": 5,
+      "reason": "Trefferchance steigern."
+    },
+    {
+      "talentId": 105916,
+      "count": 1,
+      "reason": "Fluchverstärkung als Voraussetzung für Kontrolle freischalten."
+    },
+    {
+      "talentId": 105919,
+      "count": 2,
+      "reason": "Omen der Pein verstärken."
+    },
+    {
+      "talentId": 105918,
+      "count": 2,
+      "reason": "Kanalisierte Zauber gegen erlittenen Schaden absichern."
+    },
+    {
+      "talentId": 105913,
+      "count": 1,
+      "reason": "Verlangsamenden Fluch auf Stufe 25 freischalten."
+    },
+    {
+      "talentId": 105914,
+      "count": 2,
+      "reason": "Spontane Schattenblitze ermöglichen."
+    },
+    {
+      "talentId": 105917,
+      "count": 2,
+      "reason": "Kritischen Schadensbonus der betroffenen Schattenzauber steigern."
+    },
+    {
+      "talentId": 105912,
+      "count": 1,
+      "reason": "Lebensentzug auf Stufe 30 freischalten."
+    },
+    {
+      "talentId": 105911,
+      "count": 3,
+      "reason": "Entzug bei aktiven periodischen Effekten verbessern."
+    },
+    {
+      "talentId": 105917,
+      "count": 1,
+      "reason": "Kritischen Schadensbonus vervollständigen."
+    },
+    {
+      "talentId": 105910,
+      "count": 5,
+      "reason": "Schattenschaden steigern."
+    },
+    {
+      "talentId": 105909,
+      "count": 1,
+      "reason": "Zermürben auf Stufe 40 für geschützte Kanalisierfenster freischalten."
+    },
+    {
+      "talentId": 105923,
+      "count": 2,
+      "reason": "Reichweite der Gebrechenzauber ausbauen."
+    },
+    {
+      "talentId": 105918,
+      "count": 1,
+      "reason": "Unterbrechungsschutz vervollständigen."
+    },
+    {
+      "talentId": 105920,
+      "count": 1,
+      "reason": "Entzugszauber ergänzen."
+    },
+    {
+      "talentId": 105907,
+      "count": 5,
+      "reason": "Eigene Ausdauer erhöhen."
+    },
+    {
+      "talentId": 105906,
+      "count": 5,
+      "reason": "Aktiven Dämon stärken."
+    },
+    {
+      "talentId": 105903,
+      "count": 3,
+      "reason": "Mana und Begleiterreserven ergänzen."
+    },
+    {
+      "talentId": 105899,
+      "count": 2,
+      "reason": "Dämonische Ressourcen unterstützen."
+    },
+    {
+      "talentId": 105904,
+      "count": 1,
+      "reason": "Optionalen defensiven Leerwandler stärken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "cobalt-warlock-affliction-pvp-20261110",
+      "foreverbattlegrounds-warlock-affliction-pvp"
+    ],
+    "editorialDecision": "Pressure and control in battlegrounds, prioritizing Curse of Exhaustion at 25, Siphon Life at 30 and Wrack at 40, followed by defense and active-demon support. No required sacrifice.",
+    "unresolved": [
+      "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+      "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+      "The cited PvP build uses sacrifice; our active-demon alternative needs comparative testing. Channel pushback protection is not silence or interrupt immunity."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

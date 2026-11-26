@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-destruction-dungeons",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11637,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 5,
+    "11636": 11,
+    "11637": 35
+  },
+  "points": [
+    {
+      "talentId": 105888,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 2
+    },
+    {
+      "talentId": 105888,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 4
+    },
+    {
+      "talentId": 105888,
+      "rank": 5
+    },
+    {
+      "talentId": 105887,
+      "rank": 1
+    },
+    {
+      "talentId": 105887,
+      "rank": 2
+    },
+    {
+      "talentId": 105887,
+      "rank": 3
+    },
+    {
+      "talentId": 105886,
+      "rank": 1
+    },
+    {
+      "talentId": 105886,
+      "rank": 2
+    },
+    {
+      "talentId": 105886,
+      "rank": 3
+    },
+    {
+      "talentId": 105886,
+      "rank": 4
+    },
+    {
+      "talentId": 105886,
+      "rank": 5
+    },
+    {
+      "talentId": 105884,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 4
+    },
+    {
+      "talentId": 105883,
+      "rank": 5
+    },
+    {
+      "talentId": 105880,
+      "rank": 1
+    },
+    {
+      "talentId": 105876,
+      "rank": 1
+    },
+    {
+      "talentId": 105877,
+      "rank": 1
+    },
+    {
+      "talentId": 105877,
+      "rank": 2
+    },
+    {
+      "talentId": 105877,
+      "rank": 3
+    },
+    {
+      "talentId": 105882,
+      "rank": 1
+    },
+    {
+      "talentId": 105875,
+      "rank": 1
+    },
+    {
+      "talentId": 105875,
+      "rank": 2
+    },
+    {
+      "talentId": 105875,
+      "rank": 3
+    },
+    {
+      "talentId": 105875,
+      "rank": 4
+    },
+    {
+      "talentId": 105875,
+      "rank": 5
+    },
+    {
+      "talentId": 105874,
+      "rank": 1
+    },
+    {
+      "talentId": 105882,
+      "rank": 2
+    },
+    {
+      "talentId": 105882,
+      "rank": 3
+    },
+    {
+      "talentId": 105879,
+      "rank": 1
+    },
+    {
+      "talentId": 105879,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105906,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 2
+    },
+    {
+      "talentId": 105906,
+      "rank": 3
+    },
+    {
+      "talentId": 105906,
+      "rank": 4
+    },
+    {
+      "talentId": 105906,
+      "rank": 5
+    },
+    {
+      "talentId": 105907,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 2
+    },
+    {
+      "talentId": 105907,
+      "rank": 3
+    },
+    {
+      "talentId": 105907,
+      "rank": 4
+    },
+    {
+      "talentId": 105907,
+      "rank": 5
+    },
+    {
+      "talentId": 105900,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105888,
+      "count": 5,
+      "reason": "Zauberzeiten direkter Schadenszauber senken."
+    },
+    {
+      "talentId": 105887,
+      "count": 3,
+      "reason": "Manakosten der Zerstörungszauber reduzieren."
+    },
+    {
+      "talentId": 105886,
+      "count": 5,
+      "reason": "Anfangsschaden von Feuerbrand und Verlangsamung durch Feuersbrunst stärken."
+    },
+    {
+      "talentId": 105884,
+      "count": 1,
+      "reason": "Schattenbrand als Sofortzauber freischalten."
+    },
+    {
+      "talentId": 105883,
+      "count": 5,
+      "reason": "Kritischen Schadensbonus steigern."
+    },
+    {
+      "talentId": 105880,
+      "count": 1,
+      "reason": "Feuersbrunst freischalten."
+    },
+    {
+      "talentId": 105876,
+      "count": 1,
+      "reason": "Omen der Verwüstung für geeignete Mehrzielkämpfe freischalten."
+    },
+    {
+      "talentId": 105877,
+      "count": 3,
+      "reason": "Kritische Trefferchance der Feuersbrunst ausbauen."
+    },
+    {
+      "talentId": 105882,
+      "count": 1,
+      "reason": "Zauberunterbrechungsschutz ergänzen."
+    },
+    {
+      "talentId": 105875,
+      "count": 5,
+      "reason": "Schatten und Flamme vervollständigen."
+    },
+    {
+      "talentId": 105874,
+      "count": 1,
+      "reason": "Verbrennen auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 105882,
+      "count": 2,
+      "reason": "Zauberunterbrechungsschutz vervollständigen."
+    },
+    {
+      "talentId": 105879,
+      "count": 2,
+      "reason": "Weiteren direkten Schaden ergänzen."
+    },
+    {
+      "talentId": 105925,
+      "count": 5,
+      "reason": "Trefferchance und geringere Bedrohung ergänzen."
+    },
+    {
+      "talentId": 105906,
+      "count": 5,
+      "reason": "Aktiven Dämon stärken."
+    },
+    {
+      "talentId": 105907,
+      "count": 5,
+      "reason": "Eigene Ausdauer erhöhen."
+    },
+    {
+      "talentId": 105900,
+      "count": 1,
+      "reason": "Dämonische Opferung als alternative Spielweise verfügbar machen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "cobalt-warlock-destruction-pve-20261110",
+      "outpost-warlock-dungeon-20261123"
+    ],
+    "editorialDecision": "Direct fire damage and multi-target utility for ordinary leveling dungeons, not a pure raid build or unconditional AoE spam. Prioritize a sustainable rotation; sacrifice remains optional.",
+    "unresolved": [
+      "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+      "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+      "Review target-lifetime dependence, threat, exact Shadow and Flame interactions and demon choice."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}
