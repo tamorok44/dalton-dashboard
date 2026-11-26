@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 4,
   "treeId": 11573,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -236,7 +236,7 @@
     {
       "talentId": 105708,
       "count": 3,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
+      "reason": "Coup de Grace verstärkt Ausweiden."
     },
     {
       "talentId": 105737,
@@ -341,16 +341,13 @@
       "rogue-outpost-2311",
       "rogue-hotfix-2511"
     ],
-    "editorialDecision": "Dungeon-Kampf mit Tank: vier Parade-/Riposte-Punkte durch Sprint- und Eröffnungsnutzen ersetzt, Flawless Execution ab 25, Flash of Steel vollständig 35–39. Klingenwirbel 30, Adrenalinrausch 40. Regulärer Tritt bleibt; verbessertes Tritt-Schweigen als Alternative bei vielen Zauberern. Kein absichtliches Tanken zur Auslösung von Riposte. Diese Änderung folgt der Spielrolle, nicht dem bloßen Umgehen eines Datenkonflikts.",
+    "editorialDecision": "Für reguläre Dungeons mit Tank: frühe günstige Angriffe, Trefferchance und Ausweiden; situative Mobilität und Eröffnungsnutzen statt eigener Paraden. Flawless Execution auf 25, Klingenwirbel 30, Flash of Steel vollständig 39 und Adrenalinrausch 40. Klingenwirbel nur bei erwünschtem Mehrzielschaden; Shank-Korrektur vom 20.11. und Poised-Korrektur vom 25.11. berücksichtigt. Später Meucheln für kritische Treffer, Zerhäckseln, Energie und Gifte. Kein DPS-Ranking, kein Zwang zur Frontposition. Die drei offenen Zahlenkonflikte Riposte, Verstümmeln und Todesmal liegen außerhalb der Vergabe und ihrer Voraussetzungen.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim.",
-      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
-      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
-      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative DPS superiority; scoped group progression recommendation.",
+      "Numeric conflicts outside the allocation remain unresolved; current runtime observation and browser release gates remain separate."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -385,7 +382,28 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "excludedConflictIds": [
+        105709,
+        105735,
+        110866
+      ]
     }
+  },
+  "treeName": "Kampf",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-combat-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für reguläre Dungeons mit Tank: frühe günstige Angriffe, Trefferchance und Ausweiden; situative Mobilität und Eröffnungsnutzen statt eigener Paraden. Flawless Execution auf 25, Klingenwirbel 30, Flash of Steel vollständig 39 und Adrenalinrausch 40. Klingenwirbel nur bei erwünschtem Mehrzielschaden; Shank-Korrektur vom 20.11. und Poised-Korrektur vom 25.11. berücksichtigt. Später Meucheln für kritische Treffer, Zerhäckseln, Energie und Gifte. Kein DPS-Ranking, kein Zwang zur Frontposition. Die drei offenen Zahlenkonflikte Riposte, Verstümmeln und Todesmal liegen außerhalb der Vergabe und ihrer Voraussetzungen.",
+    "adviceSummary": "Kampf-Dungeons: günstige Angriffe, Klingenwirbel auf 30, Adrenalinrausch auf 40; mit Tank statt auf eigenes Parieren zu setzen.",
+    "evidenceIds": [
+      "rogue-combat-dungeons-rank0-71139-editorial-1",
+      "rogue-combat-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }
