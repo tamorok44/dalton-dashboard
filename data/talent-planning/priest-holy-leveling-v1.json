@@ -251,7 +251,7 @@
     {
       "talentId": 105860,
       "count": 3,
-      "reason": "Rüstungsschutz nach kritischen direkten Heilungen ausbauen."
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
     },
     {
       "talentId": 105862,
@@ -266,12 +266,12 @@
     {
       "talentId": 105858,
       "count": 3,
-      "reason": "Manakosten zentraler Heilzauber reduzieren."
+      "reason": "Manakosten von geringer Heilung, Heilung, großer Heilung, Sühne und Gebet der Besserung reduzieren; nur erlernte Fähigkeiten nutzen."
     },
     {
       "talentId": 105856,
       "count": 1,
-      "reason": "Eigene Heilung bei Blitzheilung auf andere ergänzen."
+      "reason": "Holy Binding: Blitzheilung auf einen anderen Verbündeten heilt auch den Priester, nicht bei Selbstheilung."
     },
     {
       "talentId": 105866,
@@ -281,7 +281,7 @@
     {
       "talentId": 105857,
       "count": 2,
-      "reason": "Schaden der betroffenen Heiligzauber für Soloaufgaben erhöhen."
+      "reason": "Heiligschaden unterstützen; periodischer Schaden von Heiligem Feuer kann kostenlose Heilige Nova ermöglichen, keine garantierte Auslösung."
     },
     {
       "talentId": 105854,
@@ -306,7 +306,7 @@
     {
       "talentId": 105851,
       "count": 1,
-      "reason": "Gebet der Besserung auf Stufe 47 freischalten."
+      "reason": "Gebet der Besserung: Heilung bei erlittenem Schaden oder nichtperiodischer Heilung; begrenzte Sprünge, keine feste Heilmenge oder garantierte Zielwahl."
     },
     {
       "talentId": 105849,
@@ -316,7 +316,7 @@
     {
       "talentId": 105848,
       "count": 3,
-      "reason": "Heilbedrohung verringern."
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
     },
     {
       "talentId": 105837,
@@ -336,17 +336,50 @@
       "priest-holy-grindclassic",
       "outpost-priest"
     ],
-    "editorialDecision": "Healing-first mixed questing; early wand and Spirit Tap, then cast-time and Holy damage, late Meditation. No claim of solo speed superior to Shadow.",
+    "editorialDecision": "Heilpriorisiertes gemischtes Leveln ohne Umskillung: sieben frühe Zauberstab-/Spirit-Tap-Punkte, danach Heiligzauber und direkte Heilung. Gebet der Besserung auf 47 ist unter dieser Verteilung der früheste Zeitpunkt. Searing Light statt Litanei für mehr Solo-Nutzen; spätere Meditation. Kein Versprechen schneller als Schatten zu leveln.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform.",
+      "105851: Build 71139 zeigt einen skalierten Heilwert; unabhängige aktuelle Messung der tatsächlichen Heilskalierung fehlt. Keine exakte Heilformel freigeben.",
+      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+          "contribution": "Aktueller Build 71139 und Cache vom 25.11.; direkte Heilung oder Schaden als Auslöser, Sprungmechanik, Spirit of Redemption als Voraussetzung; keine unabhängig gemessene Skalierungsformel."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/holy-priest/rotation-and-playstyle",
+          "contribution": "10.11.: Gebet der Besserung, bedarfsgerechter Heilzauberwechsel und Manaregeneration; Endgame-Guide kein Beweis unserer Levelchronologie."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Litanei, Holy Binding, Improved Healing und Searing Light: qualitative Talentfunktionen."
+        },
+        {
+          "url": "https://undying.app/classes/priest/holy",
+          "contribution": "15.11.: tiefer Holy-Kern mit Prayer of Mending, Holy Binding, Litany und Discipline-Ressourcen; situative Alternative Holy Reach."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
