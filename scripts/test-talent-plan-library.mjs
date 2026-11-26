@@ -787,6 +787,29 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
+// Paladin conflict follow-up: rank zero, research only; avoid disputed Boundless Light prerequisite.
+for(const [id,milestones] of [
+ ['paladin-holy-leveling',[[105330,30],[105323,35],[105320,45]]],
+ ['paladin-holy-dungeons',[[105330,25],[105323,30],[105320,40]]],
+ ['paladin-holy-pvp',[[105330,25],[105323,30],[105320,40],[105637,46],[105633,51]]],
+ ['paladin-protection-pvp',[[105625,20],[110878,25],[105628,30],[110875,40]]],
+ ['paladin-retribution-leveling',[[105696,20],[105694,33],[105692,40]]],
+ ['paladin-retribution-dungeons',[[105696,20],[105694,30],[105692,40],[105638,46]]],
+ ['paladin-retribution-pvp',[[105696,20],[105694,30],[105692,40]]]
+]){
+ const p=plans.find(x=>x.id===id);
+ assert.equal(p.status,'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+ assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
+ assert.ok(!p.points.some(x=>x.talentId===113631));
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+const shieldPvp=plans.find(p=>p.id==='paladin-protection-pvp');
+assert.ok(!shieldPvp.points.some(p=>p.talentId===105697));
+assert.equal(shieldPvp.points.filter(p=>p.talentId===105707).length,3);
+assert.notDeepEqual(plans.find(p=>p.id==='paladin-holy-pvp').points,plans.find(p=>p.id==='paladin-holy-dungeons').points);
+
 // Rogue conflict follow-up: preserve scoped rank-zero research and exact milestones.
 for(const [id,milestones] of [
  ['rogue-assassination-leveling',[[105715,25],[105712,30],[105709,40]]],
