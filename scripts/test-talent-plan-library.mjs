@@ -640,3 +640,11 @@ const fixtureQueue=deriveTalentWorkQueue(fixtureRows);
 assert.equal(fixtureQueue.counts.check_current_release,1);
 assert.deepEqual(fixtureQueue.queue.find(a=>a.kind==='verify_legacy_ranks').ranks,[1,2,3,4,5]);
 assert.equal(fixtureQueue.liveReleaseStatus,'not_checked');
+
+for(const [id,distribution] of [['warlock-affliction-dungeons',[30,0,21]],['warlock-demonology-pvp',[7,33,11]]]){
+  const p=plans.find(x=>x.id===id);
+  assert.ok(p&&p.status==='research_only');
+  assert.deepEqual(Object.values(p.expectedDistribution),distribution);
+  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
+  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+}

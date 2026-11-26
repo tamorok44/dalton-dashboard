@@ -285,3 +285,8 @@ Arkan 38/10/3 und Feuer 15/33/3 für reguläre Dungeon-Gruppen, Rank 0, direkt a
 ### Persönlicher Soll-Ist-Abgleich (26.11.2026)
 
 Der Plan zeigt bei bestätigten, frischen Charakterdaten zusätzlich eine aufklappbare Gegenüberstellung der abweichenden Talent-Ränge auf der tatsächlichen Charakterstufe, einschließlich der Summen. Unabhängig von der im Talentbaum gewählten Vorschau-Stufe. Der chronologische Präfixabgleich bleibt bestehen; bei abweichender Reihenfolge wird weiterhin kein nächster persönlicher Punkt abgeleitet. Fehlende Ränge können unverteilte Punkte sein, keine automatische Umskill-Empfehlung. Keine neue Datenquelle, kein zusätzlicher Abruf, keine Freigabeänderung. Eigenständige Aufbereitungs- und Vergleichslogik des Dalton-Dashboards. Tests für bestätigte/unbestätigte Daten, vollständige Übereinstimmung, abweichende Ränge, zusätzliche Talente und Stufenwechsel.
+
+
+### Hexenmeister: Dungeon- und PvP-Forschung (26.11.2026)
+
+Zwei zusätzliche 51-Punkte-Pfade ohne Umskillen, ausschließlich research_only: Gebrechen Dungeon 30/0/21 ohne Zermürben, mit direktem Schaden und frühem Zerstörungs-Abstecher; Dämonologie PvP 7/33/11 mit Ausdauer zuerst, Seelenverbindung 30, Dämonischem Pakt 40 und später Sofortzaubern. Redaktionelle Chronologie eigenständig, Quellen Outpost (23.11.) und Skill Capped (19.11.) stützen die jeweilige Ausrichtung, nicht unsere konkrete Reihenfolge oder gemessene Überlegenheit. Vollständige 51 Punkte je Pfad gegen exakten Primärproof 71139 strukturell geprüft. Unabhängige vollständige Build-Strukturprüfung und fachliche Hotfix-Reconciliation fehlen weiterhin; keine Freigabe und keine zusätzlichen Laufzeitabrufe.

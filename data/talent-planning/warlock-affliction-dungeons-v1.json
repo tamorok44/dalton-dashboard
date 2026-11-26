@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-affliction-dungeons",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11629,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 30,
+    "11636": 0,
+    "11637": 21
+  },
+  "points": [
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105921,
+      "rank": 1
+    },
+    {
+      "talentId": 105922,
+      "rank": 1
+    },
+    {
+      "talentId": 105922,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105920,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 3
+    },
+    {
+      "talentId": 105919,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 1
+    },
+    {
+      "talentId": 105918,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 2
+    },
+    {
+      "talentId": 105888,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 4
+    },
+    {
+      "talentId": 105888,
+      "rank": 5
+    },
+    {
+      "talentId": 105889,
+      "rank": 1
+    },
+    {
+      "talentId": 105889,
+      "rank": 2
+    },
+    {
+      "talentId": 105889,
+      "rank": 3
+    },
+    {
+      "talentId": 105889,
+      "rank": 4
+    },
+    {
+      "talentId": 105889,
+      "rank": 5
+    },
+    {
+      "talentId": 105912,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 2
+    },
+    {
+      "talentId": 105911,
+      "rank": 3
+    },
+    {
+      "talentId": 105914,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 2
+    },
+    {
+      "talentId": 105910,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 4
+    },
+    {
+      "talentId": 105910,
+      "rank": 5
+    },
+    {
+      "talentId": 105887,
+      "rank": 1
+    },
+    {
+      "talentId": 105887,
+      "rank": 2
+    },
+    {
+      "talentId": 105887,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 4
+    },
+    {
+      "talentId": 105883,
+      "rank": 5
+    },
+    {
+      "talentId": 105879,
+      "rank": 1
+    },
+    {
+      "talentId": 105879,
+      "rank": 2
+    },
+    {
+      "talentId": 105879,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen und ihren Schaden stärken."
+    },
+    {
+      "talentId": 105925,
+      "count": 4,
+      "reason": "Trefferchance und geringere Bedrohung früh berücksichtigen."
+    },
+    {
+      "talentId": 105921,
+      "count": 1,
+      "reason": "Aderlass etwas effizienter machen."
+    },
+    {
+      "talentId": 105922,
+      "count": 2,
+      "reason": "Manaregeneration nach passenden Seelendieb-Kills nutzen."
+    },
+    {
+      "talentId": 105920,
+      "count": 3,
+      "reason": "Gesundheitsentzug vor Zermürben verbessern."
+    },
+    {
+      "talentId": 105919,
+      "count": 2,
+      "reason": "Omen der Pein stärken."
+    },
+    {
+      "talentId": 105918,
+      "count": 3,
+      "reason": "Unterbrechungsschutz für Entzugszauber aufbauen."
+    },
+    {
+      "talentId": 105888,
+      "count": 5,
+      "reason": "Zauberzeiten für direkten Schaden zwischen periodischen Effekten senken."
+    },
+    {
+      "talentId": 105889,
+      "count": 5,
+      "reason": "Schattenblitz als ergänzenden Gruppenzauber stärken."
+    },
+    {
+      "talentId": 105912,
+      "count": 1,
+      "reason": "Lebensentzug nach dem frühen Zerstörungs-Abstecher freischalten."
+    },
+    {
+      "talentId": 105911,
+      "count": 3,
+      "reason": "Seelenentzug für die drei ausdrücklich genannten DoTs ausbauen."
+    },
+    {
+      "talentId": 105914,
+      "count": 1,
+      "reason": "Gelegentlichen spontanen Schattenblitz ermöglichen."
+    },
+    {
+      "talentId": 105910,
+      "count": 5,
+      "reason": "Schattenschaden und Lebensentzug stärken."
+    },
+    {
+      "talentId": 105887,
+      "count": 3,
+      "reason": "Manakosten der Zerstörungszauber senken."
+    },
+    {
+      "talentId": 105883,
+      "count": 5,
+      "reason": "Kritischen Schadensbonus der Zerstörungszauber erhöhen."
+    },
+    {
+      "talentId": 105879,
+      "count": 3,
+      "reason": "Den direkten Schaden über den Zerstörungsbaum ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "outpost-warlock-dungeon-20261123",
+      "mobalytics-crix-warlock"
+    ],
+    "editorialDecision": "For regular leveling dungeons, retain the active demon, use DoTs selectively and direct shadow damage between pulls; trade the deep channel and pet-tree investment for earlier direct-cast talents. Own chronology, not a copied level-60 build.",
+    "unresolved": [
+      "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
+      "No assertion of superior dungeon DPS; target lifetime, threat and movement change value.",
+      "Verify exact effect of the final destruction talent and current pet interactions; ranks 1–5 not verified."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

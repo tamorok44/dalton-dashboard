@@ -685,6 +685,27 @@
       "url": "https://foreverbattlegrounds.com/classes/mage/frost/",
       "kind": "expert_guide",
       "independenceGroup": "foreverbattlegrounds-editorial"
+    },
+    {
+      "id": "outpost-warlock-dungeon-20261123",
+      "url": "https://wofwforever.com/en/guides/wow-forever-warlock-level-60-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "outpost-seren-editorial",
+      "guideUpdated": "2026-11-23"
+    },
+    {
+      "id": "skillcapped-warlock-demonology-pvp-20261119",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/demonology-warlock-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-editorial",
+      "guideUpdated": "2026-11-19"
+    },
+    {
+      "id": "cobalt-warlock-demonology-pvp-20261103",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/demonology/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-03"
     }
   ],
   "pilot": {
@@ -1285,6 +1306,46 @@
         "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
         "Effective Legacy 1–5 minimum levels and comparative performance not established.",
         "Nov 25 Balance rework: exact revised names, IDs, rank caps and effects unresolved."
+      ]
+    },
+    {
+      "id": "warlock-affliction-dungeons",
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-warlock-dungeon-20261123",
+        "mobalytics-crix-warlock"
+      ],
+      "proposal": "For regular leveling dungeons, retain the active demon, use DoTs selectively and direct shadow damage between pulls; trade the deep channel and pet-tree investment for earlier direct-cast talents. Own chronology, not a copied level-60 build.",
+      "openChecks": [
+        "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
+        "No assertion of superior dungeon DPS; target lifetime, threat and movement change value.",
+        "Verify exact effect of the final destruction talent and current pet interactions; ranks 1–5 not verified."
+      ]
+    },
+    {
+      "id": "warlock-demonology-pvp",
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "skillcapped-warlock-demonology-pvp-20261119",
+        "cobalt-warlock-demonology-pvp-20261103"
+      ],
+      "proposal": "Defensive battleground and duel research route. Stamina first, Soul Link at 30, Demonic Pact at 40, instant Corruption and Shadowburn later. Preserve a living demon; no assumption that resummoning the sacrificed demon retains its bonus.",
+      "openChecks": [
+        "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
+        "November 25 pet crit corrections; no exact pet-damage or PvP performance claim.",
+        "Compare with 21/30/0 Soul Link/Siphon Life alternative and confirm defensive effects; ranks 1–5 not verified."
       ]
     }
   ]
