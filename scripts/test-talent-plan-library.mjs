@@ -718,7 +718,7 @@ for(const treeId of [11582,11594,11601])for(const goal of ['leveling','dungeons'
   assert.ok(plans.some(p=>p.classId===8&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Mage coverage '+treeId+' '+goal);
 }
 
-for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hunter-beast-mastery-pvp",[30,0,21]],["hunter-marksmanship-dungeons",[5,41,5]],["hunter-marksmanship-pvp",[0,31,20]],["hunter-survival-dungeons",[16,10,25]],["hunter-survival-pvp",[0,21,30]]]){
+for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hunter-beast-mastery-pvp",[30,0,21]],["hunter-marksmanship-dungeons",[5,41,5]],["hunter-marksmanship-pvp",[0,31,20]],["hunter-survival-dungeons",[16,8,27]],["hunter-survival-pvp",[0,21,30]]]){
   const p=plans.find(x=>x.id===id);
   assert.ok(p&&p.status===(['hunter-marksmanship-dungeons','hunter-marksmanship-pvp','hunter-survival-pvp'].includes(id)?'approved':'research_only'));
   assert.deepEqual([11372,11371,11370].map(t=>p.expectedDistribution[t]),distribution);
@@ -787,7 +787,7 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
-for(const [id,milestones] of [['hunter-marksmanship-dungeons',[[105007,20],[105004,25],[104999,30],[104997,40]]],['hunter-survival-leveling',[[104981,30],[104984,40]]],['hunter-survival-pvp',[[104981,30],[105000,60]]],['paladin-protection-dungeons',[[105628,30],[110875,40]]],['paladin-protection-leveling',[[105628,35],[110875,45]]]]){
+for(const [id,milestones] of [['hunter-beast-mastery-dungeons',[[104966,25]]],['hunter-beast-mastery-pvp',[[104966,25]]],['hunter-survival-dungeons',[[104981,30],[110860,35],[104966,52]]],['warlock-affliction-leveling',[[105912,30],[105909,40]]],['warlock-affliction-pvp',[[105913,25],[105912,30],[105909,40]]],['hunter-marksmanship-dungeons',[[105007,20],[105004,25],[104999,30],[104997,40]]],['hunter-survival-leveling',[[104981,30],[104984,40]]],['hunter-survival-pvp',[[104981,30],[105000,60]]],['paladin-protection-dungeons',[[105628,30],[110875,40]]],['paladin-protection-leveling',[[105628,35],[110875,45]]]]){
  const p=plans.find(x=>x.id===id);for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
