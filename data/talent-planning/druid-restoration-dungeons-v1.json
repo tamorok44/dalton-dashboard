@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-restoration-dungeons",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11340,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 11,
+    "11340": 40,
+    "11347": 0
+  },
+  "points": [
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    },
+    {
+      "talentId": 104916,
+      "rank": 5
+    },
+    {
+      "talentId": 104914,
+      "rank": 1
+    },
+    {
+      "talentId": 104921,
+      "rank": 1
+    },
+    {
+      "talentId": 104911,
+      "rank": 1
+    },
+    {
+      "talentId": 104911,
+      "rank": 2
+    },
+    {
+      "talentId": 104911,
+      "rank": 3
+    },
+    {
+      "talentId": 104914,
+      "rank": 2
+    },
+    {
+      "talentId": 104914,
+      "rank": 3
+    },
+    {
+      "talentId": 104913,
+      "rank": 1
+    },
+    {
+      "talentId": 104913,
+      "rank": 2
+    },
+    {
+      "talentId": 104913,
+      "rank": 3
+    },
+    {
+      "talentId": 104913,
+      "rank": 4
+    },
+    {
+      "talentId": 104910,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 2
+    },
+    {
+      "talentId": 104924,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 4
+    },
+    {
+      "talentId": 104924,
+      "rank": 5
+    },
+    {
+      "talentId": 104925,
+      "rank": 1
+    },
+    {
+      "talentId": 104925,
+      "rank": 2
+    },
+    {
+      "talentId": 104925,
+      "rank": 3
+    },
+    {
+      "talentId": 104927,
+      "rank": 1
+    },
+    {
+      "talentId": 104927,
+      "rank": 2
+    },
+    {
+      "talentId": 104928,
+      "rank": 1
+    },
+    {
+      "talentId": 104957,
+      "rank": 1
+    },
+    {
+      "talentId": 104957,
+      "rank": 2
+    },
+    {
+      "talentId": 104957,
+      "rank": 3
+    },
+    {
+      "talentId": 104957,
+      "rank": 4
+    },
+    {
+      "talentId": 104957,
+      "rank": 5
+    },
+    {
+      "talentId": 104917,
+      "rank": 1
+    },
+    {
+      "talentId": 104917,
+      "rank": 2
+    },
+    {
+      "talentId": 104917,
+      "rank": 3
+    },
+    {
+      "talentId": 104918,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Zauberzeit wichtiger Heilungen verringern."
+    },
+    {
+      "talentId": 104920,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern ausbauen."
+    },
+    {
+      "talentId": 104916,
+      "count": 2,
+      "reason": "Heilwirkung steigern."
+    },
+    {
+      "talentId": 104912,
+      "count": 1,
+      "reason": "Rasche Heilung freischalten."
+    },
+    {
+      "talentId": 104916,
+      "count": 3,
+      "reason": "Geschenk der Natur vervollständigen."
+    },
+    {
+      "talentId": 104914,
+      "count": 1,
+      "reason": "Verjüngung stärken."
+    },
+    {
+      "talentId": 104921,
+      "count": 1,
+      "reason": "Schnelligkeit der Natur freischalten."
+    },
+    {
+      "talentId": 104911,
+      "count": 3,
+      "reason": "Willenskraft stärken."
+    },
+    {
+      "talentId": 104914,
+      "count": 2,
+      "reason": "Verjüngung vervollständigen."
+    },
+    {
+      "talentId": 104913,
+      "count": 4,
+      "reason": "Kritische Nachwachsen-Heilungen stärken."
+    },
+    {
+      "talentId": 104910,
+      "count": 1,
+      "reason": "Wildwuchs freischalten."
+    },
+    {
+      "talentId": 104924,
+      "count": 5,
+      "reason": "Periodische Heilwirkung erhöhen."
+    },
+    {
+      "talentId": 104925,
+      "count": 3,
+      "reason": "Kosten situativer Schadenszauber reduzieren."
+    },
+    {
+      "talentId": 104927,
+      "count": 2,
+      "reason": "Kritische Trefferchance ergänzen."
+    },
+    {
+      "talentId": 104928,
+      "count": 1,
+      "reason": "Dauer ausgewählter periodischer Effekte verlängern."
+    },
+    {
+      "talentId": 104957,
+      "count": 5,
+      "reason": "Zauberzeitverlust bei erlittenem Schaden verringern."
+    },
+    {
+      "talentId": 104917,
+      "count": 3,
+      "reason": "Heilbedrohung senken."
+    },
+    {
+      "talentId": 104918,
+      "count": 1,
+      "reason": "Blüte freischalten."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-restoration-druid-leveling",
+      "mob-restoration-druid"
+    ],
+    "editorialDecision": "Dedicated healer with mana regen, Swiftmend, Nature's Swiftness and Wild Growth; late Genesis utility.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Verify Nov 25 Genesis/Tranquility correction and Wild Growth targeting."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "711a753c7815903c91d667dd8d67e9dbd5d876d6f4d9fd9e010a28f072d50e15",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

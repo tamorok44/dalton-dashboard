@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-balance-leveling",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11328,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 31,
+    "11340": 20,
+    "11347": 0
+  },
+  "points": [
+    {
+      "talentId": 104923,
+      "rank": 1
+    },
+    {
+      "talentId": 104923,
+      "rank": 2
+    },
+    {
+      "talentId": 104923,
+      "rank": 3
+    },
+    {
+      "talentId": 104923,
+      "rank": 4
+    },
+    {
+      "talentId": 104923,
+      "rank": 5
+    },
+    {
+      "talentId": 104925,
+      "rank": 1
+    },
+    {
+      "talentId": 104925,
+      "rank": 2
+    },
+    {
+      "talentId": 104925,
+      "rank": 3
+    },
+    {
+      "talentId": 104929,
+      "rank": 1
+    },
+    {
+      "talentId": 104929,
+      "rank": 2
+    },
+    {
+      "talentId": 104927,
+      "rank": 1
+    },
+    {
+      "talentId": 104927,
+      "rank": 2
+    },
+    {
+      "talentId": 104928,
+      "rank": 1
+    },
+    {
+      "talentId": 104931,
+      "rank": 1
+    },
+    {
+      "talentId": 104931,
+      "rank": 2
+    },
+    {
+      "talentId": 104930,
+      "rank": 1
+    },
+    {
+      "talentId": 104932,
+      "rank": 1
+    },
+    {
+      "talentId": 104932,
+      "rank": 2
+    },
+    {
+      "talentId": 104932,
+      "rank": 3
+    },
+    {
+      "talentId": 104932,
+      "rank": 4
+    },
+    {
+      "talentId": 104932,
+      "rank": 5
+    },
+    {
+      "talentId": 104934,
+      "rank": 1
+    },
+    {
+      "talentId": 104935,
+      "rank": 1
+    },
+    {
+      "talentId": 104935,
+      "rank": 2
+    },
+    {
+      "talentId": 104935,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 2
+    },
+    {
+      "talentId": 104924,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 4
+    },
+    {
+      "talentId": 104924,
+      "rank": 5
+    },
+    {
+      "talentId": 104937,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104917,
+      "rank": 1
+    },
+    {
+      "talentId": 104917,
+      "rank": 2
+    },
+    {
+      "talentId": 104917,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104923,
+      "count": 5,
+      "reason": "Zauberzeit von Zorn verringern; neue Sternenfeuer-Wirkung separat prüfen."
+    },
+    {
+      "talentId": 104925,
+      "count": 3,
+      "reason": "Manakosten von Schadenszaubern senken."
+    },
+    {
+      "talentId": 104929,
+      "count": 2,
+      "reason": "Reichweite und Trefferchance erhöhen."
+    },
+    {
+      "talentId": 104927,
+      "count": 2,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 104928,
+      "count": 1,
+      "reason": "Dauer periodischer Effekte verlängern."
+    },
+    {
+      "talentId": 104931,
+      "count": 2,
+      "reason": "Mondfeuer stärken; neue Sternenfeuer-Wirkung separat prüfen."
+    },
+    {
+      "talentId": 104930,
+      "count": 1,
+      "reason": "Insektenschwarm freischalten."
+    },
+    {
+      "talentId": 104932,
+      "count": 5,
+      "reason": "Kritischen Arkane- und Naturschaden stärken."
+    },
+    {
+      "talentId": 104934,
+      "count": 1,
+      "reason": "Zaubertempo nach geeigneten kritischen Treffern unterstützen."
+    },
+    {
+      "talentId": 104935,
+      "count": 3,
+      "reason": "Sternenfeuer nach Zorn beschleunigen; zusätzlichen Zorn-Krit prüfen."
+    },
+    {
+      "talentId": 104924,
+      "count": 5,
+      "reason": "Periodischen Schaden und Heilung steigern."
+    },
+    {
+      "talentId": 104937,
+      "count": 1,
+      "reason": "Moonkingestalt freischalten; geänderte Schadenswirkung separat bestätigen."
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Schaden und situative Heilzauber stärken."
+    },
+    {
+      "talentId": 104920,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern erhöhen."
+    },
+    {
+      "talentId": 104917,
+      "count": 3,
+      "reason": "Bedrohung reduzieren."
+    },
+    {
+      "talentId": 104916,
+      "count": 4,
+      "reason": "Heilwirkung außerhalb der Moonkingestalt erhöhen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "wh-balance-druid",
+      "mob-balance-druid",
+      "official-balance-2511"
+    ],
+    "editorialDecision": "Conservative structural candidate against pre-hotfix extract. Avoid removed Moonfury and changed Improved Starfire rank entirely; updated slot IDs and effects require exact proof.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Nov 25 Balance rework: exact revised names, IDs, rank caps and effects unresolved."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "711a753c7815903c91d667dd8d67e9dbd5d876d6f4d9fd9e010a28f072d50e15",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

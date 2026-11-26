@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "id": "hunter-survival-leveling",
+  "version": 1,
+  "classId": 3,
+  "treeId": 11370,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11370": 31,
+    "11371": 0,
+    "11372": 20
+  },
+  "points": [
+    {
+      "talentId": 104996,
+      "rank": 1
+    },
+    {
+      "talentId": 104996,
+      "rank": 2
+    },
+    {
+      "talentId": 104996,
+      "rank": 3
+    },
+    {
+      "talentId": 104996,
+      "rank": 4
+    },
+    {
+      "talentId": 104996,
+      "rank": 5
+    },
+    {
+      "talentId": 104993,
+      "rank": 1
+    },
+    {
+      "talentId": 104993,
+      "rank": 2
+    },
+    {
+      "talentId": 104992,
+      "rank": 1
+    },
+    {
+      "talentId": 104992,
+      "rank": 2
+    },
+    {
+      "talentId": 104992,
+      "rank": 3
+    },
+    {
+      "talentId": 104987,
+      "rank": 1
+    },
+    {
+      "talentId": 104987,
+      "rank": 2
+    },
+    {
+      "talentId": 104987,
+      "rank": 3
+    },
+    {
+      "talentId": 104991,
+      "rank": 1
+    },
+    {
+      "talentId": 104991,
+      "rank": 2
+    },
+    {
+      "talentId": 110861,
+      "rank": 1
+    },
+    {
+      "talentId": 110861,
+      "rank": 2
+    },
+    {
+      "talentId": 110861,
+      "rank": 3
+    },
+    {
+      "talentId": 110861,
+      "rank": 4
+    },
+    {
+      "talentId": 110861,
+      "rank": 5
+    },
+    {
+      "talentId": 104983,
+      "rank": 1
+    },
+    {
+      "talentId": 104983,
+      "rank": 2
+    },
+    {
+      "talentId": 104985,
+      "rank": 1
+    },
+    {
+      "talentId": 104985,
+      "rank": 2
+    },
+    {
+      "talentId": 104981,
+      "rank": 1
+    },
+    {
+      "talentId": 110859,
+      "rank": 1
+    },
+    {
+      "talentId": 110859,
+      "rank": 2
+    },
+    {
+      "talentId": 110859,
+      "rank": 3
+    },
+    {
+      "talentId": 110859,
+      "rank": 4
+    },
+    {
+      "talentId": 110859,
+      "rank": 5
+    },
+    {
+      "talentId": 104984,
+      "rank": 1
+    },
+    {
+      "talentId": 104976,
+      "rank": 1
+    },
+    {
+      "talentId": 104976,
+      "rank": 2
+    },
+    {
+      "talentId": 104976,
+      "rank": 3
+    },
+    {
+      "talentId": 104976,
+      "rank": 4
+    },
+    {
+      "talentId": 104976,
+      "rank": 5
+    },
+    {
+      "talentId": 104960,
+      "rank": 1
+    },
+    {
+      "talentId": 104960,
+      "rank": 2
+    },
+    {
+      "talentId": 104960,
+      "rank": 3
+    },
+    {
+      "talentId": 104960,
+      "rank": 4
+    },
+    {
+      "talentId": 104960,
+      "rank": 5
+    },
+    {
+      "talentId": 104975,
+      "rank": 1
+    },
+    {
+      "talentId": 104975,
+      "rank": 2
+    },
+    {
+      "talentId": 104969,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 2
+    },
+    {
+      "talentId": 104969,
+      "rank": 3
+    },
+    {
+      "talentId": 104969,
+      "rank": 4
+    },
+    {
+      "talentId": 104969,
+      "rank": 5
+    },
+    {
+      "talentId": 104972,
+      "rank": 1
+    },
+    {
+      "talentId": 104972,
+      "rank": 2
+    },
+    {
+      "talentId": 104970,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104996,
+      "count": 5,
+      "reason": "Schaden gegen passende verfolgte Kreaturentypen erhöhen."
+    },
+    {
+      "talentId": 104993,
+      "count": 2,
+      "reason": "Kritische Nahkampffähigkeiten stärken."
+    },
+    {
+      "talentId": 104992,
+      "count": 3,
+      "reason": "Gesundheit erhöhen."
+    },
+    {
+      "talentId": 104987,
+      "count": 3,
+      "reason": "Trefferchance und Schutz vor Verlangsamungen ergänzen."
+    },
+    {
+      "talentId": 104991,
+      "count": 2,
+      "reason": "Fallenwirkung verstärken."
+    },
+    {
+      "talentId": 110861,
+      "count": 5,
+      "reason": "Kritischen Nahkampf- und Schildhandschaden stärken."
+    },
+    {
+      "talentId": 104983,
+      "count": 2,
+      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken."
+    },
+    {
+      "talentId": 104985,
+      "count": 2,
+      "reason": "Aktivierung von Mungobiss unterstützen."
+    },
+    {
+      "talentId": 104981,
+      "count": 1,
+      "reason": "Situativen Tritt und Bewegungsvorteil freischalten."
+    },
+    {
+      "talentId": 110859,
+      "count": 5,
+      "reason": "Beweglichkeit erhöhen."
+    },
+    {
+      "talentId": 104984,
+      "count": 1,
+      "reason": "Blutung von Mungobiss freischalten."
+    },
+    {
+      "talentId": 104976,
+      "count": 5,
+      "reason": "Gesundheit und Rüstung des Begleiters erhöhen."
+    },
+    {
+      "talentId": 104960,
+      "count": 5,
+      "reason": "Aspektabhängiges Angriffstempo unterstützen."
+    },
+    {
+      "talentId": 104975,
+      "count": 2,
+      "reason": "Schaden mit aktivem Begleiter ergänzen."
+    },
+    {
+      "talentId": 104969,
+      "count": 5,
+      "reason": "Begleiterschaden steigern."
+    },
+    {
+      "talentId": 104972,
+      "count": 2,
+      "reason": "Wiederbelebung erleichtern."
+    },
+    {
+      "talentId": 104970,
+      "count": 1,
+      "reason": "Bewegung des Begleiters verbessern."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "wh-survival-hunter",
+      "mob-survival-hunter"
+    ],
+    "editorialDecision": "Melee-oriented Survival, traps, active pet; avoid cyclic Beast Mastery edge.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Nov 25 pet crit fixes; verify melee weapon choice and trainer levels."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "9fa5fb0f24d1f95d20f208b2829b5da45b1a7068e97aba2897cecd8be43cc16f",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

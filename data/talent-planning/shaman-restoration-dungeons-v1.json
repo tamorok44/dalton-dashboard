@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "shaman-restoration-dungeons",
+  "version": 1,
+  "classId": 7,
+  "treeId": 11362,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11326": 0,
+    "11362": 46,
+    "11363": 5
+  },
+  "points": [
+    {
+      "talentId": 104729,
+      "rank": 1
+    },
+    {
+      "talentId": 104729,
+      "rank": 2
+    },
+    {
+      "talentId": 104729,
+      "rank": 3
+    },
+    {
+      "talentId": 104729,
+      "rank": 4
+    },
+    {
+      "talentId": 104729,
+      "rank": 5
+    },
+    {
+      "talentId": 104734,
+      "rank": 1
+    },
+    {
+      "talentId": 104734,
+      "rank": 2
+    },
+    {
+      "talentId": 104734,
+      "rank": 3
+    },
+    {
+      "talentId": 104739,
+      "rank": 1
+    },
+    {
+      "talentId": 104739,
+      "rank": 2
+    },
+    {
+      "talentId": 104732,
+      "rank": 1
+    },
+    {
+      "talentId": 104731,
+      "rank": 1
+    },
+    {
+      "talentId": 104731,
+      "rank": 2
+    },
+    {
+      "talentId": 104731,
+      "rank": 3
+    },
+    {
+      "talentId": 104733,
+      "rank": 1
+    },
+    {
+      "talentId": 104728,
+      "rank": 1
+    },
+    {
+      "talentId": 104738,
+      "rank": 1
+    },
+    {
+      "talentId": 104738,
+      "rank": 2
+    },
+    {
+      "talentId": 104738,
+      "rank": 3
+    },
+    {
+      "talentId": 104738,
+      "rank": 4
+    },
+    {
+      "talentId": 104727,
+      "rank": 1
+    },
+    {
+      "talentId": 104727,
+      "rank": 2
+    },
+    {
+      "talentId": 104727,
+      "rank": 3
+    },
+    {
+      "talentId": 104726,
+      "rank": 1
+    },
+    {
+      "talentId": 104738,
+      "rank": 5
+    },
+    {
+      "talentId": 104725,
+      "rank": 1
+    },
+    {
+      "talentId": 104725,
+      "rank": 2
+    },
+    {
+      "talentId": 104725,
+      "rank": 3
+    },
+    {
+      "talentId": 104725,
+      "rank": 4
+    },
+    {
+      "talentId": 104725,
+      "rank": 5
+    },
+    {
+      "talentId": 104724,
+      "rank": 1
+    },
+    {
+      "talentId": 104756,
+      "rank": 1
+    },
+    {
+      "talentId": 104756,
+      "rank": 2
+    },
+    {
+      "talentId": 104756,
+      "rank": 3
+    },
+    {
+      "talentId": 104756,
+      "rank": 4
+    },
+    {
+      "talentId": 104756,
+      "rank": 5
+    },
+    {
+      "talentId": 104739,
+      "rank": 3
+    },
+    {
+      "talentId": 104739,
+      "rank": 4
+    },
+    {
+      "talentId": 104739,
+      "rank": 5
+    },
+    {
+      "talentId": 104736,
+      "rank": 1
+    },
+    {
+      "talentId": 104736,
+      "rank": 2
+    },
+    {
+      "talentId": 104736,
+      "rank": 3
+    },
+    {
+      "talentId": 104733,
+      "rank": 2
+    },
+    {
+      "talentId": 104733,
+      "rank": 3
+    },
+    {
+      "talentId": 104735,
+      "rank": 1
+    },
+    {
+      "talentId": 104735,
+      "rank": 2
+    },
+    {
+      "talentId": 104730,
+      "rank": 1
+    },
+    {
+      "talentId": 104730,
+      "rank": 2
+    },
+    {
+      "talentId": 104730,
+      "rank": 3
+    },
+    {
+      "talentId": 104730,
+      "rank": 4
+    },
+    {
+      "talentId": 104730,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104729,
+      "count": 5,
+      "reason": "Heilkosten und Trefferchance verbessern."
+    },
+    {
+      "talentId": 104734,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern stärken."
+    },
+    {
+      "talentId": 104739,
+      "count": 2,
+      "reason": "Welle der Heilung beschleunigen."
+    },
+    {
+      "talentId": 104732,
+      "count": 1,
+      "reason": "Wasserschild freischalten."
+    },
+    {
+      "talentId": 104731,
+      "count": 3,
+      "reason": "Rüstungsschutz nach kritischer Heilung stärken."
+    },
+    {
+      "talentId": 104733,
+      "count": 1,
+      "reason": "Zauberzeitverlust bei Heilungen reduzieren."
+    },
+    {
+      "talentId": 104728,
+      "count": 1,
+      "reason": "Totem der Manaflut freischalten."
+    },
+    {
+      "talentId": 104738,
+      "count": 4,
+      "reason": "Kritische Heilungen unterstützen."
+    },
+    {
+      "talentId": 104727,
+      "count": 3,
+      "reason": "Welle der Heilung stärken."
+    },
+    {
+      "talentId": 104726,
+      "count": 1,
+      "reason": "Schnelligkeit der Natur freischalten."
+    },
+    {
+      "talentId": 104738,
+      "count": 1,
+      "reason": "Gezeitenbeherrschung vervollständigen."
+    },
+    {
+      "talentId": 104725,
+      "count": 5,
+      "reason": "Heilwirkung steigern."
+    },
+    {
+      "talentId": 104724,
+      "count": 1,
+      "reason": "Springflut freischalten."
+    },
+    {
+      "talentId": 104756,
+      "count": 5,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 104739,
+      "count": 3,
+      "reason": "Welle der Heilung vollständig beschleunigen."
+    },
+    {
+      "talentId": 104736,
+      "count": 3,
+      "reason": "Heilbedrohung reduzieren."
+    },
+    {
+      "talentId": 104733,
+      "count": 2,
+      "reason": "Heilfokus vervollständigen."
+    },
+    {
+      "talentId": 104735,
+      "count": 2,
+      "reason": "Totemkosten verringern."
+    },
+    {
+      "talentId": 104730,
+      "count": 5,
+      "reason": "Regenerationstotems stärken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-restoration-shaman-leveling",
+      "wh-restoration-shaman"
+    ],
+    "editorialDecision": "Group healer with Water Shield, Mana Tide, Healing Way and Riptide.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Verify Riptide/Chain Heal interaction and current Water Shield triggers."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "a10ee22c8f0a98e794c903bd979f6eeb2e94f043bbbfd459bb812921471cb593",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

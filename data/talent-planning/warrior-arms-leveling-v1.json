@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "warrior-arms-leveling",
+  "version": 1,
+  "classId": 1,
+  "treeId": 11650,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11650": 31,
+    "11657": 20,
+    "11670": 0
+  },
+  "points": [
+    {
+      "talentId": 105956,
+      "rank": 1
+    },
+    {
+      "talentId": 105956,
+      "rank": 2
+    },
+    {
+      "talentId": 105956,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 1
+    },
+    {
+      "talentId": 105957,
+      "rank": 2
+    },
+    {
+      "talentId": 105955,
+      "rank": 1
+    },
+    {
+      "talentId": 105955,
+      "rank": 2
+    },
+    {
+      "talentId": 105952,
+      "rank": 1
+    },
+    {
+      "talentId": 105952,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 1
+    },
+    {
+      "talentId": 105954,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 3
+    },
+    {
+      "talentId": 105951,
+      "rank": 1
+    },
+    {
+      "talentId": 105950,
+      "rank": 1
+    },
+    {
+      "talentId": 105950,
+      "rank": 2
+    },
+    {
+      "talentId": 105950,
+      "rank": 3
+    },
+    {
+      "talentId": 105948,
+      "rank": 1
+    },
+    {
+      "talentId": 105948,
+      "rank": 2
+    },
+    {
+      "talentId": 105948,
+      "rank": 3
+    },
+    {
+      "talentId": 105947,
+      "rank": 1
+    },
+    {
+      "talentId": 105947,
+      "rank": 2
+    },
+    {
+      "talentId": 105945,
+      "rank": 1
+    },
+    {
+      "talentId": 105944,
+      "rank": 1
+    },
+    {
+      "talentId": 105944,
+      "rank": 2
+    },
+    {
+      "talentId": 105944,
+      "rank": 3
+    },
+    {
+      "talentId": 105944,
+      "rank": 4
+    },
+    {
+      "talentId": 110858,
+      "rank": 1
+    },
+    {
+      "talentId": 110858,
+      "rank": 2
+    },
+    {
+      "talentId": 105944,
+      "rank": 5
+    },
+    {
+      "talentId": 105942,
+      "rank": 1
+    },
+    {
+      "talentId": 105941,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
+    },
+    {
+      "talentId": 105937,
+      "rank": 1
+    },
+    {
+      "talentId": 105937,
+      "rank": 2
+    },
+    {
+      "talentId": 105937,
+      "rank": 3
+    },
+    {
+      "talentId": 105937,
+      "rank": 4
+    },
+    {
+      "talentId": 105937,
+      "rank": 5
+    },
+    {
+      "talentId": 105931,
+      "rank": 1
+    },
+    {
+      "talentId": 105931,
+      "rank": 2
+    },
+    {
+      "talentId": 105931,
+      "rank": 3
+    },
+    {
+      "talentId": 105931,
+      "rank": 4
+    },
+    {
+      "talentId": 105931,
+      "rank": 5
+    },
+    {
+      "talentId": 105934,
+      "rank": 1
+    },
+    {
+      "talentId": 105934,
+      "rank": 2
+    },
+    {
+      "talentId": 105934,
+      "rank": 3
+    },
+    {
+      "talentId": 105932,
+      "rank": 1
+    },
+    {
+      "talentId": 105932,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105956,
+      "count": 3,
+      "reason": "Verwunden stärken."
+    },
+    {
+      "talentId": 105957,
+      "count": 2,
+      "reason": "Parieren verbessern."
+    },
+    {
+      "talentId": 105955,
+      "count": 2,
+      "reason": "Sturmangriff-Wut erhöhen."
+    },
+    {
+      "talentId": 105952,
+      "count": 2,
+      "reason": "Kritisches Überwältigen stärken."
+    },
+    {
+      "talentId": 105954,
+      "count": 3,
+      "reason": "Wuterhalt bei Haltungswechseln ausbauen."
+    },
+    {
+      "talentId": 105951,
+      "count": 1,
+      "reason": "Aggressionskontrolle freischalten."
+    },
+    {
+      "talentId": 105950,
+      "count": 3,
+      "reason": "Blutungen nach kritischen Treffern stärken."
+    },
+    {
+      "talentId": 105948,
+      "count": 3,
+      "reason": "Zweihandwaffenschaden erhöhen."
+    },
+    {
+      "talentId": 105947,
+      "count": 2,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 105945,
+      "count": 1,
+      "reason": "Mehrzielangriffe ermöglichen."
+    },
+    {
+      "talentId": 105944,
+      "count": 4,
+      "reason": "Waffenabhängigen Bonus aufbauen."
+    },
+    {
+      "talentId": 110858,
+      "count": 2,
+      "reason": "Zerschmettern beschleunigen."
+    },
+    {
+      "talentId": 105944,
+      "count": 1,
+      "reason": "Waffenmeister vervollständigen."
+    },
+    {
+      "talentId": 105942,
+      "count": 1,
+      "reason": "Bewegungsbindung ergänzen."
+    },
+    {
+      "talentId": 105941,
+      "count": 1,
+      "reason": "Tödlichen Stoß freischalten."
+    },
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105937,
+      "count": 5,
+      "reason": "Wutgewinn aus Angriffen unterstützen."
+    },
+    {
+      "talentId": 105931,
+      "count": 5,
+      "reason": "Schadensbonus nach erlittenen Angriffen ausbauen."
+    },
+    {
+      "talentId": 105934,
+      "count": 3,
+      "reason": "Erholung nach schweren Treffern unterstützen."
+    },
+    {
+      "talentId": 105932,
+      "count": 2,
+      "reason": "Hinrichten günstiger machen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-arms-warrior-leveling",
+      "mob-warrior-leveling"
+    ],
+    "editorialDecision": "Two-handed bleed/rage leveling; Sweeping Strikes and Mortal Strike; no weapon-specific superiority.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Weaponmaster Nov 25 death fix and old secondary grid differ."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "003db0d05a5d5f3bad86556e98a50f8b29965f0b5d54f6de20cdb27e1df3a2c0",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

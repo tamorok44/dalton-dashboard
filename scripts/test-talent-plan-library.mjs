@@ -449,6 +449,13 @@ for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warl
   const key=proofKey(p.classId,p.research.structuralValidation.catalogRevision,p.research.structuralValidation.sourceRevision);
   assert.ok(researchSnapshots.has(key)&&!snapshots.has(key));
 }
+assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
+for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
+  const candidate=plans.find(p=>p.id===id);
+  assert.ok(candidate&&candidate.status==='research_only');
+  assert.deepEqual(validatedRanks.get(JSON.stringify([id,candidate.version])),[0]);
+  assert.deepEqual(coverage.classes[candidate.classId].map(t=>candidate.expectedDistribution[t.treeId]),dist);
+}
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');

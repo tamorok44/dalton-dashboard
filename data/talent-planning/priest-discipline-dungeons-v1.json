@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-discipline-dungeons",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11608,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 31,
+    "11615": 20,
+    "11622": 0
+  },
+  "points": [
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105837,
+      "rank": 1
+    },
+    {
+      "talentId": 105837,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105839,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 2
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
+    },
+    {
+      "talentId": 105834,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 2
+    },
+    {
+      "talentId": 105835,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 4
+    },
+    {
+      "talentId": 105840,
+      "rank": 1
+    },
+    {
+      "talentId": 105840,
+      "rank": 2
+    },
+    {
+      "talentId": 105840,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 5
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105836,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 2
+    },
+    {
+      "talentId": 110855,
+      "rank": 3
+    },
+    {
+      "talentId": 110855,
+      "rank": 4
+    },
+    {
+      "talentId": 110855,
+      "rank": 5
+    },
+    {
+      "talentId": 105863,
+      "rank": 1
+    },
+    {
+      "talentId": 105863,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 3
+    },
+    {
+      "talentId": 105863,
+      "rank": 4
+    },
+    {
+      "talentId": 105863,
+      "rank": 5
+    },
+    {
+      "talentId": 105860,
+      "rank": 1
+    },
+    {
+      "talentId": 105860,
+      "rank": 2
+    },
+    {
+      "talentId": 105860,
+      "rank": 3
+    },
+    {
+      "talentId": 105866,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 2
+    },
+    {
+      "talentId": 105866,
+      "rank": 3
+    },
+    {
+      "talentId": 105858,
+      "rank": 1
+    },
+    {
+      "talentId": 105858,
+      "rank": 2
+    },
+    {
+      "talentId": 105858,
+      "rank": 3
+    },
+    {
+      "talentId": 105862,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Heilbedrohung und Kontrollanfälligkeit senken."
+    },
+    {
+      "talentId": 105837,
+      "count": 2,
+      "reason": "Intelligenz steigern."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Absorption des Schilds erhöhen."
+    },
+    {
+      "talentId": 105839,
+      "count": 1,
+      "reason": "Seelenwehr freischalten."
+    },
+    {
+      "talentId": 105842,
+      "count": 3,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105834,
+      "count": 1,
+      "reason": "Sühne als Heiloption freischalten."
+    },
+    {
+      "talentId": 105835,
+      "count": 4,
+      "reason": "Heilungen auf Ziele mit Geschwächter Seele unterstützen."
+    },
+    {
+      "talentId": 105840,
+      "count": 3,
+      "reason": "Absorption nach kritischen direkten Heilungen stärken."
+    },
+    {
+      "talentId": 105835,
+      "count": 1,
+      "reason": "Erneuerte Hoffnung vervollständigen."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105836,
+      "count": 1,
+      "reason": "Seele der Macht freischalten."
+    },
+    {
+      "talentId": 110855,
+      "count": 5,
+      "reason": "Kritische Heiligeffekte ergänzen."
+    },
+    {
+      "talentId": 105863,
+      "count": 5,
+      "reason": "Zauberzeit zentraler Heilungen verringern."
+    },
+    {
+      "talentId": 105860,
+      "count": 3,
+      "reason": "Rüstungsschutz nach kritischen Heilungen stärken."
+    },
+    {
+      "talentId": 105866,
+      "count": 3,
+      "reason": "Erneuerung stärken."
+    },
+    {
+      "talentId": 105858,
+      "count": 3,
+      "reason": "Manakosten zentraler Heilungen verringern."
+    },
+    {
+      "talentId": 105862,
+      "count": 1,
+      "reason": "Heilige Nova ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-discipline-priest-leveling",
+      "wh-discipline-priest"
+    ],
+    "editorialDecision": "Shield-based healer, Meditation, Soul Warding and Penance; different from Holy direct/group healing.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Verify shield and Weakened Soul mechanics and undocumented priest changes."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

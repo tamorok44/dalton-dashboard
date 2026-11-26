@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-assassination-leveling",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11580,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 0,
+    "11573": 20,
+    "11580": 31
+  },
+  "points": [
+    {
+      "talentId": 105722,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 2
+    },
+    {
+      "talentId": 105722,
+      "rank": 3
+    },
+    {
+      "talentId": 105722,
+      "rank": 4
+    },
+    {
+      "talentId": 105722,
+      "rank": 5
+    },
+    {
+      "talentId": 105721,
+      "rank": 1
+    },
+    {
+      "talentId": 105721,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 3
+    },
+    {
+      "talentId": 105739,
+      "rank": 1
+    },
+    {
+      "talentId": 105739,
+      "rank": 2
+    },
+    {
+      "talentId": 105716,
+      "rank": 1
+    },
+    {
+      "talentId": 105716,
+      "rank": 2
+    },
+    {
+      "talentId": 105720,
+      "rank": 1
+    },
+    {
+      "talentId": 105720,
+      "rank": 2
+    },
+    {
+      "talentId": 105739,
+      "rank": 3
+    },
+    {
+      "talentId": 105714,
+      "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 2
+    },
+    {
+      "talentId": 105714,
+      "rank": 3
+    },
+    {
+      "talentId": 105714,
+      "rank": 4
+    },
+    {
+      "talentId": 105714,
+      "rank": 5
+    },
+    {
+      "talentId": 113633,
+      "rank": 1
+    },
+    {
+      "talentId": 113633,
+      "rank": 2
+    },
+    {
+      "talentId": 113633,
+      "rank": 3
+    },
+    {
+      "talentId": 113633,
+      "rank": 4
+    },
+    {
+      "talentId": 105712,
+      "rank": 1
+    },
+    {
+      "talentId": 105710,
+      "rank": 1
+    },
+    {
+      "talentId": 105710,
+      "rank": 2
+    },
+    {
+      "talentId": 105710,
+      "rank": 3
+    },
+    {
+      "talentId": 105715,
+      "rank": 1
+    },
+    {
+      "talentId": 113633,
+      "rank": 5
+    },
+    {
+      "talentId": 105709,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105719,
+      "rank": 1
+    },
+    {
+      "talentId": 105719,
+      "rank": 2
+    },
+    {
+      "talentId": 105719,
+      "rank": 3
+    },
+    {
+      "talentId": 105738,
+      "rank": 1
+    },
+    {
+      "talentId": 105738,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 3
+    },
+    {
+      "talentId": 105735,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 105726,
+      "rank": 1
+    },
+    {
+      "talentId": 105726,
+      "rank": 2
+    },
+    {
+      "talentId": 105730,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105722,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105721,
+      "count": 3,
+      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+    },
+    {
+      "talentId": 105739,
+      "count": 2,
+      "reason": "Zerhäckseln verlängern."
+    },
+    {
+      "talentId": 105716,
+      "count": 2,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 105720,
+      "count": 2,
+      "reason": "Energiereserve steigern."
+    },
+    {
+      "talentId": 105739,
+      "count": 1,
+      "reason": "Zerhäckseln vervollständigen."
+    },
+    {
+      "talentId": 105714,
+      "count": 5,
+      "reason": "Giftschaden steigern."
+    },
+    {
+      "talentId": 113633,
+      "count": 4,
+      "reason": "Energierückfluss verbessern."
+    },
+    {
+      "talentId": 105712,
+      "count": 1,
+      "reason": "Toxin freischalten."
+    },
+    {
+      "talentId": 105710,
+      "count": 3,
+      "reason": "Zusätzliche Combopunkte bei kritischen Fähigkeiten unterstützen."
+    },
+    {
+      "talentId": 105715,
+      "count": 1,
+      "reason": "Kaltblütigkeit freischalten."
+    },
+    {
+      "talentId": 113633,
+      "count": 1,
+      "reason": "Unerbittliche Stöße vervollständigen."
+    },
+    {
+      "talentId": 105709,
+      "count": 1,
+      "reason": "Verstümmeln freischalten."
+    },
+    {
+      "talentId": 105741,
+      "count": 2,
+      "reason": "Kosten häufiger Angriffe senken."
+    },
+    {
+      "talentId": 105708,
+      "count": 3,
+      "reason": "Ausweiden stärken."
+    },
+    {
+      "talentId": 105737,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105719,
+      "count": 3,
+      "reason": "Kritische Dolchfähigkeiten stärken."
+    },
+    {
+      "talentId": 105738,
+      "count": 3,
+      "reason": "Parieren stärken."
+    },
+    {
+      "talentId": 105735,
+      "count": 1,
+      "reason": "Riposte freischalten."
+    },
+    {
+      "talentId": 105736,
+      "count": 2,
+      "reason": "Defensive und Bewegung häufiger einsetzen."
+    },
+    {
+      "talentId": 105726,
+      "count": 2,
+      "reason": "Ausweichen und Parieren der Gegner verringern."
+    },
+    {
+      "talentId": 105730,
+      "count": 1,
+      "reason": "Schaden häufiger Angriffe ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "wh-assassination-rogue",
+      "mob-rogue-leveling"
+    ],
+    "editorialDecision": "Poison and dagger alternative; slower before poisons and capstone; not default over Combat.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Poison restrictions and Poised fix Nov 25; verify Shank and dagger requirements."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "aa44b443774e0b700e440f2e2e4ae70eeb4469afc458ecf8df3e036596839a8e",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

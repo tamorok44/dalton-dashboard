@@ -529,6 +529,150 @@
       "kind": "expert_guide",
       "independenceGroup": "icy-veins-shaman-editorial",
       "guideUpdated": "2026-11-21"
+    },
+    {
+      "id": "mob-warrior-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-warrior-leveling-editorial"
+    },
+    {
+      "id": "iv-arms-warrior-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/arms-warrior-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-arms-warrior-editorial"
+    },
+    {
+      "id": "iv-fury-warrior-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/fury-warrior-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-fury-warrior-editorial"
+    },
+    {
+      "id": "iv-holy-paladin-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/holy-paladin-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-holy-paladin-editorial"
+    },
+    {
+      "id": "mob-holy-paladin",
+      "url": "https://mobalytics.gg/wow-forever/classes/holy-paladin-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-holy-paladin-editorial"
+    },
+    {
+      "id": "iv-protection-paladin-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/protection-paladin-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-protection-paladin-editorial"
+    },
+    {
+      "id": "wh-protection-paladin",
+      "url": "https://www.wowhead.com/forever/guide/classes/paladin/protection/tank-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-protection-paladin-editorial"
+    },
+    {
+      "id": "wh-survival-hunter",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/survival/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-survival-hunter-editorial"
+    },
+    {
+      "id": "mob-survival-hunter",
+      "url": "https://mobalytics.gg/wow-forever/classes/survival-hunter-guide-1-60-ludideo",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-survival-hunter-editorial"
+    },
+    {
+      "id": "wh-assassination-rogue",
+      "url": "https://www.wowhead.com/forever/guide/classes/rogue/assassination/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-assassination-rogue-editorial"
+    },
+    {
+      "id": "mob-rogue-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/rogue-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-rogue-leveling-editorial"
+    },
+    {
+      "id": "skillcapped-subtlety-pvp",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/subtlety-rogue-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-subtlety-pvp-editorial"
+    },
+    {
+      "id": "foreverbattlegrounds-subtlety",
+      "url": "https://foreverbattlegrounds.com/classes/rogue/subtlety/",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverbattlegrounds-subtlety-editorial"
+    },
+    {
+      "id": "iv-discipline-priest-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/discipline-priest-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-discipline-priest-editorial"
+    },
+    {
+      "id": "wh-discipline-priest",
+      "url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/healer-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-discipline-priest-editorial"
+    },
+    {
+      "id": "iv-elemental-shaman-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/elemental-shaman-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-elemental-shaman-editorial"
+    },
+    {
+      "id": "mob-elemental-shaman",
+      "url": "https://mobalytics.gg/wow-forever/classes/elemental-shaman-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-elemental-shaman-editorial"
+    },
+    {
+      "id": "iv-restoration-shaman-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/restoration-shaman-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-restoration-shaman-editorial"
+    },
+    {
+      "id": "wh-restoration-shaman",
+      "url": "https://www.wowhead.com/forever/guide/classes/shaman/restoration/healer-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-restoration-shaman-editorial"
+    },
+    {
+      "id": "iv-restoration-druid-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/restoration-druid-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-restoration-druid-editorial"
+    },
+    {
+      "id": "mob-restoration-druid",
+      "url": "https://mobalytics.gg/wow-forever/classes/restoration-druid-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-restoration-druid-editorial"
+    },
+    {
+      "id": "wh-balance-druid",
+      "url": "https://www.wowhead.com/forever/guide/classes/druid/balance/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-balance-druid-editorial"
+    },
+    {
+      "id": "mob-balance-druid",
+      "url": "https://mobalytics.gg/wow-forever/classes/balance-druid-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-balance-druid-editorial"
+    },
+    {
+      "id": "official-balance-2511",
+      "url": "https://eu.forums.blizzard.com/en/wow/t/balance-druid-adjustments-25-november/645939",
+      "kind": "expert_guide",
+      "independenceGroup": "official-balance-2511-editorial"
     }
   ],
   "pilot": {
@@ -885,6 +1029,247 @@
         "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
         "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
         "November 25 Clearcasting/Maelstrom Chain Lightning fix and current Improved Stormstrike rank scaling. Maelstrom's tooltip contains an unspecified weapon-speed-dependent chance; no DPS estimate."
+      ]
+    },
+    {
+      "id": "warrior-arms-leveling",
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-arms-warrior-leveling",
+        "mob-warrior-leveling"
+      ],
+      "proposal": "Two-handed bleed/rage leveling; Sweeping Strikes and Mortal Strike; no weapon-specific superiority.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Weaponmaster Nov 25 death fix and old secondary grid differ."
+      ]
+    },
+    {
+      "id": "warrior-fury-leveling",
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-fury-warrior-leveling",
+        "mob-warrior-leveling"
+      ],
+      "proposal": "Dual-wield sustained rage, Bloodthirst; no dual wield before training.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Older independent export conflicts on Fury positions and Bloodthirst prerequisite."
+      ]
+    },
+    {
+      "id": "paladin-holy-dungeons",
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-holy-paladin-leveling",
+        "mob-holy-paladin"
+      ],
+      "proposal": "Dedicated healing, early mana/Illumination, Holy Shock and Light's Vigil; avoid unresolved Boundless Light prerequisite.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Oath duration official 60 min vs extracted 5 min; no duration claim, shield talents require shield."
+      ]
+    },
+    {
+      "id": "paladin-protection-dungeons",
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-protection-paladin-leveling",
+        "wh-protection-paladin"
+      ],
+      "proposal": "Shield tank with mana from blocks, Holy Shield and Shieldsworn.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify Holy Shield charges, Shieldsworn and Judgement refresh hotfix."
+      ]
+    },
+    {
+      "id": "hunter-survival-leveling",
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-survival-hunter",
+        "mob-survival-hunter"
+      ],
+      "proposal": "Melee-oriented Survival, traps, active pet; avoid cyclic Beast Mastery edge.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Nov 25 pet crit fixes; verify melee weapon choice and trainer levels."
+      ]
+    },
+    {
+      "id": "rogue-assassination-leveling",
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-assassination-rogue",
+        "mob-rogue-leveling"
+      ],
+      "proposal": "Poison and dagger alternative; slower before poisons and capstone; not default over Combat.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Poison restrictions and Poised fix Nov 25; verify Shank and dagger requirements."
+      ]
+    },
+    {
+      "id": "rogue-subtlety-pvp",
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "skillcapped-subtlety-pvp",
+        "foreverbattlegrounds-subtlety"
+      ],
+      "proposal": "Control, opener, bleeds, resets then Combat utility; not leveling-speed recommendation.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify current PvP diminishing returns, reset scope and Death Mark limits."
+      ]
+    },
+    {
+      "id": "priest-discipline-dungeons",
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-discipline-priest-leveling",
+        "wh-discipline-priest"
+      ],
+      "proposal": "Shield-based healer, Meditation, Soul Warding and Penance; different from Holy direct/group healing.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify shield and Weakened Soul mechanics and undocumented priest changes."
+      ]
+    },
+    {
+      "id": "shaman-elemental-leveling",
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-elemental-shaman-leveling",
+        "mob-elemental-shaman"
+      ],
+      "proposal": "Ranged elemental alternative; Earthbound, Lightning Overload and Lightning Mastery, then mana sustain; no Lava Burst.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify overload, freecast and Chain Lightning after Nov 25."
+      ]
+    },
+    {
+      "id": "shaman-restoration-dungeons",
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-shaman-leveling",
+        "wh-restoration-shaman"
+      ],
+      "proposal": "Group healer with Water Shield, Mana Tide, Healing Way and Riptide.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify Riptide/Chain Heal interaction and current Water Shield triggers."
+      ]
+    },
+    {
+      "id": "druid-restoration-dungeons",
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-druid-leveling",
+        "mob-restoration-druid"
+      ],
+      "proposal": "Dedicated healer with mana regen, Swiftmend, Nature's Swiftness and Wild Growth; late Genesis utility.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify Nov 25 Genesis/Tranquility correction and Wild Growth targeting."
+      ]
+    },
+    {
+      "id": "druid-balance-leveling",
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-balance-druid",
+        "mob-balance-druid",
+        "official-balance-2511"
+      ],
+      "proposal": "Conservative structural candidate against pre-hotfix extract. Avoid removed Moonfury and changed Improved Starfire rank entirely; updated slot IDs and effects require exact proof.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Nov 25 Balance rework: exact revised names, IDs, rank caps and effects unresolved."
       ]
     }
   ]

@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-protection-dungeons",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11541,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 15,
+    "11541": 31,
+    "11559": 5
+  },
+  "points": [
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
+    },
+    {
+      "talentId": 105632,
+      "rank": 1
+    },
+    {
+      "talentId": 105632,
+      "rank": 2
+    },
+    {
+      "talentId": 105625,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 2
+    },
+    {
+      "talentId": 105630,
+      "rank": 1
+    },
+    {
+      "talentId": 105630,
+      "rank": 2
+    },
+    {
+      "talentId": 110878,
+      "rank": 1
+    },
+    {
+      "talentId": 105634,
+      "rank": 1
+    },
+    {
+      "talentId": 105634,
+      "rank": 2
+    },
+    {
+      "talentId": 105634,
+      "rank": 3
+    },
+    {
+      "talentId": 105630,
+      "rank": 3
+    },
+    {
+      "talentId": 105628,
+      "rank": 1
+    },
+    {
+      "talentId": 105627,
+      "rank": 1
+    },
+    {
+      "talentId": 105627,
+      "rank": 2
+    },
+    {
+      "talentId": 105627,
+      "rank": 3
+    },
+    {
+      "talentId": 105630,
+      "rank": 4
+    },
+    {
+      "talentId": 110879,
+      "rank": 1
+    },
+    {
+      "talentId": 110879,
+      "rank": 2
+    },
+    {
+      "talentId": 110879,
+      "rank": 3
+    },
+    {
+      "talentId": 105627,
+      "rank": 4
+    },
+    {
+      "talentId": 105627,
+      "rank": 5
+    },
+    {
+      "talentId": 110875,
+      "rank": 1
+    },
+    {
+      "talentId": 105335,
+      "rank": 1
+    },
+    {
+      "talentId": 105335,
+      "rank": 2
+    },
+    {
+      "talentId": 105335,
+      "rank": 3
+    },
+    {
+      "talentId": 105335,
+      "rank": 4
+    },
+    {
+      "talentId": 105335,
+      "rank": 5
+    },
+    {
+      "talentId": 105334,
+      "rank": 1
+    },
+    {
+      "talentId": 105334,
+      "rank": 2
+    },
+    {
+      "talentId": 105334,
+      "rank": 3
+    },
+    {
+      "talentId": 105334,
+      "rank": 4
+    },
+    {
+      "talentId": 105334,
+      "rank": 5
+    },
+    {
+      "talentId": 110871,
+      "rank": 1
+    },
+    {
+      "talentId": 110871,
+      "rank": 2
+    },
+    {
+      "talentId": 105333,
+      "rank": 1
+    },
+    {
+      "talentId": 105333,
+      "rank": 2
+    },
+    {
+      "talentId": 105333,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 1
+    },
+    {
+      "talentId": 105706,
+      "rank": 2
+    },
+    {
+      "talentId": 105706,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 4
+    },
+    {
+      "talentId": 105706,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blockchance nach Nahkampfangriffen ausbauen."
+    },
+    {
+      "talentId": 105638,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105632,
+      "count": 2,
+      "reason": "Defensive Abklingzeiten verringern."
+    },
+    {
+      "talentId": 105625,
+      "count": 1,
+      "reason": "Bollwerk des Templers freischalten."
+    },
+    {
+      "talentId": 110874,
+      "count": 2,
+      "reason": "Blocken und Manarückfluss verbessern."
+    },
+    {
+      "talentId": 105630,
+      "count": 2,
+      "reason": "Rüstung erhöhen."
+    },
+    {
+      "talentId": 110878,
+      "count": 1,
+      "reason": "Zusätzliches Richturteil freischalten."
+    },
+    {
+      "talentId": 105634,
+      "count": 3,
+      "reason": "Schadensminderung bei aktivem Zorn der Gerechtigkeit stärken."
+    },
+    {
+      "talentId": 105630,
+      "count": 1,
+      "reason": "Rüstung weiter stärken."
+    },
+    {
+      "talentId": 105628,
+      "count": 1,
+      "reason": "Heiligen Schild freischalten."
+    },
+    {
+      "talentId": 105627,
+      "count": 3,
+      "reason": "Zusatzangriffe nach Blocken stärken."
+    },
+    {
+      "talentId": 105630,
+      "count": 1,
+      "reason": "Rüstung weiter ausbauen."
+    },
+    {
+      "talentId": 110879,
+      "count": 3,
+      "reason": "Bedrohung und Schutz durch Heiligen Stoß stärken."
+    },
+    {
+      "talentId": 105627,
+      "count": 2,
+      "reason": "Abrechnung vervollständigen."
+    },
+    {
+      "talentId": 110875,
+      "count": 1,
+      "reason": "Schildgeschworen freischalten."
+    },
+    {
+      "talentId": 105335,
+      "count": 5,
+      "reason": "Heilungen gegen Zauberzeitverlust absichern."
+    },
+    {
+      "talentId": 105334,
+      "count": 5,
+      "reason": "Siegel und Richturteile stärken."
+    },
+    {
+      "talentId": 110871,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern erhöhen."
+    },
+    {
+      "talentId": 105333,
+      "count": 3,
+      "reason": "Heilungen stärken."
+    },
+    {
+      "talentId": 105706,
+      "count": 5,
+      "reason": "Kosten der Sofortzauber reduzieren."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-protection-paladin-leveling",
+      "wh-protection-paladin"
+    ],
+    "editorialDecision": "Shield tank with mana from blocks, Holy Shield and Shieldsworn.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Verify Holy Shield charges, Shieldsworn and Judgement refresh hotfix."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "dfe974a80f59e6b57d54dcc4914e832a018dbfdcf6863bacc999c9e389ec8415",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

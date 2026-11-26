@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "id": "shaman-elemental-leveling",
+  "version": 1,
+  "classId": 7,
+  "treeId": 11326,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11326": 31,
+    "11362": 20,
+    "11363": 0
+  },
+  "points": [
+    {
+      "talentId": 104772,
+      "rank": 1
+    },
+    {
+      "talentId": 104772,
+      "rank": 2
+    },
+    {
+      "talentId": 104772,
+      "rank": 3
+    },
+    {
+      "talentId": 104772,
+      "rank": 4
+    },
+    {
+      "talentId": 104772,
+      "rank": 5
+    },
+    {
+      "talentId": 104771,
+      "rank": 1
+    },
+    {
+      "talentId": 104771,
+      "rank": 2
+    },
+    {
+      "talentId": 104771,
+      "rank": 3
+    },
+    {
+      "talentId": 104773,
+      "rank": 1
+    },
+    {
+      "talentId": 104773,
+      "rank": 2
+    },
+    {
+      "talentId": 104768,
+      "rank": 1
+    },
+    {
+      "talentId": 104773,
+      "rank": 3
+    },
+    {
+      "talentId": 104773,
+      "rank": 4
+    },
+    {
+      "talentId": 104773,
+      "rank": 5
+    },
+    {
+      "talentId": 104770,
+      "rank": 1
+    },
+    {
+      "talentId": 104762,
+      "rank": 1
+    },
+    {
+      "talentId": 104763,
+      "rank": 1
+    },
+    {
+      "talentId": 104763,
+      "rank": 2
+    },
+    {
+      "talentId": 104763,
+      "rank": 3
+    },
+    {
+      "talentId": 104764,
+      "rank": 1
+    },
+    {
+      "talentId": 104760,
+      "rank": 1
+    },
+    {
+      "talentId": 104759,
+      "rank": 1
+    },
+    {
+      "talentId": 104759,
+      "rank": 2
+    },
+    {
+      "talentId": 104759,
+      "rank": 3
+    },
+    {
+      "talentId": 104761,
+      "rank": 1
+    },
+    {
+      "talentId": 104766,
+      "rank": 1
+    },
+    {
+      "talentId": 104766,
+      "rank": 2
+    },
+    {
+      "talentId": 104766,
+      "rank": 3
+    },
+    {
+      "talentId": 104766,
+      "rank": 4
+    },
+    {
+      "talentId": 104766,
+      "rank": 5
+    },
+    {
+      "talentId": 104758,
+      "rank": 1
+    },
+    {
+      "talentId": 104729,
+      "rank": 1
+    },
+    {
+      "talentId": 104729,
+      "rank": 2
+    },
+    {
+      "talentId": 104729,
+      "rank": 3
+    },
+    {
+      "talentId": 104729,
+      "rank": 4
+    },
+    {
+      "talentId": 104729,
+      "rank": 5
+    },
+    {
+      "talentId": 104734,
+      "rank": 1
+    },
+    {
+      "talentId": 104734,
+      "rank": 2
+    },
+    {
+      "talentId": 104734,
+      "rank": 3
+    },
+    {
+      "talentId": 104739,
+      "rank": 1
+    },
+    {
+      "talentId": 104739,
+      "rank": 2
+    },
+    {
+      "talentId": 104732,
+      "rank": 1
+    },
+    {
+      "talentId": 104736,
+      "rank": 1
+    },
+    {
+      "talentId": 104736,
+      "rank": 2
+    },
+    {
+      "talentId": 104736,
+      "rank": 3
+    },
+    {
+      "talentId": 104739,
+      "rank": 3
+    },
+    {
+      "talentId": 104739,
+      "rank": 4
+    },
+    {
+      "talentId": 104739,
+      "rank": 5
+    },
+    {
+      "talentId": 104735,
+      "rank": 1
+    },
+    {
+      "talentId": 104735,
+      "rank": 2
+    },
+    {
+      "talentId": 104735,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104772,
+      "count": 5,
+      "reason": "Schaden von Blitzzaubern und Erdschock erhöhen."
+    },
+    {
+      "talentId": 104771,
+      "count": 3,
+      "reason": "Blitzzauber beschleunigen."
+    },
+    {
+      "talentId": 104773,
+      "count": 2,
+      "reason": "Manakosten reduzieren."
+    },
+    {
+      "talentId": 104768,
+      "count": 1,
+      "reason": "Freizauber freischalten."
+    },
+    {
+      "talentId": 104773,
+      "count": 3,
+      "reason": "Konvektion vervollständigen."
+    },
+    {
+      "talentId": 104770,
+      "count": 1,
+      "reason": "Feuerschaden ergänzen."
+    },
+    {
+      "talentId": 104762,
+      "count": 1,
+      "reason": "Erdgebunden als Kontrolle freischalten."
+    },
+    {
+      "talentId": 104763,
+      "count": 3,
+      "reason": "Zauberzeitverlust bei Blitzzaubern verringern."
+    },
+    {
+      "talentId": 104764,
+      "count": 1,
+      "reason": "Feuernova ergänzen."
+    },
+    {
+      "talentId": 104760,
+      "count": 1,
+      "reason": "Kritische Blitztreffer stärken."
+    },
+    {
+      "talentId": 104759,
+      "count": 3,
+      "reason": "Blitzschlag-Überladung ausbauen."
+    },
+    {
+      "talentId": 104761,
+      "count": 1,
+      "reason": "Reichweite ergänzen."
+    },
+    {
+      "talentId": 104766,
+      "count": 5,
+      "reason": "Kritischen Elementarschaden stärken."
+    },
+    {
+      "talentId": 104758,
+      "count": 1,
+      "reason": "Blitzbeherrschung freischalten."
+    },
+    {
+      "talentId": 104729,
+      "count": 5,
+      "reason": "Heilkosten und Trefferchance verbessern."
+    },
+    {
+      "talentId": 104734,
+      "count": 3,
+      "reason": "Manaregeneration während des Zauberns erhöhen."
+    },
+    {
+      "talentId": 104739,
+      "count": 2,
+      "reason": "Welle der Heilung beschleunigen."
+    },
+    {
+      "talentId": 104732,
+      "count": 1,
+      "reason": "Wasserschild freischalten."
+    },
+    {
+      "talentId": 104736,
+      "count": 3,
+      "reason": "Zauberbedrohung senken."
+    },
+    {
+      "talentId": 104739,
+      "count": 3,
+      "reason": "Welle der Heilung weiter beschleunigen."
+    },
+    {
+      "talentId": 104735,
+      "count": 3,
+      "reason": "Totemkosten reduzieren."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-elemental-shaman-leveling",
+      "mob-elemental-shaman"
+    ],
+    "editorialDecision": "Ranged elemental alternative; Earthbound, Lightning Overload and Lightning Mastery, then mana sustain; no Lava Burst.",
+    "unresolved": [
+      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+      "Verify overload, freecast and Chain Lightning after Nov 25."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "a10ee22c8f0a98e794c903bd979f6eeb2e94f043bbbfd459bb812921471cb593",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}
