@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 9,
   "treeId": 11629,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -290,7 +290,7 @@
     },
     {
       "talentId": 105909,
-      "reason": "Zermürben auf 40: beschleunigt eigene Verderbnis-, Lebensentzug- und Omen-der-Pein-Ticks während geschützter Kanalisierung. Keine Heilung wie Blutsauger; kein zusätzlicher DoT-Multiplikator.",
+      "reason": "Zermürben beschleunigt beim Kanalisieren die eigenen Verderbnis-, Lebensentzug- und Omen-der-Pein-Ticks; Dauer bleibt gleich, Fortschritt bleibt bei Abbruch erhalten. Keine Heilung wie Blutsauger, keine feste Schadenszahl.",
       "count": 1
     },
     {
@@ -340,16 +340,12 @@
       "cobalt-warlock-affliction-pvp-20261110",
       "foreverbattlegrounds-warlock-affliction-pvp"
     ],
-    "editorialDecision": "Aktiver Dämon als bewusste Kontroll-/Defensivoption im gemischten PvP; Verlangsamungsfluch 25, Lebensentzug 30 und Zermürben 40. Zermürben nur bei geschützter Kanalisierung und ausreichender Ziellebensdauer. Die alternative Opferung des Wichtels tauscht Dämonennutzen gegen Schattenschaden; keine gemessene Überlegenheit.",
+    "editorialDecision": "Aktiver Dämon, Verlangsamungsfluch 25, Lebensentzug 30, Zermürben 40. Nur geschützt kanalisieren, keine Unterbrechungsimmunität. 30/21 Seelenverbindung-Hybrid und Dämonopferung als Alternativen; keine pauschale Überlegenheit.",
     "unresolved": [
-      "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
-      "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
-      "The cited PvP build uses sacrifice; our active-demon alternative needs comparative testing. Channel pushback protection is not silence or interrupt immunity.",
-      "Exakter skalierter Basiswert von Zermürben 105909 unter Build 71139 bleibt ungeklärt; qualitative Hotfix-Regel bestätigt, keine Schadensformel.",
-      "Vermächtnisränge 1–5, vollständige Hotfix-Abhängigkeitsprüfung, redaktioneller Vergleich und reguläre CI ausstehend.",
-      "25.11.: Begleiter-Kritfehler korrigiert; keine alte Pet-Kritannahme, kein Schadensranking."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Schadens-, Bedrohungs- und Begleiter-Kritformeln nicht freigegeben."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -389,7 +385,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Gebrechen",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-affliction-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Aktiver Dämon, Verlangsamungsfluch 25, Lebensentzug 30, Zermürben 40. Nur geschützt kanalisieren, keine Unterbrechungsimmunität. 30/21 Seelenverbindung-Hybrid und Dämonopferung als Alternativen; keine pauschale Überlegenheit.",
+    "adviceSummary": "Aktiver Dämon, Verlangsamungsfluch 25, Lebensentzug 30, Zermürben 40. Nur geschützt kanalisieren, keine Unterbrechungsimmunität. 30/21 Seelenverbindung-Hybrid und Dämonopferung als Alternativen; keine pauschale Überlegenheit.",
+    "evidenceIds": [
+      "warlock-affliction-pvp-rank0-71139-editorial-1",
+      "warlock-affliction-pvp-rank0-71139-editorial-2"
+    ]
   }
 }

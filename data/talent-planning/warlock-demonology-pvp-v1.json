@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 9,
   "treeId": 11636,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -260,7 +260,7 @@
     },
     {
       "talentId": 105896,
-      "reason": "Dämonisches Brandmal: Sengender Schmerz verursacht weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Begleitertreffer. Exakter Zusatzschaden und Bedrohungswert nicht unabhängig numerisch bestätigt.",
+      "reason": "Sengender Schmerz erzeugt weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Dämonentreffer. Zusatzschaden ist je nach Dämon Feuer oder Schatten; nur Schatten erzeugt hohe Bedrohung. Keine feste Schadenszahl oder garantierte Ausnutzung.",
       "count": 2
     },
     {
@@ -325,14 +325,12 @@
       "skillcapped-warlock-demonology-pvp-20261119",
       "cobalt-warlock-demonology-pvp-20261103"
     ],
-    "editorialDecision": "Defensiver Dämonologie-PvP-Pfad mit Ausdauer, Seelenverbindung 30, Fel Domination 31 statt 34 und Dämonischem Pakt 40. Zwei Ränge Improved Felhunter für Magieabwehr/Unterbrechungsnutzen. Sofortige Verderbnis 47, fünf Bane-Ränge als Reihenfreischaltung 48–52, Molten Skin 53–57, Schattenbrand 58 statt 60; verbesserter Aderlass 59–60. Keine garantierte Kontrolle oder pauschale Überlegenheit gegenüber Gebrechen-Hybridpfaden.",
+    "editorialDecision": "Ausdauer und Seelenverbindung 30, Fel Domination 31, Pakt 40, Teufelsjäger-Option, Molten Skin und Schattenbrand später. 20/31/0 bzw. Soul Link/Siphon Life als Alternativen, kein garantiertes Kontrollfenster oder PvP-Ranking.",
     "unresolved": [
-      "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
-      "November 25 pet crit corrections; no exact pet-damage or PvP performance claim.",
-      "Compare with 21/30/0 Soul Link/Siphon Life alternative and confirm defensive effects; ranks 1–5 not verified.",
-      "105896: exakter zusätzlicher Schaden nicht unabhängig bestätigt. Hotfix 25.11. korrigiert Nahkampfgrundangriffs-Krit und zu hohe Kritchance von Sukkubus/Inkubus; keine universelle Kritformel ableiten. Hotfix 20.11. Dämonische Ägide nach Umskillen entfernt; nicht im Pfad. Vermächtnisränge 1–5 und reguläre CI offen."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Schadens-, Bedrohungs- und Begleiter-Kritformeln nicht freigegeben."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -366,7 +364,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Dämonologie",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-demonology-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Ausdauer und Seelenverbindung 30, Fel Domination 31, Pakt 40, Teufelsjäger-Option, Molten Skin und Schattenbrand später. 20/31/0 bzw. Soul Link/Siphon Life als Alternativen, kein garantiertes Kontrollfenster oder PvP-Ranking.",
+    "adviceSummary": "Ausdauer und Seelenverbindung 30, Fel Domination 31, Pakt 40, Teufelsjäger-Option, Molten Skin und Schattenbrand später. 20/31/0 bzw. Soul Link/Siphon Life als Alternativen, kein garantiertes Kontrollfenster oder PvP-Ranking.",
+    "evidenceIds": [
+      "warlock-demonology-pvp-rank0-71139-editorial-1",
+      "warlock-demonology-pvp-rank0-71139-editorial-2"
+    ]
   }
 }

@@ -8058,6 +8058,659 @@
       "allocationDigest": "4b916be55536e656d9f9d4ee5de7313938c7b01d713224dc7fca0c9e81369a48",
       "url": "https://www.method.gg/wow-forever/class-guides/survival-hunter/talents",
       "claim": "Nov 5: melee Hawk has no minimum range; Strider Kick and Expose Prey core at 30, no guaranteed Mongoose Bite proc. Own leveling-dungeon chronology, not an endgame optimum."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "5f70293771f34fdd7c85505353dd82699bf55e905471f65b63cb85651aaead57",
+      "id": "warlock-affliction-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "98e5d8db215ee97445f0b1372ae123d3255e47a9892f90c72e1f84092a218985",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "5d469d81856a1993e3059efdbc228e27f4c4055a663c3e30eb8e3d693016c6a7",
+        "talentIds": [
+          105899,
+          105903,
+          105906,
+          105907,
+          105909,
+          105910,
+          105911,
+          105912,
+          105914,
+          105917,
+          105918,
+          105919,
+          105920,
+          105921,
+          105922,
+          105923,
+          105924,
+          105925
+        ],
+        "excludedConflictIds": [
+          105896
+        ],
+        "olderComparisonCaptureSha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+        "olderBuild": "1.60.1.71091"
+      },
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105909,
+        "spellId": 1316697,
+        "primaryHash": "4765c6cfc24eab64c9ffa1e602c01ac1eb020b6d107f89aed2c2ea8749443c9f",
+        "secondaryHash": "7cdb80ddf3ea355ad5ef75e8271ac851751a181e1792d2e8e77aba6699ec2598",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "channelSeconds": 6,
+          "periodicSpells": [
+            "Corruption",
+            "Siphon Life",
+            "Bane of Agony"
+          ],
+          "periodicTickRateMultiplier": 2,
+          "dotDurationUnchanged": true,
+          "tickProgressRetained": true,
+          "noSeparatePeriodicDamageMultiplier": true,
+          "soulSiphonLimitedToThreeOwnDots": true
+        },
+        "unresolved": "Exact rank/level base damage, coefficient and total realized DPS not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Wrack accelerates three own DoTs while channeling."
+          },
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+            "claim": "Nov 10: doubled tick rate, duration unchanged, progress kept after interruption, no separate periodic multiplier; Soul Siphon counts only three named DoTs."
+          }
+        ],
+        "allocationDigest": "5d469d81856a1993e3059efdbc228e27f4c4055a663c3e30eb8e3d693016c6a7"
+      },
+      "claim": "Exact retained 71139 class structure (52/52) and allocation-scoped qualitative reconciliation; the other disputed effect remains excluded. No numerical damage or threat formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "5f70293771f34fdd7c85505353dd82699bf55e905471f65b63cb85651aaead57",
+      "id": "warlock-affliction-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 6 Soul Siphon self-feedback fix, Nov 10 Wrack and Soul Siphon redesign and demon health/Imp tuning; Nov 20 Demonic Aegis respec fix; Nov 23 Intensity correction; Nov 25 pet critical-strike fixes. No bug reliance or universal pet-crit formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-affliction-leveling-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-affliction-leveling",
+      "planVersion": 1,
+      "allocationDigest": "5d469d81856a1993e3059efdbc228e27f4c4055a663c3e30eb8e3d693016c6a7",
+      "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+      "claim": "Nov 23: DoTs, Drain Life, Life Tap, Wrack and active demon."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-affliction-leveling-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-affliction-leveling",
+      "planVersion": 1,
+      "allocationDigest": "5d469d81856a1993e3059efdbc228e27f4c4055a663c3e30eb8e3d693016c6a7",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-warlock-leveling-talents/",
+      "claim": "Nov 10 tuning and comparative leveling roles; own allocation chronology."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "a5e2861f4bbc5b784f536f80bfcfe783edf8bf3a6abc6487ba46c2d570bb1785",
+      "id": "warlock-affliction-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "98e5d8db215ee97445f0b1372ae123d3255e47a9892f90c72e1f84092a218985",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "1a8a759dafead83678a9e56e508c2d575a40dab943e5606cf73da00123be2cd1",
+        "talentIds": [
+          105899,
+          105903,
+          105904,
+          105906,
+          105907,
+          105909,
+          105910,
+          105911,
+          105912,
+          105913,
+          105914,
+          105916,
+          105917,
+          105918,
+          105919,
+          105920,
+          105923,
+          105924,
+          105925
+        ],
+        "excludedConflictIds": [
+          105896
+        ],
+        "olderComparisonCaptureSha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+        "olderBuild": "1.60.1.71091"
+      },
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105909,
+        "spellId": 1316697,
+        "primaryHash": "4765c6cfc24eab64c9ffa1e602c01ac1eb020b6d107f89aed2c2ea8749443c9f",
+        "secondaryHash": "7cdb80ddf3ea355ad5ef75e8271ac851751a181e1792d2e8e77aba6699ec2598",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "channelSeconds": 6,
+          "periodicSpells": [
+            "Corruption",
+            "Siphon Life",
+            "Bane of Agony"
+          ],
+          "periodicTickRateMultiplier": 2,
+          "dotDurationUnchanged": true,
+          "tickProgressRetained": true,
+          "noSeparatePeriodicDamageMultiplier": true,
+          "soulSiphonLimitedToThreeOwnDots": true
+        },
+        "unresolved": "Exact rank/level base damage, coefficient and total realized DPS not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Wrack accelerates three own DoTs while channeling."
+          },
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+            "claim": "Nov 10: doubled tick rate, duration unchanged, progress kept after interruption, no separate periodic multiplier; Soul Siphon counts only three named DoTs."
+          }
+        ],
+        "allocationDigest": "1a8a759dafead83678a9e56e508c2d575a40dab943e5606cf73da00123be2cd1"
+      },
+      "claim": "Exact retained 71139 class structure (52/52) and allocation-scoped qualitative reconciliation; the other disputed effect remains excluded. No numerical damage or threat formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "a5e2861f4bbc5b784f536f80bfcfe783edf8bf3a6abc6487ba46c2d570bb1785",
+      "id": "warlock-affliction-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 6 Soul Siphon self-feedback fix, Nov 10 Wrack and Soul Siphon redesign and demon health/Imp tuning; Nov 20 Demonic Aegis respec fix; Nov 23 Intensity correction; Nov 25 pet critical-strike fixes. No bug reliance or universal pet-crit formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-affliction-pvp-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-affliction-pvp",
+      "planVersion": 1,
+      "allocationDigest": "1a8a759dafead83678a9e56e508c2d575a40dab943e5606cf73da00123be2cd1",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/affliction/pvp/",
+      "claim": "DoT pressure, positioning, safe recovery and demon utility."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-affliction-pvp-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-affliction-pvp",
+      "planVersion": 1,
+      "allocationDigest": "1a8a759dafead83678a9e56e508c2d575a40dab943e5606cf73da00123be2cd1",
+      "url": "https://foreverbattlegrounds.com/classes/warlock/affliction/",
+      "claim": "35/16/0 PvP build, alternative sacrifice and control priorities; older client, not current numeric evidence."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e73912746ad58e3e7d865dd3675080b7299908f2ea5c213286f86985dab90b99",
+      "id": "warlock-demonology-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "98e5d8db215ee97445f0b1372ae123d3255e47a9892f90c72e1f84092a218985",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "cf2366e75d6d20aa2dd48033d2afc6b8433607752d8f4175cd1126915ef9eccb",
+        "talentIds": [
+          105890,
+          105891,
+          105892,
+          105893,
+          105895,
+          105896,
+          105898,
+          105899,
+          105900,
+          105903,
+          105904,
+          105906,
+          105907,
+          105918,
+          105920,
+          105921,
+          105922,
+          105924,
+          105925
+        ],
+        "excludedConflictIds": [
+          105909
+        ],
+        "olderComparisonCaptureSha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+        "olderBuild": "1.60.1.71091"
+      },
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105896,
+        "spellId": 1293695,
+        "primaryHash": "a2c00088d0a1386ef9a58004e6d8f7197f0739fbd5f565b301527c90cf4c720d",
+        "secondaryHash": "aeb6c3b8e800bbe14b22db02617bbaa49a1dcf3fa0c02d066d0b2f7e3b6ed64c",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "searingPainThreatReduction": true,
+          "brandDurationSeconds": 10,
+          "limitedPetAttacks": true,
+          "petDependentFireOrShadowDamage": true,
+          "highThreatOnlyShadowDamage": true
+        },
+        "unresolved": "Exact bonus damage, actual threat and realized charge consumption not measured; Wowhead displayed charge text differs from trait table.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Brand reduces Searing Pain threat, marks for limited pet attacks, high threat only Shadow damage; numeric damage placeholder."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1293695/demonic-brand",
+            "claim": "Independent spell detail confirms Fire or Shadow damage by pet type, Shadow high threat and rank-based threat/charge modifiers; no numeric formula released."
+          }
+        ],
+        "allocationDigest": "cf2366e75d6d20aa2dd48033d2afc6b8433607752d8f4175cd1126915ef9eccb"
+      },
+      "claim": "Exact retained 71139 class structure (52/52) and allocation-scoped qualitative reconciliation; the other disputed effect remains excluded. No numerical damage or threat formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e73912746ad58e3e7d865dd3675080b7299908f2ea5c213286f86985dab90b99",
+      "id": "warlock-demonology-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 6 Soul Siphon self-feedback fix, Nov 10 Wrack and Soul Siphon redesign and demon health/Imp tuning; Nov 20 Demonic Aegis respec fix; Nov 23 Intensity correction; Nov 25 pet critical-strike fixes. No bug reliance or universal pet-crit formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-demonology-leveling-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf2366e75d6d20aa2dd48033d2afc6b8433607752d8f4175cd1126915ef9eccb",
+      "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+      "claim": "Nov 23: demon leveling and active pet playstyle."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-demonology-leveling-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf2366e75d6d20aa2dd48033d2afc6b8433607752d8f4175cd1126915ef9eccb",
+      "url": "https://undying.app/classes/warlock",
+      "claim": "Nov 15: Brand, Soul Link, quick summons and Affliction secondary; own chronology."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "89f8528873055d80b585907b93b9de4cb265f397529f69b2ad4bf635e27c647d",
+      "id": "warlock-demonology-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "98e5d8db215ee97445f0b1372ae123d3255e47a9892f90c72e1f84092a218985",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "c05739396f3ad899711e85a147302bd9621bdef89bcd9c2ac5601b3c98f04114",
+        "talentIds": [
+          105883,
+          105886,
+          105887,
+          105888,
+          105890,
+          105891,
+          105892,
+          105893,
+          105896,
+          105897,
+          105898,
+          105899,
+          105900,
+          105903,
+          105906,
+          105908,
+          105921
+        ],
+        "excludedConflictIds": [
+          105909
+        ],
+        "olderComparisonCaptureSha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+        "olderBuild": "1.60.1.71091"
+      },
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105896,
+        "spellId": 1293695,
+        "primaryHash": "a2c00088d0a1386ef9a58004e6d8f7197f0739fbd5f565b301527c90cf4c720d",
+        "secondaryHash": "aeb6c3b8e800bbe14b22db02617bbaa49a1dcf3fa0c02d066d0b2f7e3b6ed64c",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "searingPainThreatReduction": true,
+          "brandDurationSeconds": 10,
+          "limitedPetAttacks": true,
+          "petDependentFireOrShadowDamage": true,
+          "highThreatOnlyShadowDamage": true
+        },
+        "unresolved": "Exact bonus damage, actual threat and realized charge consumption not measured; Wowhead displayed charge text differs from trait table.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Brand reduces Searing Pain threat, marks for limited pet attacks, high threat only Shadow damage; numeric damage placeholder."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1293695/demonic-brand",
+            "claim": "Independent spell detail confirms Fire or Shadow damage by pet type, Shadow high threat and rank-based threat/charge modifiers; no numeric formula released."
+          }
+        ],
+        "allocationDigest": "c05739396f3ad899711e85a147302bd9621bdef89bcd9c2ac5601b3c98f04114"
+      },
+      "claim": "Exact retained 71139 class structure (52/52) and allocation-scoped qualitative reconciliation; the other disputed effect remains excluded. No numerical damage or threat formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "89f8528873055d80b585907b93b9de4cb265f397529f69b2ad4bf635e27c647d",
+      "id": "warlock-demonology-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 6 Soul Siphon self-feedback fix, Nov 10 Wrack and Soul Siphon redesign and demon health/Imp tuning; Nov 20 Demonic Aegis respec fix; Nov 23 Intensity correction; Nov 25 pet critical-strike fixes. No bug reliance or universal pet-crit formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-demonology-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "c05739396f3ad899711e85a147302bd9621bdef89bcd9c2ac5601b3c98f04114",
+      "url": "https://www.wowhead.com/forever/guide/classes/warlock/demonology/talent-builds-pve-dps",
+      "claim": "Nov 4: 2/31/18 fire/shadow alternatives with Pact, Brand and Decimation."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-demonology-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "c05739396f3ad899711e85a147302bd9621bdef89bcd9c2ac5601b3c98f04114",
+      "url": "https://forever-hub.com/en/guides/demonology-warlock-guide",
+      "claim": "Nov 20: fire/shadow choices, active different demon plus sacrifice and Brand before pet attacks."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "b4c2fd5b978281a0e21267eaba876bc2c8150003a7e5ceceb7265333f7fa6904",
+      "id": "warlock-demonology-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "98e5d8db215ee97445f0b1372ae123d3255e47a9892f90c72e1f84092a218985",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "70ec563fac00d491c1abc33fddf3ea47812a1f88fbfedb2e34cae074c518769f",
+        "talentIds": [
+          105884,
+          105885,
+          105888,
+          105890,
+          105891,
+          105892,
+          105893,
+          105894,
+          105895,
+          105896,
+          105898,
+          105899,
+          105900,
+          105903,
+          105906,
+          105907,
+          105921,
+          105924
+        ],
+        "excludedConflictIds": [
+          105909
+        ],
+        "olderComparisonCaptureSha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+        "olderBuild": "1.60.1.71091"
+      },
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105896,
+        "spellId": 1293695,
+        "primaryHash": "a2c00088d0a1386ef9a58004e6d8f7197f0739fbd5f565b301527c90cf4c720d",
+        "secondaryHash": "aeb6c3b8e800bbe14b22db02617bbaa49a1dcf3fa0c02d066d0b2f7e3b6ed64c",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "searingPainThreatReduction": true,
+          "brandDurationSeconds": 10,
+          "limitedPetAttacks": true,
+          "petDependentFireOrShadowDamage": true,
+          "highThreatOnlyShadowDamage": true
+        },
+        "unresolved": "Exact bonus damage, actual threat and realized charge consumption not measured; Wowhead displayed charge text differs from trait table.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Brand reduces Searing Pain threat, marks for limited pet attacks, high threat only Shadow damage; numeric damage placeholder."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1293695/demonic-brand",
+            "claim": "Independent spell detail confirms Fire or Shadow damage by pet type, Shadow high threat and rank-based threat/charge modifiers; no numeric formula released."
+          }
+        ],
+        "allocationDigest": "70ec563fac00d491c1abc33fddf3ea47812a1f88fbfedb2e34cae074c518769f"
+      },
+      "claim": "Exact retained 71139 class structure (52/52) and allocation-scoped qualitative reconciliation; the other disputed effect remains excluded. No numerical damage or threat formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "b4c2fd5b978281a0e21267eaba876bc2c8150003a7e5ceceb7265333f7fa6904",
+      "id": "warlock-demonology-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Nov 6 Soul Siphon self-feedback fix, Nov 10 Wrack and Soul Siphon redesign and demon health/Imp tuning; Nov 20 Demonic Aegis respec fix; Nov 23 Intensity correction; Nov 25 pet critical-strike fixes. No bug reliance or universal pet-crit formula."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-demonology-pvp-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-pvp",
+      "planVersion": 1,
+      "allocationDigest": "70ec563fac00d491c1abc33fddf3ea47812a1f88fbfedb2e34cae074c518769f",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/demonology-warlock-pvp-guide/talents/",
+      "claim": "Demonology PvP core and secondary Affliction/Destruction talent tradeoffs."
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-demonology-pvp-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-pvp",
+      "planVersion": 1,
+      "allocationDigest": "70ec563fac00d491c1abc33fddf3ea47812a1f88fbfedb2e34cae074c518769f",
+      "url": "https://metammo.com/wow-forever/builds/warlock",
+      "claim": "Build 71139: Soul Link PvP defensive alternative, no measured superiority."
     }
   ],
   "rulePacks": [
@@ -10772,6 +11425,197 @@
         "105011": 10,
         "110860": 30,
         "110861": 25
+      }
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "warlock-affliction-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "warlock-affliction-leveling-rank0-71139-client",
+        "warlock-affliction-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105899": 15,
+        "105903": 15,
+        "105906": 10,
+        "105907": 10,
+        "105909": 40,
+        "105910": 35,
+        "105911": 30,
+        "105912": 30,
+        "105914": 25,
+        "105917": 20,
+        "105918": 20,
+        "105919": 20,
+        "105920": 15,
+        "105921": 10,
+        "105922": 15,
+        "105923": 15,
+        "105924": 10,
+        "105925": 10
+      }
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "warlock-affliction-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "warlock-affliction-pvp-rank0-71139-client",
+        "warlock-affliction-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105899": 15,
+        "105903": 15,
+        "105904": 15,
+        "105906": 10,
+        "105907": 10,
+        "105909": 40,
+        "105910": 35,
+        "105911": 30,
+        "105912": 30,
+        "105913": 25,
+        "105914": 25,
+        "105916": 20,
+        "105917": 20,
+        "105918": 20,
+        "105919": 20,
+        "105920": 15,
+        "105923": 15,
+        "105924": 10,
+        "105925": 10
+      }
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "warlock-demonology-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "warlock-demonology-leveling-rank0-71139-client",
+        "warlock-demonology-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105890": 40,
+        "105891": 35,
+        "105892": 30,
+        "105893": 30,
+        "105895": 25,
+        "105896": 25,
+        "105898": 20,
+        "105899": 15,
+        "105900": 20,
+        "105903": 15,
+        "105904": 15,
+        "105906": 10,
+        "105907": 10,
+        "105918": 20,
+        "105920": 15,
+        "105921": 10,
+        "105922": 15,
+        "105924": 10,
+        "105925": 10
+      }
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "warlock-demonology-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "warlock-demonology-dungeons-rank0-71139-client",
+        "warlock-demonology-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105883": 20,
+        "105886": 15,
+        "105887": 15,
+        "105888": 10,
+        "105890": 40,
+        "105891": 35,
+        "105892": 30,
+        "105893": 30,
+        "105896": 25,
+        "105897": 25,
+        "105898": 20,
+        "105899": 15,
+        "105900": 20,
+        "105903": 15,
+        "105906": 10,
+        "105908": 10,
+        "105921": 10
+      }
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "warlock-demonology-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "warlock-demonology-pvp-rank0-71139-client",
+        "warlock-demonology-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105884": 20,
+        "105885": 15,
+        "105888": 10,
+        "105890": 40,
+        "105891": 35,
+        "105892": 30,
+        "105893": 30,
+        "105894": 30,
+        "105895": 25,
+        "105896": 25,
+        "105898": 20,
+        "105899": 15,
+        "105900": 20,
+        "105903": 15,
+        "105906": 10,
+        "105907": 10,
+        "105921": 10,
+        "105924": 10
       }
     }
   ],

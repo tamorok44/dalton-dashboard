@@ -326,6 +326,32 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
         for(const id of [104961,104964])assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
       }
+      if(['warlock-affliction-leveling','warlock-affliction-pvp','warlock-demonology-leveling','warlock-demonology-dungeons','warlock-demonology-pvp'].includes(plan.id)){
+        const id=plan.treeId===11629?105909:105896,other=id===105909?105896:105909;
+        const row=effects.rows.find(x=>x.classId===9&&x.id===id),detail=clients[0].warlockEffectResolution;
+        assert.ok(row&&detail&&row.warlockEffectResolution);
+        assert.deepEqual(detail,{...row.warlockEffectResolution,allocationDigest:talentPlanEvidenceDigest(plan)});
+        assert.equal(detail.kind,'warlock_qualitative_effect_reconciliation');
+        assert.equal(detail.clientBuild,pack.clientBuild);
+        assert.equal(detail.sourceRevision,pack.sourceRevision);
+        assert.equal(detail.spellId,id===105909?1316697:1293695);
+        assert.equal(detail.spellId,proof.trees.flatMap(t=>t.talents).find(n=>n.id===id)?.spellId);
+        assert.equal(detail.primaryHash,row.primaryHash);
+        assert.equal(detail.secondaryHash,row.secondaryHash);
+        assert.equal(detail.serverMeasured,false);
+        assert.equal(detail.numericFormulaReleased,false);
+        assert.equal(row.quantitativeClaimVerified,false);
+        assert.equal(row.classification,id===105909?'numeric_scale_or_rounding':'incomplete_numeric');
+        assert.deepEqual(detail.confirmedCore,id===105909?{"channelSeconds":6,"periodicSpells":["Corruption","Siphon Life","Bane of Agony"],"periodicTickRateMultiplier":2,"dotDurationUnchanged":true,"tickProgressRetained":true,"noSeparatePeriodicDamageMultiplier":true,"soulSiphonLimitedToThreeOwnDots":true}:{"searingPainThreatReduction":true,"brandDurationSeconds":10,"limitedPetAttacks":true,"petDependentFireOrShadowDamage":true,"highThreatOnlyShadowDamage":true});
+        assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url===pathLedger.sourceUrl));
+        assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url==='https://metammo.com/wow-forever/talents/warlock'));
+        assert.ok(detail.sources.some(s=>s.url===(id===105909?'https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040':'https://www.wowhead.com/forever/spell=1293695/demonic-brand')));
+        assert.ok(plan.points.some(p=>p.talentId===id));
+        assert.ok(!plan.points.some(p=>p.talentId===other));
+        assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
+        scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
+        assert.throws(()=>talentPathScope({...plan,points:[{talentId:other,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
+      }
       const scope=talentPathScope(plan,proof,pathLedger,cross,scopedEffects);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
       if(frostScope)assert.deepEqual(scope.excludedConflictIds,[]);else assert.ok(scope.excludedConflictIds.length);
@@ -672,7 +698,7 @@ assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==fa
   Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warlock-demonology-leveling",[20,31,0]],["warlock-destruction-leveling",[20,0,31]],["warrior-protection-dungeons",[15,5,31]],["priest-holy-dungeons",[20,31,0]],["priest-shadow-leveling",[20,0,31]],["paladin-retribution-leveling",[12,8,31]],["rogue-combat-leveling",[12,39,0]],["shaman-enhancement-leveling",[20,31,0]]]){
   const p=plans.find(p=>p.id===id);
-  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','warrior-protection-dungeons','rogue-combat-leveling','priest-holy-dungeons','paladin-retribution-leveling'].includes(id);
+  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','warrior-protection-dungeons','rogue-combat-leveling','priest-holy-dungeons','paladin-retribution-leveling','warlock-affliction-leveling','warlock-demonology-leveling'].includes(id);
   assert.ok(p&&p.status===(promoted?'approved':'research_only'));
   if(promoted)assert.deepEqual(p.supportedLegacyRanks,[0]);
   assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,p.version])),[0]);
@@ -887,7 +913,7 @@ assert.equal(fixtureQueue.liveReleaseStatus,'not_checked');
 
 for(const [id,distribution] of [['warlock-affliction-dungeons',[30,0,21]],['warlock-demonology-pvp',[7,33,11]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status===(id==='warlock-affliction-dungeons'?'approved':'research_only'));
+  assert.ok(p&&p.status==='approved');
   assert.deepEqual(Object.values(p.expectedDistribution),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -895,7 +921,7 @@ for(const [id,distribution] of [['warlock-affliction-dungeons',[30,0,21]],['warl
 
 for(const [id,distribution] of [['warlock-affliction-pvp',[35,16,0]],['warlock-demonology-dungeons',[2,31,18]],['warlock-destruction-dungeons',[5,11,35]],['warlock-destruction-pvp',[18,0,33]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status===(['warlock-destruction-dungeons','warlock-destruction-pvp'].includes(id)?'approved':'research_only'));
+  assert.ok(p&&p.status==='approved');
   assert.deepEqual(Object.values(p.expectedDistribution),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -1002,15 +1028,16 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
-// Demonology: scoped rank-zero research, no numeric brand release.
+// Demonology: scoped rank-zero approvals, no numeric brand release.
 for(const [id,milestones] of [
  ['warlock-demonology-leveling',[[105896,25],[105892,30],[105895,31],[105890,40]]],
  ['warlock-demonology-dungeons',[[105896,26],[105897,29],[105892,30],[105890,40]]],
  ['warlock-demonology-pvp',[[105892,30],[105895,31],[105890,40],[105885,53],[105884,58]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,'research_only');
- assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(p.status,'approved');
+ assert.deepEqual(p.supportedLegacyRanks,[0]);
+ assert.equal(p.research.conflictFollowup.releaseEligible,true);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');

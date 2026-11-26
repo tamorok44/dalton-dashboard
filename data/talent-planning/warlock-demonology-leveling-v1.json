@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 9,
   "treeId": 11636,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -261,7 +261,7 @@
     {
       "talentId": 105896,
       "count": 3,
-      "reason": "Dämonisches Brandmal: Sengender Schmerz verursacht weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Begleitertreffer. Exakter Zusatzschaden und Bedrohungswert nicht unabhängig numerisch bestätigt."
+      "reason": "Sengender Schmerz erzeugt weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Dämonentreffer. Zusatzschaden ist je nach Dämon Feuer oder Schatten; nur Schatten erzeugt hohe Bedrohung. Keine feste Schadenszahl oder garantierte Ausnutzung."
     },
     {
       "talentId": 105898,
@@ -330,20 +330,15 @@
       "mobalytics-crix-warlock",
       "method-roguery-warlock"
     ],
-    "editorialDecision": "Begleiterorientiertes gemischtes Leveln ohne Umskillung. Leerwandler-Unterstützung früh, Brandmal ab 25, Seelenverbindung 30, Fel Domination (Notfallbeschwörung) 31 statt 34 und Dämonischer Pakt 40. Sofortige Verderbnis erst nach dem Dämonologiekern; bewusster Kompromiss gegenüber frühem Gebrechenabstecher. Vor 40 nicht dauerhaft den aktiven Dämon für einen Opferungsbonus verlieren.",
+    "editorialDecision": "Aktiver Dämon, Leerwandler früh, Brandmal 25, Seelenverbindung 30, Fel Domination 31, Pakt 40. Sofortige Verderbnis bewusst später. Opferungsbonus mit aktivem anderen Dämon erst ab Pakt; kein dauerhafter Gruppenbuff.",
     "unresolved": [
-      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
-      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
-      "Nov 25 corrected pet melee crit and Sayaad critical chance; verify brand threat and actual pet sustain without numerical scaling promises.",
-      "105896: gespeicherter Quellenvergleich bestätigt Trefferzahl und Bedrohungsfunktion qualitativ; exakter zusätzlicher Schadenswert nicht unabhängig bestätigt. Keine garantierte Bedrohungsübernahme.",
-      "Blizzard-Hotfix 25.11.: 0% Nahkampfgrundangriffs-Krit der Dämonen korrigiert, Sukkubus/Inkubus hatten 5% zu hohe Kritchance. Keine universelle aktuelle Pet-Kritformel daraus ableiten.",
-      "20.11. Dämonische Ägide kann nicht mehr durch Umskillen dauerhaft erhalten werden; 23.11. Intensity/Incinerate korrigiert. Diese Pfade nutzen diese Talente nicht.",
-      "Exakte aktuelle Quelle, vollständige Hotfix-Abhängigkeitsprüfung, Vermächtnisränge 1–5, vergleichende Messungen und reguläre CI bleiben Freigabevoraussetzungen."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Schadens-, Bedrohungs- und Begleiter-Kritformeln nicht freigegeben."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
-      "catalogRevision": "954b5cfaaa3f0879d6bc5e47b169c867df7dd608a5c841d19c3be3b22a6feb12",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     },
     "conflictFollowup": {
@@ -378,7 +373,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Dämonologie",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-demonology-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Aktiver Dämon, Leerwandler früh, Brandmal 25, Seelenverbindung 30, Fel Domination 31, Pakt 40. Sofortige Verderbnis bewusst später. Opferungsbonus mit aktivem anderen Dämon erst ab Pakt; kein dauerhafter Gruppenbuff.",
+    "adviceSummary": "Aktiver Dämon, Leerwandler früh, Brandmal 25, Seelenverbindung 30, Fel Domination 31, Pakt 40. Sofortige Verderbnis bewusst später. Opferungsbonus mit aktivem anderen Dämon erst ab Pakt; kein dauerhafter Gruppenbuff.",
+    "evidenceIds": [
+      "warlock-demonology-leveling-rank0-71139-editorial-1",
+      "warlock-demonology-leveling-rank0-71139-editorial-2"
+    ]
   }
 }

@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 9,
   "treeId": 11636,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -266,7 +266,7 @@
     {
       "talentId": 105896,
       "count": 3,
-      "reason": "Dämonisches Brandmal: Sengender Schmerz verursacht weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Begleitertreffer. Exakter Zusatzschaden und Bedrohungswert nicht unabhängig numerisch bestätigt."
+      "reason": "Sengender Schmerz erzeugt weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Dämonentreffer. Zusatzschaden ist je nach Dämon Feuer oder Schatten; nur Schatten erzeugt hohe Bedrohung. Keine feste Schadenszahl oder garantierte Ausnutzung."
     },
     {
       "talentId": 105897,
@@ -330,17 +330,12 @@
       "cobalt-warlock-demonology-pve-20261110",
       "outpost-warlock-dungeon-20261123"
     ],
-    "editorialDecision": "Feuerorientierter Dungeon-Schaden mit aktivem Wichtel, sofern die Situation passt. Zwei Ausdauerpunkte durch Decimation ersetzt: Brandmal 26–28, Seelenverbindung 30, Decimation auf 29 und 31, Dämonisches Wissen 32–34, Dämonischer Pakt 40. Tankbedrohung beachten, Brandmal nur bei genügend Zeit für Begleitertreffer. Opferung eines anderen Dämons erst nach dem Pakt; kein garantierter DPS-Vorteil oder pauschaler Gruppenbonus.",
+    "editorialDecision": "Feuerorientierte Gruppenvariante 2/31/18, Brandmal 26–28, Decimation 29/31, Seelenverbindung 30, Pakt 40. Wichtel je nach Situation; Brandmal nur bei genügend Zeit für Treffer, Schatten-Zusatzschaden erzeugt hohe Bedrohung. Tankkoordination statt garantierter Bedrohungsübernahme.",
     "unresolved": [
-      "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
-      "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
-      "November 25 pet crit corrections; verify Imp uptime, threat and choice of sacrifice target.",
-      "105896: gespeicherter Quellenvergleich bestätigt Trefferzahl und Bedrohungsfunktion qualitativ; exakter zusätzlicher Schadenswert nicht unabhängig bestätigt. Keine garantierte Bedrohungsübernahme.",
-      "Blizzard-Hotfix 25.11.: 0% Nahkampfgrundangriffs-Krit der Dämonen korrigiert, Sukkubus/Inkubus hatten 5% zu hohe Kritchance. Keine universelle aktuelle Pet-Kritformel daraus ableiten.",
-      "20.11. Dämonische Ägide kann nicht mehr durch Umskillen dauerhaft erhalten werden; 23.11. Intensity/Incinerate korrigiert. Diese Pfade nutzen diese Talente nicht.",
-      "Exakte aktuelle Quelle, vollständige Hotfix-Abhängigkeitsprüfung, Vermächtnisränge 1–5, vergleichende Messungen und reguläre CI bleiben Freigabevoraussetzungen."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Schadens-, Bedrohungs- und Begleiter-Kritformeln nicht freigegeben."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -378,7 +373,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Dämonologie",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-demonology-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Feuerorientierte Gruppenvariante 2/31/18, Brandmal 26–28, Decimation 29/31, Seelenverbindung 30, Pakt 40. Wichtel je nach Situation; Brandmal nur bei genügend Zeit für Treffer, Schatten-Zusatzschaden erzeugt hohe Bedrohung. Tankkoordination statt garantierter Bedrohungsübernahme.",
+    "adviceSummary": "Feuerorientierte Gruppenvariante 2/31/18, Brandmal 26–28, Decimation 29/31, Seelenverbindung 30, Pakt 40. Wichtel je nach Situation; Brandmal nur bei genügend Zeit für Treffer, Schatten-Zusatzschaden erzeugt hohe Bedrohung. Tankkoordination statt garantierter Bedrohungsübernahme.",
+    "evidenceIds": [
+      "warlock-demonology-dungeons-rank0-71139-editorial-1",
+      "warlock-demonology-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

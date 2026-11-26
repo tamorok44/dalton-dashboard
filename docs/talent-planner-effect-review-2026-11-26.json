@@ -669,7 +669,43 @@
       "independentRankCount": 3,
       "classification": "incomplete_numeric",
       "decision": "Schadensbetrag nur in einer Quelle aufgelöst; Trefferzahl und Bedrohung gleich.",
-      "quantitativeClaimVerified": false
+      "quantitativeClaimVerified": false,
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105896,
+        "spellId": 1293695,
+        "primaryHash": "a2c00088d0a1386ef9a58004e6d8f7197f0739fbd5f565b301527c90cf4c720d",
+        "secondaryHash": "aeb6c3b8e800bbe14b22db02617bbaa49a1dcf3fa0c02d066d0b2f7e3b6ed64c",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "searingPainThreatReduction": true,
+          "brandDurationSeconds": 10,
+          "limitedPetAttacks": true,
+          "petDependentFireOrShadowDamage": true,
+          "highThreatOnlyShadowDamage": true
+        },
+        "unresolved": "Exact bonus damage, actual threat and realized charge consumption not measured; Wowhead displayed charge text differs from trait table.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Brand reduces Searing Pain threat, marks for limited pet attacks, high threat only Shadow damage; numeric damage placeholder."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1293695/demonic-brand",
+            "claim": "Independent spell detail confirms Fire or Shadow damage by pet type, Shadow high threat and rank-based threat/charge modifiers; no numeric formula released."
+          }
+        ]
+      }
     },
     {
       "id": 105909,
@@ -680,7 +716,49 @@
       "independentRankCount": 1,
       "classification": "numeric_scale_or_rounding",
       "decision": "Basiswert bei unterschiedlicher Skalierung; DoT-Beschleunigung gleich.",
-      "quantitativeClaimVerified": false
+      "quantitativeClaimVerified": false,
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105909,
+        "spellId": 1316697,
+        "primaryHash": "4765c6cfc24eab64c9ffa1e602c01ac1eb020b6d107f89aed2c2ea8749443c9f",
+        "secondaryHash": "7cdb80ddf3ea355ad5ef75e8271ac851751a181e1792d2e8e77aba6699ec2598",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "channelSeconds": 6,
+          "periodicSpells": [
+            "Corruption",
+            "Siphon Life",
+            "Bane of Agony"
+          ],
+          "periodicTickRateMultiplier": 2,
+          "dotDurationUnchanged": true,
+          "tickProgressRetained": true,
+          "noSeparatePeriodicDamageMultiplier": true,
+          "soulSiphonLimitedToThreeOwnDots": true
+        },
+        "unresolved": "Exact rank/level base damage, coefficient and total realized DPS not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Wrack accelerates three own DoTs while channeling."
+          },
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+            "claim": "Nov 10: doubled tick rate, duration unchanged, progress kept after interruption, no separate periodic multiplier; Soul Siphon counts only three named DoTs."
+          }
+        ]
+      }
     },
     {
       "id": 104923,
