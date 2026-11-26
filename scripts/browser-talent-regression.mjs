@@ -267,6 +267,43 @@ try{
     console.error(result.error);
   }finally{report.cases.push(result);await context.close()}
  }
+ // Exercise the real service worker rather than the blocked-worker contexts
+ // above. Use a fresh same-origin page with no external network requests.
+ const offline=await browser.newContext({serviceWorkers:'allow',locale:'de-DE'});
+ try{
+   const page=await offline.newPage();
+   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
+   const before=providerReads;
+   await page.goto(origin+'/');
+   await page.evaluate(async()=>{
+     if(!('serviceWorker' in navigator))throw Error('service worker unavailable');
+     await navigator.serviceWorker.register('/sw.js');
+   });
+   await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,{},{timeout:20000});
+   const installed=await page.evaluate(async()=>{
+     const keys=await caches.keys(),cache=await caches.open(keys.find(k=>k.startsWith('daltons-talent-planner-'))??'missing');
+     const paths=(await cache.keys()).map(r=>new URL(r.url).pathname+new URL(r.url).search);
+     return {keys,paths,apiCached:paths.some(p=>p.startsWith('/api/')||p.startsWith('/data/'))};
+   });
+   assert.equal(installed.keys.filter(k=>k.startsWith('daltons-talent-planner-')).length,1);
+   assert.ok(installed.paths.includes('/talent-planner.js')&&installed.paths.includes('/talent-personal-state.js')&&installed.paths.includes('/talent-text-quality.js'));
+   assert.ok(installed.paths.includes('/')&&installed.paths.some(p=>p.startsWith('/app.js?v=')));
+   assert.equal(installed.apiCached,false);
+   await offline.setOffline(true);
+   const staticResult=await page.evaluate(async()=>{
+     const results=await Promise.all(['/','/talent-planner.js','/talent-personal-state.js','/talent-text-quality.js'].map(async path=>{
+       try{const r=await fetch(path);return r.ok&&(await r.text()).length>0}catch{return false}
+     }));
+     let liveUnavailable=false;
+     try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8');liveUnavailable=!r.ok}catch{liveUnavailable=true}
+     return {results,liveUnavailable};
+   });
+   assert.deepEqual(staticResult.results,[true,true,true,true],'app shell must remain available offline');
+   assert.equal(staticResult.liveUnavailable,true,'live plans must not be served by service worker offline');
+   assert.equal(providerReads,before,'PWA install/offline cache must not trigger provider observation');
+   report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true};
+ }catch(error){report.pwa={status:'failed',error:String(error.stack||error)};console.error(report.pwa.error);throw error}
+ finally{await offline.close()}
  report.discoveryBytes=discoveryBytes;report.pathBytes=pathBytes;report.providerReads=providerReads;
  assert.ok(discoveryBytes>0&&discoveryBytes<20000,'discovery payload budget');
  assert.ok(pathBytes>0&&pathBytes<100000,'plan payload budget');
