@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-combat-leveling",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11573,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 0,
+    "11573": 39,
+    "11580": 12
+  },
+  "points": [
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105738,
+      "rank": 1
+    },
+    {
+      "talentId": 105738,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 3
+    },
+    {
+      "talentId": 105735,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 1
+    },
+    {
+      "talentId": 105730,
+      "rank": 1
+    },
+    {
+      "talentId": 105730,
+      "rank": 2
+    },
+    {
+      "talentId": 105730,
+      "rank": 3
+    },
+    {
+      "talentId": 105726,
+      "rank": 1
+    },
+    {
+      "talentId": 105726,
+      "rank": 2
+    },
+    {
+      "talentId": 105728,
+      "rank": 1
+    },
+    {
+      "talentId": 113635,
+      "rank": 1
+    },
+    {
+      "talentId": 113635,
+      "rank": 2
+    },
+    {
+      "talentId": 105727,
+      "rank": 1
+    },
+    {
+      "talentId": 105727,
+      "rank": 2
+    },
+    {
+      "talentId": 105740,
+      "rank": 1
+    },
+    {
+      "talentId": 105740,
+      "rank": 2
+    },
+    {
+      "talentId": 105740,
+      "rank": 3
+    },
+    {
+      "talentId": 105740,
+      "rank": 4
+    },
+    {
+      "talentId": 105740,
+      "rank": 5
+    },
+    {
+      "talentId": 105724,
+      "rank": 1
+    },
+    {
+      "talentId": 105727,
+      "rank": 3
+    },
+    {
+      "talentId": 105727,
+      "rank": 4
+    },
+    {
+      "talentId": 105727,
+      "rank": 5
+    },
+    {
+      "talentId": 113398,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 3
+    },
+    {
+      "talentId": 113398,
+      "rank": 4
+    },
+    {
+      "talentId": 113398,
+      "rank": 5
+    },
+    {
+      "talentId": 108100,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 2
+    },
+    {
+      "talentId": 105722,
+      "rank": 3
+    },
+    {
+      "talentId": 105722,
+      "rank": 4
+    },
+    {
+      "talentId": 105722,
+      "rank": 5
+    },
+    {
+      "talentId": 105723,
+      "rank": 1
+    },
+    {
+      "talentId": 105723,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 1
+    },
+    {
+      "talentId": 105721,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 3
+    },
+    {
+      "talentId": 105739,
+      "rank": 1
+    },
+    {
+      "talentId": 105739,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105741,
+      "count": 2,
+      "reason": "Energiekosten häufiger Angriffe senken."
+    },
+    {
+      "talentId": 105708,
+      "count": 3,
+      "reason": "Schaden von Ausweiden stärken."
+    },
+    {
+      "talentId": 105737,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105738,
+      "count": 2,
+      "reason": "Parierchance verbessern."
+    },
+    {
+      "talentId": 105738,
+      "count": 1,
+      "reason": "Abwehr vervollständigen."
+    },
+    {
+      "talentId": 105735,
+      "count": 1,
+      "reason": "Riposte für Gelegenheiten nach dem Parieren freischalten."
+    },
+    {
+      "talentId": 105736,
+      "count": 2,
+      "reason": "Sprinten und Entrinnen häufiger einsetzen."
+    },
+    {
+      "talentId": 113398,
+      "count": 1,
+      "reason": "Ausweichen ergänzen."
+    },
+    {
+      "talentId": 105730,
+      "count": 3,
+      "reason": "Schaden häufiger Angriffe erhöhen."
+    },
+    {
+      "talentId": 105726,
+      "count": 2,
+      "reason": "Ausweichen und Parieren durch Gegner reduzieren."
+    },
+    {
+      "talentId": 105728,
+      "count": 1,
+      "reason": "Klingenwirbel auf 30 freischalten."
+    },
+    {
+      "talentId": 113635,
+      "count": 2,
+      "reason": "Schaden der Schildhandwaffe verbessern."
+    },
+    {
+      "talentId": 105727,
+      "count": 2,
+      "reason": "Waffenabhängigen Bonus ergänzen."
+    },
+    {
+      "talentId": 105740,
+      "count": 5,
+      "reason": "Energiegewinn und Abklingzeit des Stiefel-/Messerangriffs ausbauen."
+    },
+    {
+      "talentId": 105724,
+      "count": 1,
+      "reason": "Adrenalinrausch auf 40 freischalten."
+    },
+    {
+      "talentId": 105727,
+      "count": 3,
+      "reason": "Waffenabhängigen Bonus vervollständigen."
+    },
+    {
+      "talentId": 113398,
+      "count": 4,
+      "reason": "Ausweichen vervollständigen."
+    },
+    {
+      "talentId": 108100,
+      "count": 1,
+      "reason": "Kosten von Ausweiden verringern."
+    },
+    {
+      "talentId": 105722,
+      "count": 5,
+      "reason": "Kritische Trefferchance ergänzen."
+    },
+    {
+      "talentId": 105723,
+      "count": 2,
+      "reason": "Folgeangriffe nach Gegnerkills unterstützen."
+    },
+    {
+      "talentId": 105721,
+      "count": 3,
+      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+    },
+    {
+      "talentId": 105739,
+      "count": 2,
+      "reason": "Dauer von Zerhäckseln verlängern."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-combat-rogue",
+      "icyveins-combat-rogue"
+    ],
+    "editorialDecision": "No-respec combat route for general melee questing, early efficient strikes, Precision and Riposte, Blade Flurry 30, Adrenaline Rush 40; sustained energy and defensive utility. Avoid dependence on the recently fixed Poised interaction.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "Check current weapon-dependent Slaughter effects and Shank energy recovery, and poison restrictions after November 25; no exact uptime claim."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "aa44b443774e0b700e440f2e2e4ae70eeb4469afc458ecf8df3e036596839a8e",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

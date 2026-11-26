@@ -440,6 +440,95 @@
       "kind": "expert_guide",
       "independenceGroup": "wowhead-foolipe-editorial",
       "guideUpdated": "2026-11-24"
+    },
+    {
+      "id": "mobalytics-crix-warlock",
+      "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "crix-editorial",
+      "guideUpdated": "2026-11-23"
+    },
+    {
+      "id": "method-roguery-warlock",
+      "url": "https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents",
+      "kind": "expert_guide",
+      "independenceGroup": "method-roguery-editorial",
+      "guideUpdated": "2026-11-16"
+    },
+    {
+      "id": "icyveins-protection-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/protection-warrior-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-warrior-editorial",
+      "guideUpdated": "2026-11-16"
+    },
+    {
+      "id": "wowhead-protection-leveling",
+      "url": "https://www.wowhead.com/forever/guide/classes/warrior/protection/tank-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-riyani-editorial",
+      "guideUpdated": "2026-11-06"
+    },
+    {
+      "id": "forever-tavern-priest",
+      "url": "https://forever-tavern.com/guides/priest-leveling-guide/",
+      "kind": "expert_guide",
+      "independenceGroup": "forever-tavern-editorial"
+    },
+    {
+      "id": "outpost-priest",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-priest-leveling-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "forever-outpost-editorial",
+      "guideUpdated": "2026-11-18"
+    },
+    {
+      "id": "mobalytics-priest-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/priest-leveling-guide-1-60",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-priest-editorial",
+      "guideUpdated": "2026-11-09"
+    },
+    {
+      "id": "mobalytics-whiter-ret",
+      "url": "https://mobalytics.gg/wow-forever/classes/dont-level-your-ret-paladin-wrong-in-wow-forever-whiter",
+      "kind": "expert_guide",
+      "independenceGroup": "whiter-editorial",
+      "guideUpdated": "2026-11-13"
+    },
+    {
+      "id": "wowforevergg-ret",
+      "url": "https://wow-forever.gg/guides/paladin/leveling/?spec=retribution",
+      "kind": "expert_guide",
+      "independenceGroup": "wowforevergg-editorial",
+      "guideUpdated": "2026-11-24"
+    },
+    {
+      "id": "mobalytics-combat-rogue",
+      "url": "https://mobalytics.gg/wow-forever/classes/combat-rogue-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-rogue-editorial",
+      "guideUpdated": "2026-11-20"
+    },
+    {
+      "id": "icyveins-combat-rogue",
+      "url": "https://www.icy-veins.com/wow-forever/combat-rogue-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-rogue-editorial",
+      "guideUpdated": "2026-11-18"
+    },
+    {
+      "id": "mobalytics-shaman-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/shaman-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-shaman-editorial"
+    },
+    {
+      "id": "icyveins-enhancement-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/enhancement-shaman-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-shaman-editorial",
+      "guideUpdated": "2026-11-21"
     }
   ],
   "pilot": {
@@ -622,11 +711,16 @@
       "priority": "balanced",
       "sourceIds": [
         "icyveins-protection-dungeons",
-        "wowfdb-dungeon-tanks"
+        "wowfdb-dungeon-tanks",
+        "icyveins-protection-leveling",
+        "wowhead-protection-leveling"
       ],
       "proposal": "Vergleiche die Forever-Dungeon-Route mit günstigerem Wutverbrauch und Kiten gegen einen Schutzpfad mit früherer defensiver Absicherung.",
       "openChecks": [
-        "Wut, Mehrzielbedrohung und Defensive an früheren Stufen prüfen. Die beiden Quellen bewerten vor allem Endspiel."
+        "Wut, Mehrzielbedrohung und Defensive an früheren Stufen prüfen. Die beiden Quellen bewerten vor allem Endspiel.",
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Verify actual rage and multi-target threat at low levels, class quest requirements for Defensive Stance and Sunder Armor, and no use of undocumented PvP effect."
       ],
       "status": "research_only"
     },
@@ -640,13 +734,158 @@
       "priority": "balanced",
       "sourceIds": [
         "icyveins-holy-priest",
-        "loreforever-dungeon-roles"
+        "loreforever-dungeon-roles",
+        "forever-tavern-priest",
+        "outpost-priest"
       ],
       "proposal": "Bewerte Mana, Schutz und kurze Heilfenster bei Dungeon-Gruppen und prüfe Disziplin-Nebenpunkte.",
       "openChecks": [
-        "Begründete Vergabe für die tatsächlichen Dungeon-Stufen mit dokumentierter Heilerrolle und freien Punkten."
+        "Begründete Vergabe für die tatsächlichen Dungeon-Stufen mit dokumentierter Heilerrolle und freien Punkten.",
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Current server healing coefficients and per-spell mana returns, especially Litany of Light; avoid assuming the same spell alternation works with all triggered heals."
       ],
       "status": "research_only"
+    },
+    {
+      "id": "warlock-affliction-leveling",
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-crix-warlock",
+        "method-roguery-warlock"
+      ],
+      "proposal": "Continuous pet-assisted DoT and drain leveling. Early instant Corruption, hit and threat reduction; retain active demon rather than mandatory sacrifice. Wrack at 40, no assumption of independent extra multipliers or Soul Harvest bug.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Official November 10 Wrack and Soul Siphon changes agree with the extracted tooltip: acceleration of periodic ticks, not duration or a second damage multiplier. Nov 25 pet crit corrections; verify pet-dependent values."
+      ]
+    },
+    {
+      "id": "warlock-demonology-leveling",
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-crix-warlock",
+        "method-roguery-warlock"
+      ],
+      "proposal": "Pet-first mixed leveling without respec, prioritize pet damage and resilience, Soul Link 30 and Demonic Pact 40. Summon a different demon only when the sacrifice rules are satisfied; do not assume the same demon preserves the bonus.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Nov 25 corrected pet melee crit and Sayaad critical chance; verify brand threat and actual pet sustain without numerical scaling promises."
+      ]
+    },
+    {
+      "id": "warlock-destruction-leveling",
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-crix-warlock",
+        "method-roguery-warlock"
+      ],
+      "proposal": "Direct-damage alternative with early cast-time and mana talents; no claim it is as efficient as Affliction. Incinerate at 40, Affliction sustain and hit later. Crix and Method agree on higher mana demands.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Compare early mana downtime and leveling pet choice; verify Searing Pain threat and interaction of Conflagrate, Shadowburn and Shadow and Flame."
+      ]
+    },
+    {
+      "id": "priest-shadow-leveling",
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-priest-leveling",
+        "outpost-priest"
+      ],
+      "proposal": "Two early wand points deliberately delay Shadowform to 42 and avoid respec. Spirit Tap supports solo/mixed kills; Vampiric Embrace and later Shadowform form the sustained caster route. Shadowform is a damage role, not a healer plan.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "November 16 Vampiric Embrace party-healing reduction and doubled personal healing reflected in extracted text; verify current kill-credit condition, periodic crit, and early wand tradeoff against direct Shadow."
+      ]
+    },
+    {
+      "id": "paladin-retribution-leveling",
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-whiter-ret",
+        "wowforevergg-ret"
+      ],
+      "proposal": "Two-handed Retribution, early mana and movement, Seal of Command 20 and Unsealed Wrath 40. Late hit and seals. Whiter explicitly distinguishes played-to-40 observations and later planned choices; no simulated DPS treated as proven.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Official November 19/25 Judgement and critical-strike fixes; verify seal echo trigger and stacking, no assumption of guaranteed extra hits."
+      ]
+    },
+    {
+      "id": "rogue-combat-leveling",
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-combat-rogue",
+        "icyveins-combat-rogue"
+      ],
+      "proposal": "No-respec combat route for general melee questing, early efficient strikes, Precision and Riposte, Blade Flurry 30, Adrenaline Rush 40; sustained energy and defensive utility. Avoid dependence on the recently fixed Poised interaction.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Check current weapon-dependent Slaughter effects and Shank energy recovery, and poison restrictions after November 25; no exact uptime claim."
+      ]
+    },
+    {
+      "id": "shaman-enhancement-leveling",
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-shaman-leveling",
+        "icyveins-enhancement-leveling"
+      ],
+      "proposal": "Two-handed melee and spell leveling, Stormstrike 25, Improved Stormstrike 30, Maelstrom Weapon 35–39 and Rage of the Farseer 40. No respec and no specific proc probability assumed. Icy Veins and Mobalytics emphasize the early Stormstrike milestone; their exact later choices differ.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "November 25 Clearcasting/Maelstrom Chain Lightning fix and current Improved Stormstrike rank scaling. Maelstrom's tooltip contains an unspecified weapon-speed-dependent chance; no DPS estimate."
+      ]
     }
   ]
 }

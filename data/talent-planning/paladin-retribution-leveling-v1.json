@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-retribution-leveling",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11559,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 12,
+    "11541": 8,
+    "11559": 31
+  },
+  "points": [
+    {
+      "talentId": 105706,
+      "rank": 1
+    },
+    {
+      "talentId": 105706,
+      "rank": 2
+    },
+    {
+      "talentId": 105706,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 4
+    },
+    {
+      "talentId": 105706,
+      "rank": 5
+    },
+    {
+      "talentId": 105705,
+      "rank": 1
+    },
+    {
+      "talentId": 105705,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 1
+    },
+    {
+      "talentId": 105701,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 3
+    },
+    {
+      "talentId": 105696,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 2
+    },
+    {
+      "talentId": 105703,
+      "rank": 1
+    },
+    {
+      "talentId": 105703,
+      "rank": 2
+    },
+    {
+      "talentId": 105700,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 2
+    },
+    {
+      "talentId": 105697,
+      "rank": 3
+    },
+    {
+      "talentId": 105703,
+      "rank": 3
+    },
+    {
+      "talentId": 105693,
+      "rank": 1
+    },
+    {
+      "talentId": 105693,
+      "rank": 2
+    },
+    {
+      "talentId": 105693,
+      "rank": 3
+    },
+    {
+      "talentId": 105694,
+      "rank": 1
+    },
+    {
+      "talentId": 105702,
+      "rank": 1
+    },
+    {
+      "talentId": 110882,
+      "rank": 1
+    },
+    {
+      "talentId": 110882,
+      "rank": 2
+    },
+    {
+      "talentId": 110882,
+      "rank": 3
+    },
+    {
+      "talentId": 110882,
+      "rank": 4
+    },
+    {
+      "talentId": 110882,
+      "rank": 5
+    },
+    {
+      "talentId": 105692,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
+    },
+    {
+      "talentId": 113630,
+      "rank": 1
+    },
+    {
+      "talentId": 113630,
+      "rank": 2
+    },
+    {
+      "talentId": 113630,
+      "rank": 3
+    },
+    {
+      "talentId": 113630,
+      "rank": 4
+    },
+    {
+      "talentId": 113630,
+      "rank": 5
+    },
+    {
+      "talentId": 105334,
+      "rank": 1
+    },
+    {
+      "talentId": 105334,
+      "rank": 2
+    },
+    {
+      "talentId": 105334,
+      "rank": 3
+    },
+    {
+      "talentId": 105334,
+      "rank": 4
+    },
+    {
+      "talentId": 105334,
+      "rank": 5
+    },
+    {
+      "talentId": 105327,
+      "rank": 1
+    },
+    {
+      "talentId": 105327,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105706,
+      "count": 5,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105705,
+      "count": 2,
+      "reason": "Richturteil häufiger einsetzen."
+    },
+    {
+      "talentId": 105701,
+      "count": 3,
+      "reason": "Mana durch Richturteile zurückgewinnen."
+    },
+    {
+      "talentId": 105696,
+      "count": 1,
+      "reason": "Siegel des Befehls auf 20 freischalten."
+    },
+    {
+      "talentId": 105699,
+      "count": 2,
+      "reason": "Bewegungstempo für Questwege erhöhen."
+    },
+    {
+      "talentId": 105703,
+      "count": 2,
+      "reason": "Kritische Trefferchance verbessern."
+    },
+    {
+      "talentId": 105700,
+      "count": 1,
+      "reason": "Heiligen Richter für Heiligen Stoß und Richturteile freischalten."
+    },
+    {
+      "talentId": 105697,
+      "count": 3,
+      "reason": "Schaden mit Zweihandwaffe verbessern."
+    },
+    {
+      "talentId": 105703,
+      "count": 1,
+      "reason": "Überzeugung vervollständigen."
+    },
+    {
+      "talentId": 105693,
+      "count": 3,
+      "reason": "Schadensbonus nach geeigneten kritischen Treffern ausbauen."
+    },
+    {
+      "talentId": 105694,
+      "count": 1,
+      "reason": "Buße und Voraussetzung für den Abschluss freischalten."
+    },
+    {
+      "talentId": 105702,
+      "count": 1,
+      "reason": "Angriffskraftschwächung ergänzen."
+    },
+    {
+      "talentId": 110882,
+      "count": 5,
+      "reason": "Intelligenz-Skalierung und Hammer der Vergeltung stärken."
+    },
+    {
+      "talentId": 105692,
+      "count": 1,
+      "reason": "Entfesselten Zorn auf 40 freischalten; unterschiedliche Siegel für gespeicherte Effekte beachten."
+    },
+    {
+      "talentId": 105332,
+      "count": 5,
+      "reason": "Intelligenz und Manareserve ergänzen."
+    },
+    {
+      "talentId": 105638,
+      "count": 3,
+      "reason": "Trefferchance verbessern."
+    },
+    {
+      "talentId": 113630,
+      "count": 5,
+      "reason": "Stärke erhöhen."
+    },
+    {
+      "talentId": 105334,
+      "count": 5,
+      "reason": "Schaden der Siegel und Richturteile verbessern."
+    },
+    {
+      "talentId": 105327,
+      "count": 2,
+      "reason": "Reinigung und situative offensive Zauber unterstützen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-whiter-ret",
+      "wowforevergg-ret"
+    ],
+    "editorialDecision": "Two-handed Retribution, early mana and movement, Seal of Command 20 and Unsealed Wrath 40. Late hit and seals. Whiter explicitly distinguishes played-to-40 observations and later planned choices; no simulated DPS treated as proven.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "Official November 19/25 Judgement and critical-strike fixes; verify seal echo trigger and stacking, no assumption of guaranteed extra hits."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "dfe974a80f59e6b57d54dcc4914e832a018dbfdcf6863bacc999c9e389ec8415",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

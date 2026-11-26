@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "warrior-protection-dungeons",
+  "version": 1,
+  "classId": 1,
+  "treeId": 11670,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11650": 15,
+    "11657": 5,
+    "11670": 31
+  },
+  "points": [
+    {
+      "talentId": 105976,
+      "rank": 1
+    },
+    {
+      "talentId": 105976,
+      "rank": 2
+    },
+    {
+      "talentId": 105976,
+      "rank": 3
+    },
+    {
+      "talentId": 105976,
+      "rank": 4
+    },
+    {
+      "talentId": 105976,
+      "rank": 5
+    },
+    {
+      "talentId": 105969,
+      "rank": 1
+    },
+    {
+      "talentId": 105969,
+      "rank": 2
+    },
+    {
+      "talentId": 105969,
+      "rank": 3
+    },
+    {
+      "talentId": 105972,
+      "rank": 1
+    },
+    {
+      "talentId": 105972,
+      "rank": 2
+    },
+    {
+      "talentId": 105971,
+      "rank": 1
+    },
+    {
+      "talentId": 105971,
+      "rank": 2
+    },
+    {
+      "talentId": 110856,
+      "rank": 1
+    },
+    {
+      "talentId": 110856,
+      "rank": 2
+    },
+    {
+      "talentId": 110856,
+      "rank": 3
+    },
+    {
+      "talentId": 105966,
+      "rank": 1
+    },
+    {
+      "talentId": 105968,
+      "rank": 1
+    },
+    {
+      "talentId": 105968,
+      "rank": 2
+    },
+    {
+      "talentId": 105968,
+      "rank": 3
+    },
+    {
+      "talentId": 105972,
+      "rank": 3
+    },
+    {
+      "talentId": 105961,
+      "rank": 1
+    },
+    {
+      "talentId": 105961,
+      "rank": 2
+    },
+    {
+      "talentId": 105961,
+      "rank": 3
+    },
+    {
+      "talentId": 105965,
+      "rank": 1
+    },
+    {
+      "talentId": 105970,
+      "rank": 1
+    },
+    {
+      "talentId": 105962,
+      "rank": 1
+    },
+    {
+      "talentId": 105962,
+      "rank": 2
+    },
+    {
+      "talentId": 105962,
+      "rank": 3
+    },
+    {
+      "talentId": 105962,
+      "rank": 4
+    },
+    {
+      "talentId": 105962,
+      "rank": 5
+    },
+    {
+      "talentId": 105959,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
+    },
+    {
+      "talentId": 105957,
+      "rank": 1
+    },
+    {
+      "talentId": 105957,
+      "rank": 2
+    },
+    {
+      "talentId": 105957,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 4
+    },
+    {
+      "talentId": 105957,
+      "rank": 5
+    },
+    {
+      "talentId": 105955,
+      "rank": 1
+    },
+    {
+      "talentId": 105955,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 1
+    },
+    {
+      "talentId": 105954,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 3
+    },
+    {
+      "talentId": 105951,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 2
+    },
+    {
+      "talentId": 105958,
+      "rank": 3
+    },
+    {
+      "talentId": 105952,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105976,
+      "count": 5,
+      "reason": "Blocken und Wutgewinn mit Schild früh ausbauen."
+    },
+    {
+      "talentId": 105969,
+      "count": 3,
+      "reason": "Rache als frühen Bedrohungs- und Schadenszauber stärken."
+    },
+    {
+      "talentId": 105972,
+      "count": 2,
+      "reason": "Donnerknall günstiger machen."
+    },
+    {
+      "talentId": 105971,
+      "count": 2,
+      "reason": "Wut bei Ausweichen und Parieren mit Schild erhalten."
+    },
+    {
+      "talentId": 110856,
+      "count": 3,
+      "reason": "Bedrohung in Verteidigungshaltung mit Schild erhöhen."
+    },
+    {
+      "talentId": 105966,
+      "count": 1,
+      "reason": "Sturmangriff in Verteidigungshaltung auf 25 ermöglichen."
+    },
+    {
+      "talentId": 105968,
+      "count": 3,
+      "reason": "Kosten von Rüstung zerreißen reduzieren."
+    },
+    {
+      "talentId": 105972,
+      "count": 1,
+      "reason": "Donnerknall-Kostenreduktion vervollständigen."
+    },
+    {
+      "talentId": 105961,
+      "count": 3,
+      "reason": "Wutkosten offensiver Fähigkeiten senken."
+    },
+    {
+      "talentId": 105965,
+      "count": 1,
+      "reason": "Betäubung und Voraussetzung für Schildschlag freischalten."
+    },
+    {
+      "talentId": 105970,
+      "count": 1,
+      "reason": "Defensiven Notfallknopf ergänzen."
+    },
+    {
+      "talentId": 105962,
+      "count": 5,
+      "reason": "Schaden mit Schild ausbauen."
+    },
+    {
+      "talentId": 105959,
+      "count": 1,
+      "reason": "Schildschlag auf 40 freischalten."
+    },
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance ergänzen."
+    },
+    {
+      "talentId": 105957,
+      "count": 5,
+      "reason": "Parierchance ergänzen."
+    },
+    {
+      "talentId": 105955,
+      "count": 2,
+      "reason": "Wut aus Sturmangriff verbessern."
+    },
+    {
+      "talentId": 105954,
+      "count": 3,
+      "reason": "Wut bei Haltungswechseln besser erhalten."
+    },
+    {
+      "talentId": 105951,
+      "count": 1,
+      "reason": "Wutgewinn und Wuterhalt ergänzen."
+    },
+    {
+      "talentId": 105958,
+      "count": 3,
+      "reason": "Kosten von heldenhaftem Stoß reduzieren."
+    },
+    {
+      "talentId": 105952,
+      "count": 1,
+      "reason": "Kritische Trefferchance von Überwältigen ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-protection-leveling",
+      "wowhead-protection-leveling"
+    ],
+    "editorialDecision": "Weapon-and-shield dungeon route with Revenge, block/dodge/parry rage, Defiance, Vanguard and Shield Slam. Icy Veins full guide and Wowhead indexed summary corroborate the early shield/revenge/master-of-defense priorities. Our allocation is independently assembled.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "Verify actual rage and multi-target threat at low levels, class quest requirements for Defensive Stance and Sunder Armor, and no use of undocumented PvP effect."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "003db0d05a5d5f3bad86556e98a50f8b29965f0b5d54f6de20cdb27e1df3a2c0",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

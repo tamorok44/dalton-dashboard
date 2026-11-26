@@ -32,9 +32,15 @@
     "unresolved": [
       "New exact build-specific independent Hunter catalog proof, level gates and official hotfix review. Conditional source access only; no editorial release.",
       "Check Hunter pet threat and sustain after November 25 hotfix. No assumption of the disputed Beast Mastery prerequisite operator; this route does not use either affected talent.",
-      "Compare sustained leveling, recovery time and pet survival against Beast Mastery; no measured superiority claim."
+      "Compare sustained leveling, recovery time and pet survival against Beast Mastery; no measured superiority claim.",
+      "26 Nov: validated all 51 points against complete extracted class catalog (not exact live hash). No used talent touches unresolved cyclic edge."
     ],
-    "approval": null
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "9fa5fb0f24d1f95d20f208b2829b5da45b1a7068e97aba2897cecd8be43cc16f",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
   },
   "points": [
     {

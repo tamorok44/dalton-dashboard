@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-affliction-leveling",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11629,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 38,
+    "11636": 13,
+    "11637": 0
+  },
+  "points": [
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105921,
+      "rank": 1
+    },
+    {
+      "talentId": 105922,
+      "rank": 1
+    },
+    {
+      "talentId": 105922,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105920,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 3
+    },
+    {
+      "talentId": 105919,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 1
+    },
+    {
+      "talentId": 105918,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 3
+    },
+    {
+      "talentId": 105912,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 2
+    },
+    {
+      "talentId": 105911,
+      "rank": 3
+    },
+    {
+      "talentId": 105914,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 2
+    },
+    {
+      "talentId": 105910,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 4
+    },
+    {
+      "talentId": 105910,
+      "rank": 5
+    },
+    {
+      "talentId": 105909,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105921,
+      "rank": 2
+    },
+    {
+      "talentId": 105914,
+      "rank": 2
+    },
+    {
+      "talentId": 105917,
+      "rank": 1
+    },
+    {
+      "talentId": 105917,
+      "rank": 2
+    },
+    {
+      "talentId": 105917,
+      "rank": 3
+    },
+    {
+      "talentId": 105923,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 2
+    },
+    {
+      "talentId": 105906,
+      "rank": 3
+    },
+    {
+      "talentId": 105906,
+      "rank": 4
+    },
+    {
+      "talentId": 105906,
+      "rank": 5
+    },
+    {
+      "talentId": 105907,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 2
+    },
+    {
+      "talentId": 105907,
+      "rank": 3
+    },
+    {
+      "talentId": 105907,
+      "rank": 4
+    },
+    {
+      "talentId": 105907,
+      "rank": 5
+    },
+    {
+      "talentId": 105899,
+      "rank": 1
+    },
+    {
+      "talentId": 105899,
+      "rank": 2
+    },
+    {
+      "talentId": 105903,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen und ihren Schaden stärken."
+    },
+    {
+      "talentId": 105925,
+      "count": 4,
+      "reason": "Trefferchance und geringere Bedrohung früh berücksichtigen."
+    },
+    {
+      "talentId": 105921,
+      "count": 1,
+      "reason": "Aderlass etwas effizienter machen."
+    },
+    {
+      "talentId": 105922,
+      "count": 2,
+      "reason": "Manaregeneration nach passenden Seelendieb-Kills nutzen."
+    },
+    {
+      "talentId": 105920,
+      "count": 3,
+      "reason": "Gesundheitsentzug vor Zermürben verbessern."
+    },
+    {
+      "talentId": 105919,
+      "count": 2,
+      "reason": "Omen der Pein stärken."
+    },
+    {
+      "talentId": 105918,
+      "count": 3,
+      "reason": "Unterbrechungsschutz für Entzugszauber aufbauen."
+    },
+    {
+      "talentId": 105912,
+      "count": 1,
+      "reason": "Lebensentzug auf Stufe 30 freischalten."
+    },
+    {
+      "talentId": 105911,
+      "count": 3,
+      "reason": "Seelenentzug für die drei ausdrücklich genannten DoTs ausbauen."
+    },
+    {
+      "talentId": 105914,
+      "count": 1,
+      "reason": "Gelegentlichen spontanen Schattenblitz ermöglichen."
+    },
+    {
+      "talentId": 105910,
+      "count": 5,
+      "reason": "Schattenschaden und Lebensentzug stärken."
+    },
+    {
+      "talentId": 105909,
+      "count": 1,
+      "reason": "Zermürben auf 40 freischalten; beschleunigt Ticks statt Dauer zu verkürzen."
+    },
+    {
+      "talentId": 105925,
+      "count": 1,
+      "reason": "Unterdrückung vervollständigen."
+    },
+    {
+      "talentId": 105921,
+      "count": 1,
+      "reason": "Aderlass vervollständigen."
+    },
+    {
+      "talentId": 105914,
+      "count": 1,
+      "reason": "Einbruch der Nacht vervollständigen."
+    },
+    {
+      "talentId": 105917,
+      "count": 3,
+      "reason": "Kritischen Schadensbonus der genannten Schattenzauber erhöhen."
+    },
+    {
+      "talentId": 105923,
+      "count": 1,
+      "reason": "Reichweite ergänzen."
+    },
+    {
+      "talentId": 105906,
+      "count": 5,
+      "reason": "Schaden des aktiven Dämons steigern."
+    },
+    {
+      "talentId": 105907,
+      "count": 5,
+      "reason": "Eigene Ausdauer erhöhen."
+    },
+    {
+      "talentId": 105899,
+      "count": 2,
+      "reason": "Dämon beim Zaubern und Aderlass unterstützen."
+    },
+    {
+      "talentId": 105903,
+      "count": 1,
+      "reason": "Eigene Manareserve und Begleiterreserven ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-crix-warlock",
+      "method-roguery-warlock"
+    ],
+    "editorialDecision": "Continuous pet-assisted DoT and drain leveling. Early instant Corruption, hit and threat reduction; retain active demon rather than mandatory sacrifice. Wrack at 40, no assumption of independent extra multipliers or Soul Harvest bug.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "Official November 10 Wrack and Soul Siphon changes agree with the extracted tooltip: acceleration of periodic ticks, not duration or a second damage multiplier. Nov 25 pet crit corrections; verify pet-dependent values."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "954b5cfaaa3f0879d6bc5e47b169c867df7dd608a5c841d19c3be3b22a6feb12",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

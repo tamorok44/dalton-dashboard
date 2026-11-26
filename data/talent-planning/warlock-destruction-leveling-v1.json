@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-destruction-leveling",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11637,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 20,
+    "11636": 0,
+    "11637": 31
+  },
+  "points": [
+    {
+      "talentId": 105888,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 2
+    },
+    {
+      "talentId": 105888,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 4
+    },
+    {
+      "talentId": 105888,
+      "rank": 5
+    },
+    {
+      "talentId": 105887,
+      "rank": 1
+    },
+    {
+      "talentId": 105887,
+      "rank": 2
+    },
+    {
+      "talentId": 105887,
+      "rank": 3
+    },
+    {
+      "talentId": 105885,
+      "rank": 1
+    },
+    {
+      "talentId": 105885,
+      "rank": 2
+    },
+    {
+      "talentId": 105884,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 4
+    },
+    {
+      "talentId": 105883,
+      "rank": 5
+    },
+    {
+      "talentId": 105880,
+      "rank": 1
+    },
+    {
+      "talentId": 105882,
+      "rank": 1
+    },
+    {
+      "talentId": 105882,
+      "rank": 2
+    },
+    {
+      "talentId": 105882,
+      "rank": 3
+    },
+    {
+      "talentId": 105876,
+      "rank": 1
+    },
+    {
+      "talentId": 105877,
+      "rank": 1
+    },
+    {
+      "talentId": 105877,
+      "rank": 2
+    },
+    {
+      "talentId": 105877,
+      "rank": 3
+    },
+    {
+      "talentId": 105879,
+      "rank": 1
+    },
+    {
+      "talentId": 105875,
+      "rank": 1
+    },
+    {
+      "talentId": 105875,
+      "rank": 2
+    },
+    {
+      "talentId": 105875,
+      "rank": 3
+    },
+    {
+      "talentId": 105875,
+      "rank": 4
+    },
+    {
+      "talentId": 105875,
+      "rank": 5
+    },
+    {
+      "talentId": 105874,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105921,
+      "rank": 1
+    },
+    {
+      "talentId": 105921,
+      "rank": 2
+    },
+    {
+      "talentId": 105922,
+      "rank": 1
+    },
+    {
+      "talentId": 105922,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105920,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 3
+    },
+    {
+      "talentId": 105919,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 2
+    },
+    {
+      "talentId": 105923,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105888,
+      "count": 5,
+      "reason": "Zauberzeiten zentraler direkter Schadenszauber verringern."
+    },
+    {
+      "talentId": 105887,
+      "count": 3,
+      "reason": "Manakosten der Zerstörungszauber reduzieren."
+    },
+    {
+      "talentId": 105885,
+      "count": 2,
+      "reason": "Erlittenen Schaden reduzieren."
+    },
+    {
+      "talentId": 105884,
+      "count": 1,
+      "reason": "Schattenbrand als Sofortzauber und bedingte Splitterrückgewinnung freischalten."
+    },
+    {
+      "talentId": 105883,
+      "count": 5,
+      "reason": "Kritischen Schadensbonus der Zerstörungszauber erhöhen."
+    },
+    {
+      "talentId": 105880,
+      "count": 1,
+      "reason": "Feuersbrunst als Feuerbrand-Verbraucher freischalten."
+    },
+    {
+      "talentId": 105882,
+      "count": 3,
+      "reason": "Zauberunterbrechungen reduzieren."
+    },
+    {
+      "talentId": 105876,
+      "count": 1,
+      "reason": "Omen der Verwüstung für mehrere Ziele freischalten."
+    },
+    {
+      "talentId": 105877,
+      "count": 3,
+      "reason": "Kritische Trefferchance der Feuersbrunst stärken."
+    },
+    {
+      "talentId": 105879,
+      "count": 1,
+      "reason": "Schaden der Zerstörungszauber ergänzen."
+    },
+    {
+      "talentId": 105875,
+      "count": 5,
+      "reason": "Schatten und Flamme ausbauen; erst dann volle Nichtverbrauchs-/Rückerstattungswirkung annehmen."
+    },
+    {
+      "talentId": 105874,
+      "count": 1,
+      "reason": "Verbrennen auf 40 freischalten."
+    },
+    {
+      "talentId": 105925,
+      "count": 5,
+      "reason": "Trefferchance und geringere Bedrohung ergänzen."
+    },
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen."
+    },
+    {
+      "talentId": 105921,
+      "count": 2,
+      "reason": "Mana aus Aderlass steigern."
+    },
+    {
+      "talentId": 105922,
+      "count": 2,
+      "reason": "Manaregeneration nach Seelendieb-Kills unterstützen."
+    },
+    {
+      "talentId": 105920,
+      "count": 3,
+      "reason": "Entzugszauber ergänzen."
+    },
+    {
+      "talentId": 105919,
+      "count": 2,
+      "reason": "Omen der Pein stärken."
+    },
+    {
+      "talentId": 105923,
+      "count": 1,
+      "reason": "Reichweite der Gebrechenzauber ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-crix-warlock",
+      "method-roguery-warlock"
+    ],
+    "editorialDecision": "Direct-damage alternative with early cast-time and mana talents; no claim it is as efficient as Affliction. Incinerate at 40, Affliction sustain and hit later. Crix and Method agree on higher mana demands.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "Compare early mana downtime and leveling pet choice; verify Searing Pain threat and interaction of Conflagrate, Shadowburn and Shadow and Flame."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "954b5cfaaa3f0879d6bc5e47b169c867df7dd608a5c841d19c3be3b22a6feb12",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

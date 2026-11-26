@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-demonology-leveling",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11636,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 20,
+    "11636": 31,
+    "11637": 0
+  },
+  "points": [
+    {
+      "talentId": 105906,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 2
+    },
+    {
+      "talentId": 105906,
+      "rank": 3
+    },
+    {
+      "talentId": 105906,
+      "rank": 4
+    },
+    {
+      "talentId": 105906,
+      "rank": 5
+    },
+    {
+      "talentId": 105899,
+      "rank": 1
+    },
+    {
+      "talentId": 105899,
+      "rank": 2
+    },
+    {
+      "talentId": 105903,
+      "rank": 1
+    },
+    {
+      "talentId": 105903,
+      "rank": 2
+    },
+    {
+      "talentId": 105903,
+      "rank": 3
+    },
+    {
+      "talentId": 105904,
+      "rank": 1
+    },
+    {
+      "talentId": 105904,
+      "rank": 2
+    },
+    {
+      "talentId": 105904,
+      "rank": 3
+    },
+    {
+      "talentId": 105900,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 1
+    },
+    {
+      "talentId": 105896,
+      "rank": 1
+    },
+    {
+      "talentId": 105896,
+      "rank": 2
+    },
+    {
+      "talentId": 105896,
+      "rank": 3
+    },
+    {
+      "talentId": 105898,
+      "rank": 1
+    },
+    {
+      "talentId": 105898,
+      "rank": 2
+    },
+    {
+      "talentId": 105892,
+      "rank": 1
+    },
+    {
+      "talentId": 105893,
+      "rank": 1
+    },
+    {
+      "talentId": 105893,
+      "rank": 2
+    },
+    {
+      "talentId": 105893,
+      "rank": 3
+    },
+    {
+      "talentId": 105895,
+      "rank": 1
+    },
+    {
+      "talentId": 105891,
+      "rank": 1
+    },
+    {
+      "talentId": 105891,
+      "rank": 2
+    },
+    {
+      "talentId": 105891,
+      "rank": 3
+    },
+    {
+      "talentId": 105891,
+      "rank": 4
+    },
+    {
+      "talentId": 105891,
+      "rank": 5
+    },
+    {
+      "talentId": 105890,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105921,
+      "rank": 1
+    },
+    {
+      "talentId": 105921,
+      "rank": 2
+    },
+    {
+      "talentId": 105922,
+      "rank": 1
+    },
+    {
+      "talentId": 105922,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105920,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 3
+    },
+    {
+      "talentId": 105918,
+      "rank": 1
+    },
+    {
+      "talentId": 105918,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105906,
+      "count": 5,
+      "reason": "Schaden des aktiven Dämons steigern."
+    },
+    {
+      "talentId": 105899,
+      "count": 2,
+      "reason": "Dämon durch eigene Zauber und Aderlass versorgen."
+    },
+    {
+      "talentId": 105903,
+      "count": 3,
+      "reason": "Mana und Begleiterreserven erhöhen."
+    },
+    {
+      "talentId": 105904,
+      "count": 3,
+      "reason": "Leerwandler für frühes sicheres Questen stärken."
+    },
+    {
+      "talentId": 105900,
+      "count": 1,
+      "reason": "Dämonische Opferung als spätere Voraussetzung und optionale Ressourcennutzung freischalten."
+    },
+    {
+      "talentId": 105907,
+      "count": 1,
+      "reason": "Eigene Ausdauer ergänzen."
+    },
+    {
+      "talentId": 105896,
+      "count": 3,
+      "reason": "Dämonisches Brandmal für Begleiterschaden und Bedrohung stärken."
+    },
+    {
+      "talentId": 105898,
+      "count": 2,
+      "reason": "Beschwörungen schneller und günstiger machen."
+    },
+    {
+      "talentId": 105892,
+      "count": 1,
+      "reason": "Seelenverbindung auf 30 freischalten."
+    },
+    {
+      "talentId": 105893,
+      "count": 3,
+      "reason": "Zauberschaden mit aktivem Dämon erhöhen."
+    },
+    {
+      "talentId": 105895,
+      "count": 1,
+      "reason": "Notfallbeschwörung freischalten."
+    },
+    {
+      "talentId": 105891,
+      "count": 5,
+      "reason": "Dämonenspezifische defensive oder offensive Vorteile ausbauen."
+    },
+    {
+      "talentId": 105890,
+      "count": 1,
+      "reason": "Dämonischen Pakt auf 40 freischalten."
+    },
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen."
+    },
+    {
+      "talentId": 105925,
+      "count": 5,
+      "reason": "Trefferchance und Bedrohung verbessern."
+    },
+    {
+      "talentId": 105921,
+      "count": 2,
+      "reason": "Mana aus Aderlass steigern."
+    },
+    {
+      "talentId": 105922,
+      "count": 2,
+      "reason": "Manaregeneration nach Seelendieb-Kills unterstützen."
+    },
+    {
+      "talentId": 105920,
+      "count": 3,
+      "reason": "Entzugszauber verbessern."
+    },
+    {
+      "talentId": 105918,
+      "count": 3,
+      "reason": "Unterbrechungsschutz für Entzugszauber ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-crix-warlock",
+      "method-roguery-warlock"
+    ],
+    "editorialDecision": "Pet-first mixed leveling without respec, prioritize pet damage and resilience, Soul Link 30 and Demonic Pact 40. Summon a different demon only when the sacrifice rules are satisfied; do not assume the same demon preserves the bonus.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "Nov 25 corrected pet melee crit and Sayaad critical chance; verify brand threat and actual pet sustain without numerical scaling promises."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "954b5cfaaa3f0879d6bc5e47b169c867df7dd608a5c841d19c3be3b22a6feb12",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

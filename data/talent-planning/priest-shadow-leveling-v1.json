@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-shadow-leveling",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11622,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 20,
+    "11615": 0,
+    "11622": 31
+  },
+  "points": [
+    {
+      "talentId": 105850,
+      "rank": 1
+    },
+    {
+      "talentId": 105850,
+      "rank": 2
+    },
+    {
+      "talentId": 105833,
+      "rank": 1
+    },
+    {
+      "talentId": 105833,
+      "rank": 2
+    },
+    {
+      "talentId": 105833,
+      "rank": 3
+    },
+    {
+      "talentId": 105833,
+      "rank": 4
+    },
+    {
+      "talentId": 105833,
+      "rank": 5
+    },
+    {
+      "talentId": 110851,
+      "rank": 1
+    },
+    {
+      "talentId": 110851,
+      "rank": 2
+    },
+    {
+      "talentId": 110851,
+      "rank": 3
+    },
+    {
+      "talentId": 110851,
+      "rank": 4
+    },
+    {
+      "talentId": 110851,
+      "rank": 5
+    },
+    {
+      "talentId": 105826,
+      "rank": 1
+    },
+    {
+      "talentId": 105825,
+      "rank": 1
+    },
+    {
+      "talentId": 105825,
+      "rank": 2
+    },
+    {
+      "talentId": 105830,
+      "rank": 1
+    },
+    {
+      "talentId": 105830,
+      "rank": 2
+    },
+    {
+      "talentId": 105820,
+      "rank": 1
+    },
+    {
+      "talentId": 105821,
+      "rank": 1
+    },
+    {
+      "talentId": 105821,
+      "rank": 2
+    },
+    {
+      "talentId": 105821,
+      "rank": 3
+    },
+    {
+      "talentId": 105823,
+      "rank": 1
+    },
+    {
+      "talentId": 105819,
+      "rank": 1
+    },
+    {
+      "talentId": 105819,
+      "rank": 2
+    },
+    {
+      "talentId": 105823,
+      "rank": 2
+    },
+    {
+      "talentId": 105823,
+      "rank": 3
+    },
+    {
+      "talentId": 105823,
+      "rank": 4
+    },
+    {
+      "talentId": 105818,
+      "rank": 1
+    },
+    {
+      "talentId": 105818,
+      "rank": 2
+    },
+    {
+      "talentId": 105818,
+      "rank": 3
+    },
+    {
+      "talentId": 105818,
+      "rank": 4
+    },
+    {
+      "talentId": 105818,
+      "rank": 5
+    },
+    {
+      "talentId": 105817,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105837,
+      "rank": 1
+    },
+    {
+      "talentId": 105837,
+      "rank": 2
+    },
+    {
+      "talentId": 105837,
+      "rank": 3
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105850,
+      "count": 2,
+      "reason": "Zauberstabschaden in den frühen Stufen verbessern."
+    },
+    {
+      "talentId": 105833,
+      "count": 5,
+      "reason": "Willenskraft und Manaregeneration nach passenden Kills verbessern."
+    },
+    {
+      "talentId": 110851,
+      "count": 5,
+      "reason": "Trefferchance der Schattenzauber erhöhen."
+    },
+    {
+      "talentId": 105826,
+      "count": 1,
+      "reason": "Gedankenschinden freischalten."
+    },
+    {
+      "talentId": 105825,
+      "count": 2,
+      "reason": "Gedankenschinden verstärken."
+    },
+    {
+      "talentId": 105830,
+      "count": 2,
+      "reason": "Dauer von Schattenwort: Schmerz verlängern."
+    },
+    {
+      "talentId": 105820,
+      "count": 1,
+      "reason": "Vampirumarmung für Schadensheilung freischalten."
+    },
+    {
+      "talentId": 105821,
+      "count": 3,
+      "reason": "Schattenwirken für längere Ziele ausbauen."
+    },
+    {
+      "talentId": 105823,
+      "count": 1,
+      "reason": "Willenskraft-Unterstützung vorbereiten."
+    },
+    {
+      "talentId": 105819,
+      "count": 2,
+      "reason": "Manakosten und Weitergabe von Verschlingender Seuche unterstützen."
+    },
+    {
+      "talentId": 105823,
+      "count": 3,
+      "reason": "Dunkle Inspiration weiter ausbauen."
+    },
+    {
+      "talentId": 105818,
+      "count": 5,
+      "reason": "Schattenschaden steigern."
+    },
+    {
+      "talentId": 105817,
+      "count": 1,
+      "reason": "Schattengestalt auf 42 freischalten; Heilzauber erfordern Gestaltwechsel."
+    },
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105837,
+      "count": 3,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Bedrohung reduzieren."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber freischalten."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Absorption des Schilds erhöhen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-priest-leveling",
+      "outpost-priest"
+    ],
+    "editorialDecision": "Two early wand points deliberately delay Shadowform to 42 and avoid respec. Spirit Tap supports solo/mixed kills; Vampiric Embrace and later Shadowform form the sustained caster route. Shadowform is a damage role, not a healer plan.",
+    "unresolved": [
+      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+      "November 16 Vampiric Embrace party-healing reduction and doubled personal healing reflected in extracted text; verify current kill-credit condition, periodic crit, and early wand tradeoff against direct Shadow."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  }
+}

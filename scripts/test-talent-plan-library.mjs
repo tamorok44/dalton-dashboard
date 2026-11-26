@@ -15,6 +15,7 @@ const coverageFile='coverage-2026-11-25.json';
 const researchFile='evidence-2026-11-25.json';
 const proofsFile='catalog-proofs-2026-11-25.json';
 const comparisonFile='mage-catalog-comparison-2026-11-25.json';
+const researchProofsFile='catalog-research-2026-11-26.json';
 const release=JSON.parse(readFileSync(new URL(releaseFile,folder),'utf8'));
 assert.equal(release.schemaVersion,1);
 assert.equal(release.kind,'talent_release_catalog');
@@ -161,6 +162,24 @@ const sourcePairs=new Set(proofFile.sourcePairs.map(pair=>{
 assert.equal(sourcePairs.size,proofFile.sourcePairs.length,'duplicate source pairs');
 assert.ok(proofFile.catalogs.every(record=>sourcePairs.has(record.sourceRevision)),'proof references an unknown source pair');
 const snapshots=indexCatalogProofs(proofFile.catalogs);
+const researchProofFile=JSON.parse(readFileSync(new URL(researchProofsFile,folder),'utf8'));
+assert.equal(researchProofFile.kind,'talent_research_catalog_proofs');
+assert.equal(researchProofFile.captureKind,'extracted_text');
+assert.equal(researchProofFile.releaseEligible,false);
+assert.ok(date(researchProofFile.capturedOn)&&isTalentClientBuild(researchProofFile.observedBuild));
+const extracted=researchProofFile.sourcePair;
+assert.ok(digest.test(extracted.rawSha256)&&digest.test(extracted.localizedSha256));
+assert.equal(talentSourcePairDigest(extracted.rawSha256,extracted.localizedSha256),extracted.revision);
+assert.ok(digest.test(researchProofFile.observedSourceRevision));
+assert.notEqual(extracted.revision,researchProofFile.observedSourceRevision,'extracted source is not exact live raw evidence');
+assert.ok(!sourcePairs.has(extracted.revision),'research capture must not enter release source pairs');
+assert.ok(researchProofFile.catalogs.every(c=>c.sourceRevision===extracted.revision));
+assert.deepEqual(researchProofFile.catalogs.map(c=>c.proof.classId).sort((a,b)=>a-b),Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
+assert.equal(researchProofFile.catalogs.flatMap(c=>c.proof.trees).length,27);
+const researchSnapshots=indexCatalogProofs(researchProofFile.catalogs);
+// Release and revalidation checks deliberately receive only snapshots,
+// never the separate researchSnapshots map.
+for(const key of researchSnapshots.keys())assert.ok(!snapshots.has(key),'research proof cannot be a release proof');
 const comparison=JSON.parse(readFileSync(new URL(comparisonFile,folder),'utf8'));
 assert.equal(comparison.schemaVersion,1);
 assert.equal(comparison.kind,'mage_talent_source_comparison');
@@ -211,7 +230,8 @@ function auditResearch(plan){
   const record=plan.research?.structuralValidation;
   if(!record)return [];
   assert.equal(record.legacyTalentedRank,0,'research currently checks the standard calendar');
-  const proof=snapshots.get(proofKey(plan.classId,record.catalogRevision,record.sourceRevision));
+  const key=proofKey(plan.classId,record.catalogRevision,record.sourceRevision);
+  const proof=snapshots.get(key)??researchSnapshots.get(key);
   assert.ok(proof,plan.id+' missing research catalog capture');
   const exportLevels=Object.fromEntries(proof.trees.flatMap(tree=>tree.talents.map(node=>[node.id,node.requiredLevel])));
   const pack={status:'verified',classId:plan.classId,catalogRevision:record.catalogRevision,revision:'structural-audit',
@@ -230,7 +250,7 @@ const activeProfiles=new Set();
 const activePaths=new Set();
 let planCount=0;
 for(const file of files){
-  if([releaseFile,coverageFile,researchFile,proofsFile,comparisonFile].includes(file))continue;
+  if([releaseFile,coverageFile,researchFile,proofsFile,comparisonFile,researchProofsFile].includes(file))continue;
   const entry=JSON.parse(readFileSync(new URL(file,folder),'utf8'));
   const plan=entry;
   planCount++;
@@ -416,6 +436,18 @@ for(const [id,milestones,distribution] of [
   assert.deepEqual([11582,11594,11601].map(treeId=>candidate.expectedDistribution[treeId]),distribution);
   const mixed=plans.find(p=>p.classId===candidate.classId&&p.treeId===candidate.treeId&&p.status==='approved'&&p.profiles.some(q=>q.goal==='leveling'));
   assert.ok(mixed&&JSON.stringify(mixed.points)!==JSON.stringify(candidate.points),'Dungeon answer must change the chronological path');
+}
+// Every class now has at least one complete non-retired path. This is
+// research coverage only, not a promise of availability to the player.
+assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.classId))].sort((a,b)=>a-b),
+  Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
+for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warlock-demonology-leveling",[20,31,0]],["warlock-destruction-leveling",[20,0,31]],["warrior-protection-dungeons",[15,5,31]],["priest-holy-dungeons",[20,31,0]],["priest-shadow-leveling",[20,0,31]],["paladin-retribution-leveling",[12,8,31]],["rogue-combat-leveling",[12,39,0]],["shaman-enhancement-leveling",[20,31,0]]]){
+  const p=plans.find(p=>p.id===id);
+  assert.ok(p&&p.status==='research_only');
+  assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,p.version])),[0]);
+  assert.deepEqual(coverage.classes[p.classId].map(t=>p.expectedDistribution[t.treeId]),distribution);
+  const key=proofKey(p.classId,p.research.structuralValidation.catalogRevision,p.research.structuralValidation.sourceRevision);
+  assert.ok(researchSnapshots.has(key)&&!snapshots.has(key));
 }
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
