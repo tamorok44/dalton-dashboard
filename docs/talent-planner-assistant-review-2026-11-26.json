@@ -1,0 +1,883 @@
+{
+  "schemaVersion": 1,
+  "kind": "talent_assistant_research_matrix",
+  "reviewedAt": "2026-11-26",
+  "releaseEligible": false,
+  "notes": [
+    "Editorial research candidates, not approved recommendations. Class and role metadata are covered; sources vary in build and do not establish exact current plan validity.",
+    "Only release-catalog specializationAdvice bound to exact active approved profile versions may preselect a comparative recommendation. No runtime import of this file.",
+    "The scope is a chosen role, not a ranking across all roles. Leveling and dungeon advice concerns progression, not level-60 raid DPS."
+  ],
+  "rows": [
+    {
+      "classId": 1,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11650,
+        11657
+      ],
+      "preferredTreeId": 11650,
+      "kind": "comparative_candidate",
+      "reason": "Zweihandwaffe und gezielte Angriffe als unkomplizierter Schadenspfad; Furor ist bei geeigneten zwei Waffen eine Alternative. Schutz wird bei dieser Rollenwahl nicht verglichen.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warrior-guide",
+        "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+        "https://www.icy-veins.com/wow-forever/protection-warrior-leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 1,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11650,
+        11657
+      ],
+      "preferredTreeId": 11657,
+      "kind": "comparative_candidate",
+      "reason": "Kontinuierlicher Nahkampfdruck in wiederholten Gruppenkämpfen; Waffen bleibt eine Option für Zweihandspiel und Klingenangriffe.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warrior-guide",
+        "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+        "https://www.icy-veins.com/wow-forever/protection-warrior-leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 1,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11650,
+        11657
+      ],
+      "preferredTreeId": 11650,
+      "kind": "comparative_candidate",
+      "reason": "Gezielter Druck mit Tödlichem Stoß und Gegnerkontrolle; Furor bleibt bei bevorzugtem anhaltendem Nahkampfdruck wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warrior-guide",
+        "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+        "https://www.icy-veins.com/wow-forever/protection-warrior-leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 1,
+      "role": "tank",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11670
+      ],
+      "preferredTreeId": 11670,
+      "kind": "role_match",
+      "reason": "Der ausgewählte Tankbaum priorisiert Schutz und Gegnerbindung. Für reines Soloquesten kann eine Schadensrolle geeigneter sein.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warrior-guide",
+        "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+        "https://www.icy-veins.com/wow-forever/protection-warrior-leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 1,
+      "role": "tank",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11670
+      ],
+      "preferredTreeId": 11670,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewünschten Tankrolle und der Schutz- bzw. Gegnerbindungsaufgabe in Dungeons.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warrior-guide",
+        "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+        "https://www.icy-veins.com/wow-forever/protection-warrior-leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 1,
+      "role": "tank",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11670
+      ],
+      "preferredTreeId": 11670,
+      "kind": "role_match",
+      "reason": "Die Rolle wird hier als defensiver Schutz, Gegnerkontrolle und Unterstützung bei Schlachtfeldzielen verstanden, nicht als Dungeon-Tanking.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warrior-guide",
+        "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+        "https://www.icy-veins.com/wow-forever/protection-warrior-leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "heal",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11486
+      ],
+      "preferredTreeId": 11486,
+      "kind": "role_match",
+      "reason": "Die gewählte Heilrolle bleibt erhalten; der Pfad ist für gemeinsame Inhalte und Unterstützung ausgelegt, nicht für maximale Solo-Geschwindigkeit.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "heal",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11486
+      ],
+      "preferredTreeId": 11486,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewünschten Gruppenheilrolle. Eine andere Rolle wird nicht automatisch eingesetzt.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "heal",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11486
+      ],
+      "preferredTreeId": 11486,
+      "kind": "role_match",
+      "reason": "Die gewählte Heilrolle bleibt auch im PvP erhalten. Die konkrete Punktfolge benötigt die fachliche Freigabe.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "tank",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11541
+      ],
+      "preferredTreeId": 11541,
+      "kind": "role_match",
+      "reason": "Der ausgewählte Tankbaum priorisiert Schutz und Gegnerbindung. Für reines Soloquesten kann eine Schadensrolle geeigneter sein.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "tank",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11541
+      ],
+      "preferredTreeId": 11541,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewünschten Tankrolle und der Schutz- bzw. Gegnerbindungsaufgabe in Dungeons.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "tank",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11541
+      ],
+      "preferredTreeId": 11541,
+      "kind": "role_match",
+      "reason": "Die Rolle wird hier als defensiver Schutz, Gegnerkontrolle und Unterstützung bei Schlachtfeldzielen verstanden, nicht als Dungeon-Tanking.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11559
+      ],
+      "preferredTreeId": 11559,
+      "kind": "role_match",
+      "reason": "Die ausgewählte Schadensrolle hat genau einen zugeordneten Talentbaum. Andere Rollen werden nicht ungefragt gewählt.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11559
+      ],
+      "preferredTreeId": 11559,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der ausgewählten Schadensrolle. Die konkrete Reihenfolge bleibt an die fachliche Pfadfreigabe gebunden.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 2,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11559
+      ],
+      "preferredTreeId": 11559,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewählten Schadensrolle. Es wird keine ungeprüfte PvP-Überlegenheit behauptet.",
+      "sourceUrls": [
+        "https://mobalytics.gg/wow-forever/classes/paladin-leveling-guide",
+        "https://wowforever.gg/en/guides/paladin-protection/",
+        "https://wowforever.gg/en/guides/paladin-retribution/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 3,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11372,
+        11371,
+        11370
+      ],
+      "preferredTreeId": 11372,
+      "kind": "comparative_candidate",
+      "reason": "Der Begleiter kann Gegner binden und entlastet die Einzelkämpfe; die Freigabe bleibt wegen der strittigen Talentverknüpfung gesperrt.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/hunter-guide",
+        "https://forever-hub.com/en/guides/beast-mastery-hunter-guide"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 3,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11372,
+        11371,
+        11370
+      ],
+      "preferredTreeId": 11371,
+      "kind": "comparative_candidate",
+      "reason": "Distanzwaffenschaden ohne verpflichtenden Nahkampfwechsel; Tierherrschaft und Überleben bleiben je nach Begleiter- und Nahkampfpräferenz Alternativen.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/hunter-guide",
+        "https://forever-hub.com/en/guides/beast-mastery-hunter-guide"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 3,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11372,
+        11371,
+        11370
+      ],
+      "preferredTreeId": 11371,
+      "kind": "comparative_candidate",
+      "reason": "Distanzdruck und gezielte Kontrolle; Überleben ist eine gleichwertig zu prüfende Alternative für Fallen und Nahkampfkontrolle, Tierherrschaft für Begleiterdruck.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/hunter-guide",
+        "https://forever-hub.com/en/guides/beast-mastery-hunter-guide"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 4,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11580,
+        11573,
+        11572
+      ],
+      "preferredTreeId": 11573,
+      "kind": "comparative_candidate",
+      "reason": "Waffenschaden und Ressourcenökonomie für wiederholte Questkämpfe; Meucheln ist die Dolch- und Giftalternative.",
+      "sourceUrls": [
+        "https://forever-hub.com/de/guides/klasse-rogue",
+        "https://metammo.com/wow-forever/builds/rogue"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 4,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11580,
+        11573,
+        11572
+      ],
+      "preferredTreeId": 11573,
+      "kind": "comparative_candidate",
+      "reason": "Kontinuierliche Angriffe und Klingenwirbel für passende Mehrzielkämpfe; Meucheln bleibt für Gift- und Dolchspiel wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/de/guides/klasse-rogue",
+        "https://metammo.com/wow-forever/builds/rogue"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 4,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11580,
+        11573,
+        11572
+      ],
+      "preferredTreeId": 11572,
+      "kind": "comparative_candidate",
+      "reason": "Verstohlenheit, Eröffnungen und Kontrollwerkzeuge sind die redaktionelle Priorität; Meucheln und Kampf bleiben für anderen Schadensrhythmus wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/de/guides/klasse-rogue",
+        "https://metammo.com/wow-forever/builds/rogue"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 5,
+      "role": "heal",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11608,
+        11615
+      ],
+      "preferredTreeId": 11608,
+      "kind": "comparative_candidate",
+      "reason": "Unterstützende Schilde und die Verbindung aus Heilung und situativem Schaden; kein Vergleich mit Schatten, da hier Heilung gewählt wurde.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/priest-guide",
+        "https://forever-hub.com/en/database/classes/priest"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 5,
+      "role": "heal",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11608,
+        11615
+      ],
+      "preferredTreeId": 11615,
+      "kind": "comparative_candidate",
+      "reason": "Direkte Heilung und Gruppenheilung bei wechselndem Gruppenschaden; Disziplin bleibt bei Schwerpunkt auf Schilden und Einzelzielunterstützung wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/priest-guide",
+        "https://forever-hub.com/en/database/classes/priest"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 5,
+      "role": "heal",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11608,
+        11615
+      ],
+      "preferredTreeId": 11608,
+      "kind": "comparative_candidate",
+      "reason": "Schilde und situative Heilung unter Druck; Heilig bleibt für direkte und Gruppenheilung eine Alternative.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/priest-guide",
+        "https://forever-hub.com/en/database/classes/priest"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 5,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11622
+      ],
+      "preferredTreeId": 11622,
+      "kind": "role_match",
+      "reason": "Die ausgewählte Schadensrolle hat genau einen zugeordneten Talentbaum. Andere Rollen werden nicht ungefragt gewählt.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/priest-guide",
+        "https://forever-hub.com/en/database/classes/priest"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 5,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11622
+      ],
+      "preferredTreeId": 11622,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der ausgewählten Schadensrolle. Die konkrete Reihenfolge bleibt an die fachliche Pfadfreigabe gebunden.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/priest-guide",
+        "https://forever-hub.com/en/database/classes/priest"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 5,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11622
+      ],
+      "preferredTreeId": 11622,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewählten Schadensrolle. Es wird keine ungeprüfte PvP-Überlegenheit behauptet.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/priest-guide",
+        "https://forever-hub.com/en/database/classes/priest"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 7,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11326,
+        11363
+      ],
+      "preferredTreeId": 11363,
+      "kind": "comparative_candidate",
+      "reason": "Nahkampf und Elementarzauber für kontinuierliches Questen; Elementar bleibt die Distanzalternative.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/shaman-guide",
+        "https://foreverdb.net/guide/leveling-shaman"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 7,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11326,
+        11363
+      ],
+      "preferredTreeId": 11363,
+      "kind": "comparative_candidate",
+      "reason": "Kontinuierlicher Nahkampfschaden mit situativer Gruppenunterstützung; Elementar bleibt für Distanzkampf verfügbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/shaman-guide",
+        "https://foreverdb.net/guide/leveling-shaman"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 7,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11326,
+        11363
+      ],
+      "preferredTreeId": 11326,
+      "kind": "comparative_candidate",
+      "reason": "Distanzdruck, Schocks und Kontrolle als redaktionelle Priorität; Verstärkung bleibt für bevorzugten Nahkampf wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/shaman-guide",
+        "https://foreverdb.net/guide/leveling-shaman"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 7,
+      "role": "heal",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11362
+      ],
+      "preferredTreeId": 11362,
+      "kind": "role_match",
+      "reason": "Die gewählte Heilrolle bleibt erhalten; der Pfad ist für gemeinsame Inhalte und Unterstützung ausgelegt, nicht für maximale Solo-Geschwindigkeit.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/shaman-guide",
+        "https://foreverdb.net/guide/leveling-shaman"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 7,
+      "role": "heal",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11362
+      ],
+      "preferredTreeId": 11362,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewünschten Gruppenheilrolle. Eine andere Rolle wird nicht automatisch eingesetzt.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/shaman-guide",
+        "https://foreverdb.net/guide/leveling-shaman"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 7,
+      "role": "heal",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11362
+      ],
+      "preferredTreeId": 11362,
+      "kind": "role_match",
+      "reason": "Die gewählte Heilrolle bleibt auch im PvP erhalten. Die konkrete Punktfolge benötigt die fachliche Freigabe.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/shaman-guide",
+        "https://foreverdb.net/guide/leveling-shaman"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 8,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11582,
+        11594,
+        11601
+      ],
+      "preferredTreeId": 11582,
+      "kind": "comparative_candidate",
+      "reason": "Bestehende redaktionelle Arcane-Vorauswahl für gemischtes Leveln innerhalb der aktuell freigegebenen Auswahl; Frost-Kontrolle bleibt als noch nicht vollständig verglichene Alternative zu prüfen.",
+      "sourceUrls": [
+        "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+        "https://forever-hub.com/en/guides/mage-guide",
+        "https://wowforever.be/classes/mage/leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 8,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11582,
+        11594,
+        11601
+      ],
+      "preferredTreeId": 11582,
+      "kind": "comparative_candidate",
+      "reason": "Bestehende redaktionelle Vorauswahl für Mana und Bedrohung in regelmäßigen Dungeons; Feuer und Frost sind stilabhängige Alternativen.",
+      "sourceUrls": [
+        "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+        "https://forever-hub.com/en/guides/mage-guide",
+        "https://wowforever.be/classes/mage/leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 8,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11582,
+        11594,
+        11601
+      ],
+      "preferredTreeId": 11601,
+      "kind": "comparative_candidate",
+      "reason": "Kontroll- und defensive Frostwerkzeuge als PvP-Prüfkandidat; gemeinsame Procs und aktuelle Servermechanik bleiben ungeklärt.",
+      "sourceUrls": [
+        "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+        "https://forever-hub.com/en/guides/mage-guide",
+        "https://wowforever.be/classes/mage/leveling/"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 9,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11629,
+        11636,
+        11637
+      ],
+      "preferredTreeId": 11629,
+      "kind": "comparative_candidate",
+      "reason": "Schaden über Zeit und Ressourcenmanagement für wiederholte Questkämpfe; Dämonologie ist eine robuste Begleiteralternative.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warlock-guide",
+        "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 9,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11629,
+        11636,
+        11637
+      ],
+      "preferredTreeId": 11636,
+      "kind": "comparative_candidate",
+      "reason": "Begleiterunterstützung und kontinuierlicher Gruppenschaden als Prüfpriorität; Gebrechen und Zerstörung bleiben für unterschiedliche Ziel- und Kampfdauern wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warlock-guide",
+        "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 9,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11629,
+        11636,
+        11637
+      ],
+      "preferredTreeId": 11636,
+      "kind": "comparative_candidate",
+      "reason": "Begleiter und defensive Unterstützung als PvP-Prüfpriorität; Gebrechen bietet anhaltenden Druck, Zerstörung direkte Schadensfenster.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/warlock-guide",
+        "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "damage",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11328,
+        11347
+      ],
+      "preferredTreeId": 11347,
+      "kind": "comparative_candidate",
+      "reason": "Katzengestalt, Mobilität und Wechsel zwischen Gestalten; Gleichgewicht bleibt für Distanzzauber wählbar.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "damage",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11328,
+        11347
+      ],
+      "preferredTreeId": 11347,
+      "kind": "comparative_candidate",
+      "reason": "Kontinuierlicher Nahkampfschaden in Katzengestalt; Gleichgewicht bleibt für Distanzkampf wählbar, besonders nach dem noch nicht vollständig abgeglichenen Hotfix.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "damage",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11328,
+        11347
+      ],
+      "preferredTreeId": 11347,
+      "kind": "comparative_candidate",
+      "reason": "Mobilität, Gestaltwechsel und Kontrolle als Prüfpriorität; Gleichgewicht bleibt nach dem aktuellen Hotfix eine separat zu bewertende Alternative.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "tank",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11347
+      ],
+      "preferredTreeId": 11347,
+      "kind": "role_match",
+      "reason": "Der ausgewählte Tankbaum priorisiert Schutz und Gegnerbindung. Für reines Soloquesten kann eine Schadensrolle geeigneter sein.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "tank",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11347
+      ],
+      "preferredTreeId": 11347,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewünschten Tankrolle und der Schutz- bzw. Gegnerbindungsaufgabe in Dungeons.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "tank",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11347
+      ],
+      "preferredTreeId": 11347,
+      "kind": "role_match",
+      "reason": "Die Rolle wird hier als defensiver Schutz, Gegnerkontrolle und Unterstützung bei Schlachtfeldzielen verstanden, nicht als Dungeon-Tanking.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "heal",
+      "goal": "leveling",
+      "optionTreeIds": [
+        11340
+      ],
+      "preferredTreeId": 11340,
+      "kind": "role_match",
+      "reason": "Die gewählte Heilrolle bleibt erhalten; der Pfad ist für gemeinsame Inhalte und Unterstützung ausgelegt, nicht für maximale Solo-Geschwindigkeit.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "heal",
+      "goal": "dungeons",
+      "optionTreeIds": [
+        11340
+      ],
+      "preferredTreeId": 11340,
+      "kind": "role_match",
+      "reason": "Der Talentbaum entspricht der gewünschten Gruppenheilrolle. Eine andere Rolle wird nicht automatisch eingesetzt.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    },
+    {
+      "classId": 11,
+      "role": "heal",
+      "goal": "pvp",
+      "optionTreeIds": [
+        11340
+      ],
+      "preferredTreeId": 11340,
+      "kind": "role_match",
+      "reason": "Die gewählte Heilrolle bleibt auch im PvP erhalten. Die konkrete Punktfolge benötigt die fachliche Freigabe.",
+      "sourceUrls": [
+        "https://forever-hub.com/en/guides/druid-guide",
+        "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/healer-leveling-tips"
+      ],
+      "releaseEligible": false,
+      "status": "research_only"
+    }
+  ]
+}

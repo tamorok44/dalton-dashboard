@@ -277,3 +277,22 @@ assert.deepEqual(talentAssistantGuide([], {goal:'dungeons'},rolesInfo.specializa
 assert.equal(talentAssistantGuide([], {goal:'dungeons',role:'tank'},rolesInfo.specializations).orientation[0].treeId,11347);
 assert.equal(talentAssistantGuide(info.profiles,{goal:'leveling'},info.specializations).fields.length,1);
 console.log('Talent assistant: all nine classes, role navigation, exact reviewed defaults, unavailable alternatives and zero provider reads: OK');
+
+// Editorial candidates are intentionally kept outside the browser/API release catalog.
+const {readFileSync:readAssistantMatrix}=await import('node:fs');
+const assistantMatrix=JSON.parse(readAssistantMatrix(new URL('../docs/talent-planner-assistant-review-2026-11-26.json',import.meta.url),'utf8'));
+assert.equal(assistantMatrix.releaseEligible,false);
+const assistantKeys=new Set();
+for(const entry of assistantMatrix.rows){
+ const key=JSON.stringify([entry.classId,entry.role,entry.goal]);
+ assert.ok(!assistantKeys.has(key));assistantKeys.add(key);
+ assert.equal(entry.status,'research_only');assert.equal(entry.releaseEligible,false);
+ assert.deepEqual(entry.optionTreeIds,coverage.classes[entry.classId].filter(t=>t.roles.includes(entry.role)).map(t=>t.treeId));
+ assert.ok(entry.optionTreeIds.includes(entry.preferredTreeId));
+ assert.equal(entry.kind,entry.optionTreeIds.length>1?'comparative_candidate':'role_match');
+ assert.ok(entry.reason.length>20&&entry.sourceUrls.length&&entry.sourceUrls.every(url=>new URL(url).protocol==='https:'));
+}
+const expectedAssistantKeys=Object.entries(coverage.classes).flatMap(([id,trees])=>[...new Set(trees.flatMap(t=>t.roles))].flatMap(role=>coverage.goals.map(goal=>JSON.stringify([Number(id),role,goal]))));
+assert.deepEqual([...assistantKeys].sort(),expectedAssistantKeys.sort());
+assert.equal(assistantMatrix.rows.filter(x=>x.kind==='comparative_candidate').length,24);
+console.log('Assistant research matrix: all 48 class/role/goal decisions, 24 comparative candidates, release disabled: OK');
