@@ -15,6 +15,7 @@ import {registerDailySnapshot,getDailySnapshot,getLastDailySnapshot,acquireDaily
 import {encodeCompactMaster} from './compact-master-cache.mjs';
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload} from './addon-sync.mjs';
+import {buildLegacyReadProjection} from './storage-rollback-projection.mjs';
 
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async()=>{throw Error('Real network disabled')};
@@ -167,10 +168,10 @@ if(!hasRedis){
 }else{
   const dir=mkdtempSync(join(tmpdir(),'dalton-redis-audit-')),socket=join(dir,'redis.sock');
   const server=spawn('redis-server',['--port','0','--unixsocket',socket,'--unixsocketperm','700','--save','','--appendonly','no','--dir',dir],{stdio:'ignore'});
-  let restrictedUser=null;
+  let restrictedUser=null,database=0;
   const cli=(...args)=>{
     const auth=restrictedUser?['--user',restrictedUser,'--pass','local-fixture-password','--no-auth-warning']:[];
-    const r=spawnSync('redis-cli',['-s',socket,'--json','-e',...auth,...args.map(String)],{encoding:'utf8',timeout:5000});
+    const r=spawnSync('redis-cli',['-s',socket,'-n',String(database),'--json','-e',...auth,...args.map(String)],{encoding:'utf8',timeout:5000});
     if(r.error||r.status!==0)throw Error((r.stderr||r.stdout||r.error?.message||'Redis failed').trim());
     try{return JSON.parse(r.stdout);}catch{throw Error(r.stdout.trim());}
   };
@@ -334,7 +335,36 @@ if(!hasRedis){
     const legacyReceipt={...actualProof,generatedAt:day+'T06:00:00Z'};
     cli('HSET','dalton-dashboard:data-version:meta:v1','daily-profile-refresh',JSON.stringify(legacyReceipt));
     assert.deepEqual(await loadDailyProfileReceipt(day),legacyReceipt);
-    console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof and index reconciliation: OK');
+    // Prepare an offline old-reader projection from both formats and restore
+    // it into a separate local DB, not into the active source database.
+    const sourceRoster=roster(),states=[await loadAddonSyncState('audit-one'),await loadAddonSyncState('audit-two')];
+    const modernRecord=JSON.parse(cli('HGET',knowledgeIndex,knowledgeKey));
+    const legacyRecord=structuredClone(modernRecord);
+    legacyRecord.latestSnapshot.capturedAt=new Date((now+8)*1000).toISOString();
+    legacyRecord.lastObservedAt=legacyRecord.latestSnapshot.capturedAt;
+    legacyRecord.latestSnapshot.entries[0].priceCopper=40;legacyRecord.services[0].priceCopper=40;legacyRecord.services[0].lastSeenAt=legacyRecord.lastObservedAt;
+    legacyRecord.observationIds.push('intervening-legacy-fixture');
+    const input={roster:sourceRoster,addonStates:states,knowledgePairs:[{key:knowledgeKey,modern:modernRecord,legacy:legacyRecord}],
+      dailyRows:[await getDailySnapshot(day),newRow],petMetadata:null,modernReceipt:actualProof,legacyReceipt,date:day};
+    const projection=buildLegacyReadProjection(input);
+    assert.equal(projection.manifest.latestDate,newDay);assert.equal(projection.manifest.observations,1);
+    assert.throws(()=>buildLegacyReadProjection({...input,addonStates:[{...states[0],pendingObservations:true},states[1]]}),/Ausstehende Beobachtungen/);
+    const rawRoster=cli('GET',rosterKey),rawStates=states.map(state=>[syncKey(state.characterSlug),cli('GET',syncKey(state.characterSlug))]);
+    database=1;
+    try{
+      assert.equal(cli('DBSIZE'),0);
+      cli('SET',rosterKey,rawRoster);for(const [key,value] of rawStates)cli('SET',key,value);
+      for(const command of projection.commands)cli(...command);
+      assert.equal(JSON.parse(cli('HGET','dalton-dashboard:data-version:meta:v1','addon:production:audit-one')).syncId,states[0].payload.syncId);
+      assert.equal(JSON.parse(cli('GET',knowledgeKey)).latestSnapshot.entries[0].priceCopper,40);
+      assert.equal(JSON.parse(cli('GET',lastKey)).date,newDay);
+      assert.equal(cli('SISMEMBER','dalton-dashboard:live-knowledge:v1:production:index',knowledgeKey),1);
+      const {loadLiveKnowledge}=await import('./live-knowledge-store.mjs');
+      assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,40);
+      assert.deepEqual(await loadDailyProfileReceipt(day),legacyReceipt);
+    }finally{database=0;}
+    assert.equal(cli('GET',rosterKey),rawRoster,'offline projection never changes the source');
+    console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof, index reconciliation and offline legacy-reader projection: OK');
   }finally{
     globalThis.fetch=originalFetch;
     server.kill('SIGTERM');
