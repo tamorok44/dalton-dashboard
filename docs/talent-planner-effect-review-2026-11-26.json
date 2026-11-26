@@ -16,8 +16,41 @@
       "primaryRankCount": 1,
       "independentRankCount": 1,
       "classification": "incomplete_numeric",
-      "decision": "Reichweite nur in einer Quelle aufgelöst; Verlangsamung und Dauer gleich.",
-      "quantitativeClaimVerified": false
+      "decision": "Talentexport hatte einen nicht aufgeloesten Radius. Aktuelle Zephras-Zauberdetailseite 71139 und weitere Quellen belegen den Basis-Tooltipradius von 10 Yards; keine Servermessung. Freigabe des konkreten qualitativ begruendeten Pfads, nicht einer garantierten Reichweitenformel.",
+      "quantitativeClaimVerified": false,
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105935,
+        "spellId": 12323,
+        "primaryHash": "62b5e836db94c0f1b29315730b0f55a70807b78e3e2bc8d4230715d1964ee0f5",
+        "secondaryHash": "66362b46c1b941c31da620169b1e5e214cfd0419b0c1a3664c2faf3295856788",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "field": "baseRadiusYards",
+        "value": 10,
+        "referenceEffects": {
+          "slowPercent": 50,
+          "durationSeconds": 6
+        },
+        "sources": [
+          {
+            "url": "https://zephras.com/forever/enUS/spell/12323/",
+            "build": "1.60.1.71139",
+            "claim": "Current page explicitly labels build 71139 and gives base radius 10 yards, slowdown 50%, duration 6 seconds. Rage display not adopted."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/12323-piercing-howl/",
+            "claim": "Separate spell detail lists casting radius 10 yards and 6 second duration; no exact build attestation."
+          },
+          {
+            "url": "https://mobalytics.gg/wow-forever/classes/warrior-pvp-guide",
+            "claim": "Nov 7 player guide identifies 10-yard area slow. Not a current controlled measurement."
+          }
+        ],
+        "serverMeasured": false,
+        "scope": "client description only; no server hitbox/range or rage-cost formula"
+      }
     },
     {
       "id": 105944,
