@@ -182,6 +182,10 @@ export async function fetchForeverReputationIndex({namespace,fetchImpl=fetch,loc
   })).filter(entry=>Number.isInteger(entry.id)&&entry.id>0&&entry.name);
 }
 
+export function foreverProfileSlug(body){
+  return [body?.name,body?.surname].filter(value=>typeof value==='string'&&value.trim()).join('-').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
 export async function fetchForeverProfile(slug,{fetchImpl=fetch,locale='de_DE'}={}){
   if(!/^[a-z0-9-]+$/i.test(slug))throw new Error('Ungültiger Charakter-Slug');
   const {token}=await accessToken(fetchImpl);
@@ -191,8 +195,7 @@ export async function fetchForeverProfile(slug,{fetchImpl=fetch,locale='de_DE'}=
   });
   const body=await parseResponse(response);
   if(!response.ok)throw new Error('Blizzard Forever API HTTP '+response.status);
-  const returnedSlug=[body?.name,body?.surname].filter(Boolean).join('-')
-    .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const returnedSlug=foreverProfileSlug(body);
   if(!body?.id||returnedSlug!==slug.toLowerCase())throw new Error('Blizzard API-Profil passt nicht zum angefragten Charakter');
   return body;
 }

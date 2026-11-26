@@ -1,6 +1,6 @@
 import {canonicalRoster,rosterMatches,rosterKey} from '../scripts/daily-roster.mjs';
 import {fetchForeverSnapshot,blizzardApiConfigured} from '../scripts/blizzard-api.mjs';
-import {saveDailySnapshot,recoverDailySnapshot,dailySnapshotStoreConfigured} from '../scripts/daily-snapshot-store.mjs';
+import {saveDailySnapshot,recoverDailySnapshot,dailySnapshotStoreConfigured,withinArchiveDeadline} from '../scripts/daily-snapshot-store.mjs';
 import {configured,loadCharacters,acquireRefreshLock,releaseRefreshLock,loadDailyProfileReceipt} from '../scripts/character-store.mjs';
 import {getDailySnapshot,registerDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from '../scripts/history-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
@@ -34,7 +34,7 @@ export function profileRefreshComplete(receipt,date,expectedRoster=null){
     Array.isArray(receipt.roster)&&receipt.roster.length===receipt.total&&rosterMatches(receipt.roster,expectedRoster??receipt.roster);
 }
 function privateArchiveComplete(meta,expectedRoster=null){
-  return meta?.archiveStatus==='private'&&['complete','partial'].includes(meta.quality?.status)&&
+  return meta?.archiveStatus==='private'&&['complete','partial'].includes(meta.quality?.status)&&meta.quality?.identity==='roster_id_and_slug'&&
     typeof meta.url==='string'&&/^https:\/\/[^/]+\.private\.blob\.vercel-storage\.com\//.test(meta.url)&&
     typeof meta.sha256==='string'&&/^[a-f0-9]{64}$/.test(meta.sha256)&&Array.isArray(meta.roster)&&
     meta.characters===meta.roster.length&&rosterMatches(meta.roster,expectedRoster??meta.roster)&&meta.rosterKey===rosterKey(meta.roster);
@@ -110,17 +110,17 @@ export function createDailySnapshotHandler(overrides={}){
         const remaining=Math.min(12000,50000-(clock()-started));
         if(remaining<2000)meta=failedMeta('failed');
         else{
-          const signal=AbortSignal.timeout(remaining);
+          const signal=AbortSignal.timeout(remaining),deadlineAt=performance.now()+remaining;
           try{
             const roster=canonicalRoster(refresh.roster);
             const slugs=roster.map(c=>c.slug);
-            meta=await recoverDailySnapshot(local.date,{signal,expectedRoster:roster});
+            meta=await recoverDailySnapshot(local.date,{signal,deadlineAt,expectedRoster:roster});
             if(meta)recovered=true;
             else{
               const fetchImpl=(url,options={})=>fetch(url,{...options,signal:AbortSignal.any([signal,...(options.signal?[options.signal]:[])])});
-              const snapshot=await fetchForeverSnapshot(slugs,{fetchImpl});
+              const snapshot=await withinArchiveDeadline(()=>fetchForeverSnapshot(slugs,{fetchImpl}),signal,deadlineAt);
               signal.throwIfAborted();
-              meta=await saveDailySnapshot(snapshot,local.date,{signal,expectedRoster:roster});
+              meta=await saveDailySnapshot(snapshot,local.date,{signal,deadlineAt,expectedRoster:roster});
               saved=true;
             }
             if(!privateArchiveComplete(meta,refresh.roster))throw new Error('Archivmetadaten nicht bestätigt');
