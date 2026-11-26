@@ -256,7 +256,7 @@
     {
       "talentId": 105860,
       "count": 3,
-      "reason": "Rüstungsschutz nach passenden kritischen Heilungen stärken."
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
     },
     {
       "talentId": 105854,
@@ -266,7 +266,7 @@
     {
       "talentId": 105856,
       "count": 1,
-      "reason": "Eigene Heilung bei Blitzheilung auf andere ergänzen."
+      "reason": "Holy Binding: Blitzheilung auf einen anderen Verbündeten heilt auch den Priester, nicht bei Selbstheilung."
     },
     {
       "talentId": 105853,
@@ -276,7 +276,7 @@
     {
       "talentId": 105851,
       "count": 1,
-      "reason": "Gebet der Besserung auf Stufe 40 freischalten."
+      "reason": "Gebet der Besserung: Heilung bei erlittenem Schaden oder nichtperiodischer Heilung; begrenzte Sprünge, keine feste Heilmenge oder garantierte Zielwahl."
     },
     {
       "talentId": 105849,
@@ -286,7 +286,7 @@
     {
       "talentId": 105848,
       "count": 3,
-      "reason": "Dauer ausgewählter Kontrollwirkungen und Bedrohung reduzieren."
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
     },
     {
       "talentId": 105845,
@@ -320,17 +320,50 @@
       "priest-holy-pvp-cobalt",
       "priest-battlegrounds"
     ],
-    "editorialDecision": "Direct and group healing with early defensive Holy choices; later shield and conditional casting protection. Distinct from Discipline.",
+    "editorialDecision": "Heilig-PvP mit frühen defensiven Talenten, gezielten direkten Heilungen und Gebet der Besserung 40; später Disziplin-Schild und situativer Unterbrechungsschutz. Kein garantierter Sprung auf den gewünschten Verbündeten; Geist der Erlösung ist nur nach Tod relevant. Disziplin bleibt sinnvolle Alternative für Schild-/Kontrollspiel.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform.",
+      "105851: Build 71139 zeigt einen skalierten Heilwert; unabhängige aktuelle Messung der tatsächlichen Heilskalierung fehlt. Keine exakte Heilformel freigeben.",
+      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+          "contribution": "Aktueller Build 71139 und Cache vom 25.11.; direkte Heilung oder Schaden als Auslöser, Sprungmechanik, Spirit of Redemption als Voraussetzung; keine unabhängig gemessene Skalierungsformel."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/holy-priest/rotation-and-playstyle",
+          "contribution": "10.11.: Gebet der Besserung, bedarfsgerechter Heilzauberwechsel und Manaregeneration; Endgame-Guide kein Beweis unserer Levelchronologie."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Litanei, Holy Binding, Improved Healing und Searing Light: qualitative Talentfunktionen."
+        },
+        {
+          "url": "https://undying.app/classes/priest/holy",
+          "contribution": "15.11.: tiefer Holy-Kern mit Prayer of Mending, Holy Binding, Litany und Discipline-Ressourcen; situative Alternative Holy Reach."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
