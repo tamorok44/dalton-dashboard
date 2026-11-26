@@ -933,10 +933,8 @@ for(const [id,milestones] of [
  ['warlock-demonology-pvp',[[105892,30],[105895,31],[105890,40],[105885,53],[105884,58]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,'approved');
- assert.deepEqual(p.supportedLegacyRanks,[0]);
- assert.equal(p.research.conflictFollowup.releaseEligible,true);
- assert.equal(p.research.conflictFollowup.releaseScope,'exact_rank0_path_qualitative_only');
+ assert.equal(p.status,'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,false);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
@@ -979,8 +977,10 @@ for(const [id,milestones] of [
  ['paladin-retribution-pvp',[[105696,20],[105694,30],[105692,40]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,'research_only');
- assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(p.status,'approved');
+ assert.deepEqual(p.supportedLegacyRanks,[0]);
+ assert.equal(p.research.conflictFollowup.releaseEligible,true);
+ assert.equal(p.research.conflictFollowup.releaseScope,'exact_rank0_path_qualitative_only');
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  assert.ok(!p.points.some(x=>x.talentId===113631));
