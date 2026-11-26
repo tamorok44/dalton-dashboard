@@ -4239,6 +4239,100 @@
           "version": 1
         }
       ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e0e5ddd998410c0bc19ba1593e885ac7cbb2e26007c648fc8c50373793e7d51e",
+      "id": "rogue-combat-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "0ce10f4869c0dfa96926c7e21a9284e75569eb58b0e7a27a676f1ab994280126",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "78912a9669a617a73c400d3da775b23cae485ae8b635fb13a898e4578774beea",
+        "talentIds": [
+          105708,
+          105714,
+          105716,
+          105720,
+          105721,
+          105722,
+          105724,
+          105726,
+          105727,
+          105728,
+          105730,
+          105732,
+          105736,
+          105737,
+          105739,
+          105740,
+          105741,
+          105759,
+          108100,
+          113398,
+          113635
+        ],
+        "excludedConflictIds": [
+          105709,
+          105735,
+          110866
+        ],
+        "olderComparisonCaptureSha256": "8cab47b7567a3c5cdb72c36c3457e69592e56a625a9896ae9ce70b0b098433e0",
+        "olderBuild": "1.60.1.71091"
+      },
+      "claim": "Retained exact 71139 independent comparison, 54/54 nodes and matching prerequisite graph; older comparison unchanged. Allocation dependency closure excludes all three non-editorial numeric discrepancies. Rank zero only."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e0e5ddd998410c0bc19ba1593e885ac7cbb2e26007c648fc8c50373793e7d51e",
+      "id": "rogue-combat-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "claim": "Reviewed Rogue hotfixes: Nov 16 Shank combo points, Nov 20 Blade Flurry copies Shank, Nov 25 Poised consumed by Sap/Distract and poison/powder temporarily bind on pickup. Path does not rely on fixed bugs, Riposte, Mutilate or Death Mark."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-combat-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "78912a9669a617a73c400d3da775b23cae485ae8b635fb13a898e4578774beea",
+      "id": "rogue-combat-dungeons-rank0-71139-editorial-1",
+      "url": "https://mobalytics.gg/wow-forever/classes/combat-rogue-guide",
+      "claim": "Nov 25 guide supports resource core Flawless Execution, Flash of Steel and Combat cooldowns. Own chronology for grouped leveling prioritizes hit, energy and cleave rather than reactive parry."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-combat-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "78912a9669a617a73c400d3da775b23cae485ae8b635fb13a898e4578774beea",
+      "id": "rogue-combat-dungeons-rank0-71139-editorial-2",
+      "url": "https://wowforeverforge.com/rogue/combat/guide/",
+      "claim": "Dungeon and raid alternative supports resource talents and weapon-specific Combat. Own group route trades situational Riposte/Deflection for mobility and Poised; no measured superiority."
     }
   ],
   "rulePacks": [
@@ -5887,6 +5981,47 @@
         "104954": 35,
         "104955": 30,
         "104958": 10
+      }
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "rogue-combat-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "rogue-combat-dungeons-rank0-71139-client",
+        "rogue-combat-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105708": 10,
+        "105714": 25,
+        "105716": 20,
+        "105720": 20,
+        "105721": 15,
+        "105722": 10,
+        "105724": 40,
+        "105726": 25,
+        "105727": 30,
+        "105728": 30,
+        "105730": 25,
+        "105732": 15,
+        "105736": 20,
+        "105737": 15,
+        "105739": 15,
+        "105740": 35,
+        "105741": 10,
+        "105759": 20,
+        "108100": 25,
+        "113398": 10,
+        "113635": 30
       }
     }
   ],
