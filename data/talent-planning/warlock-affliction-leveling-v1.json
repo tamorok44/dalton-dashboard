@@ -230,108 +230,108 @@
   "rationaleBlocks": [
     {
       "talentId": 105924,
-      "count": 5,
-      "reason": "Verderbnis sofort wirkbar machen und ihren Schaden stärken."
+      "reason": "Verderbnis sofort wirkbar machen und ihren Schaden stärken.",
+      "count": 5
     },
     {
       "talentId": 105925,
-      "count": 4,
-      "reason": "Trefferchance und geringere Bedrohung früh berücksichtigen."
+      "reason": "Trefferchance und geringere Bedrohung früh berücksichtigen.",
+      "count": 4
     },
     {
       "talentId": 105921,
-      "count": 1,
-      "reason": "Aderlass etwas effizienter machen."
+      "reason": "Aderlass etwas effizienter machen.",
+      "count": 1
     },
     {
       "talentId": 105922,
-      "count": 2,
-      "reason": "Manaregeneration nach passenden Seelendieb-Kills nutzen."
+      "reason": "Manaregeneration nach passenden Seelendieb-Kills; keine Ausnutzung des Soul-Harvest-Fehlers.",
+      "count": 2
     },
     {
       "talentId": 105920,
-      "count": 3,
-      "reason": "Gesundheitsentzug vor Zermürben verbessern."
+      "reason": "Gesundheitsentzug vor Zermürben verbessern.",
+      "count": 3
     },
     {
       "talentId": 105919,
-      "count": 2,
-      "reason": "Omen der Pein stärken."
+      "reason": "Omen der Pein stärken.",
+      "count": 2
     },
     {
       "talentId": 105918,
-      "count": 3,
-      "reason": "Unterbrechungsschutz für Entzugszauber aufbauen."
+      "reason": "Kanalisierung gegen Zauberzeitverlust durch Schaden unterstützen; keine Immunität gegen Unterbrechung oder Stille.",
+      "count": 3
     },
     {
       "talentId": 105912,
-      "count": 1,
-      "reason": "Lebensentzug auf Stufe 30 freischalten."
+      "reason": "Lebensentzug auf Stufe 30 freischalten.",
+      "count": 1
     },
     {
       "talentId": 105911,
-      "count": 3,
-      "reason": "Seelenentzug für die drei ausdrücklich genannten DoTs ausbauen."
+      "reason": "Seelenentzug stärkt Blutsauger, Seelendieb und Zermürben nur anhand der drei genannten eigenen DoTs; kein rekursiver Schadensbonus.",
+      "count": 3
     },
     {
       "talentId": 105914,
-      "count": 1,
-      "reason": "Gelegentlichen spontanen Schattenblitz ermöglichen."
+      "reason": "Gelegentlichen spontanen Schattenblitz ermöglichen.",
+      "count": 1
     },
     {
       "talentId": 105910,
-      "count": 5,
-      "reason": "Schattenschaden und Lebensentzug stärken."
+      "reason": "Schattenschaden und Lebensentzug stärken.",
+      "count": 5
     },
     {
       "talentId": 105909,
-      "count": 1,
-      "reason": "Zermürben auf 40 freischalten; beschleunigt Ticks statt Dauer zu verkürzen."
+      "reason": "Zermürben auf 40: beschleunigt die drei eigenen DoT-Ticks während der Kanalisierung; Dauer unverändert, auch bei Abbruch bleibt der erreichte Tick-Fortschritt erhalten.",
+      "count": 1
     },
     {
       "talentId": 105925,
-      "count": 1,
-      "reason": "Unterdrückung vervollständigen."
+      "reason": "Unterdrückung vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105921,
-      "count": 1,
-      "reason": "Aderlass vervollständigen."
+      "reason": "Aderlass vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105914,
-      "count": 1,
-      "reason": "Einbruch der Nacht vervollständigen."
+      "reason": "Einbruch der Nacht vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105917,
-      "count": 3,
-      "reason": "Kritischen Schadensbonus der genannten Schattenzauber erhöhen."
+      "reason": "Kritischen Schadensbonus der genannten Schattenzauber erhöhen.",
+      "count": 3
     },
     {
       "talentId": 105923,
-      "count": 1,
-      "reason": "Reichweite ergänzen."
+      "reason": "Reichweite ergänzen.",
+      "count": 1
     },
     {
       "talentId": 105906,
-      "count": 5,
-      "reason": "Schaden des aktiven Dämons steigern."
+      "reason": "Schaden des aktiven Dämons steigern.",
+      "count": 5
     },
     {
       "talentId": 105907,
-      "count": 5,
-      "reason": "Eigene Ausdauer erhöhen."
+      "reason": "Eigene Ausdauer erhöhen.",
+      "count": 5
     },
     {
       "talentId": 105899,
-      "count": 2,
-      "reason": "Dämon beim Zaubern und Aderlass unterstützen."
+      "reason": "Dämon beim Zaubern und Aderlass unterstützen.",
+      "count": 2
     },
     {
       "talentId": 105903,
-      "count": 1,
-      "reason": "Eigene Manareserve und Begleiterreserven ergänzen."
+      "reason": "Eigene Manareserve und Begleiterreserven ergänzen.",
+      "count": 1
     }
   ],
   "research": {
@@ -340,17 +340,48 @@
       "mobalytics-crix-warlock",
       "method-roguery-warlock"
     ],
-    "editorialDecision": "Continuous pet-assisted DoT and drain leveling. Early instant Corruption, hit and threat reduction; retain active demon rather than mandatory sacrifice. Wrack at 40, no assumption of independent extra multipliers or Soul Harvest bug.",
+    "editorialDecision": "Aktiver Dämon, DoT-Druck und Entzüge ohne Umskillung. Lebensentzug 30, Zermürben 40; frühere Kernfähigkeit statt frühem Dämonologie-Abstecher. Blutsauger bei Heilbedarf, Zermürben bei ausreichender Ziellebensdauer. Kein Soul-Harvest-Bug und keine garantierte Manaeffizienz.",
     "unresolved": [
       "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
       "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
-      "Official November 10 Wrack and Soul Siphon changes agree with the extracted tooltip: acceleration of periodic ticks, not duration or a second damage multiplier. Nov 25 pet crit corrections; verify pet-dependent values."
+      "Official November 10 Wrack and Soul Siphon changes agree with the extracted tooltip: acceleration of periodic ticks, not duration or a second damage multiplier. Nov 25 pet crit corrections; verify pet-dependent values.",
+      "Exakter skalierter Basiswert von Zermürben 105909 unter Build 71139 bleibt ungeklärt; qualitative Hotfix-Regel bestätigt, keine Schadensformel.",
+      "Vermächtnisränge 1–5, vollständige Hotfix-Abhängigkeitsprüfung, redaktioneller Vergleich und reguläre CI ausstehend.",
+      "25.11.: Begleiter-Kritfehler korrigiert; keine alte Pet-Kritannahme, kein Schadensranking."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "954b5cfaaa3f0879d6bc5e47b169c867df7dd608a5c841d19c3be3b22a6feb12",
       "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "official": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "mirror": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "sources": [
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+          "contribution": "23.11.: DoTs, Drain Life/Life Tap, Wrack und aktiver Dämon; keine Nutzung des erwähnten Soul-Harvest-Fehlers."
+        },
+        {
+          "url": "https://www.wowhead.com/forever/guide/classes/warlock/affliction/dps-leveling-tips",
+          "contribution": "11.11.: Dämonologie-Abstecher und Wrack erst 47 als Alternative; Wrack heilt nicht wie Drain Life."
+        },
+        {
+          "url": "https://www.icy-veins.com/wow-forever/affliction-warlock-leveling/",
+          "contribution": "16.11.: alternativer früher Dämonopferungs-Abstecher; nicht für unsere aktive Dämonen-Spielweise übernommen."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
