@@ -697,6 +697,23 @@ for(const [id,distribution] of [['mage-arcane-pvp',[31,0,20]],['mage-fire-pvp',[
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
 }
+// Conflict research is deliberately kept outside the published rank-zero library.
+for(const id of ['warrior-arms-pvp','mage-frost-dungeons','mage-frost-leveling-mixed-balanced','mage-frost-pvp']){
+  const candidate=plans.find(p=>p.id===id);
+  assert.ok(candidate&&candidate.status==='research_only');
+  assert.equal(candidate.research.conflictFollowup.releaseEligible,false);
+  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+  const rationale=candidate.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId));
+  assert.deepEqual(rationale,candidate.points.map(x=>x.talentId));
+}
+const armsConflict=plans.find(p=>p.id==='warrior-arms-pvp');
+assert.equal(armsConflict.points[20].talentId,105945,'Sweeping Strikes at 30');
+assert.equal(armsConflict.points[30].talentId,105941,'Mortal Strike at 40');
+const frostDungeonConflict=plans.find(p=>p.id==='mage-frost-dungeons');
+assert.equal(frostDungeonConflict.points[30].talentId,105762,'Ice Barrier at 40');
+assert.deepEqual(frostDungeonConflict.points.slice(25,30).map(x=>x.talentId),[105764,105765,105765,105777,105777]);
+assert.ok(!frostDungeonConflict.points.some(x=>x.talentId===105763),'short group pull candidate does not assume Winter Chill stacks');
+
 for(const treeId of [11582,11594,11601])for(const goal of ['leveling','dungeons','pvp']){
   assert.ok(plans.some(p=>p.classId===8&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Mage coverage '+treeId+' '+goal);
 }
