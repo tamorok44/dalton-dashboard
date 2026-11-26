@@ -118,8 +118,8 @@ assert.equal(structuralOnly.history.find(s=>s.talentId===105764).level,30);
 assert.equal(structuralOnly.history.find(s=>s.talentId===105762).level,40);
 const distribution=Object.fromEntries(fixtureTrees.map(t=>[t.id,structuralOnly.history.filter(s=>s.treeId===t.id).length]));
 assert.deepEqual(distribution,pilot.expectedDistribution);
-assert.equal(resolveApprovedTalentPlan(pilot.profiles[0],[pilot],pilotMaster,[pilotRules]).code,'no_approved_recommendation');
-console.log('Mage Frost pilot: 51 allocations valid in observed-constraint fixture; research candidate cannot be released: OK');
+assert.equal(resolveApprovedTalentPlan(pilot.profiles[0],[{...pilot,status:'research_only'}],pilotMaster,[pilotRules]).code,'no_approved_recommendation');
+console.log('Mage Frost pilot: 51 allocations valid in observed-constraint fixture; synthetic research-only candidate cannot be released: OK');
 
 // Research hypothesis for Hunter: all other gates can be audited without
 // pretending that the cyclic provider edges have a verified operator.
