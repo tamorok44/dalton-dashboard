@@ -402,3 +402,8 @@ Alle 26 Unterschiede anhand der unveränderten archivierten Quellen rangweise un
 ### Verstärkung und Zerstörung – Rang 0 (26.11.2026)
 
 Zwei zusätzliche redaktionelle Levelpfade freigegeben: Verstärkungsschamane (Sturmschlag 25, Mahlstromwaffe ab 35, Zorn des Scharfsehers 40), Zerstörungshexenmeister (Schattenbrand 20, Verbrennen 40). Keine zugeteilten Talente mit abweichenden Effekttexten; exakter Clientvergleich und frühere unabhängige Kantenprüfung stimmen überein. November-Hotfixes berücksichtigt, keine behaupteten DPS-Vorteile. Vergleichende Schamanen-Empfehlung Verstärkung vor Elementar für gemischtes Leveln, mit exakten freigegebenen Alternativen und zwei Quellen (Outpost 14.11., WoW-Forever.gg 24.11.). Kein höherer Vermächtnisrang oder Produktivbetrieb freigegeben.
+
+
+### Vollständiges Freigabe-Gate (26.11.2026)
+
+`npm run talent:release-gate` prüft jede der 84 Klassen-/Baum-/Rollen-/Zielkombinationen gegen alle sechs Vermächtnisränge (504 Zellen) mit dem tatsächlichen Fail-closed-Resolver, aber bewusst archiviertem Quellenstand und Testzeit. Alle 24 vergleichenden Empfehlungen werden auf vollständige Baumabdeckung und exakten Optionssatz geprüft. `-- --require-complete` liefert einen Fehlercode bei unvollständiger Offline-Abdeckung. Der normale Regressionstest prüft die Report-Erstellung, nicht die noch offene fachliche Vollständigkeit. Kein automatisches Deployment und keine erfundene Live-/Gerätefreigabe. Live-Build/Hotfix-Abgleich, vollständige Rangfreigabe, relevante Datenkorrekturen und Endgerätetest bleiben gesonderte Freigabekriterien.

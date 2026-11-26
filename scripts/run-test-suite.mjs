@@ -95,6 +95,7 @@ for(const phase of phases){
   if(phase.label.startsWith('02')){
     run(phase.label,['scripts/talent-release-readiness.mjs','--summary']);
     run(phase.label,['scripts/talent-zephras-audit.mjs','--summary']);
+    run(phase.label,['scripts/talent-full-release-gate.mjs','--summary']);
   }
 }
 const failed=results.filter(x=>x.status==='failed');
