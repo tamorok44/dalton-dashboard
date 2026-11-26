@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-frost-dungeons",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11601,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 18,
+    "11594": 0,
+    "11601": 33
+  },
+  "points": [
+    {
+      "talentId": 105779,
+      "rank": 1
+    },
+    {
+      "talentId": 105779,
+      "rank": 2
+    },
+    {
+      "talentId": 105779,
+      "rank": 3
+    },
+    {
+      "talentId": 105779,
+      "rank": 4
+    },
+    {
+      "talentId": 105779,
+      "rank": 5
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105776,
+      "rank": 1
+    },
+    {
+      "talentId": 105776,
+      "rank": 2
+    },
+    {
+      "talentId": 105771,
+      "rank": 1
+    },
+    {
+      "talentId": 105771,
+      "rank": 2
+    },
+    {
+      "talentId": 105771,
+      "rank": 3
+    },
+    {
+      "talentId": 105772,
+      "rank": 1
+    },
+    {
+      "talentId": 105772,
+      "rank": 2
+    },
+    {
+      "talentId": 105772,
+      "rank": 3
+    },
+    {
+      "talentId": 105767,
+      "rank": 1
+    },
+    {
+      "talentId": 105777,
+      "rank": 1
+    },
+    {
+      "talentId": 105777,
+      "rank": 2
+    },
+    {
+      "talentId": 105777,
+      "rank": 3
+    },
+    {
+      "talentId": 105766,
+      "rank": 1
+    },
+    {
+      "talentId": 105768,
+      "rank": 1
+    },
+    {
+      "talentId": 105768,
+      "rank": 2
+    },
+    {
+      "talentId": 105768,
+      "rank": 3
+    },
+    {
+      "talentId": 105764,
+      "rank": 1
+    },
+    {
+      "talentId": 105763,
+      "rank": 1
+    },
+    {
+      "talentId": 105763,
+      "rank": 2
+    },
+    {
+      "talentId": 105763,
+      "rank": 3
+    },
+    {
+      "talentId": 105763,
+      "rank": 4
+    },
+    {
+      "talentId": 105763,
+      "rank": 5
+    },
+    {
+      "talentId": 105762,
+      "rank": 1
+    },
+    {
+      "talentId": 105770,
+      "rank": 1
+    },
+    {
+      "talentId": 105770,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105808,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105779,
+      "count": 5,
+      "reason": "Frostblitz beschleunigen."
+    },
+    {
+      "talentId": 105778,
+      "count": 3,
+      "reason": "Präzision für wechselnde Gegnerstufen vervollständigen."
+    },
+    {
+      "talentId": 105776,
+      "count": 2,
+      "reason": "Verlangsamungen für kontrollierte Gruppenpulls stärken."
+    },
+    {
+      "talentId": 105771,
+      "count": 3,
+      "reason": "Blizzard-Verlangsamung ausbauen."
+    },
+    {
+      "talentId": 105772,
+      "count": 3,
+      "reason": "Mana und Bedrohung der Frostzauber verringern."
+    },
+    {
+      "talentId": 105767,
+      "count": 1,
+      "reason": "Eislanze freischalten."
+    },
+    {
+      "talentId": 105777,
+      "count": 3,
+      "reason": "Kritischen Frostschaden ergänzen."
+    },
+    {
+      "talentId": 105766,
+      "count": 1,
+      "reason": "Kälteeinbruch auf Stufe 30 freischalten."
+    },
+    {
+      "talentId": 105768,
+      "count": 3,
+      "reason": "Kritische Trefferchance gegen eingefrorene Ziele erhöhen."
+    },
+    {
+      "talentId": 105764,
+      "count": 1,
+      "reason": "Eisige Finger als situatives Fenster ergänzen."
+    },
+    {
+      "talentId": 105763,
+      "count": 5,
+      "reason": "Frosttalent der sechsten Reihe für längere Ziele ausbauen."
+    },
+    {
+      "talentId": 105762,
+      "count": 1,
+      "reason": "Eisbarriere auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 105770,
+      "count": 2,
+      "reason": "Reichweite der Frostzauber ergänzen."
+    },
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Arkanen Nebenbaum öffnen und Zauberzeitverlust verringern."
+    },
+    {
+      "talentId": 105810,
+      "count": 5,
+      "reason": "Freizauber ausbauen."
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Geschosssalve ergänzen."
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Bedrohung der Arkanergänzung reduzieren."
+    },
+    {
+      "talentId": 105808,
+      "count": 1,
+      "reason": "Reichweite der Arkanergänzung erhöhen."
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Manaregeneration beim Wirken ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "outpost-mage-level60",
+      "foreverhub-mage-dungeons",
+      "icyveins-frost"
+    ],
+    "editorialDecision": "Regular group dungeons: early hit, controlled Blizzard and Frost Channeling before later Arcane sustain. No dedicated solo AoE farm route; avoid random Frostbite roots during coordinated pulls. Own chronological route.",
+    "unresolved": [
+      "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+      "No verified Legacy ranks 1–5 or controlled comparative performance.",
+      "Confirm the late Frost talent effect and group-specific value. Freeze-immune bosses and proc charges are not assumed to behave as frozen targets."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

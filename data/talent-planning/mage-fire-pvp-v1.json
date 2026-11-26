@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-fire-pvp",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11594,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 0,
+    "11594": 31,
+    "11601": 20
+  },
+  "points": [
+    {
+      "talentId": 105795,
+      "rank": 1
+    },
+    {
+      "talentId": 105795,
+      "rank": 2
+    },
+    {
+      "talentId": 105795,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 4
+    },
+    {
+      "talentId": 105795,
+      "rank": 5
+    },
+    {
+      "talentId": 105794,
+      "rank": 1
+    },
+    {
+      "talentId": 105794,
+      "rank": 2
+    },
+    {
+      "talentId": 105794,
+      "rank": 3
+    },
+    {
+      "talentId": 105794,
+      "rank": 4
+    },
+    {
+      "talentId": 105794,
+      "rank": 5
+    },
+    {
+      "talentId": 105789,
+      "rank": 1
+    },
+    {
+      "talentId": 105789,
+      "rank": 2
+    },
+    {
+      "talentId": 105789,
+      "rank": 3
+    },
+    {
+      "talentId": 105797,
+      "rank": 1
+    },
+    {
+      "talentId": 105790,
+      "rank": 1
+    },
+    {
+      "talentId": 105786,
+      "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 2
+    },
+    {
+      "talentId": 105785,
+      "rank": 3
+    },
+    {
+      "talentId": 105797,
+      "rank": 2
+    },
+    {
+      "talentId": 105784,
+      "rank": 1
+    },
+    {
+      "talentId": 105784,
+      "rank": 2
+    },
+    {
+      "talentId": 105784,
+      "rank": 3
+    },
+    {
+      "talentId": 105783,
+      "rank": 1
+    },
+    {
+      "talentId": 105791,
+      "rank": 1
+    },
+    {
+      "talentId": 105782,
+      "rank": 1
+    },
+    {
+      "talentId": 105782,
+      "rank": 2
+    },
+    {
+      "talentId": 105782,
+      "rank": 3
+    },
+    {
+      "talentId": 105788,
+      "rank": 1
+    },
+    {
+      "talentId": 105788,
+      "rank": 2
+    },
+    {
+      "talentId": 105781,
+      "rank": 1
+    },
+    {
+      "talentId": 105779,
+      "rank": 1
+    },
+    {
+      "talentId": 105779,
+      "rank": 2
+    },
+    {
+      "talentId": 105779,
+      "rank": 3
+    },
+    {
+      "talentId": 105779,
+      "rank": 4
+    },
+    {
+      "talentId": 105779,
+      "rank": 5
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105776,
+      "rank": 1
+    },
+    {
+      "talentId": 105776,
+      "rank": 2
+    },
+    {
+      "talentId": 105775,
+      "rank": 1
+    },
+    {
+      "talentId": 105775,
+      "rank": 2
+    },
+    {
+      "talentId": 105774,
+      "rank": 1
+    },
+    {
+      "talentId": 105774,
+      "rank": 2
+    },
+    {
+      "talentId": 105774,
+      "rank": 3
+    },
+    {
+      "talentId": 105769,
+      "rank": 1
+    },
+    {
+      "talentId": 105770,
+      "rank": 1
+    },
+    {
+      "talentId": 105770,
+      "rank": 2
+    },
+    {
+      "talentId": 105768,
+      "rank": 1
+    },
+    {
+      "talentId": 105768,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105795,
+      "count": 5,
+      "reason": "Feuerball beschleunigen."
+    },
+    {
+      "talentId": 105794,
+      "count": 5,
+      "reason": "Entzünden für kritische Feuerzauber ausbauen."
+    },
+    {
+      "talentId": 105789,
+      "count": 3,
+      "reason": "Zauberzeitverlust und Feuerbedrohung verringern."
+    },
+    {
+      "talentId": 105797,
+      "count": 1,
+      "reason": "Feuerschlag flexibler einsetzen."
+    },
+    {
+      "talentId": 105790,
+      "count": 1,
+      "reason": "Pyroschlag freischalten."
+    },
+    {
+      "talentId": 105786,
+      "count": 1,
+      "reason": "Aufwärmen auf 25 freischalten."
+    },
+    {
+      "talentId": 105785,
+      "count": 3,
+      "reason": "Mana bei passenden kritischen Treffern zurückgewinnen."
+    },
+    {
+      "talentId": 105797,
+      "count": 1,
+      "reason": "Feuerschlag-Talent vervollständigen."
+    },
+    {
+      "talentId": 105784,
+      "count": 3,
+      "reason": "Kritische Masse als Voraussetzung für Verbrennung ausbauen."
+    },
+    {
+      "talentId": 105783,
+      "count": 1,
+      "reason": "Weitere Feueroption freischalten."
+    },
+    {
+      "talentId": 105791,
+      "count": 1,
+      "reason": "Flammenstoß ergänzen."
+    },
+    {
+      "talentId": 105782,
+      "count": 3,
+      "reason": "Feuermacht gegen Ziele mit eigenen Feuereffekten ausbauen."
+    },
+    {
+      "talentId": 105788,
+      "count": 2,
+      "reason": "Versengen für länger lebende Ziele ergänzen."
+    },
+    {
+      "talentId": 105781,
+      "count": 1,
+      "reason": "Verbrennung auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 105779,
+      "count": 5,
+      "reason": "Frostblitz beschleunigen."
+    },
+    {
+      "talentId": 105778,
+      "count": 3,
+      "reason": "Trefferchance aller Zauber erhöhen."
+    },
+    {
+      "talentId": 105776,
+      "count": 2,
+      "reason": "Verlangsamungen stärken."
+    },
+    {
+      "talentId": 105775,
+      "count": 2,
+      "reason": "Frostnova häufiger einsetzen."
+    },
+    {
+      "talentId": 105774,
+      "count": 3,
+      "reason": "Situative Festfriereffekte ergänzen."
+    },
+    {
+      "talentId": 105769,
+      "count": 1,
+      "reason": "Eisblock als defensive Option freischalten."
+    },
+    {
+      "talentId": 105770,
+      "count": 2,
+      "reason": "Reichweite für Abstand und Kontrolle erhöhen."
+    },
+    {
+      "talentId": 105768,
+      "count": 2,
+      "reason": "Kritische Trefferchance gegen eingefrorene Ziele ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "cobalt-fire-pvp",
+      "undying-fire-pvp"
+    ],
+    "editorialDecision": "Fire pressure and protected casting, then Frost control and Ice Block. Prioritize a usable defensive exit; no guaranteed Heating Up or critical chain.",
+    "unresolved": [
+      "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+      "No verified Legacy ranks 1–5 or controlled comparative performance.",
+      "Verify effect of the additional Fire node and whether shorter fights favor an earlier Frost dip; shared Ice Lance/Fire Blast cooldown is not bypassed."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

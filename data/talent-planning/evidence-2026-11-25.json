@@ -748,6 +748,42 @@
       "kind": "expert_guide",
       "independenceGroup": "cobalt-editorial",
       "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "cobalt-arcane-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/arcane/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "foreverhub-arcane-pvp",
+      "url": "https://forever-hub.com/en/guides/arcane-mage-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverhub-editorial"
+    },
+    {
+      "id": "cobalt-fire-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/fire/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "undying-fire-pvp",
+      "url": "https://undying.app/classes/mage/fire",
+      "kind": "expert_guide",
+      "independenceGroup": "undying-editorial"
+    },
+    {
+      "id": "outpost-mage-level60",
+      "url": "https://wofwforever.com/en/guides/wow-forever-mage-level-60-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "outpost-editorial"
+    },
+    {
+      "id": "foreverhub-mage-dungeons",
+      "url": "https://forever-hub.com/en/guides/mage-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverhub-editorial"
     }
   ],
   "pilot": {
@@ -1468,6 +1504,67 @@
         "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
         "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
         "Confirm the proc and consumption order of Shadowburn, Conflagrate and Shadow and Flame; do not infer immunity to kicks or silence."
+      ]
+    },
+    {
+      "id": "mage-arcane-pvp",
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-arcane-pvp",
+        "foreverhub-arcane-pvp"
+      ],
+      "proposal": "Arcane burst with improved Counterspell and Presence of Mind, followed by Frost control and Ice Block. Deliberately trades early Frost defense for Arcane milestones; not a measured optimal PvP build.",
+      "openChecks": [
+        "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+        "No verified Legacy ranks 1–5 or controlled comparative performance.",
+        "Compare early survivability versus earlier Frost investment; no assumed independent missile procs or guaranteed burst."
+      ]
+    },
+    {
+      "id": "mage-fire-pvp",
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-fire-pvp",
+        "undying-fire-pvp"
+      ],
+      "proposal": "Fire pressure and protected casting, then Frost control and Ice Block. Prioritize a usable defensive exit; no guaranteed Heating Up or critical chain.",
+      "openChecks": [
+        "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+        "No verified Legacy ranks 1–5 or controlled comparative performance.",
+        "Verify effect of the additional Fire node and whether shorter fights favor an earlier Frost dip; shared Ice Lance/Fire Blast cooldown is not bypassed."
+      ]
+    },
+    {
+      "id": "mage-frost-dungeons",
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-mage-level60",
+        "foreverhub-mage-dungeons",
+        "icyveins-frost"
+      ],
+      "proposal": "Regular group dungeons: early hit, controlled Blizzard and Frost Channeling before later Arcane sustain. No dedicated solo AoE farm route; avoid random Frostbite roots during coordinated pulls. Own chronological route.",
+      "openChecks": [
+        "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+        "No verified Legacy ranks 1–5 or controlled comparative performance.",
+        "Confirm the late Frost talent effect and group-specific value. Freeze-immune bosses and proc charges are not assumed to behave as frozen targets."
       ]
     }
   ]
