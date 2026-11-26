@@ -670,3 +670,12 @@ for(const [id,distribution] of [['mage-arcane-pvp',[31,0,20]],['mage-fire-pvp',[
 for(const treeId of [11582,11594,11601])for(const goal of ['leveling','dungeons','pvp']){
   assert.ok(plans.some(p=>p.classId===8&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Mage coverage '+treeId+' '+goal);
 }
+
+for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hunter-beast-mastery-pvp",[30,0,21]],["hunter-marksmanship-dungeons",[5,41,5]],["hunter-marksmanship-pvp",[0,31,20]],["hunter-survival-dungeons",[16,10,25]],["hunter-survival-pvp",[0,21,30]]]){
+  const p=plans.find(x=>x.id===id);
+  assert.ok(p&&p.status==='research_only');
+  assert.deepEqual([11372,11371,11370].map(t=>p.expectedDistribution[t]),distribution);
+  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
+  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+  assert.ok(p.points.every(step=>![104961,104964].includes(step.talentId)));
+}

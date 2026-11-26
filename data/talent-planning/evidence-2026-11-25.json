@@ -784,6 +784,48 @@
       "url": "https://forever-hub.com/en/guides/mage-guide",
       "kind": "expert_guide",
       "independenceGroup": "foreverhub-editorial"
+    },
+    {
+      "id": "outpost-hunter-level60-2311",
+      "url": "https://wofwforever.com/en/guides/wow-forever-hunter-level-60-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "outpost-editorial"
+    },
+    {
+      "id": "foreverhub-hunter-2011",
+      "url": "https://forever-hub.com/en/guides/hunter-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverhub-editorial"
+    },
+    {
+      "id": "feor-bm-pvp-0711",
+      "url": "https://mobalytics.gg/wow-forever/profile/feor/classes/beast-mastery-hunter-pvp-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "feor-editorial"
+    },
+    {
+      "id": "cobalt-hunter-pvp-1011",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/hunter/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "metammo-hunter-pvp",
+      "url": "https://metammo.com/wow-forever/builds/hunter",
+      "kind": "expert_guide",
+      "independenceGroup": "metammo-editorial"
+    },
+    {
+      "id": "wowhead-survival-builds-1711",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/survival/talent-builds-pve-dps",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-survival-hunter-editorial"
+    },
+    {
+      "id": "skillcapped-survival-pvp-1911",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/survival-hunter-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-editorial"
     }
   ],
   "pilot": {
@@ -1565,6 +1607,126 @@
         "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
         "No verified Legacy ranks 1–5 or controlled comparative performance.",
         "Confirm the late Frost talent effect and group-specific value. Freeze-immune bosses and proc charges are not assumed to behave as frozen targets."
+      ]
+    },
+    {
+      "id": "hunter-beast-mastery-dungeons",
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-hunter-level60-2311",
+        "foreverhub-hunter-2011"
+      ],
+      "proposal": "Pet-assisted regular dungeons, Hawk, mana sustain, group aura. Not the standard capstone build; respects the cyclic prerequisite rather than editing it.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved."
+      ]
+    },
+    {
+      "id": "hunter-beast-mastery-pvp",
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "feor-bm-pvp-0711",
+        "cobalt-hunter-pvp-1011"
+      ],
+      "proposal": "Pet uptime, recovery and secondary defensive Survival tools. Deliberately excludes the disputed Bestial Wrath chain; this loses the main BM PvP cooldown and is an incomplete mechanical substitute, never a release recommendation.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved."
+      ]
+    },
+    {
+      "id": "hunter-marksmanship-dungeons",
+      "classId": 3,
+      "treeId": 11371,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-hunter-level60-2311",
+        "metammo-hunter-pvp"
+      ],
+      "proposal": "Ranged group route without active pet after Lone Wolf, with early efficiency, aura and multi-target shots. No assumed benefit from pet-dependent talents while petless.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Compare active-pet group route, threat and uptime; aura unlock gate discrepancy between official article and primary data. Verify the final optional Marksmanship node."
+      ]
+    },
+    {
+      "id": "hunter-marksmanship-pvp",
+      "classId": 3,
+      "treeId": 11371,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "metammo-hunter-pvp",
+        "cobalt-hunter-pvp-1011"
+      ],
+      "proposal": "Ranged pressure with active pet, Scatter Shot and later Deterrence/Counterattack. No assumed control immunity or unbreakable Scatter Shot.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Review PvP value of pet upkeep, trap availability, and relative timing of the late defensive dip."
+      ]
+    },
+    {
+      "id": "hunter-survival-dungeons",
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wowhead-survival-builds-1711",
+        "outpost-hunter-level60-2311"
+      ],
+      "proposal": "Melee-oriented ordinary dungeons, hit, mana and active pet/Hawk support; no deep agility or bleed capstone. Check actual weapon and trainer level, no assumed melee weaving benefit.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Compare pure melee and weaving; shared shot/Hawk cooldowns and pet corrections remain relevant."
+      ]
+    },
+    {
+      "id": "hunter-survival-pvp",
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "skillcapped-survival-pvp-1911",
+        "wowhead-survival-builds-1711"
+      ],
+      "proposal": "Control-focused mixed melee/ranged battleground route with active pet, Deterrence, Counterattack, Strider Kick and late Scatter Shot. Avoid the disputed BM prerequisite.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Compare earlier Scatter Shot versus deep Survival timing; trap shared cooldown and interrupt/control rules need independent current evidence."
       ]
     }
   ]
