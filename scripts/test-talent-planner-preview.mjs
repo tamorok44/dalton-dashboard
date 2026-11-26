@@ -296,3 +296,21 @@ const expectedAssistantKeys=Object.entries(coverage.classes).flatMap(([id,trees]
 assert.deepEqual([...assistantKeys].sort(),expectedAssistantKeys.sort());
 assert.equal(assistantMatrix.rows.filter(x=>x.kind==='comparative_candidate').length,24);
 console.log('Assistant research matrix: all 48 class/role/goal decisions, 24 comparative candidates, release disabled: OK');
+
+// New class approvals remain bound to the exact source and rank zero.
+const shamanPacks=release.rulePacks.filter(p=>p.classId===7);
+for(const planId of ["shaman-elemental-leveling","shaman-restoration-dungeons"]){
+ const plan=talentPlanLibrary.find(p=>p.id===planId);
+ assert.ok(plan);
+ const pack=shamanPacks.find(p=>p.revision===plan.ruleRevision);
+ const proof=proofs.catalogs.find(c=>c.catalogRevision===pack.catalogRevision).proof;
+ const profile=plan.profiles[0];
+ const q={...query,character:'qa-class-7',tree:String(plan.treeId),goal:profile.goal,role:profile.role,playStyle:profile.playStyle,priority:profile.priority};
+ const overrides={roster:async()=>({data:{characters:allRoster}}),master:async()=>({...master,classes:{7:proof},classMechanicsRevisions:{7:pack.catalogRevision},sourceRevision:pack.sourceRevision}),observe:async()=>({...observation,clientBuild:pack.clientBuild,hotfixRevision:pack.hotfixRevision})};
+ const result=(await request(q,{endpoint:handler(overrides)})).body;
+ assert.equal(result.ok,true,planId+': '+JSON.stringify(result));
+ assert.equal(result.planId,planId);
+ assert.equal(result.history.length,51);
+ await blocked('unsupported_legacy_rank',{...q,rank:'1'},overrides);
+}
+console.log('Shaman: exact-build rank-zero release and higher-rank denial: OK');

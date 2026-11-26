@@ -453,7 +453,19 @@ for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warl
 assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
 for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
   const candidate=plans.find(p=>p.id===id);
-  assert.ok(candidate&&candidate.status==='research_only');
+  const promoted=['shaman-elemental-leveling','shaman-restoration-dungeons'].includes(id);
+  assert.ok(candidate&&candidate.status===(promoted?'approved':'research_only'));
+  if(promoted){
+    assert.deepEqual(candidate.supportedLegacyRanks,[0]);
+    const ledger=JSON.parse(readFileSync(new URL('../docs/talent-planner-zephras-review-2026-11-26.json',import.meta.url),'utf8'));
+    const independent=ledger.classes.find(c=>c.classId===7);
+    assert.equal(independent.effectTextDifferenceCount,0);
+    assert.deepEqual(independent.structureDifferences,[]);
+    const pack=release.rulePacks.find(r=>r.revision===candidate.ruleRevision);
+    assert.equal(pack.catalogRevision,independent.catalogRevision);
+    assert.equal(pack.sourceRevision,ledger.primarySourceRevision);
+    assert.equal(pack.clientBuild,ledger.build);
+  }
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,candidate.version])),[0]);
   assert.deepEqual(coverage.classes[candidate.classId].map(t=>candidate.expectedDistribution[t.treeId]),dist);
 }

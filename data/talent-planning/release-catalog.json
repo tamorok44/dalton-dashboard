@@ -620,20 +620,6 @@
       "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
       "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
-      "reviewedAt": "2026-11-26",
-      "legacyTalentedRank": 0,
-      "ruleDigest": "8520e7fe03fe84b8469d0c801f459d9287235e4e72887857fe4cca755d8b69cd",
-      "id": "shaman-restoration-dungeons-rank0-71139-calendar",
-      "kind": "client",
-      "url": "https://grindclassic.com/wow-forever/leveling/shaman/restoration/",
-      "claim": "Public rank-zero progression corroborates the listed key level milestones; current primary gates and exact independent row structure agree. No claim about earlier Legacy effective gates."
-    },
-    {
-      "classId": 7,
-      "clientBuild": "1.60.1.71139",
-      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
-      "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
-      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "id": "shaman-restoration-dungeons-rank0-71139-editorial-1",
       "kind": "editorial",
       "reviewedAt": "2026-11-26",
@@ -687,20 +673,6 @@
       "kind": "official",
       "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
       "claim": "November 25 Shaman change consumes Clearcasting when Chain Lightning coincides with five Maelstrom stacks. Neither approved path uses Maelstrom Weapon or assumes dual benefit; no rank-zero gate change in the listed Shaman hotfix."
-    },
-    {
-      "classId": 7,
-      "clientBuild": "1.60.1.71139",
-      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
-      "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
-      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
-      "reviewedAt": "2026-11-26",
-      "legacyTalentedRank": 0,
-      "ruleDigest": "368a36dd3a269ccd260011dd9ceeb5335f64f75311bbde65bcb45cb3f5a9c515",
-      "id": "shaman-elemental-leveling-rank0-71139-calendar",
-      "kind": "client",
-      "url": "https://khorium.pro/guide-view.html?slug=wow-forever-elemental-shaman-leveling",
-      "claim": "Public rank-zero progression corroborates the listed key level milestones; current primary gates and exact independent row structure agree. No claim about earlier Legacy effective gates."
     },
     {
       "classId": 7,
@@ -897,8 +869,7 @@
       "reviewedAt": "2026-11-26",
       "sources": [
         "shaman-restoration-dungeons-rank0-71139-client",
-        "shaman-restoration-dungeons-rank0-71139-official",
-        "shaman-restoration-dungeons-rank0-71139-calendar"
+        "shaman-restoration-dungeons-rank0-71139-official"
       ],
       "legacyTalentedRank": 0,
       "pointCalendarRevision": "forever-talented-v1",
@@ -934,8 +905,7 @@
       "reviewedAt": "2026-11-26",
       "sources": [
         "shaman-elemental-leveling-rank0-71139-client",
-        "shaman-elemental-leveling-rank0-71139-official",
-        "shaman-elemental-leveling-rank0-71139-calendar"
+        "shaman-elemental-leveling-rank0-71139-official"
       ],
       "legacyTalentedRank": 0,
       "pointCalendarRevision": "forever-talented-v1",
