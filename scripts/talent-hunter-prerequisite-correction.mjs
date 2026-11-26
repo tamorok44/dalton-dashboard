@@ -1,5 +1,6 @@
 // Own, exact-source correction; the raw catalog and revision are never rewritten.
 import {talentPlanEvidenceDigest} from './talent-catalog-proof.mjs';
+import {matchesLegacyGatePolicy} from './talent-legacy-policy.mjs';
 export const HUNTER_CORRECTION_REVISION='hunter-intimidation-swiftness-71139-v1';
 export const HUNTER_CORRECTION_REVIEW_DIGEST='6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34';
 const source='9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b',catalog='2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119',hotfix='409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d',build='1.60.1.71139';
@@ -7,7 +8,7 @@ const allocations=Object.freeze({"hunter-beast-mastery-leveling":"ae45116e0a7b2e
 const exact=(actual,ids)=>Array.isArray(actual)&&actual.length===ids.length&&ids.every(id=>actual.some(p=>p.id===id&&p.rank===1&&p.conditionKnown===true));
 export function correctHunterPlanningClass(plan,master,rules){
  const request=rules?.prerequisiteCorrection,klass=master?.classes?.[3];
- if(!request||plan?.classId!==3||plan.treeId!==11372||plan.version!==1||rules.classId!==3||rules.legacyTalentedRank!==0||
+ if(!request||plan?.classId!==3||plan.treeId!==11372||plan.version!==1||rules.classId!==3||(rules.legacyTalentedRank!==0&&!matchesLegacyGatePolicy(rules))||
     request.revision!==HUNTER_CORRECTION_REVISION||request.reviewDigest!==HUNTER_CORRECTION_REVIEW_DIGEST||
     request.allocationDigest!==allocations[plan.id]||request.allocationDigest!==talentPlanEvidenceDigest(plan)||
     rules.sourceRevision!==source||master.sourceRevision!==source||rules.catalogRevision!==catalog||

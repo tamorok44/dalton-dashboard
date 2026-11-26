@@ -7,6 +7,8 @@ import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS,describeTalentRuleRevie
 import catalog from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import {talentPlanLibrary} from './talent-plan-index.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
+import {deriveLegacyRelease} from './talent-legacy-release.mjs';
+const effectiveRelease=deriveLegacyRelease(talentPlanLibrary,catalog);
 
 export const PERSONAL_TALENT_MAX_AGE_MS=26*60*60*1000;
 export function isPersonalTalentFresh(character,now){
@@ -29,7 +31,7 @@ function characterIdentity(character){
 
 export function createTalentPlannerHandler({
   enabled=preview,roster=loadCharacters,observe=loadPreviewTalentObservation,master=loadTalentMaster,
-  project=loadTalentPlannerClass,clock=Date.now,library=talentPlanLibrary
+  project=loadTalentPlannerClass,clock=Date.now,library=effectiveRelease.library,releaseCatalog=effectiveRelease.catalog
 }={}){
   return async function handler(req,res){
     const send=(status,body)=>res.status(status).json(body);
@@ -68,7 +70,7 @@ export function createTalentPlannerHandler({
         const orientationFocus=Object.freeze({"11326":"Blitz- und Elementarzauber aus Distanz","11328":"Natur- und Arkanzauber aus Distanz","11340":"Heilung und Heilung über Zeit","11347":"Katzen- oder Bärengestalt je nach Rolle","11362":"Heilung und Unterstützung der Gruppe","11363":"Nahkampf mit Elementarzaubern","11370":"Fallen, Kontrolle und Nahkampfoptionen","11371":"Schüsse und Distanzwaffen","11372":"Kampf mit dem Tierbegleiter","11486":"Direkte Heilung und Unterstützung","11541":"Schild und Schutz der Gruppe","11559":"Nahkampfschaden mit Heiligmagie","11572":"Verstohlenheit, Eröffnung und Kontrolle","11573":"Kontinuierlicher Waffenschaden","11580":"Gifte, Dolche und Finishing-Moves","11582":"Arkanzauber und Ressourcenmanagement","11594":"Feuerzauber und kritische Treffer","11601":"Frostzauber und Gegnerkontrolle","11608":"Schilde und unterstützende Heilung","11615":"Direkte Heilung und Gruppenheilung","11622":"Schattenschaden und Schadenszauber","11629":"Schaden über Zeit und Flüche","11636":"Dämonenbegleiter und Unterstützung","11637":"Direkte Schadenszauber","11650":"Zweihand-Nahkampf und gezielte Angriffe","11657":"Kontinuierlicher Nahkampfschaden und Wut","11670":"Schild, Schutz und Gegnerbindung"});
         const specializations=[...names].map(([treeId,name])=>({treeId,name,
           roles:coverage.classes[character.classId]?.find(t=>t.treeId===treeId)?.roles??[],focus:orientationFocus[treeId]??''}));
-        const specializationAdvice=(catalog.specializationAdvice??[]).filter(entry=>entry.preferred.classId===character.classId&&
+        const specializationAdvice=(releaseCatalog.specializationAdvice??[]).filter(entry=>entry.preferred.classId===character.classId&&
           entry.options.every(option=>profiles.some(p=>p.planId===option.planId&&p.version===option.version&&profileKey(p)===profileKey(option))));
         return send(200,{ok:true,profiles,identity,specializations,specializationAdvice});
       }
@@ -95,14 +97,14 @@ export function createTalentPlannerHandler({
       const liveMaster=await master();
       const evidence={...observation,catalogRevision:liveMaster.classMechanicsRevisions?.[profile.classId]??null,
         sourceRevision:liveMaster.sourceRevision??null,catalogCheckedAt:liveMaster.checkedAt??null};
-      const applicable=catalog.rulePacks.filter(r=>r.revision===candidates[0].ruleRevision&&r.classId===profile.classId&&r.legacyTalentedRank===rank);
+      const applicable=releaseCatalog.rulePacks.filter(r=>r.revision===candidates[0].ruleRevision&&r.classId===profile.classId&&r.legacyTalentedRank===rank);
       const now=clock();
       if(applicable.length===1){
-        const matched=selectTalentRulePack(candidates[0],applicable[0],liveMaster,ruleObservation,catalog.revalidations,now);
+        const matched=selectTalentRulePack(candidates[0],applicable[0],liveMaster,ruleObservation,releaseCatalog.revalidations,now);
         evidence.review=describeTalentRuleReview(ruleObservation,matched??applicable[0],liveMaster,now);
         evidence.review.revalidated=Boolean(matched&&matched!==applicable[0]);
       }
-      const plan=resolveApprovedTalentPlan(profile,candidates,liveMaster,catalog.rulePacks,{ruleObservation,legacyTalentedRank:rank,now,revalidations:catalog.revalidations});
+      const plan=resolveApprovedTalentPlan(profile,candidates,liveMaster,releaseCatalog.rulePacks,{ruleObservation,legacyTalentedRank:rank,now,revalidations:releaseCatalog.revalidations});
       if(!plan.ok)return blocked(409,plan.code,evidence);
       const corrected=correctTalentDisplay(liveMaster.classes[profile.classId],liveMaster);
       const klass=await project(corrected);
@@ -115,6 +117,7 @@ export function createTalentPlannerHandler({
         Array.isArray(details)&&details.length===klass.trees.length&&
         details.every(tree=>Array.isArray(tree?.talents));
       return send(200,{...plan,profile,identity,klass,evidence,recommendation:candidates[0].review.rationale,legacyRank:{rank,source:'player_confirmed'},
+        legacyGateEvidence:rank>0?{kind:'official_and_client_data_derived',serverGrantObserved:false,assumesRankActiveThroughout:true}:null,
         character:{level:character.level,scrapedAt:character.scrapedAt??null,
           talentDetailsFresh:personalFresh,personalValidUntil:personalFresh?new Date(Date.parse(character.scrapedAt)+PERSONAL_TALENT_MAX_AGE_MS).toISOString():null,
           talentDetailsVerified:detailsComplete,

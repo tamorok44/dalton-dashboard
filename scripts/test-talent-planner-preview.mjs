@@ -7,6 +7,7 @@ import {talentAllocationDifference,compareTalentProgress,talentGuideOptions,tale
 import {talentPlanLibrary} from './talent-plan-index.mjs';
 import release from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import proofs from '../data/talent-planning/catalog-proofs-2026-11-25.json' with {type:'json'};
+import {deriveLegacyRelease} from './talent-legacy-release.mjs';
 
 const rules=release.rulePacks[0];
 const klass=proofs.catalogs.find(entry=>entry.proof.classId===rules.classId).proof;
@@ -25,7 +26,7 @@ let reads=0;
 const roster=async()=>({data:{characters:[mage,warrior]}});
 function handler(overrides={}){
   return createTalentPlannerHandler({enabled:()=>true,roster,observe:async()=>{reads++;return observation},
-    master:async()=>master,clock:()=>start+1000,project:async value=>value,...overrides});
+    master:async()=>master,clock:()=>start+1000,project:async value=>value,library:talentPlanLibrary,releaseCatalog:release,...overrides});
 }
 async function request(params,{endpoint=handler(),method='GET'}={}){
   const response={headers:{},setHeader(name,value){this.headers[name]=value},
@@ -384,9 +385,12 @@ const currentProofs=proofs.catalogs.filter(c=>c.sourceRevision===currentPack.sou
 const matrixMaster={...master,classes:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,c.proof])),classMechanicsRevisions:Object.fromEntries(currentProofs.map(c=>[c.proof.classId,c.catalogRevision])),sourceRevision:currentPack.sourceRevision};
 const matrixObservation={...observation,clientBuild:currentPack.clientBuild,hotfixRevision:currentPack.hotfixRevision};
 let matrixReads=0,matrixMasterReads=0,matrixProjects=0,httpCalls=0,eligibleCells=0,deniedCells=0,cells=0,negative=0;
-const config={roster:async()=>({data:{characters:allRoster}}),observe:async()=>{matrixReads++;return matrixObservation},master:async()=>{matrixMasterReads++;return matrixMaster},project:async v=>{matrixProjects++;return v}};
+const effective=deriveLegacyRelease(talentPlanLibrary,release);
+assert.equal(effective.library.filter(p=>p.supportedLegacyRanks.length===6).length,84);
+assert.equal(effective.catalog.rulePacks.length,504);
+const config={library:effective.library,releaseCatalog:effective.catalog,roster:async()=>({data:{characters:allRoster}}),observe:async()=>{matrixReads++;return matrixObservation},master:async()=>{matrixMasterReads++;return matrixMaster},project:async v=>{matrixProjects++;return v}};
 const endpoint=handler(config);
-const available=talentPlanLibrary.filter(p=>p.active!==false&&p.status==='approved');
+const available=effective.library.filter(p=>p.active!==false&&p.status==='approved');
 for(const [id,trees] of Object.entries(coverage.classes))for(const tree of trees)for(const role of tree.roles)for(const goal of coverage.goals){
  const classId=Number(id);
  const profiles=[...new Map(matrixPlans.flatMap(p=>p.profiles.filter(x=>x.classId===classId&&x.treeId===tree.treeId&&x.role===role&&x.goal===goal)).map(x=>[matrixProfileKey(x),x])).values()];
@@ -404,6 +408,8 @@ for(const [id,trees] of Object.entries(coverage.classes))for(const tree of trees
        success=true;assert.equal(res.code,200);assert.equal(res.body.ok,true);
        assert.equal(res.body.planId,plan.id);assert.equal(res.body.version,plan.version);
        assert.deepEqual(res.body.history.map(({talentId,rank})=>({talentId,rank})),plan.points);
+       assert.deepEqual(res.body.history.map(x=>x.level),Array.from({length:51},(_,i)=>10-rank+i));
+       if(rank>0)assert.equal(res.body.legacyGateEvidence.serverGrantObserved,false);
        assert.deepEqual([matrixReads,matrixMasterReads,matrixProjects],before.map(x=>x+1));
        const variants=[
         ['unverified_current_rules',{observe:async()=>({...matrixObservation,clientBuild:'1.60.1.99999'})}],
@@ -428,5 +434,5 @@ for(const [id,trees] of Object.entries(coverage.classes))for(const tree of trees
    if(success)eligibleCells++;else deniedCells++;
  }
 }
-assert.equal(cells,504);assert.equal(eligibleCells+deniedCells,cells);
+assert.equal(cells,504);assert.equal(eligibleCells,504);assert.equal(deniedCells,0);assert.equal(eligibleCells+deniedCells,cells);
 console.log('DALTON_HTTP_MATRIX '+JSON.stringify({cells,eligibleCells,deniedCells,httpCalls,negativeTests:negative,liveServices:false}));

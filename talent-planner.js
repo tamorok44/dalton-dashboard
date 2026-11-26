@@ -338,6 +338,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     result.innerHTML=
       '<h3 id="talentPlannerPath" tabindex="-1">'+esc(plan.klass.trees.find(t=>t.id===plan.profile.treeId).name)+' · Planversion '+esc(plan.version)+'</h3>'+
       (rationale?'<p>'+esc(rationale)+'</p>':'')+
+      (plan.legacyRank.rank>0?'<p class="talent-point-note">Stufenangaben in der allgemeinen Begründung beziehen sich auf Rang 0. Die Punktliste berücksichtigt deinen bestätigten Rang. Der Rang muss bereits beim jeweiligen Levelaufstieg aktiv sein; Lehrerfähigkeiten behalten ihre normalen Lernstufen. Die Regel ist aus offiziellen Angaben und Clientdaten abgeleitet, nicht durch eine eigene Live-Lernprobe bestätigt.</p>':'')+
       '<p><strong>Vermächtnisrang „Talentiert“ '+esc(plan.legacyRank.rank)+'</strong> · von dir im Spiel bestätigt</p>'+
       '<p><strong>Ist-Abgleich</strong> '+esc(progressText)+'</p>'+
       (!personalFresh?'<p class="talent-point-note">Der persönliche Spielstand ist nicht ausreichend aktuell. Aktualisiere die Charakterdaten über die vorhandene Funktion.</p>':'')+

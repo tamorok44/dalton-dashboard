@@ -3,11 +3,12 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {profileKey,resolveApprovedTalentPlan} from './talent-plan-core.mjs';
 import {talentRevisionDigest} from './talent-catalog-proof.mjs';
 import {talentPlanLibrary} from './talent-plan-index.mjs';
+import {deriveLegacyRelease} from './talent-legacy-release.mjs';
 import {specializationOptionKey,specializationOptionSet} from '../talent-planner.js';
 
 const folder=new URL('../data/talent-planning/',import.meta.url);
 const read=f=>JSON.parse(readFileSync(new URL(f,folder),'utf8'));
-const coverage=read('coverage-2026-11-25.json'),release=read('release-catalog.json');
+const coverage=read('coverage-2026-11-25.json'),effective=deriveLegacyRelease(talentPlanLibrary,read('release-catalog.json')),release=effective.catalog;
 const ledger=JSON.parse(readFileSync(new URL('../docs/talent-planner-zephras-review-2026-11-26.json',import.meta.url),'utf8'));
 const effects=JSON.parse(readFileSync(new URL('../docs/talent-planner-effect-review-2026-11-26.json',import.meta.url),'utf8'));
 const proofRecords=read('catalog-proofs-2026-11-25.json').catalogs.filter(c=>c.sourceRevision===ledger.primarySourceRevision);
@@ -15,7 +16,7 @@ const retained=Object.fromEntries(proofRecords.map(c=>[c.proof.classId,c.proof])
 const revisions=Object.fromEntries(proofRecords.map(c=>[c.proof.classId,c.catalogRevision]));
 for(const c of proofRecords)assert.equal(talentRevisionDigest(c.proof),c.catalogRevision);
 const all=readdirSync(folder).filter(f=>/-v\d+\.json$/.test(f)).map(read).filter(p=>p.status!=='retired'&&p.active!==false);
-const approved=talentPlanLibrary.filter(p=>p.active!==false);
+const approved=effective.library.filter(p=>p.active!==false);
 const pack=release.rulePacks.find(p=>p.clientBuild===ledger.build&&p.sourceRevision===ledger.primarySourceRevision);
 assert.ok(pack,'retained current build tuple absent');
 const at='2026-11-26T00:00:00.000Z',now=Date.parse(at);
@@ -53,7 +54,7 @@ const detailedByRank=Array.from({length:6},(_,rank)=>({rank,total:cells.reduce((
 const detailedTotal=detailedByRank.reduce((s,x)=>s+x.total,0),detailedEligible=detailedByRank.reduce((s,x)=>s+x.eligible,0);
 assert.ok(detailedTotal>=cells.length*6,'Detailed profile coverage cannot be smaller than coarse coverage');
 assert.ok(detailedTotal-detailedEligible>=missing,'Detailed missing coverage cannot be smaller than coarse missing coverage');
-const blockers={missingRankProfileCombinations:missing,missingDetailedRankProfileCombinations:detailedTotal-detailedEligible,incompleteComparisons:comparisonCells.filter(x=>!x.complete).length,unreconciledRawStructure:ledger.classes.filter(c=>c.structureDifferences.length>0).map(c=>c.classId),unconfirmedQuantitativeTexts:effects.rows.filter(x=>['incomplete_numeric','numeric_scale_or_rounding'].includes(x.classification)).length,liveObservationVerified:false,physicalDevicesVerified:false};
+const blockers={missingRankProfileCombinations:missing,missingDetailedRankProfileCombinations:detailedTotal-detailedEligible,incompleteComparisons:comparisonCells.filter(x=>!x.complete).length,unreconciledRawStructure:ledger.classes.filter(c=>c.structureDifferences.length>0).map(c=>c.classId),unconfirmedQuantitativeTexts:effects.rows.filter(x=>['incomplete_numeric','numeric_scale_or_rounding'].includes(x.classification)).length,liveObservationVerified:false,physicalDevicesVerified:false,legacyServerGrantObserved:false};
 const summary={kind:'offline_full_release_gate',retainedBuild:ledger.build,activePaths:all.length,approvedPaths:approved.length,rankProfileCombinations:cells.length*6,eligibleRankProfileCombinations:byRank.reduce((s,x)=>s+x.eligible,0),byRank,detailedRankProfileCombinations:detailedTotal,eligibleDetailedRankProfileCombinations:detailedEligible,detailedByRank,comparativeDecisions:comparisonCells.length,completeComparativeDecisions:comparisonCells.filter(x=>x.complete).length,blockers,offlineCoverageComplete:missing===0&&detailedEligible===detailedTotal&&blockers.incompleteComparisons===0,productionReleaseAuthorized:false,note:'Retained source fixtures are deliberately not a live observation. This report never authorizes deployment.'};
 console.log(JSON.stringify(process.argv.includes('--summary')?summary:{summary,cells,comparisonCells},null,2));
 if(process.argv.includes('--require-complete')&&!summary.offlineCoverageComplete)process.exitCode=1;

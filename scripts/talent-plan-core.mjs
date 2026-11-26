@@ -1,5 +1,6 @@
 import {currentTalentRulesMatch} from './talent-rule-watch.mjs';
 import {correctHunterPlanningClass} from './talent-hunter-prerequisite-correction.mjs';
+import {matchesLegacyGatePolicy} from './talent-legacy-policy.mjs';
 import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest} from './talent-catalog-proof.mjs';
 
 // Pure planning rules. No provider requests, no roster dependency, no runtime AI.
@@ -29,6 +30,7 @@ export function validateTalentPath(plan,master,rules){
   if(rules.pointCalendarRevision!==TALENT_POINT_CALENDAR_REVISION||
     !Number.isInteger(talentedRank)||talentedRank<0||talentedRank>5||
     rules.gateMode!=='earlier_rows'||!['immediate','bankable'].includes(rules.pointSpendMode)||!rules.minimumLevelByTalent||typeof rules.minimumLevelByTalent!=='object')return reject('unsupported_rules');
+  if(rules.legacyGatePolicy&&(!matchesLegacyGatePolicy(rules)||rules.legacyAllocationDigest!==talentPlanEvidenceDigest(plan)||master.sourceRevision!==rules.sourceRevision))return reject('unverified_current_rules');
   const maxPoints=51;
   const firstPointLevel=10-talentedRank;
   if(plan.requiresRespec!==false)return reject('respec_not_supported');
@@ -48,6 +50,7 @@ export function validateTalentPath(plan,master,rules){
     if(!positive(t.maxRank)||step.rank!==rank||rank>t.maxRank)return reject('invalid_rank',point);
     const minLevel=rules.minimumLevelByTalent[t.id];
     if(!positive(minLevel)||minLevel>60)return reject('unverified_level_gate',point);
+    if(rules.legacyGatePolicy&&(t.requiredLevel!==10+t.requiredPoints||minLevel!==t.requiredLevel-talentedRank))return reject('unverified_level_gate',point);
     const level=rules.pointSpendMode==='bankable'
       ?Math.max(availableAt,minLevel,history.at(-1)?.level??0):availableAt;
     if(level<minLevel)return reject('level_gate',point);
@@ -86,7 +89,7 @@ export function compatibleTalentRevalidation(entry,plan,baseline){
 // An equal class hash, a newer build, or an unrelated hotfix is not enough.
 export function selectTalentRulePack(plan,baseline,master,observation,revalidations,now){
   if(currentTalentRulesMatch(observation,baseline,master,now))return baseline;
-  if(baseline.prerequisiteCorrection)return null; // Structural correction requires a new exact review, never automatic transition.
+  if(baseline.prerequisiteCorrection||baseline.legacyGatePolicy)return null; // Structural correction requires a new exact review, never automatic transition.
   const reviewed=array(revalidations).filter(entry=>compatibleTalentRevalidation(entry,plan,baseline)&&
     currentTalentRulesMatch(observation,{...baseline,...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,entry.to[k]]))},master,now));
   if(reviewed.length!==1)return null;
