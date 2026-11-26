@@ -173,6 +173,9 @@ try{
    assert.equal(await spec.inputValue(),'11582');
    await page.screenshot({path:resolve(reportDir,item.name+'-guide.png'),fullPage:true});
    // Exercise newly approved class routes and the actual corrected character view.
+   await choose(7);await goal.selectOption('dungeons');await role.selectOption('damage');
+   assert.equal(await spec.inputValue(),'11363','Shaman dungeon comparative default');
+   await spec.selectOption('11326');assert.equal(await spec.inputValue(),'11326','Shaman dungeon alternative');
    await choose(7);await goal.selectOption('leveling');await role.selectOption('damage');
    assert.equal(await spec.inputValue(),'11363','Shaman comparative default');
    await spec.selectOption('11326');assert.equal(await spec.inputValue(),'11326','Shaman alternative');
