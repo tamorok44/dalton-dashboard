@@ -44,7 +44,9 @@ const mageCharacter=roster.find(c=>c.classId===8),mageFrost=displayMaster.classe
 mageCharacter.talentDetailsVerified=true;mageCharacter.talentsVerified=true;mageCharacter.talents='Frost: 3';mageCharacter.talentDetails=[{name:'Frost',spentPoints:3,talents:[{id:mageNode.profileId,rank:3,spellId:mageNode.rankSpellIds[0]}]}];
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
+let offlineFixture=false;
 const server=createServer(async(req,res)=>{
+ if(offlineFixture){req.socket.destroy();return;}
  try{
  const url=new URL(req.url,'http://127.0.0.1');
  const send=(status,body)=>{const json=JSON.stringify(body);res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(json);return Buffer.byteLength(json)};
@@ -272,7 +274,7 @@ try{
  const offline=await browser.newContext({serviceWorkers:'allow',locale:'de-DE'});
  try{
    const page=await offline.newPage();
-   await page.route('**/*',r=>r.request().url().startsWith(origin+'/')?r.continue():r.abort());
+   await page.route(url=>url.origin!==origin,r=>r.abort());
    const before=providerReads;
    await page.goto(origin+'/');
    await page.evaluate(async()=>{
@@ -289,21 +291,23 @@ try{
    assert.ok(installed.paths.includes('/talent-planner.js')&&installed.paths.includes('/talent-personal-state.js')&&installed.paths.includes('/talent-text-quality.js'));
    assert.ok(installed.paths.includes('/')&&installed.paths.some(p=>p.startsWith('/app.js?v=')));
    assert.equal(installed.apiCached,false);
-   await offline.setOffline(true);
+   // Abort network connections at the fixture server, not via a browser
+   // emulation flag that can bypass Service Worker routing in Firefox.
+   offlineFixture=true;
    const staticResult=await page.evaluate(async()=>{
      const results=await Promise.all(['/','/talent-planner.js','/talent-personal-state.js','/talent-text-quality.js'].map(async path=>{
        try{const r=await fetch(path);return r.ok&&(await r.text()).length>0}catch{return false}
      }));
      let liveUnavailable=false;
-     try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8');liveUnavailable=!r.ok}catch{liveUnavailable=true}
+     try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8',{cache:'no-store'});liveUnavailable=!r.ok}catch{liveUnavailable=true}
      return {results,liveUnavailable};
    });
    assert.deepEqual(staticResult.results,[true,true,true,true],'app shell must remain available offline');
    assert.equal(staticResult.liveUnavailable,true,'live plans must not be served by service worker offline');
    assert.equal(providerReads,before,'PWA install/offline cache must not trigger provider observation');
-   report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true};
+   report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true,networkFailure:'fixture_socket_abort'};
  }catch(error){report.pwa={status:'failed',error:String(error.stack||error)};console.error(report.pwa.error);throw error}
- finally{await offline.close()}
+ finally{offlineFixture=false;await offline.close()}
  report.discoveryBytes=discoveryBytes;report.pathBytes=pathBytes;report.providerReads=providerReads;
  assert.ok(discoveryBytes>0&&discoveryBytes<20000,'discovery payload budget');
  assert.ok(pathBytes>0&&pathBytes<100000,'plan payload budget');
