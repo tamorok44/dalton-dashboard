@@ -177,12 +177,16 @@ try{
    await spec.selectOption('11363');await rank.selectOption('0');
    await page.locator('button[type=submit].talent-planner-action').click();
    await page.locator('[data-plan-result] .talent-grid').waitFor({state:'visible'});
-   assert.equal(await page.locator('.talent-planner-steps li').count(),51);
+   assert.equal(await page.locator('.talent-planner-steps li').count(),6,'initial preview uses character level 15');
+   await page.locator('#talentPlannerLevel').selectOption('60');
+   assert.equal(await page.locator('.talent-planner-steps li').count(),51,'complete rank-zero path at level 60');
    await choose(9);await goal.selectOption('leveling');
    await spec.selectOption('11637');await rank.selectOption('0');
    await page.locator('button[type=submit].talent-planner-action').click();
    await page.locator('[data-plan-result] .talent-grid').waitFor({state:'visible'});
-   assert.equal(await page.locator('.talent-planner-steps li').count(),51);
+   assert.equal(await page.locator('.talent-planner-steps li').count(),6,'initial preview uses character level 15');
+   await page.locator('#talentPlannerLevel').selectOption('60');
+   assert.equal(await page.locator('.talent-planner-steps li').count(),51,'complete rank-zero path at level 60');
    await page.evaluate(()=>{location.hash='#charaktere'});
    const beforeDisplay=displayRequests,beforePlan=plannerRequests;
    async function showTalent(classId,id){
