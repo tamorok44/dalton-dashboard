@@ -17,8 +17,8 @@
     }
   ],
   "expectedDistribution": {
-    "11370": 25,
-    "11371": 10,
+    "11370": 27,
+    "11371": 8,
     "11372": 16
   },
   "points": [
@@ -103,24 +103,32 @@
       "rank": 5
     },
     {
-      "talentId": 104983,
-      "rank": 1
-    },
-    {
-      "talentId": 104983,
-      "rank": 2
-    },
-    {
-      "talentId": 104985,
-      "rank": 1
-    },
-    {
-      "talentId": 104985,
-      "rank": 2
-    },
-    {
       "talentId": 104981,
       "rank": 1
+    },
+    {
+      "talentId": 104983,
+      "rank": 1
+    },
+    {
+      "talentId": 104983,
+      "rank": 2
+    },
+    {
+      "talentId": 104985,
+      "rank": 1
+    },
+    {
+      "talentId": 104985,
+      "rank": 2
+    },
+    {
+      "talentId": 110860,
+      "rank": 1
+    },
+    {
+      "talentId": 110860,
+      "rank": 2
     },
     {
       "talentId": 104960,
@@ -217,96 +225,93 @@
     {
       "talentId": 105008,
       "rank": 3
-    },
-    {
-      "talentId": 105008,
-      "rank": 4
-    },
-    {
-      "talentId": 105008,
-      "rank": 5
     }
   ],
   "rationaleBlocks": [
     {
       "talentId": 104996,
-      "count": 5,
-      "reason": "Schaden gegen passende verfolgte Kreaturentypen erhöhen."
+      "reason": "Schaden gegen passende verfolgte Kreaturentypen erhöhen.",
+      "count": 5
     },
     {
       "talentId": 104993,
-      "count": 2,
-      "reason": "Kritische Nahkampffähigkeiten stärken."
+      "reason": "Kritische Nahkampffähigkeiten stärken.",
+      "count": 2
     },
     {
       "talentId": 104992,
-      "count": 3,
-      "reason": "Gesundheit erhöhen."
+      "reason": "Gesundheit erhöhen.",
+      "count": 3
     },
     {
       "talentId": 104987,
-      "count": 3,
-      "reason": "Trefferchance und Schutz vor Verlangsamungen ergänzen."
+      "reason": "Trefferchance und Schutz vor Verlangsamungen ergänzen.",
+      "count": 3
     },
     {
       "talentId": 104991,
-      "count": 2,
-      "reason": "Fallenwirkung stärken."
+      "reason": "Fallenwirkung stärken.",
+      "count": 2
     },
     {
       "talentId": 110861,
-      "count": 5,
-      "reason": "Kritischen Nahkampfschaden ergänzen."
-    },
-    {
-      "talentId": 104983,
-      "count": 2,
-      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken."
-    },
-    {
-      "talentId": 104985,
-      "count": 2,
-      "reason": "Mungobiss-Aktivierung unterstützen."
+      "reason": "Kritischen Nahkampfschaden ergänzen.",
+      "count": 5
     },
     {
       "talentId": 104981,
-      "count": 1,
-      "reason": "Streichertritt freischalten."
+      "reason": "Streichertritt für Nahkampfschaden und Bewegungstempo freischalten; keine Zauberunterbrechung.",
+      "count": 1
+    },
+    {
+      "talentId": 104983,
+      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken.",
+      "count": 2
+    },
+    {
+      "talentId": 104985,
+      "reason": "Mungobiss-Aktivierung bei Angriffen gegen markierte Ziele unterstützen; kein garantierter Proc.",
+      "count": 2
+    },
+    {
+      "talentId": 110860,
+      "reason": "Abklingzeit der Fallen für wiederholte Gruppenpulls reduzieren.",
+      "count": 2
     },
     {
       "talentId": 104960,
-      "count": 5,
-      "reason": "Aspektabhängiges Angriffstempo steigern."
+      "reason": "Aspektabhängige Angriffstempo-Procs unterstützen, keine dauerhafte Tempoerhöhung voraussetzen.",
+      "count": 5
     },
     {
       "talentId": 104976,
-      "count": 5,
-      "reason": "Begleiter widerstandsfähiger machen."
+      "reason": "Begleiter widerstandsfähiger machen.",
+      "count": 5
     },
     {
       "talentId": 104975,
-      "count": 2,
-      "reason": "Schaden bei aktivem Begleiter ergänzen."
+      "reason": "Schaden bei aktivem Begleiter ergänzen.",
+      "count": 2
     },
     {
       "talentId": 104969,
-      "count": 3,
-      "reason": "Begleiter- und Falkenschaden erhöhen."
+      "reason": "Begleiter- und Falkenschaden erhöhen.",
+      "count": 3
     },
     {
       "talentId": 104966,
-      "count": 1,
-      "reason": "Falke beschwören als zusätzliche Fähigkeit freischalten."
+      "reason": "Falkenbeschwörung für geeignete langlebige Ziele freischalten; gemeinsame Abklingzeit mit Arkanem Schuss und Manakosten beachten. Falke kann auch bei passivem Begleiter angreifen.",
+      "count": 1
     },
     {
       "talentId": 105011,
-      "count": 5,
-      "reason": "Eigene kritische Trefferchance erhöhen."
+      "reason": "Kritische Trefferchance aller Angriffe erhöhen.",
+      "count": 5
     },
     {
       "talentId": 105008,
-      "count": 5,
-      "reason": "Angriffskraft über Sorgfältiges Zielen ergänzen."
+      "reason": "Angriffskraft über Sorgfältiges Zielen ergänzen.",
+      "count": 3
     }
   ],
   "research": {
@@ -315,17 +320,64 @@
       "wowhead-survival-builds-1711",
       "outpost-hunter-level60-2311"
     ],
-    "editorialDecision": "Melee-oriented ordinary dungeons, hit, mana and active pet/Hawk support; no deep agility or bleed capstone. Check actual weapon and trainer level, no assumed melee weaving benefit.",
+    "editorialDecision": "Nahkampf-orientierte normale Dungeons mit aktivem Begleiter; Streichertritt früh auf 30, Expose Prey gegen markierte Ziele, Ressourcen und Fallenabklingzeit vor dem Nebenbaum. Falken auf 52 statt 50; dafür bessere Fallenverfügbarkeit ab 35–36. 27 Überleben/8 Treffsicherheit/16 Tierherrschaft ist eigene Forschungsvariante, keine optimale Endgame-Behauptung. Tiefe Beweglichkeit/Blutung und stärkeres Weaving bleiben situative Alternativen.",
     "unresolved": [
       "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
       "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
-      "Compare pure melee and weaving; shared shot/Hawk cooldowns and pet corrections remain relevant."
+      "Compare pure melee and weaving; shared shot/Hawk cooldowns and pet corrections remain relevant.",
+      "Vergleich der 27/8/16-Variante mit tieferen Überleben- und Weaving-Pfaden, tatsächliche Waffen/Markierung/Aspekte; keine garantierte Mungobiss-Aktivierung.",
+      "104966: genaue Falken-Schadensskalierung und effektive Kritchance nach 25.11. nicht unabhängig gemessen. 10.11. Kosten und 25.11. Zielwahl/Entlassung bestätigt; keine garantierte Trefferzahl.",
+      "Vermächtnisränge 1–5, komplette Hotfix-/Pfadfreigabe und CI ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "official": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "mirror": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "sources": [
+        {
+          "url": "https://forevertalents.net/talents/hunter/",
+          "contribution": "Alternative ODER-Bedingung Bestial Wrath oder Bestial Swiftness für Intimidation; keine beobachtete Vergabe im aktuellen Client."
+        },
+        {
+          "url": "https://foreverdiff.com/talents/hunter/intimidation-1387/",
+          "contribution": "Zwei Voraussetzungen gelistet; Operator nicht eindeutig bestätigt."
+        },
+        {
+          "url": "https://foreverdb.net/class/hunter",
+          "contribution": "Öffentliche Simulator-/Guide-Daten, älterer Build 71091; keine aktuelle exakte Schadensformel."
+        },
+        {
+          "url": "https://www.wowhead.com/forever/guide/classes/hunter/survival/talent-builds-pve-dps",
+          "contribution": "17.11.: Nahkampf-Dungeon-Spielweise mit Falken und Mana; tiefe Beweglichkeit/Blutung abhängig von Ausrüstung und Weaving."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/survival-hunter/talents",
+          "contribution": "5.11.: Falken ohne Mindestdistanz, Expose Prey und Streichertritt ab 30; keine DPS-Überlegenheit übernommen."
+        },
+        {
+          "url": "https://forever-xp.com/changes/hunter/",
+          "contribution": "Build 71139: Lethal Attacks gilt für alle Angriffe, Careful Aim wandelt Intelligenz in Angriffskraft um."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/hunter/",
+          "contribution": "Survivalist's Discipline zwei Ränge, Expose Prey benötigt markiertes Ziel."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
