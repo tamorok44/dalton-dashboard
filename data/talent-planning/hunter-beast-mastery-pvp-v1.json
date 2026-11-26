@@ -83,6 +83,10 @@
       "rank": 1
     },
     {
+      "talentId": 104966,
+      "rank": 1
+    },
+    {
       "talentId": 104969,
       "rank": 1
     },
@@ -101,10 +105,6 @@
     {
       "talentId": 104969,
       "rank": 5
-    },
-    {
-      "talentId": 104966,
-      "rank": 1
     },
     {
       "talentId": 104967,
@@ -230,98 +230,98 @@
   "rationaleBlocks": [
     {
       "talentId": 104976,
-      "count": 5,
-      "reason": "Begleiter zuerst widerstandsfähiger machen."
+      "reason": "Begleiter zuerst widerstandsfähiger machen.",
+      "count": 5
     },
     {
       "talentId": 104960,
-      "count": 5,
-      "reason": "Aspektabhängiges Angriffstempo steigern."
+      "reason": "Aspektabhängige Angriffstempo-Procs unterstützen, keine dauerhafte Tempoerhöhung voraussetzen.",
+      "count": 5
     },
     {
       "talentId": 104972,
-      "count": 2,
-      "reason": "Wiederbelebung des Begleiters erleichtern."
+      "reason": "Wiederbelebung des Begleiters erleichtern.",
+      "count": 2
     },
     {
       "talentId": 104975,
-      "count": 2,
-      "reason": "Schaden bei aktivem Begleiter ergänzen."
+      "reason": "Schaden bei aktivem Begleiter ergänzen.",
+      "count": 2
     },
     {
       "talentId": 104970,
-      "count": 1,
-      "reason": "Begleiterbewegung verbessern."
-    },
-    {
-      "talentId": 104969,
-      "count": 5,
-      "reason": "Schaden von Begleiter und Falken erhöhen."
+      "reason": "Begleiterbewegung verbessern.",
+      "count": 1
     },
     {
       "talentId": 104966,
-      "count": 1,
-      "reason": "Falke beschwören freischalten."
+      "reason": "Falkenbeschwörung für geeignete langlebige Ziele freischalten; gemeinsame Abklingzeit mit Arkanem Schuss und Manakosten beachten. Falke kann auch bei passivem Begleiter angreifen.",
+      "count": 1
+    },
+    {
+      "talentId": 104969,
+      "reason": "Schaden von Begleiter und Falken erhöhen.",
+      "count": 5
     },
     {
       "talentId": 104967,
-      "count": 5,
-      "reason": "Wildheit für Raserei vervollständigen."
+      "reason": "Wildheit für Raserei vervollständigen.",
+      "count": 5
     },
     {
       "talentId": 104963,
-      "count": 2,
-      "reason": "Ressourcenregeneration unterstützen."
+      "reason": "Ressourcenregeneration unterstützen.",
+      "count": 2
     },
     {
       "talentId": 104962,
-      "count": 2,
-      "reason": "Raserei ergänzen."
+      "reason": "Raserei ergänzen.",
+      "count": 2
     },
     {
       "talentId": 104996,
-      "count": 5,
-      "reason": "Schaden gegen passende verfolgte Kreaturentypen erhöhen."
+      "reason": "Schaden gegen passende verfolgte Kreaturentypen erhöhen.",
+      "count": 5
     },
     {
       "talentId": 104992,
-      "count": 5,
-      "reason": "Eigene Gesundheit erhöhen."
+      "reason": "Eigene Gesundheit erhöhen.",
+      "count": 5
     },
     {
       "talentId": 104987,
-      "count": 3,
-      "reason": "Trefferchance und Schutz vor Verlangsamungen stärken."
+      "reason": "Trefferchance und Schutz vor Verlangsamungen stärken.",
+      "count": 3
     },
     {
       "talentId": 104986,
-      "count": 1,
-      "reason": "Abschreckung als defensive Option freischalten."
+      "reason": "Abschreckung als defensive Option freischalten.",
+      "count": 1
     },
     {
       "talentId": 104991,
-      "count": 1,
-      "reason": "Fallenwirkung ergänzen."
+      "reason": "Fallenwirkung ergänzen.",
+      "count": 1
     },
     {
       "talentId": 104989,
-      "count": 1,
-      "reason": "Gegenangriff nach erfolgreichem Parieren ermöglichen."
+      "reason": "Gegenangriff nach erfolgreichem Parieren ermöglichen.",
+      "count": 1
     },
     {
       "talentId": 104988,
-      "count": 2,
-      "reason": "Trefferchance von Fallen und Totstellen ergänzen."
+      "reason": "Trefferchance von Fallen und Totstellen ergänzen.",
+      "count": 2
     },
     {
       "talentId": 110861,
-      "count": 2,
-      "reason": "Kritischen Nahkampfschaden ergänzen."
+      "reason": "Kritischen Nahkampfschaden ergänzen.",
+      "count": 2
     },
     {
       "talentId": 104991,
-      "count": 1,
-      "reason": "Fallenwirkung vervollständigen."
+      "reason": "Fallenwirkung vervollständigen.",
+      "count": 1
     }
   ],
   "research": {
@@ -330,17 +330,48 @@
       "feor-bm-pvp-0711",
       "cobalt-hunter-pvp-1011"
     ],
-    "editorialDecision": "Pet uptime, recovery and secondary defensive Survival tools. Deliberately excludes the disputed Bestial Wrath chain; this loses the main BM PvP cooldown and is an incomplete mechanical substitute, never a release recommendation.",
+    "editorialDecision": "Forschungsalternative mit aktivem Begleiter und frühestmöglichem Falken auf 25, danach weitere Begleiter-Synergien. Die fehlenden Kernfähigkeiten Einschüchterung und Zorn des Wildtiers bleiben ein fachlicher Freigabeblocker; keine alternative vollständige Tierherrschaftsempfehlung vortäuschen.",
     "unresolved": [
       "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
       "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
-      "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved."
+      "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved.",
+      "Einschüchterung/Zorn des Wildtiers fehlen bewusst wegen zyklischer Primärvoraussetzung. Eine fachlich vollständige Tierherrschaft-Variante erst nach bestätigtem Operator prüfen.",
+      "104966: genaue Falken-Schadensskalierung und effektive Kritchance nach 25.11. nicht unabhängig gemessen. 10.11. Kosten und 25.11. Zielwahl/Entlassung bestätigt; keine garantierte Trefferzahl.",
+      "Vermächtnisränge 1–5, komplette Hotfix-/Pfadfreigabe und CI ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "official": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "mirror": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "sources": [
+        {
+          "url": "https://forevertalents.net/talents/hunter/",
+          "contribution": "Alternative ODER-Bedingung Bestial Wrath oder Bestial Swiftness für Intimidation; keine beobachtete Vergabe im aktuellen Client."
+        },
+        {
+          "url": "https://foreverdiff.com/talents/hunter/intimidation-1387/",
+          "contribution": "Zwei Voraussetzungen gelistet; Operator nicht eindeutig bestätigt."
+        },
+        {
+          "url": "https://foreverdb.net/class/hunter",
+          "contribution": "Öffentliche Simulator-/Guide-Daten, älterer Build 71091; keine aktuelle exakte Schadensformel."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
