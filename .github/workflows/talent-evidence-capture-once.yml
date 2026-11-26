@@ -1,0 +1,25 @@
+name: Einmaliger Talent-Evidenzabgleich
+on:
+  push:
+    branches: [talent-evidence-capture-20261126]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --ignore-scripts
+      - name: Einmaliger öffentlicher Quellenabgleich
+        run: node scripts/capture-talent-evidence-once.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: talent-evidence-capture-20261126
+          path: evidence-capture/
+          retention-days: 14
+          if-no-files-found: error
