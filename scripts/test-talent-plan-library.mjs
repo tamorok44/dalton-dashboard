@@ -455,13 +455,13 @@ for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warl
 assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
 for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
   const candidate=plans.find(p=>p.id===id);
-  const promoted=['shaman-elemental-leveling','shaman-restoration-dungeons'].includes(id);
+  const promoted=['shaman-elemental-leveling','shaman-restoration-dungeons','warrior-arms-leveling','warrior-fury-leveling'].includes(id);
   assert.ok(candidate&&candidate.status===(promoted?'approved':'research_only'));
   if(promoted){
     assert.deepEqual(candidate.supportedLegacyRanks,[0]);
     const ledger=JSON.parse(readFileSync(new URL('../docs/talent-planner-zephras-review-2026-11-26.json',import.meta.url),'utf8'));
-    const independent=ledger.classes.find(c=>c.classId===7);
-    assert.equal(independent.effectTextDifferenceCount,0);
+    const independent=ledger.classes.find(c=>c.classId===candidate.classId);
+    assert.equal(independent.effectTextDifferenceCount,candidate.classId===1?2:0);
     assert.deepEqual(independent.structureDifferences,[]);
     const pack=release.rulePacks.find(r=>r.revision===candidate.ruleRevision);
     assert.equal(pack.catalogRevision,independent.catalogRevision);
@@ -738,4 +738,9 @@ for(const [id,dist] of [["warrior-arms-dungeons",{"11650":31,"11657":20,"11670":
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+}
+
+for(const [id,milestones] of [['warrior-arms-leveling',[[105949,25],[105945,30],[110524,31],[105941,40]]],['warrior-fury-leveling',[[113569,31],[105930,40]]]]){
+ const p=plans.find(x=>x.id===id);
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }

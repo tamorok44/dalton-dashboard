@@ -16,5 +16,7 @@ import plan13 from '../data/talent-planning/shaman-restoration-leveling-v1.json'
 import plan14 from '../data/talent-planning/shaman-restoration-pvp-v1.json' with {type:'json'};
 import plan15 from '../data/talent-planning/warlock-destruction-dungeons-v1.json' with {type:'json'};
 import plan16 from '../data/talent-planning/warlock-destruction-leveling-v1.json' with {type:'json'};
-import plan17 from '../data/talent-planning/warrior-protection-dungeons-v1.json' with {type:'json'};
-export const talentPlanLibrary=Object.freeze([plan0,plan1,plan2,plan3,plan4,plan5,plan6,plan7,plan8,plan9,plan10,plan11,plan12,plan13,plan14,plan15,plan16,plan17]);
+import plan17 from '../data/talent-planning/warrior-arms-leveling-v1.json' with {type:'json'};
+import plan18 from '../data/talent-planning/warrior-fury-leveling-v1.json' with {type:'json'};
+import plan19 from '../data/talent-planning/warrior-protection-dungeons-v1.json' with {type:'json'};
+export const talentPlanLibrary=Object.freeze([plan0,plan1,plan2,plan3,plan4,plan5,plan6,plan7,plan8,plan9,plan10,plan11,plan12,plan13,plan14,plan15,plan16,plan17,plan18,plan19]);
