@@ -176,3 +176,28 @@ assert.equal(resolveTransition([transition],{observation:{...transitionObservati
 assert.equal(resolveTransition([transition],{master:{...transitionMaster,sourceRevision:'f'.repeat(64)}}).code,'unverified_current_rules');
 assert.equal(resolveTransition([transition],{master:{...transitionMaster,stale:true}}).code,'unverified_current_catalog');
 console.log('Reviewed exact transition preserves plan identity; unknown updates fail closed: OK');
+
+// Marksmanship keeps its pet without touching the unresolved BM edge.
+const marksman=JSON.parse(readFileSync(new URL('../data/talent-planning/hunter-marksmanship-leveling-v1.json',import.meta.url),'utf8'));
+const marksmanRows=[
+  [11372,[[104976,0,5],[104960,0,5],[104975,1,2],[104970,2,1],[104969,2,5],[104972,1,2],
+    [104964,4,1,[[104970,1],[104961,1]]],[104961,6,1,[[104964,1]]]]],
+  [11371,[[105011,0,5],[105008,1,5],[105005,2,2],[105009,1,5],[105004,3,1],[105002,3,5,[[105008,5]]],
+    [104999,4,2,[[105005,2]]],[105000,4,1],[104998,5,5],[104997,6,1,[[105004,1]]]]],
+  [11370,[]]
+];
+const marksmanTrees=marksmanRows.map(([id,rows])=>({id,talents:rows.map(([id,row,maxRank,pre=[]])=>({
+  id,row,maxRank,requiredPoints:row*5,prerequisites:pre.map(([id,rank])=>({id,rank,conditionKnown:true}))
+}))}));
+const marksmanMaster={...hunterMaster,classes:{3:{trees:marksmanTrees}}};
+const marksmanRules={...hunterRules,minimumLevelByTalent:Object.fromEntries(marksmanTrees.flatMap(t=>t.talents.map(n=>[n.id,10+5*n.row])))};
+const mmChecked=validateTalentPath({...marksman,catalogRevision:hunterRevision,ruleRevision:marksmanRules.revision},marksmanMaster,marksmanRules);
+assert.ok(mmChecked.ok,JSON.stringify(mmChecked));
+assert.equal(mmChecked.history.length,51);
+assert.equal(mmChecked.history.find(p=>p.talentId===105004).level,25);
+assert.equal(mmChecked.history.find(p=>p.talentId===104999).level,30);
+assert.equal(mmChecked.history.find(p=>p.talentId===104997).level,40);
+assert.deepEqual([11372,11371,11370].map(id=>mmChecked.history.filter(p=>p.treeId===id).length),[20,31,0]);
+assert.ok(!marksman.points.some(p=>[104964,104961,105007].includes(p.talentId)));
+assert.equal(resolveApprovedTalentPlan(marksman.profiles[0],[marksman],marksmanMaster,[marksmanRules]).code,'no_approved_recommendation');
+console.log('Marksmanship: 51-point research fixture, retains pet and avoids disputed edge: OK');

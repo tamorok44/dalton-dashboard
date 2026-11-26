@@ -337,7 +337,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
         return '<option value="'+esc(id)+'"'+(treeId===id?' selected':'')+'>'+esc(label)+'</option>';
       }).join('')+'</select></label>':'';
     const missing=treeId&&!profile?'<p role="status">Für deine gewählte Spezialisierung steht bei dieser Ausrichtung noch kein fachlich freigegebener Plan bereit. Wir ersetzen deine Wahl nicht automatisch.</p>':'';
-    return fieldHtml+explanation+specialization+missing+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
+    return fieldHtml+explanation+specialization+missing+(guide.profiles.length?'<p class="talent-point-note">Die Empfehlung beruht auf redaktionell geprüften Pfaden. Die Gültigkeit für den aktuellen Spielstand wird beim Erstellen des Plans geprüft.</p>':'')+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
   }
   function render(focus){
     const disabled=busy?' disabled':'';

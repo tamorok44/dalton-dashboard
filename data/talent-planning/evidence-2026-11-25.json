@@ -378,6 +378,36 @@
       "url": "https://www.reddit.com/r/wowforever/comments/1y55sam/fingers_of_frost_talent_broken/",
       "kind": "community_report",
       "independenceGroup": "reddit-single-report"
+    },
+    {
+      "id": "icyveins-marksmanship-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/marksmanship-hunter-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icyveins-hunter-editorial"
+    },
+    {
+      "id": "grindclassic-marksmanship-leveling",
+      "url": "https://grindclassic.com/wow-forever/leveling/hunter/marksmanship/",
+      "kind": "expert_guide",
+      "independenceGroup": "grindclassic-hunter-editorial"
+    },
+    {
+      "id": "wowhead-marksmanship-leveling",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/marksmanship/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-hunter-editorial"
+    },
+    {
+      "id": "mobalytics-feral-tank-2511",
+      "url": "https://mobalytics.gg/wow-forever/classes/feral-druid-tank-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-druid-editorial"
+    },
+    {
+      "id": "grindclassic-feral-leveling",
+      "url": "https://grindclassic.com/wow-forever/leveling/druid/feral/",
+      "kind": "expert_guide",
+      "independenceGroup": "grindclassic-druid-editorial"
     }
   ],
   "pilot": {

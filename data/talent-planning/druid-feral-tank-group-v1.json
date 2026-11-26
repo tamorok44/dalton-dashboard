@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-feral-dungeons-tank-group-balanced",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11347,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 0,
+    "11340": 12,
+    "11347": 39
+  },
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-feral-pve",
+      "mobalytics-feral-tank-2511",
+      "grindclassic-feral-leveling"
+    ],
+    "editorialDecision": "Distinct Bear dungeon progression. Prioritize Swipe before defensive extra armor, Lacerate at 25, rage generation and Primal Bite at 40. Avoid Shifting Power and Predatory Discipline as cat-specific investments; evaluate distinct mixed leveling separately.",
+    "unresolved": [
+      "Structural check against retained 71091 proof only. New 71139 full Druid catalog inconsistent with official Balance hotfix; do not approve until current independent comparison reconciled.",
+      "Indexed Mobalytics tank guide explicitly permits Primal Bite first at 40; exact group threat, survivability and form-specific behavior still require full evidence review.",
+      "No measured tank optimization or current build approval."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    }
+  },
+  "points": [
+    {
+      "talentId": 104938,
+      "rank": 1
+    },
+    {
+      "talentId": 104938,
+      "rank": 2
+    },
+    {
+      "talentId": 104938,
+      "rank": 3
+    },
+    {
+      "talentId": 104938,
+      "rank": 4
+    },
+    {
+      "talentId": 104938,
+      "rank": 5
+    },
+    {
+      "talentId": 104940,
+      "rank": 1
+    },
+    {
+      "talentId": 104940,
+      "rank": 2
+    },
+    {
+      "talentId": 104940,
+      "rank": 3
+    },
+    {
+      "talentId": 104943,
+      "rank": 1
+    },
+    {
+      "talentId": 104943,
+      "rank": 2
+    },
+    {
+      "talentId": 104948,
+      "rank": 1
+    },
+    {
+      "talentId": 104948,
+      "rank": 2
+    },
+    {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 2
+    },
+    {
+      "talentId": 104949,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 3
+    },
+    {
+      "talentId": 104947,
+      "rank": 1
+    },
+    {
+      "talentId": 104955,
+      "rank": 1
+    },
+    {
+      "talentId": 104947,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 3
+    },
+    {
+      "talentId": 104954,
+      "rank": 1
+    },
+    {
+      "talentId": 104954,
+      "rank": 2
+    },
+    {
+      "talentId": 104954,
+      "rank": 3
+    },
+    {
+      "talentId": 104954,
+      "rank": 4
+    },
+    {
+      "talentId": 104954,
+      "rank": 5
+    },
+    {
+      "talentId": 104956,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 2
+    },
+    {
+      "talentId": 104953,
+      "rank": 3
+    },
+    {
+      "talentId": 104953,
+      "rank": 4
+    },
+    {
+      "talentId": 104953,
+      "rank": 5
+    },
+    {
+      "talentId": 104945,
+      "rank": 1
+    },
+    {
+      "talentId": 104945,
+      "rank": 2
+    },
+    {
+      "talentId": 104945,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104919,
+      "rank": 1
+    },
+    {
+      "talentId": 104919,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104938,
+      "count": 5,
+      "reason": "Kosten zentraler Formfähigkeiten reduzieren."
+    },
+    {
+      "talentId": 104940,
+      "count": 3,
+      "reason": "Prankenhieb früh für Gruppenbedrohung und Schaden stärken."
+    },
+    {
+      "talentId": 104943,
+      "count": 2,
+      "reason": "Ausweichen in Bärengestalt und Beweglichkeit beim Questen verbessern."
+    },
+    {
+      "talentId": 104948,
+      "count": 2,
+      "reason": "Häufige Formangriffe stärken und Aufschlitzen vorbereiten."
+    },
+    {
+      "talentId": 104944,
+      "count": 1,
+      "reason": "Wilde Attacke für Annäherung und Unterbrechung."
+    },
+    {
+      "talentId": 104946,
+      "count": 2,
+      "reason": "Kritische Trefferchance und Voraussetzung für Blutraserei."
+    },
+    {
+      "talentId": 104949,
+      "count": 1,
+      "reason": "Aufschlitzen als stapelbare Bedrohungsquelle auf Stufe 25."
+    },
+    {
+      "talentId": 104942,
+      "count": 3,
+      "reason": "Basisrüstung in Gestalt erhöhen."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Zusätzliche Wut bei kritischen Treffern vorbereiten."
+    },
+    {
+      "talentId": 104955,
+      "count": 1,
+      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Wutunterstützung vervollständigen."
+    },
+    {
+      "talentId": 104952,
+      "count": 3,
+      "reason": "Angriffskraft in Gestalt und Voraussetzung für Beißen und Reißen."
+    },
+    {
+      "talentId": 104954,
+      "count": 5,
+      "reason": "Ausweichen und Wut in Bärengestalt vor dem Abschluss ausbauen."
+    },
+    {
+      "talentId": 104956,
+      "count": 1,
+      "reason": "Urtümlichen Biss für Bedrohung auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 104953,
+      "count": 5,
+      "reason": "Nahkampfschaden gegen blutende Ziele erhöhen."
+    },
+    {
+      "talentId": 104945,
+      "count": 3,
+      "reason": "Wutkosten von Aufschlitzen reduzieren."
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Ausdauer in Bärengestalt ausbauen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Verursachten Schaden erhöhen."
+    },
+    {
+      "talentId": 104919,
+      "count": 2,
+      "reason": "Ressourcenkosten situativer Gestaltwechsel reduzieren."
+    }
+  ]
+}

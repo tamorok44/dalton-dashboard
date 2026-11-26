@@ -386,6 +386,10 @@ for(const entry of release.revalidations??[]){
   revalidationKeys.add(key);
   auditRevalidation(entry,plans,{evidence,packs},snapshots);
 }
+const bearPlan=plans.find(p=>p.id==='druid-feral-dungeons-tank-group-balanced');
+assert.ok(bearPlan&&bearPlan.status==='research_only');
+assert.deepEqual(validatedRanks.get(JSON.stringify([bearPlan.id,bearPlan.version])),[0]);
+assert.ok(!bearPlan.points.some(p=>[104951,113563].includes(p.talentId)),'Bear route deliberately avoids cat-specific mechanic');
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');
