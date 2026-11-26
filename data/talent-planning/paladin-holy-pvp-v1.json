@@ -63,46 +63,6 @@
       "rank": 2
     },
     {
-      "talentId": 105332,
-      "rank": 1
-    },
-    {
-      "talentId": 105332,
-      "rank": 2
-    },
-    {
-      "talentId": 105332,
-      "rank": 3
-    },
-    {
-      "talentId": 105332,
-      "rank": 4
-    },
-    {
-      "talentId": 105332,
-      "rank": 5
-    },
-    {
-      "talentId": 105626,
-      "rank": 1
-    },
-    {
-      "talentId": 105626,
-      "rank": 2
-    },
-    {
-      "talentId": 105626,
-      "rank": 3
-    },
-    {
-      "talentId": 105626,
-      "rank": 4
-    },
-    {
-      "talentId": 105626,
-      "rank": 5
-    },
-    {
       "talentId": 105329,
       "rank": 1
     },
@@ -185,6 +145,46 @@
     {
       "talentId": 105320,
       "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
     },
     {
       "talentId": 105637,
@@ -244,29 +244,19 @@
       "reason": "Manaregeneration beim Zaubern unterstützen."
     },
     {
-      "talentId": 105332,
-      "count": 5,
-      "reason": "Intelligenz erhöhen."
-    },
-    {
-      "talentId": 105626,
-      "count": 5,
-      "reason": "Blocken bei Angriffen ergänzen."
-    },
-    {
       "talentId": 105329,
       "count": 5,
-      "reason": "Mana nach kritischer Heilung zurückgewinnen."
+      "reason": "Mana nach kritischer Heilung mit ausdrücklich genannten Heilzaubern zurückgewinnen; nicht bei jedem Tick oder beliebigen Heileffekt."
     },
     {
       "talentId": 105330,
       "count": 1,
-      "reason": "Eid des Lichts für priorisiertes Heilziel freischalten."
+      "reason": "Eid des Lichts auf einen priorisierten Verbündeten: verstärkt Heiliges Licht, Lichtblitz und Heiligen Schock auf diesem Ziel; seit Blizzard-Hotfix 25.11. 60 Minuten, nur ein Eid gleichzeitig. Keine feste Heilmenge."
     },
     {
       "talentId": 110873,
       "count": 2,
-      "reason": "Heiliges Licht nach kritischen Heilungen beschleunigen."
+      "reason": "Kritische Treffer von Heiligem Schock und Lichtblitz beschleunigen das folgende Heilige Licht im vorgesehenen Zeitfenster."
     },
     {
       "talentId": 105325,
@@ -291,12 +281,12 @@
     {
       "talentId": 105324,
       "count": 2,
-      "reason": "Trefferchance und Schutz vor Stille ergänzen."
+      "reason": "Trefferchance der Heiligzauber und verkürzte Stilledauer; keine Immunität."
     },
     {
       "talentId": 105704,
       "count": 1,
-      "reason": "Situative Schadenszauber günstiger machen."
+      "reason": "Manakosten der ausdrücklich betroffenen offensiven Heiligzauber reduzieren."
     },
     {
       "talentId": 105321,
@@ -306,7 +296,17 @@
     {
       "talentId": 105320,
       "count": 1,
-      "reason": "Lichtwacht freischalten."
+      "reason": "Lichtwacht für gezielten nächsten Heiligen Schock auf das markierte Ziel und dessen Gruppe; keine pauschale Heilmenge."
+    },
+    {
+      "talentId": 105332,
+      "count": 5,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blocken bei Angriffen ergänzen."
     },
     {
       "talentId": 105637,
@@ -321,7 +321,7 @@
     {
       "talentId": 105625,
       "count": 1,
-      "reason": "Absorptionszauber ergänzen."
+      "reason": "Bollwerk des Templers für ein situatives Absorptionsfenster; Forbearance beachten."
     },
     {
       "talentId": 105633,
@@ -341,18 +341,60 @@
       "paladin-talentsmith-2511",
       "official-hotfix-nov25"
     ],
-    "editorialDecision": "Healing under pressure with early shield/intellect investment, later Holy capstone and blessing/hammer utility. No silence immunity assumed.",
+    "editorialDecision": "Heilig-PvP: statt zehn früher Schutzpunkte zunächst den Heiligkern ausbauen: Eid des Lichts 25, Heiliger Schock 30 und Lichtwacht 40. Intelligenz, Schildblocken und Segen später. Bewusster Tausch früher passiver Defensive gegen früheren Heilzugang. Keine Stilleimmunität oder Überlegenheit vorausgesetzt.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
       "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
-      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition.",
+      "Oath of Light: 60 Minuten offiziell am 25.11. bestätigt, Clienttext teils noch 5 Minuten. Heilskalierung bleibt offen; keine globale Freigabe des Talents.",
+      "105696: Richturteil des Befehls seit 13.11. Nahkampfangriff, sonstige Richturteile nach 11.11. nicht pauschal gleichsetzen; numerische Schadensformel/Rundung nicht abschließend bestätigt.",
+      "105702: Angriffskraftminderung qualitativ belegt, widersprüchliche stufenabhängige Zahlen; kein zusätzlicher eigener AP-Bonus übernommen.",
+      "Vermächtnisränge 1–5, vollständige Hotfix-Abhängigkeitsprüfung und CI ausstehend. 113631 nicht benutzt."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://armorywowforever.com/talents/paladin",
+          "contribution": "Build 71139 ausgewiesen; Talentfunktionen und Voraussetzungen, Eid-Tooltip mit altem Dauerwert und nicht aufgelöster Heilskalierung; keine unabhängige numerische Messung."
+        },
+        {
+          "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+          "contribution": "Offiziell 11.11. Richturteile Fernkampf, 13.11. Ausnahme Richturteil des Befehls Nahkampf/On-hit, 25.11. Eid 60 Minuten, Exorzismus-Kritfehler korrigiert."
+        },
+        {
+          "url": "https://wowfdb.com/talents/paladin/",
+          "contribution": "Vindication als Angriffskraftminderung; Werte weichen von niedrigstufigem/unaufgelöstem Clienttext ab."
+        },
+        {
+          "url": "https://www.foreverdb.app/en/forever/classes/paladin",
+          "contribution": "Weiterer abweichender AP-Wert; keine feste Rundungsformel."
+        },
+        {
+          "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-leveling-talents/",
+          "contribution": "Levelvarianten und Meilensteine, Stand 9.11. als redaktionelle Referenz, nicht aktueller vollständiger Strukturbeleg."
+        },
+        {
+          "url": "https://metammo.com/wow-forever/builds/paladin",
+          "contribution": "Heilig- und Vergeltungskern, Siegelwechsel und Eid; keine gemessene Überlegenheit."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
