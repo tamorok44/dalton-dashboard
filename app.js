@@ -292,7 +292,7 @@ function talentNodeDetail(node,tree,personal,level,catalogStale,{planned=false}=
       (provenance&&provenance!=='ForeverDB deutscher Clienttext'?'<small>'+esc(provenance)+'</small>':'')+'</div>';
   }).join('');
   return '<div class="talent-node-detail"><div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(node.iconUrl,36)+'<strong>'+esc(node.name)+'</strong></span><span>'+esc(rank===null?'Rang unbekannt':rank+'/'+node.maxRank)+'</span></div>'+
-    '<p class="talent-detail-state">'+esc(label)+'</p>'+(node.reviewNotice?'<p class="talent-catalog-notice">'+esc(node.reviewNotice)+(node.reviewSources?.length?' Quellen: '+node.reviewSources.map(s=>'<a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.label)+'</a>').join(', '):'')+'</p>':'')+
+    '<p class="talent-detail-state">'+esc(label)+'</p>'+(node.reviewNotice?'<p class="talent-catalog-notice">'+esc(node.reviewNotice)+(node.reviewSources?.length?' Quellen: '+displayList('fixedControls',node.reviewSources,s=>'<a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.label)+'</a>').join(', '):'')+'</p>':'')+
     '<div class="talent-requirements"><strong>Voraussetzungen</strong><p>'+ (planned&&effectiveTalentLevel(node,personal)!==node.requiredLevel?'Mit Talentiert Rang '+esc(personal.plannedLegacyRank)+' ab Stufe '+esc(effectiveTalentLevel(node,personal))+' (regulär '+esc(node.requiredLevel)+')':'Regulär ab Stufe '+esc(node.requiredLevel))+' · '+esc(required)+' Punkte in vorherigen Reihen dieses Baums'+(before===null?'':' ('+before+' vorhanden)')+'</p>'+
     (pre?'<ul class="talent-prerequisites">'+pre+'</ul>':'')+'</div>'+
     '<div class="talent-rank-list" aria-label="Alle Talentränge">'+rankRows+'</div></div>';

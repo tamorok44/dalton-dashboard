@@ -5,6 +5,7 @@ import path from 'node:path';
 import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from '../hunter-pets.js';
 import {reputationStages,reputationColors} from '../reputation-data.js';
 import {createTalentPlanner} from '../talent-planner.js';
+import {displayedTalentText} from '../talent-text-quality.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
@@ -33,7 +34,8 @@ for(const c of data.characters){
 const executableSource=source
   .replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'')
   .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'')
-  .replace("import {createTalentPlanner} from './talent-planner.js';\n",'');
+  .replace("import {createTalentPlanner} from './talent-planner.js';\n",'')
+  .replace("import {displayedTalentText} from './talent-text-quality.js';\n",'');
 const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
@@ -43,7 +45,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1092,3 +1094,15 @@ for(const details of [[],talentChar.talentDetails.slice(0,1),talentChar.talentDe
  assert.equal(ui.personalTalentRanks(c,talentCatalogFixture.classes[8]).verified,false);
  assert.ok(ui.talentPanel(c).includes('Talentstand nicht bestätigt'));
 }
+
+// The planner's selected Legacy rank must affect the graph and detail, never the character's own unconfirmed rank.
+const earlyNode={id:123,name:'Testtalent',row:0,column:0,maxRank:1,requiredLevel:10,requiredPoints:0,prerequisites:[],descriptions:['? Mana'],descriptionSources:['ForeverDB deutscher Clienttext']};
+const earlyTree={id:1,talents:[earlyNode]};
+const earlyPersonal={verified:true,ranks:new Map()};
+assert.equal(ui.talentNodeStatus(earlyNode,earlyTree,earlyPersonal,5),'unknown');
+assert.equal(ui.talentNodeStatus(earlyNode,earlyTree,{...earlyPersonal,plannedLegacyRank:5},5),'unlocked');
+assert.equal(ui.talentNodeStatus(earlyNode,earlyTree,{...earlyPersonal,plannedLegacyRank:5},4),'unknown');
+const earlyDetail=ui.talentNodeDetail(earlyNode,earlyTree,{...earlyPersonal,plannedLegacyRank:5},5,false,{planned:true});
+assert.ok(earlyDetail.includes('Mit Talentiert Rang 5 ab Stufe 5 (regulär 10)'));
+assert.ok(earlyDetail.includes('nicht aufgelöste Angaben')&&!earlyDetail.includes('? Mana'));
+console.log('Talent display: effective Legacy gate and no unresolved tokens: OK');
