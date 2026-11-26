@@ -314,3 +314,17 @@ for(const planId of ["shaman-elemental-leveling","shaman-restoration-dungeons"])
  await blocked('unsupported_legacy_rank',{...q,rank:'1'},overrides);
 }
 console.log('Shaman: exact-build rank-zero release and higher-rank denial: OK');
+
+const shamanInfo=(await request({character:'qa-class-7'},{endpoint:orientationEndpoint})).body;
+const shamanGuide=talentAssistantGuide(shamanInfo.profiles,{goal:'leveling',role:'damage'},shamanInfo.specializations);
+assert.equal(specializationSelection(shamanGuide,{},shamanInfo.specializationAdvice).profile.planId,'shaman-enhancement-leveling');
+assert.equal(specializationSelection(shamanGuide,{treeId:11326},shamanInfo.specializationAdvice).profile.planId,'shaman-elemental-leveling');
+for(const id of ['shaman-enhancement-leveling','warlock-destruction-leveling']){
+ const plan=talentPlanLibrary.find(p=>p.id===id),pack=release.rulePacks.find(p=>p.revision===plan.ruleRevision),proof=proofs.catalogs.find(c=>c.catalogRevision===pack.catalogRevision).proof,profile=plan.profiles[0];
+ const q={...query,character:'qa-class-'+plan.classId,tree:String(plan.treeId),goal:profile.goal,role:profile.role,playStyle:profile.playStyle,priority:profile.priority};
+ const overrides={roster:async()=>({data:{characters:allRoster}}),master:async()=>({...master,classes:{[plan.classId]:proof},classMechanicsRevisions:{[plan.classId]:pack.catalogRevision},sourceRevision:pack.sourceRevision}),observe:async()=>({...observation,clientBuild:pack.clientBuild,hotfixRevision:pack.hotfixRevision})};
+ const result=(await request(q,{endpoint:handler(overrides)})).body;
+ assert.equal(result.ok,true,id+': '+JSON.stringify(result));assert.equal(result.history.length,51);
+ await blocked('unsupported_legacy_rank',{...q,rank:'1'},overrides);
+}
+console.log('Additional rank-zero plans and reviewed Shaman comparative choice: OK');

@@ -444,11 +444,13 @@ assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==fa
   Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warlock-demonology-leveling",[20,31,0]],["warlock-destruction-leveling",[20,0,31]],["warrior-protection-dungeons",[15,5,31]],["priest-holy-dungeons",[20,31,0]],["priest-shadow-leveling",[20,0,31]],["paladin-retribution-leveling",[12,8,31]],["rogue-combat-leveling",[12,39,0]],["shaman-enhancement-leveling",[20,31,0]]]){
   const p=plans.find(p=>p.id===id);
-  assert.ok(p&&p.status==='research_only');
+  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling'].includes(id);
+  assert.ok(p&&p.status===(promoted?'approved':'research_only'));
+  if(promoted)assert.deepEqual(p.supportedLegacyRanks,[0]);
   assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,p.version])),[0]);
   assert.deepEqual(coverage.classes[p.classId].map(t=>p.expectedDistribution[t.treeId]),distribution);
   const key=proofKey(p.classId,p.research.structuralValidation.catalogRevision,p.research.structuralValidation.sourceRevision);
-  assert.ok(researchSnapshots.has(key)&&!snapshots.has(key));
+  if(promoted)assert.ok(snapshots.has(key));else assert.ok(researchSnapshots.has(key)&&!snapshots.has(key));
 }
 assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
 for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
@@ -671,7 +673,7 @@ for(const [id,distribution] of [['warlock-affliction-pvp',[35,16,0]],['warlock-d
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
 }
 for(const treeId of [11629,11636,11637])for(const goal of ['leveling','dungeons','pvp']){
-  assert.ok(plans.some(p=>p.classId===9&&p.treeId===treeId&&p.active!==false&&p.status==='research_only'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Warlock research '+treeId+' '+goal);
+  assert.ok(plans.some(p=>p.classId===9&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Warlock research '+treeId+' '+goal);
 }
 
 for(const [id,distribution] of [['mage-arcane-pvp',[31,0,20]],['mage-fire-pvp',[0,31,20]],['mage-frost-dungeons',[18,0,33]]]){

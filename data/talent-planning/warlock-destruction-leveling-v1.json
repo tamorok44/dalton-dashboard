@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 9,
   "treeId": 11637,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -332,15 +332,29 @@
     ],
     "editorialDecision": "Direct-damage alternative with early cast-time and mana talents; no claim it is as efficient as Affliction. Incinerate at 40, Affliction sustain and hit later. Crix and Method agree on higher mana demands.",
     "unresolved": [
-      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
-      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
-      "Compare early mana downtime and leveling pet choice; verify Searing Pain threat and interaction of Conflagrate, Shadowburn and Shadow and Flame."
+      "No controlled comparative performance benchmark; editorial route.",
+      "Legacy ranks 1–5 effective gates unverified."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
-      "catalogRevision": "954b5cfaaa3f0879d6bc5e47b169c867df7dd608a5c841d19c3be3b22a6feb12",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Zerstörung",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-destruction-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Direktschaden als bewusst offensive Alternative zum Gebrechen- und Dämonologie-Leveln. Früh kürzere Zauberzeit, Manakosten und Schadensminderung; Schattenbrand auf 20, Feuersbrunst nach 16 investierten Punkten und Omen der Verwüstung auf 30 für ausgewählte Mehrzielkämpfe. Verbrennen auf 40. Anschließend verbessern Gebrechen-Talente Trefferchance, Aderlass und Entzug; Verderbnis wird spät zum Sofortzauber. Der Pfad ist für direkte Schadensfenster gedacht, nicht für gemessen schnellstes Leveln oder pausenloses Questen. Keine garantierten Procs oder numerischen Begleiterboni.",
+    "adviceSummary": "Direktschaden mit frühem Schattenbrand, Feuersbrunst und Verbrennen auf 40; später Mana- und Entzugstalente.",
+    "evidenceIds": [
+      "warlock-destruction-leveling-rank0-71139-editorial-1",
+      "warlock-destruction-leveling-rank0-71139-editorial-2"
+    ]
   }
 }

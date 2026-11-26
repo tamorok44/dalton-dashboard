@@ -397,3 +397,8 @@ Schamane Elementar/Leveln und Wiederherstellung/Dungeons als eigene Progressions
 ### Effektabgleich und Hotfix-Anzeige (26.11.2026)
 
 Alle 26 Unterschiede anhand der unveränderten archivierten Quellen rangweise untersucht (CI 45817715156). Eigene Einzelentscheidungen und beide Effektprüfsummen in `docs/talent-planner-effect-review-2026-11-26.json`: 7 Schreibweisen/Farbmarkierungen, 8 nicht aufgelöste Zahlen, 4 Skalierungs-/Rundungsunterschiede, 7 offizielle Hotfix-Änderungen. Anzeigeprojektion korrigiert auf der exakt bekannten Quellenkombination den Jäger-Pfeil, Paladin-Kante/Eid und sechs Balance-Talente. Texte sind ausdrücklich eigene deutsche Zusammenfassungen, keine Originaltexte. Die Dreamstate-Profil- und Rangzauberzuordnung bleibt unbekannt, deshalb kein persönlicher Druiden-Rangabgleich auf dieser Projektion. Der echte Planungs-Master und Freigabedigest bleiben unverändert. Bei anderer Quellenprüfsumme wird die alte Korrektur nicht angewendet. Keine neuen Provider-Abrufe, Zephras/Blizzard-Quellenhinweise in der UI. PWA Cache v92.
+
+
+### Verstärkung und Zerstörung – Rang 0 (26.11.2026)
+
+Zwei zusätzliche redaktionelle Levelpfade freigegeben: Verstärkungsschamane (Sturmschlag 25, Mahlstromwaffe ab 35, Zorn des Scharfsehers 40), Zerstörungshexenmeister (Schattenbrand 20, Verbrennen 40). Keine zugeteilten Talente mit abweichenden Effekttexten; exakter Clientvergleich und frühere unabhängige Kantenprüfung stimmen überein. November-Hotfixes berücksichtigt, keine behaupteten DPS-Vorteile. Vergleichende Schamanen-Empfehlung Verstärkung vor Elementar für gemischtes Leveln, mit exakten freigegebenen Alternativen und zwei Quellen (Outpost 14.11., WoW-Forever.gg 24.11.). Kein höherer Vermächtnisrang oder Produktivbetrieb freigegeben.
