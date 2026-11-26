@@ -99,11 +99,18 @@ try{
      else assert.equal(await role.count(),0);
      await spec.waitFor({state:'visible'});
      assert.equal(await page.locator('[data-plan-result]').count(),0);
-     const hasDefault=Number(id)===7;
+     const defaultTree={1:'11670',7:'11363',9:'11637'}[Number(id)];
+     const hasDefault=Boolean(defaultTree);
       assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),hasDefault?1:0,'only a reviewed default may enable confirmation');
-      if(hasDefault)assert.equal(await spec.inputValue(),'11363','reviewed mixed PvP default');
-     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes(Number(id)===7?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
+      if(hasDefault)assert.equal(await spec.inputValue(),defaultTree,'reviewed PvP default');
+     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes([1,7,8,9].includes(Number(id))?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
    }
+   await choose(8);await goal.selectOption('pvp');
+   assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0,'no reviewed comparative default yet');
+   await spec.selectOption('11582');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
+   await spec.selectOption('11594');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
+   await spec.selectOption('11601');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);
+   await choose(5);await goal.selectOption('pvp');await role.selectOption('damage');assert.equal(await spec.inputValue(),'11622');
    await choose(8);await goal.selectOption('leveling');
    assert.equal(await spec.inputValue(),'11582','reviewed comparative recommendation should be preselected');
    assert.equal(await role.count(),0);

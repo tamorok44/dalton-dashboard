@@ -667,7 +667,7 @@ for(const [id,distribution] of [['warlock-affliction-dungeons',[30,0,21]],['warl
 
 for(const [id,distribution] of [['warlock-affliction-pvp',[35,16,0]],['warlock-demonology-dungeons',[2,31,18]],['warlock-destruction-dungeons',[5,11,35]],['warlock-destruction-pvp',[18,0,33]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status===(id==='warlock-destruction-dungeons'?'approved':'research_only'));
+  assert.ok(p&&p.status===(['warlock-destruction-dungeons','warlock-destruction-pvp'].includes(id)?'approved':'research_only'));
   assert.deepEqual(Object.values(p.expectedDistribution),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -678,7 +678,7 @@ for(const treeId of [11629,11636,11637])for(const goal of ['leveling','dungeons'
 
 for(const [id,distribution] of [['mage-arcane-pvp',[31,0,20]],['mage-fire-pvp',[0,31,20]],['mage-frost-dungeons',[18,0,33]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status==='research_only');
+  assert.ok(p&&p.status===(id==='mage-frost-dungeons'?'research_only':'approved'));
   assert.deepEqual(Object.values(p.expectedDistribution),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -706,7 +706,7 @@ for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347"
 
 for(const [id,dist] of [["priest-discipline-leveling",{"11608":33,"11615":18,"11622":0}],["priest-discipline-pvp",{"11608":31,"11615":20,"11622":0}],["priest-holy-leveling",{"11608":15,"11615":31,"11622":5}],["priest-holy-pvp",{"11608":20,"11615":31,"11622":0}],["priest-shadow-pvp",{"11608":20,"11615":0,"11622":31}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status==='research_only');
+ assert.ok(p&&p.status===(id==='priest-shadow-pvp'?'approved':'research_only'));
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -733,7 +733,7 @@ for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"1
 
 for(const [id,dist] of [["warrior-arms-dungeons",{"11650":31,"11657":20,"11670":0}],["warrior-arms-pvp",{"11650":31,"11657":20,"11670":0}],["warrior-fury-dungeons",{"11650":20,"11657":31,"11670":0}],["warrior-fury-pvp",{"11650":20,"11657":31,"11670":0}],["warrior-protection-leveling",{"11650":15,"11657":5,"11670":31}],["warrior-protection-pvp",{"11650":15,"11657":5,"11670":31}],["paladin-holy-leveling",{"11486":31,"11541":5,"11559":15}],["paladin-holy-pvp",{"11486":31,"11541":20,"11559":0}],["paladin-protection-leveling",{"11486":15,"11541":31,"11559":5}],["paladin-protection-pvp",{"11486":0,"11541":31,"11559":20}],["paladin-retribution-dungeons",{"11486":12,"11541":8,"11559":31}],["paladin-retribution-pvp",{"11486":0,"11541":20,"11559":31}],["shaman-elemental-dungeons",{"11326":31,"11362":15,"11363":5}],["shaman-elemental-pvp",{"11326":31,"11362":15,"11363":5}],["shaman-enhancement-dungeons",{"11326":17,"11362":0,"11363":34}],["shaman-enhancement-pvp",{"11326":11,"11362":5,"11363":35}],["shaman-restoration-leveling",{"11326":20,"11362":31,"11363":0}],["shaman-restoration-pvp",{"11326":0,"11362":41,"11363":10}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status===(id.startsWith('shaman-')?'approved':'research_only'));
+ assert.ok(p&&p.status===(id.startsWith('shaman-')||['warrior-protection-leveling','warrior-protection-pvp'].includes(id)?'approved':'research_only'));
  if(id.startsWith('shaman-'))assert.deepEqual(p.supportedLegacyRanks,[0]);
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
@@ -741,6 +741,12 @@ for(const [id,dist] of [["warrior-arms-dungeons",{"11650":31,"11657":20,"11670":
 }
 
 for(const [id,milestones] of [['warrior-arms-leveling',[[105949,25],[105945,30],[110524,31],[105941,40]]],['warrior-fury-leveling',[[113569,31],[105930,40]]]]){
+ const p=plans.find(x=>x.id===id);
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+
+// Reviewed progression milestones must survive future revisions.
+for(const [id,milestones] of [['mage-fire-pvp',[[105792,20],[105786,25],[105783,33],[105781,40],[105769,56]]],['mage-arcane-pvp',[[105804,25],[105801,30],[105798,40],[105769,56]]],['warrior-protection-leveling',[[105970,24],[105966,25],[105963,27],[105959,40]]],['warrior-protection-pvp',[[105970,24],[105966,25],[105963,26],[105959,40]]]]){
  const p=plans.find(x=>x.id===id);
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }

@@ -52,7 +52,7 @@ try{
 await blocked('unknown_character',{...query,character:'not-in-roster'});
 await blocked('unknown_character',query,{roster:async()=>({data:{characters:[mage,{...mage,blizzardCharacterId:556}]}})});
 await blocked('roster_unavailable',query,{roster:async()=>({fallback:true})});
-assert.deepEqual((await request({character:warrior.slug})).body.profiles.map(p=>p.planId).sort(),['warrior-arms-leveling','warrior-fury-leveling','warrior-protection-dungeons']);
+assert.deepEqual((await request({character:warrior.slug})).body.profiles.map(p=>p.planId).sort(),['warrior-arms-leveling','warrior-fury-leveling','warrior-protection-dungeons','warrior-protection-leveling','warrior-protection-pvp']);
 await blocked('no_approved_recommendation',{...query,character:warrior.slug});
 await blocked('no_approved_recommendation',{...query,goal:'pvp'});
 await blocked('no_approved_recommendation',{...query,tree:'11601'});
@@ -65,15 +65,15 @@ await blocked('binding_unavailable',{...query,goal:'pvp',planId:'mage-arcane-lev
 assert.equal(reads,0,'rejected requests and profile discovery do not inspect catalogs or providers');
 
 const info=(await request({character:mage.slug})).body;
-assert.equal(info.profiles.length,4);
+assert.equal(info.profiles.length,6);
 assert.equal(info.identity,'["eu","",555]');
 assert.equal(info.profiles[0].name,'Arkan');
 assert.deepEqual(info.profiles[0].supportedLegacyRanks,[0]);
 assert.equal(talentGuideOptions(info.profiles).complete,false);
-assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).profiles.length,0);
+assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).profiles.length,2);
 assert.equal(talentGuideOptions(info.profiles,{goal:'leveling'}).profiles.length,2);
 assert.deepEqual(talentGuideOptions(info.profiles,{goal:'leveling'}).fields.map(f=>f.key),['goal']);
-assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).unavailable,true);
+assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).unavailable,false);
 assert.equal(info.profiles.find(p=>p.goal==='leveling'&&p.treeId===11582).planId,'mage-arcane-leveling');
 assert.equal(info.profiles[0].version,1);
 assert.deepEqual(info.specializations.map(p=>p.name),['Arkan','Feuer','Frost']);
@@ -177,7 +177,7 @@ assert.equal((await request(query,{endpoint:versions})).body.version,2);
 assert.equal((await request({...query,planId:current.id,version:'1',identity:info.identity},{endpoint:versions})).body.version,1);
 assert.equal((await request({character:mage.slug},{endpoint:versions})).body.profiles.length,1);
 const newCharacter={...mage,slug:'second-mage',blizzardCharacterId:777};
-assert.equal((await request({character:newCharacter.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,newCharacter]}})})})).body.profiles.length,4);
+assert.equal((await request({character:newCharacter.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,newCharacter]}})})})).body.profiles.length,6);
 assert.equal((await request({character:mage.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,{...mage,slug:'duplicate-id'}]}})})})).body.identity,null);
 const stalePersonal=(await request(query,{endpoint:handler({roster:async()=>({data:{characters:[{...mage,scrapedAt:'2026-11-20T10:00:00Z'}]}})})})).body;
 assert.equal(stalePersonal.ok,true);
@@ -326,7 +326,7 @@ assert.equal(specializationSelection(shamanGuide,{treeId:11326},shamanInfo.speci
 const shamanDungeonGuide=talentAssistantGuide(shamanInfo.profiles,{goal:'dungeons',role:'damage'},shamanInfo.specializations);
 assert.equal(specializationSelection(shamanDungeonGuide,{},shamanInfo.specializationAdvice).profile.planId,'shaman-enhancement-dungeons');
 assert.equal(specializationSelection(shamanDungeonGuide,{treeId:11326},shamanInfo.specializationAdvice).profile.planId,'shaman-elemental-dungeons');
-for(const id of ['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','priest-shadow-dungeons','warrior-protection-dungeons','warlock-destruction-dungeons','warrior-arms-leveling','warrior-fury-leveling']){
+for(const id of ['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','priest-shadow-dungeons','warrior-protection-dungeons','warlock-destruction-dungeons','warrior-arms-leveling','warrior-fury-leveling','mage-arcane-pvp','mage-fire-pvp','priest-shadow-pvp','warlock-destruction-pvp','warrior-protection-leveling','warrior-protection-pvp']){
  const plan=talentPlanLibrary.find(p=>p.id===id),pack=release.rulePacks.find(p=>p.revision===plan.ruleRevision),proof=proofs.catalogs.find(c=>c.catalogRevision===pack.catalogRevision).proof,profile=plan.profiles[0];
  const q={...query,character:'qa-class-'+plan.classId,tree:String(plan.treeId),goal:profile.goal,role:profile.role,playStyle:profile.playStyle,priority:profile.priority};
  const overrides={roster:async()=>({data:{characters:allRoster}}),master:async()=>({...master,classes:{[plan.classId]:proof},classMechanicsRevisions:{[plan.classId]:pack.catalogRevision},sourceRevision:pack.sourceRevision}),observe:async()=>({...observation,clientBuild:pack.clientBuild,hotfixRevision:pack.hotfixRevision})};

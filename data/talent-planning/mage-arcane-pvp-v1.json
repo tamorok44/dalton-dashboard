@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11582,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -340,17 +340,31 @@
       "cobalt-arcane-pvp",
       "foreverhub-arcane-pvp"
     ],
-    "editorialDecision": "Arcane burst with improved Counterspell and Presence of Mind, followed by Frost control and Ice Block. Deliberately trades early Frost defense for Arcane milestones; not a measured optimal PvP build.",
+    "editorialDecision": "Früher Arkan-Kern für Gruppen-PvP: Schutz vor Zauberzeitverlust, verbesserter Gegenzauber auf 25–26, Geistesgegenwart auf 30 und Arkane Macht auf 40. Die Frost-Ergänzung bietet später Verlangsamungen und Eisblock auf 56. Ein Frost-Start gäbe Eisblock bereits auf 25, würde aber die frühen Arkan-Meilensteine verschieben. Für häufigen gegnerischen Nahkampfdruck bleibt ein anderer Pfad sinnvoll; keine garantierten kritischen Treffer oder unabhängigen Procs.",
     "unresolved": [
-      "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
-      "No verified Legacy ranks 1–5 or controlled comparative performance.",
-      "Compare early survivability versus earlier Frost investment; no assumed independent missile procs or guaranteed burst."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Arkan",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-arcane-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Früher Arkan-Kern für Gruppen-PvP: Schutz vor Zauberzeitverlust, verbesserter Gegenzauber auf 25–26, Geistesgegenwart auf 30 und Arkane Macht auf 40. Die Frost-Ergänzung bietet später Verlangsamungen und Eisblock auf 56. Ein Frost-Start gäbe Eisblock bereits auf 25, würde aber die frühen Arkan-Meilensteine verschieben. Für häufigen gegnerischen Nahkampfdruck bleibt ein anderer Pfad sinnvoll; keine garantierten kritischen Treffer oder unabhängigen Procs.",
+    "adviceSummary": "Gruppen-PvP mit verbessertem Gegenzauber, Geistesgegenwart auf 30, Arkaner Macht auf 40 und Eisblock auf 56.",
+    "evidenceIds": [
+      "mage-arcane-pvp-rank0-71139-editorial-1",
+      "mage-arcane-pvp-rank0-71139-editorial-2"
+    ]
   }
 }

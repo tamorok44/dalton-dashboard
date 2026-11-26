@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11594,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -63,15 +63,15 @@
       "rank": 5
     },
     {
-      "talentId": 105789,
+      "talentId": 105792,
       "rank": 1
     },
     {
-      "talentId": 105789,
+      "talentId": 105792,
       "rank": 2
     },
     {
-      "talentId": 105789,
+      "talentId": 105792,
       "rank": 3
     },
     {
@@ -87,15 +87,15 @@
       "rank": 1
     },
     {
-      "talentId": 105785,
+      "talentId": 105789,
       "rank": 1
     },
     {
-      "talentId": 105785,
+      "talentId": 105789,
       "rank": 2
     },
     {
-      "talentId": 105785,
+      "talentId": 105789,
       "rank": 3
     },
     {
@@ -119,8 +119,16 @@
       "rank": 1
     },
     {
-      "talentId": 105791,
+      "talentId": 105785,
       "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 2
+    },
+    {
+      "talentId": 105785,
+      "rank": 3
     },
     {
       "talentId": 105782,
@@ -133,14 +141,6 @@
     {
       "talentId": 105782,
       "rank": 3
-    },
-    {
-      "talentId": 105788,
-      "rank": 1
-    },
-    {
-      "talentId": 105788,
-      "rank": 2
     },
     {
       "talentId": 105781,
@@ -239,9 +239,9 @@
       "reason": "Entzünden für kritische Feuerzauber ausbauen."
     },
     {
-      "talentId": 105789,
+      "talentId": 105792,
       "count": 3,
-      "reason": "Zauberzeitverlust und Feuerbedrohung verringern."
+      "reason": "Situative Betäubungschance bei Feuerzaubern ergänzen; keine garantierte Auslösung."
     },
     {
       "talentId": 105797,
@@ -256,17 +256,17 @@
     {
       "talentId": 105786,
       "count": 1,
-      "reason": "Aufwärmen auf 25 freischalten."
+      "reason": "Aufwärmen auf Stufe 25 freischalten."
     },
     {
-      "talentId": 105785,
+      "talentId": 105789,
       "count": 3,
-      "reason": "Mana bei passenden kritischen Treffern zurückgewinnen."
+      "reason": "Zauberzeitverlust und Feuerbedrohung verringern."
     },
     {
       "talentId": 105797,
       "count": 1,
-      "reason": "Feuerschlag-Talent vervollständigen."
+      "reason": "Feuerschlag flexibler einsetzen."
     },
     {
       "talentId": 105784,
@@ -276,22 +276,17 @@
     {
       "talentId": 105783,
       "count": 1,
-      "reason": "Weitere Feueroption freischalten."
+      "reason": "Druckwelle für situativen Flächenschaden und Verlangsamung freischalten."
     },
     {
-      "talentId": 105791,
-      "count": 1,
-      "reason": "Flammenstoß ergänzen."
+      "talentId": 105785,
+      "count": 3,
+      "reason": "Mana bei passenden kritischen Treffern zurückgewinnen."
     },
     {
       "talentId": 105782,
       "count": 3,
       "reason": "Feuermacht gegen Ziele mit eigenen Feuereffekten ausbauen."
-    },
-    {
-      "talentId": 105788,
-      "count": 2,
-      "reason": "Versengen für länger lebende Ziele ergänzen."
     },
     {
       "talentId": 105781,
@@ -345,17 +340,31 @@
       "cobalt-fire-pvp",
       "undying-fire-pvp"
     ],
-    "editorialDecision": "Fire pressure and protected casting, then Frost control and Ice Block. Prioritize a usable defensive exit; no guaranteed Heating Up or critical chain.",
+    "editorialDecision": "Gruppen-PvP mit früher Betäubungschance durch Impact, Feuerball, Entzünden, Pyroschlag und Aufwärmen. Drei Punkte für Impact ersetzen die bisherigen Investitionen in verbesserten Flammenstoß und Versengen; Druckwelle bietet situative Kontrolle, Verbrennung bleibt auf 40. Brennende Seele reduziert Zauberzeitverlust, ist keine Immunität gegen Unterbrechungen. Frost-first wäre defensiver, verschiebt aber den Feuer-Kern. Keine garantierte Betäubung oder Kritkette.",
     "unresolved": [
-      "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
-      "No verified Legacy ranks 1–5 or controlled comparative performance.",
-      "Verify effect of the additional Fire node and whether shorter fights favor an earlier Frost dip; shared Ice Lance/Fire Blast cooldown is not bypassed."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Feuer",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-fire-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Gruppen-PvP mit früher Betäubungschance durch Impact, Feuerball, Entzünden, Pyroschlag und Aufwärmen. Drei Punkte für Impact ersetzen die bisherigen Investitionen in verbesserten Flammenstoß und Versengen; Druckwelle bietet situative Kontrolle, Verbrennung bleibt auf 40. Brennende Seele reduziert Zauberzeitverlust, ist keine Immunität gegen Unterbrechungen. Frost-first wäre defensiver, verschiebt aber den Feuer-Kern. Keine garantierte Betäubung oder Kritkette.",
+    "adviceSummary": "Feuer-PvP mit Impact auf 20–22, Aufwärmen auf 25, Druckwelle auf 33 und Verbrennung auf 40; Eisblock auf 56.",
+    "evidenceIds": [
+      "mage-fire-pvp-rank0-71139-editorial-1",
+      "mage-fire-pvp-rank0-71139-editorial-2"
+    ]
   }
 }

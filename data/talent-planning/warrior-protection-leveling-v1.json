@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 1,
   "treeId": 11670,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -43,26 +43,6 @@
       "rank": 5
     },
     {
-      "talentId": 105939,
-      "rank": 1
-    },
-    {
-      "talentId": 105939,
-      "rank": 2
-    },
-    {
-      "talentId": 105939,
-      "rank": 3
-    },
-    {
-      "talentId": 105939,
-      "rank": 4
-    },
-    {
-      "talentId": 105939,
-      "rank": 5
-    },
-    {
       "talentId": 105969,
       "rank": 1
     },
@@ -91,36 +71,36 @@
       "rank": 2
     },
     {
-      "talentId": 110856,
+      "talentId": 105974,
       "rank": 1
     },
     {
-      "talentId": 110856,
+      "talentId": 105974,
       "rank": 2
     },
     {
-      "talentId": 110856,
-      "rank": 3
+      "talentId": 105970,
+      "rank": 1
     },
     {
       "talentId": 105966,
       "rank": 1
     },
     {
-      "talentId": 105968,
+      "talentId": 105972,
+      "rank": 3
+    },
+    {
+      "talentId": 105963,
       "rank": 1
     },
     {
-      "talentId": 105968,
+      "talentId": 105963,
       "rank": 2
     },
     {
       "talentId": 105968,
-      "rank": 3
-    },
-    {
-      "talentId": 105972,
-      "rank": 3
+      "rank": 1
     },
     {
       "talentId": 105961,
@@ -139,8 +119,8 @@
       "rank": 1
     },
     {
-      "talentId": 105970,
-      "rank": 1
+      "talentId": 105968,
+      "rank": 2
     },
     {
       "talentId": 105962,
@@ -165,6 +145,26 @@
     {
       "talentId": 105959,
       "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
     },
     {
       "talentId": 105957,
@@ -234,11 +234,6 @@
       "reason": "Blocken und Wutgewinn mit Schild früh ausbauen."
     },
     {
-      "talentId": 105939,
-      "count": 5,
-      "reason": "Kritische Trefferchance ergänzen."
-    },
-    {
       "talentId": 105969,
       "count": 3,
       "reason": "Rache als frühen Bedrohungs- und Schadenszauber stärken."
@@ -254,24 +249,34 @@
       "reason": "Wut bei Ausweichen und Parieren mit Schild erhalten."
     },
     {
-      "talentId": 110856,
-      "count": 3,
-      "reason": "Bedrohung in Verteidigungshaltung mit Schild erhöhen."
+      "talentId": 105974,
+      "count": 2,
+      "reason": "Zusätzliche Wut durch Blutrausch unterstützen."
+    },
+    {
+      "talentId": 105970,
+      "count": 1,
+      "reason": "Defensiven Notfallknopf ergänzen."
     },
     {
       "talentId": 105966,
       "count": 1,
-      "reason": "Sturmangriff in Verteidigungshaltung ermöglichen."
-    },
-    {
-      "talentId": 105968,
-      "count": 3,
-      "reason": "Kosten von Rüstung zerreißen reduzieren."
+      "reason": "Sturmangriff in Verteidigungshaltung auf Stufe 25 ermöglichen, außerhalb des Kampfes."
     },
     {
       "talentId": 105972,
       "count": 1,
-      "reason": "Donnerknall-Kostenreduktion vervollständigen."
+      "reason": "Donnerknall günstiger machen."
+    },
+    {
+      "talentId": 105963,
+      "count": 2,
+      "reason": "Verbesserten Schildhieb für situative Zauberkontrolle ausbauen."
+    },
+    {
+      "talentId": 105968,
+      "count": 1,
+      "reason": "Kosten von Rüstung zerreißen reduzieren."
     },
     {
       "talentId": 105961,
@@ -284,9 +289,9 @@
       "reason": "Betäubung und Voraussetzung für Schildschlag freischalten."
     },
     {
-      "talentId": 105970,
+      "talentId": 105968,
       "count": 1,
-      "reason": "Defensiven Notfallknopf ergänzen."
+      "reason": "Kosten von Rüstung zerreißen reduzieren."
     },
     {
       "talentId": 105962,
@@ -296,7 +301,12 @@
     {
       "talentId": 105959,
       "count": 1,
-      "reason": "Schildschlag freischalten."
+      "reason": "Schildschlag auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance ergänzen."
     },
     {
       "talentId": 105957,
@@ -336,17 +346,31 @@
       "warrior-undying",
       "official-hotfix-nov25"
     ],
-    "editorialDecision": "Shield-first questing plus dungeons, earlier critical damage investment for solo fights; later Shield Slam than dedicated dungeon route.",
+    "editorialDecision": "Für gemischtes Leveln bleiben Schild und Rache zentral. Ein früher Furor-Abstecher würde Vorhut und Schildschlag um fünf Stufen verschieben; angesichts ihrer Bedeutung für Schildkrieger ziehen wir den Schutz-Kern vor. Im Unterschied zur Dungeon-Variante werden frühe zusätzliche Wut und Letztes Gefecht vor reiner Bedrohung priorisiert; verbesserter Schildhieb unterstützt Kämpfe gegen Zauberer. Ab 41 folgen kritische Trefferchance und Waffen-Nebenbaum. Keine pauschale Geschwindigkeits- oder Wutgarantie; Klassenfähigkeiten und geeigneter Schild vorausgesetzt.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Schutz",
+  "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+  "ruleRevision": "warrior-protection-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für gemischtes Leveln bleiben Schild und Rache zentral. Ein früher Furor-Abstecher würde Vorhut und Schildschlag um fünf Stufen verschieben; angesichts ihrer Bedeutung für Schildkrieger ziehen wir den Schutz-Kern vor. Im Unterschied zur Dungeon-Variante werden frühe zusätzliche Wut und Letztes Gefecht vor reiner Bedrohung priorisiert; verbesserter Schildhieb unterstützt Kämpfe gegen Zauberer. Ab 41 folgen kritische Trefferchance und Waffen-Nebenbaum. Keine pauschale Geschwindigkeits- oder Wutgarantie; Klassenfähigkeiten und geeigneter Schild vorausgesetzt.",
+    "adviceSummary": "Schild-Levelpfad mit früher Rache, Letztem Gefecht und Vorhut auf 25, Schildschlag auf 40.",
+    "evidenceIds": [
+      "warrior-protection-leveling-rank0-71139-editorial-1",
+      "warrior-protection-leveling-rank0-71139-editorial-2"
+    ]
   }
 }

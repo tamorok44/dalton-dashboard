@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 1,
   "treeId": 11670,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -71,16 +71,12 @@
       "rank": 2
     },
     {
-      "talentId": 110856,
+      "talentId": 105974,
       "rank": 1
     },
     {
-      "talentId": 110856,
+      "talentId": 105974,
       "rank": 2
-    },
-    {
-      "talentId": 110856,
-      "rank": 3
     },
     {
       "talentId": 105970,
@@ -91,35 +87,39 @@
       "rank": 1
     },
     {
-      "talentId": 105968,
+      "talentId": 105963,
       "rank": 1
     },
     {
-      "talentId": 105968,
+      "talentId": 105963,
       "rank": 2
     },
     {
-      "talentId": 105968,
-      "rank": 3
-    },
-    {
-      "talentId": 105972,
-      "rank": 3
-    },
-    {
-      "talentId": 105961,
+      "talentId": 105967,
       "rank": 1
     },
     {
-      "talentId": 105961,
+      "talentId": 105967,
       "rank": 2
-    },
-    {
-      "talentId": 105961,
-      "rank": 3
     },
     {
       "talentId": 105965,
+      "rank": 1
+    },
+    {
+      "talentId": 105961,
+      "rank": 1
+    },
+    {
+      "talentId": 105961,
+      "rank": 2
+    },
+    {
+      "talentId": 105961,
+      "rank": 3
+    },
+    {
+      "talentId": 105964,
       "rank": 1
     },
     {
@@ -249,9 +249,9 @@
       "reason": "Wut bei Ausweichen und Parieren mit Schild erhalten."
     },
     {
-      "talentId": 110856,
-      "count": 3,
-      "reason": "Bedrohung in Verteidigungshaltung mit Schild erhöhen."
+      "talentId": 105974,
+      "count": 2,
+      "reason": "Zusätzliche Wut durch Blutrausch unterstützen."
     },
     {
       "talentId": 105970,
@@ -261,17 +261,22 @@
     {
       "talentId": 105966,
       "count": 1,
-      "reason": "Sturmangriff in Verteidigungshaltung ermöglichen."
+      "reason": "Sturmangriff in Verteidigungshaltung auf Stufe 25 ermöglichen, außerhalb des Kampfes."
     },
     {
-      "talentId": 105968,
-      "count": 3,
-      "reason": "Kosten von Rüstung zerreißen reduzieren."
+      "talentId": 105963,
+      "count": 2,
+      "reason": "Verbesserten Schildhieb für situative Schweigeeffekte ausbauen."
     },
     {
-      "talentId": 105972,
+      "talentId": 105967,
+      "count": 2,
+      "reason": "Entwaffnung für geeignete gegnerische Waffenangriffe häufiger verfügbar machen."
+    },
+    {
+      "talentId": 105965,
       "count": 1,
-      "reason": "Donnerknall-Kostenreduktion vervollständigen."
+      "reason": "Betäubung und Voraussetzung für Schildschlag freischalten."
     },
     {
       "talentId": 105961,
@@ -279,9 +284,9 @@
       "reason": "Wutkosten offensiver Fähigkeiten senken."
     },
     {
-      "talentId": 105965,
+      "talentId": 105964,
       "count": 1,
-      "reason": "Betäubung und Voraussetzung für Schildschlag freischalten."
+      "reason": "Abklingzeit des defensiven Schildwalls reduzieren."
     },
     {
       "talentId": 105962,
@@ -291,7 +296,7 @@
     {
       "talentId": 105959,
       "count": 1,
-      "reason": "Schildschlag freischalten."
+      "reason": "Schildschlag auf Stufe 40 freischalten."
     },
     {
       "talentId": 105939,
@@ -337,17 +342,31 @@
       "warrior-undying",
       "official-hotfix-nov25"
     ],
-    "editorialDecision": "Objective support, shield defense, early emergency button, interruption and team peeling. Not an ordinary dungeon tank recommendation.",
+    "editorialDecision": "Für objektorientiertes Gruppen-PvP werden zusätzliche Wut, Letztes Gefecht, Vorhut und verbesserter Schildhieb statt Bedrohungsinvestitionen priorisiert. Verbesserte Entwaffnung und Erschütternder Schlag unterstützen den Schutz von Mitspielern, sofern das Ziel kontrollierbar ist. Schildschlag auf 40 bleibt Kern der Schildrotation. Keine Gleichsetzung mit Waffen-Schadensdruck und keine Garantie gegen Zauberer; die späteren Waffen-Talente verbessern Haltungswechsel und günstige Angriffe.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Schutz",
+  "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+  "ruleRevision": "warrior-protection-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für objektorientiertes Gruppen-PvP werden zusätzliche Wut, Letztes Gefecht, Vorhut und verbesserter Schildhieb statt Bedrohungsinvestitionen priorisiert. Verbesserte Entwaffnung und Erschütternder Schlag unterstützen den Schutz von Mitspielern, sofern das Ziel kontrollierbar ist. Schildschlag auf 40 bleibt Kern der Schildrotation. Keine Gleichsetzung mit Waffen-Schadensdruck und keine Garantie gegen Zauberer; die späteren Waffen-Talente verbessern Haltungswechsel und günstige Angriffe.",
+    "adviceSummary": "Schild-PvP für Schutz und Störung gegnerischer Angriffe, mit frühem Letztem Gefecht, verbessertem Schildhieb und Schildschlag auf 40.",
+    "evidenceIds": [
+      "warrior-protection-pvp-rank0-71139-editorial-1",
+      "warrior-protection-pvp-rank0-71139-editorial-2"
+    ]
   }
 }
