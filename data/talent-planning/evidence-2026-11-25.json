@@ -2089,6 +2089,27 @@
         "Legacy ranks 1–5 effective gates and comparative performance unverified.",
         "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
       ]
+    },
+    {
+      "id": "priest-shadow-dungeons",
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-shadow-wowhead-pve",
+        "priest-shadow-icyveins-pve",
+        "priest-shadow-guildorder"
+      ],
+      "proposal": "Direct Shadow with early hit, Mind Flay, party utility, Silence and Shadowform at 40; later Discipline mana sustain. No assumption of healing access in Shadowform or previous Vampiric Embrace party-heal coefficient.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify current Vampiric Embrace, Spirit Tap, Dark Inspiration, and Silence behavior; no guarantee of procs."
+      ]
     }
   ]
 }

@@ -695,3 +695,14 @@ for(const [id,dist] of [["priest-discipline-leveling",{"11608":33,"11615":18,"11
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
 }
+
+{
+ const p=plans.find(x=>x.id==='priest-shadow-dungeons');
+ assert.ok(p&&p.status==='research_only');
+ assert.deepEqual(p.expectedDistribution,{"11608":18,"11615":0,"11622":33});
+ assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,1])),[0]);
+ assert.equal(currentAudit.find(a=>a.id===p.id)?.status,'primary_structure_matches');
+}
+for(const treeId of [11608,11615,11622])for(const goal of ['leveling','dungeons','pvp']){
+ assert.ok(plans.some(p=>p.classId===5&&p.treeId===treeId&&p.active!==false&&p.status!=='retired'&&p.profiles.some(x=>x.goal===goal)&&validatedRanks.get(JSON.stringify([p.id,p.version]))?.includes(0)),'Missing Priest research '+treeId+' '+goal);
+}
