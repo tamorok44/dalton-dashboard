@@ -9730,6 +9730,644 @@
       "allocationDigest": "d015b4a0f728ccdc9d5629c9b828af858e418efb8593e78abf0506e805bbe135",
       "url": "https://foreverwow.com/class-guides/hunter/",
       "claim": "Pet pressure and PvP suitability; defensive secondary options are own progression, no PvP superiority measured."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-leveling-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "url": "https://mobalytics.gg/wow-forever/classes/mage-leveling-guide",
+      "claim": "Nov 25: early Arcane, Frost later competitive and Fire mana tradeoffs.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-arcane-leveling",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-fire-leveling-mixed-balanced",
+          "version": 2
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-frost-leveling-mixed-balanced",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-leveling-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-mage-leveling-talents/",
+      "claim": "Nov 12 comparison favors Frost for safety; explicitly compares all three, supports conditional Arcane/Frost distinction.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-arcane-leveling",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-fire-leveling-mixed-balanced",
+          "version": 2
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-frost-leveling-mixed-balanced",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-dungeons-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "851be0018bfbb66ce396c3a0a70be3f8b9fbb450d2ffaa5f41225a268824ee76",
+      "url": "https://wowforever.be/classes/mage/leveling/",
+      "claim": "Nov 12: Fire and Arcane particularly suited to dungeon play; Frost remains a control-oriented choice.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-frost-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-dungeons-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "851be0018bfbb66ce396c3a0a70be3f8b9fbb450d2ffaa5f41225a268824ee76",
+      "url": "https://forever-hub.com/en/guides/mage-guide",
+      "claim": "Nov class overview: all three specs, Fire multi-target and Frost control/mana choices.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-frost-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-frost-pvp",
+      "planVersion": 1,
+      "allocationDigest": "c8c9a942a7eebd3f9b185b4b10285078209ab56a45e2c7c875d4c4c08f29788e",
+      "url": "https://metammo.com/wow-forever/builds/mage",
+      "claim": "Current 71139: Frost PvP control, Arcane and Fire damage identities.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-frost-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-frost-pvp",
+      "planVersion": 1,
+      "allocationDigest": "c8c9a942a7eebd3f9b185b4b10285078209ab56a45e2c7c875d4c4c08f29788e",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/frost-mage-pvp-guide/",
+      "claim": "Nov 19 Frost PvP role, crowd control and defense; no benchmark of our routes.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-frost-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "rogue-leveling-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-combat-leveling",
+      "planVersion": 1,
+      "allocationDigest": "2202927476be54b21610fe8467ff0ccd14eafea0b0e7b3f9745a7da6cdee8ef9",
+      "url": "https://wow-forever.gg/guides/rogue/leveling/?spec=subtlety",
+      "claim": "Nov 24: combat favored for leveling, all three routes present.",
+      "comparedOptions": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-assassination-leveling",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-combat-leveling",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "rogue-leveling-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-combat-leveling",
+      "planVersion": 1,
+      "allocationDigest": "2202927476be54b21610fe8467ff0ccd14eafea0b0e7b3f9745a7da6cdee8ef9",
+      "url": "https://hearthproof.com/classes/rogue/leveling/",
+      "claim": "Nov 16: combat weapon flexibility and steady damage; Subtlety utility and Assassination dagger alternative.",
+      "comparedOptions": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-assassination-leveling",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-combat-leveling",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "rogue-dungeons-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-combat-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "78912a9669a617a73c400d3da775b23cae485ae8b635fb13a898e4578774beea",
+      "url": "https://hackverso.com/en/wowforever/rogue/",
+      "claim": "Nov 20: Combat cleave and dungeon suitability; Assassination single-target, Subtlety delayed Death Mark. Simulation not adopted as our own.",
+      "comparedOptions": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-assassination-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-combat-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "rogue-dungeons-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-combat-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "78912a9669a617a73c400d3da775b23cae485ae8b635fb13a898e4578774beea",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-rogue-level-60-talents/",
+      "claim": "Nov 23: compares all three; no separate dungeon/raid split verified, our chronological dungeon preference is editorial.",
+      "comparedOptions": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-assassination-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-combat-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "rogue-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-subtlety-pvp",
+      "planVersion": 1,
+      "allocationDigest": "2d51f5c4a3fd6f74a8dab58318c42e3f0dfcbfad9b971cc6f1ec6c6d00d7aad9",
+      "url": "https://mobalytics.gg/wow-forever/profile/kargoz/guides/which-class-is-right-for-you-pvp-deep-dive",
+      "claim": "PvP comparison prioritizes Subtlety over Assassination and Combat while noting changed toolkit.",
+      "comparedOptions": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-assassination-pvp",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-combat-pvp",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "rogue-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-subtlety-pvp",
+      "planVersion": 1,
+      "allocationDigest": "2d51f5c4a3fd6f74a8dab58318c42e3f0dfcbfad9b971cc6f1ec6c6d00d7aad9",
+      "url": "https://metammo.com/wow-forever/builds/rogue",
+      "claim": "Current 71139 build lists Subtlety PvP and Combat/Assassination offensive alternatives.",
+      "comparedOptions": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-assassination-pvp",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-combat-pvp",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 1,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warrior-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warrior-arms-pvp",
+      "planVersion": 1,
+      "allocationDigest": "a26604da6dc8e889fc9ba75a24bef4000e4bc7b24057b9a35420efa18aa5f5d7",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/arms-warrior-pvp-guide/",
+      "claim": "Nov 25 Arms PvP, Mortal Strike and target pressure.",
+      "comparedOptions": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-arms-pvp",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-fury-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 1,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warrior-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warrior-arms-pvp",
+      "planVersion": 1,
+      "allocationDigest": "a26604da6dc8e889fc9ba75a24bef4000e4bc7b24057b9a35420efa18aa5f5d7",
+      "url": "https://thetirisfalen.com/wow-forever/guides/warrior-ms-enrage-pvp/",
+      "claim": "Nov 2 comparison of Arms and Fury builds; weapon and encounter tradeoffs, no adopted modeled DPS.",
+      "comparedOptions": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-arms-pvp",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-fury-pvp",
+          "version": 1
+        }
+      ]
     }
   ],
   "rulePacks": [
@@ -12992,86 +13630,6 @@
     {
       "options": [
         {
-          "classId": 8,
-          "treeId": 11582,
-          "goal": "leveling",
-          "role": "damage",
-          "playStyle": "mixed",
-          "priority": "balanced",
-          "planId": "mage-arcane-leveling",
-          "version": 1
-        },
-        {
-          "classId": 8,
-          "treeId": 11594,
-          "goal": "leveling",
-          "role": "damage",
-          "playStyle": "mixed",
-          "priority": "balanced",
-          "planId": "mage-fire-leveling-mixed-balanced",
-          "version": 2
-        }
-      ],
-      "preferred": {
-        "classId": 8,
-        "treeId": 11582,
-        "goal": "leveling",
-        "role": "damage",
-        "playStyle": "mixed",
-        "priority": "balanced",
-        "planId": "mage-arcane-leveling",
-        "version": 1
-      },
-      "reason": "Für gemischtes Leveln empfehlen wir derzeit Arkan: Arkanschlag, Geschosssalve und frühe Arkane Meditation unterstützen Schaden und Mana bereits auf niedrigen Stufen. Feuer ist eine geprüfte offensive Alternative, bei der wichtige Manavorteile des Arkanbaums erst später verfügbar werden. Die Empfehlung vergleicht die beiden bisher freigegebenen Pfade; Frost ist noch nicht abschließend geprüft.",
-      "reviewedAt": "2026-11-26",
-      "evidenceIds": [
-        "arcane-fire-comparison-icyveins-20261126",
-        "arcane-fire-comparison-avoid-20261126"
-      ]
-    },
-    {
-      "options": [
-        {
-          "classId": 8,
-          "treeId": 11582,
-          "goal": "dungeons",
-          "role": "damage",
-          "playStyle": "group",
-          "priority": "balanced",
-          "planId": "mage-arcane-dungeons",
-          "version": 1
-        },
-        {
-          "classId": 8,
-          "treeId": 11594,
-          "goal": "dungeons",
-          "role": "damage",
-          "playStyle": "group",
-          "priority": "balanced",
-          "planId": "mage-fire-dungeons",
-          "version": 1
-        }
-      ],
-      "preferred": {
-        "classId": 8,
-        "treeId": 11582,
-        "goal": "dungeons",
-        "role": "damage",
-        "playStyle": "group",
-        "priority": "balanced",
-        "planId": "mage-arcane-dungeons",
-        "version": 1
-      },
-      "reason": "Für reguläre Dungeon-Gruppen empfehlen wir unter den derzeit freigegebenen Pfaden Arkan: frühe Bedrohungsreduktion und Arkane Meditation unterstützen einen gleichmäßigen Spielfluss. Feuer ist eine geprüfte Alternative mit frühen Treffer- und Feuertalenten sowie Flammenstoß für passende Gruppen. Frost ist noch nicht freigegeben. Kein gemessener Geschwindigkeitsvergleich.",
-      "reviewedAt": "2026-11-26",
-      "evidenceIds": [
-        "arcane-fire-dungeon-wowhead-20261126",
-        "arcane-fire-dungeon-cobalt-20261126"
-      ]
-    },
-    {
-      "options": [
-        {
           "classId": 7,
           "treeId": 11326,
           "goal": "leveling",
@@ -13272,46 +13830,6 @@
     {
       "options": [
         {
-          "classId": 8,
-          "treeId": 11582,
-          "goal": "pvp",
-          "role": "damage",
-          "playStyle": "group",
-          "priority": "balanced",
-          "planId": "mage-arcane-pvp",
-          "version": 1
-        },
-        {
-          "classId": 8,
-          "treeId": 11594,
-          "goal": "pvp",
-          "role": "damage",
-          "playStyle": "group",
-          "priority": "balanced",
-          "planId": "mage-fire-pvp",
-          "version": 1
-        }
-      ],
-      "preferred": {
-        "classId": 8,
-        "treeId": 11582,
-        "goal": "pvp",
-        "role": "damage",
-        "playStyle": "group",
-        "priority": "balanced",
-        "planId": "mage-arcane-pvp",
-        "version": 1
-      },
-      "reason": "Für koordiniertes Gruppen-PvP empfehlen wir unter den bisher freigegebenen Pfaden Arkan: verbesserter Gegenzauber schafft gezielte Unterbrechungsfenster, Geistesgegenwart und Arkane Macht unterstützen abgesprochene Angriffe. Feuer bietet als geprüfte Alternative anhaltenden Druck und situative Kontrolle durch Impact und Druckwelle. Frost bleibt noch in Prüfung und ist nicht Teil dieses Vergleichs; kein generelles PvP-Ranking.",
-      "reviewedAt": "2026-11-26",
-      "evidenceIds": [
-        "mage-pvp-comparison-20261126-1",
-        "mage-pvp-comparison-20261126-2"
-      ]
-    },
-    {
-      "options": [
-        {
           "classId": 9,
           "treeId": 11629,
           "goal": "dungeons",
@@ -13427,6 +13945,346 @@
       "evidenceIds": [
         "hunter-pvp-comparison-20261126-1",
         "hunter-pvp-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-arcane-leveling",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-fire-leveling-mixed-balanced",
+          "version": 2
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "mage-frost-leveling-mixed-balanced",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 8,
+        "treeId": 11582,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "mage-arcane-leveling",
+        "version": 1
+      },
+      "reason": "Für gemischtes Leveln empfehlen wir Arkan als Einstieg: frühe Arkanschlag- und Geschosssalve-Synergien sowie Manaregeneration. Frost ist die defensivere Alternative mit Verlangsamungen und Eisbarriere ab 40; Feuer eignet sich für direkten Druck, benötigt aber sorgfältigere Manaplanung. Bei überwiegend gefährlichen Solo-Pulls kann Frost sinnvoller sein. Keine gemessene Levelgeschwindigkeit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "mage-leveling-full-comparison-20261126-1",
+        "mage-leveling-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-frost-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 8,
+        "treeId": 11582,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "mage-arcane-dungeons",
+        "version": 1
+      },
+      "reason": "Für reguläre Level-Dungeons empfehlen wir Arkan: frühe Bedrohungsreduktion und Manaregeneration erleichtern gleichmäßige Gruppen-Pulls. Feuer ist die Alternative für offensive direkte Zauber und Flächenschaden, Frost für kontrollierte Pulls und defensive Spielweise. Bei vielen kurzlebigen Gegnern oder hohem Kontrollbedarf kann die Wahl wechseln. Kein gemessener DPS-Vorsprung.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "mage-dungeons-full-comparison-20261126-1",
+        "mage-dungeons-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11601,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-frost-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 8,
+        "treeId": 11601,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "mage-frost-pvp",
+        "version": 1
+      },
+      "reason": "Für koordiniertes Gruppen-PvP empfehlen wir Frost: Kontrolle, Abstand, Eisblock 25, Kälteeinbruch 30 und Eisbarriere 40 helfen beim Überleben und beim Schutz von Verbündeten. Arkan bleibt die Alternative für abgesprochene Burst- und Gegenzauberfenster, Feuer für offensiven Druck. Keine garantierte Kontrolle oder pauschale Rangliste.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "mage-pvp-full-comparison-20261126-1",
+        "mage-pvp-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-assassination-leveling",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-combat-leveling",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-leveling",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 4,
+        "treeId": 11573,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "rogue-combat-leveling",
+        "version": 1
+      },
+      "reason": "Für gemischtes Leveln empfehlen wir Kampf: passende Waffen, frühe Energieentlastung, Riposte 20 und Klingenwirbel 30 unterstützen wechselnde Quests und kurze Kämpfe. Meucheln ist die Alternative mit zwei Dolchen und Giften; Täuschung für Eröffnungen, Kontrolle und längere Ziele. Keine gemessene Levelzeit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "rogue-leveling-full-comparison-20261126-1",
+        "rogue-leveling-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-assassination-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-combat-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 4,
+        "treeId": 11573,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "rogue-combat-dungeons",
+        "version": 1
+      },
+      "reason": "Für normale Level-Dungeons empfehlen wir Kampf: Klingenwirbel 30 und Adrenalinrausch 40 bieten Mehrziel- und Ressourcenfenster, ohne auf eigenes Parieren angewiesen zu sein. Meucheln eignet sich mit Dolchen und Giften besonders für langlebige Einzelziele, Täuschung für kontrollierte Kämpfe mit ausreichend Zeit für Todesmal. Kein pauschales DPS-Ranking; Kontrolle der Gruppe beachten.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "rogue-dungeons-full-comparison-20261126-1",
+        "rogue-dungeons-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 4,
+          "treeId": 11580,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-assassination-pvp",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11573,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-combat-pvp",
+          "version": 1
+        },
+        {
+          "classId": 4,
+          "treeId": 11572,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "rogue-subtlety-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 4,
+        "treeId": 11572,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "rogue-subtlety-pvp",
+        "version": 1
+      },
+      "reason": "Für gemischtes PvP empfehlen wir Täuschung: Vorbereitung 30, kontrollierte Eröffnungen und Rückzugsmöglichkeiten unterstützen den Wechsel zwischen Angriff und Verteidigung. Meucheln bleibt die Gift-/Dolchalternative, Kampf die Variante für kontinuierlichen Waffendruck. Todesmal nur mit ausreichend Folgekontakt; keine garantierte Kontrolle oder Rangliste.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "rogue-pvp-full-comparison-20261126-1",
+        "rogue-pvp-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-arms-pvp",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-fury-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 1,
+        "treeId": 11650,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "warrior-arms-pvp",
+        "version": 1
+      },
+      "reason": "Für gemischtes PvP empfehlen wir Waffen: Tödlicher Stoß 40 unterstützt den Druck auf geheilte Ziele, eine Zweihandwaffe und gezielte Angriffe passen zu kurzen Angriffsfenstern. Furor bleibt die Alternative mit zwei passenden Waffen, Todeswunsch und Blutdurst für kontinuierlichen Nahkampfdruck. Keine pauschale PvP-Überlegenheit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warrior-pvp-full-comparison-20261126-1",
+        "warrior-pvp-full-comparison-20261126-2"
       ]
     }
   ],

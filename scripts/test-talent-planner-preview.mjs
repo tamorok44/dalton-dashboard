@@ -79,17 +79,18 @@ assert.equal(info.profiles[0].version,1);
 assert.deepEqual(info.specializations.map(p=>p.name),['Arkan','Feuer','Frost']);
 assert.equal(info.specializationAdvice.length,3);
 const magePvPGuide=talentGuideOptions(info.profiles,{goal:'pvp'});
-assert.equal(specializationSelection(magePvPGuide,{},info.specializationAdvice).profile,null,'old two-option comparison must not select from three');
+assert.equal(specializationSelection(magePvPGuide,{},info.specializationAdvice).profile.planId,'mage-frost-pvp');
+assert.equal(specializationSelection(magePvPGuide,{treeId:11594},info.specializationAdvice).recommended.profile.planId,'mage-frost-pvp');
 assert.equal(specializationSelection(magePvPGuide,{treeId:11594},info.specializationAdvice).profile.planId,'mage-fire-pvp');
 const dungeonGuide=talentGuideOptions(info.profiles,{goal:'dungeons'});
 assert.equal(dungeonGuide.profiles.length,3);
-assert.equal(specializationSelection(dungeonGuide,{},info.specializationAdvice).profile,null);
+assert.equal(specializationSelection(dungeonGuide,{},info.specializationAdvice).profile.planId,'mage-arcane-dungeons');
 assert.equal(specializationSelection(dungeonGuide,{treeId:11594},info.specializationAdvice).profile.planId,'mage-fire-dungeons');
 const pilotGuide=talentGuideOptions(info.profiles,{goal:'leveling'});
-assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).profile,null);
-assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).recommended,null);
+assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).profile.planId,'mage-arcane-leveling');
+assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).recommended.kind,'comparative');
 assert.equal(specializationSelection(talentGuideOptions([info.profiles.find(p=>p.goal==='leveling'&&p.treeId===11582)],{goal:'leveling'})).recommended.kind,'available');
-assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).recommended,null);
+assert.ok(specializationSelection(pilotGuide,{},info.specializationAdvice).recommended.reason.length>0);
 assert.equal(specializationSelection(pilotGuide,{treeId:11594}).treeId,11594);
 assert.equal(specializationSelection(pilotGuide,{treeId:11594},info.specializationAdvice).profile.planId,'mage-fire-leveling-mixed-balanced');
 assert.equal(specializationSelection(pilotGuide,{treeId:11601}).profile.planId,'mage-frost-leveling-mixed-balanced');
@@ -334,6 +335,20 @@ assert.equal(specializationSelection(warriorGuide,{treeId:11657},warriorInfo.spe
 const warriorDungeonGuide=talentAssistantGuide(warriorInfo.profiles,{goal:'dungeons',role:'damage'},warriorInfo.specializations);
 assert.equal(specializationSelection(warriorDungeonGuide,{},warriorInfo.specializationAdvice).profile.planId,'warrior-arms-dungeons');
 assert.equal(specializationSelection(warriorDungeonGuide,{treeId:11657},warriorInfo.specializationAdvice).profile.planId,'warrior-fury-dungeons');
+// Full Mage, Rogue and Warrior comparisons: all alternatives remain selectable.
+for(const [classId,defaults] of [[4,{leveling:'rogue-combat-leveling',dungeons:'rogue-combat-dungeons',pvp:'rogue-subtlety-pvp'}],[1,{pvp:'warrior-arms-pvp'}]]){
+ const info=(await request({character:'qa-class-'+classId},{endpoint:orientationEndpoint})).body;
+ for(const [goal,id] of Object.entries(defaults)){
+   const g=talentAssistantGuide(info.profiles,{goal,role:'damage'},info.specializations);
+   assert.equal(g.profiles.length,classId===4?3:2);
+   const recommended=specializationSelection(g,{},info.specializationAdvice);
+   assert.equal(recommended.profile.planId,id);
+   assert.equal(recommended.recommended.kind,'comparative');
+   assert.ok(recommended.recommended.reason.length>50);
+   for(const option of g.profiles)assert.equal(specializationSelection(g,{treeId:option.treeId},info.specializationAdvice).profile.planId,option.planId);
+   if(g.profiles.length>2)assert.equal(specializationRecommendation(g.profiles.slice(1),info.specializationAdvice),null,'no stale full-set recommendation for a subset');
+ }
+}
 const warlockInfo=(await request({character:'qa-class-9'},{endpoint:orientationEndpoint})).body;
 const warlockDungeonGuide=talentAssistantGuide(warlockInfo.profiles,{goal:'dungeons'},warlockInfo.specializations);
 assert.equal(warlockDungeonGuide.profiles.length,3);
