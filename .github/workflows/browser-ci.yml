@@ -1,0 +1,59 @@
+name: Dalton Browser und Performance
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            browser: chromium
+            label: Linux Chromium und Android
+          - os: ubuntu-24.04
+            browser: firefox
+            label: Linux Firefox
+          - os: windows-latest
+            browser: chromium
+            label: Windows Chromium
+          - os: macos-latest
+            browser: webkit
+            label: macOS WebKit und iPhone
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Fest versionierte Browser-Testwerkzeuge installieren
+        run: npm install --prefix "${{ runner.temp }}/dalton-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+      - name: Browser und Linux-Systembibliotheken installieren
+        if: runner.os == 'Linux'
+        run: node "${{ runner.temp }}/dalton-browser/node_modules/playwright/cli.js" install --with-deps ${{ matrix.browser }}
+      - name: Browser installieren
+        if: runner.os != 'Linux'
+        run: node "${{ runner.temp }}/dalton-browser/node_modules/playwright/cli.js" install ${{ matrix.browser }}
+      - name: Browserinteraktionen und Performance prüfen
+        env:
+          DALTON_PLAYWRIGHT_MODULE: ${{ runner.temp }}/dalton-browser/node_modules/playwright/index.mjs
+          DALTON_BROWSER: ${{ matrix.browser }}
+          DALTON_BROWSER_REPORT: browser-report
+        run: node scripts/browser-talent-regression.mjs
+      - name: Berichte und Screenshots archivieren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dalton-browser-${{ matrix.os }}-${{ matrix.browser }}
+          path: browser-report/
+          if-no-files-found: warn
+          retention-days: 14
