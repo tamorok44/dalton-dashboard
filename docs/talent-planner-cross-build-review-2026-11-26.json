@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent_cross_build_diagnostic",
+  "date": "2026-11-26",
+  "releaseEligible": false,
+  "captureRun": 45813547795,
+  "reviewRun": 45813735196,
+  "capturedAt": "2026-11-26T11:46:21.575Z",
+  "primaryBuild": "1.60.1.71139",
+  "independentBuild": "1.60.1.71091",
+  "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+  "captures": [
+    {
+      "key": "hotfix-client-1",
+      "url": "https://wowforevertalents.com/warrior/",
+      "error": "HTTP 403"
+    },
+    {
+      "key": "hotfix-client-11",
+      "url": "https://wowforevertalents.com/druid/",
+      "sha256": "cdb799e0666fa10db18c0b7890e0e517c3be7c428f7a15355aa7bbc1810d45c1",
+      "bytes": 346976,
+      "explicitBuild": null,
+      "buildTags": [
+        "1.60.1.71139",
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "hotfix-client-2",
+      "url": "https://wowforevertalents.com/paladin/",
+      "error": "HTTP 403"
+    },
+    {
+      "key": "hotfix-client-3",
+      "url": "https://wowforevertalents.com/hunter/",
+      "error": "HTTP 403"
+    },
+    {
+      "key": "hotfix-client-4",
+      "url": "https://wowforevertalents.com/rogue/",
+      "sha256": "8cd5e82cf9b031fd559cffbe87e6714d50d2e4d2eb8d383a2399bfebda8130de",
+      "bytes": 364323,
+      "explicitBuild": null,
+      "buildTags": [
+        "1.60.1.71139",
+        "1.60.1.70755",
+        "1.60.1.70753"
+      ]
+    },
+    {
+      "key": "hotfix-client-5",
+      "url": "https://wowforevertalents.com/priest/",
+      "sha256": "7462cf5b85c0c267417fee7d2978d6d5acc0e57100dbdf395803487297c122f2",
+      "bytes": 360950,
+      "explicitBuild": null,
+      "buildTags": [
+        "1.60.1.70959",
+        "1.60.1.71139",
+        "1.60.1.70755"
+      ]
+    },
+    {
+      "key": "hotfix-client-7",
+      "url": "https://wowforevertalents.com/shaman/",
+      "sha256": "2a2a6cb44ad081bbd51ecdf8997e5d0ccd1195569668c8e9810dcf1d4afea503",
+      "bytes": 356456,
+      "explicitBuild": null,
+      "buildTags": [
+        "1.60.1.71139",
+        "1.60.1.70755"
+      ]
+    },
+    {
+      "key": "hotfix-client-8",
+      "url": "https://wowforevertalents.com/mage/",
+      "sha256": "3e056c1190054f7642ea6e28a4961dbc72e1a2dbc9231688588cbda75b935f51",
+      "bytes": 334855,
+      "explicitBuild": null,
+      "buildTags": [
+        "1.60.1.71139"
+      ]
+    },
+    {
+      "key": "hotfix-client-9",
+      "url": "https://wowforevertalents.com/warlock/",
+      "sha256": "d27a6b6d9a5e3a3f3758ff615e1d2da3ffd203ef90a62471e124aaa04f5039f5",
+      "bytes": 338980,
+      "explicitBuild": null,
+      "buildTags": [
+        "1.60.1.70888",
+        "1.60.1.71139",
+        "1.60.1.70755"
+      ]
+    },
+    {
+      "key": "independent-1",
+      "url": "https://theforeverera.com/en/talents/warrior/",
+      "sha256": "a5b9df73ad583e9bdb6a6551bc1c81cc0764e46a47f765d3efae0195417026e3",
+      "bytes": 243914,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-11",
+      "url": "https://theforeverera.com/en/talents/druid/",
+      "sha256": "2f9a354ca17f4c891e7e24ee357dd0727a92459c924d6686937ad8d46a15f78d",
+      "bytes": 247855,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-2",
+      "url": "https://theforeverera.com/en/talents/paladin/",
+      "sha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+      "bytes": 251453,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-3",
+      "url": "https://theforeverera.com/en/talents/hunter/",
+      "sha256": "15eaa6d0fe8abe9a42e1b8b4392ce9638c0cb5ed1897ad801b54ecf7a7bffd1f",
+      "bytes": 238582,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-4",
+      "url": "https://theforeverera.com/en/talents/rogue/",
+      "sha256": "8cab47b7567a3c5cdb72c36c3457e69592e56a625a9896ae9ce70b0b098433e0",
+      "bytes": 246206,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-5",
+      "url": "https://theforeverera.com/en/talents/priest/",
+      "sha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+      "bytes": 242697,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-7",
+      "url": "https://theforeverera.com/en/talents/shaman/",
+      "sha256": "ac6f11f314f532672ca2eed8c780c7243a92caf7e75daa038861791f2d09eb3f",
+      "bytes": 241130,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-8",
+      "url": "https://theforeverera.com/en/talents/mage/",
+      "sha256": "83cbc804062abc24c849a70df92e0ee475d954b0363d38d1c27e37b2effcc2ec",
+      "bytes": 241130,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "independent-9",
+      "url": "https://theforeverera.com/en/talents/warlock/",
+      "sha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+      "bytes": 249676,
+      "explicitBuild": "1.60.1.71091",
+      "buildTags": [
+        "1.60.1.71091"
+      ]
+    },
+    {
+      "key": "localized",
+      "url": "https://foreverdb.net/data/l10n/de/classes.json",
+      "sha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+      "bytes": 196449,
+      "explicitBuild": null,
+      "buildTags": []
+    },
+    {
+      "key": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "sha256": "85dddedcf36ca696ed6289bd364bea5685fda2392e4ef230eb7b476a3eadc77b",
+      "bytes": 419551,
+      "explicitBuild": null,
+      "buildTags": []
+    },
+    {
+      "key": "raw",
+      "url": "https://foreverdb.net/data/classes.json",
+      "sha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+      "bytes": 372360,
+      "explicitBuild": null,
+      "buildTags": []
+    }
+  ],
+  "classes": [
+    {
+      "status": "structure_matches",
+      "classId": 1,
+      "build": "1.60.1.71091",
+      "talentCount": 53,
+      "primaryNormalizedSha256": "5af7c8ed14d3adbb997cb1ce14f22d9cdaaa6c59aca547d412d156665bda20db",
+      "independentNormalizedSha256": "5af7c8ed14d3adbb997cb1ce14f22d9cdaaa6c59aca547d412d156665bda20db",
+      "comparisonDigest": "77aa2f05941d1fce47d5b6fa6f5c2a147909c97b041f98704a38c750f321cdc9",
+      "captureSha256": "a5b9df73ad583e9bdb6a6551bc1c81cc0764e46a47f765d3efae0195417026e3",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "edge_review_required",
+      "classId": 2,
+      "build": "1.60.1.71091",
+      "talentCount": 51,
+      "primaryNormalizedSha256": "6a0670ee3352f38a19e2978a3a5385afb4c840a344320909eed2613f007276f9",
+      "independentNormalizedSha256": "6a0670ee3352f38a19e2978a3a5385afb4c840a344320909eed2613f007276f9",
+      "comparisonDigest": "7db4a4d952016284141708f29e9a119bbfb167ea3198095e9466215d242d069c",
+      "captureSha256": "6c9c80d22313f02e70c8b1081f77bae2519b3cb6940eed3c4a5c669e74753605",
+      "unknownPrerequisites": [
+        113631
+      ],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_differs",
+      "classId": 3,
+      "build": "1.60.1.71091",
+      "talentCount": 50,
+      "primaryNormalizedSha256": "c0d216aec8014a58004ab26df529a8fe3c74bf59f9d2ce8e05b50b1b25188fdb",
+      "independentNormalizedSha256": "ca8979c7269cd20c9b007594f37badf6baa91f21d7a55ec17698381220f463a6",
+      "comparisonDigest": "a26856240d824aa556733b5fbe6670595ada591ceee5807a3a85ad0abd1da7f4",
+      "captureSha256": "15eaa6d0fe8abe9a42e1b8b4392ce9638c0cb5ed1897ad801b54ecf7a7bffd1f",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [
+        [
+          104961,
+          104964,
+          104961
+        ]
+      ],
+      "changes": [
+        {
+          "id": 104964,
+          "kind": "changed",
+          "fields": [
+            "prerequisites"
+          ]
+        }
+      ],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_matches",
+      "classId": 4,
+      "build": "1.60.1.71091",
+      "talentCount": 54,
+      "primaryNormalizedSha256": "af48627adbdfe608854c735a5f623ff475ef54961f45d144a71b6dac207aedfa",
+      "independentNormalizedSha256": "af48627adbdfe608854c735a5f623ff475ef54961f45d144a71b6dac207aedfa",
+      "comparisonDigest": "0ce10f4869c0dfa96926c7e21a9284e75569eb58b0e7a27a676f1ab994280126",
+      "captureSha256": "8cab47b7567a3c5cdb72c36c3457e69592e56a625a9896ae9ce70b0b098433e0",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_matches",
+      "classId": 5,
+      "build": "1.60.1.71091",
+      "talentCount": 52,
+      "primaryNormalizedSha256": "42161aa0400d5c34c0bf303beded804e9392b03b5717d7b213540b9f4724e347",
+      "independentNormalizedSha256": "42161aa0400d5c34c0bf303beded804e9392b03b5717d7b213540b9f4724e347",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "captureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_matches",
+      "classId": 7,
+      "build": "1.60.1.71091",
+      "talentCount": 50,
+      "primaryNormalizedSha256": "4550d52d97976f1fffefa10bd2db4e246182e3bcf55afdeac5a0af65d01035a8",
+      "independentNormalizedSha256": "4550d52d97976f1fffefa10bd2db4e246182e3bcf55afdeac5a0af65d01035a8",
+      "comparisonDigest": "64bb43f33193d7a65bfc00bca362fa903bcdafe778752d71a5a36eb0b928cdb2",
+      "captureSha256": "ac6f11f314f532672ca2eed8c780c7243a92caf7e75daa038861791f2d09eb3f",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_matches",
+      "classId": 8,
+      "build": "1.60.1.71091",
+      "talentCount": 53,
+      "primaryNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+      "independentNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "captureSha256": "83cbc804062abc24c849a70df92e0ee475d954b0363d38d1c27e37b2effcc2ec",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_matches",
+      "classId": 9,
+      "build": "1.60.1.71091",
+      "talentCount": 52,
+      "primaryNormalizedSha256": "342d7c99b4e76770b53309124ce9a764d4d4468832558f1cae3740935527d3e2",
+      "independentNormalizedSha256": "342d7c99b4e76770b53309124ce9a764d4d4468832558f1cae3740935527d3e2",
+      "comparisonDigest": "98e5d8db215ee97445f0b1372ae123d3255e47a9892f90c72e1f84092a218985",
+      "captureSha256": "1c923eb78caa12e1fcbacc441456daaac01ac92c4eb76b90e55266bdaee84e9b",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    },
+    {
+      "status": "structure_differs",
+      "classId": 11,
+      "build": "1.60.1.71091",
+      "talentCount": 52,
+      "primaryNormalizedSha256": "774a082b176a98778856a8e2b5b17e93fd1a57f882090e51e8112a39247cd58f",
+      "independentNormalizedSha256": "b35d4e76e6e9de0ea79ae3126fa5eb57aa59bfb69073fceca791074effb83dfa",
+      "comparisonDigest": "c981514d778ec46e10d1062385519882b63b2c8458da8a1ab0c74ea11c24fba2",
+      "captureSha256": "2f9a354ca17f4c891e7e24ee357dd0727a92459c924d6686937ad8d46a15f78d",
+      "unknownPrerequisites": [],
+      "cyclicPrerequisites": [],
+      "changes": [
+        {
+          "id": 104933,
+          "kind": "changed",
+          "fields": [
+            "maxRank"
+          ]
+        }
+      ],
+      "primaryBuild": "1.60.1.71139",
+      "releaseEligible": false
+    }
+  ],
+  "issues": [
+    {
+      "classId": 3,
+      "id": "hunter-intimidation-cycle",
+      "talentIds": [
+        104964,
+        104961
+      ],
+      "status": "correction_candidate_not_verified",
+      "primary": "104964 requires 104970 and 104961; 104961 requires 104964.",
+      "candidate": "104964 requires only 104970 rank 1; 104961 requires 104964 rank 1.",
+      "sources": [
+        "https://armorywowforever.com/talents/hunter",
+        "https://wowforevertalents.com/hunter/talents/intimidation/",
+        "https://wowforevertalents.com/hunter/talents/bestial-wrath/"
+      ],
+      "remaining": "Confirm exact current independent edge and live learnability; do not change release proof or silently rewrite provider data."
+    },
+    {
+      "classId": 2,
+      "id": "paladin-boundless-light-edge",
+      "talentIds": [
+        113631,
+        105323
+      ],
+      "status": "correction_candidate_not_verified",
+      "primary": "113631 requires 105323 rank 1; conditionKnown false.",
+      "candidate": "113631 requires 105323 rank 1 with known condition.",
+      "sources": [
+        "https://wowforever.gg/en/talents/paladin/",
+        "https://wowforevertalents.com/paladin/"
+      ],
+      "remaining": "Verify exact current prerequisite semantics; no path may rely on assumption."
+    },
+    {
+      "classId": 11,
+      "id": "druid-balance-hotfix",
+      "talentIds": [
+        104923,
+        104931,
+        104933,
+        104935,
+        104936,
+        104937,
+        104924
+      ],
+      "status": "official_changes_confirmed_projection_unreconciled",
+      "primary": "104933 maxRank 5; 104936 Mondfuror retained.",
+      "candidate": "104933 maxRank 2; Moonfury replaced by Dreamstate, do not infer its stable ID. Review Starlight Wrath, Moon and Stars, Eclipse, Moonkin Form and Genesis effect changes.",
+      "sources": [
+        "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+        "https://wowforevertalents.com/druid/",
+        "https://talentsforever.com/hotfixes/2026-11-25"
+      ],
+      "remaining": "Exact updated talent IDs, rank spell IDs, effect digests and German labels required."
+    }
+  ],
+  "legacy": {
+    "calendarStatus": "confirmed_public_description",
+    "serverGateStatus": "unverified",
+    "releaseEligible": false,
+    "cap": 51,
+    "firstLevels": [
+      10,
+      9,
+      8,
+      7,
+      6,
+      5
+    ],
+    "sources": [
+      {
+        "url": "https://worldofwarcraft.blizzard.com/en-us/news/24307383/scopri-il-legacy-system-di-world-of-warcraft-forever",
+        "claim": "Official earlier point acquisition up to five levels."
+      },
+      {
+        "url": "https://www.icy-veins.com/wow-forever/legacy-system",
+        "claim": "Per-rank first point and cap 51."
+      },
+      {
+        "url": "https://forever.undrwrldcub.com/db/legacy-perks/legacy-perk-talented/",
+        "claim": "Reported client probe supports per-rank acquisition; older builds."
+      },
+      {
+        "url": "https://foreverwow.com/guides/wow-forever-talent-planning/",
+        "claim": "Editorial table predicts 31-point milestone at 35 with rank 5; not controlled live measurement."
+      },
+      {
+        "url": "https://www.destructoid.com/how-to-reset-talents-in-wow-forever-explained-respec-cost-when-to-dual-spec/?rp=3&rw=c&src=recirc",
+        "claim": "Independent editorial capstone estimate; not proof of all effective gates."
+      }
+    ],
+    "remaining": [
+      "Actual minimum-level gates with ranks 1–5",
+      "Unspent point banking, retroactive perk changes and previously learned abilities",
+      "Exact current client/server evidence per rank and class"
+    ]
+  },
+  "officialHotfix": {
+    "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+    "classNotes": {
+      "1": "Weaponmaster reapplication after battleground death",
+      "2": "Judgement refresh, Exorcism crit, Oath of Light 60 minutes",
+      "3": "Pet basic melee crit restored, Hawk target/dismiss/crit fixes",
+      "4": "Temporary poison/blinding powder binding, Poised removed by Sap/Distract in stealth",
+      "5": "No Priest class-specific entry on Nov 25; earlier changes still require review",
+      "7": "Chain Lightning consumes Clearcasting even alongside 5 Maelstrom stacks",
+      "8": "No Mage class-specific entry on Nov 25; prior reviewed paths unaffected as documented separately",
+      "9": "Pet basic melee crit restored, Succubus/Incubus crit correction",
+      "11": "Balance rework and Genesis Hurricane/Tranquility fix"
+    },
+    "scope": "Nov 25 class entries only; not full per-path hotfix dependency approval."
+  }
+}
