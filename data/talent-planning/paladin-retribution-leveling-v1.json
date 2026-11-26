@@ -241,12 +241,12 @@
     {
       "talentId": 105701,
       "count": 3,
-      "reason": "Mana durch Richturteile zurückgewinnen."
+      "reason": "Manarückgewinn bei geeigneten Richturteilen unterstützen; keine zusätzliche Bedrohung aus der Manarückgewinnung voraussetzen."
     },
     {
       "talentId": 105696,
       "count": 1,
-      "reason": "Siegel des Befehls auf 20 freischalten."
+      "reason": "Siegel des Befehls freischalten: zusätzlicher möglicher Heiligschaden bei geeigneten Waffenangriffen; Richturteil des Befehls zählt seit 13.11. als Nahkampfangriff und löst geeignete Treffereffekte aus. Keine garantierte Auslösung oder Schadenskonstante."
     },
     {
       "talentId": 105699,
@@ -261,7 +261,7 @@
     {
       "talentId": 105700,
       "count": 1,
-      "reason": "Heiligen Richter für Heiligen Stoß und Richturteile freischalten."
+      "reason": "Heiliger Richter verstärkt Heiligen Stoß und erneuert vorhandene Richturteil-Effekte auf dem Ziel."
     },
     {
       "talentId": 105697,
@@ -276,17 +276,17 @@
     {
       "talentId": 105693,
       "count": 3,
-      "reason": "Schadensbonus nach geeigneten kritischen Treffern ausbauen."
+      "reason": "Vergeltungsschaden nach eigenen nichtperiodischen kritischen Treffern verstärken; keine dauerhaften Stapel voraussetzen."
     },
     {
       "talentId": 105694,
       "count": 1,
-      "reason": "Buße und Voraussetzung für den Abschluss freischalten."
+      "reason": "Buße gegen geeignete humanoide Ziele freischalten; Schaden kann die Kontrolle beenden."
     },
     {
       "talentId": 105702,
       "count": 1,
-      "reason": "Angriffskraftschwächung ergänzen."
+      "reason": "Vindication kann bei schädigenden Nahkampfangriffen die gegnerische Angriffskraft senken; Höhe und Skalierung nicht abschließend bestätigt."
     },
     {
       "talentId": 110882,
@@ -296,7 +296,7 @@
     {
       "talentId": 105692,
       "count": 1,
-      "reason": "Entfesselten Zorn auf 40 freischalten; unterschiedliche Siegel für gespeicherte Effekte beachten."
+      "reason": "Entfesselter Zorn speichert aktive Siegeleffekte bei Nahkampfangriffen; Treffer mit einem anderen Siegel verbraucht gespeicherte Stapel mit normaler Auslösechance, keine garantierten Zusatztreffer."
     },
     {
       "talentId": 105332,
@@ -306,7 +306,7 @@
     {
       "talentId": 105638,
       "count": 3,
-      "reason": "Trefferchance verbessern."
+      "reason": "Trefferchance erhöhen; Richturteile nach ihrer jeweiligen Angriffsklassifikation bewerten."
     },
     {
       "talentId": 113630,
@@ -330,17 +330,59 @@
       "mobalytics-whiter-ret",
       "wowforevergg-ret"
     ],
-    "editorialDecision": "Two-handed Retribution, early mana and movement, Seal of Command 20 and Unsealed Wrath 40. Late hit and seals. Whiter explicitly distinguishes played-to-40 observations and later planned choices; no simulated DPS treated as proven.",
+    "editorialDecision": "Zweihand-Levelpfad mit Mana, Siegel des Befehls 20, Heiligem Richter 25, Buße 33, Entfesseltem Zorn 40. Nahkampfschaden und Richturteile situationsgerecht nutzen; Vindication nur als qualitative Angriffskraftminderung. Keine feste Proc- oder Skalierungsbehauptung.",
     "unresolved": [
       "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
       "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
-      "Official November 19/25 Judgement and critical-strike fixes; verify seal echo trigger and stacking, no assumption of guaranteed extra hits."
+      "Official November 19/25 Judgement and critical-strike fixes; verify seal echo trigger and stacking, no assumption of guaranteed extra hits.",
+      "Oath of Light: 60 Minuten offiziell am 25.11. bestätigt, Clienttext teils noch 5 Minuten. Heilskalierung bleibt offen; keine globale Freigabe des Talents.",
+      "105696: Richturteil des Befehls seit 13.11. Nahkampfangriff, sonstige Richturteile nach 11.11. nicht pauschal gleichsetzen; numerische Schadensformel/Rundung nicht abschließend bestätigt.",
+      "105702: Angriffskraftminderung qualitativ belegt, widersprüchliche stufenabhängige Zahlen; kein zusätzlicher eigener AP-Bonus übernommen.",
+      "Vermächtnisränge 1–5, vollständige Hotfix-Abhängigkeitsprüfung und CI ausstehend. 113631 nicht benutzt."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "dfe974a80f59e6b57d54dcc4914e832a018dbfdcf6863bacc999c9e389ec8415",
       "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://armorywowforever.com/talents/paladin",
+          "contribution": "Build 71139 ausgewiesen; Talentfunktionen und Voraussetzungen, Eid-Tooltip mit altem Dauerwert und nicht aufgelöster Heilskalierung; keine unabhängige numerische Messung."
+        },
+        {
+          "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+          "contribution": "Offiziell 11.11. Richturteile Fernkampf, 13.11. Ausnahme Richturteil des Befehls Nahkampf/On-hit, 25.11. Eid 60 Minuten, Exorzismus-Kritfehler korrigiert."
+        },
+        {
+          "url": "https://wowfdb.com/talents/paladin/",
+          "contribution": "Vindication als Angriffskraftminderung; Werte weichen von niedrigstufigem/unaufgelöstem Clienttext ab."
+        },
+        {
+          "url": "https://www.foreverdb.app/en/forever/classes/paladin",
+          "contribution": "Weiterer abweichender AP-Wert; keine feste Rundungsformel."
+        },
+        {
+          "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-leveling-talents/",
+          "contribution": "Levelvarianten und Meilensteine, Stand 9.11. als redaktionelle Referenz, nicht aktueller vollständiger Strukturbeleg."
+        },
+        {
+          "url": "https://metammo.com/wow-forever/builds/paladin",
+          "contribution": "Heilig- und Vergeltungskern, Siegelwechsel und Eid; keine gemessene Überlegenheit."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
