@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
+import {observeTalentRules,talentHotfixRevision} from './talent-rule-watch.mjs';
 import {inspectPetDb2} from './pet-db2-audit.mjs';
 
 export const PET_RULEBOOK_VERSION=HUNTER_PET_RULEBOOK_VERSION;
@@ -176,9 +177,9 @@ const sources=Object.freeze({
     mode:'markers',
     semanticPatterns:Object.freeze([
       /build\s+changelog/i,
-      /data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+1\.60\.1\.\d+,?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
+      /data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+\d+(?:\.\d+){3},?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
     ]),
-    buildPattern:/data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+(1\.60\.1\.\d+),?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
+    buildPattern:/data\s+from\s+the\s+wow\s+forever\s+client,?\s+build\s+(\d+(?:\.\d+){3})(?!\d|\.\d),?\s+extracted\s+\d{4}-\d{2}-\d{2}/i
   }),
   bindFox:Object.freeze({
     label:'Bind on Forever · Fox',
@@ -193,7 +194,7 @@ const sources=Object.freeze({
       /dash[\s\S]{0,180}?rank\s+1\s+30[\s\S]{0,160}?rank\s+2\s+40[\s\S]{0,160}?rank\s+3\s+50/i,
       /fox\s+pets?\s+eat\s+meat/i
     ]),
-    buildPattern:/build\s+(1\.60\.1\.\d+)/i
+    buildPattern:/build\s+(\d+(?:\.\d+){3})(?!\d|\.\d)/i
   }),
   sixtyToolsPets:Object.freeze({
     label:'60.tools · WoW Forever Hunter Pets',
@@ -242,7 +243,7 @@ const reviewedBuildTransitions=Object.freeze({
 
 function decodeEntities(value){
   return String(value||'')
-    .replace(/&nbsp;/gi,' ')
+    .replace(/&nbsp;|&#160;|&#xa0;/gi,' ')
     .replace(/&amp;/gi,'&')
     .replace(/&quot;/gi,'"')
     .replace(/&#39;|&apos;/gi,"'")
@@ -265,6 +266,13 @@ function htmlText(html){
 }
 function normalized(value){
   return String(value||'').toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+}
+export function hotfixArticleBody(html){
+  const news=html.match(/<section\b[^>]*\bclass=["']blog["'][^>]*>([\s\S]*?)<\/section>/i)?.[1];
+  if(news)return htmlText(news);
+  // worldofwarcraft.blizzard.com serves the same article in a legacy wrapper.
+  const gameSite=html.match(/<div\s+id=["']blog["']>\s*<div\s+class=["']Blog\b[^"']*["']>\s*<div\s+class=["']detail["']>([\s\S]*?)<\/article>/i)?.[1];
+  return htmlText(gameSite);
 }
 function sha(value){
   return createHash('sha256').update(String(value)).digest('hex');
@@ -345,20 +353,24 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       signal:AbortSignal.timeout(15000)
     });
     if(!response.ok)throw new Error('HTTP '+response.status);
-    const text=htmlText(await response.text());
+    const html=await response.text();
+    const text=htmlText(html);
+    const talentHotfixEvidence=definition.mode==='hotfix'
+      ?{talentHotfixRevision:talentHotfixRevision(hotfixArticleBody(html))}
+      :{};
     const semantic=definition.mode==='hotfix'
       ?hotfixEvidence(text,definition.semanticPatterns)
       :markerEvidence(text,definition.semanticPatterns);
     if(!semantic.ok){
       return {
         id,label:definition.label,url:definition.url,status:'review_required',
-        reason:'expected_rule_evidence_missing',missing:semantic.missing,
+        reason:'expected_rule_evidence_missing',missing:semantic.missing,...talentHotfixEvidence,
         baselineDigest:previousSource?.baselineDigest||null,
         baselineEvidence:previousSource?.baselineEvidence||null,
         baselineBuild:previousSource?.baselineBuild||null
       };
     }
-    if(id==='blizzardHotfix')return {id,label:definition.label,url:definition.url,build:null,...inspectHotfixEvidence(semantic,previousSource,previousRulebookVersion)};
+    if(id==='blizzardHotfix')return {id,label:definition.label,url:definition.url,build:null,...inspectHotfixEvidence(semantic,previousSource,previousRulebookVersion),...talentHotfixEvidence};
     const build=definition.buildPattern?.exec(text)?.[1]||null;
     // Der alte Fox-Marker kann die Buildnummer zusätzlich im Treffertext enthalten.
     // Rekonstruktion ersetzt ausschließlich die erkannte vollständige Buildkennung;
@@ -393,7 +405,7 @@ async function inspectSource(id,definition,{fetchImpl=fetch,previousSource=null,
       id,label:definition.label,url:definition.url,
       status:changed?'review_required':'verified',
       reason:changed?(buildOnly?'source_build_changed':'source_evidence_changed'):null,
-      digest,baselineDigest:nextBaseline,baselineBuild:approved||!oldDigest?build:baselineBuild,build
+      digest,...talentHotfixEvidence,baselineDigest:nextBaseline,baselineBuild:approved||!oldDigest?build:baselineBuild,build
     };
   }catch(error){
     return {
@@ -412,13 +424,20 @@ function worstStatus(statuses){
   return 'verified';
 }
 
+export async function checkTalentRuleSources({fetchImpl=fetch,now=new Date()}={}){
+  const ids=['foreverDbBuild','blizzardHotfix','bindFox'];
+  const results=await Promise.all(ids.map(id=>inspectSource(id,sources[id],{fetchImpl})));
+  return observeTalentRules(Object.fromEntries(ids.map((id,index)=>[id,results[index]])),now);
+}
+
 export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=new Date()}={}){
   const sourceEntries=await Promise.all(Object.entries(sources).map(async([id,definition])=>[
     id,await inspectSource(id,definition,{fetchImpl,previousSource:previousState?.sources?.[id],previousRulebookVersion:previousState?.rulebookVersion})
   ]));
   const sourceResults=Object.fromEntries(sourceEntries);
+  const talentRuleObservation=observeTalentRules(sourceResults,now);
   const builds=['foreverDbBuild','bindFox'].map(id=>sourceResults[id]?.build).filter(b=>/^1\.60\.1\.\d+$/.test(b||''));
-  const latestBuild=builds.sort((a,b)=>Number(b.split('.').at(-1))-Number(a.split('.').at(-1)))[0];
+  const latestBuild=talentRuleObservation.clientBuild||builds.sort((a,b)=>Number(b.split('.').at(-1))-Number(a.split('.').at(-1)))[0];
   Object.assign(sourceResults,await inspectPetDb2({build:latestBuild,fetchImpl}));
   const rules=Object.fromEntries(Object.entries(PET_RULES).map(([id,rule])=>{
     const statuses=rule.sourceIds.map(sourceId=>{
@@ -442,6 +461,7 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
   return {
     rulebookVersion:PET_RULEBOOK_VERSION,
     checkedAt:now.toISOString(),
+    talentRuleObservation,
     overall:worstStatus(Object.values(rules).map(rule=>rule.status)),
     rules,
     sources:sourceResults

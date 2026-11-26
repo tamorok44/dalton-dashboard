@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-feral-dungeons-tank-group-balanced",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11347,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 0,
+    "11340": 12,
+    "11347": 39
+  },
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-feral-pve",
+      "mobalytics-feral-tank-2511",
+      "grindclassic-feral-leveling"
+    ],
+    "editorialDecision": "Für regelmäßiges Tanking frühe Prankenhieb-/Schleichpunkte und Wilde Attacke auf 20, dann Aufschlitzen auf 25 und Rudelführer auf 30. Natural Reaction vor Urtümlichem Biss auf 40. Anschließend Blutungsschaden und geringere Aufschlitzen-Kosten, danach Ausdauer und Schaden aus Wiederherstellung. Keine katzenspezifische Machtverschiebung oder Raubtierdisziplin investiert. Keine gemessene Bedrohungsüberlegenheit behauptet.",
+    "unresolved": [
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Gleichgewichtsbaum und Rangzauberzuordnung von Traumzustand noch nicht vollständig abgeglichen; diese Vergabe verwendet ausschließlich Wilder Kampf/Wiederherstellung. Keine vollständige Klassenfreigabe.",
+      "Effektive Manakosten von Machtverschiebung nicht numerisch behauptet."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "points": [
+    {
+      "talentId": 104938,
+      "rank": 1
+    },
+    {
+      "talentId": 104938,
+      "rank": 2
+    },
+    {
+      "talentId": 104938,
+      "rank": 3
+    },
+    {
+      "talentId": 104938,
+      "rank": 4
+    },
+    {
+      "talentId": 104938,
+      "rank": 5
+    },
+    {
+      "talentId": 104940,
+      "rank": 1
+    },
+    {
+      "talentId": 104940,
+      "rank": 2
+    },
+    {
+      "talentId": 104940,
+      "rank": 3
+    },
+    {
+      "talentId": 104943,
+      "rank": 1
+    },
+    {
+      "talentId": 104943,
+      "rank": 2
+    },
+    {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
+      "talentId": 104948,
+      "rank": 1
+    },
+    {
+      "talentId": 104948,
+      "rank": 2
+    },
+    {
+      "talentId": 104946,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 2
+    },
+    {
+      "talentId": 104949,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 3
+    },
+    {
+      "talentId": 104947,
+      "rank": 1
+    },
+    {
+      "talentId": 104955,
+      "rank": 1
+    },
+    {
+      "talentId": 104947,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 3
+    },
+    {
+      "talentId": 104954,
+      "rank": 1
+    },
+    {
+      "talentId": 104954,
+      "rank": 2
+    },
+    {
+      "talentId": 104954,
+      "rank": 3
+    },
+    {
+      "talentId": 104954,
+      "rank": 4
+    },
+    {
+      "talentId": 104954,
+      "rank": 5
+    },
+    {
+      "talentId": 104956,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 2
+    },
+    {
+      "talentId": 104953,
+      "rank": 3
+    },
+    {
+      "talentId": 104953,
+      "rank": 4
+    },
+    {
+      "talentId": 104953,
+      "rank": 5
+    },
+    {
+      "talentId": 104945,
+      "rank": 1
+    },
+    {
+      "talentId": 104945,
+      "rank": 2
+    },
+    {
+      "talentId": 104945,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104919,
+      "rank": 1
+    },
+    {
+      "talentId": 104919,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104938,
+      "count": 5,
+      "reason": "Kosten zentraler Formfähigkeiten senken."
+    },
+    {
+      "talentId": 104940,
+      "count": 3,
+      "reason": "Prankenhieb und Schleichen für Gruppen und Wege unterstützen."
+    },
+    {
+      "talentId": 104943,
+      "count": 2,
+      "reason": "Bewegung in Katzengestalt und Ausweichen verbessern."
+    },
+    {
+      "talentId": 104944,
+      "count": 1,
+      "reason": "Wilde Attacke als situative Annäherung und Kontrolle freischalten; Gestaltvoraussetzungen beachten."
+    },
+    {
+      "talentId": 104948,
+      "count": 2,
+      "reason": "Häufige Formangriffe stärken und Aufschlitzen vorbereiten."
+    },
+    {
+      "talentId": 104946,
+      "count": 2,
+      "reason": "Kritische Trefferchance in beiden Kampfgestalten stärken."
+    },
+    {
+      "talentId": 104949,
+      "count": 1,
+      "reason": "Aufschlitzen für stapelbare Blutung und Bärenbedrohung freischalten."
+    },
+    {
+      "talentId": 104942,
+      "count": 3,
+      "reason": "Rüstung in Gestalt erhöhen."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
+    },
+    {
+      "talentId": 104955,
+      "count": 1,
+      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses freischalten."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
+    },
+    {
+      "talentId": 104952,
+      "count": 3,
+      "reason": "Angriffskraft in Gestalt erhöhen und Beißen und Reißen vorbereiten."
+    },
+    {
+      "talentId": 104954,
+      "count": 5,
+      "reason": "Ausweichen und Wut in Bärengestalt unterstützen."
+    },
+    {
+      "talentId": 104956,
+      "count": 1,
+      "reason": "Urtümlichen Biss als starke Bedrohungsfähigkeit für Bären freischalten."
+    },
+    {
+      "talentId": 104953,
+      "count": 5,
+      "reason": "Nahkampffähigkeiten gegen blutende Ziele stärken."
+    },
+    {
+      "talentId": 104945,
+      "count": 3,
+      "reason": "Kosten von Schreddern und Aufschlitzen verringern."
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Herz der Wildnis: Intelligenz sowie gestaltspezifisch Ausdauer oder Stärke erhöhen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Verursachten Schaden erhöhen und Heilzauber beschleunigen."
+    },
+    {
+      "talentId": 104919,
+      "count": 2,
+      "reason": "Manakosten von Gestaltwechseln reduzieren."
+    }
+  ],
+  "treeName": "Wilder Kampf",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-feral-dungeons-tank-group-balanced-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für regelmäßiges Tanking frühe Prankenhieb-/Schleichpunkte und Wilde Attacke auf 20, dann Aufschlitzen auf 25 und Rudelführer auf 30. Natural Reaction vor Urtümlichem Biss auf 40. Anschließend Blutungsschaden und geringere Aufschlitzen-Kosten, danach Ausdauer und Schaden aus Wiederherstellung. Keine katzenspezifische Machtverschiebung oder Raubtierdisziplin investiert. Keine gemessene Bedrohungsüberlegenheit behauptet.",
+    "adviceSummary": "Spezialisierter Bären-Dungeonpfad mit frühem Prankenhieb, Aufschlitzen auf 25, Urtümlichem Biss auf 40.",
+    "evidenceIds": [
+      "druid-feral-dungeons-tank-group-balanced-rank0-71139-editorial-1",
+      "druid-feral-dungeons-tank-group-balanced-rank0-71139-editorial-2",
+      "druid-feral-dungeons-tank-group-balanced-rank0-71139-editorial-3"
+    ]
+  }
+}

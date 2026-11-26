@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-protection-dungeons",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11541,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 15,
+    "11541": 31,
+    "11559": 5
+  },
+  "points": [
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
+    },
+    {
+      "talentId": 105632,
+      "rank": 1
+    },
+    {
+      "talentId": 105632,
+      "rank": 2
+    },
+    {
+      "talentId": 105625,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 2
+    },
+    {
+      "talentId": 105630,
+      "rank": 1
+    },
+    {
+      "talentId": 105630,
+      "rank": 2
+    },
+    {
+      "talentId": 110878,
+      "rank": 1
+    },
+    {
+      "talentId": 105634,
+      "rank": 1
+    },
+    {
+      "talentId": 105634,
+      "rank": 2
+    },
+    {
+      "talentId": 105634,
+      "rank": 3
+    },
+    {
+      "talentId": 105630,
+      "rank": 3
+    },
+    {
+      "talentId": 105628,
+      "rank": 1
+    },
+    {
+      "talentId": 105627,
+      "rank": 1
+    },
+    {
+      "talentId": 105627,
+      "rank": 2
+    },
+    {
+      "talentId": 105627,
+      "rank": 3
+    },
+    {
+      "talentId": 105630,
+      "rank": 4
+    },
+    {
+      "talentId": 110879,
+      "rank": 1
+    },
+    {
+      "talentId": 110879,
+      "rank": 2
+    },
+    {
+      "talentId": 110879,
+      "rank": 3
+    },
+    {
+      "talentId": 105627,
+      "rank": 4
+    },
+    {
+      "talentId": 105627,
+      "rank": 5
+    },
+    {
+      "talentId": 110875,
+      "rank": 1
+    },
+    {
+      "talentId": 105335,
+      "rank": 1
+    },
+    {
+      "talentId": 105335,
+      "rank": 2
+    },
+    {
+      "talentId": 105335,
+      "rank": 3
+    },
+    {
+      "talentId": 105335,
+      "rank": 4
+    },
+    {
+      "talentId": 105335,
+      "rank": 5
+    },
+    {
+      "talentId": 105334,
+      "rank": 1
+    },
+    {
+      "talentId": 105334,
+      "rank": 2
+    },
+    {
+      "talentId": 105334,
+      "rank": 3
+    },
+    {
+      "talentId": 105334,
+      "rank": 4
+    },
+    {
+      "talentId": 105334,
+      "rank": 5
+    },
+    {
+      "talentId": 110871,
+      "rank": 1
+    },
+    {
+      "talentId": 110871,
+      "rank": 2
+    },
+    {
+      "talentId": 105333,
+      "rank": 1
+    },
+    {
+      "talentId": 105333,
+      "rank": 2
+    },
+    {
+      "talentId": 105333,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 1
+    },
+    {
+      "talentId": 105706,
+      "rank": 2
+    },
+    {
+      "talentId": 105706,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 4
+    },
+    {
+      "talentId": 105706,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blockchance nach Nahkampfangriffen ausbauen."
+    },
+    {
+      "talentId": 105638,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105632,
+      "count": 2,
+      "reason": "Defensive Abklingzeiten verringern."
+    },
+    {
+      "talentId": 105625,
+      "count": 1,
+      "reason": "Bollwerk des Templers freischalten."
+    },
+    {
+      "talentId": 110874,
+      "count": 2,
+      "reason": "Blocken und Manarückfluss verbessern."
+    },
+    {
+      "talentId": 105630,
+      "count": 2,
+      "reason": "Rüstung erhöhen."
+    },
+    {
+      "talentId": 110878,
+      "count": 1,
+      "reason": "Zusätzliches Richturteil freischalten."
+    },
+    {
+      "talentId": 105634,
+      "count": 3,
+      "reason": "Schadensminderung bei aktivem Zorn der Gerechtigkeit stärken."
+    },
+    {
+      "talentId": 105630,
+      "count": 1,
+      "reason": "Rüstung weiter stärken."
+    },
+    {
+      "talentId": 105628,
+      "count": 1,
+      "reason": "Heiligen Schild freischalten."
+    },
+    {
+      "talentId": 105627,
+      "count": 3,
+      "reason": "Zusatzangriffe nach Blocken stärken."
+    },
+    {
+      "talentId": 105630,
+      "count": 1,
+      "reason": "Rüstung weiter ausbauen."
+    },
+    {
+      "talentId": 110879,
+      "count": 3,
+      "reason": "Bedrohung und Schutz durch Heiligen Stoß stärken."
+    },
+    {
+      "talentId": 105627,
+      "count": 2,
+      "reason": "Abrechnung vervollständigen."
+    },
+    {
+      "talentId": 110875,
+      "count": 1,
+      "reason": "Schildgeschworen freischalten."
+    },
+    {
+      "talentId": 105335,
+      "count": 5,
+      "reason": "Heilungen gegen Zauberzeitverlust absichern."
+    },
+    {
+      "talentId": 105334,
+      "count": 5,
+      "reason": "Siegel und Richturteile stärken."
+    },
+    {
+      "talentId": 110871,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern erhöhen."
+    },
+    {
+      "talentId": 105333,
+      "count": 3,
+      "reason": "Heilungen stärken."
+    },
+    {
+      "talentId": 105706,
+      "count": 5,
+      "reason": "Kosten der Sofortzauber reduzieren."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-protection-paladin-leveling",
+      "wh-protection-paladin"
+    ],
+    "editorialDecision": "Früh Blockchance und Trefferchance, anschließend Blocken/Manarückfluss, Schadensminderung und Heiligen Schild auf 30. Schildgeschworen auf 40 stärkt die Rotation aus Heiligem Schild und Heiligem Stoß. Die weiteren Heilig- und Vergeltungspunkte unterstützen Siegel, Heilung und Manakosten; eine tiefere Schutzvariante ist für Endgame-Ausrüstung sinnvoll, aber nicht pauschal schneller beim Leveln. Kein fester Manarückfluss, keine garantierten Zusatzangriffe. Richturteil gilt als Fernkampfangriff; keine Nahkampf-Proc-Annahme.",
+    "unresolved": [
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Klassenweite Quellenabweichungen außerhalb der vergebenen Talente und Voraussetzungen bestehen weiterhin; keine vollständige Klassenfreigabe."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Schutz",
+  "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+  "ruleRevision": "paladin-protection-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Früh Blockchance und Trefferchance, anschließend Blocken/Manarückfluss, Schadensminderung und Heiligen Schild auf 30. Schildgeschworen auf 40 stärkt die Rotation aus Heiligem Schild und Heiligem Stoß. Die weiteren Heilig- und Vergeltungspunkte unterstützen Siegel, Heilung und Manakosten; eine tiefere Schutzvariante ist für Endgame-Ausrüstung sinnvoll, aber nicht pauschal schneller beim Leveln. Kein fester Manarückfluss, keine garantierten Zusatzangriffe. Richturteil gilt als Fernkampfangriff; keine Nahkampf-Proc-Annahme.",
+    "adviceSummary": "Schildtank mit Bollwerk auf 20, Heiligem Schild auf 30 und Schildgeschworen auf 40.",
+    "evidenceIds": [
+      "paladin-protection-dungeons-rank0-71139-editorial-1",
+      "paladin-protection-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

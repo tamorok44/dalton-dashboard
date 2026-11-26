@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-affliction-pvp",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11629,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 35,
+    "11636": 16,
+    "11637": 0
+  },
+  "points": [
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105916,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 1
+    },
+    {
+      "talentId": 105918,
+      "rank": 2
+    },
+    {
+      "talentId": 105913,
+      "rank": 1
+    },
+    {
+      "talentId": 105914,
+      "rank": 1
+    },
+    {
+      "talentId": 105914,
+      "rank": 2
+    },
+    {
+      "talentId": 105917,
+      "rank": 1
+    },
+    {
+      "talentId": 105917,
+      "rank": 2
+    },
+    {
+      "talentId": 105912,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 1
+    },
+    {
+      "talentId": 105911,
+      "rank": 2
+    },
+    {
+      "talentId": 105911,
+      "rank": 3
+    },
+    {
+      "talentId": 105917,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 2
+    },
+    {
+      "talentId": 105910,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 4
+    },
+    {
+      "talentId": 105910,
+      "rank": 5
+    },
+    {
+      "talentId": 105909,
+      "rank": 1
+    },
+    {
+      "talentId": 105923,
+      "rank": 1
+    },
+    {
+      "talentId": 105923,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 3
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 1
+    },
+    {
+      "talentId": 105907,
+      "rank": 2
+    },
+    {
+      "talentId": 105907,
+      "rank": 3
+    },
+    {
+      "talentId": 105907,
+      "rank": 4
+    },
+    {
+      "talentId": 105907,
+      "rank": 5
+    },
+    {
+      "talentId": 105906,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 2
+    },
+    {
+      "talentId": 105906,
+      "rank": 3
+    },
+    {
+      "talentId": 105906,
+      "rank": 4
+    },
+    {
+      "talentId": 105906,
+      "rank": 5
+    },
+    {
+      "talentId": 105903,
+      "rank": 1
+    },
+    {
+      "talentId": 105903,
+      "rank": 2
+    },
+    {
+      "talentId": 105903,
+      "rank": 3
+    },
+    {
+      "talentId": 105899,
+      "rank": 1
+    },
+    {
+      "talentId": 105899,
+      "rank": 2
+    },
+    {
+      "talentId": 105904,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105924,
+      "reason": "Verderbnis sofort wirkbar machen.",
+      "count": 5
+    },
+    {
+      "talentId": 105925,
+      "reason": "Trefferchance steigern.",
+      "count": 5
+    },
+    {
+      "talentId": 105916,
+      "reason": "Fluchverstärkung als Voraussetzung für Kontrolle freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105919,
+      "reason": "Omen der Pein verstärken.",
+      "count": 2
+    },
+    {
+      "talentId": 105918,
+      "reason": "Kanalisierung gegen Zauberzeitverlust durch Schaden unterstützen; keine Immunität gegen Unterbrechung oder Stille.",
+      "count": 2
+    },
+    {
+      "talentId": 105913,
+      "reason": "Verlangsamenden Fluch auf Stufe 25 freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105914,
+      "reason": "Spontane Schattenblitze ermöglichen.",
+      "count": 2
+    },
+    {
+      "talentId": 105917,
+      "reason": "Kritischen Schadensbonus der betroffenen Schattenzauber steigern.",
+      "count": 2
+    },
+    {
+      "talentId": 105912,
+      "reason": "Lebensentzug auf Stufe 30 freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105911,
+      "reason": "Seelenentzug stärkt Blutsauger, Seelendieb und Zermürben nur anhand der drei genannten eigenen DoTs; kein rekursiver Schadensbonus.",
+      "count": 3
+    },
+    {
+      "talentId": 105917,
+      "reason": "Kritischen Schadensbonus vervollständigen.",
+      "count": 1
+    },
+    {
+      "talentId": 105910,
+      "reason": "Schattenschaden steigern.",
+      "count": 5
+    },
+    {
+      "talentId": 105909,
+      "reason": "Zermürben beschleunigt beim Kanalisieren die eigenen Verderbnis-, Lebensentzug- und Omen-der-Pein-Ticks; Dauer bleibt gleich, Fortschritt bleibt bei Abbruch erhalten. Keine Heilung wie Blutsauger, keine feste Schadenszahl.",
+      "count": 1
+    },
+    {
+      "talentId": 105923,
+      "reason": "Reichweite der Gebrechenzauber ausbauen.",
+      "count": 2
+    },
+    {
+      "talentId": 105918,
+      "reason": "Kanalisierung gegen Zauberzeitverlust durch Schaden unterstützen; keine Immunität gegen Unterbrechung oder Stille.",
+      "count": 1
+    },
+    {
+      "talentId": 105920,
+      "reason": "Entzugszauber ergänzen.",
+      "count": 1
+    },
+    {
+      "talentId": 105907,
+      "reason": "Eigene Ausdauer erhöhen.",
+      "count": 5
+    },
+    {
+      "talentId": 105906,
+      "reason": "Aktiven Dämon stärken.",
+      "count": 5
+    },
+    {
+      "talentId": 105903,
+      "reason": "Mana und Begleiterreserven ergänzen.",
+      "count": 3
+    },
+    {
+      "talentId": 105899,
+      "reason": "Dämonische Ressourcen unterstützen.",
+      "count": 2
+    },
+    {
+      "talentId": 105904,
+      "reason": "Optionalen defensiven Leerwandler stärken.",
+      "count": 1
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "cobalt-warlock-affliction-pvp-20261110",
+      "foreverbattlegrounds-warlock-affliction-pvp"
+    ],
+    "editorialDecision": "Aktiver Dämon, Verlangsamungsfluch 25, Lebensentzug 30, Zermürben 40. Nur geschützt kanalisieren, keine Unterbrechungsimmunität. 30/21 Seelenverbindung-Hybrid und Dämonopferung als Alternativen; keine pauschale Überlegenheit.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Schadens-, Bedrohungs- und Begleiter-Kritformeln nicht freigegeben."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "official": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "mirror": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "sources": [
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+          "contribution": "23.11.: DoTs, Drain Life/Life Tap, Wrack und aktiver Dämon; keine Nutzung des erwähnten Soul-Harvest-Fehlers."
+        },
+        {
+          "url": "https://www.wowhead.com/forever/guide/classes/warlock/affliction/dps-leveling-tips",
+          "contribution": "11.11.: Dämonologie-Abstecher und Wrack erst 47 als Alternative; Wrack heilt nicht wie Drain Life."
+        },
+        {
+          "url": "https://www.icy-veins.com/wow-forever/affliction-warlock-leveling/",
+          "contribution": "16.11.: alternativer früher Dämonopferungs-Abstecher; nicht für unsere aktive Dämonen-Spielweise übernommen."
+        },
+        {
+          "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/affliction/pvp/",
+          "contribution": "10.11.: DoT-Druck, Kontrolle und sichere Ressourcenfenster."
+        },
+        {
+          "url": "https://foreverbattlegrounds.com/classes/warlock/affliction/",
+          "contribution": "Älterer PvP-Build mit Dämonopferung; nicht als exakter 71139-Skalierungsnachweis."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Gebrechen",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-affliction-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Aktiver Dämon, Verlangsamungsfluch 25, Lebensentzug 30, Zermürben 40. Nur geschützt kanalisieren, keine Unterbrechungsimmunität. 30/21 Seelenverbindung-Hybrid und Dämonopferung als Alternativen; keine pauschale Überlegenheit.",
+    "adviceSummary": "Aktiver Dämon, Verlangsamungsfluch 25, Lebensentzug 30, Zermürben 40. Nur geschützt kanalisieren, keine Unterbrechungsimmunität. 30/21 Seelenverbindung-Hybrid und Dämonopferung als Alternativen; keine pauschale Überlegenheit.",
+    "evidenceIds": [
+      "warlock-affliction-pvp-rank0-71139-editorial-1",
+      "warlock-affliction-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

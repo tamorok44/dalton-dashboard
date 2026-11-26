@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-feral-pvp-damage",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11347,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 0,
+    "11340": 16,
+    "11347": 35
+  },
+  "points": [
+    {
+      "talentId": 104938,
+      "rank": 1
+    },
+    {
+      "talentId": 104938,
+      "rank": 2
+    },
+    {
+      "talentId": 104938,
+      "rank": 3
+    },
+    {
+      "talentId": 104938,
+      "rank": 4
+    },
+    {
+      "talentId": 104938,
+      "rank": 5
+    },
+    {
+      "talentId": 104939,
+      "rank": 1
+    },
+    {
+      "talentId": 104939,
+      "rank": 2
+    },
+    {
+      "talentId": 104939,
+      "rank": 3
+    },
+    {
+      "talentId": 104943,
+      "rank": 1
+    },
+    {
+      "talentId": 104943,
+      "rank": 2
+    },
+    {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
+      "talentId": 104941,
+      "rank": 1
+    },
+    {
+      "talentId": 104941,
+      "rank": 2
+    },
+    {
+      "talentId": 104946,
+      "rank": 1
+    },
+    {
+      "talentId": 104946,
+      "rank": 2
+    },
+    {
+      "talentId": 104951,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 1
+    },
+    {
+      "talentId": 104952,
+      "rank": 2
+    },
+    {
+      "talentId": 104952,
+      "rank": 3
+    },
+    {
+      "talentId": 104947,
+      "rank": 1
+    },
+    {
+      "talentId": 104955,
+      "rank": 1
+    },
+    {
+      "talentId": 104947,
+      "rank": 2
+    },
+    {
+      "talentId": 104950,
+      "rank": 1
+    },
+    {
+      "talentId": 104950,
+      "rank": 2
+    },
+    {
+      "talentId": 104939,
+      "rank": 4
+    },
+    {
+      "talentId": 104953,
+      "rank": 1
+    },
+    {
+      "talentId": 104953,
+      "rank": 2
+    },
+    {
+      "talentId": 104953,
+      "rank": 3
+    },
+    {
+      "talentId": 104953,
+      "rank": 4
+    },
+    {
+      "talentId": 104953,
+      "rank": 5
+    },
+    {
+      "talentId": 113563,
+      "rank": 1
+    },
+    {
+      "talentId": 104939,
+      "rank": 5
+    },
+    {
+      "talentId": 104945,
+      "rank": 1
+    },
+    {
+      "talentId": 104945,
+      "rank": 2
+    },
+    {
+      "talentId": 104945,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104919,
+      "rank": 1
+    },
+    {
+      "talentId": 104919,
+      "rank": 2
+    },
+    {
+      "talentId": 104919,
+      "rank": 3
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104938,
+      "count": 5,
+      "reason": "Kosten zentraler Formfähigkeiten senken."
+    },
+    {
+      "talentId": 104939,
+      "count": 3,
+      "reason": "Wut beim Bärenwechsel und Erhalt vorhandener Katzenenergie verbessern; kein klassisches Powershifting voraussetzen."
+    },
+    {
+      "talentId": 104943,
+      "count": 2,
+      "reason": "Bewegung in Katzengestalt und Ausweichen verbessern."
+    },
+    {
+      "talentId": 104944,
+      "count": 1,
+      "reason": "Wilde Attacke als situative Annäherung und Kontrolle freischalten; Gestaltvoraussetzungen beachten."
+    },
+    {
+      "talentId": 104941,
+      "count": 2,
+      "reason": "Betäubungsdauer von Hieb und Anspringen verbessern und Hieb häufiger ermöglichen."
+    },
+    {
+      "talentId": 104946,
+      "count": 2,
+      "reason": "Kritische Trefferchance in beiden Kampfgestalten stärken."
+    },
+    {
+      "talentId": 104951,
+      "count": 1,
+      "reason": "Raubtierdisziplin als Voraussetzung für Machtverschiebung freischalten."
+    },
+    {
+      "talentId": 104952,
+      "count": 3,
+      "reason": "Angriffskraft in Gestalt erhöhen und Beißen und Reißen vorbereiten."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
+    },
+    {
+      "talentId": 104955,
+      "count": 1,
+      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses freischalten."
+    },
+    {
+      "talentId": 104947,
+      "count": 1,
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
+    },
+    {
+      "talentId": 104950,
+      "count": 2,
+      "reason": "Kritischen Nahkampfschaden und Heilung in Abhängigkeit von Intelligenz unterstützen."
+    },
+    {
+      "talentId": 104939,
+      "count": 1,
+      "reason": "Wut beim Bärenwechsel und Erhalt vorhandener Katzenenergie verbessern; kein klassisches Powershifting voraussetzen."
+    },
+    {
+      "talentId": 104953,
+      "count": 5,
+      "reason": "Nahkampffähigkeiten gegen blutende Ziele stärken."
+    },
+    {
+      "talentId": 113563,
+      "count": 1,
+      "reason": "Machtverschiebung als Energieoption in Katzengestalt freischalten; Manakosten und Abklingzeit beachten."
+    },
+    {
+      "talentId": 104939,
+      "count": 1,
+      "reason": "Wut beim Bärenwechsel und Erhalt vorhandener Katzenenergie verbessern; kein klassisches Powershifting voraussetzen."
+    },
+    {
+      "talentId": 104945,
+      "count": 3,
+      "reason": "Kosten von Schreddern und Aufschlitzen verringern."
+    },
+    {
+      "talentId": 104958,
+      "count": 5,
+      "reason": "Herz der Wildnis: Intelligenz sowie gestaltspezifisch Ausdauer oder Stärke erhöhen."
+    },
+    {
+      "talentId": 104922,
+      "count": 5,
+      "reason": "Verursachten Schaden erhöhen und Heilzauber beschleunigen."
+    },
+    {
+      "talentId": 104919,
+      "count": 3,
+      "reason": "Manakosten von Gestaltwechseln reduzieren."
+    },
+    {
+      "talentId": 104920,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern unterstützen."
+    },
+    {
+      "talentId": 104912,
+      "count": 1,
+      "reason": "Rasche Heilung für ein Ziel mit passendem aktiven Heilung-über-Zeit-Effekt freischalten."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "druid-feral-pvp-skillcapped",
+      "druid-feral-pvp-cobalt"
+    ],
+    "editorialDecision": "Die alte 30/21-Verteilung verzichtete auf Machtverschiebung. Die eigene 35/16-Variante orientiert sich an der Duell-/Nahkampfausrichtung: Furor, Wilde Attacke, Brutal Impact und Gestaltmobilität früh, Blutungsschaden und Machtverschiebung auf 40. Später gestaltspezifische Attribute, Schadensbonus, geringere Formkosten und Rasche Heilung. Kein alter Powershift und keine generelle Furchtimmunität; Schnelligkeit der Natur bleibt dem defensiveren 30/21-Pfad vorbehalten. Keine Bestbuild-Behauptung.",
+    "unresolved": [
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Gleichgewichtsbaum und Rangzauberzuordnung von Traumzustand noch nicht vollständig abgeglichen; diese Vergabe verwendet ausschließlich Wilder Kampf/Wiederherstellung. Keine vollständige Klassenfreigabe.",
+      "Effektive Manakosten von Machtverschiebung nicht numerisch behauptet."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Wilder Kampf",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-feral-pvp-damage-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Die alte 30/21-Verteilung verzichtete auf Machtverschiebung. Die eigene 35/16-Variante orientiert sich an der Duell-/Nahkampfausrichtung: Furor, Wilde Attacke, Brutal Impact und Gestaltmobilität früh, Blutungsschaden und Machtverschiebung auf 40. Später gestaltspezifische Attribute, Schadensbonus, geringere Formkosten und Rasche Heilung. Kein alter Powershift und keine generelle Furchtimmunität; Schnelligkeit der Natur bleibt dem defensiveren 30/21-Pfad vorbehalten. Keine Bestbuild-Behauptung.",
+    "adviceSummary": "Offensiver Feral-PvP-Pfad mit früher Kontrolle, Machtverschiebung auf 40 und Rascher Heilung auf 60.",
+    "evidenceIds": [
+      "druid-feral-pvp-damage-rank0-71139-editorial-1",
+      "druid-feral-pvp-damage-rank0-71139-editorial-2",
+      "druid-feral-pvp-damage-rank0-71139-editorial-3"
+    ]
+  }
+}

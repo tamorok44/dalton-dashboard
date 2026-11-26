@@ -1,0 +1,454 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-assassination-pvp",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11580,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 0,
+    "11573": 20,
+    "11580": 31
+  },
+  "points": [
+    {
+      "talentId": 105722,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 2
+    },
+    {
+      "talentId": 105722,
+      "rank": 3
+    },
+    {
+      "talentId": 105722,
+      "rank": 4
+    },
+    {
+      "talentId": 105722,
+      "rank": 5
+    },
+    {
+      "talentId": 105721,
+      "rank": 1
+    },
+    {
+      "talentId": 105721,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 3
+    },
+    {
+      "talentId": 105739,
+      "rank": 1
+    },
+    {
+      "talentId": 105739,
+      "rank": 2
+    },
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 1
+    },
+    {
+      "talentId": 113398,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 3
+    },
+    {
+      "talentId": 105732,
+      "rank": 1
+    },
+    {
+      "talentId": 105732,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105716,
+      "rank": 1
+    },
+    {
+      "talentId": 105716,
+      "rank": 2
+    },
+    {
+      "talentId": 105720,
+      "rank": 1
+    },
+    {
+      "talentId": 105720,
+      "rank": 2
+    },
+    {
+      "talentId": 105739,
+      "rank": 3
+    },
+    {
+      "talentId": 105715,
+      "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 2
+    },
+    {
+      "talentId": 105714,
+      "rank": 3
+    },
+    {
+      "talentId": 105714,
+      "rank": 4
+    },
+    {
+      "talentId": 105712,
+      "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 5
+    },
+    {
+      "talentId": 113633,
+      "rank": 1
+    },
+    {
+      "talentId": 113633,
+      "rank": 2
+    },
+    {
+      "talentId": 113633,
+      "rank": 3
+    },
+    {
+      "talentId": 113633,
+      "rank": 4
+    },
+    {
+      "talentId": 105710,
+      "rank": 1
+    },
+    {
+      "talentId": 105710,
+      "rank": 2
+    },
+    {
+      "talentId": 105710,
+      "rank": 3
+    },
+    {
+      "talentId": 113633,
+      "rank": 5
+    },
+    {
+      "talentId": 105709,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 1
+    },
+    {
+      "talentId": 105738,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 3
+    },
+    {
+      "talentId": 105733,
+      "rank": 1
+    },
+    {
+      "talentId": 105733,
+      "rank": 2
+    },
+    {
+      "talentId": 105735,
+      "rank": 1
+    },
+    {
+      "talentId": 105730,
+      "rank": 1
+    },
+    {
+      "talentId": 105730,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105722,
+      "reason": "Kritische Trefferchance erhöhen.",
+      "count": 5
+    },
+    {
+      "talentId": 105721,
+      "reason": "Combopunkte nach Finishing-Moves unterstützen.",
+      "count": 3
+    },
+    {
+      "talentId": 105739,
+      "reason": "Zerhäckseln verlängern.",
+      "count": 2
+    },
+    {
+      "talentId": 105741,
+      "reason": "Energiekosten häufiger Angriffe reduzieren.",
+      "count": 2
+    },
+    {
+      "talentId": 113398,
+      "reason": "Ausweichen ergänzen.",
+      "count": 3
+    },
+    {
+      "talentId": 105732,
+      "reason": "Verbessertes Sprinten für situationsabhängiges Lösen von Bewegungseinschränkungen.",
+      "count": 2
+    },
+    {
+      "talentId": 105737,
+      "reason": "Trefferchance erhöhen.",
+      "count": 3
+    },
+    {
+      "talentId": 105716,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen.",
+      "count": 2
+    },
+    {
+      "talentId": 105720,
+      "reason": "Energiereserve steigern.",
+      "count": 2
+    },
+    {
+      "talentId": 105739,
+      "reason": "Zerhäckseln vervollständigen.",
+      "count": 1
+    },
+    {
+      "talentId": 105715,
+      "reason": "Kaltblütigkeit für einen gezielten kritischen Angriff freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105714,
+      "reason": "Giftschaden steigern.",
+      "count": 4
+    },
+    {
+      "talentId": 105712,
+      "reason": "Venom: Shank eröffnet ein zeitlich begrenztes Fenster für stärkere und häufiger angewandte Gifte; keine garantierte Anwendung.",
+      "count": 1
+    },
+    {
+      "talentId": 105714,
+      "reason": "Giftschaden steigern.",
+      "count": 1
+    },
+    {
+      "talentId": 113633,
+      "reason": "Energierückfluss verbessern.",
+      "count": 4
+    },
+    {
+      "talentId": 105710,
+      "reason": "Zusätzliche Combopunkte bei kritischen Fähigkeiten unterstützen.",
+      "count": 3
+    },
+    {
+      "talentId": 113633,
+      "reason": "Unerbittliche Stöße vervollständigen.",
+      "count": 1
+    },
+    {
+      "talentId": 105709,
+      "reason": "Verstümmeln mit zwei Dolchen für Combopunkte und zusätzlichen Schaden gegen vergiftete Ziele; keine exakte zusätzliche Schadenskonstante voraussetzen.",
+      "count": 1
+    },
+    {
+      "talentId": 105736,
+      "reason": "Sprinten und Entrinnen häufiger verfügbar machen.",
+      "count": 2
+    },
+    {
+      "talentId": 105738,
+      "reason": "Parieren ausbauen.",
+      "count": 3
+    },
+    {
+      "talentId": 105733,
+      "reason": "Tritt um einen Schweigeeffekt gegen geeignete Gegner ergänzen; keine garantierte Kontrolle.",
+      "count": 2
+    },
+    {
+      "talentId": 105735,
+      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen.",
+      "count": 1
+    },
+    {
+      "talentId": 105730,
+      "reason": "Schaden häufiger Angriffe ergänzen.",
+      "count": 2
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "rogue-assassination-pvp-1711",
+      "rogue-assassination-pvp-cobalt",
+      "rogue-hotfix-2511"
+    ],
+    "editorialDecision": "Früher 10-Punkte-Abstecher für Trefferchance und Sprint-Kontrolle; Kaltblütigkeit 35, Venom 40, Verstümmeln 50. Bewusster Mobilitätskompromiss gegenüber früherem Giftkern; keine garantierte Gift- oder Kontrollwirkung. Der widersprüchliche additive Rang-1-Schadenswert (39/39,6) ist für diese qualitative Talentwahl nicht entscheidend; keine konkrete Schadensprognose oder Rundungsregel. Giftverstärkung, Combopunkte und Dolchvoraussetzung sind belegt. Keine gemessene Überlegenheit.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative performance or exact server rounding of Mutilate; no damage forecast.",
+      "Death Mark numerical discrepancy remains outside this path."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wow-forever.gg/talents/rogue/",
+          "contribution": "Talentfunktionen, Voraussetzungen Riposte, Venom und Todesmal, Coup de Grace und Boot Knife; keine unabhängige numerische Servermessung."
+        },
+        {
+          "url": "https://endgametools.com/en/wow-forever/news/wow-forever-rogue",
+          "contribution": "Build 71139 ausgewiesen; Shank ab 24 und neue Talentkerne; kein Beweis der exakten Serverkoeffizienten."
+        },
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/assassination-rogue-guide",
+          "contribution": "25.11.: Gift-/Dolchspielweise, Shank, alternative Levelchronologie und zwei Dolche für Mutilate."
+        }
+      ],
+      "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "rawAudit": {
+        "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ],
+        "allocationDigest": "2549b658de4d2acab6fefce3040f3f2ee00289b84f5e03628eecf36f8192bfda"
+      }
+    }
+  },
+  "treeName": "Meucheln",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-assassination-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Früher 10-Punkte-Abstecher für Trefferchance und Sprint-Kontrolle; Kaltblütigkeit 35, Venom 40, Verstümmeln 50. Bewusster Mobilitätskompromiss gegenüber früherem Giftkern; keine garantierte Gift- oder Kontrollwirkung. Der widersprüchliche additive Rang-1-Schadenswert (39/39,6) ist für diese qualitative Talentwahl nicht entscheidend; keine konkrete Schadensprognose oder Rundungsregel. Giftverstärkung, Combopunkte und Dolchvoraussetzung sind belegt. Keine gemessene Überlegenheit.",
+    "adviceSummary": "Meucheln-PvP: frühe Sprintkontrolle, Giftkern und Verstümmeln 50.",
+    "evidenceIds": [
+      "rogue-assassination-pvp-rank0-71139-editorial-1",
+      "rogue-assassination-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

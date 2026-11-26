@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-shadow-pvp",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11622,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 20,
+    "11615": 0,
+    "11622": 31
+  },
+  "points": [
+    {
+      "talentId": 105832,
+      "rank": 1
+    },
+    {
+      "talentId": 105832,
+      "rank": 2
+    },
+    {
+      "talentId": 105832,
+      "rank": 3
+    },
+    {
+      "talentId": 105832,
+      "rank": 4
+    },
+    {
+      "talentId": 105832,
+      "rank": 5
+    },
+    {
+      "talentId": 110851,
+      "rank": 1
+    },
+    {
+      "talentId": 110851,
+      "rank": 2
+    },
+    {
+      "talentId": 110851,
+      "rank": 3
+    },
+    {
+      "talentId": 110851,
+      "rank": 4
+    },
+    {
+      "talentId": 110851,
+      "rank": 5
+    },
+    {
+      "talentId": 105826,
+      "rank": 1
+    },
+    {
+      "talentId": 105825,
+      "rank": 1
+    },
+    {
+      "talentId": 105825,
+      "rank": 2
+    },
+    {
+      "talentId": 105830,
+      "rank": 1
+    },
+    {
+      "talentId": 105830,
+      "rank": 2
+    },
+    {
+      "talentId": 105820,
+      "rank": 1
+    },
+    {
+      "talentId": 105821,
+      "rank": 1
+    },
+    {
+      "talentId": 105821,
+      "rank": 2
+    },
+    {
+      "talentId": 105821,
+      "rank": 3
+    },
+    {
+      "talentId": 105823,
+      "rank": 1
+    },
+    {
+      "talentId": 105824,
+      "rank": 1
+    },
+    {
+      "talentId": 105819,
+      "rank": 1
+    },
+    {
+      "talentId": 105819,
+      "rank": 2
+    },
+    {
+      "talentId": 105823,
+      "rank": 2
+    },
+    {
+      "talentId": 105823,
+      "rank": 3
+    },
+    {
+      "talentId": 105818,
+      "rank": 1
+    },
+    {
+      "talentId": 105818,
+      "rank": 2
+    },
+    {
+      "talentId": 105818,
+      "rank": 3
+    },
+    {
+      "talentId": 105818,
+      "rank": 4
+    },
+    {
+      "talentId": 105818,
+      "rank": 5
+    },
+    {
+      "talentId": 105817,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105845,
+      "rank": 1
+    },
+    {
+      "talentId": 105845,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 2
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105832,
+      "count": 5,
+      "reason": "Situative Betäubungsprocs aus Schattenzaubern ergänzen; keine garantierte Auslösung."
+    },
+    {
+      "talentId": 110851,
+      "count": 5,
+      "reason": "Trefferchance von Schattenzaubern erhöhen."
+    },
+    {
+      "talentId": 105826,
+      "count": 1,
+      "reason": "Gedankenschinden auf Stufe 20 freischalten."
+    },
+    {
+      "talentId": 105825,
+      "count": 2,
+      "reason": "Gedankenschinden verstärken."
+    },
+    {
+      "talentId": 105830,
+      "count": 2,
+      "reason": "Schattenwort: Schmerz verlängern."
+    },
+    {
+      "talentId": 105820,
+      "count": 1,
+      "reason": "Vampirumarmung freischalten; reduzierte Gruppenheilung nach November-Hotfix beachten."
+    },
+    {
+      "talentId": 105821,
+      "count": 3,
+      "reason": "Schattenwirken für längere Ziele ausbauen."
+    },
+    {
+      "talentId": 105823,
+      "count": 1,
+      "reason": "Willenskraft-Unterstützung vorbereiten."
+    },
+    {
+      "talentId": 105824,
+      "count": 1,
+      "reason": "Stille als situative Zauberunterbrechung und Kontrolle freischalten."
+    },
+    {
+      "talentId": 105819,
+      "count": 2,
+      "reason": "Manakosten und Weitergabe von Verschlingender Seuche unterstützen."
+    },
+    {
+      "talentId": 105823,
+      "count": 2,
+      "reason": "Dunkle Inspiration ausbauen."
+    },
+    {
+      "talentId": 105818,
+      "count": 5,
+      "reason": "Schattenschaden erhöhen."
+    },
+    {
+      "talentId": 105817,
+      "count": 1,
+      "reason": "Schattengestalt auf Stufe 40 freischalten; keine Heilzauber in Gestalt einplanen."
+    },
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Dauer ausgewählter Kontrollwirkungen und Bedrohung reduzieren."
+    },
+    {
+      "talentId": 105845,
+      "count": 2,
+      "reason": "Nach erlittenem kritischem Treffer situativen Zauberzeitschutz und Widerstand gegen Unterbrechung ergänzen."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Schildabsorption stärken."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105842,
+      "count": 3,
+      "reason": "Kosten von Sofortzaubern sowie Heiligem Feuer und Heiligem Schlag reduzieren."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "priest-battlegrounds",
+      "priest-shadow-wowhead-pve",
+      "priest-current-client-71139"
+    ],
+    "editorialDecision": "Gemischtes PvP ohne Umskillen: frühe situative Betäubung statt Kill-Regeneration, Gedankenschinden auf 20, Vampirumarmung auf 25, Stille auf 30 und Schattengestalt auf 40. Disziplin unterstützt später Sofortzauber, Schilde, Mana und Schutz gegen Kontrollwirkungen. Der 31/20-Ansatz priorisiert diese Unterstützung gegenüber zwei weiteren Schattenpunkten; kein Anspruch auf universellen Endgame-Bestbuild. Gruppeneffekt der Vampirumarmung reduziert, eigene Heilung unverändert. Kein garantierter Proc, keine allgemeine Heilung in Schattengestalt.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Schatten",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-shadow-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Gemischtes PvP ohne Umskillen: frühe situative Betäubung statt Kill-Regeneration, Gedankenschinden auf 20, Vampirumarmung auf 25, Stille auf 30 und Schattengestalt auf 40. Disziplin unterstützt später Sofortzauber, Schilde, Mana und Schutz gegen Kontrollwirkungen. Der 31/20-Ansatz priorisiert diese Unterstützung gegenüber zwei weiteren Schattenpunkten; kein Anspruch auf universellen Endgame-Bestbuild. Gruppeneffekt der Vampirumarmung reduziert, eigene Heilung unverändert. Kein garantierter Proc, keine allgemeine Heilung in Schattengestalt.",
+    "adviceSummary": "Schattendruck, Stille auf 30, Schattengestalt auf 40, danach Schutz und Manavorteile aus Disziplin.",
+    "evidenceIds": [
+      "priest-shadow-pvp-rank0-71139-editorial-1",
+      "priest-shadow-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

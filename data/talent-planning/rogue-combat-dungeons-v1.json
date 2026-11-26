@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-combat-dungeons",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11573,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 0,
+    "11573": 31,
+    "11580": 20
+  },
+  "points": [
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105732,
+      "rank": 1
+    },
+    {
+      "talentId": 105732,
+      "rank": 2
+    },
+    {
+      "talentId": 105759,
+      "rank": 1
+    },
+    {
+      "talentId": 105759,
+      "rank": 2
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 113398,
+      "rank": 1
+    },
+    {
+      "talentId": 108100,
+      "rank": 1
+    },
+    {
+      "talentId": 105730,
+      "rank": 1
+    },
+    {
+      "talentId": 105730,
+      "rank": 2
+    },
+    {
+      "talentId": 105726,
+      "rank": 1
+    },
+    {
+      "talentId": 105726,
+      "rank": 2
+    },
+    {
+      "talentId": 105728,
+      "rank": 1
+    },
+    {
+      "talentId": 113635,
+      "rank": 1
+    },
+    {
+      "talentId": 113635,
+      "rank": 2
+    },
+    {
+      "talentId": 105727,
+      "rank": 1
+    },
+    {
+      "talentId": 105727,
+      "rank": 2
+    },
+    {
+      "talentId": 105740,
+      "rank": 1
+    },
+    {
+      "talentId": 105740,
+      "rank": 2
+    },
+    {
+      "talentId": 105740,
+      "rank": 3
+    },
+    {
+      "talentId": 105740,
+      "rank": 4
+    },
+    {
+      "talentId": 105740,
+      "rank": 5
+    },
+    {
+      "talentId": 105724,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 1
+    },
+    {
+      "talentId": 105722,
+      "rank": 2
+    },
+    {
+      "talentId": 105722,
+      "rank": 3
+    },
+    {
+      "talentId": 105722,
+      "rank": 4
+    },
+    {
+      "talentId": 105722,
+      "rank": 5
+    },
+    {
+      "talentId": 105721,
+      "rank": 1
+    },
+    {
+      "talentId": 105721,
+      "rank": 2
+    },
+    {
+      "talentId": 105721,
+      "rank": 3
+    },
+    {
+      "talentId": 105739,
+      "rank": 1
+    },
+    {
+      "talentId": 105739,
+      "rank": 2
+    },
+    {
+      "talentId": 105739,
+      "rank": 3
+    },
+    {
+      "talentId": 105716,
+      "rank": 1
+    },
+    {
+      "talentId": 105716,
+      "rank": 2
+    },
+    {
+      "talentId": 105720,
+      "rank": 1
+    },
+    {
+      "talentId": 105720,
+      "rank": 2
+    },
+    {
+      "talentId": 105714,
+      "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 2
+    },
+    {
+      "talentId": 105714,
+      "rank": 3
+    },
+    {
+      "talentId": 105714,
+      "rank": 4
+    },
+    {
+      "talentId": 105714,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105741,
+      "count": 2,
+      "reason": "Energiekosten häufiger Angriffe senken."
+    },
+    {
+      "talentId": 105708,
+      "count": 3,
+      "reason": "Coup de Grace verstärkt Ausweiden."
+    },
+    {
+      "talentId": 105737,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105732,
+      "count": 2,
+      "reason": "Verbessertes Sprinten für Bewegungsprobleme."
+    },
+    {
+      "talentId": 105759,
+      "count": 2,
+      "reason": "Composure verstärkt die Energiekostenreduktion von Poised; seit 25.11. wird Poised auch durch Sap/Distract in Verstohlenheit verbraucht."
+    },
+    {
+      "talentId": 105736,
+      "count": 2,
+      "reason": "Sprinten und Entrinnen häufiger einsetzen."
+    },
+    {
+      "talentId": 113398,
+      "count": 1,
+      "reason": "Ausweichen ergänzen."
+    },
+    {
+      "talentId": 108100,
+      "count": 1,
+      "reason": "Energiekosten von Ausweiden senken."
+    },
+    {
+      "talentId": 105730,
+      "count": 2,
+      "reason": "Schaden häufiger Angriffe erhöhen."
+    },
+    {
+      "talentId": 105726,
+      "count": 2,
+      "reason": "Ausweichen und Parieren durch Gegner reduzieren."
+    },
+    {
+      "talentId": 105728,
+      "count": 1,
+      "reason": "Klingenwirbel für kontrollierte Mehrzielkämpfe; seit Hotfix 20.11. auch Shank-Schaden auf ein zusätzliches Ziel, keine ungewollten Pulls."
+    },
+    {
+      "talentId": 113635,
+      "count": 2,
+      "reason": "Schaden der Schildhandwaffe verbessern."
+    },
+    {
+      "talentId": 105727,
+      "count": 2,
+      "reason": "Hack and Slash: waffenabhängigen Zusatzangriff bzw. Kritbonus passend zur Ausrüstung unterstützen."
+    },
+    {
+      "talentId": 105740,
+      "count": 5,
+      "reason": "Flash of Steel verstärkt Shanks Energierückgewinnung und verkürzt seine Abklingzeit."
+    },
+    {
+      "talentId": 105724,
+      "count": 1,
+      "reason": "Adrenalinrausch auf 40 freischalten."
+    },
+    {
+      "talentId": 105722,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105721,
+      "count": 3,
+      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+    },
+    {
+      "talentId": 105739,
+      "count": 3,
+      "reason": "Zerhäckseln verlängern."
+    },
+    {
+      "talentId": 105716,
+      "count": 2,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 105720,
+      "count": 2,
+      "reason": "Energiereserve erhöhen."
+    },
+    {
+      "talentId": 105714,
+      "count": 5,
+      "reason": "Giftschaden steigern."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "rogue-combat-group-2511",
+      "rogue-outpost-2311",
+      "rogue-hotfix-2511"
+    ],
+    "editorialDecision": "Für reguläre Dungeons mit Tank: frühe günstige Angriffe, Trefferchance und Ausweiden; situative Mobilität und Eröffnungsnutzen statt eigener Paraden. Flawless Execution auf 25, Klingenwirbel 30, Flash of Steel vollständig 39 und Adrenalinrausch 40. Klingenwirbel nur bei erwünschtem Mehrzielschaden; Shank-Korrektur vom 20.11. und Poised-Korrektur vom 25.11. berücksichtigt. Später Meucheln für kritische Treffer, Zerhäckseln, Energie und Gifte. Kein DPS-Ranking, kein Zwang zur Frontposition. Die drei offenen Zahlenkonflikte Riposte, Verstümmeln und Todesmal liegen außerhalb der Vergabe und ihrer Voraussetzungen.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative DPS superiority; scoped group progression recommendation.",
+      "Numeric conflicts outside the allocation remain unresolved; current runtime observation and browser release gates remain separate."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wow-forever.gg/talents/rogue/",
+          "contribution": "Talentfunktionen, Voraussetzungen Riposte, Venom und Todesmal, Coup de Grace und Boot Knife; keine unabhängige numerische Servermessung."
+        },
+        {
+          "url": "https://endgametools.com/en/wow-forever/news/wow-forever-rogue",
+          "contribution": "Build 71139 ausgewiesen; Shank ab 24 und neue Talentkerne; kein Beweis der exakten Serverkoeffizienten."
+        },
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/combat-rogue-guide",
+          "contribution": "25.11.: Flawless Execution und Flash of Steel als Ressourcenmechaniken."
+        },
+        {
+          "url": "https://forever-hub.com/en/guides/combat-rogue-guide",
+          "contribution": "20.11.: Klingenwirbel, Adrenalinrausch, Shank und Ausweiden."
+        }
+      ],
+      "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "rawAudit": {
+        "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "excludedConflictIds": [
+        105709,
+        105735,
+        110866
+      ]
+    }
+  },
+  "treeName": "Kampf",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-combat-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für reguläre Dungeons mit Tank: frühe günstige Angriffe, Trefferchance und Ausweiden; situative Mobilität und Eröffnungsnutzen statt eigener Paraden. Flawless Execution auf 25, Klingenwirbel 30, Flash of Steel vollständig 39 und Adrenalinrausch 40. Klingenwirbel nur bei erwünschtem Mehrzielschaden; Shank-Korrektur vom 20.11. und Poised-Korrektur vom 25.11. berücksichtigt. Später Meucheln für kritische Treffer, Zerhäckseln, Energie und Gifte. Kein DPS-Ranking, kein Zwang zur Frontposition. Die drei offenen Zahlenkonflikte Riposte, Verstümmeln und Todesmal liegen außerhalb der Vergabe und ihrer Voraussetzungen.",
+    "adviceSummary": "Kampf-Dungeons: günstige Angriffe, Klingenwirbel auf 30, Adrenalinrausch auf 40; mit Tank statt auf eigenes Parieren zu setzen.",
+    "evidenceIds": [
+      "rogue-combat-dungeons-rank0-71139-editorial-1",
+      "rogue-combat-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

@@ -1,0 +1,345 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-affliction-dungeons",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11629,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 30,
+    "11636": 0,
+    "11637": 21
+  },
+  "points": [
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105888,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 2
+    },
+    {
+      "talentId": 105888,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 4
+    },
+    {
+      "talentId": 105888,
+      "rank": 5
+    },
+    {
+      "talentId": 105921,
+      "rank": 1
+    },
+    {
+      "talentId": 105921,
+      "rank": 2
+    },
+    {
+      "talentId": 105917,
+      "rank": 1
+    },
+    {
+      "talentId": 105917,
+      "rank": 2
+    },
+    {
+      "talentId": 105917,
+      "rank": 3
+    },
+    {
+      "talentId": 105914,
+      "rank": 1
+    },
+    {
+      "talentId": 105914,
+      "rank": 2
+    },
+    {
+      "talentId": 110876,
+      "rank": 1
+    },
+    {
+      "talentId": 110876,
+      "rank": 2
+    },
+    {
+      "talentId": 110876,
+      "rank": 3
+    },
+    {
+      "talentId": 105912,
+      "rank": 1
+    },
+    {
+      "talentId": 110876,
+      "rank": 4
+    },
+    {
+      "talentId": 110876,
+      "rank": 5
+    },
+    {
+      "talentId": 105919,
+      "rank": 1
+    },
+    {
+      "talentId": 105919,
+      "rank": 2
+    },
+    {
+      "talentId": 105910,
+      "rank": 1
+    },
+    {
+      "talentId": 105910,
+      "rank": 2
+    },
+    {
+      "talentId": 105910,
+      "rank": 3
+    },
+    {
+      "talentId": 105910,
+      "rank": 4
+    },
+    {
+      "talentId": 105910,
+      "rank": 5
+    },
+    {
+      "talentId": 105889,
+      "rank": 1
+    },
+    {
+      "talentId": 105889,
+      "rank": 2
+    },
+    {
+      "talentId": 105889,
+      "rank": 3
+    },
+    {
+      "talentId": 105889,
+      "rank": 4
+    },
+    {
+      "talentId": 105889,
+      "rank": 5
+    },
+    {
+      "talentId": 105887,
+      "rank": 1
+    },
+    {
+      "talentId": 105887,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 4
+    },
+    {
+      "talentId": 105883,
+      "rank": 5
+    },
+    {
+      "talentId": 105884,
+      "rank": 1
+    },
+    {
+      "talentId": 105879,
+      "rank": 1
+    },
+    {
+      "talentId": 105879,
+      "rank": 2
+    },
+    {
+      "talentId": 105879,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen und ihren Schaden stärken."
+    },
+    {
+      "talentId": 105925,
+      "count": 5,
+      "reason": "Trefferchance und geringere Bedrohung früh berücksichtigen."
+    },
+    {
+      "talentId": 105888,
+      "count": 5,
+      "reason": "Zauberzeiten für direkten Schaden zwischen periodischen Effekten senken."
+    },
+    {
+      "talentId": 105921,
+      "count": 2,
+      "reason": "Aderlass effizienter machen."
+    },
+    {
+      "talentId": 105917,
+      "count": 3,
+      "reason": "Kritischen Schaden der vorgesehenen periodischen Effekte verbessern."
+    },
+    {
+      "talentId": 105914,
+      "count": 2,
+      "reason": "Situative spontane Schattenblitze ermöglichen; keine garantierte Auslösung."
+    },
+    {
+      "talentId": 110876,
+      "count": 3,
+      "reason": "Kritische Trefferchance geeigneter Schattenzauber ausbauen."
+    },
+    {
+      "talentId": 105912,
+      "count": 1,
+      "reason": "Lebensentzug auf Stufe 35 freischalten."
+    },
+    {
+      "talentId": 110876,
+      "count": 2,
+      "reason": "Böswilligkeit vervollständigen."
+    },
+    {
+      "talentId": 105919,
+      "count": 2,
+      "reason": "Omen der Pein für ausreichend lange Ziele stärken."
+    },
+    {
+      "talentId": 105910,
+      "count": 5,
+      "reason": "Schattenschaden und Lebensentzug stärken."
+    },
+    {
+      "talentId": 105889,
+      "count": 5,
+      "reason": "Schattenblitz als ergänzenden Gruppenzauber stärken."
+    },
+    {
+      "talentId": 105887,
+      "count": 2,
+      "reason": "Manakosten der Zerstörungszauber senken."
+    },
+    {
+      "talentId": 105883,
+      "count": 5,
+      "reason": "Kritischen Schadensbonus der Zerstörungszauber erhöhen."
+    },
+    {
+      "talentId": 105884,
+      "count": 1,
+      "reason": "Schattenbrand als bewegliche Abschlussoption freischalten."
+    },
+    {
+      "talentId": 105879,
+      "count": 3,
+      "reason": "Schaden der Zerstörungszauber ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "outpost-warlock-dungeon-20261123",
+      "mobalytics-crix-warlock"
+    ],
+    "editorialDecision": "Die 30/0/21-Variante behält einen aktiven Dämon und nutzt Schattenblitz statt eines tiefen Wrack-Kanals. Die ersten zehn Punkte sichern Verderbnis und Trefferchance; ein früher Fünf-Punkte-Abstecher für schnellere direkte Schadenszauber unterstützt kurze Dungeonkämpfe. Danach Aderlass, Pandemic, Malevolence und beide Nightfall-Ränge, Lebensentzug auf 35 statt 40. Schattenbeherrschung wird bis 44 vervollständigt. Später folgen verbesserter Schattenblitz, Katastrophe, Ruin, Schattenbrand als beweglicher Abschluss und Agonizing Flames. Periodische Effekte nur bei ausreichender Ziellebensdauer; keine garantierten Procs oder numerische Schadensbehauptung. Keine Dämonopferung erforderlich.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Gebrechen",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-affliction-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Die 30/0/21-Variante behält einen aktiven Dämon und nutzt Schattenblitz statt eines tiefen Wrack-Kanals. Die ersten zehn Punkte sichern Verderbnis und Trefferchance; ein früher Fünf-Punkte-Abstecher für schnellere direkte Schadenszauber unterstützt kurze Dungeonkämpfe. Danach Aderlass, Pandemic, Malevolence und beide Nightfall-Ränge, Lebensentzug auf 35 statt 40. Schattenbeherrschung wird bis 44 vervollständigt. Später folgen verbesserter Schattenblitz, Katastrophe, Ruin, Schattenbrand als beweglicher Abschluss und Agonizing Flames. Periodische Effekte nur bei ausreichender Ziellebensdauer; keine garantierten Procs oder numerische Schadensbehauptung. Keine Dämonopferung erforderlich.",
+    "adviceSummary": "Gebrechen-Dungeons mit frühem Schattenblitz, Lebensentzug auf 35, Schattenbeherrschung bis 44 und direktem Schaden aus Zerstörung.",
+    "evidenceIds": [
+      "warlock-affliction-dungeons-rank0-71139-editorial-1",
+      "warlock-affliction-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

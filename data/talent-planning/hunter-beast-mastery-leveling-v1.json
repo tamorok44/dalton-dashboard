@@ -1,0 +1,408 @@
+{
+  "schemaVersion": 1,
+  "id": "hunter-beast-mastery-leveling",
+  "version": 1,
+  "classId": 3,
+  "treeId": 11372,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "solo",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11370": 0,
+    "11371": 20,
+    "11372": 31
+  },
+  "points": [
+    {
+      "talentId": 104976,
+      "rank": 1
+    },
+    {
+      "talentId": 104976,
+      "rank": 2
+    },
+    {
+      "talentId": 104976,
+      "rank": 3
+    },
+    {
+      "talentId": 104976,
+      "rank": 4
+    },
+    {
+      "talentId": 104976,
+      "rank": 5
+    },
+    {
+      "talentId": 104975,
+      "rank": 1
+    },
+    {
+      "talentId": 104975,
+      "rank": 2
+    },
+    {
+      "talentId": 104960,
+      "rank": 1
+    },
+    {
+      "talentId": 104960,
+      "rank": 2
+    },
+    {
+      "talentId": 104960,
+      "rank": 3
+    },
+    {
+      "talentId": 104970,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 2
+    },
+    {
+      "talentId": 104969,
+      "rank": 3
+    },
+    {
+      "talentId": 104969,
+      "rank": 4
+    },
+    {
+      "talentId": 104966,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 5
+    },
+    {
+      "talentId": 104967,
+      "rank": 1
+    },
+    {
+      "talentId": 104967,
+      "rank": 2
+    },
+    {
+      "talentId": 104967,
+      "rank": 3
+    },
+    {
+      "talentId": 104964,
+      "rank": 1
+    },
+    {
+      "talentId": 104967,
+      "rank": 4
+    },
+    {
+      "talentId": 104967,
+      "rank": 5
+    },
+    {
+      "talentId": 104963,
+      "rank": 1
+    },
+    {
+      "talentId": 104963,
+      "rank": 2
+    },
+    {
+      "talentId": 104962,
+      "rank": 1
+    },
+    {
+      "talentId": 104962,
+      "rank": 2
+    },
+    {
+      "talentId": 104962,
+      "rank": 3
+    },
+    {
+      "talentId": 104962,
+      "rank": 4
+    },
+    {
+      "talentId": 104962,
+      "rank": 5
+    },
+    {
+      "talentId": 104961,
+      "rank": 1
+    },
+    {
+      "talentId": 105011,
+      "rank": 1
+    },
+    {
+      "talentId": 105011,
+      "rank": 2
+    },
+    {
+      "talentId": 105011,
+      "rank": 3
+    },
+    {
+      "talentId": 105011,
+      "rank": 4
+    },
+    {
+      "talentId": 105011,
+      "rank": 5
+    },
+    {
+      "talentId": 105008,
+      "rank": 1
+    },
+    {
+      "talentId": 105008,
+      "rank": 2
+    },
+    {
+      "talentId": 105008,
+      "rank": 3
+    },
+    {
+      "talentId": 105008,
+      "rank": 4
+    },
+    {
+      "talentId": 105008,
+      "rank": 5
+    },
+    {
+      "talentId": 105005,
+      "rank": 1
+    },
+    {
+      "talentId": 105005,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 1
+    },
+    {
+      "talentId": 105009,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 3
+    },
+    {
+      "talentId": 105002,
+      "rank": 1
+    },
+    {
+      "talentId": 105002,
+      "rank": 2
+    },
+    {
+      "talentId": 105002,
+      "rank": 3
+    },
+    {
+      "talentId": 105002,
+      "rank": 4
+    },
+    {
+      "talentId": 105002,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104976,
+      "reason": "Begleiter beim frühen Leveln widerstandsfähiger machen.",
+      "count": 5
+    },
+    {
+      "talentId": 104975,
+      "reason": "Schaden von Jäger und Begleiter gemeinsam erhöhen.",
+      "count": 2
+    },
+    {
+      "talentId": 104960,
+      "reason": "Aspektabhängige Angriffstempo-Procs unterstützen, keine dauerhafte Tempoerhöhung voraussetzen.",
+      "count": 3
+    },
+    {
+      "talentId": 104970,
+      "reason": "Begleiter schneller zum Gegner bringen.",
+      "count": 1
+    },
+    {
+      "talentId": 104969,
+      "reason": "Direkten Schaden des Begleiters und Falken steigern.",
+      "count": 4
+    },
+    {
+      "talentId": 104966,
+      "reason": "Falkenbeschwörung für geeignete langlebige Ziele; gemeinsame Abklingzeit mit Arkanem Schuss und Manakosten beachten. Keine feste Schadens- oder Trefferzahl.",
+      "count": 1
+    },
+    {
+      "talentId": 104969,
+      "reason": "Entfesselten Zorn vervollständigen.",
+      "count": 1
+    },
+    {
+      "talentId": 104967,
+      "reason": "Kritische Treffer des Begleiters und Falken ausbauen.",
+      "count": 3
+    },
+    {
+      "talentId": 104964,
+      "reason": "Einschüchterung nach Bestial Swiftness und 20 früheren Tierherrschaftspunkten. Betäubung und hohe Bedrohung beim nächsten erfolgreichen Begleiterangriff; keine garantierte Dauer gegen immune Ziele.",
+      "count": 1
+    },
+    {
+      "talentId": 104967,
+      "reason": "Wildheit für Raserei vollständig ausbauen.",
+      "count": 2
+    },
+    {
+      "talentId": 104963,
+      "reason": "Fokusregeneration des Tiers und eigene Manaregeneration unterstützen.",
+      "count": 2
+    },
+    {
+      "talentId": 104962,
+      "reason": "Raserei nach bestätigter Wildheit vervollständigen.",
+      "count": 5
+    },
+    {
+      "talentId": 104961,
+      "reason": "Zorn des Wildtiers nach Einschüchterung und 30 früheren Tierherrschaftspunkten. Zeitlich begrenztes Schadens- und Kontrollschutzfenster für den Begleiter.",
+      "count": 1
+    },
+    {
+      "talentId": 105011,
+      "reason": "Kritische Trefferchance aller Angriffe erhöhen.",
+      "count": 5
+    },
+    {
+      "talentId": 105008,
+      "reason": "Sorgfältiges Zielen als Voraussetzung für Todbringende Schüsse.",
+      "count": 5
+    },
+    {
+      "talentId": 105005,
+      "reason": "Schaden nach Gegnerkills unterstützen.",
+      "count": 2
+    },
+    {
+      "talentId": 105009,
+      "reason": "Manakosten der eigenen Fähigkeiten reduzieren.",
+      "count": 3
+    },
+    {
+      "talentId": 105002,
+      "reason": "Kritischen Distanzschaden ergänzen.",
+      "count": 5
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-beast-mastery",
+      "mobalytics-vareion-hunter",
+      "wow-forever-gg-hunter-prerequisites",
+      "forevertalents-hunter-prerequisites",
+      "metabot-hunter-intimidation",
+      "wowfdb-hunter-tree",
+      "foreverbuilder-intimidation",
+      "hunter-71139-edge-tracker",
+      "hunter-fit-intimidation",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Aktiver Begleiter, früh widerstandsfähiges Tier, Falke 25, Einschüchterung 30, Zorn des Wildtiers 40; später Distanzschaden. Kontrolle setzt den nächsten erfolgreichen Begleiterangriff voraus. Keine garantierte Bedrohung oder Kritauslösung.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Keine eigene Live-Lernprobe; konservative Voraussetzung anhand offizieller und aktueller Clientdaten bestätigt.",
+      "Falken-Schadensformel, tatsächliche Trefferzahl und Pet-Kritwerte nicht numerisch freigegeben."
+    ],
+    "approval": "editorial_rank0_exact_structural_correction",
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "official": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "mirror": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "sources": [
+        {
+          "url": "https://forevertalents.net/talents/hunter/",
+          "contribution": "Alternative ODER-Bedingung Bestial Wrath oder Bestial Swiftness für Intimidation; keine beobachtete Vergabe im aktuellen Client."
+        },
+        {
+          "url": "https://foreverdiff.com/talents/hunter/intimidation-1387/",
+          "contribution": "Zwei Voraussetzungen gelistet; Operator nicht eindeutig bestätigt."
+        },
+        {
+          "url": "https://foreverdb.net/class/hunter",
+          "contribution": "Öffentliche Simulator-/Guide-Daten, älterer Build 71091; keine aktuelle exakte Schadensformel."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": [
+          {
+            "level": 30,
+            "talentId": 104964
+          }
+        ]
+      },
+      "hypotheticalOrAudit": {
+        "errors": [],
+        "releaseEligible": false
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only",
+      "prerequisiteCorrection": {
+        "revision": "hunter-intimidation-swiftness-71139-v1",
+        "reviewDigest": "6a103625fa5ff805d40ea0b81a080923af6e5e4c739e10220bddcdd2d3904b34",
+        "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7"
+      }
+    },
+    "structuralValidation": {
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0,
+      "prerequisiteCorrectionRevision": "hunter-intimidation-swiftness-71139-v1"
+    }
+  },
+  "treeName": "Tierherrschaft",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "ruleRevision": "hunter-beast-mastery-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Aktiver Begleiter, früh widerstandsfähiges Tier, Falke 25, Einschüchterung 30, Zorn des Wildtiers 40; später Distanzschaden. Kontrolle setzt den nächsten erfolgreichen Begleiterangriff voraus. Keine garantierte Bedrohung oder Kritauslösung.",
+    "adviceSummary": "Aktiver Begleiter, früh widerstandsfähiges Tier, Falke 25, Einschüchterung 30, Zorn des Wildtiers 40; später Distanzschaden. Kontrolle setzt den nächsten erfolgreichen Begleiterangriff voraus. Keine garantierte Bedrohung oder Kritauslösung.",
+    "evidenceIds": [
+      "hunter-beast-mastery-leveling-rank0-71139-editorial-1",
+      "hunter-beast-mastery-leveling-rank0-71139-editorial-2"
+    ]
+  }
+}

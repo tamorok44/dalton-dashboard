@@ -1,0 +1,374 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-arcane-dungeons",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11582,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 38,
+    "11594": 10,
+    "11601": 3
+  },
+  "points": [
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105806,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    },
+    {
+      "talentId": 113627,
+      "rank": 1
+    },
+    {
+      "talentId": 105807,
+      "rank": 1
+    },
+    {
+      "talentId": 105807,
+      "rank": 2
+    },
+    {
+      "talentId": 105801,
+      "rank": 1
+    },
+    {
+      "talentId": 105800,
+      "rank": 1
+    },
+    {
+      "talentId": 105800,
+      "rank": 2
+    },
+    {
+      "talentId": 105800,
+      "rank": 3
+    },
+    {
+      "talentId": 105800,
+      "rank": 4
+    },
+    {
+      "talentId": 105800,
+      "rank": 5
+    },
+    {
+      "talentId": 105799,
+      "rank": 1
+    },
+    {
+      "talentId": 105799,
+      "rank": 2
+    },
+    {
+      "talentId": 105799,
+      "rank": 3
+    },
+    {
+      "talentId": 105798,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 1
+    },
+    {
+      "talentId": 105795,
+      "rank": 2
+    },
+    {
+      "talentId": 105795,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 4
+    },
+    {
+      "talentId": 105795,
+      "rank": 5
+    },
+    {
+      "talentId": 105796,
+      "rank": 1
+    },
+    {
+      "talentId": 105796,
+      "rank": 2
+    },
+    {
+      "talentId": 105796,
+      "rank": 3
+    },
+    {
+      "talentId": 105796,
+      "rank": 4
+    },
+    {
+      "talentId": 105796,
+      "rank": 5
+    },
+    {
+      "talentId": 105807,
+      "rank": 3
+    },
+    {
+      "talentId": 105808,
+      "rank": 1
+    },
+    {
+      "talentId": 105808,
+      "rank": 2
+    },
+    {
+      "talentId": 105805,
+      "rank": 1
+    },
+    {
+      "talentId": 105805,
+      "rank": 2
+    },
+    {
+      "talentId": 105804,
+      "rank": 1
+    },
+    {
+      "talentId": 105804,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Kanalisierung und Kernzauber gegen Zauberzeitverlust bei erlittenem Schaden absichern."
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Arkanbedrohung in frühen Dungeons reduzieren; keinen ungeprüften Schaden aus negativen Widerständen voraussetzen."
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Geschosssalve als ressourcenschonende Ergänzung vorbereiten."
+    },
+    {
+      "talentId": 105810,
+      "count": 1,
+      "reason": "Freizauber beginnen."
+    },
+    {
+      "talentId": 105778,
+      "count": 2,
+      "reason": "Trefferchance mit allen Zaubern früher verbessern, besonders für wechselnde Gegnerstufen."
+    },
+    {
+      "talentId": 105806,
+      "count": 1,
+      "reason": "Arkanschlag freischalten; durch frühe Präzision auf Stufe 22 verschoben."
+    },
+    {
+      "talentId": 105810,
+      "count": 4,
+      "reason": "Freizauber vervollständigen und Arkane Meditation vorbereiten."
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Mana beim Zaubern regenerieren, um Pausen in Gruppen zu reduzieren."
+    },
+    {
+      "talentId": 113627,
+      "count": 1,
+      "reason": "Arkanen Zorn als weitere Schadensoption freischalten."
+    },
+    {
+      "talentId": 105807,
+      "count": 2,
+      "reason": "Kritische Trefferchance der Arkanzauber erhöhen."
+    },
+    {
+      "talentId": 105801,
+      "count": 1,
+      "reason": "Geistesgegenwart als situative Option und Voraussetzung für Arkane Macht freischalten."
+    },
+    {
+      "talentId": 105800,
+      "count": 5,
+      "reason": "Intelligenz und kritischen Arkanschaden erhöhen."
+    },
+    {
+      "talentId": 105799,
+      "count": 3,
+      "reason": "Zauberschaden und kritische Trefferchance ergänzen."
+    },
+    {
+      "talentId": 105798,
+      "count": 1,
+      "reason": "Arkane Macht auf Stufe 42 freischalten; zusätzliche Manakosten berücksichtigen."
+    },
+    {
+      "talentId": 105778,
+      "count": 1,
+      "reason": "Präzision für höherstufige Dungeonziele vervollständigen, ohne eine garantierte Trefferquote anzunehmen."
+    },
+    {
+      "talentId": 105795,
+      "count": 5,
+      "reason": "Feuerball und Arkanen Zorn beschleunigen."
+    },
+    {
+      "talentId": 105796,
+      "count": 5,
+      "reason": "Kritische Trefferchance der betroffenen Zauber ergänzen."
+    },
+    {
+      "talentId": 105807,
+      "count": 1,
+      "reason": "Arkanen Einschlag vervollständigen."
+    },
+    {
+      "talentId": 105808,
+      "count": 2,
+      "reason": "Reichweite von Arkanzaubern erhöhen."
+    },
+    {
+      "talentId": 105805,
+      "count": 2,
+      "reason": "Situativen Schutz und Widerstände stärken."
+    },
+    {
+      "talentId": 105804,
+      "count": 2,
+      "reason": "Gegenzauber um eine zusätzliche Schweigeoption erweitern."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "archon-dungeons",
+      "mrronit-arcane-leveling",
+      "wowhead-arcane-leveling-2411",
+      "foreverguide-arcane-dungeons",
+      "icyveins-arcane",
+      "mobalytics-arcane-leveling"
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "editorialDecision": "Group-focused continuous progression with early Arcane Subtlety and Precision before Arcane Blast. Retains the mixed plan's final allocation but changes the order substantially. No verified numerical superiority; the source excerpts support hit, lower threat and mana sustain rather than this exact custom route. Use of reduced threat is not proof of damage from negative spell resistance.",
+    "unresolved": [
+      "No controlled comparative dungeon leveling benchmark; editorial recommendation only.",
+      "Effective Legacy rank 1–5 gates unverified."
+    ]
+  },
+  "treeName": "Arkan",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-arcane-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für überwiegendes Dungeon-Spiel werden Arkanes Feingefühl und Präzision vorgezogen, um Bedrohung und Fehlschläge bei wechselnden Gegnerstufen zu reduzieren. Arkanschlag folgt auf Stufe 22, Arkane Meditation auf 27–29 und Arkane Macht auf 42. Die späteren Feuer- und Arkantalente ergänzen Schaden, Reichweite und Kontrolle. Die Empfehlung setzt weder einen Bonus durch negative Widerstände noch eine bestimmte Proc-Kette voraus. Die frühere Trefferchance ist eine bewusste Abwägung gegenüber den früheren Kernzaubern des Questpfads; kein gemessener Geschwindigkeitsvorteil.",
+    "adviceSummary": "Frühe Bedrohungsreduktion, Trefferchance und Manaregeneration unterstützen wiederholte Dungeonkampfe. Arkanschlag auf 22 und Arkane Macht auf 42.",
+    "evidenceIds": [
+      "mage-arcane-dungeons-rank0-71139-editorial-1",
+      "mage-arcane-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

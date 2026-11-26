@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-holy-dungeons",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11486,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 31,
+    "11541": 20,
+    "11559": 0
+  },
+  "points": [
+    {
+      "talentId": 105335,
+      "rank": 1
+    },
+    {
+      "talentId": 105335,
+      "rank": 2
+    },
+    {
+      "talentId": 105335,
+      "rank": 3
+    },
+    {
+      "talentId": 105335,
+      "rank": 4
+    },
+    {
+      "talentId": 105335,
+      "rank": 5
+    },
+    {
+      "talentId": 105333,
+      "rank": 1
+    },
+    {
+      "talentId": 105333,
+      "rank": 2
+    },
+    {
+      "talentId": 105333,
+      "rank": 3
+    },
+    {
+      "talentId": 110871,
+      "rank": 1
+    },
+    {
+      "talentId": 110871,
+      "rank": 2
+    },
+    {
+      "talentId": 105329,
+      "rank": 1
+    },
+    {
+      "talentId": 105329,
+      "rank": 2
+    },
+    {
+      "talentId": 105329,
+      "rank": 3
+    },
+    {
+      "talentId": 105329,
+      "rank": 4
+    },
+    {
+      "talentId": 105329,
+      "rank": 5
+    },
+    {
+      "talentId": 105330,
+      "rank": 1
+    },
+    {
+      "talentId": 110873,
+      "rank": 1
+    },
+    {
+      "talentId": 110873,
+      "rank": 2
+    },
+    {
+      "talentId": 105325,
+      "rank": 1
+    },
+    {
+      "talentId": 105327,
+      "rank": 1
+    },
+    {
+      "talentId": 105323,
+      "rank": 1
+    },
+    {
+      "talentId": 105327,
+      "rank": 2
+    },
+    {
+      "talentId": 105324,
+      "rank": 1
+    },
+    {
+      "talentId": 105324,
+      "rank": 2
+    },
+    {
+      "talentId": 105704,
+      "rank": 1
+    },
+    {
+      "talentId": 105321,
+      "rank": 1
+    },
+    {
+      "talentId": 105321,
+      "rank": 2
+    },
+    {
+      "talentId": 105321,
+      "rank": 3
+    },
+    {
+      "talentId": 105321,
+      "rank": 4
+    },
+    {
+      "talentId": 105321,
+      "rank": 5
+    },
+    {
+      "talentId": 105320,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
+    },
+    {
+      "talentId": 105637,
+      "rank": 1
+    },
+    {
+      "talentId": 105637,
+      "rank": 2
+    },
+    {
+      "talentId": 105632,
+      "rank": 1
+    },
+    {
+      "talentId": 105632,
+      "rank": 2
+    },
+    {
+      "talentId": 105625,
+      "rank": 1
+    },
+    {
+      "talentId": 105633,
+      "rank": 1
+    },
+    {
+      "talentId": 105633,
+      "rank": 2
+    },
+    {
+      "talentId": 105633,
+      "rank": 3
+    },
+    {
+      "talentId": 110874,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105335,
+      "count": 5,
+      "reason": "Zauberzeitverlust bei Heilungen vermindern."
+    },
+    {
+      "talentId": 105333,
+      "count": 3,
+      "reason": "Direkte Heilungen stärken."
+    },
+    {
+      "talentId": 110871,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern unterstützen."
+    },
+    {
+      "talentId": 105329,
+      "count": 5,
+      "reason": "Mana nach kritischer Heilung mit ausdrücklich genannten Heilzaubern zurückgewinnen; nicht bei jedem Tick oder beliebigen Heileffekt."
+    },
+    {
+      "talentId": 105330,
+      "count": 1,
+      "reason": "Eid des Lichts auf einen priorisierten Verbündeten: verstärkt Heiliges Licht, Lichtblitz und Heiligen Schock auf diesem Ziel; seit Blizzard-Hotfix 25.11. 60 Minuten, nur ein Eid gleichzeitig. Keine feste Heilmenge."
+    },
+    {
+      "talentId": 110873,
+      "count": 2,
+      "reason": "Kritische Treffer von Heiligem Schock und Lichtblitz beschleunigen das folgende Heilige Licht im vorgesehenen Zeitfenster."
+    },
+    {
+      "talentId": 105325,
+      "count": 1,
+      "reason": "Gezielten kritischen Heilzauber ermöglichen."
+    },
+    {
+      "talentId": 105327,
+      "count": 1,
+      "reason": "Reinigung günstiger machen."
+    },
+    {
+      "talentId": 105323,
+      "count": 1,
+      "reason": "Heiligen Schock freischalten."
+    },
+    {
+      "talentId": 105327,
+      "count": 1,
+      "reason": "Reinigende Macht vervollständigen."
+    },
+    {
+      "talentId": 105324,
+      "count": 2,
+      "reason": "Trefferchance der Heiligzauber und verkürzte Stilledauer; keine Immunität."
+    },
+    {
+      "talentId": 105704,
+      "count": 1,
+      "reason": "Manakosten der ausdrücklich betroffenen offensiven Heiligzauber reduzieren."
+    },
+    {
+      "talentId": 105321,
+      "count": 5,
+      "reason": "Kritischen Heilbonus ausbauen."
+    },
+    {
+      "talentId": 105320,
+      "count": 1,
+      "reason": "Lichtwacht für gezielten nächsten Heiligen Schock auf das markierte Ziel und dessen Gruppe; keine pauschale Heilmenge."
+    },
+    {
+      "talentId": 105332,
+      "count": 5,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blocken bei Angriffen ergänzen."
+    },
+    {
+      "talentId": 105637,
+      "count": 2,
+      "reason": "Schutz- und Freiheitssegen stärken."
+    },
+    {
+      "talentId": 105632,
+      "count": 2,
+      "reason": "Defensive Abklingzeiten reduzieren."
+    },
+    {
+      "talentId": 105625,
+      "count": 1,
+      "reason": "Bollwerk des Templers für ein situatives Absorptionsfenster; Forbearance beachten."
+    },
+    {
+      "talentId": 105633,
+      "count": 3,
+      "reason": "Hammer der Gerechtigkeit häufiger verfügbar machen."
+    },
+    {
+      "talentId": 110874,
+      "count": 2,
+      "reason": "Blocken und bedingten Manarückfluss stärken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-holy-paladin-leveling",
+      "mob-holy-paladin"
+    ],
+    "editorialDecision": "Gruppenheilung mit Eid des Lichts 25, Heiligem Schock 30 und Lichtwacht 40. Eid auf ein priorisiertes Heilziel, Lichtwacht und Heiligen Schock gezielt für Gruppenschaden kombinieren. Schild-/Schutzpunkte später, ohne ungeklärte Voraussetzung für Boundless Light.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "113631: zusätzliche Voraussetzung außerhalb der verwendeten Pfade nicht vollständig geklärt.",
+      "Serverseitige Heil-, Schadens-, Angriffskraft- und Proc-Formeln nicht freigegeben; keine universelle Leistungsrangliste."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://armorywowforever.com/talents/paladin",
+          "contribution": "Build 71139 ausgewiesen; Talentfunktionen und Voraussetzungen, Eid-Tooltip mit altem Dauerwert und nicht aufgelöster Heilskalierung; keine unabhängige numerische Messung."
+        },
+        {
+          "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+          "contribution": "Offiziell 11.11. Richturteile Fernkampf, 13.11. Ausnahme Richturteil des Befehls Nahkampf/On-hit, 25.11. Eid 60 Minuten, Exorzismus-Kritfehler korrigiert."
+        },
+        {
+          "url": "https://wowfdb.com/talents/paladin/",
+          "contribution": "Vindication als Angriffskraftminderung; Werte weichen von niedrigstufigem/unaufgelöstem Clienttext ab."
+        },
+        {
+          "url": "https://www.foreverdb.app/en/forever/classes/paladin",
+          "contribution": "Weiterer abweichender AP-Wert; keine feste Rundungsformel."
+        },
+        {
+          "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-leveling-talents/",
+          "contribution": "Levelvarianten und Meilensteine, Stand 9.11. als redaktionelle Referenz, nicht aktueller vollständiger Strukturbeleg."
+        },
+        {
+          "url": "https://metammo.com/wow-forever/builds/paladin",
+          "contribution": "Heilig- und Vergeltungskern, Siegelwechsel und Eid; keine gemessene Überlegenheit."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Heilig",
+  "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+  "ruleRevision": "paladin-holy-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Gruppenheilung mit Eid des Lichts 25, Heiligem Schock 30 und Lichtwacht 40. Eid auf ein priorisiertes Heilziel, Lichtwacht und Heiligen Schock gezielt für Gruppenschaden kombinieren. Schild-/Schutzpunkte später, ohne ungeklärte Voraussetzung für Boundless Light.",
+    "adviceSummary": "Gruppenheiler mit Eid 25, Heiligem Schock 30 und Lichtwacht 40.",
+    "evidenceIds": [
+      "paladin-holy-dungeons-rank0-71139-editorial-1",
+      "paladin-holy-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

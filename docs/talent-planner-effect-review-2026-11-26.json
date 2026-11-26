@@ -1,0 +1,852 @@
+{
+  "schemaVersion": 1,
+  "kind": "reviewed_effect_differences",
+  "reviewedAt": "2026-11-26",
+  "captureRun": 45817715156,
+  "sourceSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+  "primarySourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+  "sourceCredit": "Zephras (https://zephras.com), CC BY 4.0; own review and summaries, Blizzard owns game data.",
+  "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+  "rows": [
+    {
+      "id": 105935,
+      "classId": 1,
+      "primaryHash": "62b5e836db94c0f1b29315730b0f55a70807b78e3e2bc8d4230715d1964ee0f5",
+      "secondaryHash": "66362b46c1b941c31da620169b1e5e214cfd0419b0c1a3664c2faf3295856788",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "incomplete_numeric",
+      "decision": "Talentexport hatte einen nicht aufgeloesten Radius. Aktuelle Zephras-Zauberdetailseite 71139 und weitere Quellen belegen den Basis-Tooltipradius von 10 Yards; keine Servermessung. Freigabe des konkreten qualitativ begruendeten Pfads, nicht einer garantierten Reichweitenformel.",
+      "quantitativeClaimVerified": false,
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105935,
+        "spellId": 12323,
+        "primaryHash": "62b5e836db94c0f1b29315730b0f55a70807b78e3e2bc8d4230715d1964ee0f5",
+        "secondaryHash": "66362b46c1b941c31da620169b1e5e214cfd0419b0c1a3664c2faf3295856788",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "field": "baseRadiusYards",
+        "value": 10,
+        "referenceEffects": {
+          "slowPercent": 50,
+          "durationSeconds": 6
+        },
+        "sources": [
+          {
+            "url": "https://zephras.com/forever/enUS/spell/12323/",
+            "build": "1.60.1.71139",
+            "claim": "Current page explicitly labels build 71139 and gives base radius 10 yards, slowdown 50%, duration 6 seconds. Rage display not adopted."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/12323-piercing-howl/",
+            "claim": "Separate spell detail lists casting radius 10 yards and 6 second duration; no exact build attestation."
+          },
+          {
+            "url": "https://mobalytics.gg/wow-forever/classes/warrior-pvp-guide",
+            "claim": "Nov 7 player guide identifies 10-yard area slow. Not a current controlled measurement."
+          }
+        ],
+        "serverMeasured": false,
+        "scope": "client description only; no server hitbox/range or rage-cost formula"
+      }
+    },
+    {
+      "id": 105944,
+      "classId": 1,
+      "primaryHash": "c76d744bacbb52a3d4d2c3588d44b192bd89bf230115df631f24ee1cfc222353",
+      "secondaryHash": "7157be19421e5d179c01e97d689178826c5a8b45c2e34239ff9e8a9d739663e9",
+      "primaryRankCount": 5,
+      "independentRankCount": 5,
+      "classification": "editorial_format",
+      "decision": "Farbmarkierung an Waffenarten; Effektwerte identisch.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 105702,
+      "classId": 2,
+      "primaryHash": "bf958f097809b3c42703fcdd369d9f33a790aee6000e222a563250de3255c97c",
+      "secondaryHash": "d097ee8c477ddba36677f8e8c953aca4e1d610c8f6f5fe494da35314c97c3558",
+      "primaryRankCount": 3,
+      "independentRankCount": 3,
+      "classification": "numeric_scale_or_rounding",
+      "decision": "Vergleich unterschiedlicher Stufen-Skalierung, keine feste Angriffskraftzahl freigeben.",
+      "quantitativeClaimVerified": false,
+      "scopedPaladinResolution": {
+        "kind": "paladin_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105702,
+        "spellId": 9452,
+        "primaryHash": "bf958f097809b3c42703fcdd369d9f33a790aee6000e222a563250de3255c97c",
+        "secondaryHash": "d097ee8c477ddba36677f8e8c953aca4e1d610c8f6f5fe494da35314c97c3558",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "possibleEnemyAttackPowerReduction": true,
+          "damagingMeleeTrigger": true,
+          "noOwnAttackPowerBonus": true
+        },
+        "unresolved": "stufe-dependent attack power reduction, sign/rounding and server formula",
+        "sources": [
+          {
+            "url": "https://armorywowforever.com/talents/paladin",
+            "build": "1.60.1.71139",
+            "claim": "Exact client shows damaging melee attacks may reduce target attack power."
+          },
+          {
+            "url": "https://wow-forever.gg/talents/paladin/",
+            "claim": "Confirms target AP reduction and removal of own AP bonus; numeric/sign rendering not released."
+          }
+        ]
+      }
+    },
+    {
+      "id": 105696,
+      "classId": 2,
+      "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+      "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "numeric_scale_or_rounding",
+      "decision": "Gerundeter Einzelwert gegenüber Schadensspanne; Grundwirkung gleich.",
+      "quantitativeClaimVerified": false,
+      "scopedPaladinResolution": {
+        "kind": "paladin_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105696,
+        "spellId": 20375,
+        "primaryHash": "05834767ea7511f66806487fff882a57addde61228ad7e0f9ede3ce7d514be74",
+        "secondaryHash": "09ab6a4de517ec9a8fd0c85b289e759d0da4ea5c4b220f24aa2e649ebb0cb64a",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "possibleAdditionalHolyWeaponDamage": true,
+          "commandJudgementMelee": true,
+          "commandJudgementOnHit": true,
+          "otherJudgementsRanged": true
+        },
+        "unresolved": "rank- and level-dependent Judgement damage, rounding, proc frequency and actual server calculation",
+        "sources": [
+          {
+            "url": "https://armorywowforever.com/talents/paladin",
+            "build": "1.60.1.71139",
+            "claim": "Seal provides possible additional Holy weapon damage; damage text is a client reference, not a measured formula."
+          },
+          {
+            "url": "https://wow-forever.gg/talents/paladin/",
+            "claim": "Independent Seal and Vengeance prerequisite description."
+          },
+          {
+            "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 11 ranged Judgements; Nov 13 Command explicitly melee/on-hit exception."
+          }
+        ]
+      }
+    },
+    {
+      "id": 105330,
+      "classId": 2,
+      "primaryHash": "2548e7d8af515abb253ec313cba63beb644f74aba2abd57f0d4b97dfef67a3f4",
+      "secondaryHash": "b8e0215b3faaacd8aeba8872eef3395b50b92d09b755c899df307ac4c25a16a0",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "official_hotfix",
+      "decision": "Offiziell 60 statt 5 Minuten. Heilskalierung bleibt gesondert zu prüfen.",
+      "quantitativeClaimVerified": false,
+      "scopedPaladinResolution": {
+        "kind": "paladin_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105330,
+        "spellId": 1328548,
+        "primaryHash": "2548e7d8af515abb253ec313cba63beb644f74aba2abd57f0d4b97dfef67a3f4",
+        "secondaryHash": "b8e0215b3faaacd8aeba8872eef3395b50b92d09b755c899df307ac4c25a16a0",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "durationMinutes": 60,
+          "oneOathPerCaster": true,
+          "healingSpells": [
+            "Holy Light",
+            "Flash of Light",
+            "Holy Shock"
+          ],
+          "targetedAlly": true
+        },
+        "unresolved": "level-dependent healing amounts and server scaling; stale client duration replaced only by official hotfix",
+        "sources": [
+          {
+            "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 25 official duration increase to 60 minutes."
+          },
+          {
+            "url": "https://armorywowforever.com/talents/paladin",
+            "build": "1.60.1.71139",
+            "claim": "Exact client build identifies the three spells and one target; tooltip 5 minutes and zero placeholders are not authoritative healing amounts."
+          },
+          {
+            "url": "https://wow-forever.gg/talents/paladin/",
+            "claim": "Corroborates target, spells and one Oath, level scaling described; duration superseded by official hotfix."
+          }
+        ]
+      }
+    },
+    {
+      "id": 104966,
+      "classId": 3,
+      "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+      "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "incomplete_numeric",
+      "decision": "Expliziter Schadenswert gegenüber Platzhalter; Dauer, Maximum und geteilte Abklingzeit gleich.",
+      "quantitativeClaimVerified": false,
+      "hawkResolution": {
+        "kind": "hunter_hawk_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 104966,
+        "spellId": 1293241,
+        "primaryHash": "7acf29d62ecd554d28f74b6fd68d88a32a7e9658327b99bdada35d456a38900c",
+        "secondaryHash": "18e21926888759f1de4c62a1060f97b81e6506c5196f167f09bec32583c7493f",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiredBeastMasteryPoints": 15,
+          "baseManaCostPercent": 11,
+          "sharedArcaneShotCooldown": true,
+          "durationSeconds": 18,
+          "maxActiveHawks": 2,
+          "attacksSummonedTargetWithPassivePet": true
+        },
+        "unresolved": "Exact initial hit and melee damage scaling, actual critical strike chance, hit count and encounter damage after Nov 25 not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current source pair agrees on duration, maximum and shared cooldown; numeric hit differs by placeholder."
+          },
+          {
+            "url": "https://talentsforever.com/hunter/talents/summon-hawk",
+            "claim": "Nov 10 hotfix-adjusted spell text corroborates row, 11% base mana, duration, max hawks and shared cooldown. Older damage reference not released."
+          },
+          {
+            "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+            "claim": "Nov 10 mana and approximate melee damage tuning; Nov 25 targeting, dismissal and crit bug fixes."
+          },
+          {
+            "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+            "claim": "Official post mirror; no numerical server measurement."
+          }
+        ]
+      }
+    },
+    {
+      "id": 105761,
+      "classId": 4,
+      "primaryHash": "90a0d3977f5692f276fe758c3968639caf53b1f96a9030eb54ecbe7e2b697812",
+      "secondaryHash": "46030a59cfa5b6925d7dabc9529fba6e895a59a444a1f432878befe029f62cfa",
+      "primaryRankCount": 3,
+      "independentRankCount": 3,
+      "classification": "editorial_format",
+      "decision": "Singular/Plural bei Stufen.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 105735,
+      "classId": 4,
+      "primaryHash": "b28115cf3a4e0a4afa9d52e27a013e02186e4b6ea1f5e5f8ed9a59ef9350ef71",
+      "secondaryHash": "3b76029e2cc5a56c7474ff933cf63ea5a37fe693a94efccc8951424c1acb2fb1",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "incomplete_numeric",
+      "decision": "Fehlender Dauerplatzhalter im Talentexport. Build 71139 deklarierter Talenttext und separate Zauberdetails sowie dokumentierte Tooltipkorrektur stützen sechs Sekunden Grunddauer. Keine kontrollierte Servermessung; PvP-Resistenzen und tatsächliche Dauer nicht garantiert.",
+      "quantitativeClaimVerified": false,
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105735,
+        "spellId": 14251,
+        "primaryHash": "b28115cf3a4e0a4afa9d52e27a013e02186e4b6ea1f5e5f8ed9a59ef9350ef71",
+        "secondaryHash": "3b76029e2cc5a56c7474ff933cf63ea5a37fe693a94efccc8951424c1acb2fb1",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "field": "baseDisarmDurationSeconds",
+        "value": 6,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/rogue/talents/riposte/",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139 labelled talent text and footage verification show 6 sec; footage date not established."
+          },
+          {
+            "url": "https://db.icy-veins.com/wow-forever/spells/14251",
+            "claim": "Spell details confirm 6 sec duration and disarm; patch history first seen 70532, not exact current capture."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/14251/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail gives 6 sec duration although tooltip placeholder remains."
+          },
+          {
+            "url": "https://foreverdb.net/corrections",
+            "claim": "Nov 6 correction explains missing referenced server spell in tooltip and uses own duration of 6 sec."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/guide/classes/rogue/combat/dps-leveling-tips",
+            "claim": "Nov 18 leveling guide confirms 6 sec disarm after parry."
+          }
+        ],
+        "serverMeasured": false,
+        "scope": "base client description; no PvP duration guarantee or server measurement"
+      }
+    },
+    {
+      "id": 105727,
+      "classId": 4,
+      "primaryHash": "686855a0e04feb56fac1619233ed74c47752a3b968353f98fadc3cf48f9a29b9",
+      "secondaryHash": "bd77cc2a317c9775966007f65de165245438ddc8cdb986ef93ba3f22f2df8dab",
+      "primaryRankCount": 5,
+      "independentRankCount": 5,
+      "classification": "editorial_format",
+      "decision": "Farbmarkierung an Waffenarten.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 105747,
+      "classId": 4,
+      "primaryHash": "e25228fe51ba81c13166023f0edd489e91fc1dab570d7fffec43b31430a9dbc1",
+      "secondaryHash": "c5ee89b684a5f823baab45bff630341f3a1d24df45101b40b92fa864a26a0aab",
+      "primaryRankCount": 2,
+      "independentRankCount": 2,
+      "classification": "editorial_format",
+      "decision": "Singular/Plural bei Stufen.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 105709,
+      "classId": 4,
+      "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+      "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "numeric_scale_or_rounding",
+      "decision": "Gespeicherte aktuelle Vergleichspaarung: 39 und 39,6 im additiven Rang-1-Tooltipwert. Blizzard bestätigt Waffenanteil und Talentumbau; weitere Zauberdetails bestätigen die Grundfunktion. Nur konkrete qualitative Meucheln-Pfade freigabefähig; keine Rundungsregel oder exakte Serverzahl freigegeben.",
+      "quantitativeClaimVerified": false,
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ]
+      }
+    },
+    {
+      "id": 110866,
+      "classId": 4,
+      "primaryHash": "bfc3454ff38ce66d773dda20bcfbe54ce944e1c59f8dc7164fa06076871778de",
+      "secondaryHash": "df4a8c060c31e29fbb23400ca69bc7e042c9e99f0fdebb330128cc32760fb6f9",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "incomplete_numeric",
+      "decision": "Schadensobergrenzen in Zephras nicht aufgelöst; Prozente und Grundmechanik gleich.",
+      "quantitativeClaimVerified": false,
+      "followup": {
+        "reviewedAt": "2026-11-26",
+        "build": "1.60.1.71139",
+        "releaseEligible": false,
+        "sources": [
+          {
+            "url": "https://www.wowhead.com/forever/spell=1316709/death-mark",
+            "claim": "Rank 1 tooltip formula cap (63 + 102 * CP + .04 * CP * AP) * (1 + crit fraction), stored 12% per CP and double bleeds; server-side script not verified."
+          },
+          {
+            "url": "https://wowforevertalents.com/rogue/talents/death-mark/",
+            "build": "1.60.1.71037",
+            "claim": "Older rendered formula agrees with Wowhead, cap base 165 to 573 before AP/crit. Not current build."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/1316709/",
+            "build": "1.60.1.71037",
+            "claim": "Storage percentages agree, cap placeholder unresolved."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/1316709-death-mark/",
+            "claim": "Formula intentionally omitted because values are resolved in play."
+          }
+        ],
+        "decision": "Current cap and interactions with Coup de Grace remain material to choosing the finisher. Keep blocked; do not infer server rounding or release formula."
+      },
+      "deathMarkResolution": {
+        "kind": "rogue_death_mark_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 110866,
+        "spellId": 1316709,
+        "primaryHash": "bfc3454ff38ce66d773dda20bcfbe54ce944e1c59f8dc7164fa06076871778de",
+        "secondaryHash": "df4a8c060c31e29fbb23400ca69bc7e042c9e99f0fdebb330128cc32760fb6f9",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiresPreparation": true,
+          "requiredSubtletyPoints": 30,
+          "comboPointFinisher": true,
+          "storesOwnDamage": true,
+          "bleeds": [
+            "Garrote",
+            "Rupture"
+          ],
+          "bleedStorageMultiplier": 2,
+          "delaySeconds": 6,
+          "capDependsOnAttackPowerAndCrit": true,
+          "dispelType": "Curse",
+          "coupDeGraceIncreasesDamageAndStorage": true
+        },
+        "unresolved": "Exact cap, spell-rank scaling, rounding, Coup de Grace cap interaction, short-target and PvP outcomes remain unmeasured; no relative DPS prediction.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build pair agrees on core and leaves numeric cap placeholders in secondary text."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/1316709-death-mark/",
+            "claim": "Rank 1 spell details: 6s, double bleed storage, AP/crit-dependent cap, curse, rank progression 40/48/56/60."
+          },
+          {
+            "url": "https://forever-xp.com/changes/rogue/",
+            "claim": "Blizzard notes mirrored: new Death Mark and Coup de Grace increases damage/storage rate; client placeholders are not a server cap."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1316709/death-mark",
+            "claim": "Resolved displayed rank-one formula, not verified server measurement or all ranks."
+          },
+          {
+            "url": "https://talentsforever.com/rogue/abilities/death-mark",
+            "claim": "Historical 70755 rank table; no claim of current cap."
+          }
+        ]
+      }
+    },
+    {
+      "id": 105840,
+      "classId": 5,
+      "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+      "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+      "primaryRankCount": 3,
+      "independentRankCount": 3,
+      "classification": "incomplete_numeric",
+      "decision": "Aktueller Build 71139 und weitere Talentbeschreibungen bestätigen die Tooltip-Grenze von 1200, 5/10/15 Prozent und 12 Sekunden. Keine Messung der tatsächlichen Schildgrenze, Stapelung oder stufenabhängigen Serverwerte.",
+      "quantitativeClaimVerified": false,
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105840,
+        "spellId": 431622,
+        "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+        "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "nonPeriodicCriticalHeal": true,
+          "absorbPercentByRank": [
+            5,
+            10,
+            15
+          ],
+          "tooltipCap": 1200,
+          "durationSeconds": 12
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+            "build": "1.60.1.71139",
+            "claim": "Client build 71139 and Nov 25 hotfix cache explicitly identified; all three ranks 5/10/15%, displayed cap 1200, 12 sec."
+          },
+          {
+            "url": "https://raiddex.com/de/wow-forever/zauber/goettliche-aegis",
+            "claim": "German spell 431622 displays same 15% at max rank, 1200 cap and 12 sec. No current build label."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/changes/talents/priest/divine-aegis",
+            "claim": "Separate talent change reference corroborates displayed cap, not a measured server value."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
+    },
+    {
+      "id": 105851,
+      "classId": 5,
+      "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+      "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "incomplete_numeric",
+      "decision": "Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben.",
+      "quantitativeClaimVerified": false,
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105851,
+        "spellId": 401859,
+        "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+        "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "rankOneBaseHeal": 172,
+          "healingPowerCoefficient": 0.429,
+          "jumpsUpTo": 5,
+          "jumpRadiusYards": 20,
+          "durationPerJumpSeconds": 30,
+          "cooldownSeconds": 10,
+          "triggerDamageOrNonPeriodicHeal": true,
+          "oneTargetPerCaster": true
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+            "build": "1.60.1.71139",
+            "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+            "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+          },
+          {
+            "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+            "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
+    },
+    {
+      "id": 105762,
+      "classId": 8,
+      "primaryHash": "6fd5a9cf41a64278438c931f57a33bbead861a3e4acd50094258f565211360a8",
+      "secondaryHash": "a101f80713f7eefe8d3c383cbe5c252ff735834e079b2e72ab18505adcb8252d",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "incomplete_numeric",
+      "decision": "Schildwert nur in einer Quelle aufgelöst; Schadensboni gleich.",
+      "quantitativeClaimVerified": false,
+      "followup": {
+        "reviewedAt": "2026-11-26",
+        "build": "1.60.1.71139",
+        "releaseEligible": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/mage/talents/ice-barrier/",
+            "claim": "71139 hotfix cache 25 Nov: 448 plus 10% Frost spell power; damage bonus 15% plus 5% while shielded."
+          },
+          {
+            "url": "https://talentsforever.com/mage/abilities/ice-barrier",
+            "claim": "Current check 25 Nov but spellbook rows based on 70755: rank 1 447; ranks learned 40/46/52/58."
+          },
+          {
+            "url": "https://foreveratlas.com/talents/mage",
+            "claim": "Rank 1 base 431 at spell level 40 before scaling. Exact relationship not established."
+          },
+          {
+            "url": "https://www.forever-xp.com/changes/",
+            "claim": "71139 current text still unresolved absorption placeholder, same damage bonuses."
+          }
+        ],
+        "decision": "Exact independent same-level absorption and rounding confirmation absent. Do not approve numerical formula or paths under current gate."
+      },
+      "iceBarrierResolution": {
+        "kind": "mage_ice_barrier_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105762,
+        "spellId": 11426,
+        "primaryHash": "6fd5a9cf41a64278438c931f57a33bbead861a3e4acd50094258f565211360a8",
+        "secondaryHash": "a101f80713f7eefe8d3c383cbe5c252ff735834e079b2e72ab18505adcb8252d",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiresColdSnap": true,
+          "requiredFrostPoints": 30,
+          "absorbsDamage": true,
+          "preventsPushbackWhileShielded": true,
+          "frostDamageBuffOnCast": true,
+          "additionalFrostDamageWhileShielded": true
+        },
+        "referenceTooltips": {
+          "currentBuildBase": 448,
+          "rankOneAtLevel40": 431,
+          "rankOneAtLevel46": 447,
+          "coefficient": 0.1,
+          "castDamagePercent": 15,
+          "shieldDamagePercent": 5
+        },
+        "unresolved": "Exact scaling by character level, spell rank, Frost Warding, rounding and server-side absorption; reference numbers are not a released calculation.",
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/mage/talents/ice-barrier/",
+            "build": "1.60.1.71139",
+            "claim": "25 Nov cache, 448 + 10% Frost spell power, damage buff and pushback while shielded, 30 Frost points and Cold Snap."
+          },
+          {
+            "url": "https://raiddex.com/en/wow-forever/spells/ice-barrier-rank-1",
+            "claim": "Rank one 431 + 10% spell power, corroborates damage buff; not same-level exact server measurement."
+          },
+          {
+            "url": "https://talentsforever.com/mage/leveling/course/l/barrier/",
+            "claim": "Level 40 rank one 431, growing to 447 by 46; separate damage and shield-holds buffs, no cast-time loss while shielded. Explains level dependence but no verified formula."
+          }
+        ]
+      }
+    },
+    {
+      "id": 105900,
+      "classId": 9,
+      "primaryHash": "c052dbd24638f41ca651bc9b32e06db3dd80ee1b27b52373a89877ffa8c748ec",
+      "secondaryHash": "7045464d2abb56917a7870d61ce19e57bc1e8b01184ecbeb7fb2cb7fd0f24464",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "editorial_format",
+      "decision": "Einheitenabkürzung hours/hrs.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 105896,
+      "classId": 9,
+      "primaryHash": "a2c00088d0a1386ef9a58004e6d8f7197f0739fbd5f565b301527c90cf4c720d",
+      "secondaryHash": "aeb6c3b8e800bbe14b22db02617bbaa49a1dcf3fa0c02d066d0b2f7e3b6ed64c",
+      "primaryRankCount": 3,
+      "independentRankCount": 3,
+      "classification": "incomplete_numeric",
+      "decision": "Schadensbetrag nur in einer Quelle aufgelöst; Trefferzahl und Bedrohung gleich.",
+      "quantitativeClaimVerified": false,
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105896,
+        "spellId": 1293695,
+        "primaryHash": "a2c00088d0a1386ef9a58004e6d8f7197f0739fbd5f565b301527c90cf4c720d",
+        "secondaryHash": "aeb6c3b8e800bbe14b22db02617bbaa49a1dcf3fa0c02d066d0b2f7e3b6ed64c",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "searingPainThreatReduction": true,
+          "brandDurationSeconds": 10,
+          "limitedPetAttacks": true,
+          "petDependentFireOrShadowDamage": true,
+          "highThreatOnlyShadowDamage": true
+        },
+        "unresolved": "Exact bonus damage, actual threat and realized charge consumption not measured; Wowhead displayed charge text differs from trait table.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Brand reduces Searing Pain threat, marks for limited pet attacks, high threat only Shadow damage; numeric damage placeholder."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1293695/demonic-brand",
+            "claim": "Independent spell detail confirms Fire or Shadow damage by pet type, Shadow high threat and rank-based threat/charge modifiers; no numeric formula released."
+          }
+        ]
+      }
+    },
+    {
+      "id": 105909,
+      "classId": 9,
+      "primaryHash": "4765c6cfc24eab64c9ffa1e602c01ac1eb020b6d107f89aed2c2ea8749443c9f",
+      "secondaryHash": "7cdb80ddf3ea355ad5ef75e8271ac851751a181e1792d2e8e77aba6699ec2598",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "numeric_scale_or_rounding",
+      "decision": "Basiswert bei unterschiedlicher Skalierung; DoT-Beschleunigung gleich.",
+      "quantitativeClaimVerified": false,
+      "warlockEffectResolution": {
+        "kind": "warlock_qualitative_effect_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105909,
+        "spellId": 1316697,
+        "primaryHash": "4765c6cfc24eab64c9ffa1e602c01ac1eb020b6d107f89aed2c2ea8749443c9f",
+        "secondaryHash": "7cdb80ddf3ea355ad5ef75e8271ac851751a181e1792d2e8e77aba6699ec2598",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "channelSeconds": 6,
+          "periodicSpells": [
+            "Corruption",
+            "Siphon Life",
+            "Bane of Agony"
+          ],
+          "periodicTickRateMultiplier": 2,
+          "dotDurationUnchanged": true,
+          "tickProgressRetained": true,
+          "noSeparatePeriodicDamageMultiplier": true,
+          "soulSiphonLimitedToThreeOwnDots": true
+        },
+        "unresolved": "Exact rank/level base damage, coefficient and total realized DPS not measured.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained current comparison agrees on qualitative mechanics."
+          },
+          {
+            "url": "https://metammo.com/wow-forever/talents/warlock",
+            "build": "1.60.1.71139",
+            "claim": "Build 71139: Wrack accelerates three own DoTs while channeling."
+          },
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+            "claim": "Nov 10: doubled tick rate, duration unchanged, progress kept after interruption, no separate periodic multiplier; Soul Siphon counts only three named DoTs."
+          }
+        ]
+      }
+    },
+    {
+      "id": 104923,
+      "classId": 11,
+      "primaryHash": "53bf3dcb884d9f634d90d4fb87bea746e15ba52748e7e88d7f7da8d17e6e0a1f",
+      "secondaryHash": "cde8d313be2a8bdb62f5ff3926124adfea74bbcd8bc15f50278cb700608c7a3e",
+      "primaryRankCount": 5,
+      "independentRankCount": 5,
+      "classification": "official_hotfix",
+      "decision": "Blizzard: neuer Name und zusätzlicher Sternenfeuer-Zeitbonus.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104931,
+      "classId": 11,
+      "primaryHash": "f67dd3bdcee26a62d62edc265507b553db6d3042f3ccd22a103a711298ba81bb",
+      "secondaryHash": "d8262c5a017dc827d91bd0bed1f94f31ab3c0228df20591cbde21e89cef455f3",
+      "primaryRankCount": 2,
+      "independentRankCount": 2,
+      "classification": "official_hotfix",
+      "decision": "Blizzard: neuer Name und Schutz vor Zauberzeitverlust.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104940,
+      "classId": 11,
+      "primaryHash": "dfec61aa86d4138c9e78655f2e1a9c5b1891c7ae025395071748d109f063ae6a",
+      "secondaryHash": "3b5f6caefcdccc74f9f46b9df0619d696290bcd0b83860840297f2c8dcf2dccc",
+      "primaryRankCount": 3,
+      "independentRankCount": 3,
+      "classification": "editorial_format",
+      "decision": "Singular/Plural bei Stufen.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104944,
+      "classId": 11,
+      "primaryHash": "f08f23d2db00876b6a3b1e3a4f05f3c6c20f3536102a051a2f1818ae9f742dcb",
+      "secondaryHash": "148f29032d444afcb373ae2f092d6178879cd868a727cacabf14fcfa41705888",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "editorial_format",
+      "decision": "Farbmarkierung der Gestaltvoraussetzung.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104933,
+      "classId": 11,
+      "primaryHash": "9e67cc51f8df7bc2c643953f02020ce2d4c33f22d9e3a1b9b5fd9b1c4d49d024",
+      "secondaryHash": "84ae2d178f8a32603f4a35dce5955325fdef0e7f7a965261a288a17abaa6d075",
+      "primaryRankCount": 5,
+      "independentRankCount": 2,
+      "classification": "official_hotfix",
+      "decision": "Blizzard: zwei Ränge statt fünf, geänderte Betäubungschance.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104935,
+      "classId": 11,
+      "primaryHash": "3a25bbc13fa89ae88fbeef3311abdc4a68cbe1a7050be2e0220fdda4cc6e35e7",
+      "secondaryHash": "025020c5926fc21969232b11e80bb554446ab7f7b6bf4c420c8945de36bf3830",
+      "primaryRankCount": 3,
+      "independentRankCount": 3,
+      "classification": "official_hotfix",
+      "decision": "Blizzard: zusätzlicher dauerhafter Zorn-Kritbonus.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104936,
+      "classId": 11,
+      "primaryHash": "8ed570bec92c6877b0da7583ef60e6244e6e25d3f8e02dad17c5e19d8eeb0fe2",
+      "secondaryHash": "2ef0edf562d5115918e245e53e4bec76945cfc148f32088eb28165068da4136d",
+      "primaryRankCount": 5,
+      "independentRankCount": 5,
+      "classification": "official_hotfix",
+      "decision": "Blizzard: Mondfuror durch Traumzustand ersetzt; Profil-/Rangzauberzuordnung nicht belegt.",
+      "quantitativeClaimVerified": false
+    },
+    {
+      "id": 104937,
+      "classId": 11,
+      "primaryHash": "d562f37ff0525386c912f2b1c1c2aa63cdd360a4df3f854189d5fa19f920b368",
+      "secondaryHash": "9156373b38c8cebfd8387ec4273c701e6b3e0d0b6e139568b6cc072b2b5371ed",
+      "primaryRankCount": 1,
+      "independentRankCount": 1,
+      "classification": "official_hotfix",
+      "decision": "Blizzard: zusätzlicher Arkan-/Naturschaden.",
+      "quantitativeClaimVerified": false
+    }
+  ]
+}

@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-arcane-leveling",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11582,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "points": [
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105806,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 113627,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    },
+    {
+      "talentId": 105807,
+      "rank": 1
+    },
+    {
+      "talentId": 105801,
+      "rank": 1
+    },
+    {
+      "talentId": 105800,
+      "rank": 1
+    },
+    {
+      "talentId": 105800,
+      "rank": 2
+    },
+    {
+      "talentId": 105800,
+      "rank": 3
+    },
+    {
+      "talentId": 105800,
+      "rank": 4
+    },
+    {
+      "talentId": 105799,
+      "rank": 1
+    },
+    {
+      "talentId": 105799,
+      "rank": 2
+    },
+    {
+      "talentId": 105799,
+      "rank": 3
+    },
+    {
+      "talentId": 105800,
+      "rank": 5
+    },
+    {
+      "talentId": 105807,
+      "rank": 2
+    },
+    {
+      "talentId": 105798,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105796,
+      "rank": 1
+    },
+    {
+      "talentId": 105796,
+      "rank": 2
+    },
+    {
+      "talentId": 105796,
+      "rank": 3
+    },
+    {
+      "talentId": 105796,
+      "rank": 4
+    },
+    {
+      "talentId": 105796,
+      "rank": 5
+    },
+    {
+      "talentId": 105795,
+      "rank": 1
+    },
+    {
+      "talentId": 105795,
+      "rank": 2
+    },
+    {
+      "talentId": 105795,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 4
+    },
+    {
+      "talentId": 105795,
+      "rank": 5
+    },
+    {
+      "talentId": 105807,
+      "rank": 3
+    },
+    {
+      "talentId": 105808,
+      "rank": 1
+    },
+    {
+      "talentId": 105808,
+      "rank": 2
+    },
+    {
+      "talentId": 105805,
+      "rank": 1
+    },
+    {
+      "talentId": 105805,
+      "rank": 2
+    },
+    {
+      "talentId": 105804,
+      "rank": 1
+    },
+    {
+      "talentId": 105804,
+      "rank": 2
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 38,
+    "11594": 10,
+    "11601": 3
+  },
+  "rationaleBlocks": [
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Unterbrechungsschutz für die zentralen Zauber etablieren"
+    },
+    {
+      "talentId": 105810,
+      "count": 3,
+      "reason": "Erste Freizauber für längere Abschnitte"
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Geschosssalve vor dem ersten Arkanschlag abschließen"
+    },
+    {
+      "talentId": 105806,
+      "count": 1,
+      "reason": "Kernzauber zum ersten regulären Zeitpunkt"
+    },
+    {
+      "talentId": 105810,
+      "count": 2,
+      "reason": "Freizauber und Voraussetzung für Arkane Meditation vervollständigen"
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Widerstände und Bedrohung durch Arkanzauber in Gruppen senken"
+    },
+    {
+      "talentId": 113627,
+      "count": 1,
+      "reason": "Arkaner Zorn als zusätzlicher Zauber gegen robuste Ziele"
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Manaregeneration während des Wirkens stärken"
+    },
+    {
+      "talentId": 105807,
+      "count": 1,
+      "reason": "Kritische Trefferchance von Arkanzaubern verbessern und die nächste Reihe vorbereiten"
+    },
+    {
+      "talentId": 105801,
+      "count": 1,
+      "reason": "Geistesgegenwart für Arkane Macht freischalten"
+    },
+    {
+      "talentId": 105800,
+      "count": 4,
+      "reason": "Intelligenz und kritische Arkantreffer verstärken"
+    },
+    {
+      "talentId": 105799,
+      "count": 3,
+      "reason": "Schaden und kritische Trefferchance steigern"
+    },
+    {
+      "talentId": 105800,
+      "count": 1,
+      "reason": "Arkanen Geist abschließen"
+    },
+    {
+      "talentId": 105807,
+      "count": 1,
+      "reason": "Kritische Trefferchance verbessern und die letzte Reihe vorbereiten"
+    },
+    {
+      "talentId": 105798,
+      "count": 1,
+      "reason": "Arkaner Burst zum frühesten regulären Zeitpunkt"
+    },
+    {
+      "talentId": 105778,
+      "count": 3,
+      "reason": "Trefferchance für spätere Dungeons und höherstufige Ziele"
+    },
+    {
+      "talentId": 105796,
+      "count": 5,
+      "reason": "Arkanschlag und Feuerschlag mit mehr Krit unterstützen"
+    },
+    {
+      "talentId": 105795,
+      "count": 5,
+      "reason": "Arkanen Zorn für gemischtes Leveln beschleunigen"
+    },
+    {
+      "talentId": 105807,
+      "count": 1,
+      "reason": "Arkanen Einschlag abschließen"
+    },
+    {
+      "talentId": 105808,
+      "count": 2,
+      "reason": "Reichweite für riskante Kämpfe und Gruppenziele"
+    },
+    {
+      "talentId": 105805,
+      "count": 2,
+      "reason": "Schilde und Widerstände als späte Überlebensoption"
+    },
+    {
+      "talentId": 105804,
+      "count": 2,
+      "reason": "Gegnerische Zauber in Gruppen und solo zuverlässiger unterbinden"
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-25",
+    "sourceIds": [
+      "icyveins-arcane",
+      "mobalytics-arcane-leveling"
+    ],
+    "editorialDecision": "Keep the Arcane capstone at the first ordinary level and compare the delayed Precision choice against the early hit alternative.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 benötigen separate bestätigte Mindeststufen.",
+      "Der Pfad ist nur für das geprüfte gemischte Levelprofil freigegeben."
+    ],
+    "approval": {
+      "reviewedAt": "2026-11-25",
+      "legacyTalentedRanks": [
+        0
+      ]
+    },
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    }
+  },
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-arcane-rank0-71091-v1",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-25",
+    "rationale": "Für gemischtes Leveln mit gewöhnlich gleichstufigen Zielen hält der Pfad die Arkan-Meilensteine auf 20, 25 und 40 erreichbar. Frühe Freizauber, Geschosssalve, Arkane Meditation sowie Widerstands- und Bedrohungseffekte geben mehrere unabhängige Vorteile. Späte Präzision kostet früher Trefferchance, verschiebt aber die Arkan-Meilensteine nicht. Die Empfehlung setzt keine Zauber niedrigen Rangs, keine mehrfach proccenden Arkane Geschosse und keinen ungeklärten Bonus gegen Ziele ohne Widerstand voraus. Für überwiegend höherstufige Ziele muss die frühere Präzision separat bewertet werden.",
+    "evidenceIds": [
+      "arcane-rank0-editorial-icyveins",
+      "arcane-rank0-editorial-avoid"
+    ],
+    "adviceSummary": "Arkan bietet für gleichstufige Quests allein und in Gruppen früh wichtige Kernzauber, Freizauber und später Manaregeneration. Der Pfad verbindet Schaden mit einem möglichst flüssigen Spielfluss und erreicht die Arkan-Meilensteine auf Stufe 20, 25 und 40."
+  },
+  "treeName": "Arkan"
+}

@@ -1,0 +1,395 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-demonology-dungeons",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11636,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 2,
+    "11636": 31,
+    "11637": 18
+  },
+  "points": [
+    {
+      "talentId": 105906,
+      "rank": 1
+    },
+    {
+      "talentId": 105906,
+      "rank": 2
+    },
+    {
+      "talentId": 105906,
+      "rank": 3
+    },
+    {
+      "talentId": 105906,
+      "rank": 4
+    },
+    {
+      "talentId": 105906,
+      "rank": 5
+    },
+    {
+      "talentId": 105908,
+      "rank": 1
+    },
+    {
+      "talentId": 105908,
+      "rank": 2
+    },
+    {
+      "talentId": 105908,
+      "rank": 3
+    },
+    {
+      "talentId": 105903,
+      "rank": 1
+    },
+    {
+      "talentId": 105903,
+      "rank": 2
+    },
+    {
+      "talentId": 105903,
+      "rank": 3
+    },
+    {
+      "talentId": 105899,
+      "rank": 1
+    },
+    {
+      "talentId": 105899,
+      "rank": 2
+    },
+    {
+      "talentId": 105900,
+      "rank": 1
+    },
+    {
+      "talentId": 105898,
+      "rank": 1
+    },
+    {
+      "talentId": 105898,
+      "rank": 2
+    },
+    {
+      "talentId": 105896,
+      "rank": 1
+    },
+    {
+      "talentId": 105896,
+      "rank": 2
+    },
+    {
+      "talentId": 105896,
+      "rank": 3
+    },
+    {
+      "talentId": 105897,
+      "rank": 1
+    },
+    {
+      "talentId": 105892,
+      "rank": 1
+    },
+    {
+      "talentId": 105897,
+      "rank": 2
+    },
+    {
+      "talentId": 105893,
+      "rank": 1
+    },
+    {
+      "talentId": 105893,
+      "rank": 2
+    },
+    {
+      "talentId": 105893,
+      "rank": 3
+    },
+    {
+      "talentId": 105891,
+      "rank": 1
+    },
+    {
+      "talentId": 105891,
+      "rank": 2
+    },
+    {
+      "talentId": 105891,
+      "rank": 3
+    },
+    {
+      "talentId": 105891,
+      "rank": 4
+    },
+    {
+      "talentId": 105891,
+      "rank": 5
+    },
+    {
+      "talentId": 105890,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 2
+    },
+    {
+      "talentId": 105888,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 4
+    },
+    {
+      "talentId": 105888,
+      "rank": 5
+    },
+    {
+      "talentId": 105887,
+      "rank": 1
+    },
+    {
+      "talentId": 105887,
+      "rank": 2
+    },
+    {
+      "talentId": 105887,
+      "rank": 3
+    },
+    {
+      "talentId": 105886,
+      "rank": 1
+    },
+    {
+      "talentId": 105886,
+      "rank": 2
+    },
+    {
+      "talentId": 105886,
+      "rank": 3
+    },
+    {
+      "talentId": 105886,
+      "rank": 4
+    },
+    {
+      "talentId": 105886,
+      "rank": 5
+    },
+    {
+      "talentId": 105883,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 4
+    },
+    {
+      "talentId": 105883,
+      "rank": 5
+    },
+    {
+      "talentId": 105921,
+      "rank": 1
+    },
+    {
+      "talentId": 105921,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105906,
+      "count": 5,
+      "reason": "Aktiven Dämon für Gruppenkämpfe stärken."
+    },
+    {
+      "talentId": 105908,
+      "count": 3,
+      "reason": "Wichtel für die offensive Gruppenvariante verbessern."
+    },
+    {
+      "talentId": 105903,
+      "count": 3,
+      "reason": "Mana und Begleiterreserven ausbauen."
+    },
+    {
+      "talentId": 105899,
+      "count": 2,
+      "reason": "Eigener Zauberschaden unterstützt die Heilung des aktiven Dämons; Aderlass stellt auch dessen Mana wieder her."
+    },
+    {
+      "talentId": 105900,
+      "count": 1,
+      "reason": "Dämonische Opferung als Voraussetzung freischalten. Ohne Dämonischen Pakt beendet das Beschwören eines Dämons den Bonus; aktiven Begleiter im normalen Spiel erhalten."
+    },
+    {
+      "talentId": 105898,
+      "count": 1,
+      "reason": "Beschwörungskosten und -zeit senken."
+    },
+    {
+      "talentId": 105898,
+      "count": 1,
+      "reason": "Beschwörungstalent vervollständigen."
+    },
+    {
+      "talentId": 105896,
+      "count": 3,
+      "reason": "Sengender Schmerz erzeugt weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Dämonentreffer. Zusatzschaden ist je nach Dämon Feuer oder Schatten; nur Schatten erzeugt hohe Bedrohung. Keine feste Schadenszahl oder garantierte Ausnutzung."
+    },
+    {
+      "talentId": 105897,
+      "count": 1,
+      "reason": "Decimation: Soul Fire und dessen Vorbereitung durch Schattenblitz oder Sengenden Schmerz bei niedriger Zielgesundheit unterstützen; keine garantierte Ausführung."
+    },
+    {
+      "talentId": 105892,
+      "count": 1,
+      "reason": "Seelenverbindung verteilt einen Teil des eigenen erlittenen Schadens auf den aktiven Dämon und unterstützt beider Schaden; Gesundheit beider Partner beachten."
+    },
+    {
+      "talentId": 105897,
+      "count": 1,
+      "reason": "Decimation: Soul Fire und dessen Vorbereitung durch Schattenblitz oder Sengenden Schmerz bei niedriger Zielgesundheit unterstützen; keine garantierte Ausführung."
+    },
+    {
+      "talentId": 105893,
+      "count": 3,
+      "reason": "Dämonisches Wissen erhöht bei aktivem Dämon den eigenen und dessen Zauberschaden abhängig von der eigenen Stufe."
+    },
+    {
+      "talentId": 105891,
+      "count": 5,
+      "reason": "Meister der Dämonologie: vom aktiven Dämontyp abhängige Schadens- oder Schutzboni, nicht pauschal dieselbe Wirkung für alle Begleiter."
+    },
+    {
+      "talentId": 105890,
+      "count": 1,
+      "reason": "Dämonischer Pakt erlaubt den Opferungsbonus mit einem anderen aktiven Dämon; erneutes Beschwören desselben Dämontyps beendet ihn. Persönlicher Effekt, kein pauschaler Gruppenbuff."
+    },
+    {
+      "talentId": 105888,
+      "count": 5,
+      "reason": "Zauberzeiten direkter Schadenszauber verringern."
+    },
+    {
+      "talentId": 105887,
+      "count": 3,
+      "reason": "Manakosten der Zerstörungszauber senken."
+    },
+    {
+      "talentId": 105886,
+      "count": 5,
+      "reason": "Aftermath verbessert den direkten Schaden von Feuerbrand; zusätzliche Feuersbrunst-Wirkung bleibt ungenutzt, da nicht erlernt."
+    },
+    {
+      "talentId": 105883,
+      "count": 5,
+      "reason": "Kritischen Schadensbonus der Zerstörungszauber erhöhen."
+    },
+    {
+      "talentId": 105921,
+      "count": 2,
+      "reason": "Aderlass effizienter machen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "cobalt-warlock-demonology-pve-20261110",
+      "outpost-warlock-dungeon-20261123"
+    ],
+    "editorialDecision": "Feuerorientierte Gruppenvariante 2/31/18, Brandmal 26–28, Decimation 29/31, Seelenverbindung 30, Pakt 40. Wichtel je nach Situation; Brandmal nur bei genügend Zeit für Treffer, Schatten-Zusatzschaden erzeugt hohe Bedrohung. Tankkoordination statt garantierter Bedrohungsübernahme.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Schadens-, Bedrohungs- und Begleiter-Kritformeln nicht freigegeben."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+          "contribution": "Offizieller Hotfixverlauf bis 25.11.; Begleiter-Kritkorrekturen, Dämonische Ägide am 20.11. und Intensity am 23.11."
+        },
+        {
+          "url": "https://wowforeverclasses.com/classes/warlock/demonology/talents",
+          "contribution": "Talentfunktionen, Ranganzahlen, Seelenverbindung und Opferung/Pakt; keine unabhängige exakte numerische Servermessung des Brandmals."
+        },
+        {
+          "url": "https://www.wowhead.com/forever/guide/classes/warlock/demonology/talent-builds-pve-dps",
+          "contribution": "Dämonischer Pakt mit anderem aktiven Dämon, Brandmal vor Begleitertreffern und Decimation."
+        },
+        {
+          "url": "https://foreverspec.com/classes/warlock/demonology/",
+          "contribution": "Alternative Levelchronologie (älterer Build 70790), Quelle laut Anbieter TalentsForever; nicht als unabhängige aktuelle Rohdatenquelle gezählt."
+        },
+        {
+          "url": "https://forever-hub.com/en/guides/demonology-warlock-guide",
+          "contribution": "Guide vom 20.11., Rollen- und Dämonenwahl; kein Nachweis eigener optimaler Chronologie."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Dämonologie",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-demonology-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Feuerorientierte Gruppenvariante 2/31/18, Brandmal 26–28, Decimation 29/31, Seelenverbindung 30, Pakt 40. Wichtel je nach Situation; Brandmal nur bei genügend Zeit für Treffer, Schatten-Zusatzschaden erzeugt hohe Bedrohung. Tankkoordination statt garantierter Bedrohungsübernahme.",
+    "adviceSummary": "Feuerorientierte Gruppenvariante 2/31/18, Brandmal 26–28, Decimation 29/31, Seelenverbindung 30, Pakt 40. Wichtel je nach Situation; Brandmal nur bei genügend Zeit für Treffer, Schatten-Zusatzschaden erzeugt hohe Bedrohung. Tankkoordination statt garantierter Bedrohungsübernahme.",
+    "evidenceIds": [
+      "warlock-demonology-dungeons-rank0-71139-editorial-1",
+      "warlock-demonology-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

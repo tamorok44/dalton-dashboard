@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 1,
+  "id": "rogue-subtlety-leveling",
+  "version": 1,
+  "classId": 4,
+  "treeId": 11572,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11572": 31,
+    "11573": 20,
+    "11580": 0
+  },
+  "points": [
+    {
+      "talentId": 105741,
+      "rank": 1
+    },
+    {
+      "talentId": 105741,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
+      "talentId": 105760,
+      "rank": 1
+    },
+    {
+      "talentId": 105760,
+      "rank": 2
+    },
+    {
+      "talentId": 105760,
+      "rank": 3
+    },
+    {
+      "talentId": 105760,
+      "rank": 4
+    },
+    {
+      "talentId": 105760,
+      "rank": 5
+    },
+    {
+      "talentId": 105761,
+      "rank": 1
+    },
+    {
+      "talentId": 105761,
+      "rank": 2
+    },
+    {
+      "talentId": 105761,
+      "rank": 3
+    },
+    {
+      "talentId": 105745,
+      "rank": 1
+    },
+    {
+      "talentId": 105745,
+      "rank": 2
+    },
+    {
+      "talentId": 105743,
+      "rank": 1
+    },
+    {
+      "talentId": 105755,
+      "rank": 1
+    },
+    {
+      "talentId": 105755,
+      "rank": 2
+    },
+    {
+      "talentId": 105755,
+      "rank": 3
+    },
+    {
+      "talentId": 105752,
+      "rank": 1
+    },
+    {
+      "talentId": 105752,
+      "rank": 2
+    },
+    {
+      "talentId": 105754,
+      "rank": 1
+    },
+    {
+      "talentId": 105753,
+      "rank": 1
+    },
+    {
+      "talentId": 105753,
+      "rank": 2
+    },
+    {
+      "talentId": 105752,
+      "rank": 3
+    },
+    {
+      "talentId": 105746,
+      "rank": 1
+    },
+    {
+      "talentId": 105748,
+      "rank": 1
+    },
+    {
+      "talentId": 105747,
+      "rank": 1
+    },
+    {
+      "talentId": 105747,
+      "rank": 2
+    },
+    {
+      "talentId": 105756,
+      "rank": 1
+    },
+    {
+      "talentId": 105750,
+      "rank": 1
+    },
+    {
+      "talentId": 105750,
+      "rank": 2
+    },
+    {
+      "talentId": 105750,
+      "rank": 3
+    },
+    {
+      "talentId": 105750,
+      "rank": 4
+    },
+    {
+      "talentId": 105750,
+      "rank": 5
+    },
+    {
+      "talentId": 110866,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 1
+    },
+    {
+      "talentId": 105737,
+      "rank": 2
+    },
+    {
+      "talentId": 105737,
+      "rank": 3
+    },
+    {
+      "talentId": 105719,
+      "rank": 1
+    },
+    {
+      "talentId": 105719,
+      "rank": 2
+    },
+    {
+      "talentId": 105719,
+      "rank": 3
+    },
+    {
+      "talentId": 105738,
+      "rank": 1
+    },
+    {
+      "talentId": 105738,
+      "rank": 2
+    },
+    {
+      "talentId": 105738,
+      "rank": 3
+    },
+    {
+      "talentId": 105735,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 1
+    },
+    {
+      "talentId": 105736,
+      "rank": 2
+    },
+    {
+      "talentId": 105726,
+      "rank": 1
+    },
+    {
+      "talentId": 105726,
+      "rank": 2
+    },
+    {
+      "talentId": 105730,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105741,
+      "reason": "Kosten häufiger Angriffe senken.",
+      "count": 2
+    },
+    {
+      "talentId": 105708,
+      "reason": "Coup de Grace unterstützt Ausweiden sowie Schaden und Speicherrate von Todesmal; keine unbestätigte Änderung der Schadensobergrenze annehmen.",
+      "count": 3
+    },
+    {
+      "talentId": 105760,
+      "reason": "Hinterhalt- und Blutungsfähigkeiten stärken.",
+      "count": 5
+    },
+    {
+      "talentId": 105761,
+      "reason": "Verstohlenheit verbessern.",
+      "count": 3
+    },
+    {
+      "talentId": 105745,
+      "reason": "Kosten der Eröffnung senken.",
+      "count": 2
+    },
+    {
+      "talentId": 105743,
+      "reason": "Premeditation für vorbereitete Combopunkte freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105755,
+      "reason": "Zusätzlichen Combopunkt bei Eröffnungen unterstützen.",
+      "count": 3
+    },
+    {
+      "talentId": 105752,
+      "reason": "Rüstungsdurchdringung und Blutungsschaden ausbauen.",
+      "count": 2
+    },
+    {
+      "talentId": 105754,
+      "reason": "Geisterhaften Stoß freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105753,
+      "reason": "Abklingzeit von Verschwinden und Blenden reduzieren.",
+      "count": 2
+    },
+    {
+      "talentId": 105752,
+      "reason": "Gezahnte Klingen vervollständigen.",
+      "count": 1
+    },
+    {
+      "talentId": 105746,
+      "reason": "Vorbereitung freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105748,
+      "reason": "Blutsturz freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 105747,
+      "reason": "Erkennung und Schutz vor Distanzangriffen verbessern.",
+      "count": 2
+    },
+    {
+      "talentId": 105756,
+      "reason": "Verstohlenheitsbewegung verbessern.",
+      "count": 1
+    },
+    {
+      "talentId": 105750,
+      "reason": "Boot Knife verbessert die Combopunkt-Erzeugung durch Shank auf dem getroffenen Ziel.",
+      "count": 5
+    },
+    {
+      "talentId": 110866,
+      "reason": "Todesmal speichert eigenen Schaden, Blutungen besonders stark, und zahlt verzögert aus. Für langlebige Ziele mit Folgekontakt, bei kurzen Kämpfen direktes Ausweiden erwägen; als Fluch entfernbar. Keine feste Schadensobergrenze.",
+      "count": 1
+    },
+    {
+      "talentId": 105737,
+      "reason": "Trefferchance erhöhen.",
+      "count": 3
+    },
+    {
+      "talentId": 105719,
+      "reason": "Kritische Dolchfähigkeiten stärken.",
+      "count": 3
+    },
+    {
+      "talentId": 105738,
+      "reason": "Parieren stärken.",
+      "count": 3
+    },
+    {
+      "talentId": 105735,
+      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen.",
+      "count": 1
+    },
+    {
+      "talentId": 105736,
+      "reason": "Defensive und Bewegung häufiger einsetzen.",
+      "count": 2
+    },
+    {
+      "talentId": 105726,
+      "reason": "Ausweichen und Parieren der Gegner verringern.",
+      "count": 2
+    },
+    {
+      "talentId": 105730,
+      "reason": "Schaden häufiger Angriffe ergänzen.",
+      "count": 1
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "rogue-all-leveling-1211",
+      "mob-rogue-leveling",
+      "rogue-tavern-leveling",
+      "rogue-hotfix-2511"
+    ],
+    "editorialDecision": "Fünf frühe Kampfpunkte für Energiekosten und Ausweiden; dafür Premeditation 25, Vorbereitung 35, Todesmal 45. Todesmal nur für hinreichend langlebige Ziele und zuverlässigen Folgekontakt, direktes Ausweiden bei kurzen Kämpfen. Shank erst nach Erlernen; keine Garantie zusätzlicher Combopunkte auf fremden Zielen. Riposte 55 als situative Option. Keine Behauptung schneller als Kampf oder Meucheln.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Todesmal-Schadensobergrenze, Rangskalierung und Coup-de-Grace-Interaktion nicht numerisch freigegeben.",
+      "Tatsächliche PvP-Kontrolldauer und Diminishing Returns nicht als garantiert behandeln."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wow-forever.gg/talents/rogue/",
+          "contribution": "Talentfunktionen, Voraussetzungen Riposte, Venom und Todesmal, Coup de Grace und Boot Knife; keine unabhängige numerische Servermessung."
+        },
+        {
+          "url": "https://endgametools.com/en/wow-forever/news/wow-forever-rogue",
+          "contribution": "Build 71139 ausgewiesen; Shank ab 24 und neue Talentkerne; kein Beweis der exakten Serverkoeffizienten."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/subtlety-rogue/talents",
+          "contribution": "23.11.: Todesmal-Build als Alternative."
+        },
+        {
+          "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/subtlety/pvp/",
+          "contribution": "10.11.: PvP-Eröffnung, Kontrolle, Blutungen und Resets."
+        }
+      ],
+      "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "rawAudit": {
+        "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Täuschung",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-subtlety-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Fünf frühe Kampfpunkte für Energiekosten und Ausweiden; dafür Premeditation 25, Vorbereitung 35, Todesmal 45. Todesmal nur für hinreichend langlebige Ziele und zuverlässigen Folgekontakt, direktes Ausweiden bei kurzen Kämpfen. Shank erst nach Erlernen; keine Garantie zusätzlicher Combopunkte auf fremden Zielen. Riposte 55 als situative Option. Keine Behauptung schneller als Kampf oder Meucheln.",
+    "adviceSummary": "Gemischter Täuschungspfad mit früher Energieentlastung, Vorbereitung 35 und Todesmal 45.",
+    "evidenceIds": [
+      "rogue-subtlety-leveling-rank0-71139-editorial-1",
+      "rogue-subtlety-leveling-rank0-71139-editorial-2"
+    ]
+  }
+}

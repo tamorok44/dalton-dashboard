@@ -1,0 +1,371 @@
+{
+  "schemaVersion": 1,
+  "id": "warrior-fury-dungeons",
+  "version": 1,
+  "classId": 1,
+  "treeId": 11657,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11650": 20,
+    "11657": 31,
+    "11670": 0
+  },
+  "points": [
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
+    },
+    {
+      "talentId": 105937,
+      "rank": 1
+    },
+    {
+      "talentId": 105937,
+      "rank": 2
+    },
+    {
+      "talentId": 105937,
+      "rank": 3
+    },
+    {
+      "talentId": 105937,
+      "rank": 4
+    },
+    {
+      "talentId": 105937,
+      "rank": 5
+    },
+    {
+      "talentId": 105953,
+      "rank": 1
+    },
+    {
+      "talentId": 105953,
+      "rank": 2
+    },
+    {
+      "talentId": 105953,
+      "rank": 3
+    },
+    {
+      "talentId": 110857,
+      "rank": 1
+    },
+    {
+      "talentId": 110857,
+      "rank": 2
+    },
+    {
+      "talentId": 105933,
+      "rank": 1
+    },
+    {
+      "talentId": 105933,
+      "rank": 2
+    },
+    {
+      "talentId": 105933,
+      "rank": 3
+    },
+    {
+      "talentId": 105933,
+      "rank": 4
+    },
+    {
+      "talentId": 105933,
+      "rank": 5
+    },
+    {
+      "talentId": 105927,
+      "rank": 1
+    },
+    {
+      "talentId": 105978,
+      "rank": 1
+    },
+    {
+      "talentId": 105978,
+      "rank": 2
+    },
+    {
+      "talentId": 113636,
+      "rank": 1
+    },
+    {
+      "talentId": 110857,
+      "rank": 3
+    },
+    {
+      "talentId": 105928,
+      "rank": 1
+    },
+    {
+      "talentId": 105928,
+      "rank": 2
+    },
+    {
+      "talentId": 105928,
+      "rank": 3
+    },
+    {
+      "talentId": 105977,
+      "rank": 1
+    },
+    {
+      "talentId": 105977,
+      "rank": 2
+    },
+    {
+      "talentId": 105930,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 2
+    },
+    {
+      "talentId": 105958,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 1
+    },
+    {
+      "talentId": 105957,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 1
+    },
+    {
+      "talentId": 105954,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 3
+    },
+    {
+      "talentId": 105955,
+      "rank": 1
+    },
+    {
+      "talentId": 105955,
+      "rank": 2
+    },
+    {
+      "talentId": 105951,
+      "rank": 1
+    },
+    {
+      "talentId": 105952,
+      "rank": 1
+    },
+    {
+      "talentId": 105952,
+      "rank": 2
+    },
+    {
+      "talentId": 105956,
+      "rank": 1
+    },
+    {
+      "talentId": 105956,
+      "rank": 2
+    },
+    {
+      "talentId": 105956,
+      "rank": 3
+    },
+    {
+      "talentId": 105950,
+      "rank": 1
+    },
+    {
+      "talentId": 105950,
+      "rank": 2
+    },
+    {
+      "talentId": 105950,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105937,
+      "count": 5,
+      "reason": "Wutgewinn steigern."
+    },
+    {
+      "talentId": 105953,
+      "count": 3,
+      "reason": "Trefferchance der Nebenhand erhöhen."
+    },
+    {
+      "talentId": 110857,
+      "count": 2,
+      "reason": "Wut zwischen aufeinanderfolgenden Kämpfen länger erhalten."
+    },
+    {
+      "talentId": 105933,
+      "count": 5,
+      "reason": "Schaden und Wut der Nebenhand unterstützen."
+    },
+    {
+      "talentId": 105927,
+      "count": 1,
+      "reason": "Todeswunsch freischalten."
+    },
+    {
+      "talentId": 105978,
+      "count": 2,
+      "reason": "Wutgewinn und Befreiung aus Bewegungseffekten unterstützen."
+    },
+    {
+      "talentId": 113636,
+      "count": 1,
+      "reason": "Zusätzliche Wut ermöglichen."
+    },
+    {
+      "talentId": 110857,
+      "count": 1,
+      "reason": "Wuterhalt zwischen Gruppen weiter verbessern."
+    },
+    {
+      "talentId": 105928,
+      "count": 3,
+      "reason": "Angriffstempo nach kritischen Treffern steigern."
+    },
+    {
+      "talentId": 105977,
+      "count": 2,
+      "reason": "Wirbelwind verbessern."
+    },
+    {
+      "talentId": 105930,
+      "count": 1,
+      "reason": "Blutdurst freischalten."
+    },
+    {
+      "talentId": 105958,
+      "count": 3,
+      "reason": "Heldenhaften Stoß günstiger machen."
+    },
+    {
+      "talentId": 105957,
+      "count": 2,
+      "reason": "Parierchance ergänzen."
+    },
+    {
+      "talentId": 105954,
+      "count": 3,
+      "reason": "Wuterhalt erhöhen."
+    },
+    {
+      "talentId": 105955,
+      "count": 2,
+      "reason": "Sturmangriff-Wut erhöhen."
+    },
+    {
+      "talentId": 105951,
+      "count": 1,
+      "reason": "Aggressionskontrolle freischalten."
+    },
+    {
+      "talentId": 105952,
+      "count": 2,
+      "reason": "Überwältigen stärken."
+    },
+    {
+      "talentId": 105956,
+      "count": 3,
+      "reason": "Verwunden stärken."
+    },
+    {
+      "talentId": 105950,
+      "count": 3,
+      "reason": "Kritische Blutungen ergänzen."
+    },
+    {
+      "talentId": 105957,
+      "count": 1,
+      "reason": "Parieren weiter stärken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "warrior-outpost-2311",
+      "warrior-cobalt-class",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Der frühe Waffen-Abstecher verzögerte Todeswunsch und Blutdurst. Für regelmäßige Gruppenkämpfe wird nun der Furor-Kern vorgezogen: Trefferchance der Nebenhand, Wutregeneration und längerer Wuterhalt zwischen Kämpfen, Todeswunsch auf 30, Schlagfolge und Wirbelwind sowie Blutdurst auf 40. Gegenüber dem Solo-Levelpfad entfallen Blutwahnsinn und Gore Drinker zugunsten gruppenbezogener Ressourcen und verbesserter Berserkerwut. Waffen-Punkte folgen ab 41. Keine kontinuierliche Flurry, keine Trefferobergrenze garantiert; Tank bindet Gegner zuerst, Waffen und Haltung müssen erlernt sein.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Furor",
+  "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+  "ruleRevision": "warrior-fury-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Der frühe Waffen-Abstecher verzögerte Todeswunsch und Blutdurst. Für regelmäßige Gruppenkämpfe wird nun der Furor-Kern vorgezogen: Trefferchance der Nebenhand, Wutregeneration und längerer Wuterhalt zwischen Kämpfen, Todeswunsch auf 30, Schlagfolge und Wirbelwind sowie Blutdurst auf 40. Gegenüber dem Solo-Levelpfad entfallen Blutwahnsinn und Gore Drinker zugunsten gruppenbezogener Ressourcen und verbesserter Berserkerwut. Waffen-Punkte folgen ab 41. Keine kontinuierliche Flurry, keine Trefferobergrenze garantiert; Tank bindet Gegner zuerst, Waffen und Haltung müssen erlernt sein.",
+    "adviceSummary": "Furor-Dungeonpfad mit Wut zwischen Gruppen, zwei Waffen, Todeswunsch auf 30 und Blutdurst auf 40.",
+    "evidenceIds": [
+      "warrior-fury-dungeons-rank0-71139-editorial-1",
+      "warrior-fury-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

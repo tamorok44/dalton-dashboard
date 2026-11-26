@@ -1,0 +1,393 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-balance-pvp",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11328,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 30,
+    "11340": 21,
+    "11347": 0
+  },
+  "points": [
+    {
+      "talentId": 104923,
+      "rank": 1
+    },
+    {
+      "talentId": 104923,
+      "rank": 2
+    },
+    {
+      "talentId": 104923,
+      "rank": 3
+    },
+    {
+      "talentId": 104923,
+      "rank": 4
+    },
+    {
+      "talentId": 104923,
+      "rank": 5
+    },
+    {
+      "talentId": 104925,
+      "rank": 1
+    },
+    {
+      "talentId": 104925,
+      "rank": 2
+    },
+    {
+      "talentId": 104925,
+      "rank": 3
+    },
+    {
+      "talentId": 104929,
+      "rank": 1
+    },
+    {
+      "talentId": 104929,
+      "rank": 2
+    },
+    {
+      "talentId": 104927,
+      "rank": 1
+    },
+    {
+      "talentId": 104927,
+      "rank": 2
+    },
+    {
+      "talentId": 104928,
+      "rank": 1
+    },
+    {
+      "talentId": 104931,
+      "rank": 1
+    },
+    {
+      "talentId": 104931,
+      "rank": 2
+    },
+    {
+      "talentId": 104930,
+      "rank": 1
+    },
+    {
+      "talentId": 104932,
+      "rank": 1
+    },
+    {
+      "talentId": 104932,
+      "rank": 2
+    },
+    {
+      "talentId": 104932,
+      "rank": 3
+    },
+    {
+      "talentId": 104932,
+      "rank": 4
+    },
+    {
+      "talentId": 104932,
+      "rank": 5
+    },
+    {
+      "talentId": 104934,
+      "rank": 1
+    },
+    {
+      "talentId": 104935,
+      "rank": 1
+    },
+    {
+      "talentId": 104935,
+      "rank": 2
+    },
+    {
+      "talentId": 104935,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    },
+    {
+      "talentId": 104916,
+      "rank": 5
+    },
+    {
+      "talentId": 104914,
+      "rank": 1
+    },
+    {
+      "talentId": 104921,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 2
+    },
+    {
+      "talentId": 104924,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 4
+    },
+    {
+      "talentId": 104924,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104923,
+      "reason": "Starlight Wrath: verkürzt Zorn und seit dem Hotfix vom 25.11. auch Sternenfeuer; senkt die Manakosten von Zorn.",
+      "count": 5
+    },
+    {
+      "talentId": 104925,
+      "reason": "Manakosten von Schadenszaubern senken.",
+      "count": 3
+    },
+    {
+      "talentId": 104929,
+      "reason": "Reichweite und Trefferchance erhöhen.",
+      "count": 2
+    },
+    {
+      "talentId": 104927,
+      "reason": "Kritische Trefferchance erhöhen.",
+      "count": 2
+    },
+    {
+      "talentId": 104928,
+      "reason": "Nature's Splendor verlängert die ausdrücklich genannten eigenen DoTs und HoTs. Konservativ erst nach zwei Rängen Nature's Majesty; abweichende Voraussetzung nicht ungeprüft ändern.",
+      "count": 1
+    },
+    {
+      "talentId": 104931,
+      "reason": "Moon and Stars: stärkt Mondfeuer und schützt Sternenfeuer seit 25.11. vor Zauberzeitverlust durch Schaden.",
+      "count": 2
+    },
+    {
+      "talentId": 104930,
+      "reason": "Insektenschwarm freischalten.",
+      "count": 1
+    },
+    {
+      "talentId": 104932,
+      "reason": "Kritischen Arkane- und Naturschaden stärken.",
+      "count": 5
+    },
+    {
+      "talentId": 104934,
+      "reason": "Zaubertempo nach geeigneten kritischen Treffern unterstützen.",
+      "count": 1
+    },
+    {
+      "talentId": 104935,
+      "reason": "Eclipse: Zorn verkürzt nachfolgende Sternenfeuer-Zauber und erhält seit 25.11. zusätzlich dauerhaft mehr kritische Trefferchance.",
+      "count": 3
+    },
+    {
+      "talentId": 104958,
+      "reason": "Heart of the Wild erhöht Intelligenz; zusätzliche gestaltspezifische Attribute beachten.",
+      "count": 5
+    },
+    {
+      "talentId": 104922,
+      "reason": "Naturalist verkürzt Heilende Berührung und Wildwuchs und erhöht den eigenen Schaden.",
+      "count": 5
+    },
+    {
+      "talentId": 104920,
+      "reason": "Manaregeneration beim Zaubern ausbauen.",
+      "count": 3
+    },
+    {
+      "talentId": 104916,
+      "reason": "Geschenk der Natur erhöht die Wirkung der Heilzauber.",
+      "count": 2
+    },
+    {
+      "talentId": 104912,
+      "reason": "Rasche Heilung auf einem Ziel mit eigener Verjüngung oder eigenem Nachwachsen; verbraucht den HoT nicht.",
+      "count": 1
+    },
+    {
+      "talentId": 104916,
+      "reason": "Geschenk der Natur erhöht die Wirkung der Heilzauber.",
+      "count": 3
+    },
+    {
+      "talentId": 104914,
+      "reason": "Verjüngung ergänzen.",
+      "count": 1
+    },
+    {
+      "talentId": 104921,
+      "reason": "Schnelligkeit der Natur macht den nächsten geeigneten Naturzauber sofort wirkbar, seit 10.11. auch Wildwuchs.",
+      "count": 1
+    },
+    {
+      "talentId": 104924,
+      "reason": "Genesis stärkt periodischen Schaden und Heilung; seit 25.11. wirken die Boni auch korrekt auf Hurrikan und Gelassenheit.",
+      "count": 5
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "druid-balance-pvp-cobalt",
+      "druid-balance-pvp-restokins",
+      "official-balance-2511"
+    ],
+    "editorialDecision": "30/21 Hybrid mit Insektenschwarm, Eclipse und Schnelligkeit der Natur 55. Keine Moonkingestalt und bewusst kein neuer 10%-Formbonus zugunsten der Notfallheilung. Kein garantierter PvP-Vorteil.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Dreamstate-Profil-/Rangzauberzuordnung und alte Improved Starfire-Ränge nicht in den freigegebenen Pfaden.",
+      "Keine garantierte numerische Heilungs-/Schadensleistung."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+          "contribution": "Blizzard-Hotfixtext: sechs Balance-Änderungen, Hurrikan und Genesis, ältere Wildwuchs-Hotfixes."
+        },
+        {
+          "url": "https://talentsforever.com/hotfixes/2026-11-25",
+          "contribution": "Vorher/Nachher-Talenttexte; serverseitiger Hotfixdatensatz laut Anbieter aus wago.tools auf Build 71139 angewandt, Wowhead-Tooltip-Abgleich berichtet. Keine eigene exakte Rohdatenaufnahme."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/druid/",
+          "contribution": "Nature's Splendor erfordert zwei Nature's Majesty; übrige Wiederherstellungs- und Feral-Talentfunktionen; Balance-Talenttexte teilweise noch alt."
+        },
+        {
+          "url": "https://wowfdb.com/classes/druid/changes/",
+          "contribution": "Aktuelle Build- und PvP-Varianten als redaktionelle Referenz, nicht Beleg für optimalen eigenen Pfad."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Gleichgewicht",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-balance-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "30/21 Hybrid mit Insektenschwarm, Eclipse und Schnelligkeit der Natur 55. Keine Moonkingestalt und bewusst kein neuer 10%-Formbonus zugunsten der Notfallheilung. Kein garantierter PvP-Vorteil.",
+    "adviceSummary": "30/21 Hybrid mit Insektenschwarm, Eclipse und Schnelligkeit der Natur 55. Keine Moonkingestalt und bewusst kein neuer 10%-Formbonus zugunsten der Notfallheilung. Kein garantierter PvP-Vorteil.",
+    "evidenceIds": [
+      "druid-balance-pvp-rank0-71139-editorial-1",
+      "druid-balance-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

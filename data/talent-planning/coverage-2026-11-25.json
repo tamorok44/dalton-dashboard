@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "kind": "talent_coverage_matrix",
+  "goals": [
+    "leveling",
+    "dungeons",
+    "pvp"
+  ],
+  "deferredGoals": [
+    "raid"
+  ],
+  "classes": {
+    "1": [
+      {
+        "treeId": 11650,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Waffen"
+      },
+      {
+        "treeId": 11657,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Furor"
+      },
+      {
+        "treeId": 11670,
+        "roles": [
+          "tank"
+        ],
+        "roleEvidence": [
+          "icyveins-protection-dungeons",
+          "wowfdb-dungeon-tanks"
+        ],
+        "treeName": "Schutz"
+      }
+    ],
+    "2": [
+      {
+        "treeId": 11486,
+        "roles": [
+          "heal"
+        ],
+        "treeName": "Heilig"
+      },
+      {
+        "treeId": 11541,
+        "roles": [
+          "tank"
+        ],
+        "treeName": "Schutz"
+      },
+      {
+        "treeId": 11559,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Vergeltung"
+      }
+    ],
+    "3": [
+      {
+        "treeId": 11372,
+        "treeName": "Tierherrschaft",
+        "roles": [
+          "damage"
+        ]
+      },
+      {
+        "treeId": 11371,
+        "treeName": "Treffsicherheit",
+        "roles": [
+          "damage"
+        ]
+      },
+      {
+        "treeId": 11370,
+        "treeName": "Überleben",
+        "roles": [
+          "damage"
+        ]
+      }
+    ],
+    "4": [
+      {
+        "treeId": 11580,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Meucheln"
+      },
+      {
+        "treeId": 11573,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Kampf"
+      },
+      {
+        "treeId": 11572,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Täuschung"
+      }
+    ],
+    "5": [
+      {
+        "treeId": 11608,
+        "roles": [
+          "heal"
+        ],
+        "treeName": "Disziplin"
+      },
+      {
+        "treeId": 11615,
+        "roles": [
+          "heal"
+        ],
+        "roleEvidence": [
+          "icyveins-holy-priest",
+          "loreforever-dungeon-roles"
+        ],
+        "treeName": "Heilig"
+      },
+      {
+        "treeId": 11622,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Schatten"
+      }
+    ],
+    "7": [
+      {
+        "treeId": 11326,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Elementar"
+      },
+      {
+        "treeId": 11363,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Verstärkung"
+      },
+      {
+        "treeId": 11362,
+        "roles": [
+          "heal"
+        ],
+        "treeName": "Wiederherstellung"
+      }
+    ],
+    "8": [
+      {
+        "treeId": 11582,
+        "treeName": "Arkan",
+        "roles": [
+          "damage"
+        ]
+      },
+      {
+        "treeId": 11594,
+        "treeName": "Feuer",
+        "roles": [
+          "damage"
+        ]
+      },
+      {
+        "treeId": 11601,
+        "treeName": "Frost",
+        "roles": [
+          "damage"
+        ]
+      }
+    ],
+    "9": [
+      {
+        "treeId": 11629,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Gebrechen"
+      },
+      {
+        "treeId": 11636,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Dämonologie"
+      },
+      {
+        "treeId": 11637,
+        "roles": [
+          "damage"
+        ],
+        "treeName": "Zerstörung"
+      }
+    ],
+    "11": [
+      {
+        "treeId": 11328,
+        "treeName": "Gleichgewicht",
+        "roles": [
+          "damage"
+        ]
+      },
+      {
+        "treeId": 11347,
+        "treeName": "Wilder Kampf",
+        "roles": [
+          "damage",
+          "tank"
+        ],
+        "roleEvidence": [
+          "icyveins-feral-pve",
+          "mobalytics-feral-leveling"
+        ]
+      },
+      {
+        "treeId": 11340,
+        "treeName": "Wiederherstellung",
+        "roles": [
+          "heal"
+        ]
+      }
+    ]
+  }
+}

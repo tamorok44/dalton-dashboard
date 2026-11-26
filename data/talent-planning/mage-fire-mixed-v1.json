@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-fire-leveling-mixed-balanced",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11594,
+  "status": "retired",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "points": [
+    {
+      "talentId": 105795,
+      "rank": 1
+    },
+    {
+      "talentId": 105795,
+      "rank": 2
+    },
+    {
+      "talentId": 105795,
+      "rank": 3
+    },
+    {
+      "talentId": 105795,
+      "rank": 4
+    },
+    {
+      "talentId": 105795,
+      "rank": 5
+    },
+    {
+      "talentId": 105794,
+      "rank": 1
+    },
+    {
+      "talentId": 105794,
+      "rank": 2
+    },
+    {
+      "talentId": 105794,
+      "rank": 3
+    },
+    {
+      "talentId": 105794,
+      "rank": 4
+    },
+    {
+      "talentId": 105794,
+      "rank": 5
+    },
+    {
+      "talentId": 105790,
+      "rank": 1
+    },
+    {
+      "talentId": 105797,
+      "rank": 1
+    },
+    {
+      "talentId": 105797,
+      "rank": 2
+    },
+    {
+      "talentId": 105796,
+      "rank": 1
+    },
+    {
+      "talentId": 105796,
+      "rank": 2
+    },
+    {
+      "talentId": 105786,
+      "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 1
+    },
+    {
+      "talentId": 105785,
+      "rank": 2
+    },
+    {
+      "talentId": 105785,
+      "rank": 3
+    },
+    {
+      "talentId": 105788,
+      "rank": 1
+    },
+    {
+      "talentId": 105784,
+      "rank": 1
+    },
+    {
+      "talentId": 105784,
+      "rank": 2
+    },
+    {
+      "talentId": 105784,
+      "rank": 3
+    },
+    {
+      "talentId": 105783,
+      "rank": 1
+    },
+    {
+      "talentId": 105796,
+      "rank": 3
+    },
+    {
+      "talentId": 105796,
+      "rank": 4
+    },
+    {
+      "talentId": 105796,
+      "rank": 5
+    },
+    {
+      "talentId": 105782,
+      "rank": 1
+    },
+    {
+      "talentId": 105782,
+      "rank": 2
+    },
+    {
+      "talentId": 105782,
+      "rank": 3
+    },
+    {
+      "talentId": 105781,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105806,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    },
+    {
+      "talentId": 105808,
+      "rank": 1
+    },
+    {
+      "talentId": 105808,
+      "rank": 2
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 20,
+    "11594": 31,
+    "11601": 0
+  },
+  "rationaleBlocks": [
+    {
+      "talentId": 105795,
+      "count": 5,
+      "reason": "Feuerball als frühen Standardzauber beschleunigen"
+    },
+    {
+      "talentId": 105794,
+      "count": 5,
+      "reason": "Feuerkrit durch Entzünden ergänzen"
+    },
+    {
+      "talentId": 105790,
+      "count": 1,
+      "reason": "Pyroschlag freischalten und Voraussetzung für Aufwärmen erfüllen"
+    },
+    {
+      "talentId": 105797,
+      "count": 2,
+      "reason": "Feuerschlag häufiger und aus größerer Distanz nutzen"
+    },
+    {
+      "talentId": 105796,
+      "count": 2,
+      "reason": "Kritchance von Feuerschlag und Versengen stärken"
+    },
+    {
+      "talentId": 105786,
+      "count": 1,
+      "reason": "Aufwärmen zum frühesten regulären Zeitpunkt freischalten"
+    },
+    {
+      "talentId": 105785,
+      "count": 3,
+      "reason": "Manakosten bei kritischen Feuer- und Frosttreffern teilweise zurückgewinnen"
+    },
+    {
+      "talentId": 105788,
+      "count": 1,
+      "reason": "Feuerverwundbarkeit für längere Gefechte vorbereiten"
+    },
+    {
+      "talentId": 105784,
+      "count": 3,
+      "reason": "Feuerkrit und Voraussetzung für Verbrennung vervollständigen"
+    },
+    {
+      "talentId": 105783,
+      "count": 1,
+      "reason": "Zusätzliche Flächenkontrolle für Gruppen und Soloeinsatz freischalten"
+    },
+    {
+      "talentId": 105796,
+      "count": 3,
+      "reason": "Kritchance der betroffenen Kernzauber vervollständigen"
+    },
+    {
+      "talentId": 105782,
+      "count": 3,
+      "reason": "Schaden gegen Ziele mit Feuereffekten erhöhen"
+    },
+    {
+      "talentId": 105781,
+      "count": 1,
+      "reason": "Verbrennung auf Stufe 40 erreichen"
+    },
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Den Arkan-Nebenbaum öffnen und Arkanschlag sowie Arkane Geschosse ergänzen"
+    },
+    {
+      "talentId": 105810,
+      "count": 5,
+      "reason": "Manakosten über Freizauber senken"
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Zauberwiderstände senken und die Bedrohung von Arkanzaubern begrenzen"
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Feuerball kann manafreie Arkane Geschosse vorbereiten"
+    },
+    {
+      "talentId": 105806,
+      "count": 1,
+      "reason": "Arkanschlag als Ergänzung gegen feuerresistente Ziele freischalten"
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern erhöhen"
+    },
+    {
+      "talentId": 105808,
+      "count": 2,
+      "reason": "Reichweite der spät eingesetzten Arkanzauber erhöhen"
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-25",
+    "sourceIds": [
+      "icyveins-fire",
+      "mobalytics-fire"
+    ],
+    "editorialDecision": "Superseded by version 2 before publication; retained for research history.",
+    "unresolved": [
+      "Current build attestation for the exact catalog capture",
+      "Heating Up action and proc semantics and the value of early Scorch for mixed play",
+      "Standard-rank minimum-level and dependency review"
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "legacyTalentedRank": 0
+    }
+  }
+}

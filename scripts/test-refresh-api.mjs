@@ -3,6 +3,7 @@ import {PET_DB2_BASELINE,PET_DB2_REVIEWED_BUILD} from './pet-db2-baseline.mjs';
 import {petDb2Url} from './pet-db2-audit.mjs';
 import {createRequire} from 'node:module';
 import handler from '../api/refresh.js';
+import {savePetRuleState} from './pet-rule-store.mjs';
 import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
 const require=createRequire(import.meta.url);
@@ -90,8 +91,25 @@ globalThis.fetch=async (url,options={})=>{
       const keys=JSON.parse(options.body);
       if(keys[3]==='dalton-dashboard:pet-rules:v1'){
         if(failPetRuleSave)return {ok:true,json:async()=>({error:'pet rule write failed'})};
-        petRulesSaved=keys[5];
-        return {ok:true,json:async()=>({result:'OK'})};
+        const next=JSON.parse(keys[5]);
+        const previous=petRulesSaved?JSON.parse(petRulesSaved):null;
+        if(!previous||previous.checkedAt<=next.checkedAt){
+          const latest=previous?.talentRuleObservation;
+          let observation=keys[7]==='preview'?latest:keys[8]?JSON.parse(keys[8]):undefined;
+          if(keys[7]!=='preview'&&Number.isFinite(observation?.checkedAtMs)&&Number.isFinite(latest?.checkedAtMs)){
+            const elapsed=observation.checkedAtMs-latest.checkedAtMs;
+            const same=observation.status===latest.status&&observation.clientBuild===latest.clientBuild&&
+              observation.hotfixRevision===latest.hotfixRevision;
+            if(elapsed<0)observation=latest;
+            else if(elapsed===0&&!same)observation={...observation,status:'review_required',revisionSince:null};
+            else if(same&&observation.status==='observed'&&latest.revisionSince&&elapsed<keys[9]){
+              observation={...observation,revisionSince:latest.revisionSince};
+            }
+          }
+          next.talentRuleObservation=observation;
+          petRulesSaved=JSON.stringify(next);
+        }
+        return {ok:true,json:async()=>({result:petRulesSaved})};
       }
       const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
         (lock===keys[6]?(saved=keys[7],'OK'):'ERROR');
@@ -243,6 +261,47 @@ try{
   const throttled=fakeResponse();
   await handler({method:'GET'},throttled);
   assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
+  const priorEnvironment=process.env.VERCEL_ENV;
+  try{
+    const checkedAt='2099-11-25T01:00:00.000Z';
+    const observation={checkedAt,status:'observed',clientBuild:'1.60.1.71091',hotfixRevision:'a'.repeat(64)};
+    const state={checkedAt,rulebookVersion:'test',history:[],talentRuleObservation:observation};
+    process.env.VERCEL_ENV='production';
+    assert.deepEqual(await savePetRuleState(state),state);
+    assert.deepEqual(await savePetRuleState({...state,checkedAt:'2099-11-25T00:00:00.000Z',talentRuleObservation:null}),state);
+    process.env.VERCEL_ENV='preview';
+    const preview=await savePetRuleState({...state,checkedAt:'2099-11-25T02:00:00.000Z',
+      talentRuleObservation:{...observation,status:'source_unavailable'}});
+    assert.deepEqual(preview.talentRuleObservation,observation);
+    assert.deepEqual(preview.history,[]);
+    process.env.VERCEL_ENV='production';
+    const productionSave=(time,{status='observed',digest=observation.hotfixRevision}={})=>savePetRuleState({
+      ...state,checkedAt:time,talentRuleObservation:{
+        checkedAt:time,checkedAtMs:Date.parse(time),revisionSince:status==='observed'?time:null,
+        status,clientBuild:observation.clientBuild,hotfixRevision:digest
+      }
+    });
+    const t1='2099-11-25T03:00:00.000Z',t2='2099-11-25T04:00:00.000Z';
+    await productionSave(t1);
+    const repeated=await productionSave(t2);
+    assert.equal(repeated.talentRuleObservation.checkedAt,t2);
+    assert.equal(repeated.talentRuleObservation.revisionSince,t1);
+    assert.deepEqual(await productionSave(t1,{digest:'b'.repeat(64)}),repeated);
+    const conflict=await productionSave(t2,{digest:'b'.repeat(64)});
+    assert.equal(conflict.talentRuleObservation.status,'review_required');
+    assert.equal(conflict.talentRuleObservation.revisionSince,null);
+    const recoveredAt='2099-11-25T05:00:00.000Z';
+    assert.equal((await productionSave(recoveredAt)).talentRuleObservation.revisionSince,recoveredAt);
+    await productionSave('2099-11-25T06:00:00.000Z',{status:'source_unavailable',digest:null});
+    const afterOutage='2099-11-25T07:00:00.000Z';
+    assert.equal((await productionSave(afterOutage)).talentRuleObservation.revisionSince,afterOutage);
+    const afterExpiry='2099-11-26T09:00:00.000Z';
+    assert.equal((await productionSave(afterExpiry)).talentRuleObservation.revisionSince,afterExpiry);
+
+  }finally{
+    if(priorEnvironment===undefined)delete process.env.VERCEL_ENV;
+    else process.env.VERCEL_ENV=priorEnvironment;
+  }
   console.log('Manual API: parallel German Armory fetch, source-backed stats, profession fail-closed behavior and outages: OK');
 }finally{
   globalThis.fetch=originalFetch;

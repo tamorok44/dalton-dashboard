@@ -1,0 +1,350 @@
+{
+  "schemaVersion": 1,
+  "id": "warlock-destruction-pvp",
+  "version": 1,
+  "classId": 9,
+  "treeId": 11637,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11629": 18,
+    "11636": 0,
+    "11637": 33
+  },
+  "points": [
+    {
+      "talentId": 105888,
+      "rank": 1
+    },
+    {
+      "talentId": 105888,
+      "rank": 2
+    },
+    {
+      "talentId": 105888,
+      "rank": 3
+    },
+    {
+      "talentId": 105888,
+      "rank": 4
+    },
+    {
+      "talentId": 105888,
+      "rank": 5
+    },
+    {
+      "talentId": 105885,
+      "rank": 1
+    },
+    {
+      "talentId": 105885,
+      "rank": 2
+    },
+    {
+      "talentId": 105885,
+      "rank": 3
+    },
+    {
+      "talentId": 105885,
+      "rank": 4
+    },
+    {
+      "talentId": 105885,
+      "rank": 5
+    },
+    {
+      "talentId": 105886,
+      "rank": 1
+    },
+    {
+      "talentId": 105886,
+      "rank": 2
+    },
+    {
+      "talentId": 105886,
+      "rank": 3
+    },
+    {
+      "talentId": 105886,
+      "rank": 4
+    },
+    {
+      "talentId": 105886,
+      "rank": 5
+    },
+    {
+      "talentId": 105884,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 1
+    },
+    {
+      "talentId": 105883,
+      "rank": 2
+    },
+    {
+      "talentId": 105883,
+      "rank": 3
+    },
+    {
+      "talentId": 105883,
+      "rank": 4
+    },
+    {
+      "talentId": 105883,
+      "rank": 5
+    },
+    {
+      "talentId": 105880,
+      "rank": 1
+    },
+    {
+      "talentId": 105882,
+      "rank": 1
+    },
+    {
+      "talentId": 105882,
+      "rank": 2
+    },
+    {
+      "talentId": 105876,
+      "rank": 1
+    },
+    {
+      "talentId": 105875,
+      "rank": 1
+    },
+    {
+      "talentId": 105875,
+      "rank": 2
+    },
+    {
+      "talentId": 105875,
+      "rank": 3
+    },
+    {
+      "talentId": 105875,
+      "rank": 4
+    },
+    {
+      "talentId": 105875,
+      "rank": 5
+    },
+    {
+      "talentId": 105874,
+      "rank": 1
+    },
+    {
+      "talentId": 105882,
+      "rank": 3
+    },
+    {
+      "talentId": 105878,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 1
+    },
+    {
+      "talentId": 105924,
+      "rank": 2
+    },
+    {
+      "talentId": 105924,
+      "rank": 3
+    },
+    {
+      "talentId": 105924,
+      "rank": 4
+    },
+    {
+      "talentId": 105924,
+      "rank": 5
+    },
+    {
+      "talentId": 105925,
+      "rank": 1
+    },
+    {
+      "talentId": 105925,
+      "rank": 2
+    },
+    {
+      "talentId": 105925,
+      "rank": 3
+    },
+    {
+      "talentId": 105925,
+      "rank": 4
+    },
+    {
+      "talentId": 105925,
+      "rank": 5
+    },
+    {
+      "talentId": 105920,
+      "rank": 1
+    },
+    {
+      "talentId": 105920,
+      "rank": 2
+    },
+    {
+      "talentId": 105920,
+      "rank": 3
+    },
+    {
+      "talentId": 105923,
+      "rank": 1
+    },
+    {
+      "talentId": 105923,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 1
+    },
+    {
+      "talentId": 105918,
+      "rank": 2
+    },
+    {
+      "talentId": 105918,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105888,
+      "count": 5,
+      "reason": "Zauberzeiten direkter Schadenszauber verringern."
+    },
+    {
+      "talentId": 105885,
+      "count": 5,
+      "reason": "Erlittenen Schaden reduzieren."
+    },
+    {
+      "talentId": 105886,
+      "count": 5,
+      "reason": "Feuerbrand und Verlangsamung durch Feuersbrunst stärken."
+    },
+    {
+      "talentId": 105884,
+      "count": 1,
+      "reason": "Schattenbrand für unmittelbaren Schaden freischalten."
+    },
+    {
+      "talentId": 105883,
+      "count": 5,
+      "reason": "Kritischen Schadensbonus ausbauen."
+    },
+    {
+      "talentId": 105880,
+      "count": 1,
+      "reason": "Feuersbrunst freischalten."
+    },
+    {
+      "talentId": 105882,
+      "count": 2,
+      "reason": "Zauberunterbrechungsschutz ergänzen."
+    },
+    {
+      "talentId": 105876,
+      "count": 1,
+      "reason": "Omen der Verwüstung als Voraussetzung freischalten."
+    },
+    {
+      "talentId": 105875,
+      "count": 5,
+      "reason": "Schatten und Flamme ausbauen."
+    },
+    {
+      "talentId": 105874,
+      "count": 1,
+      "reason": "Verbrennen auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 105882,
+      "count": 1,
+      "reason": "Zauberunterbrechungsschutz vervollständigen."
+    },
+    {
+      "talentId": 105878,
+      "count": 1,
+      "reason": "Situative Betäubungsmöglichkeit ergänzen."
+    },
+    {
+      "talentId": 105924,
+      "count": 5,
+      "reason": "Verderbnis sofort wirkbar machen."
+    },
+    {
+      "talentId": 105925,
+      "count": 5,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105920,
+      "count": 3,
+      "reason": "Entzugszauber zur Erholung stärken."
+    },
+    {
+      "talentId": 105923,
+      "count": 2,
+      "reason": "Reichweite der Gebrechenzauber erhöhen."
+    },
+    {
+      "talentId": 105918,
+      "count": 3,
+      "reason": "Unterbrechungsschutz der Entzugszauber ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-warlock-destruction-pvp",
+      "cobalt-warlock-destruction-pvp-20261110"
+    ],
+    "editorialDecision": "Für gemischtes PvP zuerst schnellere direkte Zauber und Schadensminderung, dann Feuerbrand, Schattenbrand und Feuersbrunst für kurze Angriffsfenster. Verbrennen auf 40, situative Pyroclasm-Kontrolle danach, anschließend Sofort-Verderbnis und Entzüge als Ergänzung. Der frühe defensive Schwerpunkt ist wichtiger als maximaler PvE-Schaden. Schatten und Flamme wechselt die Schadensschulen situationsabhängig; keine garantierte Konsumfolge, kein garantierter Stun, keine Immunität gegen Unterbrechungen.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Zerstörung",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-destruction-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für gemischtes PvP zuerst schnellere direkte Zauber und Schadensminderung, dann Feuerbrand, Schattenbrand und Feuersbrunst für kurze Angriffsfenster. Verbrennen auf 40, situative Pyroclasm-Kontrolle danach, anschließend Sofort-Verderbnis und Entzüge als Ergänzung. Der frühe defensive Schwerpunkt ist wichtiger als maximaler PvE-Schaden. Schatten und Flamme wechselt die Schadensschulen situationsabhängig; keine garantierte Konsumfolge, kein garantierter Stun, keine Immunität gegen Unterbrechungen.",
+    "adviceSummary": "Zerstörungs-PvP mit Schadensminderung, Schattenbrand auf 25, Feuersbrunst auf 31 und Verbrennen auf 40.",
+    "evidenceIds": [
+      "warlock-destruction-pvp-rank0-71139-editorial-1",
+      "warlock-destruction-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

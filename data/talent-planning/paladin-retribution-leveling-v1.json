@@ -1,0 +1,400 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-retribution-leveling",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11559,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 12,
+    "11541": 8,
+    "11559": 31
+  },
+  "points": [
+    {
+      "talentId": 105706,
+      "rank": 1
+    },
+    {
+      "talentId": 105706,
+      "rank": 2
+    },
+    {
+      "talentId": 105706,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 4
+    },
+    {
+      "talentId": 105706,
+      "rank": 5
+    },
+    {
+      "talentId": 105705,
+      "rank": 1
+    },
+    {
+      "talentId": 105705,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 1
+    },
+    {
+      "talentId": 105701,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 3
+    },
+    {
+      "talentId": 105696,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 2
+    },
+    {
+      "talentId": 105703,
+      "rank": 1
+    },
+    {
+      "talentId": 105703,
+      "rank": 2
+    },
+    {
+      "talentId": 105700,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 2
+    },
+    {
+      "talentId": 105697,
+      "rank": 3
+    },
+    {
+      "talentId": 105703,
+      "rank": 3
+    },
+    {
+      "talentId": 105693,
+      "rank": 1
+    },
+    {
+      "talentId": 105693,
+      "rank": 2
+    },
+    {
+      "talentId": 105693,
+      "rank": 3
+    },
+    {
+      "talentId": 105694,
+      "rank": 1
+    },
+    {
+      "talentId": 105702,
+      "rank": 1
+    },
+    {
+      "talentId": 110882,
+      "rank": 1
+    },
+    {
+      "talentId": 110882,
+      "rank": 2
+    },
+    {
+      "talentId": 110882,
+      "rank": 3
+    },
+    {
+      "talentId": 110882,
+      "rank": 4
+    },
+    {
+      "talentId": 110882,
+      "rank": 5
+    },
+    {
+      "talentId": 105692,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
+    },
+    {
+      "talentId": 113630,
+      "rank": 1
+    },
+    {
+      "talentId": 113630,
+      "rank": 2
+    },
+    {
+      "talentId": 113630,
+      "rank": 3
+    },
+    {
+      "talentId": 113630,
+      "rank": 4
+    },
+    {
+      "talentId": 113630,
+      "rank": 5
+    },
+    {
+      "talentId": 105334,
+      "rank": 1
+    },
+    {
+      "talentId": 105334,
+      "rank": 2
+    },
+    {
+      "talentId": 105334,
+      "rank": 3
+    },
+    {
+      "talentId": 105334,
+      "rank": 4
+    },
+    {
+      "talentId": 105334,
+      "rank": 5
+    },
+    {
+      "talentId": 105327,
+      "rank": 1
+    },
+    {
+      "talentId": 105327,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105706,
+      "count": 5,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105705,
+      "count": 2,
+      "reason": "Richturteil häufiger einsetzen."
+    },
+    {
+      "talentId": 105701,
+      "count": 3,
+      "reason": "Manarückgewinn bei geeigneten Richturteilen unterstützen; keine zusätzliche Bedrohung aus der Manarückgewinnung voraussetzen."
+    },
+    {
+      "talentId": 105696,
+      "count": 1,
+      "reason": "Siegel des Befehls freischalten: zusätzlicher möglicher Heiligschaden bei geeigneten Waffenangriffen; Richturteil des Befehls zählt seit 13.11. als Nahkampfangriff und löst geeignete Treffereffekte aus. Keine garantierte Auslösung oder Schadenskonstante."
+    },
+    {
+      "talentId": 105699,
+      "count": 2,
+      "reason": "Bewegungstempo für Questwege erhöhen."
+    },
+    {
+      "talentId": 105703,
+      "count": 2,
+      "reason": "Kritische Trefferchance verbessern."
+    },
+    {
+      "talentId": 105700,
+      "count": 1,
+      "reason": "Heiliger Richter verstärkt Heiligen Stoß und erneuert vorhandene Richturteil-Effekte auf dem Ziel."
+    },
+    {
+      "talentId": 105697,
+      "count": 3,
+      "reason": "Schaden mit Zweihandwaffe verbessern."
+    },
+    {
+      "talentId": 105703,
+      "count": 1,
+      "reason": "Überzeugung vervollständigen."
+    },
+    {
+      "talentId": 105693,
+      "count": 3,
+      "reason": "Vergeltungsschaden nach eigenen nichtperiodischen kritischen Treffern verstärken; keine dauerhaften Stapel voraussetzen."
+    },
+    {
+      "talentId": 105694,
+      "count": 1,
+      "reason": "Buße gegen geeignete humanoide Ziele freischalten; Schaden kann die Kontrolle beenden."
+    },
+    {
+      "talentId": 105702,
+      "count": 1,
+      "reason": "Vindication kann bei schädigenden Nahkampfangriffen die gegnerische Angriffskraft senken; Höhe und Skalierung nicht abschließend bestätigt."
+    },
+    {
+      "talentId": 110882,
+      "count": 5,
+      "reason": "Intelligenz-Skalierung und Hammer der Vergeltung stärken."
+    },
+    {
+      "talentId": 105692,
+      "count": 1,
+      "reason": "Entfesselter Zorn speichert aktive Siegeleffekte bei Nahkampfangriffen; Treffer mit einem anderen Siegel verbraucht gespeicherte Stapel mit normaler Auslösechance, keine garantierten Zusatztreffer."
+    },
+    {
+      "talentId": 105332,
+      "count": 5,
+      "reason": "Intelligenz und Manareserve ergänzen."
+    },
+    {
+      "talentId": 105638,
+      "count": 3,
+      "reason": "Trefferchance erhöhen; Richturteile nach ihrer jeweiligen Angriffsklassifikation bewerten."
+    },
+    {
+      "talentId": 113630,
+      "count": 5,
+      "reason": "Stärke erhöhen."
+    },
+    {
+      "talentId": 105334,
+      "count": 5,
+      "reason": "Schaden der Siegel und Richturteile verbessern."
+    },
+    {
+      "talentId": 105327,
+      "count": 2,
+      "reason": "Reinigung und situative offensive Zauber unterstützen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "mobalytics-whiter-ret",
+      "wowforevergg-ret"
+    ],
+    "editorialDecision": "Zweihand-Levelpfad mit Mana, Siegel des Befehls 20, Heiligem Richter 25, Buße 33, Entfesseltem Zorn 40. Nahkampfschaden und Richturteile situationsgerecht nutzen; Vindication nur als qualitative Angriffskraftminderung. Keine feste Proc- oder Skalierungsbehauptung.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "113631: zusätzliche Voraussetzung außerhalb der verwendeten Pfade nicht vollständig geklärt.",
+      "Serverseitige Heil-, Schadens-, Angriffskraft- und Proc-Formeln nicht freigegeben; keine universelle Leistungsrangliste."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://armorywowforever.com/talents/paladin",
+          "contribution": "Build 71139 ausgewiesen; Talentfunktionen und Voraussetzungen, Eid-Tooltip mit altem Dauerwert und nicht aufgelöster Heilskalierung; keine unabhängige numerische Messung."
+        },
+        {
+          "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+          "contribution": "Offiziell 11.11. Richturteile Fernkampf, 13.11. Ausnahme Richturteil des Befehls Nahkampf/On-hit, 25.11. Eid 60 Minuten, Exorzismus-Kritfehler korrigiert."
+        },
+        {
+          "url": "https://wowfdb.com/talents/paladin/",
+          "contribution": "Vindication als Angriffskraftminderung; Werte weichen von niedrigstufigem/unaufgelöstem Clienttext ab."
+        },
+        {
+          "url": "https://www.foreverdb.app/en/forever/classes/paladin",
+          "contribution": "Weiterer abweichender AP-Wert; keine feste Rundungsformel."
+        },
+        {
+          "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-leveling-talents/",
+          "contribution": "Levelvarianten und Meilensteine, Stand 9.11. als redaktionelle Referenz, nicht aktueller vollständiger Strukturbeleg."
+        },
+        {
+          "url": "https://metammo.com/wow-forever/builds/paladin",
+          "contribution": "Heilig- und Vergeltungskern, Siegelwechsel und Eid; keine gemessene Überlegenheit."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Vergeltung",
+  "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+  "ruleRevision": "paladin-retribution-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Zweihand-Levelpfad mit Mana, Siegel des Befehls 20, Heiligem Richter 25, Buße 33, Entfesseltem Zorn 40. Nahkampfschaden und Richturteile situationsgerecht nutzen; Vindication nur als qualitative Angriffskraftminderung. Keine feste Proc- oder Skalierungsbehauptung.",
+    "adviceSummary": "Zweihand-Levelpfad mit Siegel des Befehls 20, Buße 33 und Entfesseltem Zorn 40.",
+    "evidenceIds": [
+      "paladin-retribution-leveling-rank0-71139-editorial-1",
+      "paladin-retribution-leveling-rank0-71139-editorial-2"
+    ]
+  }
+}

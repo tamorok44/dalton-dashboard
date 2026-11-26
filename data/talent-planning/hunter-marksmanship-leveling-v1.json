@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "id": "hunter-marksmanship-leveling-mixed-balanced",
+  "version": 1,
+  "classId": 3,
+  "treeId": 11371,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 3,
+      "treeId": 11371,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11370": 0,
+    "11371": 31,
+    "11372": 20
+  },
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-marksmanship-leveling",
+      "grindclassic-marksmanship-leveling",
+      "wowhead-marksmanship-leveling"
+    ],
+    "editorialDecision": "Begleiter bindet Gegner beim Questen; kein Einsamer Wolf. Früher eigener Fernkampfschaden und Manaentlastung, Aura auf 25, Rasche Erholung auf 30–31 und Heckenschützenschuss auf 40. Streuschuss auf 33 als situative Kontrolle; später Begleiterhaltbarkeit, Schaden und Mobilität. Gegenüber einem früheren Tierherrschafts-Abstecher werden die Treffsicherheits-Meilensteine vorgezogen. Tierherrschaft kann für reines Sololeveln stärker sein; kein numerischer Vergleich, kein Falkenbonus.",
+    "unresolved": [
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Klassenweite Quellenabweichungen außerhalb der vergebenen Talente und Voraussetzungen bestehen weiterhin; keine vollständige Klassenfreigabe."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "points": [
+    {
+      "talentId": 105011,
+      "rank": 1
+    },
+    {
+      "talentId": 105011,
+      "rank": 2
+    },
+    {
+      "talentId": 105011,
+      "rank": 3
+    },
+    {
+      "talentId": 105011,
+      "rank": 4
+    },
+    {
+      "talentId": 105011,
+      "rank": 5
+    },
+    {
+      "talentId": 105008,
+      "rank": 1
+    },
+    {
+      "talentId": 105008,
+      "rank": 2
+    },
+    {
+      "talentId": 105008,
+      "rank": 3
+    },
+    {
+      "talentId": 105008,
+      "rank": 4
+    },
+    {
+      "talentId": 105008,
+      "rank": 5
+    },
+    {
+      "talentId": 105005,
+      "rank": 1
+    },
+    {
+      "talentId": 105005,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 1
+    },
+    {
+      "talentId": 105009,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 3
+    },
+    {
+      "talentId": 105004,
+      "rank": 1
+    },
+    {
+      "talentId": 105002,
+      "rank": 1
+    },
+    {
+      "talentId": 105002,
+      "rank": 2
+    },
+    {
+      "talentId": 105002,
+      "rank": 3
+    },
+    {
+      "talentId": 105002,
+      "rank": 4
+    },
+    {
+      "talentId": 104999,
+      "rank": 1
+    },
+    {
+      "talentId": 104999,
+      "rank": 2
+    },
+    {
+      "talentId": 105002,
+      "rank": 5
+    },
+    {
+      "talentId": 105000,
+      "rank": 1
+    },
+    {
+      "talentId": 105009,
+      "rank": 4
+    },
+    {
+      "talentId": 104998,
+      "rank": 1
+    },
+    {
+      "talentId": 104998,
+      "rank": 2
+    },
+    {
+      "talentId": 104998,
+      "rank": 3
+    },
+    {
+      "talentId": 104998,
+      "rank": 4
+    },
+    {
+      "talentId": 104998,
+      "rank": 5
+    },
+    {
+      "talentId": 104997,
+      "rank": 1
+    },
+    {
+      "talentId": 104976,
+      "rank": 1
+    },
+    {
+      "talentId": 104976,
+      "rank": 2
+    },
+    {
+      "talentId": 104976,
+      "rank": 3
+    },
+    {
+      "talentId": 104976,
+      "rank": 4
+    },
+    {
+      "talentId": 104976,
+      "rank": 5
+    },
+    {
+      "talentId": 104960,
+      "rank": 1
+    },
+    {
+      "talentId": 104960,
+      "rank": 2
+    },
+    {
+      "talentId": 104960,
+      "rank": 3
+    },
+    {
+      "talentId": 104960,
+      "rank": 4
+    },
+    {
+      "talentId": 104960,
+      "rank": 5
+    },
+    {
+      "talentId": 104975,
+      "rank": 1
+    },
+    {
+      "talentId": 104975,
+      "rank": 2
+    },
+    {
+      "talentId": 104970,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 2
+    },
+    {
+      "talentId": 104969,
+      "rank": 3
+    },
+    {
+      "talentId": 104969,
+      "rank": 4
+    },
+    {
+      "talentId": 104969,
+      "rank": 5
+    },
+    {
+      "talentId": 104972,
+      "rank": 1
+    },
+    {
+      "talentId": 104972,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105011,
+      "count": 5,
+      "reason": "Eigene kritische Trefferchance ausbauen."
+    },
+    {
+      "talentId": 105008,
+      "count": 5,
+      "reason": "Sorgfältiges Zielen für Angriffskraft und Todbringende Schüsse."
+    },
+    {
+      "talentId": 105005,
+      "count": 2,
+      "reason": "Schaden nach dem Töten nicht trivialer Gegner unterstützen."
+    },
+    {
+      "talentId": 105009,
+      "count": 3,
+      "reason": "Manakosten der Schüsse und Stiche reduzieren."
+    },
+    {
+      "talentId": 105004,
+      "count": 1,
+      "reason": "Aura des Volltreffers für den Jäger und seine Gruppe freischalten."
+    },
+    {
+      "talentId": 105002,
+      "count": 4,
+      "reason": "Kritischen Distanzschaden stärken."
+    },
+    {
+      "talentId": 104999,
+      "count": 2,
+      "reason": "Rasche Erholung für Manaregeneration nach Schlangengift."
+    },
+    {
+      "talentId": 105002,
+      "count": 1,
+      "reason": "Todbringende Schüsse vervollständigen."
+    },
+    {
+      "talentId": 105000,
+      "count": 1,
+      "reason": "Streuschuss als situative Kontrolle; bei aktivem Schaden nicht als dauerhaftes Kontrollfenster annehmen."
+    },
+    {
+      "talentId": 105009,
+      "count": 1,
+      "reason": "Manakosten weiter reduzieren."
+    },
+    {
+      "talentId": 104998,
+      "count": 5,
+      "reason": "Distanzwaffenschaden erhöhen."
+    },
+    {
+      "talentId": 104997,
+      "count": 1,
+      "reason": "Heckenschützenschuss auf 40 freischalten."
+    },
+    {
+      "talentId": 104976,
+      "count": 5,
+      "reason": "Aktiven Begleiter widerstandsfähiger machen."
+    },
+    {
+      "talentId": 104960,
+      "count": 5,
+      "reason": "Angriffstempo mit passendem Aspekt unterstützen."
+    },
+    {
+      "talentId": 104975,
+      "count": 2,
+      "reason": "Schaden mit aktivem Begleiter ergänzen."
+    },
+    {
+      "talentId": 104970,
+      "count": 1,
+      "reason": "Laufwege des Begleiters verkürzen."
+    },
+    {
+      "talentId": 104969,
+      "count": 5,
+      "reason": "Begleiterschaden ergänzen."
+    },
+    {
+      "talentId": 104972,
+      "count": 2,
+      "reason": "Wiederbelebung des Begleiters erleichtern."
+    }
+  ],
+  "treeName": "Treffsicherheit",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "ruleRevision": "hunter-marksmanship-leveling-mixed-balanced-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Begleiter bindet Gegner beim Questen; kein Einsamer Wolf. Früher eigener Fernkampfschaden und Manaentlastung, Aura auf 25, Rasche Erholung auf 30–31 und Heckenschützenschuss auf 40. Streuschuss auf 33 als situative Kontrolle; später Begleiterhaltbarkeit, Schaden und Mobilität. Gegenüber einem früheren Tierherrschafts-Abstecher werden die Treffsicherheits-Meilensteine vorgezogen. Tierherrschaft kann für reines Sololeveln stärker sein; kein numerischer Vergleich, kein Falkenbonus.",
+    "adviceSummary": "Gemischtes Leveln mit aktivem Begleiter, Aura auf 25, Rascher Erholung auf 30 und Heckenschützenschuss auf 40.",
+    "evidenceIds": [
+      "hunter-marksmanship-leveling-mixed-balanced-rank0-71139-editorial-1",
+      "hunter-marksmanship-leveling-mixed-balanced-rank0-71139-editorial-2"
+    ]
+  }
+}

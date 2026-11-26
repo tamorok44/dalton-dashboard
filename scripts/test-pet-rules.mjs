@@ -6,7 +6,7 @@ import {PET_RULEBOOK_VERSION,verifyPetRulebook,publicPetRuleState} from './pet-r
 const pages={
   'raw.githubusercontent.com/wowsims/forever/680ed6f99191ff5884794a3d595176ae1a316353/docs/evidence/EV-0134-hunter-pet-and-hawk-crit-hawk-swing-and-melee-crits-in-live-logs.md':"## Count of 2026-11-23 to 2026-11-24\n| 5 | 34 | 15,281 / 53,245 | 28.7% | 6,235 / 25,967 | 24.0% | 16.1% |\nAt 5/5 the white swings' 28.7% is their 12.8% before the hotfix plus the owners' 16.1%.\nThe abilities' slope is 0.93 (0.85 to 1.02, 386 reports)",
   'worldofwarcraft.blizzard.com/en-us/news/24315281':`
-    <main><li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li></main>`,
+    <section class="blog"><p>Here you will find a list of hotfixes that address various issues related to World of Warcraft: Forever.</p><p>November 22, 2026</p><li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li></section>`,
   'us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes':`
     <main>Pets now correctly benefit from Expertise.
     Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.</main>`,
@@ -83,7 +83,62 @@ function fetchFrom(currentPages,failPart=null,alterDb2=null){
   };
 }
 const now=new Date('2026-11-22T04:07:00.000Z');
-const first=await verifyPetRulebook({fetchImpl:fetchFrom(pages),now});
+let hotfixRequests=0;
+const first=await verifyPetRulebook({now,fetchImpl:async url=>{
+  if(String(url).includes('24315281'))hotfixRequests++;
+  return fetchFrom(pages)(url);
+}});
+assert.equal(hotfixRequests,1);
+assert.equal(first.talentRuleObservation.status,'observed',JSON.stringify({
+  observation:first.talentRuleObservation,
+  primary:first.sources.foreverDbBuild,
+  official:first.sources.blizzardHotfix,
+  secondary:first.sources.bindFox
+}));
+assert.equal(first.talentRuleObservation.clientBuild,'1.60.1.71091');
+assert.match(first.talentRuleObservation.hotfixRevision,/^[a-f0-9]{64}$/);
+assert.equal(publicPetRuleState(first).talentRuleObservation,undefined);
+const hotfixPage='worldofwarcraft.blizzard.com/en-us/news/24315281';
+const mageEdit={...pages,[hotfixPage]:'<nav>Changed navigation</nav>'+pages[hotfixPage].replace('</section>','<li>Mage: Ice Barrier changed.</li></section>')};
+const talentChange=await verifyPetRulebook({fetchImpl:fetchFrom(mageEdit),previousState:first,now});
+// A Mage-only hotfix must not alter any pet rule's review status.
+assert.equal(talentChange.overall,first.overall);
+assert.deepEqual(Object.fromEntries(Object.entries(talentChange.rules).map(([id,r])=>[id,r.status])),
+  Object.fromEntries(Object.entries(first.rules).map(([id,r])=>[id,r.status])));
+assert.notEqual(talentChange.talentRuleObservation.hotfixRevision,first.talentRuleObservation.hotfixRevision);
+const outsideEdit={...pages,[hotfixPage]:pages[hotfixPage]+'<nav>Changed navigation</nav>'};
+const sameContent=await verifyPetRulebook({fetchImpl:fetchFrom(outsideEdit),previousState:first,now});
+assert.equal(sameContent.talentRuleObservation.hotfixRevision,first.talentRuleObservation.hotfixRevision);
+const legacyArticle={...pages,[hotfixPage]:pages[hotfixPage]
+  .replace('<section class="blog">','<article><div id="blog"><div class="Blog margin-bottom-medium"><div class="detail">&#160;')
+  .replace('</section>','</div></div></div><div class="space-medium"></div></article>')};
+const sameLegacy=await verifyPetRulebook({fetchImpl:fetchFrom(legacyArticle),previousState:first,now});
+assert.equal(sameLegacy.talentRuleObservation.hotfixRevision,first.talentRuleObservation.hotfixRevision);
+const unavailableHotfix=await verifyPetRulebook({fetchImpl:fetchFrom(pages,'24315281'),previousState:first,now});
+assert.equal(unavailableHotfix.talentRuleObservation.status,'source_unavailable');
+assert.equal(unavailableHotfix.talentRuleObservation.hotfixRevision,null);
+const higherBind={...pages,'bindonforever.com/pets/fox':pages['bindonforever.com/pets/fox'].replace('1.60.1.70959','1.60.1.99999')};
+const mismatched=await verifyPetRulebook({fetchImpl:fetchFrom(higherBind),previousState:first,now});
+assert.equal(mismatched.talentRuleObservation.status,'review_required');
+assert.equal(mismatched.talentRuleObservation.clientBuild,'1.60.1.99999');
+const futurePages={...pages,'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replaceAll('1.60.1.71091','2.1.0.17')};
+let futureDb2Calls=0;
+const futureState=await verifyPetRulebook({fetchImpl:async url=>{
+  if(String(url).startsWith('https://wago.tools/db2/'))futureDb2Calls++;
+  return fetchFrom(futurePages)(url);
+},now});
+assert.equal(futureState.talentRuleObservation.clientBuild,'2.1.0.17');
+assert.equal(futureState.talentRuleObservation.status,'observed');
+assert.equal(futureDb2Calls,0);
+const newerBranch={...pages,'bindonforever.com/pets/fox':pages['bindonforever.com/pets/fox'].replace('1.60.1.70959','1.61.0.12')};
+const branchState=await verifyPetRulebook({fetchImpl:fetchFrom(newerBranch),now});
+assert.equal(branchState.talentRuleObservation.clientBuild,'1.61.0.12');
+assert.equal(branchState.talentRuleObservation.status,'review_required');
+const unknown=await verifyPetRulebook({fetchImpl:fetchFrom(pages,'foreverdb.net/changelog'),now});
+assert.equal(unknown.talentRuleObservation.status,'source_unavailable');
+assert.equal(unknown.talentRuleObservation.revisionSince,null);
+
+
 assert.equal(first.rulebookVersion,PET_RULEBOOK_VERSION);
 assert.equal(first.overall,'review_required');
 assert.equal(Object.keys(first.rules).length,12);

@@ -4,6 +4,9 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from '../hunter-pets.js';
 import {reputationStages,reputationColors} from '../reputation-data.js';
+import {createTalentPlanner} from '../talent-planner.js';
+import {displayedTalentText} from '../talent-text-quality.js';
+import {resolvePersonalTalentState} from '../talent-personal-state.js';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
@@ -31,7 +34,10 @@ for(const c of data.characters){
 }
 const executableSource=source
   .replace("import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';\n",'')
-  .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'');
+  .replace("import {reputationStages,reputationColors} from './reputation-data.js';\n",'')
+  .replace("import {createTalentPlanner} from './talent-planner.js';\n",'')
+  .replace("import {displayedTalentText} from './talent-text-quality.js';\n",'')
+  .replace("import {resolvePersonalTalentState} from './talent-personal-state.js';\n",'');
 const start=executableSource.indexOf('button.innerHTML=');
 assert.ok(start>0,'App bootstrapping anchor exists');
 const nodes=new Map();
@@ -41,7 +47,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1072,7 +1078,7 @@ assert.deepEqual(ui.displayOrder('searchRelevance',repOrderFixture),repOrderFixt
 assert.deepEqual(ui.displayOrder('rankedOffers',repOrderFixture),repOrderFixture,'Preferred offers are not changed by display');
 
 const talentCatalogFixture={classes:{8:{classId:8,trees:[{id:1,name:'Arkan',talents:[{id:101,profileId:201,name:'Talent A',row:0,column:0,maxRank:5,requiredLevel:10,spellId:301,rankSpellIds:[301,301,301,301,301],descriptions:['Text'],prerequisites:[]},{id:102,profileId:202,name:'Talent B',row:1,column:2,maxRank:1,requiredLevel:15,spellId:302,rankSpellIds:[302],descriptions:['Text'],prerequisites:[{id:101,rank:5,conditionKnown:true}]}]},{id:2,name:'Feuer',talents:[{id:103,profileId:203,name:'Talent C',row:0,column:1,maxRank:1,requiredLevel:10,spellId:303,rankSpellIds:[303],descriptions:['Text'],prerequisites:[]}]},{id:3,name:'Frost',talents:[{id:104,profileId:204,name:'Talent D',row:0,column:3,maxRank:1,requiredLevel:10,spellId:304,rankSpellIds:[304],descriptions:['Text'],prerequisites:[]}]}]}}};
-const talentChar={slug:'qa',classId:8,level:15,talentDetailsVerified:true,talentDetails:[{name:'Arkan',spentPoints:5,talents:[{id:201,spellId:301,rank:5}]}]};
+const talentChar={slug:'qa',classId:8,level:15,talentDetailsVerified:true,talentDetails:[{name:'Arkan',spentPoints:5,talents:[{id:201,spellId:301,rank:5}]},{name:'Feuer',spentPoints:0,talents:[]},{name:'Frost',spentPoints:0,talents:[]}]};
 ui.setTalentCatalog(talentCatalogFixture);
 const personal=ui.personalTalentRanks(talentChar,talentCatalogFixture.classes[8]);
 assert.equal(personal.verified,true);assert.equal(personal.ranks.get(101),5);assert.equal(ui.talentNodeStatus(talentCatalogFixture.classes[8].trees[0].talents[1],talentCatalogFixture.classes[8].trees[0],personal,15),'unlocked');
@@ -1083,3 +1089,40 @@ assert.equal(ui.talentNodeStatus({...talentCatalogFixture.classes[8].trees[0].ta
 
 assert.ok(ui.talentGraph(talentCatalogFixture.classes[8].trees[0],personal,15,false,0).includes('dir="ltr"'));
 assert.ok(ui.talentGraph(talentCatalogFixture.classes[8].trees[0],personal,15,false,0).includes('--talent-rows:7'));
+
+// An omitted tree or omitted talent array must not be represented as zero.
+for(const details of [[],talentChar.talentDetails.slice(0,1),talentChar.talentDetails.map((t,i)=>i===1?{...t,talents:undefined}:t),[talentChar.talentDetails[0],talentChar.talentDetails[1],talentChar.talentDetails[1]]]){
+ const c={...talentChar,talentDetails:details};
+ assert.equal(ui.personalTalentRanks(c,talentCatalogFixture.classes[8]).verified,false);
+ assert.ok(ui.talentPanel(c).includes('Talentstand nicht bestätigt'));
+}
+
+// The planner's selected Legacy rank must affect the graph and detail, never the character's own unconfirmed rank.
+const earlyNode={id:123,name:'Testtalent',row:0,column:0,maxRank:1,requiredLevel:10,requiredPoints:0,prerequisites:[],descriptions:['? Mana'],descriptionSources:['ForeverDB deutscher Clienttext']};
+const earlyTree={id:1,talents:[earlyNode]};
+const earlyPersonal={verified:true,ranks:new Map()};
+assert.equal(ui.talentNodeStatus(earlyNode,earlyTree,earlyPersonal,5),'unknown');
+assert.equal(ui.talentNodeStatus(earlyNode,earlyTree,{...earlyPersonal,plannedLegacyRank:5},5),'unlocked');
+assert.equal(ui.talentNodeStatus(earlyNode,earlyTree,{...earlyPersonal,plannedLegacyRank:5},4),'unknown');
+const earlyDetail=ui.talentNodeDetail(earlyNode,earlyTree,{...earlyPersonal,plannedLegacyRank:5},5,false,{planned:true});
+assert.ok(earlyDetail.includes('Mit Talentiert Rang 5 ab Stufe 5 (regulär 10)'));
+assert.ok(earlyDetail.includes('nicht aufgelöste Angaben')&&!earlyDetail.includes('? Mana'));
+console.log('Talent display: effective Legacy gate and no unresolved tokens: OK');
+
+const aliasTree={id:11363,name:'Verstärkung',sourceName:'Verstärk',talents:[{id:124,profileId:124,maxRank:1,rankSpellIds:[124]}]};
+const aliasChar={talentDetailsVerified:true,talentDetails:[{name:'Verstärk',spentPoints:1,talents:[{id:124,rank:1,spellId:124}]}]};
+assert.equal(ui.personalTalentRanks(aliasChar,{trees:[aliasTree]}).verified,true);
+assert.equal(ui.personalTalentRanks({...aliasChar,talentDetails:[{...aliasChar.talentDetails[0],name:'Verstärkung'}]},{trees:[aliasTree]}).verified,true);
+assert.equal(ui.personalTalentRanks({...aliasChar,talentDetails:[{...aliasChar.talentDetails[0],name:'Nicht zugeordnet'}]},{trees:[aliasTree]}).verified,false);
+
+// The actual official snapshot omits unused trees. Trust it only when the
+// verified summary, every reported tree total and unique ID/spell all match.
+const sparseTalentChar={...talentChar,talentsVerified:true,talents:'Arkan: 5',talentDetails:talentChar.talentDetails.slice(0,1)};
+const sparseClass=talentCatalogFixture.classes[8];
+const sparseState=ui.personalTalentRanks(sparseTalentChar,sparseClass);
+assert.equal(sparseState.verified,true);assert.equal(sparseState.coverage,'verified_reported_trees');assert.equal(sparseState.ranks.get(101),5);assert.equal(sparseState.points.get(2),0);assert.equal(sparseState.points.get(3),0);
+for(const c of [{...sparseTalentChar,talentsVerified:false},{...sparseTalentChar,talents:'Arkan: 6'},{...sparseTalentChar,talentDetails:[]},{...sparseTalentChar,talentDetails:[{...sparseTalentChar.talentDetails[0],talents:[{id:201,rank:5}]}]},{...sparseTalentChar,talentDetails:[{...sparseTalentChar.talentDetails[0],talents:[{id:201,rank:5,spellId:999}]}]},{...sparseTalentChar,talentDetails:[{...sparseTalentChar.talentDetails[0],spentPoints:4}]},{...sparseTalentChar,talentDetails:[sparseTalentChar.talentDetails[0],sparseTalentChar.talentDetails[0]]}])assert.equal(ui.personalTalentRanks(c,sparseClass).verified,false);
+assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true}).verified,false);
+assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[102]}).verified,true);
+assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[101]}).verified,false);
+console.log('Sparse verified Armory snapshot, exact ID/rank/spell, scoped ambiguous mapping: OK');

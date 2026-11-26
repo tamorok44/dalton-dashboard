@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "id": "druid-restoration-pvp",
+  "version": 1,
+  "classId": 11,
+  "treeId": 11340,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11328": 8,
+    "11340": 32,
+    "11347": 11
+  },
+  "points": [
+    {
+      "talentId": 104958,
+      "rank": 1
+    },
+    {
+      "talentId": 104958,
+      "rank": 2
+    },
+    {
+      "talentId": 104958,
+      "rank": 3
+    },
+    {
+      "talentId": 104958,
+      "rank": 4
+    },
+    {
+      "talentId": 104958,
+      "rank": 5
+    },
+    {
+      "talentId": 104922,
+      "rank": 1
+    },
+    {
+      "talentId": 104922,
+      "rank": 2
+    },
+    {
+      "talentId": 104922,
+      "rank": 3
+    },
+    {
+      "talentId": 104922,
+      "rank": 4
+    },
+    {
+      "talentId": 104922,
+      "rank": 5
+    },
+    {
+      "talentId": 104920,
+      "rank": 1
+    },
+    {
+      "talentId": 104920,
+      "rank": 2
+    },
+    {
+      "talentId": 104920,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 2
+    },
+    {
+      "talentId": 104912,
+      "rank": 1
+    },
+    {
+      "talentId": 104916,
+      "rank": 3
+    },
+    {
+      "talentId": 104916,
+      "rank": 4
+    },
+    {
+      "talentId": 104916,
+      "rank": 5
+    },
+    {
+      "talentId": 104914,
+      "rank": 1
+    },
+    {
+      "talentId": 104921,
+      "rank": 1
+    },
+    {
+      "talentId": 104939,
+      "rank": 1
+    },
+    {
+      "talentId": 104939,
+      "rank": 2
+    },
+    {
+      "talentId": 104939,
+      "rank": 3
+    },
+    {
+      "talentId": 104939,
+      "rank": 4
+    },
+    {
+      "talentId": 104939,
+      "rank": 5
+    },
+    {
+      "talentId": 104943,
+      "rank": 1
+    },
+    {
+      "talentId": 104943,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 1
+    },
+    {
+      "talentId": 104942,
+      "rank": 2
+    },
+    {
+      "talentId": 104942,
+      "rank": 3
+    },
+    {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
+      "talentId": 104918,
+      "rank": 1
+    },
+    {
+      "talentId": 104957,
+      "rank": 1
+    },
+    {
+      "talentId": 104957,
+      "rank": 2
+    },
+    {
+      "talentId": 104957,
+      "rank": 3
+    },
+    {
+      "talentId": 104957,
+      "rank": 4
+    },
+    {
+      "talentId": 104914,
+      "rank": 2
+    },
+    {
+      "talentId": 104914,
+      "rank": 3
+    },
+    {
+      "talentId": 104911,
+      "rank": 1
+    },
+    {
+      "talentId": 104911,
+      "rank": 2
+    },
+    {
+      "talentId": 104911,
+      "rank": 3
+    },
+    {
+      "talentId": 104910,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 1
+    },
+    {
+      "talentId": 104924,
+      "rank": 2
+    },
+    {
+      "talentId": 104924,
+      "rank": 3
+    },
+    {
+      "talentId": 104924,
+      "rank": 4
+    },
+    {
+      "talentId": 104924,
+      "rank": 5
+    },
+    {
+      "talentId": 104923,
+      "rank": 1
+    },
+    {
+      "talentId": 104923,
+      "rank": 2
+    },
+    {
+      "talentId": 104923,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104958,
+      "reason": "Heart of the Wild erhöht Intelligenz; zusätzliche gestaltspezifische Attribute beachten.",
+      "count": 5
+    },
+    {
+      "talentId": 104922,
+      "reason": "Naturalist verkürzt Heilende Berührung und Wildwuchs und erhöht den eigenen Schaden.",
+      "count": 5
+    },
+    {
+      "talentId": 104920,
+      "reason": "Manaregeneration beim Zaubern ausbauen.",
+      "count": 3
+    },
+    {
+      "talentId": 104916,
+      "reason": "Geschenk der Natur erhöht die Wirkung der Heilzauber.",
+      "count": 2
+    },
+    {
+      "talentId": 104912,
+      "reason": "Rasche Heilung auf einem Ziel mit eigener Verjüngung oder eigenem Nachwachsen; verbraucht den HoT nicht.",
+      "count": 1
+    },
+    {
+      "talentId": 104916,
+      "reason": "Geschenk der Natur erhöht die Wirkung der Heilzauber.",
+      "count": 3
+    },
+    {
+      "talentId": 104914,
+      "reason": "Verjüngung ergänzen.",
+      "count": 1
+    },
+    {
+      "talentId": 104921,
+      "reason": "Schnelligkeit der Natur macht den nächsten geeigneten Naturzauber sofort wirkbar, seit 10.11. auch Wildwuchs.",
+      "count": 1
+    },
+    {
+      "talentId": 104939,
+      "reason": "Furor unterstützt die Ressourcen beim Wechsel in Bären- oder Katzengestalt.",
+      "count": 5
+    },
+    {
+      "talentId": 104943,
+      "reason": "Feline Swiftness verbessert Bewegungstempo in Katzengestalt und Ausweichen.",
+      "count": 2
+    },
+    {
+      "talentId": 104942,
+      "reason": "Gestaltrüstung erhöhen.",
+      "count": 3
+    },
+    {
+      "talentId": 104944,
+      "reason": "Wilde Attacke für situationsabhängige Mobilität in passender Gestalt.",
+      "count": 1
+    },
+    {
+      "talentId": 104918,
+      "reason": "Bloom heilt bei natürlichem Ablauf oder Bannung eigener Verjüngung beziehungsweise Nachwachsen abhängig von Willenskraft.",
+      "count": 1
+    },
+    {
+      "talentId": 104957,
+      "reason": "Nature's Focus schützt Arkan- und Naturzauber vor Zauberzeitverlust durch erlittenen Schaden; keine Unterbrechungsimmunität.",
+      "count": 4
+    },
+    {
+      "talentId": 104914,
+      "reason": "Verjüngung vervollständigen.",
+      "count": 2
+    },
+    {
+      "talentId": 104911,
+      "reason": "Willenskraft steigern.",
+      "count": 3
+    },
+    {
+      "talentId": 104910,
+      "reason": "Wildwuchs heilt das Ziel und dessen Gruppe über Zeit; Zauberzeit und gemeinsame Abklingzeit aller Ränge beachten. Nicht im Laufen wirkbar, keine raidweite Sofortheilung.",
+      "count": 1
+    },
+    {
+      "talentId": 104924,
+      "reason": "Genesis stärkt periodischen Schaden und Heilung; seit 25.11. wirken die Boni auch korrekt auf Hurrikan und Gelassenheit.",
+      "count": 5
+    },
+    {
+      "talentId": 104923,
+      "reason": "Starlight Wrath: verkürzt Zorn und seit dem Hotfix vom 25.11. auch Sternenfeuer; senkt die Manakosten von Zorn.",
+      "count": 3
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "druid-resto-pvp-wowhead",
+      "druid-resto-pvp-skillcapped"
+    ],
+    "editorialDecision": "Mobile Heilung mit HoTs, Rascher Heilung 25, Schnelligkeit der Natur 30, Wilder Attacke 41, Wildwuchs 52. Wildwuchs ist nicht im Laufen wirkbar; Bloom nur situativ, keine garantierte Kontrolle oder Unterbrechungsimmunität.",
+    "unresolved": [
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Dreamstate-Profil-/Rangzauberzuordnung und alte Improved Starfire-Ränge nicht in den freigegebenen Pfaden.",
+      "Keine garantierte numerische Heilungs-/Schadensleistung."
+    ],
+    "approval": "editorial_rank0_path_scope_only",
+    "structuralValidation": {
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+          "contribution": "Blizzard-Hotfixtext: sechs Balance-Änderungen, Hurrikan und Genesis, ältere Wildwuchs-Hotfixes."
+        },
+        {
+          "url": "https://talentsforever.com/hotfixes/2026-11-25",
+          "contribution": "Vorher/Nachher-Talenttexte; serverseitiger Hotfixdatensatz laut Anbieter aus wago.tools auf Build 71139 angewandt, Wowhead-Tooltip-Abgleich berichtet. Keine eigene exakte Rohdatenaufnahme."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/druid/",
+          "contribution": "Nature's Splendor erfordert zwei Nature's Majesty; übrige Wiederherstellungs- und Feral-Talentfunktionen; Balance-Talenttexte teilweise noch alt."
+        },
+        {
+          "url": "https://wowfdb.com/classes/druid/changes/",
+          "contribution": "Aktuelle Build- und PvP-Varianten als redaktionelle Referenz, nicht Beleg für optimalen eigenen Pfad."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
+    }
+  },
+  "treeName": "Wiederherstellung",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-restoration-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Mobile Heilung mit HoTs, Rascher Heilung 25, Schnelligkeit der Natur 30, Wilder Attacke 41, Wildwuchs 52. Wildwuchs ist nicht im Laufen wirkbar; Bloom nur situativ, keine garantierte Kontrolle oder Unterbrechungsimmunität.",
+    "adviceSummary": "Mobile Heilung mit HoTs, Rascher Heilung 25, Schnelligkeit der Natur 30, Wilder Attacke 41, Wildwuchs 52. Wildwuchs ist nicht im Laufen wirkbar; Bloom nur situativ, keine garantierte Kontrolle oder Unterbrechungsimmunität.",
+    "evidenceIds": [
+      "druid-restoration-pvp-rank0-71139-editorial-1",
+      "druid-restoration-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

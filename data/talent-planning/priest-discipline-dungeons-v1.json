@@ -1,0 +1,441 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-discipline-dungeons",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11608,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 31,
+    "11615": 20,
+    "11622": 0
+  },
+  "points": [
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105837,
+      "rank": 1
+    },
+    {
+      "talentId": 105837,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105839,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105842,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 2
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
+    },
+    {
+      "talentId": 105834,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 1
+    },
+    {
+      "talentId": 105835,
+      "rank": 2
+    },
+    {
+      "talentId": 105835,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 4
+    },
+    {
+      "talentId": 105840,
+      "rank": 1
+    },
+    {
+      "talentId": 105840,
+      "rank": 2
+    },
+    {
+      "talentId": 105840,
+      "rank": 3
+    },
+    {
+      "talentId": 105835,
+      "rank": 5
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105836,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 2
+    },
+    {
+      "talentId": 110855,
+      "rank": 3
+    },
+    {
+      "talentId": 110855,
+      "rank": 4
+    },
+    {
+      "talentId": 110855,
+      "rank": 5
+    },
+    {
+      "talentId": 105863,
+      "rank": 1
+    },
+    {
+      "talentId": 105863,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 3
+    },
+    {
+      "talentId": 105863,
+      "rank": 4
+    },
+    {
+      "talentId": 105863,
+      "rank": 5
+    },
+    {
+      "talentId": 105860,
+      "rank": 1
+    },
+    {
+      "talentId": 105860,
+      "rank": 2
+    },
+    {
+      "talentId": 105860,
+      "rank": 3
+    },
+    {
+      "talentId": 105866,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 2
+    },
+    {
+      "talentId": 105866,
+      "rank": 3
+    },
+    {
+      "talentId": 105858,
+      "rank": 1
+    },
+    {
+      "talentId": 105858,
+      "rank": 2
+    },
+    {
+      "talentId": 105858,
+      "rank": 3
+    },
+    {
+      "talentId": 105862,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
+    },
+    {
+      "talentId": 105837,
+      "count": 2,
+      "reason": "Intelligenz steigern."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Absorption des Schilds erhöhen."
+    },
+    {
+      "talentId": 105843,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105839,
+      "count": 1,
+      "reason": "Seelenwehr verkürzt die Abklingzeit und senkt die Manakosten von Machtwort: Schild; Geschwächte Seele bleibt separat zu beachten."
+    },
+    {
+      "talentId": 105843,
+      "count": 1,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105842,
+      "count": 3,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105834,
+      "count": 1,
+      "reason": "Sühne als kanalisierte Heilung oder situativen Heiligschaden freischalten; Zauberunterbrechung bleibt möglich."
+    },
+    {
+      "talentId": 105835,
+      "count": 4,
+      "reason": "Erneuerte Hoffnung verbessert die kritische Heilchance der ausdrücklich genannten Heilzauber auf Zielen mit Geschwächter Seele und verkürzt deren Restdauer."
+    },
+    {
+      "talentId": 105840,
+      "count": 3,
+      "reason": "Göttliche Aegis: nichtperiodische kritische Heilungen erzeugen einen zusätzlichen Absorptionsschild; keine garantierte Auslösung oder feste Schildobergrenze voraussetzen."
+    },
+    {
+      "talentId": 105835,
+      "count": 1,
+      "reason": "Erneuerte Hoffnung verbessert die kritische Heilchance der ausdrücklich genannten Heilzauber auf Zielen mit Geschwächter Seele und verkürzt deren Restdauer."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105836,
+      "count": 1,
+      "reason": "Seele der Macht freischalten."
+    },
+    {
+      "talentId": 110855,
+      "count": 5,
+      "reason": "Kritische Heiligeffekte ergänzen."
+    },
+    {
+      "talentId": 105863,
+      "count": 5,
+      "reason": "Zauberzeit zentraler Heilungen verringern."
+    },
+    {
+      "talentId": 105860,
+      "count": 3,
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
+    },
+    {
+      "talentId": 105866,
+      "count": 3,
+      "reason": "Erneuerung stärken."
+    },
+    {
+      "talentId": 105858,
+      "count": 3,
+      "reason": "Manakosten von geringer Heilung, Heilung, großer Heilung, Sühne und Gebet der Besserung reduzieren; nur erlernte Fähigkeiten nutzen."
+    },
+    {
+      "talentId": 105862,
+      "count": 1,
+      "reason": "Heilige Nova ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "iv-discipline-priest-leveling",
+      "wh-discipline-priest"
+    ],
+    "editorialDecision": "Regelmäßige Dungeonheilung: Schildverbesserung auf 20–22 und Seelenwehr unmittelbar auf 25 (statt 26), dritter Meditationsrang folgt auf 26. Sühne 30, Seele der Macht 40. Erneuerte Hoffnung verkürzt Geschwächte Seele nur über genannte direkte Heilzauber; Divine Aegis nur bei nichtperiodischer kritischer Heilung. Keine unbegrenzte Schildmenge oder garantierte Folge von kritischen Heilungen. Aktueller Build 71139 und weitere Talentbeschreibungen bestätigen die Tooltip-Grenze von 1200, 5/10/15 Prozent und 12 Sekunden. Keine Messung der tatsächlichen Schildgrenze, Stapelung oder stufenabhängigen Serverwerte. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative healing performance or actual server absorb/heal calculation; no guaranteed amount or target selection.",
+      "No assumption of undocumented proc interactions or immunity."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+          "contribution": "Aktueller Build 71139; nichtperiodischer kritischer Heal, Absorption und Dauer; feste Obergrenze nicht als stufenunabhängige Serverregel übernehmen."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Qualitative Übereinstimmung bei Divine Aegis, Soul Warding und Renewed Hope; keine zweite vollständige numerische Kappe."
+        },
+        {
+          "url": "https://guildorder.com/games/wow_forever/wiki/discipline-priest-field-guide",
+          "contribution": "25.11.: alternative 33/13/5 Levelroute, Priorität Schild, Sühne, Aegis, Ressourcen; keine gemessene Überlegenheit."
+        },
+        {
+          "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/discipline-priest-pvp-guide/talents/",
+          "contribution": "19.11.: Soul Warding, Inner Focus, Penance, Power Infusion als PvP-Kern."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105840,
+        "spellId": 431622,
+        "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+        "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "nonPeriodicCriticalHeal": true,
+          "absorbPercentByRank": [
+            5,
+            10,
+            15
+          ],
+          "tooltipCap": 1200,
+          "durationSeconds": 12
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+            "build": "1.60.1.71139",
+            "claim": "Client build 71139 and Nov 25 hotfix cache explicitly identified; all three ranks 5/10/15%, displayed cap 1200, 12 sec."
+          },
+          {
+            "url": "https://raiddex.com/de/wow-forever/zauber/goettliche-aegis",
+            "claim": "German spell 431622 displays same 15% at max rank, 1200 cap and 12 sec. No current build label."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/changes/talents/priest/divine-aegis",
+            "claim": "Separate talent change reference corroborates displayed cap, not a measured server value."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
+    },
+    "previousStructuralValidation": {
+      "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Disziplin",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-discipline-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Regelmäßige Dungeonheilung: Schildverbesserung auf 20–22 und Seelenwehr unmittelbar auf 25 (statt 26), dritter Meditationsrang folgt auf 26. Sühne 30, Seele der Macht 40. Erneuerte Hoffnung verkürzt Geschwächte Seele nur über genannte direkte Heilzauber; Divine Aegis nur bei nichtperiodischer kritischer Heilung. Keine unbegrenzte Schildmenge oder garantierte Folge von kritischen Heilungen. Aktueller Build 71139 und weitere Talentbeschreibungen bestätigen die Tooltip-Grenze von 1200, 5/10/15 Prozent und 12 Sekunden. Keine Messung der tatsächlichen Schildgrenze, Stapelung oder stufenabhängigen Serverwerte. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "adviceSummary": "Disziplin-Dungeonheilung mit Seelenwehr 25, Sühne 30 und Seele der Macht 40.",
+    "evidenceIds": [
+      "priest-discipline-dungeons-rank0-71139-editorial-1",
+      "priest-discipline-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "id": "warrior-arms-dungeons",
+  "version": 1,
+  "classId": 1,
+  "treeId": 11650,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11650": 31,
+    "11657": 20,
+    "11670": 0
+  },
+  "points": [
+    {
+      "talentId": 105956,
+      "rank": 1
+    },
+    {
+      "talentId": 105956,
+      "rank": 2
+    },
+    {
+      "talentId": 105956,
+      "rank": 3
+    },
+    {
+      "talentId": 105958,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 2
+    },
+    {
+      "talentId": 105955,
+      "rank": 1
+    },
+    {
+      "talentId": 105955,
+      "rank": 2
+    },
+    {
+      "talentId": 105952,
+      "rank": 1
+    },
+    {
+      "talentId": 105952,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 1
+    },
+    {
+      "talentId": 105954,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 3
+    },
+    {
+      "talentId": 105951,
+      "rank": 1
+    },
+    {
+      "talentId": 105950,
+      "rank": 1
+    },
+    {
+      "talentId": 105950,
+      "rank": 2
+    },
+    {
+      "talentId": 105950,
+      "rank": 3
+    },
+    {
+      "talentId": 105948,
+      "rank": 1
+    },
+    {
+      "talentId": 105948,
+      "rank": 2
+    },
+    {
+      "talentId": 105948,
+      "rank": 3
+    },
+    {
+      "talentId": 105947,
+      "rank": 1
+    },
+    {
+      "talentId": 105945,
+      "rank": 1
+    },
+    {
+      "talentId": 105947,
+      "rank": 2
+    },
+    {
+      "talentId": 110524,
+      "rank": 1
+    },
+    {
+      "talentId": 110524,
+      "rank": 2
+    },
+    {
+      "talentId": 105944,
+      "rank": 1
+    },
+    {
+      "talentId": 105944,
+      "rank": 2
+    },
+    {
+      "talentId": 105944,
+      "rank": 3
+    },
+    {
+      "talentId": 105944,
+      "rank": 4
+    },
+    {
+      "talentId": 110858,
+      "rank": 1
+    },
+    {
+      "talentId": 110858,
+      "rank": 2
+    },
+    {
+      "talentId": 105941,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
+    },
+    {
+      "talentId": 105937,
+      "rank": 1
+    },
+    {
+      "talentId": 105937,
+      "rank": 2
+    },
+    {
+      "talentId": 105937,
+      "rank": 3
+    },
+    {
+      "talentId": 105937,
+      "rank": 4
+    },
+    {
+      "talentId": 105937,
+      "rank": 5
+    },
+    {
+      "talentId": 105931,
+      "rank": 1
+    },
+    {
+      "talentId": 105931,
+      "rank": 2
+    },
+    {
+      "talentId": 105931,
+      "rank": 3
+    },
+    {
+      "talentId": 105931,
+      "rank": 4
+    },
+    {
+      "talentId": 105931,
+      "rank": 5
+    },
+    {
+      "talentId": 105934,
+      "rank": 1
+    },
+    {
+      "talentId": 105934,
+      "rank": 2
+    },
+    {
+      "talentId": 105934,
+      "rank": 3
+    },
+    {
+      "talentId": 105932,
+      "rank": 1
+    },
+    {
+      "talentId": 105932,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105956,
+      "count": 3,
+      "reason": "Verwunden stärken."
+    },
+    {
+      "talentId": 105958,
+      "count": 2,
+      "reason": "Wutkosten von Heldenhaftem Stoß in wiederholten Gruppenkämpfen reduzieren."
+    },
+    {
+      "talentId": 105955,
+      "count": 2,
+      "reason": "Sturmangriff-Wut erhöhen."
+    },
+    {
+      "talentId": 105952,
+      "count": 2,
+      "reason": "Kritisches Überwältigen stärken."
+    },
+    {
+      "talentId": 105954,
+      "count": 3,
+      "reason": "Wuterhalt bei Haltungswechseln ausbauen."
+    },
+    {
+      "talentId": 105951,
+      "count": 1,
+      "reason": "Aggressionskontrolle freischalten."
+    },
+    {
+      "talentId": 105950,
+      "count": 3,
+      "reason": "Blutungen nach kritischen Treffern stärken."
+    },
+    {
+      "talentId": 105948,
+      "count": 3,
+      "reason": "Zweihandwaffenschaden erhöhen."
+    },
+    {
+      "talentId": 105947,
+      "count": 1,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 105945,
+      "count": 1,
+      "reason": "Mehrzielangriffe ermöglichen."
+    },
+    {
+      "talentId": 105947,
+      "count": 1,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+    },
+    {
+      "talentId": 110524,
+      "count": 2,
+      "reason": "Bloodthrill verbindet Verwunden mit situativem Überwältigen; keine garantierte Auslösung."
+    },
+    {
+      "talentId": 105944,
+      "count": 4,
+      "reason": "Waffenabhängigen Bonus aufbauen."
+    },
+    {
+      "talentId": 110858,
+      "count": 2,
+      "reason": "Zerschmettern beschleunigen."
+    },
+    {
+      "talentId": 105941,
+      "count": 1,
+      "reason": "Tödlichen Stoß freischalten."
+    },
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105937,
+      "count": 5,
+      "reason": "Wutgewinn aus Angriffen unterstützen."
+    },
+    {
+      "talentId": 105931,
+      "count": 5,
+      "reason": "Schadensbonus nach erlittenen Angriffen ausbauen."
+    },
+    {
+      "talentId": 105934,
+      "count": 3,
+      "reason": "Erholung nach schweren Treffern unterstützen."
+    },
+    {
+      "talentId": 105932,
+      "count": 2,
+      "reason": "Hinrichten günstiger machen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "warrior-outpost-2311",
+      "warrior-cobalt-class",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Frühere Wutkostensenkung für häufige Gruppenkämpfe bleibt gegenüber dem Solopfad erhalten. Weitreichende Stöße werden von 31 auf 30 vorgezogen, Bloodthrill auf 32–33 ergänzt die Verwunden/Überwältigen-Synergie bei ausreichend langlebigen Zielen. Vier Waffenmeisterpunkte und zwei Zerschmettern-Punkte statt Bewegungsbindung. Tödlicher Stoß auf 40. Spearing Strike bleibt eine sinnvolle situative Alternative gegen passende Kreaturen; ohne gesicherten Anteil solcher Gegner priorisieren wir hier konstante Zweihand- und Mehrzielvorteile. Keine garantierten Zusatzangriffe, kein DPS-Ranking.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Waffen",
+  "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+  "ruleRevision": "warrior-arms-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Frühere Wutkostensenkung für häufige Gruppenkämpfe bleibt gegenüber dem Solopfad erhalten. Weitreichende Stöße werden von 31 auf 30 vorgezogen, Bloodthrill auf 32–33 ergänzt die Verwunden/Überwältigen-Synergie bei ausreichend langlebigen Zielen. Vier Waffenmeisterpunkte und zwei Zerschmettern-Punkte statt Bewegungsbindung. Tödlicher Stoß auf 40. Spearing Strike bleibt eine sinnvolle situative Alternative gegen passende Kreaturen; ohne gesicherten Anteil solcher Gegner priorisieren wir hier konstante Zweihand- und Mehrzielvorteile. Keine garantierten Zusatzangriffe, kein DPS-Ranking.",
+    "adviceSummary": "Zweihand-Dungeonpfad mit günstigen Angriffen, Weitreichenden Stößen auf 30, Bloodthrill auf 32–33 und Tödlichem Stoß auf 40.",
+    "evidenceIds": [
+      "warrior-arms-dungeons-rank0-71139-editorial-1",
+      "warrior-arms-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}

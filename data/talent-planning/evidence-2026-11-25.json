@@ -204,6 +204,892 @@
         "References original authors including Mobalytics; not an extra confirmation"
       ],
       "reuseStatus": "source_discovery_only"
+    },
+    {
+      "id": "icyveins-arcane",
+      "url": "https://www.icy-veins.com/wow-forever/arcane-mage-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-arcane-editorial"
+    },
+    {
+      "id": "mobalytics-arcane-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/arcane-mage-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "progress-avoid-editorial"
+    },
+    {
+      "id": "icyveins-beast-mastery",
+      "url": "https://www.icy-veins.com/wow-forever/beast-mastery-hunter-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-beast-mastery-editorial"
+    },
+    {
+      "id": "mobalytics-vareion-hunter",
+      "url": "https://mobalytics.gg/wow-forever/classes/hunter-leveling-1-60-vareion",
+      "kind": "expert_guide",
+      "independenceGroup": "vareion-editorial"
+    },
+    {
+      "id": "wow-forever-gg-hunter-prerequisites",
+      "url": "https://wow-forever.gg/talents/hunter/b/v9_50.1-163.305311210103/",
+      "kind": "client_reference",
+      "independenceGroup": "wow-forever-gg-talent-calculator"
+    },
+    {
+      "id": "icyveins-fire",
+      "url": "https://www.icy-veins.com/wow-forever/fire-mage-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-fire-editorial"
+    },
+    {
+      "id": "mobalytics-fire",
+      "url": "https://mobalytics.gg/wow-forever/classes/fire-mage-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "progress-avoid-editorial"
+    },
+    {
+      "id": "icyveins-feral",
+      "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-feral-editorial"
+    },
+    {
+      "id": "mobalytics-feral-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/druid-leveling-guide-1-60",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-druid-editorial"
+    },
+    {
+      "id": "icyveins-feral-pve",
+      "url": "https://www.icy-veins.com/wow-forever/feral-druid-melee-dps-and-tank-pve-guide/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-feral-editorial"
+    },
+    {
+      "id": "forevertalents-hunter-prerequisites",
+      "url": "https://forevertalents.net/talents/hunter/",
+      "kind": "client_reference",
+      "independenceGroup": "forevertalents-client-reference"
+    },
+    {
+      "id": "metabot-hunter-intimidation",
+      "url": "https://metabot.gg/en/wow-forever/talents/hunter-intimidation",
+      "kind": "client_reference",
+      "independenceGroup": "metabot-71037-reference"
+    },
+    {
+      "id": "mrronit-arcane-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/mrronit-s-arcane-mage-levelling-guide-1-60",
+      "kind": "expert_guide",
+      "independenceGroup": "mrronit-editorial"
+    },
+    {
+      "id": "arcane-concentration-player-report",
+      "url": "https://us.forums.blizzard.com/en/wow/t/arcane-concentration-bugged-doesnt-do-what-description-says/2410881",
+      "kind": "player_report",
+      "independenceGroup": "blizzard-forum-player-observation"
+    },
+    {
+      "id": "icyveins-fire-pve",
+      "url": "https://www.icy-veins.com/wow-forever/fire-mage-ranged-dps-pve-rotation-cooldowns-abilities",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-fire-editorial"
+    },
+    {
+      "id": "cobalt-frost-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/frost/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "blizzard-forever-hotfix-24315281",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-23-2026",
+      "kind": "official",
+      "independenceGroup": "blizzard-primary"
+    },
+    {
+      "id": "icyveins-protection-dungeons",
+      "url": "https://www.icy-veins.com/wow-forever/protection-warrior-tank-pve-spec-builds-talents",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-warrior-editorial"
+    },
+    {
+      "id": "wowfdb-dungeon-tanks",
+      "url": "https://wowfdb.com/tier-lists/dungeon-tank/",
+      "kind": "expert_guide",
+      "independenceGroup": "wowfdb-level-60-dungeon-editorial"
+    },
+    {
+      "id": "loreforever-dungeon-roles",
+      "url": "https://loreforeverwow.com/guides/wow-forever-best-talent-spec-for-dungeons",
+      "kind": "editorial_review",
+      "independenceGroup": "loreforever-dungeon-report"
+    },
+    {
+      "id": "icyveins-holy-priest",
+      "url": "https://www.icy-veins.com/wow-forever/holy-priest-healer-pve-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-priest-editorial"
+    },
+    {
+      "id": "wowfdb-hunter-tree",
+      "url": "https://wowfdb.com/talents/hunter/",
+      "kind": "client_reference",
+      "independenceGroup": "wowfdb-build-71091"
+    },
+    {
+      "id": "foreverbuilder-intimidation",
+      "url": "https://wowforeverbuilder.com/classes/hunter/talents/intimidation/",
+      "kind": "client_reference",
+      "independenceGroup": "foreverbuilder-client-reference"
+    },
+    {
+      "id": "hunter-71139-edge-tracker",
+      "url": "https://wowforever.tools/talent-changes",
+      "kind": "client_reference",
+      "independenceGroup": "wowforever-tools-client-tracker"
+    },
+    {
+      "id": "hunter-fit-intimidation",
+      "url": "https://wowforever.fit/talents/hunter/",
+      "kind": "client_reference",
+      "independenceGroup": "wowforever-fit-client-reference"
+    },
+    {
+      "id": "feral-shifting-power-71139",
+      "url": "https://wowforevertalents.com/druid/talents/shifting-power/",
+      "kind": "client_reference",
+      "independenceGroup": "wowforevertalents-hotfix-cache"
+    },
+    {
+      "id": "feral-shifting-power-history",
+      "url": "https://talentsforever.com/druid/abilities/shifting-power",
+      "kind": "client_reference",
+      "independenceGroup": "talentsforever-client-export"
+    },
+    {
+      "id": "official-hotfix-nov25",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "kind": "official",
+      "independenceGroup": "blizzard-official"
+    },
+    {
+      "id": "frost-proc-report-nov25",
+      "url": "https://www.reddit.com/r/wowforever/comments/1y55sam/fingers_of_frost_talent_broken/",
+      "kind": "community_report",
+      "independenceGroup": "reddit-single-report"
+    },
+    {
+      "id": "icyveins-marksmanship-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/marksmanship-hunter-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icyveins-hunter-editorial"
+    },
+    {
+      "id": "grindclassic-marksmanship-leveling",
+      "url": "https://grindclassic.com/wow-forever/leveling/hunter/marksmanship/",
+      "kind": "expert_guide",
+      "independenceGroup": "grindclassic-hunter-editorial"
+    },
+    {
+      "id": "wowhead-marksmanship-leveling",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/marksmanship/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-hunter-editorial"
+    },
+    {
+      "id": "mobalytics-feral-tank-2511",
+      "url": "https://mobalytics.gg/wow-forever/classes/feral-druid-tank-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-druid-editorial"
+    },
+    {
+      "id": "grindclassic-feral-leveling",
+      "url": "https://grindclassic.com/wow-forever/leveling/druid/feral/",
+      "kind": "expert_guide",
+      "independenceGroup": "grindclassic-druid-editorial"
+    },
+    {
+      "id": "wowhead-arcane-leveling-2411",
+      "url": "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-foolipe-editorial",
+      "guideUpdated": "2026-11-24"
+    },
+    {
+      "id": "foreverguide-arcane-dungeons",
+      "url": "https://foreverguide.app/guides/leveling/mage/arcane",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverguide-editorial"
+    },
+    {
+      "id": "cobalt-fire-pve",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/fire/pve/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "wowforeverprogress-fire-pve",
+      "url": "https://wowforeverprogress.com/en/siniflar/mage/fire",
+      "kind": "expert_guide",
+      "independenceGroup": "wowforeverprogress-editorial"
+    },
+    {
+      "id": "wowhead-fire-leveling-2411",
+      "url": "https://www.wowhead.com/forever/guide/classes/mage/fire/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-foolipe-editorial",
+      "guideUpdated": "2026-11-24"
+    },
+    {
+      "id": "mobalytics-crix-warlock",
+      "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "crix-editorial",
+      "guideUpdated": "2026-11-23"
+    },
+    {
+      "id": "method-roguery-warlock",
+      "url": "https://www.method.gg/wow-forever/wow-forever-warlock-leveling-guide-and-talents",
+      "kind": "expert_guide",
+      "independenceGroup": "method-roguery-editorial",
+      "guideUpdated": "2026-11-16"
+    },
+    {
+      "id": "icyveins-protection-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/protection-warrior-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-warrior-editorial",
+      "guideUpdated": "2026-11-16"
+    },
+    {
+      "id": "wowhead-protection-leveling",
+      "url": "https://www.wowhead.com/forever/guide/classes/warrior/protection/tank-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-riyani-editorial",
+      "guideUpdated": "2026-11-06"
+    },
+    {
+      "id": "forever-tavern-priest",
+      "url": "https://forever-tavern.com/guides/priest-leveling-guide/",
+      "kind": "expert_guide",
+      "independenceGroup": "forever-tavern-editorial"
+    },
+    {
+      "id": "outpost-priest",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-priest-leveling-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "forever-outpost-editorial",
+      "guideUpdated": "2026-11-18"
+    },
+    {
+      "id": "mobalytics-priest-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/priest-leveling-guide-1-60",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-priest-editorial",
+      "guideUpdated": "2026-11-09"
+    },
+    {
+      "id": "mobalytics-whiter-ret",
+      "url": "https://mobalytics.gg/wow-forever/classes/dont-level-your-ret-paladin-wrong-in-wow-forever-whiter",
+      "kind": "expert_guide",
+      "independenceGroup": "whiter-editorial",
+      "guideUpdated": "2026-11-13"
+    },
+    {
+      "id": "wowforevergg-ret",
+      "url": "https://wow-forever.gg/guides/paladin/leveling/?spec=retribution",
+      "kind": "expert_guide",
+      "independenceGroup": "wowforevergg-editorial",
+      "guideUpdated": "2026-11-24"
+    },
+    {
+      "id": "mobalytics-combat-rogue",
+      "url": "https://mobalytics.gg/wow-forever/classes/combat-rogue-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-rogue-editorial",
+      "guideUpdated": "2026-11-20"
+    },
+    {
+      "id": "icyveins-combat-rogue",
+      "url": "https://www.icy-veins.com/wow-forever/combat-rogue-leveling",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-rogue-editorial",
+      "guideUpdated": "2026-11-18"
+    },
+    {
+      "id": "mobalytics-shaman-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/shaman-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-shaman-editorial"
+    },
+    {
+      "id": "icyveins-enhancement-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/enhancement-shaman-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-shaman-editorial",
+      "guideUpdated": "2026-11-21"
+    },
+    {
+      "id": "mob-warrior-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-warrior-leveling-editorial"
+    },
+    {
+      "id": "iv-arms-warrior-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/arms-warrior-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-arms-warrior-editorial"
+    },
+    {
+      "id": "iv-fury-warrior-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/fury-warrior-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-fury-warrior-editorial"
+    },
+    {
+      "id": "iv-holy-paladin-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/holy-paladin-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-holy-paladin-editorial"
+    },
+    {
+      "id": "mob-holy-paladin",
+      "url": "https://mobalytics.gg/wow-forever/classes/holy-paladin-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-holy-paladin-editorial"
+    },
+    {
+      "id": "iv-protection-paladin-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/protection-paladin-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-protection-paladin-editorial"
+    },
+    {
+      "id": "wh-protection-paladin",
+      "url": "https://www.wowhead.com/forever/guide/classes/paladin/protection/tank-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-protection-paladin-editorial"
+    },
+    {
+      "id": "wh-survival-hunter",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/survival/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-survival-hunter-editorial"
+    },
+    {
+      "id": "mob-survival-hunter",
+      "url": "https://mobalytics.gg/wow-forever/classes/survival-hunter-guide-1-60-ludideo",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-survival-hunter-editorial"
+    },
+    {
+      "id": "wh-assassination-rogue",
+      "url": "https://www.wowhead.com/forever/guide/classes/rogue/assassination/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-assassination-rogue-editorial"
+    },
+    {
+      "id": "mob-rogue-leveling",
+      "url": "https://mobalytics.gg/wow-forever/classes/rogue-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-rogue-leveling-editorial"
+    },
+    {
+      "id": "skillcapped-subtlety-pvp",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/subtlety-rogue-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-subtlety-pvp-editorial"
+    },
+    {
+      "id": "foreverbattlegrounds-subtlety",
+      "url": "https://foreverbattlegrounds.com/classes/rogue/subtlety/",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverbattlegrounds-subtlety-editorial"
+    },
+    {
+      "id": "iv-discipline-priest-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/discipline-priest-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-discipline-priest-editorial"
+    },
+    {
+      "id": "wh-discipline-priest",
+      "url": "https://www.wowhead.com/forever/guide/classes/priest/discipline/healer-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-discipline-priest-editorial"
+    },
+    {
+      "id": "iv-elemental-shaman-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/elemental-shaman-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-elemental-shaman-editorial"
+    },
+    {
+      "id": "mob-elemental-shaman",
+      "url": "https://mobalytics.gg/wow-forever/classes/elemental-shaman-leveling-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-elemental-shaman-editorial"
+    },
+    {
+      "id": "iv-restoration-shaman-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/restoration-shaman-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-restoration-shaman-editorial"
+    },
+    {
+      "id": "wh-restoration-shaman",
+      "url": "https://www.wowhead.com/forever/guide/classes/shaman/restoration/healer-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-restoration-shaman-editorial"
+    },
+    {
+      "id": "iv-restoration-druid-leveling",
+      "url": "https://www.icy-veins.com/wow-forever/restoration-druid-leveling/",
+      "kind": "expert_guide",
+      "independenceGroup": "icy-veins-restoration-druid-editorial"
+    },
+    {
+      "id": "mob-restoration-druid",
+      "url": "https://mobalytics.gg/wow-forever/classes/restoration-druid-guide-progress",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-restoration-druid-editorial"
+    },
+    {
+      "id": "wh-balance-druid",
+      "url": "https://www.wowhead.com/forever/guide/classes/druid/balance/dps-leveling-tips",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-balance-druid-editorial"
+    },
+    {
+      "id": "mob-balance-druid",
+      "url": "https://mobalytics.gg/wow-forever/classes/balance-druid-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-balance-druid-editorial"
+    },
+    {
+      "id": "official-balance-2511",
+      "url": "https://eu.forums.blizzard.com/en/wow/t/balance-druid-adjustments-25-november/645939",
+      "kind": "expert_guide",
+      "independenceGroup": "official-balance-2511-editorial"
+    },
+    {
+      "id": "skillcapped-frost-pvp-1911",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/frost-mage-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-editorial"
+    },
+    {
+      "id": "foreverbattlegrounds-frost",
+      "url": "https://foreverbattlegrounds.com/classes/mage/frost/",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverbattlegrounds-editorial"
+    },
+    {
+      "id": "outpost-warlock-dungeon-20261123",
+      "url": "https://wofwforever.com/en/guides/wow-forever-warlock-level-60-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "outpost-seren-editorial",
+      "guideUpdated": "2026-11-23"
+    },
+    {
+      "id": "skillcapped-warlock-demonology-pvp-20261119",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/demonology-warlock-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-editorial",
+      "guideUpdated": "2026-11-19"
+    },
+    {
+      "id": "cobalt-warlock-demonology-pvp-20261103",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/demonology/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-03"
+    },
+    {
+      "id": "cobalt-warlock-demonology-pve-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/demonology/pve/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "cobalt-warlock-destruction-pve-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/destruction/pve/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "cobalt-warlock-affliction-pvp-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/affliction/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "foreverbattlegrounds-warlock-affliction-pvp",
+      "url": "https://foreverbattlegrounds.com/classes/warlock/affliction/",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverbattlegrounds-editorial",
+      "guideUpdated": "2026-11-11"
+    },
+    {
+      "id": "mobalytics-warlock-destruction-pvp",
+      "url": "https://mobalytics.gg/wow-forever/classes/destruction-warlock-pvp-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "mobalytics-warlock-pvp-editorial",
+      "guideUpdated": "2026-11-15"
+    },
+    {
+      "id": "cobalt-warlock-destruction-pvp-20261110",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warlock/destruction/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial",
+      "guideUpdated": "2026-11-10"
+    },
+    {
+      "id": "cobalt-arcane-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/arcane/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "foreverhub-arcane-pvp",
+      "url": "https://forever-hub.com/en/guides/arcane-mage-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverhub-editorial"
+    },
+    {
+      "id": "cobalt-fire-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/fire/pvp/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "undying-fire-pvp",
+      "url": "https://undying.app/classes/mage/fire",
+      "kind": "expert_guide",
+      "independenceGroup": "undying-editorial"
+    },
+    {
+      "id": "outpost-mage-level60",
+      "url": "https://wofwforever.com/en/guides/wow-forever-mage-level-60-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "outpost-editorial"
+    },
+    {
+      "id": "foreverhub-mage-dungeons",
+      "url": "https://forever-hub.com/en/guides/mage-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverhub-editorial"
+    },
+    {
+      "id": "outpost-hunter-level60-2311",
+      "url": "https://wofwforever.com/en/guides/wow-forever-hunter-level-60-talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "outpost-editorial"
+    },
+    {
+      "id": "foreverhub-hunter-2011",
+      "url": "https://forever-hub.com/en/guides/hunter-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverhub-editorial"
+    },
+    {
+      "id": "feor-bm-pvp-0711",
+      "url": "https://mobalytics.gg/wow-forever/profile/feor/classes/beast-mastery-hunter-pvp-guide",
+      "kind": "expert_guide",
+      "independenceGroup": "feor-editorial"
+    },
+    {
+      "id": "cobalt-hunter-pvp-1011",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/hunter/",
+      "kind": "expert_guide",
+      "independenceGroup": "cobalt-editorial"
+    },
+    {
+      "id": "metammo-hunter-pvp",
+      "url": "https://metammo.com/wow-forever/builds/hunter",
+      "kind": "expert_guide",
+      "independenceGroup": "metammo-editorial"
+    },
+    {
+      "id": "wowhead-survival-builds-1711",
+      "url": "https://www.wowhead.com/forever/guide/classes/hunter/survival/talent-builds-pve-dps",
+      "kind": "expert_guide",
+      "independenceGroup": "wowhead-survival-hunter-editorial"
+    },
+    {
+      "id": "skillcapped-survival-pvp-1911",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/survival-hunter-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-editorial"
+    },
+    {
+      "id": "druid-feral-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/feral-druid-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-feral-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/druid/feral/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-resto-pvp-wowhead",
+      "url": "https://www.wowhead.com/forever/de/guide/classes/druid/restoration/talent-builds-pve-healer",
+      "independenceGroup": "wowhead-restoration-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-resto-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/restoration-druid-pvp-guide/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-balance-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/druid/balance/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "druid-balance-pvp-restokins",
+      "url": "https://restokins.com/guides/restokin-build.html",
+      "independenceGroup": "restokins-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-foreverguide-holy",
+      "url": "https://foreverguide.app/guides/leveling/priest/holy",
+      "independenceGroup": "foreverguide-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-holy-grindclassic",
+      "url": "https://grindclassic.com/wow-forever/leveling/priest/holy/",
+      "independenceGroup": "grindclassic-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-discipline-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/discipline-priest-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-discipline-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/priest/discipline/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-holy-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/priest/holy/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-battlegrounds",
+      "url": "https://foreverbattlegrounds.com/classes/priest/",
+      "independenceGroup": "foreverbattlegrounds-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-shadow-wowhead-pve",
+      "url": "https://www.wowhead.com/forever/guide/classes/priest/shadow/talent-builds-pve-dps",
+      "independenceGroup": "wowhead-shadow-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-shadow-icyveins-pve",
+      "url": "https://www.icy-veins.com/wow-forever/shadow-priest-ranged-dps-pve-spec-builds-talents",
+      "independenceGroup": "icyveins-shadow-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-shadow-guildorder",
+      "url": "https://guildorder.com/games/wow_forever/wiki/shadow-priest-field-guide",
+      "independenceGroup": "guildorder-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "priest-current-client-71139",
+      "url": "https://wowforevertalents.com/priest/",
+      "independenceGroup": "wowforevertalents-hotfix-cache",
+      "kind": "client_reference"
+    },
+    {
+      "id": "rogue-combat-group-2511",
+      "url": "https://wowforever.gg/en/guides/rogue-combat/",
+      "independenceGroup": "wowforever-gg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-outpost-2311",
+      "url": "https://wofwforever.com/en/guides/wow-forever-rogue-level-60-talents/",
+      "independenceGroup": "outpost-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-assassination-builds-1711",
+      "url": "https://www.wowhead.com/forever/guide/classes/rogue/assassination/talent-builds-pve-dps",
+      "independenceGroup": "wowhead-rogue-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-assassination-pvp-1711",
+      "url": "https://foreverbattlegrounds.com/classes/rogue/assassination/",
+      "independenceGroup": "foreverbattlegrounds-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-assassination-pvp-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/assassination/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-perplexity-pvp-2311",
+      "url": "https://mobalytics.gg/wow-forever/profile/perplexity-tdea17/classes/perplexity-s-rogue-pvp-guide-a",
+      "independenceGroup": "perplexity-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-all-leveling-1211",
+      "url": "https://wowforever.be/guides/rogue-leveling/",
+      "independenceGroup": "wowforever-be-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-tavern-leveling",
+      "url": "https://forever-tavern.com/guides/rogue-leveling-guide/",
+      "independenceGroup": "forever-tavern-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-subtlety-pve-cobalt",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/talents/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "rogue-hotfix-2511",
+      "url": "https://www.wowhead.com/de/blue-tracker/topic/us/wow-forever-hotfixes-november-25-2026-2403040",
+      "independenceGroup": "blizzard-blue-post",
+      "kind": "official_hotfix"
+    },
+    {
+      "id": "rogue-client-delta-71139",
+      "url": "https://wowfdb.com/classes/rogue/changes/",
+      "independenceGroup": "wowfdb-client-delta",
+      "kind": "client_reference"
+    },
+    {
+      "id": "warrior-outpost-2311",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-warrior-level-60-talents/",
+      "independenceGroup": "outpost-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-arms-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/arms/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-fury-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/fury/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-protection-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/protection/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-class",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-undying",
+      "url": "https://undying.app/classes/warrior",
+      "independenceGroup": "undying-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-outpost-2311",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-level-60-talents/",
+      "independenceGroup": "outpost-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-holy-wowforevergg",
+      "url": "https://wowforever.gg/en/guides/paladin-holy/",
+      "independenceGroup": "wowforevergg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-protection-wowforevergg",
+      "url": "https://wowforever.gg/en/guides/paladin-protection/",
+      "independenceGroup": "wowforevergg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-ret-wowforevergg-2511",
+      "url": "https://wowforever.gg/en/guides/paladin-retribution/",
+      "independenceGroup": "wowforevergg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-ret-skillcapped-1911",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/retribution-paladin-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-talentsmith-2511",
+      "url": "https://talentsmith.app/classes/paladin.html",
+      "independenceGroup": "talentsmith-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-foreverhub-2011",
+      "url": "https://forever-hub.com/en/guides/shaman-guide",
+      "independenceGroup": "foreverhub-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-undying",
+      "url": "https://undying.app/classes/shaman",
+      "independenceGroup": "undying-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-enhance-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/enhancement-shaman-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-mmonster-builds",
+      "url": "https://mmonster.co/wow-forever/tools/talent-calculator/shaman",
+      "independenceGroup": "mmonster-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "class-builds-talentsmith-2511",
+      "url": "https://talentsmith.app/builds/",
+      "independenceGroup": "talentsmith-editorial",
+      "kind": "expert_guide"
     }
   ],
   "pilot": {
@@ -237,5 +1123,1673 @@
       }
     ],
     "approvedPlanId": null
-  }
+  },
+  "candidateTracks": [
+    {
+      "id": "mage-arcane-leveling",
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-arcane",
+        "mobalytics-arcane-leveling",
+        "mrronit-arcane-leveling",
+        "arcane-concentration-player-report",
+        "talentsforever-mage-order"
+      ],
+      "proposal": "Compare continuous Arcane with early Precision against an earlier Arcane capstone and later Precision. Evaluate downtime, threat and damage before and after the Arcane Blast and Missile Barrage milestones.",
+      "openChecks": [
+        "Chronological ranks and spell synergies including the November hotfixes",
+        "Comparable downtime and threat for solo and dungeon pulls",
+        "Minimum levels and exact release revisions"
+      ],
+      "observedMilestones": [
+        {
+          "talentId": 105806,
+          "catalogMinimumLevel": 20
+        },
+        {
+          "talentId": 113627,
+          "catalogMinimumLevel": 25
+        },
+        {
+          "talentId": 105798,
+          "catalogMinimumLevel": 40
+        }
+      ]
+    },
+    {
+      "id": "hunter-beast-mastery-leveling",
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "solo",
+      "priority": "balanced",
+      "releaseBlocker": "hunter_prerequisite_semantics_unverified",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-beast-mastery",
+        "mobalytics-vareion-hunter",
+        "wow-forever-gg-hunter-prerequisites",
+        "forevertalents-hunter-prerequisites",
+        "metabot-hunter-intimidation",
+        "wowfdb-hunter-tree",
+        "foreverbuilder-intimidation",
+        "hunter-71139-edge-tracker",
+        "hunter-fit-intimidation",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Compare early pet utility and mobility with an earlier direct pet-damage investment while retaining the timely Summon Hawk milestone. Compare low and high pet-threat encounters separately.",
+      "openChecks": [
+        "Chronological points and Hunter talent IDs on the current build",
+        "Benefit and opportunity cost of pet revival, mobility and cleansing",
+        "Current pet and Summon Hawk behavior, minimum levels and exact release revisions",
+        "The export models Intimidation and Bestial Wrath as a cycle. Independently verify whether Bestial Swiftness is an alternative prerequisite in the current client before publishing a complete path.",
+        "Two published calculators report an alternative edge. The build-71091 TraitEdge export was inaccessible, and the public source tuple does not encode the operator. Review exact client edge type or a reproducible live allocation.",
+        "26 Nov 71139: live German projection still carries the reciprocal Intimidation/Bestial Wrath edges. Independent indexed calculators report Bestial Swiftness as required or an OR edge. Exact edge operator remains unverified. Nov 25 official hotfix changed pet melee crit and Hawk targeting/crit; update pet behavior evidence before release."
+      ],
+      "observedMilestones": [
+        {
+          "talentId": 104966,
+          "catalogMinimumLevel": 25
+        }
+      ]
+    },
+    {
+      "id": "mage-arcane-dungeons",
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "archon-dungeons",
+        "mrronit-arcane-leveling",
+        "wowhead-arcane-leveling-2411",
+        "foreverguide-arcane-dungeons",
+        "icyveins-arcane",
+        "mobalytics-arcane-leveling"
+      ],
+      "proposal": "Prüfe für wechselnde Gegnerstufen, Bedrohung und Unterbrechungen in Dungeons, wann frühere Präzision den späteren Arkan-Meilenstein rechtfertigt.",
+      "openChecks": [
+        "Stichprobe und Instanzstufe so wählen, dass sich Lernpfade statt nur Endspielverteilungen vergleichen lassen."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "mage-fire-dungeons",
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "icyveins-fire-pve",
+        "mobalytics-fire",
+        "cobalt-fire-pve",
+        "wowforeverprogress-fire-pve",
+        "wowhead-fire-leveling-2411"
+      ],
+      "proposal": "Vergleiche gegnerabhängig ein tiefes Feuerprofil mit einem Frostfeuerblitzprofil für gemischte Einzelziel- und Gruppenphasen.",
+      "openChecks": [
+        "Zauberzugang auf Zwischenstufen, Trefferchance, Flächenbedrohung und Spielbarkeit vor Stufe 40."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "mage-frost-pvp",
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "cobalt-frost-pvp",
+        "blizzard-forever-hotfix-24315281",
+        "skillcapped-frost-pvp-1911",
+        "foreverbattlegrounds-frost"
+      ],
+      "releaseBlocker": "frost_proc_and_charge_behavior_unverified",
+      "proposal": "Bewerte Kontrollfenster, Überleben und Schaden im Gruppen-PvP unter den aktuellen Regeln.",
+      "openChecks": [
+        "Clientbeobachtung zu Erfrierung, Eisigen Fingern, geteilten Abklingeffekten von Wurzeln und Verbrauch der Ladungen bei Mehrzielen.",
+        "Complete guides retrieved 26 Nov. Skill Capped uses 17/0/34, ForeverBattlegrounds 20/0/31. Both support Shatter, Ice Block, Cold Snap, Ice Barrier and Counterspell. No guaranteed double spell, independent proc or charge consumption assumed."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "warrior-protection-dungeons",
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "icyveins-protection-dungeons",
+        "wowfdb-dungeon-tanks",
+        "icyveins-protection-leveling",
+        "wowhead-protection-leveling"
+      ],
+      "proposal": "Vergleiche die Forever-Dungeon-Route mit günstigerem Wutverbrauch und Kiten gegen einen Schutzpfad mit früherer defensiver Absicherung.",
+      "openChecks": [
+        "Wut, Mehrzielbedrohung und Defensive an früheren Stufen prüfen. Die beiden Quellen bewerten vor allem Endspiel.",
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Verify actual rage and multi-target threat at low levels, class quest requirements for Defensive Stance and Sunder Armor, and no use of undocumented PvP effect."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "priest-holy-dungeons",
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "sourceIds": [
+        "icyveins-holy-priest",
+        "loreforever-dungeon-roles",
+        "forever-tavern-priest",
+        "outpost-priest"
+      ],
+      "proposal": "Bewerte Mana, Schutz und kurze Heilfenster bei Dungeon-Gruppen und prüfe Disziplin-Nebenpunkte.",
+      "openChecks": [
+        "Begründete Vergabe für die tatsächlichen Dungeon-Stufen mit dokumentierter Heilerrolle und freien Punkten.",
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Current server healing coefficients and per-spell mana returns, especially Litany of Light; avoid assuming the same spell alternation works with all triggered heals."
+      ],
+      "status": "research_only"
+    },
+    {
+      "id": "warlock-affliction-leveling",
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-crix-warlock",
+        "method-roguery-warlock"
+      ],
+      "proposal": "Continuous pet-assisted DoT and drain leveling. Early instant Corruption, hit and threat reduction; retain active demon rather than mandatory sacrifice. Wrack at 40, no assumption of independent extra multipliers or Soul Harvest bug.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Official November 10 Wrack and Soul Siphon changes agree with the extracted tooltip: acceleration of periodic ticks, not duration or a second damage multiplier. Nov 25 pet crit corrections; verify pet-dependent values."
+      ]
+    },
+    {
+      "id": "warlock-demonology-leveling",
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-crix-warlock",
+        "method-roguery-warlock"
+      ],
+      "proposal": "Pet-first mixed leveling without respec, prioritize pet damage and resilience, Soul Link 30 and Demonic Pact 40. Summon a different demon only when the sacrifice rules are satisfied; do not assume the same demon preserves the bonus.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Nov 25 corrected pet melee crit and Sayaad critical chance; verify brand threat and actual pet sustain without numerical scaling promises."
+      ]
+    },
+    {
+      "id": "warlock-destruction-leveling",
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-crix-warlock",
+        "method-roguery-warlock"
+      ],
+      "proposal": "Direct-damage alternative with early cast-time and mana talents; no claim it is as efficient as Affliction. Incinerate at 40, Affliction sustain and hit later. Crix and Method agree on higher mana demands.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Compare early mana downtime and leveling pet choice; verify Searing Pain threat and interaction of Conflagrate, Shadowburn and Shadow and Flame."
+      ]
+    },
+    {
+      "id": "priest-shadow-leveling",
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-priest-leveling",
+        "outpost-priest"
+      ],
+      "proposal": "Two early wand points deliberately delay Shadowform to 42 and avoid respec. Spirit Tap supports solo/mixed kills; Vampiric Embrace and later Shadowform form the sustained caster route. Shadowform is a damage role, not a healer plan.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "November 16 Vampiric Embrace party-healing reduction and doubled personal healing reflected in extracted text; verify current kill-credit condition, periodic crit, and early wand tradeoff against direct Shadow."
+      ]
+    },
+    {
+      "id": "paladin-retribution-leveling",
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-whiter-ret",
+        "wowforevergg-ret"
+      ],
+      "proposal": "Two-handed Retribution, early mana and movement, Seal of Command 20 and Unsealed Wrath 40. Late hit and seals. Whiter explicitly distinguishes played-to-40 observations and later planned choices; no simulated DPS treated as proven.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Official November 19/25 Judgement and critical-strike fixes; verify seal echo trigger and stacking, no assumption of guaranteed extra hits."
+      ]
+    },
+    {
+      "id": "rogue-combat-leveling",
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-combat-rogue",
+        "icyveins-combat-rogue"
+      ],
+      "proposal": "No-respec combat route for general melee questing, early efficient strikes, Precision and Riposte, Blade Flurry 30, Adrenaline Rush 40; sustained energy and defensive utility. Avoid dependence on the recently fixed Poised interaction.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "Check current weapon-dependent Slaughter effects and Shank energy recovery, and poison restrictions after November 25; no exact uptime claim."
+      ]
+    },
+    {
+      "id": "shaman-enhancement-leveling",
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-shaman-leveling",
+        "icyveins-enhancement-leveling"
+      ],
+      "proposal": "Two-handed melee and spell leveling, Stormstrike 25, Improved Stormstrike 30, Maelstrom Weapon 35–39 and Rage of the Farseer 40. No respec and no specific proc probability assumed. Icy Veins and Mobalytics emphasize the early Stormstrike milestone; their exact later choices differ.",
+      "openChecks": [
+        "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
+        "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
+        "November 25 Clearcasting/Maelstrom Chain Lightning fix and current Improved Stormstrike rank scaling. Maelstrom's tooltip contains an unspecified weapon-speed-dependent chance; no DPS estimate."
+      ]
+    },
+    {
+      "id": "warrior-arms-leveling",
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-arms-warrior-leveling",
+        "mob-warrior-leveling"
+      ],
+      "proposal": "Two-handed bleed/rage leveling; Sweeping Strikes and Mortal Strike; no weapon-specific superiority.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Weaponmaster Nov 25 death fix and old secondary grid differ."
+      ]
+    },
+    {
+      "id": "warrior-fury-leveling",
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-fury-warrior-leveling",
+        "mob-warrior-leveling"
+      ],
+      "proposal": "Dual-wield sustained rage, Bloodthirst; no dual wield before training.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Older independent export conflicts on Fury positions and Bloodthirst prerequisite."
+      ]
+    },
+    {
+      "id": "paladin-holy-dungeons",
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-holy-paladin-leveling",
+        "mob-holy-paladin"
+      ],
+      "proposal": "Dedicated healing, early mana/Illumination, Holy Shock and Light's Vigil; avoid unresolved Boundless Light prerequisite.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Oath duration official 60 min vs extracted 5 min; no duration claim, shield talents require shield."
+      ]
+    },
+    {
+      "id": "paladin-protection-dungeons",
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "dungeons",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-protection-paladin-leveling",
+        "wh-protection-paladin"
+      ],
+      "proposal": "Shield tank with mana from blocks, Holy Shield and Shieldsworn.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify Holy Shield charges, Shieldsworn and Judgement refresh hotfix."
+      ]
+    },
+    {
+      "id": "hunter-survival-leveling",
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-survival-hunter",
+        "mob-survival-hunter"
+      ],
+      "proposal": "Melee-oriented Survival, traps, active pet; avoid cyclic Beast Mastery edge.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Nov 25 pet crit fixes; verify melee weapon choice and trainer levels."
+      ]
+    },
+    {
+      "id": "rogue-assassination-leveling",
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-assassination-rogue",
+        "mob-rogue-leveling"
+      ],
+      "proposal": "Poison and dagger alternative; slower before poisons and capstone; not default over Combat.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Poison restrictions and Poised fix Nov 25; verify Shank and dagger requirements."
+      ]
+    },
+    {
+      "id": "rogue-subtlety-pvp",
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "skillcapped-subtlety-pvp",
+        "foreverbattlegrounds-subtlety"
+      ],
+      "proposal": "Control, opener, bleeds, resets then Combat utility; not leveling-speed recommendation.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify current PvP diminishing returns, reset scope and Death Mark limits."
+      ]
+    },
+    {
+      "id": "priest-discipline-dungeons",
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-discipline-priest-leveling",
+        "wh-discipline-priest"
+      ],
+      "proposal": "Shield-based healer, Meditation, Soul Warding and Penance; different from Holy direct/group healing.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify shield and Weakened Soul mechanics and undocumented priest changes."
+      ]
+    },
+    {
+      "id": "shaman-elemental-leveling",
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-elemental-shaman-leveling",
+        "mob-elemental-shaman"
+      ],
+      "proposal": "Ranged elemental alternative; Earthbound, Lightning Overload and Lightning Mastery, then mana sustain; no Lava Burst.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify overload, freecast and Chain Lightning after Nov 25."
+      ]
+    },
+    {
+      "id": "shaman-restoration-dungeons",
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-shaman-leveling",
+        "wh-restoration-shaman"
+      ],
+      "proposal": "Group healer with Water Shield, Mana Tide, Healing Way and Riptide.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify Riptide/Chain Heal interaction and current Water Shield triggers."
+      ]
+    },
+    {
+      "id": "druid-restoration-dungeons",
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-druid-leveling",
+        "mob-restoration-druid"
+      ],
+      "proposal": "Dedicated healer with mana regen, Swiftmend, Nature's Swiftness and Wild Growth; late Genesis utility.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Verify Nov 25 Genesis/Tranquility correction and Wild Growth targeting."
+      ]
+    },
+    {
+      "id": "druid-balance-leveling",
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-balance-druid",
+        "mob-balance-druid",
+        "official-balance-2511"
+      ],
+      "proposal": "Conservative structural candidate against pre-hotfix extract. Avoid removed Moonfury and changed Improved Starfire rank entirely; updated slot IDs and effects require exact proof.",
+      "openChecks": [
+        "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
+        "Effective Legacy 1–5 minimum levels and comparative performance not established.",
+        "Nov 25 Balance rework: exact revised names, IDs, rank caps and effects unresolved."
+      ]
+    },
+    {
+      "id": "warlock-affliction-dungeons",
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-warlock-dungeon-20261123",
+        "mobalytics-crix-warlock"
+      ],
+      "proposal": "For regular leveling dungeons, retain the active demon, use DoTs selectively and direct shadow damage between pulls; trade the deep channel and pet-tree investment for earlier direct-cast talents. Own chronology, not a copied level-60 build.",
+      "openChecks": [
+        "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
+        "No assertion of superior dungeon DPS; target lifetime, threat and movement change value.",
+        "Verify exact effect of the final destruction talent and current pet interactions; ranks 1–5 not verified."
+      ]
+    },
+    {
+      "id": "warlock-demonology-pvp",
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "skillcapped-warlock-demonology-pvp-20261119",
+        "cobalt-warlock-demonology-pvp-20261103"
+      ],
+      "proposal": "Defensive battleground and duel research route. Stamina first, Soul Link at 30, Demonic Pact at 40, instant Corruption and Shadowburn later. Preserve a living demon; no assumption that resummoning the sacrificed demon retains its bonus.",
+      "openChecks": [
+        "Independent build-labelled full class comparison and exact hotfix reconciliation still required.",
+        "November 25 pet crit corrections; no exact pet-damage or PvP performance claim.",
+        "Compare with 21/30/0 Soul Link/Siphon Life alternative and confirm defensive effects; ranks 1–5 not verified."
+      ]
+    },
+    {
+      "id": "warlock-affliction-pvp",
+      "classId": 9,
+      "treeId": 11629,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-warlock-affliction-pvp-20261110",
+        "foreverbattlegrounds-warlock-affliction-pvp"
+      ],
+      "proposal": "Pressure and control in battlegrounds, prioritizing Curse of Exhaustion at 25, Siphon Life at 30 and Wrack at 40, followed by defense and active-demon support. No required sacrifice.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "The cited PvP build uses sacrifice; our active-demon alternative needs comparative testing. Channel pushback protection is not silence or interrupt immunity."
+      ]
+    },
+    {
+      "id": "warlock-demonology-dungeons",
+      "classId": 9,
+      "treeId": 11636,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-warlock-demonology-pve-20261110",
+        "outpost-warlock-dungeon-20261123"
+      ],
+      "proposal": "Fire-oriented active-demon group route, with Demonic Pact before the Destruction investment. Keep the tank's threat role; no guaranteed stacking or same-demon sacrifice carryover.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "November 25 pet crit corrections; verify Imp uptime, threat and choice of sacrifice target."
+      ]
+    },
+    {
+      "id": "warlock-destruction-dungeons",
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-warlock-destruction-pve-20261110",
+        "outpost-warlock-dungeon-20261123"
+      ],
+      "proposal": "Direct fire damage and multi-target utility for ordinary leveling dungeons, not a pure raid build or unconditional AoE spam. Prioritize a sustainable rotation; sacrifice remains optional.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "Review target-lifetime dependence, threat, exact Shadow and Flame interactions and demon choice."
+      ]
+    },
+    {
+      "id": "warlock-destruction-pvp",
+      "classId": 9,
+      "treeId": 11637,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "mobalytics-warlock-destruction-pvp",
+        "cobalt-warlock-destruction-pvp-20261110"
+      ],
+      "proposal": "Burst and survival research route for battlegrounds, using Molten Skin and Aftermath before Conflagrate, with drain sustain later. Situational Pyroclasm rather than an assumed guaranteed stun.",
+      "openChecks": [
+        "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
+        "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
+        "Confirm the proc and consumption order of Shadowburn, Conflagrate and Shadow and Flame; do not infer immunity to kicks or silence."
+      ]
+    },
+    {
+      "id": "mage-arcane-pvp",
+      "classId": 8,
+      "treeId": 11582,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-arcane-pvp",
+        "foreverhub-arcane-pvp"
+      ],
+      "proposal": "Arcane burst with improved Counterspell and Presence of Mind, followed by Frost control and Ice Block. Deliberately trades early Frost defense for Arcane milestones; not a measured optimal PvP build.",
+      "openChecks": [
+        "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+        "No verified Legacy ranks 1–5 or controlled comparative performance.",
+        "Compare early survivability versus earlier Frost investment; no assumed independent missile procs or guaranteed burst."
+      ]
+    },
+    {
+      "id": "mage-fire-pvp",
+      "classId": 8,
+      "treeId": 11594,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "cobalt-fire-pvp",
+        "undying-fire-pvp"
+      ],
+      "proposal": "Fire pressure and protected casting, then Frost control and Ice Block. Prioritize a usable defensive exit; no guaranteed Heating Up or critical chain.",
+      "openChecks": [
+        "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+        "No verified Legacy ranks 1–5 or controlled comparative performance.",
+        "Verify effect of the additional Fire node and whether shorter fights favor an earlier Frost dip; shared Ice Lance/Fire Blast cooldown is not bypassed."
+      ]
+    },
+    {
+      "id": "mage-frost-dungeons",
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-mage-level60",
+        "foreverhub-mage-dungeons",
+        "icyveins-frost"
+      ],
+      "proposal": "Regular group dungeons: early hit, controlled Blizzard and Frost Channeling before later Arcane sustain. No dedicated solo AoE farm route; avoid random Frostbite roots during coordinated pulls. Own chronological route.",
+      "openChecks": [
+        "Exact primary structure at build 71139 checked; independent Magier comparison exists, but path-specific editorial and current hotfix approval still required.",
+        "No verified Legacy ranks 1–5 or controlled comparative performance.",
+        "Confirm the late Frost talent effect and group-specific value. Freeze-immune bosses and proc charges are not assumed to behave as frozen targets."
+      ]
+    },
+    {
+      "id": "hunter-beast-mastery-dungeons",
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-hunter-level60-2311",
+        "foreverhub-hunter-2011"
+      ],
+      "proposal": "Pet-assisted regular dungeons, Hawk, mana sustain, group aura. Not the standard capstone build; respects the cyclic prerequisite rather than editing it.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved."
+      ]
+    },
+    {
+      "id": "hunter-beast-mastery-pvp",
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "feor-bm-pvp-0711",
+        "cobalt-hunter-pvp-1011"
+      ],
+      "proposal": "Pet uptime, recovery and secondary defensive Survival tools. Deliberately excludes the disputed Bestial Wrath chain; this loses the main BM PvP cooldown and is an incomplete mechanical substitute, never a release recommendation.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved."
+      ]
+    },
+    {
+      "id": "hunter-marksmanship-dungeons",
+      "classId": 3,
+      "treeId": 11371,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "outpost-hunter-level60-2311",
+        "metammo-hunter-pvp"
+      ],
+      "proposal": "Ranged group route without active pet after Lone Wolf, with early efficiency, aura and multi-target shots. No assumed benefit from pet-dependent talents while petless.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Compare active-pet group route, threat and uptime; aura unlock gate discrepancy between official article and primary data. Verify the final optional Marksmanship node."
+      ]
+    },
+    {
+      "id": "hunter-marksmanship-pvp",
+      "classId": 3,
+      "treeId": 11371,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "metammo-hunter-pvp",
+        "cobalt-hunter-pvp-1011"
+      ],
+      "proposal": "Ranged pressure with active pet, Scatter Shot and later Deterrence/Counterattack. No assumed control immunity or unbreakable Scatter Shot.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Review PvP value of pet upkeep, trap availability, and relative timing of the late defensive dip."
+      ]
+    },
+    {
+      "id": "hunter-survival-dungeons",
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wowhead-survival-builds-1711",
+        "outpost-hunter-level60-2311"
+      ],
+      "proposal": "Melee-oriented ordinary dungeons, hit, mana and active pet/Hawk support; no deep agility or bleed capstone. Check actual weapon and trainer level, no assumed melee weaving benefit.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Compare pure melee and weaving; shared shot/Hawk cooldowns and pet corrections remain relevant."
+      ]
+    },
+    {
+      "id": "hunter-survival-pvp",
+      "classId": 3,
+      "treeId": 11370,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "skillcapped-survival-pvp-1911",
+        "wowhead-survival-builds-1711"
+      ],
+      "proposal": "Control-focused mixed melee/ranged battleground route with active pet, Deterrence, Counterattack, Strider Kick and late Scatter Shot. Avoid the disputed BM prerequisite.",
+      "openChecks": [
+        "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
+        "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
+        "Compare earlier Scatter Shot versus deep Survival timing; trap shared cooldown and interrupt/control rules need independent current evidence."
+      ]
+    },
+    {
+      "id": "druid-balance-dungeons",
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-balance-druid",
+        "mob-balance-druid",
+        "official-balance-2511"
+      ],
+      "proposal": "Earlier mana and group support before Moonkin; avoid changed Improved Starfire and former Moonfury.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-balance-pvp",
+      "classId": 11,
+      "treeId": 11328,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-balance-pvp-cobalt",
+        "druid-balance-pvp-restokins",
+        "official-balance-2511"
+      ],
+      "proposal": "Restokin pressure and emergency healing; trades Moonkin for Nature's Swiftness. Reassess after hotfix.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-dungeons-damage",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-feral-pve",
+        "mobalytics-feral-leveling"
+      ],
+      "proposal": "Cat-oriented group damage with emergency Bear utility; Shifting Power cost not assumed.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-pvp-damage",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-feral-pvp-skillcapped",
+        "druid-feral-pvp-cobalt"
+      ],
+      "proposal": "Feral pressure and control, followed by emergency healing; deliberately gives up capstones.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-leveling-tank",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "leveling",
+      "role": "tank",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-feral-pve",
+        "grindclassic-feral-leveling"
+      ],
+      "proposal": "Bear-first leveling with earlier cross-form utility than the dedicated dungeon path.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-feral-pvp-tank",
+      "classId": 11,
+      "treeId": 11347,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-feral-pvp-cobalt",
+        "druid-resto-pvp-skillcapped"
+      ],
+      "proposal": "Objective and flag carrier research rather than ordinary dungeon tanking; durability and emergency healing.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-restoration-leveling",
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-druid-leveling",
+        "mob-restoration-druid"
+      ],
+      "proposal": "Early damage for questing, then healing milestones; not pure solo-speed.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "druid-restoration-pvp",
+      "classId": 11,
+      "treeId": 11340,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "druid-resto-pvp-wowhead",
+        "druid-resto-pvp-skillcapped"
+      ],
+      "proposal": "Mobile healer with Feral Charge, emergency healing, and periodic healing.",
+      "openChecks": [
+        "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      ]
+    },
+    {
+      "id": "priest-discipline-leveling",
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "wh-discipline-priest",
+        "iv-discipline-priest-leveling",
+        "outpost-priest"
+      ],
+      "proposal": "Mixed healing and questing with early wand investment and later Holy damage/cast-time support. Delays deep Discipline unlocks by two levels.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-discipline-pvp",
+      "classId": 5,
+      "treeId": 11608,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-discipline-pvp-skillcapped",
+        "priest-discipline-pvp-cobalt"
+      ],
+      "proposal": "Defensive Discipline with early control-duration reduction, shield and conditional casting protection; late Holy magic mitigation. No immunity to control or interrupts.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-holy-leveling",
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-foreverguide-holy",
+        "priest-holy-grindclassic",
+        "outpost-priest"
+      ],
+      "proposal": "Healing-first mixed questing; early wand and Spirit Tap, then cast-time and Holy damage, late Meditation. No claim of solo speed superior to Shadow.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-holy-pvp",
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-holy-pvp-cobalt",
+        "priest-battlegrounds"
+      ],
+      "proposal": "Direct and group healing with early defensive Holy choices; later shield and conditional casting protection. Distinct from Discipline.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-shadow-pvp",
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-battlegrounds",
+        "priest-shadow-wowhead-pve",
+        "priest-current-client-71139"
+      ],
+      "proposal": "Shadow pressure, probabilistic control, Silence and later defensive Discipline. Gives up Spirit Tap for PvP control; not a measured best route.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      ]
+    },
+    {
+      "id": "priest-shadow-dungeons",
+      "classId": 5,
+      "treeId": 11622,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "priest-shadow-wowhead-pve",
+        "priest-shadow-icyveins-pve",
+        "priest-shadow-guildorder"
+      ],
+      "proposal": "Direct Shadow with early hit, Mind Flay, party utility, Silence and Shadowform at 40; later Discipline mana sustain. No assumption of healing access in Shadowform or previous Vampiric Embrace party-heal coefficient.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Verify current Vampiric Embrace, Spirit Tap, Dark Inspiration, and Silence behavior; no guarantee of procs."
+      ]
+    },
+    {
+      "id": "rogue-assassination-dungeons",
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-assassination-builds-1711",
+        "rogue-outpost-2311",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Early hit and efficient attacks, then poison and dagger development. Mutilate needs two daggers. Delay capstone versus quest path; no guaranteed poison uptime.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-assassination-pvp",
+      "classId": 4,
+      "treeId": 11580,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-assassination-pvp-1711",
+        "rogue-assassination-pvp-cobalt",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Poison pressure with early Sprint mobility, later Mutilate and defensive Combat tools. No guaranteed control duration.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-combat-dungeons",
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-combat-group-2511",
+        "rogue-outpost-2311",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Sustained Combat and interrupts, Blade Flurry and Adrenaline Rush; cleave only intended targets. Later Assassination energy and poison support.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-combat-pvp",
+      "classId": 4,
+      "treeId": 11573,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-combat-group-2511",
+        "rogue-perplexity-pvp-2311",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Mobility, avoidance and interrupts before Combat capstone; later Subtlety control.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-subtlety-leveling",
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-all-leveling-1211",
+        "mob-rogue-leveling",
+        "rogue-tavern-leveling",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Early cheap strikes and finishers, then stealth, opener and bleed tools. Death Mark later than pure PvP.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "rogue-subtlety-dungeons",
+      "classId": 4,
+      "treeId": 11572,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "rogue-outpost-2311",
+        "rogue-subtlety-pve-cobalt",
+        "rogue-hotfix-2511"
+      ],
+      "proposal": "Bleed and opener focused group alternative; retains Preparation and Death Mark, later damage and hit support. No measured sustained boss advantage.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "warrior-arms-dungeons",
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-outpost-2311",
+        "warrior-cobalt-class",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Two-handed group damage; prioritize efficient Heroic Strike, Sweeping Strikes and Mortal Strike. Cleave only intended targets, no raid DPS claim.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-arms-pvp",
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-cobalt-arms-pvp",
+        "warrior-outpost-2311",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Two-handed pressure with Mortal Strike, more Hamstring-related control and secondary rage/control. No guaranteed root or PvP uptime.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-fury-dungeons",
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-outpost-2311",
+        "warrior-cobalt-class",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Dual-wield group damage, early Arms efficiency/parry and sustained Fury rage, then Bloodthirst. No guarantee of hit cap or continuous flurry.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-fury-pvp",
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-cobalt-fury-pvp",
+        "warrior-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early stance utility and defense before deep Fury; coordinated pressure with Death Wish and Bloodthirst, not equivalent to Mortal Strike.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-protection-leveling",
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "leveling",
+      "role": "tank",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-protection-leveling",
+        "warrior-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Shield-first questing plus dungeons, earlier critical damage investment for solo fights; later Shield Slam than dedicated dungeon route.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-protection-pvp",
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-cobalt-protection-pvp",
+        "warrior-cobalt-class",
+        "warrior-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Objective support, shield defense, early emergency button, interruption and team peeling. Not an ordinary dungeon tank recommendation.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "paladin-holy-leveling",
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-holy-paladin-leveling",
+        "paladin-holy-wowforevergg",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healing-first mixed leveling, early mana-efficient instant abilities, later Holy Shock and Light's Vigil. Not faster than Retribution for solo questing.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-holy-pvp",
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-holy-wowforevergg",
+        "paladin-talentsmith-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healing under pressure with early shield/intellect investment, later Holy capstone and blessing/hammer utility. No silence immunity assumed.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-protection-leveling",
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "leveling",
+      "role": "tank",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-protection-paladin-leveling",
+        "paladin-protection-wowforevergg",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early instant mana efficiency for questing while retaining shield, Holy Shield and Shieldsworn; not a raid defense-cap route.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-protection-pvp",
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-protection-wowforevergg",
+        "paladin-talentsmith-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Shield objective support and mobility with secondary Retribution pressure. No guarantee of spell block or flag survival.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-retribution-dungeons",
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-outpost-2311",
+        "paladin-ret-wowforevergg-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early intellect and hit for repeated group fights; two-handed damage and Unsealed Wrath later than quest path. No assumed universal seal proc.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-retribution-pvp",
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-ret-skillcapped-1911",
+        "paladin-ret-wowforevergg-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Two-handed pressure with early mana reserve and later Freedom/hammer/shield-switch support. No guaranteed crowd-control immunity.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "shaman-elemental-dungeons",
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early mana/hit support for repeated dungeon fights, then ranged Elemental damage; consider Chain Lightning threat and intended targets.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-elemental-pvp",
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-mmonster-builds",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Shock pressure, Earthbound control and later off-healing/casting protection. Trade mana cost talents for shock frequency; no guaranteed proc chain.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-enhancement-dungeons",
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Melee damage, Stormstrike and Maelstrom Weapon with early supplemental spell damage. No assumed double Clearcasting/Maelstrom benefit.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-enhancement-pvp",
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-enhance-pvp-skillcapped",
+        "shaman-foreverhub-2011",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Melee pressure, shock support and situational off-healing, not a copy of the cited endgame split.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-restoration-leveling",
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-shaman-leveling",
+        "shaman-foreverhub-2011",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healer-oriented mixed questing with early lightning damage, later Riptide and emergency healing. Not optimized pure solo.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-restoration-pvp",
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-mmonster-builds",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healing under pressure, early intellect and crit, later Riptide and situational shock/lightning support. No assumed proc or control immunity.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    }
+  ]
 }

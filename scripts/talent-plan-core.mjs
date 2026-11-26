@@ -1,0 +1,120 @@
+import {currentTalentRulesMatch} from './talent-rule-watch.mjs';
+import {correctHunterPlanningClass} from './talent-hunter-prerequisite-correction.mjs';
+import {matchesLegacyGatePolicy} from './talent-legacy-policy.mjs';
+import {TALENT_RULE_BINDING_FIELDS,talentPlanEvidenceDigest} from './talent-catalog-proof.mjs';
+
+// Pure planning rules. No provider requests, no roster dependency, no runtime AI.
+const positive=v=>Number.isSafeInteger(v)&&v>0;
+const nonempty=v=>typeof v==='string'&&v.trim().length>0;
+const hash=v=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
+const array=v=>Array.isArray(v)?v:[];
+export const TALENT_POINT_CALENDAR_REVISION='forever-talented-v1';
+export const TALENT_PROFILE_FIELDS=Object.freeze(['classId','treeId','goal','role','playStyle','priority']);
+export function profileKey(profile){
+  if(!profile||!positive(profile.classId)||!positive(profile.treeId))return null;
+  if(!TALENT_PROFILE_FIELDS.slice(2).every(k=>nonempty(profile[k])))return null;
+  return JSON.stringify(TALENT_PROFILE_FIELDS.map(k=>profile[k]));
+}
+function reject(code,point=null){return {ok:false,code,point}}
+// A reviewed rule pack must explicitly bind to a class layout revision and
+// select the verified point calendar and provide the effective minimum-level
+// rule for each talent. No assumed Legacy shift or silent Classic fallback.
+export function validateTalentPath(plan,master,rules){
+  if(!plan||!positive(plan.classId)||!nonempty(plan.id)||!positive(plan.version))return reject('invalid_plan_identity');
+  const c=master?.classes?.[plan.classId],revision=master?.classMechanicsRevisions?.[plan.classId];
+  if(!c||!hash(revision)||plan.catalogRevision!==revision||master.stale!==false)return reject('unverified_current_catalog');
+  if(!rules||rules.status!=='verified'||rules.classId!==plan.classId||rules.catalogRevision!==revision||
+    !nonempty(rules.revision)||plan.ruleRevision!==rules.revision||!array(rules.sources).length||
+    !rules.sources.every(nonempty)||!nonempty(rules.reviewedAt))return reject('unverified_rules');
+  const talentedRank=rules.legacyTalentedRank;
+  if(rules.pointCalendarRevision!==TALENT_POINT_CALENDAR_REVISION||
+    !Number.isInteger(talentedRank)||talentedRank<0||talentedRank>5||
+    rules.gateMode!=='earlier_rows'||!['immediate','bankable'].includes(rules.pointSpendMode)||!rules.minimumLevelByTalent||typeof rules.minimumLevelByTalent!=='object')return reject('unsupported_rules');
+  if(rules.legacyGatePolicy&&(!matchesLegacyGatePolicy(rules)||rules.legacyAllocationDigest!==talentPlanEvidenceDigest(plan)||master.sourceRevision!==rules.sourceRevision))return reject('unverified_current_rules');
+  const maxPoints=51;
+  const firstPointLevel=10-talentedRank;
+  if(plan.requiresRespec!==false)return reject('respec_not_supported');
+  if(!Array.isArray(plan.points)||plan.points.length!==maxPoints)return reject('incomplete_path');
+  if(!c.trees.some(t=>t.id===plan.treeId))return reject('unknown_specialization');
+  const effectiveClass=rules.prerequisiteCorrection?correctHunterPlanningClass(plan,master,rules):c;
+  if(!effectiveClass)return reject('unverified_current_rules');
+  const byId=new Map(),ranks=new Map(),history=[];
+  for(const tree of effectiveClass.trees)for(const t of tree.talents){
+    if(byId.has(t.id))return reject('ambiguous_talent_id');
+    byId.set(t.id,{...t,treeId:tree.id});
+  }
+  for(const [index,step] of plan.points.entries()){
+    const point=index+1,availableAt=firstPointLevel+index,t=byId.get(step?.talentId);
+    if(!t)return reject('unknown_talent',point);
+    const rank=(ranks.get(t.id)||0)+1;
+    if(!positive(t.maxRank)||step.rank!==rank||rank>t.maxRank)return reject('invalid_rank',point);
+    const minLevel=rules.minimumLevelByTalent[t.id];
+    if(!positive(minLevel)||minLevel>60)return reject('unverified_level_gate',point);
+    if(rules.legacyGatePolicy&&(t.requiredLevel!==10+t.requiredPoints||minLevel!==t.requiredLevel-talentedRank))return reject('unverified_level_gate',point);
+    const level=rules.pointSpendMode==='bankable'
+      ?Math.max(availableAt,minLevel,history.at(-1)?.level??0):availableAt;
+    if(level<minLevel)return reject('level_gate',point);
+    if(!Number.isSafeInteger(t.row)||t.row<0||t.row>10||t.requiredPoints!==t.row*5)return reject('unverified_tree_gate',point);
+    const priorPoints=[...ranks.entries()].reduce((sum,[id,n])=>{
+      const prior=byId.get(id);
+      return sum+(prior.treeId===t.treeId&&prior.row<t.row?n:0);
+    },0);
+    if(priorPoints<t.requiredPoints)return reject('tree_gate',point);
+    if(!Array.isArray(t.prerequisites))return reject('unverified_prerequisite',point);
+    for(const pre of t.prerequisites){
+      const required=byId.get(pre?.id);
+      if(pre?.conditionKnown!==true||!required||required.treeId!==t.treeId||!positive(pre.rank)||pre.rank>required.maxRank){
+        return reject('unverified_prerequisite',point);
+      }
+      if((ranks.get(pre.id)||0)<pre.rank)return reject('prerequisite',point);
+    }
+    ranks.set(t.id,rank);
+    history.push({point,level,talentId:t.id,rank,treeId:t.treeId});
+  }
+  return {ok:true,history,finalRanks:Object.fromEntries(ranks)};
+}
+const tupleEqual=(a,b)=>TALENT_RULE_BINDING_FIELDS.every(key=>a?.[key]===b?.[key]);
+export function compatibleTalentRevalidation(entry,plan,baseline){
+  return entry?.status==='verified'&&entry.planId===plan.id&&entry.planVersion===plan.version&&
+    entry.allocationDigest===talentPlanEvidenceDigest(plan)&&entry.legacyTalentedRank===baseline.legacyTalentedRank&&
+    entry.ruleRevision===baseline.revision&&tupleEqual(entry.from,baseline)&&
+    entry.to?.classId===baseline.classId&&entry.to?.catalogRevision===baseline.catalogRevision&&
+    !tupleEqual(entry.from,entry.to)&&nonempty(entry.reviewedAt)&&entry.reviewedAt>=baseline.reviewedAt&&
+    array(entry.evidenceIds).length>=3&&new Set(entry.evidenceIds).size===entry.evidenceIds.length&&entry.evidenceIds.every(nonempty)&&
+    entry.scope?.completeHotfixReview===true&&entry.scope?.classAndSpellDependenciesUnchanged===true&&
+    entry.scope?.pointCalendarAndGatesUnchanged===true&&entry.scope?.editorialRecommendationUnchanged===true;
+}
+
+// Only explicitly reviewed exact transitions can preserve a plan version.
+// An equal class hash, a newer build, or an unrelated hotfix is not enough.
+export function selectTalentRulePack(plan,baseline,master,observation,revalidations,now){
+  if(currentTalentRulesMatch(observation,baseline,master,now))return baseline;
+  if(baseline.prerequisiteCorrection||baseline.legacyGatePolicy)return null; // Structural correction requires a new exact review, never automatic transition.
+  const reviewed=array(revalidations).filter(entry=>compatibleTalentRevalidation(entry,plan,baseline)&&
+    currentTalentRulesMatch(observation,{...baseline,...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,entry.to[k]]))},master,now));
+  if(reviewed.length!==1)return null;
+  const entry=reviewed[0];
+  return {...baseline,...Object.fromEntries(TALENT_RULE_BINDING_FIELDS.map(k=>[k,entry.to[k]])),
+    reviewedAt:entry.reviewedAt,sources:entry.evidenceIds};
+}
+export function resolveApprovedTalentPlan(profile,plans,master,rulePacks,{ruleObservation,legacyTalentedRank,now=Date.now(),revalidations=[]}={}){
+  const key=profileKey(profile);
+  if(!key)return reject('invalid_profile');
+  const candidates=array(plans).filter(p=>p?.status==='approved'&&p.classId===profile.classId&&p.treeId===profile.treeId&&
+    array(p.profiles).some(x=>profileKey(x)===key));
+  if(candidates.length!==1)return reject(candidates.length?'ambiguous_recommendation':'no_approved_recommendation');
+  const plan=candidates[0];
+  if(!nonempty(plan.review?.reviewedAt)||!nonempty(plan.review?.rationale)||
+    !array(plan.review?.evidenceIds).length||!plan.review.evidenceIds.every(nonempty))return reject('missing_editorial_review');
+  if(!Number.isInteger(legacyTalentedRank)||legacyTalentedRank<0||legacyTalentedRank>5)return reject('unverified_legacy_rank');
+  if(!array(plan.supportedLegacyRanks).includes(legacyTalentedRank))return reject('unsupported_legacy_rank');
+  const rules=array(rulePacks).filter(r=>r?.revision===plan.ruleRevision&&r.classId===plan.classId&&
+    r.legacyTalentedRank===legacyTalentedRank);
+  if(rules.length!==1)return reject('missing_or_ambiguous_rules');
+  const check=validateTalentPath(plan,master,rules[0]);
+  if(!check.ok)return check;
+  // Cache freshness only attests to an acquisition. Release additionally
+  // requires independent, current evidence from a verified rules check.
+  if(!selectTalentRulePack(plan,rules[0],master,ruleObservation,revalidations,now))return reject('unverified_current_rules');
+  return {ok:true,planId:plan.id,version:plan.version,history:check.history};
+}

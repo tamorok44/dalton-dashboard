@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-holy-pvp",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11615,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 20,
+    "11615": 31,
+    "11622": 0
+  },
+  "points": [
+    {
+      "talentId": 110855,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 2
+    },
+    {
+      "talentId": 110855,
+      "rank": 3
+    },
+    {
+      "talentId": 110855,
+      "rank": 4
+    },
+    {
+      "talentId": 110855,
+      "rank": 5
+    },
+    {
+      "talentId": 105867,
+      "rank": 1
+    },
+    {
+      "talentId": 105867,
+      "rank": 2
+    },
+    {
+      "talentId": 105867,
+      "rank": 3
+    },
+    {
+      "talentId": 105866,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 1
+    },
+    {
+      "talentId": 105863,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 3
+    },
+    {
+      "talentId": 105863,
+      "rank": 4
+    },
+    {
+      "talentId": 105863,
+      "rank": 5
+    },
+    {
+      "talentId": 105864,
+      "rank": 1
+    },
+    {
+      "talentId": 105864,
+      "rank": 2
+    },
+    {
+      "talentId": 105864,
+      "rank": 3
+    },
+    {
+      "talentId": 105864,
+      "rank": 4
+    },
+    {
+      "talentId": 105864,
+      "rank": 5
+    },
+    {
+      "talentId": 105860,
+      "rank": 1
+    },
+    {
+      "talentId": 105860,
+      "rank": 2
+    },
+    {
+      "talentId": 105860,
+      "rank": 3
+    },
+    {
+      "talentId": 105854,
+      "rank": 1
+    },
+    {
+      "talentId": 105856,
+      "rank": 1
+    },
+    {
+      "talentId": 105853,
+      "rank": 1
+    },
+    {
+      "talentId": 105853,
+      "rank": 2
+    },
+    {
+      "talentId": 105853,
+      "rank": 3
+    },
+    {
+      "talentId": 105853,
+      "rank": 4
+    },
+    {
+      "talentId": 105853,
+      "rank": 5
+    },
+    {
+      "talentId": 105851,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105845,
+      "rank": 1
+    },
+    {
+      "talentId": 105845,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 2
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 110855,
+      "count": 5,
+      "reason": "Kritische Heiligzauber ergänzen."
+    },
+    {
+      "talentId": 105867,
+      "count": 3,
+      "reason": "Schutz gegen Zauberzeitverlust; keine Unterbrechungsimmunität annehmen."
+    },
+    {
+      "talentId": 105866,
+      "count": 2,
+      "reason": "Erneuerung stärken."
+    },
+    {
+      "talentId": 105863,
+      "count": 5,
+      "reason": "Zauberzeit zentraler Heilungen verringern."
+    },
+    {
+      "talentId": 105864,
+      "count": 5,
+      "reason": "Erlittenen Zauberschaden senken."
+    },
+    {
+      "talentId": 105860,
+      "count": 3,
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
+    },
+    {
+      "talentId": 105854,
+      "count": 1,
+      "reason": "Geist der Erlösung als Voraussetzung freischalten."
+    },
+    {
+      "talentId": 105856,
+      "count": 1,
+      "reason": "Holy Binding: Blitzheilung auf einen anderen Verbündeten heilt auch den Priester, nicht bei Selbstheilung."
+    },
+    {
+      "talentId": 105853,
+      "count": 5,
+      "reason": "Heilwirkung aus Willenskraft stärken."
+    },
+    {
+      "talentId": 105851,
+      "count": 1,
+      "reason": "Gebet der Besserung: Heilung bei erlittenem Schaden oder nichtperiodischer Heilung; begrenzte Sprünge, keine feste Heilmenge oder garantierte Zielwahl."
+    },
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
+    },
+    {
+      "talentId": 105845,
+      "count": 2,
+      "reason": "Nach erlittenem kritischem Treffer situativen Zauberzeitschutz und Widerstand gegen Unterbrechung ergänzen."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Schildabsorption stärken."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105842,
+      "count": 3,
+      "reason": "Kosten von Sofortzaubern sowie Heiligem Feuer und Heiligem Schlag reduzieren."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "priest-holy-pvp-cobalt",
+      "priest-battlegrounds"
+    ],
+    "editorialDecision": "Heilig-PvP mit frühen defensiven Talenten, gezielten direkten Heilungen und Gebet der Besserung 40; später Disziplin-Schild und situativer Unterbrechungsschutz. Kein garantierter Sprung auf den gewünschten Verbündeten; Geist der Erlösung ist nur nach Tod relevant. Disziplin bleibt sinnvolle Alternative für Schild-/Kontrollspiel. Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative healing performance or actual server absorb/heal calculation; no guaranteed amount or target selection.",
+      "No assumption of undocumented proc interactions or immunity."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+          "contribution": "Aktueller Build 71139 und Cache vom 25.11.; direkte Heilung oder Schaden als Auslöser, Sprungmechanik, Spirit of Redemption als Voraussetzung; keine unabhängig gemessene Skalierungsformel."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/holy-priest/rotation-and-playstyle",
+          "contribution": "10.11.: Gebet der Besserung, bedarfsgerechter Heilzauberwechsel und Manaregeneration; Endgame-Guide kein Beweis unserer Levelchronologie."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Litanei, Holy Binding, Improved Healing und Searing Light: qualitative Talentfunktionen."
+        },
+        {
+          "url": "https://undying.app/classes/priest/holy",
+          "contribution": "15.11.: tiefer Holy-Kern mit Prayer of Mending, Holy Binding, Litany und Discipline-Ressourcen; situative Alternative Holy Reach."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105851,
+        "spellId": 401859,
+        "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+        "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "rankOneBaseHeal": 172,
+          "healingPowerCoefficient": 0.429,
+          "jumpsUpTo": 5,
+          "jumpRadiusYards": 20,
+          "durationPerJumpSeconds": 30,
+          "cooldownSeconds": 10,
+          "triggerDamageOrNonPeriodicHeal": true,
+          "oneTargetPerCaster": true
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+            "build": "1.60.1.71139",
+            "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+            "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+          },
+          {
+            "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+            "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
+    }
+  },
+  "treeName": "Heilig",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-holy-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Heilig-PvP mit frühen defensiven Talenten, gezielten direkten Heilungen und Gebet der Besserung 40; später Disziplin-Schild und situativer Unterbrechungsschutz. Kein garantierter Sprung auf den gewünschten Verbündeten; Geist der Erlösung ist nur nach Tod relevant. Disziplin bleibt sinnvolle Alternative für Schild-/Kontrollspiel. Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "adviceSummary": "Heilig-PvP mit defensiven Heilfähigkeiten und Gebet der Besserung auf 40.",
+    "evidenceIds": [
+      "priest-holy-pvp-rank0-71139-editorial-1",
+      "priest-holy-pvp-rank0-71139-editorial-2"
+    ]
+  }
+}

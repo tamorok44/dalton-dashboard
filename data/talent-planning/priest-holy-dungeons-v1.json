@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "id": "priest-holy-dungeons",
+  "version": 1,
+  "classId": 5,
+  "treeId": 11615,
+  "status": "approved",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 5,
+      "treeId": 11615,
+      "goal": "dungeons",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11608": 20,
+    "11615": 31,
+    "11622": 0
+  },
+  "points": [
+    {
+      "talentId": 110855,
+      "rank": 1
+    },
+    {
+      "talentId": 110855,
+      "rank": 2
+    },
+    {
+      "talentId": 110855,
+      "rank": 3
+    },
+    {
+      "talentId": 110855,
+      "rank": 4
+    },
+    {
+      "talentId": 110855,
+      "rank": 5
+    },
+    {
+      "talentId": 105863,
+      "rank": 1
+    },
+    {
+      "talentId": 105863,
+      "rank": 2
+    },
+    {
+      "talentId": 105863,
+      "rank": 3
+    },
+    {
+      "talentId": 105863,
+      "rank": 4
+    },
+    {
+      "talentId": 105863,
+      "rank": 5
+    },
+    {
+      "talentId": 105860,
+      "rank": 1
+    },
+    {
+      "talentId": 105860,
+      "rank": 2
+    },
+    {
+      "talentId": 105860,
+      "rank": 3
+    },
+    {
+      "talentId": 105862,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 1
+    },
+    {
+      "talentId": 105858,
+      "rank": 1
+    },
+    {
+      "talentId": 105858,
+      "rank": 2
+    },
+    {
+      "talentId": 105858,
+      "rank": 3
+    },
+    {
+      "talentId": 105856,
+      "rank": 1
+    },
+    {
+      "talentId": 105866,
+      "rank": 2
+    },
+    {
+      "talentId": 105855,
+      "rank": 1
+    },
+    {
+      "talentId": 105855,
+      "rank": 2
+    },
+    {
+      "talentId": 105854,
+      "rank": 1
+    },
+    {
+      "talentId": 105853,
+      "rank": 1
+    },
+    {
+      "talentId": 105853,
+      "rank": 2
+    },
+    {
+      "talentId": 105852,
+      "rank": 1
+    },
+    {
+      "talentId": 105852,
+      "rank": 2
+    },
+    {
+      "talentId": 105852,
+      "rank": 3
+    },
+    {
+      "talentId": 105853,
+      "rank": 3
+    },
+    {
+      "talentId": 105853,
+      "rank": 4
+    },
+    {
+      "talentId": 105851,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 1
+    },
+    {
+      "talentId": 105849,
+      "rank": 2
+    },
+    {
+      "talentId": 105849,
+      "rank": 3
+    },
+    {
+      "talentId": 105849,
+      "rank": 4
+    },
+    {
+      "talentId": 105849,
+      "rank": 5
+    },
+    {
+      "talentId": 105848,
+      "rank": 1
+    },
+    {
+      "talentId": 105848,
+      "rank": 2
+    },
+    {
+      "talentId": 105848,
+      "rank": 3
+    },
+    {
+      "talentId": 105837,
+      "rank": 1
+    },
+    {
+      "talentId": 105837,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 1
+    },
+    {
+      "talentId": 105843,
+      "rank": 2
+    },
+    {
+      "talentId": 105843,
+      "rank": 3
+    },
+    {
+      "talentId": 105844,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 1
+    },
+    {
+      "talentId": 105846,
+      "rank": 2
+    },
+    {
+      "talentId": 105846,
+      "rank": 3
+    },
+    {
+      "talentId": 105837,
+      "rank": 3
+    },
+    {
+      "talentId": 105837,
+      "rank": 4
+    },
+    {
+      "talentId": 105837,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 110855,
+      "count": 5,
+      "reason": "Kritische Heilzauber und Heiligzauber unterstützen."
+    },
+    {
+      "talentId": 105863,
+      "count": 5,
+      "reason": "Zauberzeit zentraler Heilungen verringern."
+    },
+    {
+      "talentId": 105860,
+      "count": 3,
+      "reason": "Inspiration: Rüstungsschutz nach nichtperiodischen kritischen Heilungen; kein garantierter Effekt bei periodischer Heilung."
+    },
+    {
+      "talentId": 105862,
+      "count": 1,
+      "reason": "Heilige Nova als situative Gruppenheilung freischalten."
+    },
+    {
+      "talentId": 105866,
+      "count": 1,
+      "reason": "Erneuerung stärken."
+    },
+    {
+      "talentId": 105858,
+      "count": 3,
+      "reason": "Manakosten von geringer Heilung, Heilung, großer Heilung, Sühne und Gebet der Besserung reduzieren; nur erlernte Fähigkeiten nutzen."
+    },
+    {
+      "talentId": 105856,
+      "count": 1,
+      "reason": "Holy Binding: Blitzheilung auf einen anderen Verbündeten heilt auch den Priester, nicht bei Selbstheilung."
+    },
+    {
+      "talentId": 105866,
+      "count": 1,
+      "reason": "Erneuerung weiter stärken."
+    },
+    {
+      "talentId": 105855,
+      "count": 2,
+      "reason": "Litanei des Lichts: Manarückgewinn bei Wechsel des gewirkten Heilzaubers; nicht bei jedem Tick oder ausgelösten Heileffekt voraussetzen."
+    },
+    {
+      "talentId": 105854,
+      "count": 1,
+      "reason": "Geist der Erlösung als Voraussetzung freischalten."
+    },
+    {
+      "talentId": 105853,
+      "count": 2,
+      "reason": "Heilung aus Willenskraft ergänzen."
+    },
+    {
+      "talentId": 105852,
+      "count": 3,
+      "reason": "Heilleistung stärken."
+    },
+    {
+      "talentId": 105853,
+      "count": 2,
+      "reason": "Willenskraft-Skalierung weiter ausbauen."
+    },
+    {
+      "talentId": 105851,
+      "count": 1,
+      "reason": "Gebet der Besserung: Heilung bei erlittenem Schaden oder nichtperiodischer Heilung; begrenzte Sprünge, keine feste Heilmenge oder garantierte Zielwahl."
+    },
+    {
+      "talentId": 105849,
+      "count": 5,
+      "reason": "Sofortzauber und Sofortheilungen stärken."
+    },
+    {
+      "talentId": 105848,
+      "count": 3,
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
+    },
+    {
+      "talentId": 105837,
+      "count": 2,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 105843,
+      "count": 3,
+      "reason": "Manaregeneration während des Zauberwirkens ausbauen."
+    },
+    {
+      "talentId": 105844,
+      "count": 1,
+      "reason": "Situativen kostenlosen Zauber ermöglichen."
+    },
+    {
+      "talentId": 105846,
+      "count": 3,
+      "reason": "Machtwort: Schild stärken."
+    },
+    {
+      "talentId": 105837,
+      "count": 3,
+      "reason": "Intelligenz vervollständigen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "forever-tavern-priest",
+      "outpost-priest"
+    ],
+    "editorialDecision": "Durchgängiger Heilig-Dungeonpfad: direkte und Gruppenheilung, Inspiration, günstigere Heilungen, Holy Binding und Litanei auf 30–31; Gebet der Besserung auf 40, danach Disziplin-Ressourcen. Heilzauber nur nach Bedarf wechseln; nicht unnötig zaubern, um Litanei auszulösen. Holy Reach ist situative Alternative zu später Intelligenz, keine gemessene Überlegenheit. Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "unresolved": [
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative healing performance or actual server absorb/heal calculation; no guaranteed amount or target selection.",
+      "No assumption of undocumented proc interactions or immunity."
+    ],
+    "approval": "editorial_rank0_only",
+    "structuralValidation": {
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+          "contribution": "Aktueller Build 71139 und Cache vom 25.11.; direkte Heilung oder Schaden als Auslöser, Sprungmechanik, Spirit of Redemption als Voraussetzung; keine unabhängig gemessene Skalierungsformel."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/holy-priest/rotation-and-playstyle",
+          "contribution": "10.11.: Gebet der Besserung, bedarfsgerechter Heilzauberwechsel und Manaregeneration; Endgame-Guide kein Beweis unserer Levelchronologie."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Litanei, Holy Binding, Improved Healing und Searing Light: qualitative Talentfunktionen."
+        },
+        {
+          "url": "https://undying.app/classes/priest/holy",
+          "contribution": "15.11.: tiefer Holy-Kern mit Prayer of Mending, Holy Binding, Litany und Discipline-Ressourcen; situative Alternative Holy Reach."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105851,
+        "spellId": 401859,
+        "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+        "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "rankOneBaseHeal": 172,
+          "healingPowerCoefficient": 0.429,
+          "jumpsUpTo": 5,
+          "jumpRadiusYards": 20,
+          "durationPerJumpSeconds": 30,
+          "cooldownSeconds": 10,
+          "triggerDamageOrNonPeriodicHeal": true,
+          "oneTargetPerCaster": true
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+            "build": "1.60.1.71139",
+            "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+            "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+          },
+          {
+            "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+            "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
+    },
+    "previousStructuralValidation": {
+      "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
+    }
+  },
+  "treeName": "Heilig",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-holy-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Durchgängiger Heilig-Dungeonpfad: direkte und Gruppenheilung, Inspiration, günstigere Heilungen, Holy Binding und Litanei auf 30–31; Gebet der Besserung auf 40, danach Disziplin-Ressourcen. Heilzauber nur nach Bedarf wechseln; nicht unnötig zaubern, um Litanei auszulösen. Holy Reach ist situative Alternative zu später Intelligenz, keine gemessene Überlegenheit. Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "adviceSummary": "Heilig-Dungeonheilung mit Litanei des Lichts und Gebet der Besserung auf 40.",
+    "evidenceIds": [
+      "priest-holy-dungeons-rank0-71139-editorial-1",
+      "priest-holy-dungeons-rank0-71139-editorial-2"
+    ]
+  }
+}
