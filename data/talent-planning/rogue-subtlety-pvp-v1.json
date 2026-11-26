@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 4,
   "treeId": 11572,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -300,7 +300,7 @@
     },
     {
       "talentId": 110866,
-      "reason": "Todesmal als Finisher speichert einen Teil des eigenen Schadens, Blutungen besonders stark; verzögerte Auszahlung mit begrenzter Skalierung, keine feste Obergrenze voraussetzen.",
+      "reason": "Todesmal speichert eigenen Schaden, Blutungen besonders stark, und zahlt verzögert aus. Für langlebige Ziele mit Folgekontakt, bei kurzen Kämpfen direktes Ausweiden erwägen; als Fluch entfernbar. Keine feste Schadensobergrenze.",
       "count": 1
     },
     {
@@ -310,7 +310,7 @@
     },
     {
       "talentId": 105708,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt.",
+      "reason": "Coup de Grace unterstützt Ausweiden sowie Schaden und Speicherrate von Todesmal; keine unbestätigte Änderung der Schadensobergrenze annehmen.",
       "count": 3
     },
     {
@@ -355,19 +355,16 @@
       "skillcapped-subtlety-pvp",
       "foreverbattlegrounds-subtlety"
     ],
-    "editorialDecision": "Täuschung-PvP: Premeditation 20, Vorbereitung 30, Todesmal 40. Coup de Grace 43–45 unterstützt Todesmal; dafür weniger Ausweichen und allgemeiner Angriffsschaden, Sprint-Kontrolle später. Keine garantierte Kontrolle oder feste Todesmal-Obergrenze. Riposte wird dafür erst auf Stufe 60 erreicht.",
+    "editorialDecision": "Premeditation 20, Vorbereitung 30, Todesmal 40, Coup de Grace 43–45. Bewegung und Unterbrechung im Nebenbaum, Riposte erst 60. Todesmal ist ein entfernbarer Fluch; nur mit ausreichendem Zielkontakt, direktes Ausweiden oder Rückzug bei drohendem Kontaktverlust. Keine garantierte Kontrollzeit, Diminishing Returns oder Schadensobergrenze.",
     "unresolved": [
-      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
-      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Verify current PvP diminishing returns, reset scope and Death Mark limits.",
-      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
-      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
-      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Todesmal-Schadensobergrenze, Rangskalierung und Coup-de-Grace-Interaktion nicht numerisch freigegeben.",
+      "Tatsächliche PvP-Kontrolldauer und Diminishing Returns nicht als garantiert behandeln."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
-      "catalogRevision": "aa44b443774e0b700e440f2e2e4ae70eeb4469afc458ecf8df3e036596839a8e",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     },
     "conflictFollowup": {
@@ -399,7 +396,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Täuschung",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-subtlety-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Premeditation 20, Vorbereitung 30, Todesmal 40, Coup de Grace 43–45. Bewegung und Unterbrechung im Nebenbaum, Riposte erst 60. Todesmal ist ein entfernbarer Fluch; nur mit ausreichendem Zielkontakt, direktes Ausweiden oder Rückzug bei drohendem Kontaktverlust. Keine garantierte Kontrollzeit, Diminishing Returns oder Schadensobergrenze.",
+    "adviceSummary": "Täuschung-PvP mit Vorbereitung 30, Todesmal 40 und späterer Sprint- und Tritt-Kontrolle.",
+    "evidenceIds": [
+      "rogue-subtlety-pvp-rank0-71139-editorial-1",
+      "rogue-subtlety-pvp-rank0-71139-editorial-2"
+    ]
   }
 }

@@ -379,6 +379,57 @@
           }
         ],
         "decision": "Current cap and interactions with Coup de Grace remain material to choosing the finisher. Keep blocked; do not infer server rounding or release formula."
+      },
+      "deathMarkResolution": {
+        "kind": "rogue_death_mark_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 110866,
+        "spellId": 1316709,
+        "primaryHash": "bfc3454ff38ce66d773dda20bcfbe54ce944e1c59f8dc7164fa06076871778de",
+        "secondaryHash": "df4a8c060c31e29fbb23400ca69bc7e042c9e99f0fdebb330128cc32760fb6f9",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiresPreparation": true,
+          "requiredSubtletyPoints": 30,
+          "comboPointFinisher": true,
+          "storesOwnDamage": true,
+          "bleeds": [
+            "Garrote",
+            "Rupture"
+          ],
+          "bleedStorageMultiplier": 2,
+          "delaySeconds": 6,
+          "capDependsOnAttackPowerAndCrit": true,
+          "dispelType": "Curse",
+          "coupDeGraceIncreasesDamageAndStorage": true
+        },
+        "unresolved": "Exact cap, spell-rank scaling, rounding, Coup de Grace cap interaction, short-target and PvP outcomes remain unmeasured; no relative DPS prediction.",
+        "sources": [
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build pair agrees on core and leaves numeric cap placeholders in secondary text."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/1316709-death-mark/",
+            "claim": "Rank 1 spell details: 6s, double bleed storage, AP/crit-dependent cap, curse, rank progression 40/48/56/60."
+          },
+          {
+            "url": "https://forever-xp.com/changes/rogue/",
+            "claim": "Blizzard notes mirrored: new Death Mark and Coup de Grace increases damage/storage rate; client placeholders are not a server cap."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=1316709/death-mark",
+            "claim": "Resolved displayed rank-one formula, not verified server measurement or all ranks."
+          },
+          {
+            "url": "https://talentsforever.com/rogue/abilities/death-mark",
+            "claim": "Historical 70755 rank table; no claim of current cap."
+          }
+        ]
       }
     },
     {

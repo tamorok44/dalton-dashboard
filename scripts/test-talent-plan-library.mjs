@@ -164,7 +164,7 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,effects),/unresolved source difference 105709/);
         scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
       }
-      if(['rogue-combat-leveling','rogue-combat-pvp','rogue-assassination-leveling','rogue-assassination-pvp'].includes(plan.id)){
+      if(['rogue-combat-leveling','rogue-combat-pvp','rogue-assassination-leveling','rogue-assassination-pvp','rogue-subtlety-leveling','rogue-subtlety-pvp'].includes(plan.id)){
         const row=effects.rows.find(x=>x.classId===4&&x.id===105735);
         const detail=clients[0].clientTextResolutions?.[0];
         assert.ok(row&&detail&&clients[0].clientTextResolutions.length===1);
@@ -277,6 +277,31 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         assert.ok(plan.points.slice(0,30).some(p=>p.talentId===105766));
         assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,effects),/unresolved source difference 105762/);
         scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
+      }
+      if(['rogue-subtlety-leveling','rogue-subtlety-dungeons','rogue-subtlety-pvp'].includes(plan.id)){
+        const row=effects.rows.find(x=>x.classId===4&&x.id===110866);
+        const detail=clients[0].deathMarkResolution;
+        assert.ok(row&&detail&&row.deathMarkResolution);
+        assert.deepEqual(detail,{...row.deathMarkResolution,allocationDigest:talentPlanEvidenceDigest(plan)});
+        assert.equal(detail.kind,'rogue_death_mark_qualitative_reconciliation');
+        assert.equal(detail.clientBuild,pack.clientBuild);
+        assert.equal(detail.sourceRevision,pack.sourceRevision);
+        assert.equal(detail.spellId,1316709);
+        assert.equal(proof.trees.flatMap(t=>t.talents).find(n=>n.id===110866)?.spellId,detail.spellId);
+        assert.equal(detail.primaryHash,row.primaryHash);
+        assert.equal(detail.secondaryHash,row.secondaryHash);
+        assert.equal(row.classification,'incomplete_numeric');
+        assert.equal(row.quantitativeClaimVerified,false);
+        assert.equal(detail.serverMeasured,false);
+        assert.equal(detail.numericFormulaReleased,false);
+        assert.deepEqual(detail.confirmedCore,{requiresPreparation:true,requiredSubtletyPoints:30,comboPointFinisher:true,storesOwnDamage:true,bleeds:['Garrote','Rupture'],bleedStorageMultiplier:2,delaySeconds:6,capDependsOnAttackPowerAndCrit:true,dispelType:'Curse',coupDeGraceIncreasesDamageAndStorage:true});
+        assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url===pathLedger.sourceUrl));
+        assert.ok(detail.sources.some(s=>s.url==='https://wow-forever.gg/db/spells/1316709-death-mark/'));
+        assert.ok(detail.sources.some(s=>s.url==='https://forever-xp.com/changes/rogue/'));
+        assert.ok(plan.points.some(p=>p.talentId===110866)&&plan.points.some(p=>p.talentId===105708));
+        assert.ok(!plan.points.some(p=>p.talentId===105709));
+        assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,scopedEffects),/unresolved source difference 110866/);
+        scopedEffects={...scopedEffects,rows:scopedEffects.rows.filter(x=>x!==row)};
       }
       const scope=talentPathScope(plan,proof,pathLedger,cross,scopedEffects);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
@@ -635,7 +660,7 @@ for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warl
 assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
 for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
   const candidate=plans.find(p=>p.id===id);
-  const scoped=['paladin-protection-dungeons','paladin-holy-dungeons','hunter-survival-leveling','rogue-assassination-leveling','priest-discipline-dungeons','priest-holy-dungeons'].includes(id);
+  const scoped=['paladin-protection-dungeons','paladin-holy-dungeons','hunter-survival-leveling','rogue-assassination-leveling','rogue-subtlety-pvp','priest-discipline-dungeons','priest-holy-dungeons'].includes(id);
   const promoted=scoped||['shaman-elemental-leveling','shaman-restoration-dungeons','warrior-arms-leveling','warrior-fury-leveling'].includes(id);
   assert.ok(candidate&&candidate.status===(promoted?'approved':'research_only'));
   if(promoted){
@@ -923,7 +948,7 @@ for(const treeId of [11608,11615,11622])for(const goal of ['leveling','dungeons'
 
 for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"11580":31}],["rogue-assassination-pvp",{"11572":0,"11573":20,"11580":31}],["rogue-combat-dungeons",{"11572":0,"11573":31,"11580":20}],["rogue-combat-pvp",{"11572":20,"11573":31,"11580":0}],["rogue-subtlety-leveling",{"11572":31,"11573":20,"11580":0}],["rogue-subtlety-dungeons",{"11572":31,"11573":8,"11580":12}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status===(['rogue-combat-dungeons','rogue-combat-pvp','rogue-assassination-dungeons','rogue-assassination-pvp'].includes(id)?'approved':'research_only'));
+ assert.ok(p&&p.status==='approved');
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -1032,8 +1057,9 @@ for(const [id,milestones] of [
  ['rogue-subtlety-pvp',[[105743,20],[105746,30],[110866,40],[105708,43],[105735,60]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,['rogue-combat-dungeons','rogue-combat-leveling','rogue-combat-pvp','rogue-assassination-leveling','rogue-assassination-dungeons','rogue-assassination-pvp'].includes(id)?'approved':'research_only');
- assert.equal(p.research.conflictFollowup.releaseEligible,['rogue-combat-dungeons','rogue-combat-leveling','rogue-combat-pvp','rogue-assassination-leveling','rogue-assassination-dungeons','rogue-assassination-pvp'].includes(id));
+ assert.equal(p.status,'approved');
+ assert.deepEqual(p.supportedLegacyRanks,[0]);
+ assert.equal(p.research.conflictFollowup.releaseEligible,true);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');

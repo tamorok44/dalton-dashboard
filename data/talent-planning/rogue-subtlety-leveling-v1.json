@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 4,
   "treeId": 11572,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -235,7 +235,7 @@
     },
     {
       "talentId": 105708,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt.",
+      "reason": "Coup de Grace unterstützt Ausweiden sowie Schaden und Speicherrate von Todesmal; keine unbestätigte Änderung der Schadensobergrenze annehmen.",
       "count": 3
     },
     {
@@ -310,7 +310,7 @@
     },
     {
       "talentId": 110866,
-      "reason": "Todesmal als Finisher speichert einen Teil des eigenen Schadens, Blutungen besonders stark; verzögerte Auszahlung mit begrenzter Skalierung, keine feste Obergrenze voraussetzen.",
+      "reason": "Todesmal speichert eigenen Schaden, Blutungen besonders stark, und zahlt verzögert aus. Für langlebige Ziele mit Folgekontakt, bei kurzen Kämpfen direktes Ausweiden erwägen; als Fluch entfernbar. Keine feste Schadensobergrenze.",
       "count": 1
     },
     {
@@ -357,16 +357,13 @@
       "rogue-tavern-leveling",
       "rogue-hotfix-2511"
     ],
-    "editorialDecision": "Gemischtes Leveln mit fünf frühen Kampf-Punkten für günstigere Angriffe und Coup de Grace; Premeditation ab 25 statt 39, Vorbereitung 35, Todesmal 45. Frühe günstige Angriffe gegen späteren Täuschungskern abgewogen; kein Umskillen, keine Behauptung schneller als Kampf.",
+    "editorialDecision": "Fünf frühe Kampfpunkte für Energiekosten und Ausweiden; dafür Premeditation 25, Vorbereitung 35, Todesmal 45. Todesmal nur für hinreichend langlebige Ziele und zuverlässigen Folgekontakt, direktes Ausweiden bei kurzen Kämpfen. Shank erst nach Erlernen; keine Garantie zusätzlicher Combopunkte auf fremden Zielen. Riposte 55 als situative Option. Keine Behauptung schneller als Kampf oder Meucheln.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim.",
-      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
-      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
-      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Todesmal-Schadensobergrenze, Rangskalierung und Coup-de-Grace-Interaktion nicht numerisch freigegeben.",
+      "Tatsächliche PvP-Kontrolldauer und Diminishing Returns nicht als garantiert behandeln."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -401,7 +398,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Täuschung",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-subtlety-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Fünf frühe Kampfpunkte für Energiekosten und Ausweiden; dafür Premeditation 25, Vorbereitung 35, Todesmal 45. Todesmal nur für hinreichend langlebige Ziele und zuverlässigen Folgekontakt, direktes Ausweiden bei kurzen Kämpfen. Shank erst nach Erlernen; keine Garantie zusätzlicher Combopunkte auf fremden Zielen. Riposte 55 als situative Option. Keine Behauptung schneller als Kampf oder Meucheln.",
+    "adviceSummary": "Gemischter Täuschungspfad mit früher Energieentlastung, Vorbereitung 35 und Todesmal 45.",
+    "evidenceIds": [
+      "rogue-subtlety-leveling-rank0-71139-editorial-1",
+      "rogue-subtlety-leveling-rank0-71139-editorial-2"
+    ]
   }
 }
