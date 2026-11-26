@@ -787,6 +787,23 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
+// Priest conflict candidates: rank-zero schedule only, no quantitative release.
+for(const [id,milestones] of [
+ ['priest-discipline-leveling',[[105839,28],[105834,32],[105836,40]]],
+ ['priest-discipline-dungeons',[[105839,25],[105834,30],[105836,40]]],
+ ['priest-discipline-pvp',[[105839,25],[105834,30],[105836,40]]],
+ ['priest-holy-leveling',[[105851,47]]],
+ ['priest-holy-dungeons',[[105855,30],[105851,40]]],
+ ['priest-holy-pvp',[[105851,40]]]
+]){
+ const p=plans.find(x=>x.id===id);
+ assert.equal(p.status,'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+ assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+
 for(const [id,milestones] of [['hunter-beast-mastery-dungeons',[[104966,25]]],['hunter-beast-mastery-pvp',[[104966,25]]],['hunter-survival-dungeons',[[104981,30],[110860,35],[104966,52]]],['warlock-affliction-leveling',[[105912,30],[105909,40]]],['warlock-affliction-pvp',[[105913,25],[105912,30],[105909,40]]],['hunter-marksmanship-dungeons',[[105007,20],[105004,25],[104999,30],[104997,40]]],['hunter-survival-leveling',[[104981,30],[104984,40]]],['hunter-survival-pvp',[[104981,30],[105000,60]]],['paladin-protection-dungeons',[[105628,30],[110875,40]]],['paladin-protection-leveling',[[105628,35],[110875,45]]]]){
  const p=plans.find(x=>x.id===id);for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
