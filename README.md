@@ -1,6 +1,8 @@
 # Die Daltons – WoW Forever Dashboard
 
-Erweiterbares Western-Gruppendashboard für WoW Forever; die vier ursprünglichen Daltons sind der aktuelle Bestand, keine technische Grenze. Statische Website mit Vercel-Funktionen, Upstash Redis und Vercel Blob.
+Eigenständig entwickeltes, erweiterbares Western-Gruppendashboard für WoW Forever. Externe Spieldaten werden durch eigene Erhebungen, Add-on-Daten, Korrekturen und Validierungen ergänzt. Eigene Auswertungen, Planungslogik und eine eigenständige Oberfläche verbinden diese Daten mit dem individuellen Charakterfortschritt. Die vier ursprünglichen Daltons sind der aktuelle Bestand, keine technische Grenze. Statische Website mit Vercel-Funktionen, Upstash Redis und Vercel Blob.
+
+Die dashboardweit verbindliche Erklärlogik zu Eigenentwicklung und Datenherkunft steht in `AGENTS.md`. Externe Quellen werden transparent genannt; ihre Daten sind von eigenen Funktionen und Berechnungen zu unterscheiden.
 
 Die projektweit verbindliche Zielarchitektur und Pflichtprüfung für Erweiterbarkeit von Charakteren, Klassen, Datenhaltung und Sync stehen in `AGENTS.md`. Bestehende feste Roster-/Relay-Annahmen sind technische Altlasten und werden kontrolliert abgelöst; die Dokumentation der aktuellen Implementierung ist keine Ausnahme von der Zielvorgabe.
 
