@@ -103,10 +103,6 @@
       "rank": 3
     },
     {
-      "talentId": 105756,
-      "rank": 1
-    },
-    {
       "talentId": 105746,
       "rank": 1
     },
@@ -121,6 +117,10 @@
     {
       "talentId": 105747,
       "rank": 2
+    },
+    {
+      "talentId": 105756,
+      "rank": 1
     },
     {
       "talentId": 105750,
@@ -147,16 +147,24 @@
       "rank": 1
     },
     {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
       "talentId": 105722,
       "rank": 1
     },
     {
       "talentId": 105722,
       "rank": 2
-    },
-    {
-      "talentId": 105708,
-      "rank": 1
     },
     {
       "talentId": 105722,
@@ -205,14 +213,6 @@
     {
       "talentId": 105741,
       "rank": 2
-    },
-    {
-      "talentId": 105708,
-      "rank": 2
-    },
-    {
-      "talentId": 105708,
-      "rank": 3
     },
     {
       "talentId": 105737,
@@ -230,123 +230,113 @@
   "rationaleBlocks": [
     {
       "talentId": 105760,
-      "count": 5,
-      "reason": "Hinterhalt- und Blutungsfähigkeiten stärken."
+      "reason": "Hinterhalt- und Blutungsfähigkeiten stärken.",
+      "count": 5
     },
     {
       "talentId": 105761,
-      "count": 3,
-      "reason": "Verstohlenheit verbessern."
+      "reason": "Verstohlenheit verbessern.",
+      "count": 3
     },
     {
       "talentId": 105745,
-      "count": 2,
-      "reason": "Kosten der Eröffnung senken."
+      "reason": "Kosten der Eröffnung senken.",
+      "count": 2
     },
     {
       "talentId": 105743,
-      "count": 1,
-      "reason": "Premeditation für vorbereitete Combopunkte freischalten."
+      "reason": "Premeditation für vorbereitete Combopunkte freischalten.",
+      "count": 1
     },
     {
       "talentId": 105755,
-      "count": 3,
-      "reason": "Zusätzlichen Combopunkt bei Eröffnungen unterstützen."
+      "reason": "Zusätzlichen Combopunkt bei Eröffnungen unterstützen.",
+      "count": 3
     },
     {
       "talentId": 105752,
-      "count": 2,
-      "reason": "Rüstungsdurchdringung und Blutungsschaden ausbauen."
+      "reason": "Rüstungsdurchdringung und Blutungsschaden ausbauen.",
+      "count": 2
     },
     {
       "talentId": 105754,
-      "count": 1,
-      "reason": "Geisterhaften Stoß freischalten."
+      "reason": "Geisterhaften Stoß freischalten.",
+      "count": 1
     },
     {
       "talentId": 105753,
-      "count": 2,
-      "reason": "Abklingzeit von Verschwinden und Blenden reduzieren."
+      "reason": "Abklingzeit von Verschwinden und Blenden reduzieren.",
+      "count": 2
     },
     {
       "talentId": 105752,
-      "count": 1,
-      "reason": "Gezahnte Klingen vervollständigen."
-    },
-    {
-      "talentId": 105756,
-      "count": 1,
-      "reason": "Verstohlenheitsbewegung verbessern."
+      "reason": "Gezahnte Klingen vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105746,
-      "count": 1,
-      "reason": "Vorbereitung freischalten."
+      "reason": "Vorbereitung freischalten.",
+      "count": 1
     },
     {
       "talentId": 105748,
-      "count": 1,
-      "reason": "Blutsturz freischalten."
+      "reason": "Blutsturz freischalten.",
+      "count": 1
     },
     {
       "talentId": 105747,
-      "count": 2,
-      "reason": "Erkennung und Schutz vor Distanzangriffen verbessern."
+      "reason": "Erkennung und Schutz vor Distanzangriffen verbessern.",
+      "count": 2
+    },
+    {
+      "talentId": 105756,
+      "reason": "Verstohlenheitsbewegung verbessern.",
+      "count": 1
     },
     {
       "talentId": 105750,
-      "count": 5,
-      "reason": "Boot Knife verbessert die Combopunkt-Erzeugung durch Shank auf dem getroffenen Ziel."
+      "reason": "Boot Knife verbessert die Combopunkt-Erzeugung durch Shank auf dem getroffenen Ziel.",
+      "count": 5
     },
     {
       "talentId": 110866,
-      "count": 1,
-      "reason": "Todesmal als Finisher speichert einen Teil des eigenen Schadens, Blutungen besonders stark; verzögerte Auszahlung mit begrenzter Skalierung, keine feste Obergrenze voraussetzen."
-    },
-    {
-      "talentId": 105722,
-      "count": 2,
-      "reason": "Kritische Trefferchance erhöhen."
+      "reason": "Todesmal als Finisher speichert einen Teil des eigenen Schadens, Blutungen besonders stark; verzögerte Auszahlung mit begrenzter Skalierung, keine feste Obergrenze voraussetzen.",
+      "count": 1
     },
     {
       "talentId": 105708,
-      "count": 1,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
+      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt.",
+      "count": 3
     },
     {
       "talentId": 105722,
-      "count": 3,
-      "reason": "Kritische Trefferchance erhöhen."
+      "reason": "Kritische Trefferchance erhöhen.",
+      "count": 5
     },
     {
       "talentId": 105721,
-      "count": 3,
-      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+      "reason": "Combopunkte nach Finishing-Moves unterstützen.",
+      "count": 3
     },
     {
       "talentId": 105739,
-      "count": 3,
-      "reason": "Zerhäckseln verlängern."
+      "reason": "Zerhäckseln verlängern.",
+      "count": 3
     },
     {
       "talentId": 105716,
-      "count": 1,
-      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+      "reason": "Kritischen Fähigkeitenschaden erhöhen.",
+      "count": 1
     },
     {
       "talentId": 105741,
-      "count": 2,
-      "reason": "Kosten häufiger Angriffe senken."
-    },
-    {
-      "talentId": 105708,
-      "count": 2,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
+      "reason": "Kosten häufiger Angriffe senken.",
+      "count": 2
     },
     {
       "talentId": 105737,
-      "count": 3,
-      "reason": "Trefferchance erhöhen."
+      "reason": "Trefferchance erhöhen.",
+      "count": 3
     }
   ],
   "research": {
