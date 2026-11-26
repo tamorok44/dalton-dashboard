@@ -1,0 +1,1440 @@
+{
+  "schemaVersion": 1,
+  "node": "v26.13.1",
+  "commit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235",
+  "passed": 159,
+  "failed": 0,
+  "results": [
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/addon-device-enroll.js",
+      "status": "passed",
+      "ms": 29,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/addon-device-promote.js",
+      "status": "passed",
+      "ms": 30,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/addon-sync-status.js",
+      "status": "passed",
+      "ms": 55,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/addon-sync.js",
+      "status": "passed",
+      "ms": 28,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/characters.js",
+      "status": "passed",
+      "ms": 53,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/daily-snapshot.js",
+      "status": "passed",
+      "ms": 43,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/data-version.js",
+      "status": "passed",
+      "ms": 67,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/location-planner.js",
+      "status": "passed",
+      "ms": 52,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/profession-planner.js",
+      "status": "passed",
+      "ms": 78,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/refresh.js",
+      "status": "passed",
+      "ms": 27,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/spellbook-sync.js",
+      "status": "passed",
+      "ms": 48,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check api/workshop.js",
+      "status": "passed",
+      "ms": 88,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check app.js",
+      "status": "passed",
+      "ms": 89,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check hunter-pets.js",
+      "status": "passed",
+      "ms": 80,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check reputation-data.js",
+      "status": "passed",
+      "ms": 32,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/addon-device-auth.mjs",
+      "status": "passed",
+      "ms": 64,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/addon-sync-store.mjs",
+      "status": "passed",
+      "ms": 57,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/addon-sync.mjs",
+      "status": "passed",
+      "ms": 78,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/archive-images.mjs",
+      "status": "passed",
+      "ms": 23,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/armory-core.mjs",
+      "status": "passed",
+      "ms": 59,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/blizzard-api.mjs",
+      "status": "passed",
+      "ms": 35,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/browser-talent-regression.mjs",
+      "status": "passed",
+      "ms": 60,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/build-delta.mjs",
+      "status": "passed",
+      "ms": 39,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/build-talent-plan-index.mjs",
+      "status": "passed",
+      "ms": 51,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/character-store.mjs",
+      "status": "passed",
+      "ms": 25,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/class-trainer-zones-de.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/class-training-classic-costs.mjs",
+      "status": "passed",
+      "ms": 82,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/class-training-store.mjs",
+      "status": "passed",
+      "ms": 67,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/classic-npc-display-ids.mjs",
+      "status": "passed",
+      "ms": 32,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/compact-master-cache.mjs",
+      "status": "passed",
+      "ms": 73,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/compare-mage-talent-sources.mjs",
+      "status": "passed",
+      "ms": 43,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/daily-snapshot-store.mjs",
+      "status": "passed",
+      "ms": 69,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/dalton-sync-client.mjs",
+      "status": "passed",
+      "ms": 79,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/data-version.mjs",
+      "status": "passed",
+      "ms": 46,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/forever-details.mjs",
+      "status": "passed",
+      "ms": 74,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/foreverdb-api.mjs",
+      "status": "passed",
+      "ms": 35,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/foreverdb-budget.mjs",
+      "status": "passed",
+      "ms": 46,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/game-catalog-store.mjs",
+      "status": "passed",
+      "ms": 29,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/history-store.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/knowledge-media.mjs",
+      "status": "passed",
+      "ms": 48,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/learning-source-evidence.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/live-knowledge-store.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/location-catalog.mjs",
+      "status": "passed",
+      "ms": 61,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/location-planner.mjs",
+      "status": "passed",
+      "ms": 36,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/media-registry.mjs",
+      "status": "passed",
+      "ms": 74,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/media-resolver.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/official-scrape.mjs",
+      "status": "passed",
+      "ms": 68,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/pet-db2-audit.mjs",
+      "status": "passed",
+      "ms": 25,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/pet-db2-baseline.mjs",
+      "status": "passed",
+      "ms": 59,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/pet-localization-store.mjs",
+      "status": "passed",
+      "ms": 49,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/pet-rule-store.mjs",
+      "status": "passed",
+      "ms": 55,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/pet-rulebook.mjs",
+      "status": "passed",
+      "ms": 21,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/player-terminology.mjs",
+      "status": "passed",
+      "ms": 73,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/profession-knowledge.mjs",
+      "status": "passed",
+      "ms": 34,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/profession-planner.mjs",
+      "status": "passed",
+      "ms": 29,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/quest-catalog-store.mjs",
+      "status": "passed",
+      "ms": 63,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/refresh-service.mjs",
+      "status": "passed",
+      "ms": 23,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/reputation-catalog-store.mjs",
+      "status": "passed",
+      "ms": 21,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/run-test-suite.mjs",
+      "status": "passed",
+      "ms": 38,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/savedvariables-parser.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/scrape.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/spellbook-sync.mjs",
+      "status": "passed",
+      "ms": 40,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-build-review.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-catalog-proof.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-display-corrections.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-full-release-gate.mjs",
+      "status": "passed",
+      "ms": 45,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-hunter-prerequisite-correction.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-legacy-policy.mjs",
+      "status": "passed",
+      "ms": 70,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-legacy-release.mjs",
+      "status": "passed",
+      "ms": 38,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-legacy-research.mjs",
+      "status": "passed",
+      "ms": 47,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-localization-audit.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-path-scope.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-plan-core.mjs",
+      "status": "passed",
+      "ms": 53,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-plan-coverage.mjs",
+      "status": "passed",
+      "ms": 39,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-plan-index.mjs",
+      "status": "passed",
+      "ms": 22,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-planner-api.mjs",
+      "status": "passed",
+      "ms": 51,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-preview-observation.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-release-readiness.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-rule-watch.mjs",
+      "status": "passed",
+      "ms": 55,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-tree-store.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/talent-zephras-audit.mjs",
+      "status": "passed",
+      "ms": 56,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-addon-structure.mjs",
+      "status": "passed",
+      "ms": 31,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-addon-sync.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-architecture-contract.mjs",
+      "status": "passed",
+      "ms": 62,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-armory.mjs",
+      "status": "passed",
+      "ms": 46,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-blizzard-api.mjs",
+      "status": "passed",
+      "ms": 56,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-class-training-store.mjs",
+      "status": "passed",
+      "ms": 24,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-data-version.mjs",
+      "status": "passed",
+      "ms": 52,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-forever-details.mjs",
+      "status": "passed",
+      "ms": 28,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-foreverdb-budget.mjs",
+      "status": "passed",
+      "ms": 23,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-game-catalog.mjs",
+      "status": "passed",
+      "ms": 61,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-game-language.mjs",
+      "status": "passed",
+      "ms": 39,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-history.mjs",
+      "status": "passed",
+      "ms": 75,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-layout-contract.mjs",
+      "status": "passed",
+      "ms": 34,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-learning-source-evidence.mjs",
+      "status": "passed",
+      "ms": 52,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-live-knowledge.mjs",
+      "status": "passed",
+      "ms": 28,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-location-planner.mjs",
+      "status": "passed",
+      "ms": 57,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-media-resolver.mjs",
+      "status": "passed",
+      "ms": 55,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-pet-localization.mjs",
+      "status": "passed",
+      "ms": 52,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-pet-rules.mjs",
+      "status": "passed",
+      "ms": 32,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-player-terminology.mjs",
+      "status": "passed",
+      "ms": 22,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-profession-planner.mjs",
+      "status": "passed",
+      "ms": 57,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-quest-catalog.mjs",
+      "status": "passed",
+      "ms": 20,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-refresh-api.mjs",
+      "status": "passed",
+      "ms": 70,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-reputation-catalog.mjs",
+      "status": "passed",
+      "ms": 53,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-spellbook-sync.mjs",
+      "status": "passed",
+      "ms": 68,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-talent-build-review.mjs",
+      "status": "passed",
+      "ms": 26,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-talent-matrix-stress.mjs",
+      "status": "passed",
+      "ms": 57,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-talent-plan-core.mjs",
+      "status": "passed",
+      "ms": 25,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-talent-plan-library.mjs",
+      "status": "passed",
+      "ms": 31,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-talent-planner-preview.mjs",
+      "status": "passed",
+      "ms": 56,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-talent-trees.mjs",
+      "status": "passed",
+      "ms": 25,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-ui.mjs",
+      "status": "passed",
+      "ms": 65,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/test-workshop.mjs",
+      "status": "passed",
+      "ms": 84,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/version-metadata.mjs",
+      "status": "passed",
+      "ms": 29,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/workshop-core.mjs",
+      "status": "passed",
+      "ms": 40,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/workshop-foreverdb.mjs",
+      "status": "passed",
+      "ms": 59,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check scripts/workshop-store.mjs",
+      "status": "passed",
+      "ms": 41,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check sw.js",
+      "status": "passed",
+      "ms": 46,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check talent-personal-state.js",
+      "status": "passed",
+      "ms": 42,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check talent-planner.js",
+      "status": "passed",
+      "ms": 69,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Syntax",
+      "test": "--check talent-text-quality.js",
+      "status": "passed",
+      "ms": 34,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "00 – Generierter Freigabeindex",
+      "test": "scripts/build-talent-plan-index.mjs --check",
+      "status": "passed",
+      "ms": 81,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "01 – Stammdaten und Architektur",
+      "test": "scripts/test-architecture-contract.mjs",
+      "status": "passed",
+      "ms": 66,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "01 – Stammdaten und Architektur",
+      "test": "scripts/test-game-catalog.mjs",
+      "status": "passed",
+      "ms": 43,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "01 – Stammdaten und Architektur",
+      "test": "scripts/test-player-terminology.mjs",
+      "status": "passed",
+      "ms": 70,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "01 – Stammdaten und Architektur",
+      "test": "scripts/test-game-language.mjs",
+      "status": "passed",
+      "ms": 42,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "01 – Stammdaten und Architektur",
+      "test": "scripts/test-talent-trees.mjs",
+      "status": "passed",
+      "ms": 161,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "01 – Stammdaten und Architektur",
+      "test": "scripts/test-talent-build-review.mjs",
+      "status": "passed",
+      "ms": 106,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "02 – Talentregeln und vollständige Bibliothek",
+      "test": "scripts/test-talent-plan-core.mjs",
+      "status": "passed",
+      "ms": 111,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "02 – Talentregeln und vollständige Bibliothek",
+      "test": "scripts/test-talent-plan-library.mjs",
+      "status": "passed",
+      "ms": 875,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "02 – Talentregeln und vollständige Bibliothek",
+      "test": "scripts/test-talent-matrix-stress.mjs",
+      "status": "passed",
+      "ms": 391,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "02 – Talentregeln und vollständige Bibliothek",
+      "test": "scripts/talent-release-readiness.mjs --summary",
+      "status": "passed",
+      "ms": 357,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "02 – Talentregeln und vollständige Bibliothek",
+      "test": "scripts/talent-zephras-audit.mjs --summary",
+      "status": "passed",
+      "ms": 580,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "02 – Talentregeln und vollständige Bibliothek",
+      "test": "scripts/talent-full-release-gate.mjs --summary",
+      "status": "passed",
+      "ms": 564,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-armory.mjs",
+      "status": "passed",
+      "ms": 47,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-blizzard-api.mjs",
+      "status": "passed",
+      "ms": 62,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-forever-details.mjs",
+      "status": "passed",
+      "ms": 85,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-history.mjs",
+      "status": "passed",
+      "ms": 107,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-data-version.mjs",
+      "status": "passed",
+      "ms": 89,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-foreverdb-budget.mjs",
+      "status": "passed",
+      "ms": 307,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-refresh-api.mjs",
+      "status": "passed",
+      "ms": 164,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "03 – Datenhaltung, API und Zugriffsschutz",
+      "test": "scripts/test-talent-planner-preview.mjs",
+      "status": "passed",
+      "ms": 1271,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-pet-rules.mjs",
+      "status": "passed",
+      "ms": 172,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-pet-localization.mjs",
+      "status": "passed",
+      "ms": 91,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-quest-catalog.mjs",
+      "status": "passed",
+      "ms": 36,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-reputation-catalog.mjs",
+      "status": "passed",
+      "ms": 60,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-media-resolver.mjs",
+      "status": "passed",
+      "ms": 31,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-learning-source-evidence.mjs",
+      "status": "passed",
+      "ms": 111,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-workshop.mjs",
+      "status": "passed",
+      "ms": 86,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-profession-planner.mjs",
+      "status": "passed",
+      "ms": 76,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-class-training-store.mjs",
+      "status": "passed",
+      "ms": 54,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-live-knowledge.mjs",
+      "status": "passed",
+      "ms": 76,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "04 – Fachmodule und Medien",
+      "test": "scripts/test-location-planner.mjs",
+      "status": "passed",
+      "ms": 100,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "05 – Add-on und Synchronisierung",
+      "test": "scripts/test-spellbook-sync.mjs",
+      "status": "passed",
+      "ms": 43,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "05 – Add-on und Synchronisierung",
+      "test": "scripts/test-addon-sync.mjs",
+      "status": "passed",
+      "ms": 63,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "05 – Add-on und Synchronisierung",
+      "test": "scripts/test-addon-structure.mjs",
+      "status": "passed",
+      "ms": 60,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "06 – Oberfläche und Layout",
+      "test": "scripts/test-ui.mjs",
+      "status": "passed",
+      "ms": 213,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    },
+    {
+      "phase": "06 – Oberfläche und Layout",
+      "test": "scripts/test-layout-contract.mjs",
+      "status": "passed",
+      "ms": 61,
+      "exitCode": 0,
+      "signal": null,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "observation": {
+    "status": "observed",
+    "checkedAt": "2026-11-26T19:47:21.078Z",
+    "checkedAtMs": 1795722441078,
+    "revisionSince": "2026-11-26T19:47:21.078Z",
+    "clientBuild": "1.60.1.71139",
+    "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d"
+  },
+  "classes": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "7",
+    "8",
+    "9",
+    "11"
+  ],
+  "count": 467,
+  "matchingOriginalRulePacks": 82,
+  "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+  "checkedAt": "2026-11-26T19:47:21.659Z",
+  "responses": [
+    {
+      "host": "bindonforever.com",
+      "status": 200,
+      "age": null
+    },
+    {
+      "host": "foreverdb.net",
+      "status": 200,
+      "age": null
+    },
+    {
+      "host": "worldofwarcraft.blizzard.com",
+      "status": 200,
+      "age": null
+    },
+    {
+      "host": "foreverdb.net",
+      "status": 200,
+      "age": null
+    },
+    {
+      "host": "foreverdb.net",
+      "status": 200,
+      "age": null
+    }
+  ]
+}

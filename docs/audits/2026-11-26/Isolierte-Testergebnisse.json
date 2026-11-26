@@ -1,0 +1,73 @@
+[
+  {
+    "code": "F07a",
+    "actual": 2,
+    "expected": 1
+  },
+  {
+    "code": "F07b",
+    "actual": {
+      "root": "craftable",
+      "external": 0
+    },
+    "expected": "unresolved dependency, not a complete plan"
+  },
+  {
+    "code": "F03",
+    "actual": {
+      "persistedIds": [
+        133
+      ],
+      "captureMovesBack": true
+    },
+    "expected": {
+      "persistedIds": [
+        133,
+        143
+      ],
+      "captureMovesBack": false
+    }
+  },
+  {
+    "code": "F08",
+    "actual": {
+      "alliance": 0,
+      "horde": 1,
+      "unknown": 1
+    },
+    "expected": {
+      "alliance": 0,
+      "horde": 1,
+      "unknown": 0
+    }
+  },
+  {
+    "code": "F06",
+    "actual": {
+      "returned": true,
+      "endpoints": 42,
+      "successful": 0
+    },
+    "expected": "raw snapshot classification must fail before archival when every endpoint fails"
+  },
+  {
+    "code": "Kontrolle-Talent",
+    "actual": {
+      "unneededProviderChecks": 0
+    },
+    "expected": {
+      "unneededProviderChecks": 0
+    }
+  },
+  {
+    "code": "F02",
+    "actual": {
+      "separateSuccessfulUpdates": 2,
+      "persistedCharacters": 1
+    },
+    "expected": {
+      "separateSuccessfulUpdates": 2,
+      "persistedCharacters": 2
+    }
+  }
+]

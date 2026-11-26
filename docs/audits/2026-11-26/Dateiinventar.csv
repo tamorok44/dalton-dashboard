@@ -1,0 +1,316 @@
+﻿Pfad;Baustein;Endung;Bytes;Zeilen;SHA256;Automatisiert geprüft
+.github/workflows/addon-ci.yml;CI/CD;.yml;11172;242;917fc2e1d7f843bfcdd53991224b65e76d371550bfd99b2917dd748d2cdff846;Inventar (Bytezahl + SHA256)
+.github/workflows/browser-ci.yml;CI/CD;.yml;2249;62;822983f1c9a39ad2b714c04a4b9fcb1a899780696584e19f231275de7a9be812;Inventar (Bytezahl + SHA256)
+.github/workflows/update-data.yml;CI/CD;.yml;1293;41;adcf66d66995d8aa3b07797a40b3b522af953f3401d69fe40993968ffcfac039;Inventar (Bytezahl + SHA256)
+AGENTS.md;Dokumentation;.md;10285;49;86f2dfb56892b456c212a200a21cd0ddebd4d43a3aa15bb2491a04534bcd2cd9;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+DATA_ARCHITECTURE.md;Dokumentation;.md;6986;107;e8893e65d7936779383d8e1e36741949b8cc2f8e8dc46d27a23de4d057bc059d;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+GAME_LANGUAGE.md;Dokumentation;.md;2244;41;00e69dd5425e01ce43d70d0742a4fa40bd13cf63355574bd3e0b063ed97409e0;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+README.md;Dokumentation;.md;12920;97;3fde8ab61ccf83b771c81968a19f43bf58db156e4aa5c69e2ae9155c61dfa2eb;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+TYPOGRAFIE.md;Dokumentation;.md;5014;86;f82e4dcf19c98e5e6eac50c97e0e50c989e779201f59e3ca940d34144a9e6b88;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+UI_CI.md;Dokumentation;.md;3469;78;adc0152e9675a241c6a60a399f61b70d8d447818eed4ed5f6cf85477768e738d;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+WOW_CI.md;Dokumentation;.md;2203;47;741c7217e5eef54b1bf7c9d77363264c8224d98b34f1f800f3d5f8c0ab844c10;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+addons/DaltonDashboard/CHANGELOG.md;Add-on/Bridge;.md;1364;23;2276c5dbbdf18d4d4d264a743acd8889ae6eb51e9cac271439e89c97ebcbc85d;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+addons/DaltonDashboard/Core.lua;Add-on/Bridge;.lua;5427;189;bf914b63e1a008ac6ccd7f9404e037dd91b6a7029d2f3f798fb7569fcd54afe2;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/DaltonDashboard.lua;Add-on/Bridge;.lua;5194;159;91383461042d40b6d0bfa4362463900cd1d7130a7d7852834d53b07fce2f1209;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/DaltonDashboard.toc;Add-on/Bridge;.toc;562;19;461590ac95b8c9c68ae520dea2efad5993e2fb840a1e0067d9d721fd63774511;Inventar (Bytezahl + SHA256)
+addons/DaltonDashboard/LICENSE;Add-on/Bridge;(ohne);1086;21;290ca473a9636a4d671429da8f1b522312774ba1d131fa6c691a73fe9357cf3e;Inventar (Bytezahl + SHA256)
+addons/DaltonDashboard/Modules/Character.lua;Add-on/Bridge;.lua;1637;60;a3691920efba8013e82dbbde74edf6e390188831b336ec21acf84464b0aac119;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/HunterPet.lua;Add-on/Bridge;.lua;8191;263;01cc337c342f5a5fcc64a65b914c276b2f0ce90a08b293fb1e3436af493123f9;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/Instances.lua;Add-on/Bridge;.lua;5882;189;befaa726181ddde787f30820a00f84f45da474f203af4606ec67779d9b46e630;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/Interactions.lua;Add-on/Bridge;.lua;13779;389;a92323e42b04cd55692ee6c26203c650b499e4cbf7db1fef788088e72690c2b2;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/Inventory.lua;Add-on/Bridge;.lua;6996;231;dc69a707f2bcae4b6ca3f77e27708087eb9077b94aea91cf66a599696d0a595b;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/Location.lua;Add-on/Bridge;.lua;5779;182;468ed954195f8bdcb78e6adf9f757b0e570ffd2afaae941c210695f857cb7286;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/Relay.lua;Add-on/Bridge;.lua;17859;564;b446d40bdfcf464d0cccb97635fae9093c9a32877a8c556f1ee7569665e76c7c;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/Modules/Spellbook.lua;Add-on/Bridge;.lua;2851;91;a501288298af220fc26d5ef74ec08caf57c21db339140711b42d195101d18c24;Inventar (Bytezahl + SHA256) | Lua-Syntax separat geprüft
+addons/DaltonDashboard/README.md;Add-on/Bridge;.md;6814;82;753009d76d316073724a9da884cc0104fc7524ec4efa972ec2ea0306f60986ed;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+android-icon-maskable.svg;Asset;.svg;2159;29;b7d507dcc7ed433d6fc4d33898cd70742196f0fa45767eb3f8d1ed3a650d11f9;Inventar (Bytezahl + SHA256)
+android-icon.svg;Asset;.svg;2053;28;9b0c5aada1f50c770144131b9b87981bfd3b5805fb2a3a6c67212f1f302359cc;Inventar (Bytezahl + SHA256)
+api/addon-device-enroll.js;Add-on/Bridge;.js;2324;53;179bdf2135c03c4c4047a8d3883aed3c94f88474ec7412d6adbb9b49bd126a89;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/addon-device-promote.js;Add-on/Bridge;.js;1153;28;2fb9d77b1ddd8712534588021900fb8eb90f703a55bcfa3c8668b5940ed85de6;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/addon-sync-status.js;Add-on/Bridge;.js;1774;33;1492a8a512994d87174fc6ec6ec99042a54d94f15c20f33f492a036e9e36570b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/addon-sync.js;Add-on/Bridge;.js;6781;143;6629546577a2afaf49e6a49d16c3d2093ac2016dd64b7c4f7c16c339041c2bb2;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/characters.js;quellen-katalog;.js;3814;61;bca9019a9c5672f94b325f04deedfad17151e17f71332b1345c78b2aec36fa16;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/daily-snapshot.js;backend-betrieb;.js;5404;109;c8002eabc8d415374ba406d3d09c4e08db2e41210a26cbe21970827fe4baa7ab;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/data-version.js;backend-betrieb;.js;527;10;a5320e9bd18f8c24e6b32acc1b187eff5bcc6c9f71f42c55e419dcbd7582a110;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/location-planner.js;ortsplaner;.js;14535;292;caa1301156acf0371a584dcafa7ffae9c0408222624a31a23aa89e004d982e4e;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/profession-planner.js;ortsplaner;.js;3354;68;684356a2068f30216daf8d910c10e7277f45d91779c4d7f8ce43e4856af1fcff;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/refresh.js;backend-betrieb;.js;3305;56;748fc20d66d2fc170821aa36778bfa2cf573fac121d8d82505ac715a9808c80d;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/spellbook-sync.js;Add-on/Bridge;.js;5170;103;9b60d8b0e75886374f9c05f2b006557c53cb37c0282cc4bc953c38e2590fe147;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+api/workshop.js;werkstatt;.js;13937;334;6dcb9c425cc4c8e5f3fc50c7e173405293f243a75d2dd9976411974260aae7e9;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+app.js;Frontend/PWA;.js;151858;2151;0239dd984a5d62920936fae91686726c77a33102a23130d42fd8201e585a1240;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+apple-touch-icon.png;Asset;.png;30709;;301a974edb0d0788fa4ba2c3b96ca4edeb660d93bf8cc9515d874cf9616fcc36;Inventar (Bytezahl + SHA256)
+bridge-branding.svg;Asset;.svg;2111;14;a8a963f44fe265f56f93f9a0da8ff51b30df00f66942add27e2771410990a08d;Inventar (Bytezahl + SHA256)
+bridge-tray.svg;Asset;.svg;1793;14;f1c09cfbc357910a6d85d9126b8247cb3ca5398fb5402ce62ec868b8e9667def;Inventar (Bytezahl + SHA256)
+bridge/Deinstallieren.cmd;Add-on/Bridge;.cmd;169;7;4e20eda21b8be2b3473ea6cd4dd26987f3490a791496151abfc357a83672f500;Inventar (Bytezahl + SHA256)
+bridge/Deinstallieren.command;Add-on/Bridge;.command;1105;33;4abd9b17298af79ecedfe8acd17c35973c0dd6c96e2eae8a50081be0967b5b6d;Inventar (Bytezahl + SHA256) | Bash-Syntax separat geprüft
+bridge/Einrichtungscode-erstellen.cmd;Add-on/Bridge;.cmd;189;7;ac4ffd3c62809262ffeb44e4a6a06313960a8405048327e2b131b79925a9e313;Inventar (Bytezahl + SHA256)
+bridge/Einrichtungscode-erstellen.command;Add-on/Bridge;.command;1426;53;3f58dc1c671d0f9d4ef718d78cf572484a9bd188d5fb12b9872669ca7f97313d;Inventar (Bytezahl + SHA256) | Bash-Syntax separat geprüft
+bridge/Installieren.cmd;Add-on/Bridge;.cmd;165;7;55ce95d228f6a6e8ae4e01debb03065c45b6fa69bb78323b5a3547dc7cd7cbd5;Inventar (Bytezahl + SHA256)
+bridge/Installieren.command;Add-on/Bridge;.command;2854;81;23dddf8a2df02479f7d99c904f3a55134a9877698ce484c411daa792dc256bef;Inventar (Bytezahl + SHA256) | Bash-Syntax separat geprüft
+bridge/README-Spieler-Windows.txt;Add-on/Bridge;.txt;1472;32;25e6521fbd487056a3d0bbe3a829c32845edde79ad8fea61780a05bd964d4f1d;Inventar (Bytezahl + SHA256)
+bridge/README-Spieler-macOS.txt;Add-on/Bridge;.txt;1425;32;c17f403ad9a79170ce69f6029dcb517c556477170ea017f5fff2411234c8e8cc;Inventar (Bytezahl + SHA256)
+bridge/Testen.command;Add-on/Bridge;.command;654;23;d2a9b45f721bda6fc9cfaf2528ecb8dfc85af0b5d5c5dc27b4bb120f61a4cf4b;Inventar (Bytezahl + SHA256) | Bash-Syntax separat geprüft
+bridge/create-enroll-windows.ps1;Add-on/Bridge;.ps1;1691;55;210726bf3a2c714db5814eada07842e756f92b325db40a4bb39adee0938d687f;Inventar (Bytezahl + SHA256)
+bridge/install-windows.ps1;Add-on/Bridge;.ps1;3544;76;15ed4a5f2246933c580945f10e387db37cb96e7e830b4b4f13ae3733e10a2164;Inventar (Bytezahl + SHA256)
+bridge/uninstall-windows.ps1;Add-on/Bridge;.ps1;1516;38;abce916ad0620bbb0f166d1fd1178b8e615adb5991649b645fa8882b2e3222a5;Inventar (Bytezahl + SHA256)
+dalton-crest.svg;Asset;.svg;3190;26;9c0bfdc23065a8ca50130803ba7640fa0c789be17115185be73c332847054625;Inventar (Bytezahl + SHA256)
+data/characters.json;quellen-katalog;.json;19017;610;9a0fe43dd1cff5fd7dc940bc3f0619dca7f265b7f53f27280d55fa5f422a9c83;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/learning-source-evidence.json;ortsplaner;.json;2209;75;c17bb67b6d151ce6374c3b6ffc508a5a8ce14df8ea6f7273f6f42e9c82b4771e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/catalog-proofs-2026-11-25.json;Talentplaner;.json;300641;9269;f9bb3c0504a2bc29c78dc41217100862b3841d5ef24abe981102adebe734ad25;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/catalog-research-2026-11-26.json;Talentplaner;.json;245694;7574;7ce86d83a7e497de6f1efce974723b0863241e0e66631f2084da10ec99b2bef2;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/coverage-2026-11-25.json;Talentplaner;.json;3992;234;db4aadcb34216bd21ec0455f40f505cbe8bd51a125ad5855cb83e4dbc2807530;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-balance-dungeons-v1.json;Talentplaner;.json;9404;388;4ee2bc6e63b528ebfaa8a1e32fe9de8c9b757a155af15b55ca47de06764edfdc;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-balance-leveling-v1.json;Talentplaner;.json;9452;388;8be571d629bd5bf79e217bb3b35d2ca75645d47249804795acca748d30e5cf31;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-balance-pvp-v1.json;Talentplaner;.json;9527;393;05ef3fc1ba77808d965db98fc9bb2fcee423e0cf6718949b617d87ea6c89e6e0;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-feral-dungeons-damage-v1.json;Talentplaner;.json;8817;372;d948f9a06fa94ec63b3cf8442b7a1337a35f39c40be5e7c846bb542c28d5a7ff;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-feral-leveling-tank-v1.json;Talentplaner;.json;8460;362;888f856616915b402105d3a93abdc686afbba3d6a7db5fcef98dd870268ffcec;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-feral-mixed-v1.json;Talentplaner;.json;8848;379;008f8bd1e33a0dc1153c1b4bf046054dac0ad5916156acd73ae12f4f14b7c07e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-feral-pvp-damage-v1.json;Talentplaner;.json;9119;377;01b0ab30fd7232b9c8a7814afe7fae626d1c62a6baf9627c864ad6c2de80778e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-feral-pvp-tank-v1.json;Talentplaner;.json;8437;363;611325ae38bfc3602410bc51c55af519d3d8906da7de12b92bee49e80ac31955;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-feral-tank-group-v1.json;Talentplaner;.json;8397;363;77286f3d801735137d603d1e4664700ad9b3ff0444f3544199191af030c02980;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-restoration-dungeons-v1.json;Talentplaner;.json;9817;397;68785731b9d017bff8e060c00203b2d530cbc9da2662ed80e687c9292fd38e2e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-restoration-leveling-v1.json;Talentplaner;.json;9650;397;9a2473fb5598c175b8b0adde668f8272a9ce12051f08c438f0ed40e981ad2c01;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/druid-restoration-pvp-v1.json;Talentplaner;.json;9658;392;e968828fa855df4ef7176abb8b9c617afa372fa18883f095484f3d5a63a1cf45;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/evidence-2026-11-25.json;Talentplaner;.json;119330;2795;8b2d1b6ae3378d022b12c8a10f67cc917154872cbc46b8d1cd9f2162728ff064;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-beast-mastery-dungeons-v1.json;Talentplaner;.json;9764;386;c4720b08e09797787bb6c4a05d7a9e7cff2c0112ed13f59c809ce69ed5d11aa1;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-beast-mastery-leveling-v1.json;Talentplaner;.json;10208;408;1687fe12cf133f079b865c51bc2b25a521ca8f24897f92f8a51f197fbfcbef1d;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-beast-mastery-pvp-v1.json;Talentplaner;.json;10084;406;bd4f1ca2a0c10b052197db2fb5c312385622768e52eb068127f815944974bbe0;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-marksmanship-dungeons-v1.json;Talentplaner;.json;8157;356;cd1c2b021001538578904c97b9a844c346086fb3d22cc9b5a63fcb5f3ef329e0;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-marksmanship-leveling-v1.json;Talentplaner;.json;7920;356;bc7eda82d3783b18fdf7a83673158495bd0c9adce2b332a57e2b3381cf89995b;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-marksmanship-pvp-v1.json;Talentplaner;.json;8237;366;2dc6d4e92710df208fa38d159c2ea9d1ee5e96598a69875df8aeb370ffbb668d;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-survival-dungeons-v1.json;Talentplaner;.json;10410;396;9ec5ae39a7b09f6e20889edbbd9927828be2318dc66298a45b33601a79bfc7cf;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-survival-leveling-v1.json;Talentplaner;.json;7670;351;7143e493ed00a9daf03bb0863020578e6e202a2c0824c44f1b86f974071942be;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/hunter-survival-pvp-v1.json;Talentplaner;.json;8016;356;398abb63f9137841a495b2e81c4e03d0ea6e66e38b66b740097f4d3d0cffb2b3;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-arcane-dungeons-v1.json;Talentplaner;.json;8526;374;1d6460a8104af3943cff65223aa1fb14c9c401810a6519fd001e968bb38176a2;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-arcane-mixed-v1.json;Talentplaner;.json;8209;380;b72462fb141b10a20083e5b18c8c0b7835d99f8bacb8384ec81e480781238d74;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-arcane-pvp-v1.json;Talentplaner;.json;7868;370;e2e3f83ce17ce2a9fbd878aa8c7dc59e88347a35357de5fabf1d010d30c3147c;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-catalog-comparison-2026-11-25.json;Talentplaner;.json;1087;22;6d51bdad96cd0fa687c135887d258140a62963f15785438221d8f99358198163;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-fire-dungeons-v1.json;Talentplaner;.json;8417;373;2682af7b2bc253b989b5b2ffacf1f3c0c8610672fd25a88570b51b1a89c23cd0;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-fire-mixed-v1.json;Talentplaner;.json;6656;351;f5fab2896e7319bed31baa8b28a8c8299d23a6c87927df002007495da6940283;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-fire-mixed-v2.json;Talentplaner;.json;8425;364;16b918091e46c3e7924a5e1a1b51f0830e6ecb2fd03dfe5153d6257183b48e14;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-fire-pvp-v1.json;Talentplaner;.json;7916;370;12502d203944ce63459d9e4b746aca996ec5af76841fae3e9cf8f9008c3a7790;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-frost-dungeons-v1.json;Talentplaner;.json;9781;401;e64cc4e7e29cee013d51ea948c03c3678e5fee2e1fab53c3a3f0810407897a31;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-frost-mixed-v1.json;Talentplaner;.json;12261;460;f57effff7719f27a97f180f191951034fb4335dca10d58257281d5bb8818234f;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/mage-frost-pvp-v1.json;Talentplaner;.json;9677;403;1b206671d42b9c386009a83a58142b527c50d4826d93b8ef6f4173134782310d;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-holy-dungeons-v1.json;Talentplaner;.json;10006;410;dae13fef518b83bb71a2891e18102e8326b1efd8a16fb73e0ef0b03f00743f8e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-holy-leveling-v1.json;Talentplaner;.json;10470;411;de794d3bc188e17c04d346835e14154e92fea8c72a5a37a82487a63be558fc9c;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-holy-pvp-v1.json;Talentplaner;.json;10771;416;c17492db6df6d657a98bcfc86fed73e51295bdebb636ed6e91c1d42964aec923;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-protection-dungeons-v1.json;Talentplaner;.json;7835;365;bd439227e207a81f442f1ec2370e265d2d8ef7f2242714b87c43c8c5cf4f4401;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-protection-leveling-v1.json;Talentplaner;.json;7920;366;40027d0ad627016c20df545e15ec2c4b2c062baad39c72e9bf756267688d3ca1;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-protection-pvp-v1.json;Talentplaner;.json;11051;426;1a929b4d637d2f164009d626f705ab8038f668a37ed2c3986fb9b0d473280e7e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-retribution-dungeons-v1.json;Talentplaner;.json;9626;397;c1e39908666fd9fe8d1ad962b9a3a627d821fa9b0e0c179fa9a8bdfdc004e72a;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-retribution-leveling-v1.json;Talentplaner;.json;10126;400;e39e78dcfebe9eef28bdd1043d416bf1254c14ff2b59ddc2f383164a440ba21e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/paladin-retribution-pvp-v1.json;Talentplaner;.json;10221;406;e6148de342d0171bc179dd42d4438cd32a97225762bfb24103a256d0154dd5e6;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-discipline-dungeons-v1.json;Talentplaner;.json;12802;441;bd6eae38fdb719bd6be12970314dc970bb9b295f020946d83f60189adb09b7bb;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-discipline-leveling-v1.json;Talentplaner;.json;12848;442;6564e32b25827f5ef1cf4ac8825c0790c3002421b803d9c679c26f575d05cd99;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-discipline-pvp-v1.json;Talentplaner;.json;12131;431;169097d515ad63c989e5169db3901e4599508d07b4a0086182bc58f87a59cb96;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-holy-dungeons-v1.json;Talentplaner;.json;12877;446;7e820ba716fc7ecde5e1cea74f1442759912eca5820c7f16a7685c990145296a;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-holy-leveling-v1.json;Talentplaner;.json;12523;437;96a959a145e778257eecb856e55c897d0a9f8ff0112a015109175bf5701fdeb4;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-holy-pvp-v1.json;Talentplaner;.json;12015;421;b60450c8670a67f556ed3ace72fb8e29c12c2d444dc0e5d87e80d62cc58a855b;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-shadow-dungeons-v1.json;Talentplaner;.json;7735;366;728515b352a887d3969887e415021efa870d15dc4b8ff90c1e2e3f8d0314e1e7;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-shadow-leveling-v1.json;Talentplaner;.json;7494;360;b80c140a0dd8fecb6c444ff1f02fe32330de9883228b7d0712557fa1856950c8;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/priest-shadow-pvp-v1.json;Talentplaner;.json;8214;366;b1957c8bce08c40202f2a4cf17ad3b50adce2ce0d1332ea7a7e6519db2ba84ad;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/release-catalog.json;Talentplaner;.json;697734;15789;4bba67e0e46736ba2560396e9e8e1884dd4907e6b3521e8586bab632015ed503;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-assassination-dungeons-v1.json;Talentplaner;.json;12367;454;b8af9ffadad0bb81aeb1b85766d6e16316e0f84bc06754bacc9e2583b5ec6121;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-assassination-leveling-v1.json;Talentplaner;.json;12283;458;a31fd9550e68ce0a6bf0555919040d6a3961b78dfdeaa3828a186a7573f31cfa;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-assassination-pvp-v1.json;Talentplaner;.json;12134;454;6c8da5cd229c4d47418359f60b2d3cc520a50ba298f711dbda243ee510c6c7f9;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-combat-dungeons-v1.json;Talentplaner;.json;10159;409;efd7c41a3a6a5e7c04c1f975f504bd6670d1871b991f228db372d5793389906d;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-combat-leveling-v1.json;Talentplaner;.json;12005;461;8a8fdf115248444ab36a6390e07ed4ba8a3955c7c17dfbbb15ac23951e345abc;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-combat-pvp-v1.json;Talentplaner;.json;11560;452;41e5ae5326f88ec243bce381e6286c6d99817c5155e4c0531cbbf15d83a10327;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-subtlety-dungeons-v1.json;Talentplaner;.json;9724;409;097e69b5c187589efbdc33c691c5ab294f6043f29c162bdcb065dfab65218a8d;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-subtlety-leveling-v1.json;Talentplaner;.json;10137;420;692811bf708ab425bd51f8501c8c97b26b0fce60922b954d35feb7bac3f1e89c;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/rogue-subtlety-pvp-v1.json;Talentplaner;.json;9994;418;3bc5e98754107279bdea82f4684a13c7bd470b908c1044ac5a70fa5316087c84;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-elemental-dungeons-v1.json;Talentplaner;.json;7396;365;47aaff8a707c5e4cc8717a8e3436a6ff0bf745732a571480ca8c44810afcce95;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-elemental-leveling-v1.json;Talentplaner;.json;7379;370;446c026888bc681594844b215ec104fa10160646690cd8615eab500c6602e9c5;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-elemental-pvp-v1.json;Talentplaner;.json;7795;380;7d1e97612a4711d2b0d6464d47b8e2a3f1276f9cc51fc1f8577d2464bc6c3bc4;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-enhancement-dungeons-v1.json;Talentplaner;.json;7495;365;6e9e76b3bd9dd373e5d355a8b8d19fd5a691f56847385a10fb458635beb5de55;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-enhancement-leveling-v1.json;Talentplaner;.json;7698;360;a30bc038acf5dad1cd6d81c528a82581b207320f8bc498a6d781553a231e0ad5;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-enhancement-pvp-v1.json;Talentplaner;.json;7289;360;5fcf154ed9f2964998229affbb65483c855844fba1fedccb7efe70ddc42f14a3;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-restoration-dungeons-v1.json;Talentplaner;.json;7546;365;d93c1bd412ca2f6a8a0c3b2808351076a12952aabf3ca30df058534219e642c6;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-restoration-leveling-v1.json;Talentplaner;.json;7936;380;cad8642153645be38f32c02001233febc9981373cb9165ad41b242d2d483ab3c;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/shaman-restoration-pvp-v1.json;Talentplaner;.json;7559;365;e4896047da4d5c4bef2ce34376819cb90f3c08dbf908e273fc136d971302d79c;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-affliction-dungeons-v1.json;Talentplaner;.json;8033;345;778afb009a27a63f5ff61e5f072dbb5e2d62e956e5151c0b679fb9044beb28ee;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-affliction-leveling-v1.json;Talentplaner;.json;9335;399;6b6a62cc098bd03d4c033f222d08e7b52a8a89a8b2cc8ea8608760bfceb6809e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-affliction-pvp-v1.json;Talentplaner;.json;9835;407;78f439f4fa53da12123e9196f2f78b42047b53d413b59ff6726a0a2d0bb81c04;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-demonology-dungeons-v1.json;Talentplaner;.json;10516;395;18301be0d0c8407e91f01de98e719cbe35891b5aa0ab7904ff4f0c8b0fda87a7;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-demonology-leveling-v1.json;Talentplaner;.json;10131;395;a6970876967ac302df9e834f2185dbd4740241d0341f4577508351b5a954983c;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-demonology-pvp-v1.json;Talentplaner;.json;9682;386;d5fc8a1a069cb6ff5feb8406de55e15c36814214ea74d63656caadf12b2211ac;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-destruction-dungeons-v1.json;Talentplaner;.json;7274;350;3234f007a9901b57f53c81bcb043707ae76233a0a53cc31cc94005021bbd3220;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-destruction-leveling-v1.json;Talentplaner;.json;7593;360;879a467701d8260ba30174be28341db793a1981c542bcc449a52dc2e88601379;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warlock-destruction-pvp-v1.json;Talentplaner;.json;7521;350;250706695d24b9e6db9d66062476316199f2cb757dc33094f3a5dd19cd6bff46;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-arms-dungeons-v1.json;Talentplaner;.json;8075;366;5c4fa2b2266a6072de355ed03d1495ebe71b86004ca229b7837451d561ea171e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-arms-leveling-v1.json;Talentplaner;.json;7699;365;c41e25a4dd73a45e8058db1e7684f61202a23346c826481b9f90f4242a317cfc;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-arms-pvp-v1.json;Talentplaner;.json;10620;430;7024fb377780d5a83d616d971a45b8a6e5c1e9fdac87e72acdd976458beda475;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-fury-dungeons-v1.json;Talentplaner;.json;7992;371;60f26604c37f88677121e2d0e590e7e391f084982cd83b9095d213eeb9629cf6;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-fury-leveling-v1.json;Talentplaner;.json;7593;370;e545cff8d19000f2e37c07ce8cc55cc17271b1109e5c980205ecda970fb0b3ca;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-fury-pvp-v1.json;Talentplaner;.json;8192;366;5351b5f08509b51935194e8c82723ccf487650ce989f78cd780f0a5e8a619f38;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-protection-dungeons-v1.json;Talentplaner;.json;7713;365;0aa7d85acfd0ba9826a3dea1c50c27e48303b5db8d9cb8d0f9ed6002a3fe4c51;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-protection-leveling-v1.json;Talentplaner;.json;8318;376;1b94c58a1f94b7fb32f2db81bb35e59f8332745a960ace8efe7467999711bb2d;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+data/talent-planning/warrior-protection-pvp-v1.json;Talentplaner;.json;8168;372;4b19dba1347ad5f9b7992b694d535a37afc8eb99853f0db5a1a3c42fc3c74969;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/architecture-contracts.md;Dokumentation;.md;48115;237;35e3e4dfea8ccefe409eddc4c20313588f726c5e0488e14f36b07b158873c3b3;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/codex-handoff.md;Dokumentation;.md;10671;40;23665eb5b291f0a67319448fa213372f915bbe8f2d6a9be8db051d208c01029e;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/curseforge-beta1.md;Dokumentation;.md;4298;75;d04d5b4129852150e4aa7deaf0105a9723a990c1b9b77d4cccc06e14eb8df4c4;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/dalton-sync-companion.md;Add-on/Bridge;.md;5631;109;4212c07ac79ac4bf27cd98885369a1b7f472245857ffd7fc90ffe2969f949565;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/display-order-review.json;Konfiguration/Projekt;.json;22002;527;55be7ac9da372d8c0aa169e35e48a7486c2992f30a5abc5d51b104fde7b753f8;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/pet-crit-evidence-2026-11-26.md;Jägerbegleiter;.md;1737;7;ea00eaad122519e83a3d5c0e389780d6b16cda28fac05af5ee597e876c8faa9e;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/pet-rulebook-2026-11-26.md;Jägerbegleiter;.md;1520;7;24101828697264c4e07a7814208ba6679193cb242d03a438a17950b632bb924a;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-assistant-review-2026-11-26.json;Talentplaner;.json;29895;883;8dbe9e942acc13e6ed2a5afb39d70f64a6a2694235a9f81c2eba92690244c41b;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-browser-qa-2026-11-26.md;Talentplaner;.md;723;3;4e0ba75da0ba8a8e0c84858eaf50942f6978b11598a5cda1f16af88c8323c218;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-comparative-review-2026-11-26.md;Talentplaner;.md;13605;139;22a4524812a3553c55f2cebec0726a5f940bb93b455cc0731028dad7df398ec9;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-conflict-review-round1-2026-11-26.md;Talentplaner;.md;5441;34;01efcdc98eb63b8d0b137086e43cb325df7f7f4a65ece69e3ff52ff7afc87213;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-cross-build-review-2026-11-26.json;Talentplaner;.json;17368;485;6f80095333017a4506d4ced24f3193d574049ec20fe49780ea06e8662dff907e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-druid-final-path-review-2026-11-26.md;Talentplaner;.md;4844;142;fc21e490ad1bbb26c8dc32337b140db6713b6d9b3d9f237fb31e9c728c5902fc;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-druid-hotfix-reconciliation-2026-11-26.json;Talentplaner;.json;3383;73;881b96f88f0cad191b4dd3774d6372cfb9b594e223c1ad882bb1a6eb9f864240;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-effect-review-2026-11-26.json;Talentplaner;.json;40251;852;c0a13f41cb12876d8955f4d6bbb818a83b6b251c7f24b15d9f17071502bfb4f3;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-exact-capture-2026-11-26.json;Talentplaner;.json;31252;995;c0e939627c9a416bbf1a6cab6bac35deaa6180fd19e256c528aebdd2f15d57ad;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-fachliche-fortsetzung-2026-11-26.md;Talentplaner;.md;3378;31;3aa68476ef4b1ab7ac8a5ed0328538389f07c33caa27c50dc240f615d99d60d0;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-feral-scope-review-2026-11-26.md;Talentplaner;.md;6586;52;ce41b1dedebfd2306742f3c7f9238137ec2629aa490613db5655ea60ddcf8f0a;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-foundation.md;Talentplaner;.md;106008;426;c6273e1a6c23d2c57ebefff4e8a9a8c34aee21e2d77c5468d44ed0501cd57c82;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-frost-final-path-review-2026-11-26.md;Talentplaner;.md;3687;47;34a79266b8b6e4139b711f037205c3b0a13d5bafa1bc89ef3eb41c984f6159e7;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-hunter-final-path-review-2026-11-26.md;Talentplaner;.md;2683;10;fe5e1533076a51ca3b3626ce799fbadad2539f9da76037c32c1b01b5dc83e52d;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-hunter-prerequisite-correction-2026-11-26.json;Talentplaner;.json;2869;61;a64904d0f4178e11dda64893ed9ed519800e41ec34b6dd68af67e0f9e09f9a39;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-hunter-prerequisite-research-2026-11-26.md;Talentplaner;.md;3211;50;756ade3632d09574eb9d9b1a6ec278d14c93a66474570012447a594bb548ef7b;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-independent-path-review-2026-11-26.json;Talentplaner;.json;288504;12647;88775b2efc004456b5031a4cda2f2084202a80ae73ca0d6b4ca15bd7d423da71;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-independent-review-2026-11-26.json;Talentplaner;.json;17402;700;41d6248204eb226209a3c2ba1da9f720ddfec4ab9e49048c4b7051f70f1b8eae;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-legacy-release-2026-11-26.md;Talentplaner;.md;844;3;16f4848ab73c70fe601d87912f68cb2a8fa1a3cdf86aeb86eb1d4e9f751b9e0d;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-legacy-rule-review-2026-11-26.json;Talentplaner;.json;1998;47;a2d0d6c4db835afd83ede8a2040005922b6aa94474fcde3dd7cd325ee29ea29f;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-live-personal-review-2026-11-26.md;Talentplaner;.md;2803;9;f8cba58f4a7508a20f06ad6a5afead6c075163399d152037f965da41f0b10c54;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-localization-qa-2026-11-26.md;Talentplaner;.md;2520;5;68dd8d37b6667bd23e83b19ffdb0bd2eb7ab3ca83bfe41851b93bc5c773f2db5;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-paladin-final-path-review-2026-11-26.md;Talentplaner;.md;6491;44;8d57bd530801afa9022603dc92f5bf9b2d633535acc19606358c794774a68ed3;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-path-scope-review-2026-11-26.md;Talentplaner;.md;8639;70;232e597eff7d5f66ef090fe3ab4f958f641ff11ad2b1a1dd3a9e0e488c9204a2;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-quantitative-followup-2026-11-26.md;Talentplaner;.md;3452;35;0a69427354956969f0070cca7dc0b0c49661f64e90a9534dd92762536b99389b;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-rank0-editorial-batch-2026-11-26.md;Talentplaner;.md;4463;29;2fb69e9f150f8e2fd1629b442e970f34819650c86d4f10f5ceb342c399c380de;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-rank0-editorial-batch2-2026-11-26.md;Talentplaner;.md;7208;57;4c3d4215ab9f189c3b65730bc9e7a1a22b354ec50d167289b3ecbb485fa93daf;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-rank0-editorial-batch3-2026-11-26.md;Talentplaner;.md;5423;39;652b42c5ef1cdfc5010bf2717dec1e8b7a9969ae82eb5eaf0eaaa3517c5bc5bf;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-remaining-path-review-2026-11-26.md;Talentplaner;.md;6705;106;8c8b5ca1d96369e4de965dc71ca0bc0bc857726b6a57aab7048ba6120b4aa5bb;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-revalidation-2026-11-26.json;Talentplaner;.json;2249;44;58ededabffcb9609788229189baf15afb8ae67e03dd70bc2faab58c89665894e;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+docs/talent-planner-subtlety-final-path-review-2026-11-26.md;Talentplaner;.md;3880;54;1990f6ec7af7d3b3623cfc243a2dc1eec2b59016d7a5db170301345a60a25c4c;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-warlock-final-path-review-2026-11-26.md;Talentplaner;.md;4365;74;5b3a2538eb729bd0be7cb79b140ff4c09c0b4d75fb3176ee65bd413546998720;Inventar (Bytezahl + SHA256) | Dokumentstruktur/Querverweise erfasst
+docs/talent-planner-zephras-review-2026-11-26.json;Talentplaner;.json;10532;411;5e00c9f938fa75441f87a770b1f3224e243b90a944dd50c3152a7a154a2263d5;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+hunter-pets.js;Frontend/PWA;.js;5052;108;178ac05055d460ccf5bc6beec7d21097b4b761a3b4f5051cb90e3f8338c132b9;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+icon.svg;Asset;.svg;2708;22;6298405c5b1b2b25e6e4534f3458182f88f08f1b52adc124d4432b3c49b2bbcc;Inventar (Bytezahl + SHA256)
+index.html;Frontend/PWA;.html;6614;84;d5f61795c0f85b1647a3a50a86af8a3ca50cbf1b629da0bc8f7a8f78bfdce4ea;Inventar (Bytezahl + SHA256)
+level-sheriff.svg;Asset;.svg;2069;22;12098c6d6e94fe91f20688ec3a01f0a54567f863bd71c62b7372df3387b30d71;Inventar (Bytezahl + SHA256)
+manifest.webmanifest;Frontend/PWA;.webmanifest;599;29;fcf0e0cd0e83300c8c12c1453a5e1b451980a85a3bdeea2968c6e6457e80f5cd;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+package-lock.json;Konfiguration/Projekt;.json;12865;367;576f6a582f2f6d6f28fcaea71d222ea090789091e8220421d2bfb646e266f23a;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+package.json;Konfiguration/Projekt;.json;849;26;9aaf219b25bf834ca3d7e1078813e4bcb6d397f61fa701a974c81cd3920b7ac2;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+quest-marker.png;Asset;.png;260;;6b0389c302104f8aa27dfa1b3a7903c99f0314ce8a7785d80fbf907be2de9998;Inventar (Bytezahl + SHA256)
+reputation-data.js;Frontend/PWA;.js;7631;171;a4bc98e8066714f2c5062cdf1d12aafbcef938bf1f1318f723b0ea243a242740;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scene-chucky.svg;Asset;.svg;4264;44;a275416222580ee6207a9af4cccf405539bed49797c3f05ba88077b1290c1e76;Inventar (Bytezahl + SHA256)
+scene-cole.svg;Asset;.svg;5003;42;3f4978ae69688a0b003297812aa81547f346476af544fab88eed2260d3f12d88;Inventar (Bytezahl + SHA256)
+scene-dolly.svg;Asset;.svg;4019;36;b503678e28ea2954918338418a49281a9e8050c5f20ae1fa95ee6be5c2d6e069;Inventar (Bytezahl + SHA256)
+scene-viola.svg;Asset;.svg;5141;42;4c37fa47a11738f5a4f81b83ff3436654139523cfec9bd1c5c5945703fd9d856;Inventar (Bytezahl + SHA256)
+scripts/addon-device-auth.mjs;Add-on/Bridge;.mjs;5209;105;4cc0125aa3980c7c7f4425ad9368d8bf88dc9fa3f0f7e0a12cf3edaf724c0d60;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/addon-sync-store.mjs;Add-on/Bridge;.mjs;2078;47;7e501e1f0249f4970fd2dfa5c119963be7b998ca0718c68ac1b6b46f46bd9abf;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/addon-sync.mjs;Add-on/Bridge;.mjs;9899;260;fd3f5894460f3463c2a2f07efb82473b619205970a6c0921e2769c11a0363424;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/archive-images.mjs;medien;.mjs;4629;90;f6a348897ab24814db875a59ed6656232dfb6021d406b01552ab906bdadbf86b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/armory-core.mjs;quellen-katalog;.mjs;24629;455;db1ddb3f859a5f3adf8ffcf55ce8c1db07a842d9f92f7e0a634be689ea7c23bb;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/blizzard-api.mjs;quellen-katalog;.mjs;16311;425;f815dcfcfbb049a55afdfb74a23df8b79aa9648faa47724256373c155ab5ee76;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/browser-talent-regression.mjs;Test;.mjs;28111;332;f6ba4d8a752409b6b6638c54589da8c25b402882ba4b11026be469bfc8951f67;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/build-delta.mjs;quellen-katalog;.mjs;2874;46;84563911ef66047ebb155c39172023a7bf9644426c0dd39bdacfd274bec1c550;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/build-talent-plan-index.mjs;Talentplaner;.mjs;1298;20;5616a1e33afba2b39ee57f972f6f7eb09b115157269c0be0c5b36d6d70dc16df;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/character-store.mjs;backend-betrieb;.mjs;4379;75;4f050ebf63aa1897eec4126c713a2839fbd26652b85de73ae6aabb2be9e1826b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/class-trainer-zones-de.mjs;ortsplaner;.mjs;865;30;55e4ab26490e48f08383a421a5de180225c0189c0475e100eed0af91656231b4;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/class-training-classic-costs.mjs;ortsplaner;.mjs;15418;5;43016363acb8c6c8b2e4f5488cfa514ede6f5e7761c212e9255a770cb8a660b2;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/class-training-store.mjs;ortsplaner;.mjs;22713;472;4e78f27af890b432012353bc14362cd807f40ba8d586d0d27c97a93eef9ea938;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/classic-npc-display-ids.mjs;ortsplaner;.mjs;14295;8;c7fc7e8effff145ba4e40dd3f785fd102db147ee081066ed28241d2b08d368af;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/compact-master-cache.mjs;backend-betrieb;.mjs;1779;40;32e2dbeaac8bea83a48e6daa73dbe122f4e895fb484a64294bdcf393720a8937;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/compare-mage-talent-sources.mjs;Talentplaner;.mjs;3160;54;afb54624a4170640b5dfb91ba6d594dd80fd7dfaba88648f8453b88ce09267d2;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/daily-snapshot-store.mjs;backend-betrieb;.mjs;1264;33;2da33367372d2bfe0d0427333ba01b79fdd5b140c31e3271ba501f11fd25e642;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/dalton-sync-client.mjs;Add-on/Bridge;.mjs;24880;550;7fa175b5f3815f04d1ab97445ea5f9b109d3e572fc56fb08a02f1246656a16d7;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/data-version.mjs;backend-betrieb;.mjs;3382;58;1f6ec8e5479424b3fcd014978dec1eb5467858834667a839ab87dcf1e6e5efd9;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/fixtures/bridge-savedvariables.lua;Testfixture;.lua;1091;41;01a2c9984e37da1ff57fa1d8b1b53a48c1cef979cc69dcb56a00e608187a04f5;Inventar (Bytezahl + SHA256)
+scripts/forever-details.mjs;quellen-katalog;.mjs;9961;234;0aa7b2df88e0e97d863d23df9d7257ec90b525c4992aea6f0bd7d2dd836bf301;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/foreverdb-api.mjs;quellen-katalog;.mjs;7449;159;c6092c2cd6c2fcaa5440da3a393f40f4ed3034489d6057442b649464eb3fe195;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/foreverdb-budget.mjs;quellen-katalog;.mjs;1485;22;e5c8c9f20d351e3ffe4fa31909c94180a971b692404e48f3eef19367b55dc92a;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/game-catalog-store.mjs;quellen-katalog;.mjs;8720;183;592b10135c1086ebb698e110ab44b7a0d5a8945700143d9b90c0570bbd866148;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/history-store.mjs;backend-betrieb;.mjs;6816;186;5cd2a8bfcdf0cd2ed898c5af45525d9724ad850e1ca2cd610a56119a25922039;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/knowledge-media.mjs;medien;.mjs;8935;139;f61aacb88df83eca747698af461d647a2a2847b37443a98c9c948ce1ce75e87c;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/learning-source-evidence.mjs;ortsplaner;.mjs;28553;666;bfa1ec39f063e68d8390d97af7de0d579299cfafefc2850a35cd166663a6776f;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/live-knowledge-store.mjs;Konfiguration/Projekt;.mjs;14547;350;5824463c97d90bb6be7bc439dcaa3222dbea4a3d1b22a1bc6518abd43b6f0eeb;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/location-catalog.mjs;ortsplaner;.mjs;4073;87;e5cc77fc652904d69983b62c494089ca5b7d5ade62fadd5f22cbea670fcf2b1f;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/location-planner.mjs;ortsplaner;.mjs;23620;584;f562b1b1e9163dea3110ae6b658fd318a40f321d03d3f99737c28185fdb4c228;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/media-registry.mjs;medien;.mjs;1679;42;9345426908ef99f124a5d1efa2d047a363ed1047567ef93aa43706001972381c;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/media-resolver.mjs;medien;.mjs;4222;102;1d5756b65bdb569d65244a2f572163e2881e76417f7261d0258f69ba8669a0a9;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/official-scrape.mjs;quellen-katalog;.mjs;521;7;34b420e2bd052f7b4795466b141e56537cbb5834c947c266754c5ace8b111d5c;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/pet-db2-audit.mjs;Jägerbegleiter;.mjs;4026;67;0a87349cd0dd4e57288ceaab6814d617064646f678d0cc3125b63ef84cf86c1a;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/pet-db2-baseline.mjs;Jägerbegleiter;.mjs;18581;240;1024b86f11b1cc9e44180230ff60be94129cf47277a80991c0c521d7de0a999e;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/pet-localization-store.mjs;Jägerbegleiter;.mjs;7392;161;bc8f90edf0c94aeeafc5a563226ecdc1712434e5b567ba5ac9002eda123248fd;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/pet-rule-store.mjs;Jägerbegleiter;.mjs;4955;108;585deb107d727099783fd2d667f04a2c7909ec66d5be76bf65092e46fd9760a1;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/pet-rulebook.mjs;Jägerbegleiter;.mjs;26879;490;609e14ebad70528b0d092ca2312ab9da07b95c63e44eedb48bf02176cfd2e2e2;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/player-terminology.mjs;quellen-katalog;.mjs;4985;110;45a1fc3f7643c8da1867f151a45d6a42e8f08a8b8d6590003b6c9afdb5f0c216;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/profession-knowledge.mjs;quellen-katalog;.mjs;4130;58;5016378ea00104263d1749bc99d2de750ca7f766452bff073a00c9da866fdac4;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/profession-planner.mjs;ortsplaner;.mjs;10110;279;0a9cba747cb81c7fb31b4f90708ef385dc85b585f50d94f906f6cef0b663aa69;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/quest-catalog-store.mjs;quellen-katalog;.mjs;2733;75;1d00fb104ec56a9c4ffc60ab585ccbf88f59648d5b99257051e3a8e8f053577a;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/refresh-service.mjs;backend-betrieb;.mjs;6813;129;1a139866f674df67530663835e1ef9106a50cad8a574993c823b7a218f79a68e;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/reputation-catalog-store.mjs;quellen-katalog;.mjs;6935;175;4ede6ebd12ace60ad47df9a28665188868ed22ee96e9482e4c84fdd8090feb7f;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/run-test-suite.mjs;backend-betrieb;.mjs;5021;111;0c0343e7b31e7cc428d06a1a5f3f8c3ec27bd94c843f188d90fc7e6cf4260b83;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/savedvariables-parser.mjs;Add-on/Bridge;.mjs;5486;159;bc301b13483d77391e2d03bcbb3c92513bd9239b1c4bbdc20618704e58fa1d84;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/scrape.mjs;quellen-katalog;.mjs;8685;169;70a23ac8b03dc97d18cfb6031970924e22b87bd6896053132064eb81e6c14b8a;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/spellbook-sync.mjs;Add-on/Bridge;.mjs;5412;114;afe7af5e722b4605575b303087cca4acf0ef21c369c8eeb9b605fca5610981c8;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-build-review.mjs;Talentplaner;.mjs;11284;183;8aa9122c6e0df6fb5582dd298d785d759f125ac6f751a86a5589c977a14d9e67;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-catalog-proof.mjs;Talentplaner;.mjs;2852;64;df8c1f6b31a3e46069f4e1d76306d94042d176e30e23077c16492688b21e93aa;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-display-corrections.mjs;Talentplaner;.mjs;8186;75;f568d79e830acdc1fbb6f2ed116af3b0fe3dfe625aaa69539eb0e4786bc7c161;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-full-release-gate.mjs;Talentplaner;.mjs;6978;60;4620753b1b7737550cbf9ced2ca70bc7ad5ed5408da6b88ba25a750519fb21da;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/talent-hunter-prerequisite-correction.mjs;Talentplaner;.mjs;2676;23;f3abb19e9b3471d86eb397f132784d6756bf6912fa300e5cb2e0bd379188f075;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-legacy-policy.mjs;Talentplaner;.mjs;825;5;659905b300269d66d7cb22033a311df7a550cb5c2155359c4acfb81ec4f6fc7f;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-legacy-release.mjs;Talentplaner;.mjs;2900;28;920b8096340094e73cfe2997d7102a96c9b4a3cac1e6349c7b96b1ac33cebe61;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-legacy-research.mjs;Talentplaner;.mjs;2320;27;68b0d417f3839ff28158997b8b262b9817a0d0ca0cf35de6bd01e6cbf4e1e4b2;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-localization-audit.mjs;Talentplaner;.mjs;1897;22;89ae86d7184d517b14b4d5f3f680306c76cf83fe32844b5ca4ce436f0b5f4fa5;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-path-scope.mjs;Talentplaner;.mjs;1954;24;eff8ae37fadd02c9eff5b8e22e51d480cc848e834bf9e97900b8d2f5f4e3a714;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-plan-core.mjs;Talentplaner;.mjs;8734;120;5080c7c8e89f9966e66462cab14a988e078987b8bd3bd43082c400c510bd3064;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-plan-coverage.mjs;Talentplaner;.mjs;4976;91;bb21bc5e44f0e62b139fb913b07ecb8339c492bbaee8d2d22759be010b949731;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-plan-index.mjs;Talentplaner;.mjs;8807;86;f8af2416ac76856553233d2dddbb1430de5e58a9841f2fb33dcbcdd18a5b4aae;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-planner-api.mjs;Talentplaner;.mjs;10948;140;0e5eb1df2151fcf2021c94619b478b4a92e5d4bd5f8025e5ab02020ed23ff413;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-preview-observation.mjs;Talentplaner;.mjs;2548;41;d9db4687418deb04ab0eb62573a431c795dcc23c9ee80b87eadfa92689a9120b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-release-readiness.mjs;Talentplaner;.mjs;7150;88;acf7bcbd35010ac2ecae91a913203cf1b75a4dc1e536872ece293b76e6c4c165;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/talent-rule-watch.mjs;Talentplaner;.mjs;5047;80;486c604baa6d7aea456b42438aab5dac7ab655a1c694bfcd759a2a019965b4d7;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-tree-store.mjs;Talentplaner;.mjs;12482;195;4f4a0fe0441dfb11f769cc047cb9727f2aa74ca333598233994b9e14943a1457;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/talent-zephras-audit.mjs;Talentplaner;.mjs;7965;90;7c5ea4aeea02d410a14d5cf26d65cc038d3c602de11c8ccbbbe8c3481a1394b6;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-addon-structure.mjs;Test;.mjs;7594;110;63216e388464433f29a7203984284ed2b967e73ed79a1a63cd783b1e62c27071;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-addon-sync.mjs;Test;.mjs;10353;155;f3b43f19572ef558f81e126b4fe64105b2b91de3a235208b7c4ebf4c11eb64c5;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-architecture-contract.mjs;Test;.mjs;36061;313;504a190f16c10e09dc01f94f0a5add2b784ca05a6e2d9120dea7afad5a881185;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-armory.mjs;Test;.mjs;9891;198;d31cf84d49679634dd40a448c1430afd351b8036847accbf919d66aa03904ab1;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-blizzard-api.mjs;Test;.mjs;6862;133;ad1abe6518714d1692c9a21142610bf32227cb975446cbe784e229998fc621ff;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-class-training-store.mjs;Test;.mjs;8210;168;b5b44e09183cca3b777da276f402a758f950c07c5d01dd8efdbe54fe7249ad6f;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-data-version.mjs;Test;.mjs;3710;60;551fe3bc7cab3832dd4e5dbcad450cf591575272c86e2305d537651c151b5b4c;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-forever-details.mjs;Test;.mjs;7776;131;0b497886edbaeea5bc9247028d391d907b4e33809fef23554dea2440218ee72b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-foreverdb-budget.mjs;Test;.mjs;8025;151;c27fe157dc75db49cc9d5fd1f1a47e40e203c701661c7eada7e71b97fb2110f9;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-game-catalog.mjs;Test;.mjs;1718;27;c9cfbef8555bbd968e66baf730f3304052499a8326e5b3a8bc3fc54c9e50dacd;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-game-language.mjs;Test;.mjs;4798;75;8b5dfac8be534f64c7bb7abc456612e9b8d985577305c987c647e5e5cff974a3;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-history.mjs;Test;.mjs;3861;55;08884cacec8344db319409025d6e8fdc24659652c3773f7fda981364d24eb575;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-layout-contract.mjs;Test;.mjs;2782;48;e4255f66e709838e7918d8704cf69adde1a78ebccc7c2557eb2963a65deb49bc;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-learning-source-evidence.mjs;Test;.mjs;12868;197;8811906de9e63a1450f46a6f7a6afcd9924a09cec357ec0f554bec75839c10d3;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-live-knowledge.mjs;Test;.mjs;5927;124;30b5f8503dbc8a79e5b0ad37917fc9c5731c30511c846342ac8fa330eaf5dc5f;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-location-planner.mjs;Test;.mjs;17484;220;143c31219f14175532311b7e839dcfefc99e775cebe3afbcdc1e97256c15e4bb;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-media-resolver.mjs;Test;.mjs;2514;62;5e40823b540bce33eddac1b1dcb41a8669025e711740cc31dce1221868b520f5;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-pet-localization.mjs;Test;.mjs;1995;33;574bd2c7e0a8d6864e91139ba5e1b359144a141d97f54f3acf8391d88e72f738;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-pet-rules.mjs;Test;.mjs;25759;320;ade49ad859304bb71ae55432c366e8ea05acdede1107344aceb6786881164f61;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-player-terminology.mjs;Test;.mjs;2868;47;7febae34754f5d4453579f96d8b869e317de386b3eab2c0e4636bf54fbc6c158;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-profession-planner.mjs;Test;.mjs;4233;54;a5a41478a22f1d0a16bb92dc2198fdc722d9cadad17d3ef3de7607d3ddda62ab;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-quest-catalog.mjs;Test;.mjs;699;18;b1258ef148fa00142c59c1b1bb7ff9b028a3d6c8d4043e45c7028e997d15a305;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-refresh-api.mjs;Test;.mjs;19482;308;f66beb01bc145601c25230ebf4aa1d7231ec7113a7aab87f291ad3b722146ce8;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-reputation-catalog.mjs;Test;.mjs;2289;30;12fbbc3d54b8d2c07c30f346f3e92ce5e683f98207af5aba6b4b79f73fb6296c;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-spellbook-sync.mjs;Test;.mjs;2782;53;bffab6a96a5afe7e0dcc4a223238f09af29d591011b7e49dc123fdb3541d6c0e;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-talent-build-review.mjs;Test;.mjs;5154;61;8988592ca8eeed08dae8b514ac6b710f9e61e6b20678238f2e9d4458f9f763b7;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-talent-matrix-stress.mjs;Test;.mjs;7007;89;48832f210034903ebdd607975bad836deff5a2836f729f2fa819192e3a74047b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-talent-plan-core.mjs;Test;.mjs;17459;206;823939389e7efaccbe76f657d25e75bc99532602a90ed1fe6d56a3bb747c646b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-talent-plan-library.mjs;Test;.mjs;95716;1238;7c612ab4e2d10a0a667805cdfc22efb6b06044cb79c3692d065dca945d9bb889;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-talent-planner-preview.mjs;Test;.mjs;41306;501;1a208eb9482edf79e188d38c7974555f92079b7ed7192bcbc3dc2895b6f76663;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-talent-trees.mjs;Test;.mjs;13234;204;ca9748e8622167dacf4b6656d3a774338f9a2aa4c5c677ec74f6ff3ebb9d52d9;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-ui.mjs;Test;.mjs;100921;1130;d59c56973f9895cb2113897fc035d5aa5d7b57095c0b7782f61acf75619b0078;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/test-workshop.mjs;Test;.mjs;17741;349;e9a90db19f9e4d11f69cba95aa2c70a35642bf3151b833d7c22aef22eaf36379;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden | Repository-Test ausgeführt
+scripts/version-metadata.mjs;backend-betrieb;.mjs;973;9;362a76ee7f76afaeef97498a27dd4c174f906b8cea4b7a9cdc9b0573c5630aaf;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/workshop-core.mjs;werkstatt;.mjs;17452;377;cd148598a1707bfede82374ec83c76d3f3a7b8993a50c08bd431ab2d13701cd4;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/workshop-foreverdb.mjs;werkstatt;.mjs;23229;501;7870c84b11dab7104df2e41c2c8afff067adbdc6dc4a42cdb7c8f687c74a360a;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+scripts/workshop-store.mjs;werkstatt;.mjs;21342;496;9a9ea5d26cf3cbd64a72a65cc3da3b404e20304e3de079a94aab2d9d48fb83e3;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+skyborne-horizon.svg;Asset;.svg;6023;65;1a34c04ca325605a43f8fc867537facc1b9b29f3df0530a7e63f85aa5e9061fe;Inventar (Bytezahl + SHA256)
+skyborne-mainstreet-mobile.svg;Asset;.svg;6021;65;52385ca8ac3df3d2731122d86aef41560eba3b8cbb53af7b0d7f452d3d597e76;Inventar (Bytezahl + SHA256)
+styles.css;Frontend/PWA;.css;107212;1297;eeb2a78942aeadefbaf6bd4e82ee3ecc24b8e93de63819cae4f7a0f53e5c34db;Inventar (Bytezahl + SHA256)
+sw.js;Frontend/PWA;.js;1582;19;9372639ede266759ca218fcaa3c18cb2438b328c589314eefe71e30a01f37f5b;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+talent-personal-state.js;Frontend/PWA;.js;2991;49;7cf2dcb88a55b871a80e891cbbaea2be4e57845a519e48ab6cf9618deb172f14;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+talent-planner.js;Frontend/PWA;.js;30370;466;c4c3b346b92e8c2d8f1622ebe02db01fe721bbbdcff899ddd65cb98bc7424bcb;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+talent-text-quality.js;Frontend/PWA;.js;580;9;b4f0ee6fc3b7d3593a3b66060380f6ac207a16bb0ae8bad327daad3619f7acf4;Inventar (Bytezahl + SHA256) | Node-Syntax bestanden
+vercel.json;Konfiguration/Projekt;.json;629;25;79e775b715c07f1dcef2b9fc2a5d77b25bbef067a3a5d344de40768e0a23a5de;Inventar (Bytezahl + SHA256) | JSON parsebar, keine doppelten Schlüssel
+vorschau-abzeichen.html;Historische Designvorschau;.html;60728;701;6d09fcbe06100998f58b85c08d64f74e46fc68f8be2d987ad32bfca1280707e8;Inventar (Bytezahl + SHA256)
+vorschau.html;Historische Designvorschau;.html;60728;701;6d09fcbe06100998f58b85c08d64f74e46fc68f8be2d987ad32bfca1280707e8;Inventar (Bytezahl + SHA256)
