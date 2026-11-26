@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {redis,REDIS_TYPE_GUARD} from './character-store.mjs';
+import {redis,REDIS_TYPE_GUARD,REDIS_ACL_GUARD} from './character-store.mjs';
 
 const CHANGE_KEY='dalton-dashboard:history:changes:v1';
 const DAILY_INDEX='dalton-dashboard:history:daily:index:v1';
@@ -172,14 +172,21 @@ export async function getDailySnapshot(date){
 export async function registerDailySnapshot(meta,lockToken){
   if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(meta?.date||'')||(!meta?.url&&!['disabled','failed','legacy_public'].includes(meta?.archiveStatus)))throw new Error('Ungültige Snapshot-Metadaten');
   if(!lockToken)throw new Error('Tageslauf-Sperre erforderlich');
-  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') or not valid(KEYS[2],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[3] then return redis.error_reply('DAILY_LOCK_LOST') end; local old=redis.call('GET',KEYS[2]); local prior=nil; if old then prior=cjson.decode(old); if type(prior.date)~='string' then return redis.error_reply('INVALID_DAILY_POINTER') end end; redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]); if not prior or prior.date<=ARGV[1] then redis.call('SET',KEYS[2],ARGV[2]) end; return 'OK'";
+  const lua=REDIS_TYPE_GUARD+REDIS_ACL_GUARD+"if not valid(KEYS[1],'hash') or not valid(KEYS[2],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[3] then return redis.error_reply('DAILY_LOCK_LOST') end; local old=redis.call('GET',KEYS[2]); local prior=nil; if old then prior=cjson.decode(old); if type(prior.date)~='string' then return redis.error_reply('INVALID_DAILY_POINTER') end end; if not allowed('HSET',KEYS[1],ARGV[1],ARGV[2]) or ((not prior or prior.date<=ARGV[1]) and not allowed('SET',KEYS[2],ARGV[2])) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end; redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]); if not prior or prior.date<=ARGV[1] then redis.call('SET',KEYS[2],ARGV[2]) end; return 'OK'";
   const result=await redis(['EVAL',lua,3,DAILY_INDEX,DAILY_LAST,DAILY_LOCK_PREFIX+meta.date,meta.date,JSON.stringify(meta),lockToken]);
   if(result!=='OK')throw new Error('Tagesindex nicht gespeichert');
 }
 export async function acquireDailySnapshotLock(date){
-  const token=randomUUID();
-  const ok=await redis(['SET',DAILY_LOCK_PREFIX+date,token,'EX',900,'NX']);
-  return ok==='OK'?token:null;
+  const token=randomUUID(),key=DAILY_LOCK_PREFIX+date;
+  try{
+    const ok=await redis(['SET',key,token,'EX',120,'NX']);
+    return ok==='OK'?token:null;
+  }catch(error){
+    // If the reply was lost after the lock was set, ownership is still
+    // recoverable. A competing token never qualifies as our own.
+    try{if(await redis(['GET',key])===token)return token;}catch{}
+    throw error;
+  }
 }
 export async function releaseDailySnapshotLock(date,token){
   const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";

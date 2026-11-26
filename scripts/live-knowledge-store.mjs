@@ -1,6 +1,6 @@
 import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
-import {redis,configured,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD} from './character-store.mjs';
+import {redis,configured,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD,REDIS_ACL_GUARD} from './character-store.mjs';
 
 const SCHEMA_VERSION=1;
 const CHANGE_LIMIT=40;
@@ -212,7 +212,7 @@ async function loadRecord(key){
 async function saveRecord(key,value,{changed,lockToken,expectedRaw}){
   const production=environmentScope()==='production';
   if(production&&!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
-  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'set') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[5]=='1' and redis.call('GET',KEYS[4])~=ARGV[6] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('GET',KEYS[1]); if (old or '')~=ARGV[4] then return redis.error_reply('OBSERVATION_CONFLICT') end; redis.call('SADD',KEYS[2],KEYS[1]); redis.call('SET',KEYS[1],ARGV[1]); if ARGV[2]=='1' then redis.call('SET',KEYS[3],ARGV[3]) end; return 'OK'";
+  const lua=REDIS_TYPE_GUARD+REDIS_ACL_GUARD+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'set') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[5]=='1' and redis.call('GET',KEYS[4])~=ARGV[6] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('GET',KEYS[1]); if (old or '')~=ARGV[4] then return redis.error_reply('OBSERVATION_CONFLICT') end; if not allowed('SADD',KEYS[2],KEYS[1]) or not allowed('SET',KEYS[1],ARGV[1]) or (ARGV[2]=='1' and not allowed('SET',KEYS[3],ARGV[3])) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end; redis.call('SADD',KEYS[2],KEYS[1]); redis.call('SET',KEYS[1],ARGV[1]); if ARGV[2]=='1' then redis.call('SET',KEYS[3],ARGV[3]) end; return 'OK'";
   const result=await redis(['EVAL',lua,4,key,indexKey(),versionKey(),REFRESH_LOCK_KEY,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedRaw||'',production?'1':'0',lockToken||'']);
   if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
 }
@@ -227,7 +227,9 @@ async function ingestSnapshot(snapshot,{lockToken=null}={}){
 
   const fingerprint=contentFingerprint(snapshot);
   const previous=existing?.latestSnapshot||null;
-  if(previous&&Date.parse(previous.capturedAt)>=Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
+  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
+  // Different fingerprints in the same second are distinct evidence. Keep
+  // both in the bounded history, without asserting a finer clock resolution.
   const previousFingerprint=previous?contentFingerprint(previous):null;
   const changed=previousFingerprint!==fingerprint;
   const delta=changed?diff(previous,snapshot):{added:[],removed:[]};
@@ -236,6 +238,7 @@ async function ingestSnapshot(snapshot,{lockToken=null}={}){
     changes.push({
       observedAt:snapshot.capturedAt,
       fingerprint,
+      ...(previous&&previous.capturedAt===snapshot.capturedAt?{sameSecond:true,previousFingerprint,previousEntries:previous.entries,entries:snapshot.entries}:{}),
       added:delta.added,
       removed:delta.removed,
       location:snapshot.location

@@ -5,7 +5,7 @@ import {resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spell
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
 import {loadAddonSyncState,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
-import {ingestAddonLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
+import {ingestAddonLiveKnowledge,snapshotsFromAddonPayload} from '../scripts/live-knowledge-store.mjs';
 import {authorizeDeviceToken,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
 export const config={maxDuration:30};
@@ -85,7 +85,14 @@ export default async function handler(req,res){
     if(device&&!deviceMaySync(device,target.slug,payload.client?.transport)){
       return res.status(403).json({error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
     }
-    const previousState=await loadAddonSyncState(target.slug);
+    let previousState=await loadAddonSyncState(target.slug);
+    const writeOptions={lockToken:previewIsolated?null:lockToken};
+    // A durable outbox is held in the same character state as the core commit.
+    // Drain it before accepting a new sync, so no later receipt can hide it.
+    if(previousState?.pendingObservations===true){
+      await ingestAddonLiveKnowledge(previousState.payload,{characterSlug:target.slug,lockToken:writeOptions.lockToken});
+      previousState=await saveAddonSyncState(target.slug,previousState.payload,{...writeOptions,receipts:previousState.receipts,receivedAt:previousState.receivedAt,pendingObservations:false});
+    }
     const prepared=prepareAddonSync(previousState,payload);
     if(prepared.duplicate){
       // An acknowledged core commit may have been followed by an interrupted
@@ -126,8 +133,10 @@ export default async function handler(req,res){
       if(spellbookApplied)updated=await archiveKnownAbilityIcons(updated,target.slug);
     }
 
-    const state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken:previewIsolated?null:lockToken,roster:spellbookApplied?updated:null,receipts:prepared.receipts});
-    const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken});
+    const pendingObservations=snapshotsFromAddonPayload(prepared.payload,{characterSlug:target.slug}).length>0;
+    let state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken:previewIsolated?null:lockToken,roster:spellbookApplied?updated:null,receipts:prepared.receipts,pendingObservations});
+    const liveKnowledge=await ingestAddonLiveKnowledge(prepared.payload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken});
+    if(pendingObservations)state=await saveAddonSyncState(target.slug,state.payload,{...writeOptions,receipts:state.receipts,receivedAt:state.receivedAt,pendingObservations:false});
     if(spellbookApplied){
       try{await appendChangeBatch(before,updated,{source:'addon-sync'})}catch(error){
         console.warn('Addon-Sync-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
