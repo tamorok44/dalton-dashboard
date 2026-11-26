@@ -1,6 +1,6 @@
 import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
-import {redis,configured,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD,REDIS_ACL_GUARD} from './character-store.mjs';
+import {redis,configured,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD} from './character-store.mjs';
 
 const SCHEMA_VERSION=1;
 const CHANGE_LIMIT=40;
@@ -14,6 +14,8 @@ function prefix(){
 }
 function indexKey(){return prefix()+'index'}
 function versionKey(){return prefix()+'version'}
+function recordsKey(){return prefix()+'records:v2'}
+const VERSION_FIELD='__version:v2';
 function text(value,max=240){return typeof value==='string'&&value.trim()?value.trim().slice(0,max):null}
 function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)&&n>0?n:null}
@@ -204,22 +206,19 @@ function mergeServiceKnowledge(existing=[],snapshot={}){
   }
   return [...map.values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'de'));
 }
-async function loadRecord(key){
-  const raw=await redis(['GET',key]);
-  if(!raw)return null;
-  try{return JSON.parse(raw)}catch{return null}
-}
 async function saveRecord(key,value,{changed,lockToken,expectedRaw}){
   const production=environmentScope()==='production';
   if(production&&!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
-  const lua=REDIS_TYPE_GUARD+REDIS_ACL_GUARD+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'set') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[5]=='1' and redis.call('GET',KEYS[4])~=ARGV[6] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('GET',KEYS[1]); if (old or '')~=ARGV[4] then return redis.error_reply('OBSERVATION_CONFLICT') end; if not allowed('SADD',KEYS[2],KEYS[1]) or not allowed('SET',KEYS[1],ARGV[1]) or (ARGV[2]=='1' and not allowed('SET',KEYS[3],ARGV[3])) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end; redis.call('SADD',KEYS[2],KEYS[1]); redis.call('SET',KEYS[1],ARGV[1]); if ARGV[2]=='1' then redis.call('SET',KEYS[3],ARGV[3]) end; return 'OK'";
-  const result=await redis(['EVAL',lua,4,key,indexKey(),versionKey(),REFRESH_LOCK_KEY,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedRaw||'',production?'1':'0',lockToken||'']);
+  // Record, implicit index and version are fields of one hash. The one
+  // HSET is the sole mutation; legacy records are read-only fallbacks.
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[6]=='1' and redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('HGET',KEYS[1],ARGV[1]); if not old then old=redis.call('GET',KEYS[2]) end; if (old or '')~=ARGV[5] then return redis.error_reply('OBSERVATION_CONFLICT') end; if ARGV[3]=='1' then redis.call('HSET',KEYS[1],ARGV[1],ARGV[2],ARGV[8],ARGV[4]) else redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,recordsKey(),key,REFRESH_LOCK_KEY,key,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedRaw||'',production?'1':'0',lockToken||'',VERSION_FIELD]);
   if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
 }
 async function ingestSnapshot(snapshot,{lockToken=null}={}){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
   const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
-  const expectedRaw=await redis(['GET',key]);
+  const expectedRaw=await redis(['HGET',recordsKey(),key])??await redis(['GET',key]);
   const existing=expectedRaw?JSON.parse(expectedRaw):null;
   const id=observationId(snapshot);
   const ids=Array.isArray(existing?.observationIds)?existing.observationIds:[];
@@ -295,8 +294,9 @@ export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null,l
 
 export async function loadLiveKnowledge({build=null,kind=null,historicalMerchantsOnly=false,redisImpl=redis,enabled=configured()}={}){
   if(!enabled)return [];
-  const members=await redisImpl(['SMEMBERS',indexKey()]);
-  const keys=(Array.isArray(members)?members:[]).filter(key=>{
+  const [members,fields]=await Promise.all([redisImpl(['SMEMBERS',indexKey()]),redisImpl(['HKEYS',recordsKey()])]);
+  const current=new Set((Array.isArray(fields)?fields:[]).filter(key=>String(key).startsWith(prefix()+'record:')));
+  const keys=[...new Set([...(Array.isArray(members)?members:[]),...current])].filter(key=>{
     const parts=String(key).slice((prefix()+'record:').length).split(':');
     if(historicalMerchantsOnly)return parts[0]==='merchant'&&parts[1]!==encodeURIComponent(build);
     return (!kind||parts[0]===kind)&&(!build||parts[1]===encodeURIComponent(build));
@@ -304,8 +304,9 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
   const result=[];
   // Read only the requested build, in bounded batches. Preserve all evidence.
   for(let i=0;i<keys.length;i+=8){
-    const values=await redisImpl(['MGET',...keys.slice(i,i+8)]);
-    for(const raw of Array.isArray(values)?values:[]){
+    const batch=keys.slice(i,i+8),modern=batch.filter(key=>current.has(key)),legacy=batch.filter(key=>!current.has(key));
+    const values=[...(modern.length?await redisImpl(['HMGET',recordsKey(),...modern]):[]),...(legacy.length?await redisImpl(['MGET',...legacy]):[])];
+    for(const raw of values){
       let record;try{record=JSON.parse(raw)}catch{continue}
       if(!record)continue;
       if(historicalMerchantsOnly){if(record.kind!=='merchant'||record.build===build||record.latestSnapshot?.complete!==true)continue;}
@@ -334,9 +335,9 @@ export function publicLiveKnowledgeSummary(records=[]){
 }
 
 
-export async function loadLiveKnowledgeVersion(){
-  if(!configured())return null;
-  const value=await redis(['GET',versionKey()]);
+export async function loadLiveKnowledgeVersion({redisImpl=redis,enabled=configured()}={}){
+  if(!enabled)return null;
+  const value=await redisImpl(['HGET',recordsKey(),VERSION_FIELD])??await redisImpl(['GET',versionKey()]);
   return typeof value==='string'&&value?value:null;
 }
 
@@ -344,7 +345,7 @@ export async function loadLiveKnowledgeVersion(){
  // Cache only the relevant projection, never the complete change log.
 export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,enabled=configured()}={}){
   if(!enabled||!build)return [];
-  const version=await redisImpl(['GET',versionKey()]);
+  const version=await loadLiveKnowledgeVersion({redisImpl,enabled});
   const key=prefix()+'merchant-conflict-history:v1';
   const cached=await readCompactMaster(key,{redisImpl});
   if(cached?.build===build&&cached.version===version&&Array.isArray(cached.records))return cached.records;
@@ -353,6 +354,6 @@ export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,ena
     npc:record.npc,location:record.location||null,lastObservedAt:record.lastObservedAt||null,
     latestSnapshot:record.latestSnapshot
   }));
-  if(await redisImpl(['GET',versionKey()])===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
+  if(await loadLiveKnowledgeVersion({redisImpl,enabled})===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
   return records;
 }

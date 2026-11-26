@@ -1,5 +1,5 @@
-import {VERSION_METADATA_KEY,addonVersionField,addonVersionMetadata} from './version-metadata.mjs';
-import {redis,configured,CHARACTER_KEY,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD,REDIS_ACL_GUARD,normalizedCharacterWrite} from './character-store.mjs';
+import {addonCompactKey,addonVersionMetadata} from './version-metadata.mjs';
+import {redis,configured,CHARACTER_KEY,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD,REDIS_COMPACT_READ,normalizedCharacterWrite} from './character-store.mjs';
 import {createHash} from 'node:crypto';
 import {addonSyncContentIdentity} from './addon-sync.mjs';
 import {publicAddonSyncSummary} from './addon-sync.mjs';
@@ -64,15 +64,16 @@ export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,r
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
   const state={characterSlug,receivedAt,payload,receipts,pendingObservations};
-  const args=[JSON.stringify(state),addonVersionField(characterSlug),JSON.stringify(addonVersionMetadata(state))];
+  const args=[JSON.stringify(state),characterSlug,JSON.stringify(addonVersionMetadata(state))];
   const production=environmentScope()==='production';
   if(production&&!lockToken)throw new Error('Schreibsperre für Addon-Sync erforderlich');
-  const guard=REDIS_TYPE_GUARD+REDIS_ACL_GUARD+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
-  const write="if not allowed('HSET',KEYS[2],ARGV[2],ARGV[3]) or not allowed('SET',KEYS[1],ARGV[1]) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end; redis.call('HSET',KEYS[2],ARGV[2],ARGV[3]); redis.call('SET',KEYS[1],ARGV[1]); return 'OK'";
-  const atomic=guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[5] then if not allowed('HSET',KEYS[2],ARGV[2],ARGV[3],'characters',ARGV[6]) or not allowed('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[5]) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end; redis.call('HSET',KEYS[2],ARGV[2],ARGV[3],'characters',ARGV[6]); redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[5]); return 'OK' end; "+write;
+  const guard=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
+  const prepare="local meta=compact(KEYS[2]); if meta.addon~=nil and type(meta.addon)~='table' then return redis.error_reply('INVALID_COMPACT_METADATA') end; meta.addon=meta.addon or {}; meta.addon[ARGV[2]]=cjson.decode(ARGV[3]); ";
+  const write="return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],cjson.encode(meta))";
+  const atomic=guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[5] then meta.characters=cjson.decode(ARGV[6]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[5],KEYS[2],cjson.encode(meta)) end; "+write;
   const result=production
-    ?await redis(['EVAL',atomic,4,keyFor(characterSlug),VERSION_METADATA_KEY,REFRESH_LOCK_KEY,CHARACTER_KEY,...args,lockToken,...(roster?normalizedCharacterWrite(roster):[])])
-    :await redis(['EVAL',guard+write,2,keyFor(characterSlug),VERSION_METADATA_KEY,...args]);
+    ?await redis(['EVAL',atomic,4,keyFor(characterSlug),addonCompactKey(),REFRESH_LOCK_KEY,CHARACTER_KEY,...args,lockToken,...(roster?normalizedCharacterWrite(roster):[])])
+    :await redis(['EVAL',guard+prepare+write,2,keyFor(characterSlug),addonCompactKey(),...args]);
   if(result!=='OK')throw new Error('Addon-Sync-Status nicht gespeichert');
   return state;
 }
