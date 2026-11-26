@@ -1,0 +1,3 @@
+# Browser-Abschlussprüfung
+
+Die bisherige Browser-Matrix enthielt alte Erwartungen (nur teilweise freigegebene Spezialisierungen, Rang 1 gesperrt). Sie wird an die nachweislich freigegebenen 24 Vergleichssätze und die abgeleitete Vermächtnisregel angepasst, nicht an einen zufälligen Ist-Wert. Weiterhin feste Soll-Spezialisierungen für alle neun Klassen, alle Alternativen, fehlende Rangbestätigung ohne Netzwerk, Rang 5 mit 11 Punkten auf Stufe 15 sowie 50/51 Punkten auf 54/55, Rang-0-Tests, lokale Bindung, verzögerte Antwort, Layout, CPU/RAM- und Netzwerkbudgets. Tablet-Viewport 768×1024 ergänzt. Emulation und synthetische Katalogdarstellung sind keine Tests auf physischen Geräten und kein Live-Nachweis.

@@ -67,7 +67,7 @@ const server=createServer(async(req,res)=>{
 await new Promise((ok,bad)=>{server.once('error',bad);server.listen(0,'127.0.0.1',ok)});
 const origin='http://127.0.0.1:'+server.address().port;
 const browser=await pw[engine].launch({headless:true});
-const cases=[{name:'desktop',options:{viewport:{width:1440,height:900}}},{name:'compact',options:{viewport:{width:320,height:720}}}];
+const cases=[{name:'desktop',options:{viewport:{width:1440,height:900}}},{name:'tablet',options:{viewport:{width:768,height:1024},hasTouch:true}},{name:'compact',options:{viewport:{width:320,height:720}}}];
 if(engine==='chromium')cases.push({name:'android',options:{...pw.devices['Pixel 7']}});
 if(engine==='webkit')cases.push({name:'iphone',options:{...pw.devices['iPhone 13']}});
 const scriptBytes=readFileSync(resolve(root,'talent-planner.js'));
@@ -99,23 +99,25 @@ try{
      else assert.equal(await role.count(),0);
      await spec.waitFor({state:'visible'});
      assert.equal(await page.locator('[data-plan-result]').count(),0);
-     const defaultTree={1:'11670',3:'11371',7:'11363',8:'11582',9:'11637',11:'11347'}[Number(id)];
+     const defaultTree={1:'11670',2:'11541',3:'11370',4:'11572',5:'11608',7:'11363',8:'11601',9:'11636',11:'11347'}[Number(id)];
      const hasDefault=Boolean(defaultTree);
       assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),hasDefault?1:0,'only a reviewed default may enable confirmation');
       if(hasDefault)assert.equal(await spec.inputValue(),defaultTree,'reviewed PvP default');
-     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes([1,3,7,8,9,11].includes(Number(id))?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
+     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes('Plan fachlich freigegeben'));
+     assert.equal(await spec.locator('option[value]:not([value=""])').count(),coverage.classes[id].filter(t=>t.roles.includes(roles.includes('tank')?'tank':roles[0])).length);
    }
    await choose(3);await goal.selectOption('pvp');
-   assert.equal(await spec.inputValue(),'11371','reviewed Hunter PvP default among released paths');
+   assert.equal(await spec.inputValue(),'11370','reviewed Hunter PvP default among all three paths');
    await spec.selectOption('11371');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
    await spec.selectOption('11370');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
-   await spec.selectOption('11372');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);
+   await spec.selectOption('11372');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
+   await goal.selectOption('leveling');assert.equal(await spec.inputValue(),'11372');assert.equal(await page.locator('#talentGuide-playStyle').count(),0);
    await choose(2);await goal.selectOption('dungeons');await role.selectOption('tank');assert.equal(await spec.inputValue(),'11541');
    await choose(8);await goal.selectOption('pvp');
-   assert.equal(await spec.inputValue(),'11582','reviewed group PvP default among released Mage plans');
+   assert.equal(await spec.inputValue(),'11601','reviewed group PvP default among released Mage plans');
    await spec.selectOption('11582');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
    await spec.selectOption('11594');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
-   await spec.selectOption('11601');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);
+   await spec.selectOption('11601');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
    await choose(5);await goal.selectOption('pvp');await role.selectOption('damage');assert.equal(await spec.inputValue(),'11622');
    await choose(1);await goal.selectOption('dungeons');await role.selectOption('damage');assert.equal(await spec.inputValue(),'11650');await spec.selectOption('11657');assert.equal(await spec.inputValue(),'11657');
    await choose(9);await goal.selectOption('dungeons');assert.equal(await spec.inputValue(),'11637');await spec.selectOption('11629');assert.equal(await spec.inputValue(),'11629');
@@ -124,14 +126,21 @@ try{
    assert.equal(await role.count(),0);
    assert.equal(await page.locator('#talentGuide-playStyle').count(),0);
    await spec.selectOption('11594');assert.equal(await spec.inputValue(),'11594','manual alternative retained');
-   await spec.selectOption('11601');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);
-   await spec.selectOption('11582');await rank.selectOption('1');
+   await spec.selectOption('11601');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
+   await spec.selectOption('11582');await rank.selectOption('');
    const beforeRank=plannerRequests;
    await page.locator('button[type=submit].talent-planner-action').click();
-   assert.ok((await page.locator('#talentPlannerMessage').innerText()).includes('nicht freigegeben'));
-   assert.equal(plannerRequests,beforeRank,'unsupported rank must be blocked before request');
-   await rank.selectOption('0');await page.locator('button[type=submit].talent-planner-action').click();
+   assert.ok((await page.locator('#talentPlannerMessage').innerText()).includes('bestätige'));
+   assert.equal(plannerRequests,beforeRank,'unconfirmed rank must be blocked before request');
+   assert.equal(await rank.locator('option').count(),7);
+   assert.ok(!(await rank.innerText()).includes('noch nicht freigegeben'));
+   await rank.selectOption('5');await page.locator('button[type=submit].talent-planner-action').click();
    await page.locator('[data-plan-result] .talent-grid').waitFor({state:'visible'});
+   assert.equal(await page.locator('.talent-planner-steps li').count(),11);
+   assert.ok((await page.locator('[data-plan-result]').innerText()).includes('keine eigene Live-Lernprobe')||(await page.locator('[data-plan-result]').innerText()).includes('nicht durch eine eigene Live-Lernprobe'));
+   await page.locator('#talentPlannerLevel').selectOption('54');assert.equal(await page.locator('.talent-planner-steps li').count(),50);
+   await page.locator('#talentPlannerLevel').selectOption('55');assert.equal(await page.locator('.talent-planner-steps li').count(),51);
+   await page.locator('#talentPlannerLevel').selectOption('15');
    const afterResolve=plannerRequests;
    const layout=await page.evaluate(()=>{
      const root=document.querySelector('#talentPlannerContent'),grid=root.querySelector('.talent-grid'),nodes=[...grid.querySelectorAll('.talent-node')];
@@ -179,6 +188,7 @@ try{
    await page.locator('[data-plan-remember]').click();
    await page.reload();await character.waitFor({state:'visible'});await character.selectOption('qa-class-8');
    await page.locator('[data-plan-forget]').waitFor({state:'visible'});
+   assert.ok((await page.locator('#talentPlannerContent').innerText()).includes('Talentiert Rang 5'));
    await page.locator('[data-plan-forget]').click();await goal.waitFor({state:'visible'});
    assert.equal(await page.locator('[data-plan-forget]').count(),0);
    // A delayed character reply may never replace a newer selection.
@@ -234,7 +244,7 @@ try{
    assert.equal(displayRequests,beforeDisplay+1,'single cached character catalog fetch');
    assert.equal(plannerRequests,beforePlan,'character view must not trigger plan requests');
    await page.screenshot({path:resolve(reportDir,item.name+'-hotfix.png'),fullPage:true});
-   result.additionalClassPaths=2;result.correctedCharacterViews=3;result.characterCatalogReads=displayRequests-beforeDisplay;
+   result.additionalClassPaths=2;result.legacyRank5Verified=true;result.correctedCharacterViews=3;result.characterCatalogReads=displayRequests-beforeDisplay;
    assert.deepEqual(errors,[],'browser page errors');
    assert.deepEqual(unexpected,[],'unexpected backend endpoints');
    result.plannerRequests=plannerRequests-baselineRequests;
