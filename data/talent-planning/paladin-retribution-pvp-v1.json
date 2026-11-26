@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-retribution-pvp",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11559,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 0,
+    "11541": 20,
+    "11559": 31
+  },
+  "points": [
+    {
+      "talentId": 105706,
+      "rank": 1
+    },
+    {
+      "talentId": 105706,
+      "rank": 2
+    },
+    {
+      "talentId": 105706,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 4
+    },
+    {
+      "talentId": 105706,
+      "rank": 5
+    },
+    {
+      "talentId": 105705,
+      "rank": 1
+    },
+    {
+      "talentId": 105705,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 1
+    },
+    {
+      "talentId": 105701,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105696,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 2
+    },
+    {
+      "talentId": 105703,
+      "rank": 1
+    },
+    {
+      "talentId": 105703,
+      "rank": 2
+    },
+    {
+      "talentId": 105700,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 2
+    },
+    {
+      "talentId": 105697,
+      "rank": 3
+    },
+    {
+      "talentId": 105703,
+      "rank": 3
+    },
+    {
+      "talentId": 105693,
+      "rank": 1
+    },
+    {
+      "talentId": 105693,
+      "rank": 2
+    },
+    {
+      "talentId": 105693,
+      "rank": 3
+    },
+    {
+      "talentId": 105694,
+      "rank": 1
+    },
+    {
+      "talentId": 105702,
+      "rank": 1
+    },
+    {
+      "talentId": 110882,
+      "rank": 1
+    },
+    {
+      "talentId": 110882,
+      "rank": 2
+    },
+    {
+      "talentId": 110882,
+      "rank": 3
+    },
+    {
+      "talentId": 110882,
+      "rank": 4
+    },
+    {
+      "talentId": 110882,
+      "rank": 5
+    },
+    {
+      "talentId": 105692,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
+    },
+    {
+      "talentId": 105637,
+      "rank": 1
+    },
+    {
+      "talentId": 105637,
+      "rank": 2
+    },
+    {
+      "talentId": 105632,
+      "rank": 1
+    },
+    {
+      "talentId": 105632,
+      "rank": 2
+    },
+    {
+      "talentId": 105633,
+      "rank": 1
+    },
+    {
+      "talentId": 105633,
+      "rank": 2
+    },
+    {
+      "talentId": 105633,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105706,
+      "count": 5,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105705,
+      "count": 2,
+      "reason": "Richturteil häufiger einsetzen."
+    },
+    {
+      "talentId": 105701,
+      "count": 3,
+      "reason": "Mana durch Richturteile zurückgewinnen."
+    },
+    {
+      "talentId": 105332,
+      "count": 5,
+      "reason": "Intelligenz für Manareserve ergänzen."
+    },
+    {
+      "talentId": 105696,
+      "count": 1,
+      "reason": "Siegel des Befehls freischalten."
+    },
+    {
+      "talentId": 105699,
+      "count": 2,
+      "reason": "Bewegungstempo für Questwege erhöhen."
+    },
+    {
+      "talentId": 105703,
+      "count": 2,
+      "reason": "Kritische Trefferchance verbessern."
+    },
+    {
+      "talentId": 105700,
+      "count": 1,
+      "reason": "Heiligen Richter für Heiligen Stoß und Richturteile freischalten."
+    },
+    {
+      "talentId": 105697,
+      "count": 3,
+      "reason": "Schaden mit Zweihandwaffe verbessern."
+    },
+    {
+      "talentId": 105703,
+      "count": 1,
+      "reason": "Überzeugung vervollständigen."
+    },
+    {
+      "talentId": 105693,
+      "count": 3,
+      "reason": "Schadensbonus nach geeigneten kritischen Treffern ausbauen."
+    },
+    {
+      "talentId": 105694,
+      "count": 1,
+      "reason": "Buße und Voraussetzung für den Abschluss freischalten."
+    },
+    {
+      "talentId": 105702,
+      "count": 1,
+      "reason": "Angriffskraftschwächung ergänzen."
+    },
+    {
+      "talentId": 110882,
+      "count": 5,
+      "reason": "Intelligenz-Skalierung und Hammer der Vergeltung stärken."
+    },
+    {
+      "talentId": 105692,
+      "count": 1,
+      "reason": "Entfesselten Zorn freischalten; unterschiedliche Siegel für gespeicherte Effekte beachten."
+    },
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blockchance für situativen Schildwechsel erhöhen."
+    },
+    {
+      "talentId": 105638,
+      "count": 3,
+      "reason": "Trefferchance steigern."
+    },
+    {
+      "talentId": 105637,
+      "count": 2,
+      "reason": "Schutz- und Freiheitssegen stärken."
+    },
+    {
+      "talentId": 105632,
+      "count": 2,
+      "reason": "Defensive Abklingzeiten reduzieren."
+    },
+    {
+      "talentId": 105633,
+      "count": 3,
+      "reason": "Hammer der Gerechtigkeit häufiger einsetzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "paladin-ret-skillcapped-1911",
+      "paladin-ret-wowforevergg-2511",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Two-handed pressure with early mana reserve and later Freedom/hammer/shield-switch support. No guaranteed crowd-control immunity.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

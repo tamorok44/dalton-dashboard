@@ -525,7 +525,9 @@ assert.equal(currentAudit.find(a=>a.id==='hunter-beast-mastery-leveling')?.statu
 if(process.argv.includes('--current-audit'))console.log(JSON.stringify({kind:'current_primary_audit',releaseEligible:false,sourceRevision:currentSource,paths:currentAudit},null,2));
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
-assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');
+assert.equal(rows.length,84,'all supported class/spec/role/goal cells');
+assert.ok(rows.every(row=>row.status!=='unresearched'),'every supported coverage cell needs a research candidate');
+for(const row of rows)assert.ok(plans.some(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51&&p.profiles.some(x=>x.classId===row.classId&&x.treeId===row.treeId&&x.role===row.role&&x.goal===row.goal)), 'Missing full 51-point path '+JSON.stringify([row.classId,row.treeId,row.role,row.goal]));
 assert.ok(rows.some(row=>row.status==='structurally_validated'||row.status==='approved'),'verified paths must appear');
 assert.ok(rows.some(row=>row.status==='blocked'&&row.profiles.some(profile=>
   profile.candidates.some(candidate=>candidate.blockers?.length))),'blocked profiles need a reason');
@@ -535,7 +537,7 @@ assert.equal(workQueue.coverageCells,rows.length);
 assert.equal(Object.values(workQueue.coverageByStatus).reduce((a,b)=>a+b,0),rows.length);
 assert.equal(new Set(workQueue.queue.map(a=>JSON.stringify([a.kind,a.identity]))).size,workQueue.queue.length);
 assert.ok(workQueue.queue.some(a=>a.kind==='check_current_release'));
-assert.ok(workQueue.queue.some(a=>a.kind==='research_profile'));
+assert.equal(workQueue.counts.research_profile,0,'all basic coverage cells researched');
 assert.ok(workQueue.queue.some(a=>a.kind==='resolve_blocker'));
 if(process.argv.includes('--legacy-research')||process.argv.includes('--current-audit')){}
 else if(process.argv.includes('--work-queue'))console.log(JSON.stringify(workQueue,null,2));
@@ -708,6 +710,14 @@ for(const treeId of [11608,11615,11622])for(const goal of ['leveling','dungeons'
 }
 
 for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"11580":31}],["rogue-assassination-pvp",{"11572":0,"11573":20,"11580":31}],["rogue-combat-dungeons",{"11572":0,"11573":31,"11580":20}],["rogue-combat-pvp",{"11572":20,"11573":31,"11580":0}],["rogue-subtlety-leveling",{"11572":31,"11573":20,"11580":0}],["rogue-subtlety-dungeons",{"11572":31,"11573":8,"11580":12}]]){
+ const p=plans.find(x=>x.id===id);
+ assert.ok(p&&p.status==='research_only');
+ assert.deepEqual(p.expectedDistribution,dist);
+ assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+}
+
+for(const [id,dist] of [["warrior-arms-dungeons",{"11650":31,"11657":20,"11670":0}],["warrior-arms-pvp",{"11650":31,"11657":20,"11670":0}],["warrior-fury-dungeons",{"11650":20,"11657":31,"11670":0}],["warrior-fury-pvp",{"11650":20,"11657":31,"11670":0}],["warrior-protection-leveling",{"11650":15,"11657":5,"11670":31}],["warrior-protection-pvp",{"11650":15,"11657":5,"11670":31}],["paladin-holy-leveling",{"11486":31,"11541":5,"11559":15}],["paladin-holy-pvp",{"11486":31,"11541":20,"11559":0}],["paladin-protection-leveling",{"11486":15,"11541":31,"11559":5}],["paladin-protection-pvp",{"11486":0,"11541":31,"11559":20}],["paladin-retribution-dungeons",{"11486":12,"11541":8,"11559":31}],["paladin-retribution-pvp",{"11486":0,"11541":20,"11559":31}],["shaman-elemental-dungeons",{"11326":31,"11362":20,"11363":0}],["shaman-elemental-pvp",{"11326":31,"11362":20,"11363":0}],["shaman-enhancement-dungeons",{"11326":20,"11362":0,"11363":31}],["shaman-enhancement-pvp",{"11326":15,"11362":5,"11363":31}],["shaman-restoration-leveling",{"11326":20,"11362":31,"11363":0}],["shaman-restoration-pvp",{"11326":10,"11362":31,"11363":10}]]){
  const p=plans.find(x=>x.id===id);
  assert.ok(p&&p.status==='research_only');
  assert.deepEqual(p.expectedDistribution,dist);

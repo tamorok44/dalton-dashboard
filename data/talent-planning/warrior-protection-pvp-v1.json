@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "id": "warrior-protection-pvp",
+  "version": 1,
+  "classId": 1,
+  "treeId": 11670,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11650": 15,
+    "11657": 5,
+    "11670": 31
+  },
+  "points": [
+    {
+      "talentId": 105976,
+      "rank": 1
+    },
+    {
+      "talentId": 105976,
+      "rank": 2
+    },
+    {
+      "talentId": 105976,
+      "rank": 3
+    },
+    {
+      "talentId": 105976,
+      "rank": 4
+    },
+    {
+      "talentId": 105976,
+      "rank": 5
+    },
+    {
+      "talentId": 105969,
+      "rank": 1
+    },
+    {
+      "talentId": 105969,
+      "rank": 2
+    },
+    {
+      "talentId": 105969,
+      "rank": 3
+    },
+    {
+      "talentId": 105972,
+      "rank": 1
+    },
+    {
+      "talentId": 105972,
+      "rank": 2
+    },
+    {
+      "talentId": 105971,
+      "rank": 1
+    },
+    {
+      "talentId": 105971,
+      "rank": 2
+    },
+    {
+      "talentId": 110856,
+      "rank": 1
+    },
+    {
+      "talentId": 110856,
+      "rank": 2
+    },
+    {
+      "talentId": 110856,
+      "rank": 3
+    },
+    {
+      "talentId": 105970,
+      "rank": 1
+    },
+    {
+      "talentId": 105966,
+      "rank": 1
+    },
+    {
+      "talentId": 105968,
+      "rank": 1
+    },
+    {
+      "talentId": 105968,
+      "rank": 2
+    },
+    {
+      "talentId": 105968,
+      "rank": 3
+    },
+    {
+      "talentId": 105972,
+      "rank": 3
+    },
+    {
+      "talentId": 105961,
+      "rank": 1
+    },
+    {
+      "talentId": 105961,
+      "rank": 2
+    },
+    {
+      "talentId": 105961,
+      "rank": 3
+    },
+    {
+      "talentId": 105965,
+      "rank": 1
+    },
+    {
+      "talentId": 105962,
+      "rank": 1
+    },
+    {
+      "talentId": 105962,
+      "rank": 2
+    },
+    {
+      "talentId": 105962,
+      "rank": 3
+    },
+    {
+      "talentId": 105962,
+      "rank": 4
+    },
+    {
+      "talentId": 105962,
+      "rank": 5
+    },
+    {
+      "talentId": 105959,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
+    },
+    {
+      "talentId": 105957,
+      "rank": 1
+    },
+    {
+      "talentId": 105957,
+      "rank": 2
+    },
+    {
+      "talentId": 105957,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 4
+    },
+    {
+      "talentId": 105957,
+      "rank": 5
+    },
+    {
+      "talentId": 105955,
+      "rank": 1
+    },
+    {
+      "talentId": 105955,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 1
+    },
+    {
+      "talentId": 105954,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 3
+    },
+    {
+      "talentId": 105951,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 2
+    },
+    {
+      "talentId": 105958,
+      "rank": 3
+    },
+    {
+      "talentId": 105952,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105976,
+      "count": 5,
+      "reason": "Blocken und Wutgewinn mit Schild früh ausbauen."
+    },
+    {
+      "talentId": 105969,
+      "count": 3,
+      "reason": "Rache als frühen Bedrohungs- und Schadenszauber stärken."
+    },
+    {
+      "talentId": 105972,
+      "count": 2,
+      "reason": "Donnerknall günstiger machen."
+    },
+    {
+      "talentId": 105971,
+      "count": 2,
+      "reason": "Wut bei Ausweichen und Parieren mit Schild erhalten."
+    },
+    {
+      "talentId": 110856,
+      "count": 3,
+      "reason": "Bedrohung in Verteidigungshaltung mit Schild erhöhen."
+    },
+    {
+      "talentId": 105970,
+      "count": 1,
+      "reason": "Defensiven Notfallknopf früh freischalten."
+    },
+    {
+      "talentId": 105966,
+      "count": 1,
+      "reason": "Sturmangriff in Verteidigungshaltung ermöglichen."
+    },
+    {
+      "talentId": 105968,
+      "count": 3,
+      "reason": "Kosten von Rüstung zerreißen reduzieren."
+    },
+    {
+      "talentId": 105972,
+      "count": 1,
+      "reason": "Donnerknall-Kostenreduktion vervollständigen."
+    },
+    {
+      "talentId": 105961,
+      "count": 3,
+      "reason": "Wutkosten offensiver Fähigkeiten senken."
+    },
+    {
+      "talentId": 105965,
+      "count": 1,
+      "reason": "Betäubung und Voraussetzung für Schildschlag freischalten."
+    },
+    {
+      "talentId": 105962,
+      "count": 5,
+      "reason": "Schaden mit Schild ausbauen."
+    },
+    {
+      "talentId": 105959,
+      "count": 1,
+      "reason": "Schildschlag freischalten."
+    },
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance ergänzen."
+    },
+    {
+      "talentId": 105957,
+      "count": 5,
+      "reason": "Parierchance ergänzen."
+    },
+    {
+      "talentId": 105955,
+      "count": 2,
+      "reason": "Wut aus Sturmangriff verbessern."
+    },
+    {
+      "talentId": 105954,
+      "count": 3,
+      "reason": "Wut bei Haltungswechseln besser erhalten."
+    },
+    {
+      "talentId": 105951,
+      "count": 1,
+      "reason": "Wutgewinn und Wuterhalt ergänzen."
+    },
+    {
+      "talentId": 105958,
+      "count": 3,
+      "reason": "Kosten von heldenhaftem Stoß reduzieren."
+    },
+    {
+      "talentId": 105952,
+      "count": 1,
+      "reason": "Kritische Trefferchance von Überwältigen ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "warrior-cobalt-protection-pvp",
+      "warrior-cobalt-class",
+      "warrior-undying",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Objective support, shield defense, early emergency button, interruption and team peeling. Not an ordinary dungeon tank recommendation.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

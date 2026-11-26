@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-holy-pvp",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11486,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 31,
+    "11541": 20,
+    "11559": 0
+  },
+  "points": [
+    {
+      "talentId": 105335,
+      "rank": 1
+    },
+    {
+      "talentId": 105335,
+      "rank": 2
+    },
+    {
+      "talentId": 105335,
+      "rank": 3
+    },
+    {
+      "talentId": 105335,
+      "rank": 4
+    },
+    {
+      "talentId": 105335,
+      "rank": 5
+    },
+    {
+      "talentId": 105333,
+      "rank": 1
+    },
+    {
+      "talentId": 105333,
+      "rank": 2
+    },
+    {
+      "talentId": 105333,
+      "rank": 3
+    },
+    {
+      "talentId": 110871,
+      "rank": 1
+    },
+    {
+      "talentId": 110871,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
+    },
+    {
+      "talentId": 105329,
+      "rank": 1
+    },
+    {
+      "talentId": 105329,
+      "rank": 2
+    },
+    {
+      "talentId": 105329,
+      "rank": 3
+    },
+    {
+      "talentId": 105329,
+      "rank": 4
+    },
+    {
+      "talentId": 105329,
+      "rank": 5
+    },
+    {
+      "talentId": 105330,
+      "rank": 1
+    },
+    {
+      "talentId": 110873,
+      "rank": 1
+    },
+    {
+      "talentId": 110873,
+      "rank": 2
+    },
+    {
+      "talentId": 105325,
+      "rank": 1
+    },
+    {
+      "talentId": 105327,
+      "rank": 1
+    },
+    {
+      "talentId": 105323,
+      "rank": 1
+    },
+    {
+      "talentId": 105327,
+      "rank": 2
+    },
+    {
+      "talentId": 105324,
+      "rank": 1
+    },
+    {
+      "talentId": 105324,
+      "rank": 2
+    },
+    {
+      "talentId": 105704,
+      "rank": 1
+    },
+    {
+      "talentId": 105321,
+      "rank": 1
+    },
+    {
+      "talentId": 105321,
+      "rank": 2
+    },
+    {
+      "talentId": 105321,
+      "rank": 3
+    },
+    {
+      "talentId": 105321,
+      "rank": 4
+    },
+    {
+      "talentId": 105321,
+      "rank": 5
+    },
+    {
+      "talentId": 105320,
+      "rank": 1
+    },
+    {
+      "talentId": 105637,
+      "rank": 1
+    },
+    {
+      "talentId": 105637,
+      "rank": 2
+    },
+    {
+      "talentId": 105632,
+      "rank": 1
+    },
+    {
+      "talentId": 105632,
+      "rank": 2
+    },
+    {
+      "talentId": 105625,
+      "rank": 1
+    },
+    {
+      "talentId": 105633,
+      "rank": 1
+    },
+    {
+      "talentId": 105633,
+      "rank": 2
+    },
+    {
+      "talentId": 105633,
+      "rank": 3
+    },
+    {
+      "talentId": 110874,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 2
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105335,
+      "count": 5,
+      "reason": "Zauberzeitverlust bei Heilungen vermindern."
+    },
+    {
+      "talentId": 105333,
+      "count": 3,
+      "reason": "Direkte Heilungen stärken."
+    },
+    {
+      "talentId": 110871,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern unterstützen."
+    },
+    {
+      "talentId": 105332,
+      "count": 5,
+      "reason": "Intelligenz erhöhen."
+    },
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blocken bei Angriffen ergänzen."
+    },
+    {
+      "talentId": 105329,
+      "count": 5,
+      "reason": "Mana nach kritischer Heilung zurückgewinnen."
+    },
+    {
+      "talentId": 105330,
+      "count": 1,
+      "reason": "Eid des Lichts für priorisiertes Heilziel freischalten."
+    },
+    {
+      "talentId": 110873,
+      "count": 2,
+      "reason": "Heiliges Licht nach kritischen Heilungen beschleunigen."
+    },
+    {
+      "talentId": 105325,
+      "count": 1,
+      "reason": "Gezielten kritischen Heilzauber ermöglichen."
+    },
+    {
+      "talentId": 105327,
+      "count": 1,
+      "reason": "Reinigung günstiger machen."
+    },
+    {
+      "talentId": 105323,
+      "count": 1,
+      "reason": "Heiligen Schock freischalten."
+    },
+    {
+      "talentId": 105327,
+      "count": 1,
+      "reason": "Reinigende Macht vervollständigen."
+    },
+    {
+      "talentId": 105324,
+      "count": 2,
+      "reason": "Trefferchance und Schutz vor Stille ergänzen."
+    },
+    {
+      "talentId": 105704,
+      "count": 1,
+      "reason": "Situative Schadenszauber günstiger machen."
+    },
+    {
+      "talentId": 105321,
+      "count": 5,
+      "reason": "Kritischen Heilbonus ausbauen."
+    },
+    {
+      "talentId": 105320,
+      "count": 1,
+      "reason": "Lichtwacht freischalten."
+    },
+    {
+      "talentId": 105637,
+      "count": 2,
+      "reason": "Schutz- und Freiheitssegen stärken."
+    },
+    {
+      "talentId": 105632,
+      "count": 2,
+      "reason": "Defensive Abklingzeiten reduzieren."
+    },
+    {
+      "talentId": 105625,
+      "count": 1,
+      "reason": "Absorptionszauber ergänzen."
+    },
+    {
+      "talentId": 105633,
+      "count": 3,
+      "reason": "Hammer der Gerechtigkeit häufiger verfügbar machen."
+    },
+    {
+      "talentId": 110874,
+      "count": 2,
+      "reason": "Blocken und bedingten Manarückfluss stärken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "paladin-holy-wowforevergg",
+      "paladin-talentsmith-2511",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Healing under pressure with early shield/intellect investment, later Holy capstone and blessing/hammer utility. No silence immunity assumed.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

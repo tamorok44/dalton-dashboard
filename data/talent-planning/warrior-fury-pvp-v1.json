@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "id": "warrior-fury-pvp",
+  "version": 1,
+  "classId": 1,
+  "treeId": 11657,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11650": 20,
+    "11657": 31,
+    "11670": 0
+  },
+  "points": [
+    {
+      "talentId": 105939,
+      "rank": 1
+    },
+    {
+      "talentId": 105939,
+      "rank": 2
+    },
+    {
+      "talentId": 105939,
+      "rank": 3
+    },
+    {
+      "talentId": 105939,
+      "rank": 4
+    },
+    {
+      "talentId": 105939,
+      "rank": 5
+    },
+    {
+      "talentId": 105958,
+      "rank": 1
+    },
+    {
+      "talentId": 105958,
+      "rank": 2
+    },
+    {
+      "talentId": 105958,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 1
+    },
+    {
+      "talentId": 105957,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 1
+    },
+    {
+      "talentId": 105954,
+      "rank": 2
+    },
+    {
+      "talentId": 105954,
+      "rank": 3
+    },
+    {
+      "talentId": 105955,
+      "rank": 1
+    },
+    {
+      "talentId": 105955,
+      "rank": 2
+    },
+    {
+      "talentId": 105937,
+      "rank": 1
+    },
+    {
+      "talentId": 105937,
+      "rank": 2
+    },
+    {
+      "talentId": 105937,
+      "rank": 3
+    },
+    {
+      "talentId": 105937,
+      "rank": 4
+    },
+    {
+      "talentId": 105937,
+      "rank": 5
+    },
+    {
+      "talentId": 105953,
+      "rank": 1
+    },
+    {
+      "talentId": 105953,
+      "rank": 2
+    },
+    {
+      "talentId": 105953,
+      "rank": 3
+    },
+    {
+      "talentId": 105934,
+      "rank": 1
+    },
+    {
+      "talentId": 105934,
+      "rank": 2
+    },
+    {
+      "talentId": 105933,
+      "rank": 1
+    },
+    {
+      "talentId": 105933,
+      "rank": 2
+    },
+    {
+      "talentId": 105933,
+      "rank": 3
+    },
+    {
+      "talentId": 105933,
+      "rank": 4
+    },
+    {
+      "talentId": 105933,
+      "rank": 5
+    },
+    {
+      "talentId": 105927,
+      "rank": 1
+    },
+    {
+      "talentId": 105978,
+      "rank": 1
+    },
+    {
+      "talentId": 105978,
+      "rank": 2
+    },
+    {
+      "talentId": 105934,
+      "rank": 3
+    },
+    {
+      "talentId": 113636,
+      "rank": 1
+    },
+    {
+      "talentId": 105928,
+      "rank": 1
+    },
+    {
+      "talentId": 105928,
+      "rank": 2
+    },
+    {
+      "talentId": 105928,
+      "rank": 3
+    },
+    {
+      "talentId": 105977,
+      "rank": 1
+    },
+    {
+      "talentId": 105977,
+      "rank": 2
+    },
+    {
+      "talentId": 105930,
+      "rank": 1
+    },
+    {
+      "talentId": 105951,
+      "rank": 1
+    },
+    {
+      "talentId": 105952,
+      "rank": 1
+    },
+    {
+      "talentId": 105952,
+      "rank": 2
+    },
+    {
+      "talentId": 105956,
+      "rank": 1
+    },
+    {
+      "talentId": 105956,
+      "rank": 2
+    },
+    {
+      "talentId": 105956,
+      "rank": 3
+    },
+    {
+      "talentId": 105950,
+      "rank": 1
+    },
+    {
+      "talentId": 105950,
+      "rank": 2
+    },
+    {
+      "talentId": 105950,
+      "rank": 3
+    },
+    {
+      "talentId": 105957,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105939,
+      "count": 5,
+      "reason": "Kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105958,
+      "count": 3,
+      "reason": "Heldenhaften Stoß günstiger machen."
+    },
+    {
+      "talentId": 105957,
+      "count": 2,
+      "reason": "Parierchance ergänzen."
+    },
+    {
+      "talentId": 105954,
+      "count": 3,
+      "reason": "Wuterhalt erhöhen."
+    },
+    {
+      "talentId": 105955,
+      "count": 2,
+      "reason": "Sturmangriff-Wut erhöhen."
+    },
+    {
+      "talentId": 105937,
+      "count": 5,
+      "reason": "Wutgewinn steigern."
+    },
+    {
+      "talentId": 105953,
+      "count": 3,
+      "reason": "Trefferchance der Schildhand erhöhen."
+    },
+    {
+      "talentId": 105934,
+      "count": 2,
+      "reason": "Erholung nach schweren Treffern beginnen."
+    },
+    {
+      "talentId": 105933,
+      "count": 5,
+      "reason": "Schaden und Wut der Schildhand steigern."
+    },
+    {
+      "talentId": 105927,
+      "count": 1,
+      "reason": "Todeswunsch freischalten."
+    },
+    {
+      "talentId": 105978,
+      "count": 2,
+      "reason": "Wutgewinn und Befreiung aus Bewegungseffekten unterstützen."
+    },
+    {
+      "talentId": 105934,
+      "count": 1,
+      "reason": "Blutwahnsinn vervollständigen."
+    },
+    {
+      "talentId": 113636,
+      "count": 1,
+      "reason": "Zusätzliche Wut ermöglichen."
+    },
+    {
+      "talentId": 105928,
+      "count": 3,
+      "reason": "Angriffstempo nach kritischen Treffern steigern."
+    },
+    {
+      "talentId": 105977,
+      "count": 2,
+      "reason": "Wirbelwind verbessern."
+    },
+    {
+      "talentId": 105930,
+      "count": 1,
+      "reason": "Blutdurst freischalten."
+    },
+    {
+      "talentId": 105951,
+      "count": 1,
+      "reason": "Aggressionskontrolle freischalten."
+    },
+    {
+      "talentId": 105952,
+      "count": 2,
+      "reason": "Überwältigen stärken."
+    },
+    {
+      "talentId": 105956,
+      "count": 3,
+      "reason": "Verwunden stärken."
+    },
+    {
+      "talentId": 105950,
+      "count": 3,
+      "reason": "Kritische Blutungen ergänzen."
+    },
+    {
+      "talentId": 105957,
+      "count": 1,
+      "reason": "Parieren weiter stärken."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "warrior-cobalt-fury-pvp",
+      "warrior-undying",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Early stance utility and defense before deep Fury; coordinated pressure with Death Wish and Bloodthirst, not equivalent to Mortal Strike.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

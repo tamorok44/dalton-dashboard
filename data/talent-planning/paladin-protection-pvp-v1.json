@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "id": "paladin-protection-pvp",
+  "version": 1,
+  "classId": 2,
+  "treeId": 11541,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11486": 0,
+    "11541": 31,
+    "11559": 20
+  },
+  "points": [
+    {
+      "talentId": 105626,
+      "rank": 1
+    },
+    {
+      "talentId": 105626,
+      "rank": 2
+    },
+    {
+      "talentId": 105626,
+      "rank": 3
+    },
+    {
+      "talentId": 105626,
+      "rank": 4
+    },
+    {
+      "talentId": 105626,
+      "rank": 5
+    },
+    {
+      "talentId": 105706,
+      "rank": 1
+    },
+    {
+      "talentId": 105706,
+      "rank": 2
+    },
+    {
+      "talentId": 105706,
+      "rank": 3
+    },
+    {
+      "talentId": 105706,
+      "rank": 4
+    },
+    {
+      "talentId": 105706,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
+    },
+    {
+      "talentId": 105632,
+      "rank": 1
+    },
+    {
+      "talentId": 105632,
+      "rank": 2
+    },
+    {
+      "talentId": 105625,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 1
+    },
+    {
+      "talentId": 110874,
+      "rank": 2
+    },
+    {
+      "talentId": 105630,
+      "rank": 1
+    },
+    {
+      "talentId": 105630,
+      "rank": 2
+    },
+    {
+      "talentId": 110878,
+      "rank": 1
+    },
+    {
+      "talentId": 105634,
+      "rank": 1
+    },
+    {
+      "talentId": 105634,
+      "rank": 2
+    },
+    {
+      "talentId": 105634,
+      "rank": 3
+    },
+    {
+      "talentId": 105630,
+      "rank": 3
+    },
+    {
+      "talentId": 105628,
+      "rank": 1
+    },
+    {
+      "talentId": 105627,
+      "rank": 1
+    },
+    {
+      "talentId": 105627,
+      "rank": 2
+    },
+    {
+      "talentId": 105627,
+      "rank": 3
+    },
+    {
+      "talentId": 105630,
+      "rank": 4
+    },
+    {
+      "talentId": 110879,
+      "rank": 1
+    },
+    {
+      "talentId": 110879,
+      "rank": 2
+    },
+    {
+      "talentId": 110879,
+      "rank": 3
+    },
+    {
+      "talentId": 105627,
+      "rank": 4
+    },
+    {
+      "talentId": 105627,
+      "rank": 5
+    },
+    {
+      "talentId": 110875,
+      "rank": 1
+    },
+    {
+      "talentId": 105705,
+      "rank": 1
+    },
+    {
+      "talentId": 105705,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 1
+    },
+    {
+      "talentId": 105701,
+      "rank": 2
+    },
+    {
+      "talentId": 105701,
+      "rank": 3
+    },
+    {
+      "talentId": 105696,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 1
+    },
+    {
+      "talentId": 105699,
+      "rank": 2
+    },
+    {
+      "talentId": 105703,
+      "rank": 1
+    },
+    {
+      "talentId": 105703,
+      "rank": 2
+    },
+    {
+      "talentId": 105700,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 1
+    },
+    {
+      "talentId": 105697,
+      "rank": 2
+    },
+    {
+      "talentId": 105697,
+      "rank": 3
+    },
+    {
+      "talentId": 105703,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105626,
+      "count": 5,
+      "reason": "Blockchance nach Nahkampfangriffen ausbauen."
+    },
+    {
+      "talentId": 105706,
+      "count": 5,
+      "reason": "Manakosten von Sofortzaubern verringern."
+    },
+    {
+      "talentId": 105638,
+      "count": 3,
+      "reason": "Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105632,
+      "count": 2,
+      "reason": "Defensive Abklingzeiten verringern."
+    },
+    {
+      "talentId": 105625,
+      "count": 1,
+      "reason": "Bollwerk des Templers freischalten."
+    },
+    {
+      "talentId": 110874,
+      "count": 2,
+      "reason": "Blocken und Manarückfluss verbessern."
+    },
+    {
+      "talentId": 105630,
+      "count": 2,
+      "reason": "Rüstung erhöhen."
+    },
+    {
+      "talentId": 110878,
+      "count": 1,
+      "reason": "Zusätzliches Richturteil freischalten."
+    },
+    {
+      "talentId": 105634,
+      "count": 3,
+      "reason": "Schadensminderung bei aktivem Zorn der Gerechtigkeit stärken."
+    },
+    {
+      "talentId": 105630,
+      "count": 1,
+      "reason": "Rüstung weiter stärken."
+    },
+    {
+      "talentId": 105628,
+      "count": 1,
+      "reason": "Heiligen Schild freischalten."
+    },
+    {
+      "talentId": 105627,
+      "count": 3,
+      "reason": "Zusatzangriffe nach Blocken stärken."
+    },
+    {
+      "talentId": 105630,
+      "count": 1,
+      "reason": "Rüstung weiter ausbauen."
+    },
+    {
+      "talentId": 110879,
+      "count": 3,
+      "reason": "Bedrohung und Schutz durch Heiligen Stoß stärken."
+    },
+    {
+      "talentId": 105627,
+      "count": 2,
+      "reason": "Abrechnung vervollständigen."
+    },
+    {
+      "talentId": 110875,
+      "count": 1,
+      "reason": "Schildgeschworen freischalten."
+    },
+    {
+      "talentId": 105705,
+      "count": 2,
+      "reason": "Richturteil häufiger einsetzen."
+    },
+    {
+      "talentId": 105701,
+      "count": 3,
+      "reason": "Mana durch Richturteile zurückgewinnen."
+    },
+    {
+      "talentId": 105696,
+      "count": 1,
+      "reason": "Siegel des Befehls freischalten."
+    },
+    {
+      "talentId": 105699,
+      "count": 2,
+      "reason": "Bewegungstempo für Questwege erhöhen."
+    },
+    {
+      "talentId": 105703,
+      "count": 2,
+      "reason": "Kritische Trefferchance verbessern."
+    },
+    {
+      "talentId": 105700,
+      "count": 1,
+      "reason": "Heiligen Richter für Heiligen Stoß und Richturteile freischalten."
+    },
+    {
+      "talentId": 105697,
+      "count": 3,
+      "reason": "Schaden mit Zweihandwaffe verbessern."
+    },
+    {
+      "talentId": 105703,
+      "count": 1,
+      "reason": "Überzeugung vervollständigen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "paladin-protection-wowforevergg",
+      "paladin-talentsmith-2511",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Shield objective support and mobility with secondary Retribution pressure. No guarantee of spell block or flag survival.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}

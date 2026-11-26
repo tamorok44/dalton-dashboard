@@ -327,3 +327,29 @@ Ergänzung: Schatten Dungeons 18/0/33 mit Schattengestalt auf 40 und anschließe
 ### Schurke: zielbezogene Forschung (26.11.2026)
 
 Neue strukturell geprüfte Entwürfe: rogue-assassination-dungeons 31/20/0; rogue-assassination-pvp 31/20/0; rogue-combat-dungeons 20/31/0; rogue-combat-pvp 0/31/20; rogue-subtlety-leveling 0/20/31; rogue-subtlety-dungeons 12/8/31. Eigenständige Punktfolgen, research_only. Quellenregister enthält Wowhead, Outpost, WoWForever.gg, Cobalt, ForeverBattlegrounds, Perplexity, Forever Tavern, Mobalytics, WoWForever.be und Blizzard-Hotfix vom 25.11. Gifte und Blendpulver vorübergehend beim Aufheben gebunden; Poised wird bei Kopfnuss/Ablenkung aus Verstohlenheit entfernt. Klingenwirbel kopiert seit Hotfix vom 20.11. Shank-Schaden; keine Annahme zusätzlicher Giftprocs. Vollständiger unabhängiger aktueller Klassenproof sowie Vermächtnisränge 1–5 offen; keine Produktivfreigabe oder zusätzlichen Laufzeitabfragen. Nicht bestandene Entwürfe bleiben außerhalb der Bibliothek.
+
+
+### Krieger, Paladin, Schamane: zielbezogene Forschungsentwürfe (26.11.2026)
+
+- warrior-arms-dungeons: {"11650":31,"11657":20,"11670":0}
+- warrior-arms-pvp: {"11650":31,"11657":20,"11670":0}
+- warrior-fury-dungeons: {"11650":20,"11657":31,"11670":0}
+- warrior-fury-pvp: {"11650":20,"11657":31,"11670":0}
+- warrior-protection-leveling: {"11650":15,"11657":5,"11670":31}
+- warrior-protection-pvp: {"11650":15,"11657":5,"11670":31}
+- paladin-holy-leveling: {"11486":31,"11541":5,"11559":15}
+- paladin-holy-pvp: {"11486":31,"11541":20,"11559":0}
+- paladin-protection-leveling: {"11486":15,"11541":31,"11559":5}
+- paladin-protection-pvp: {"11486":0,"11541":31,"11559":20}
+- paladin-retribution-dungeons: {"11486":12,"11541":8,"11559":31}
+- paladin-retribution-pvp: {"11486":0,"11541":20,"11559":31}
+- shaman-elemental-dungeons: {"11326":31,"11362":20,"11363":0}
+- shaman-elemental-pvp: {"11326":31,"11362":20,"11363":0}
+- shaman-enhancement-dungeons: {"11326":20,"11362":0,"11363":31}
+- shaman-enhancement-pvp: {"11326":15,"11362":5,"11363":31}
+- shaman-restoration-leveling: {"11326":20,"11362":31,"11363":0}
+- shaman-restoration-pvp: {"11326":10,"11362":31,"11363":10}
+
+Eigenständige, aus den bestehenden geprüften Basisfolgen entwickelte chronologische Varianten. Alle erfolgreichen Entwürfe gegen exakten Primärproof 71139 geprüft, research_only; keine Behauptung gemessener Überlegenheit. Externe Quellen: Outpost (23.11.), Cobalt, Icy Veins, WoWForever.gg (Vergeltung 25.11.), Talentsmith (25.11.), Forever Hub (20.11.), Undying, Skill Capped (19.11.), MMonster und Blizzard-Hotfix vom 25.11. Waffenmeister-Wiederanwendung nach Schlachtfeldtod und korrigierter Freizauber-Verbrauch bei Kettenblitz mit fünf Mahlstromstapeln berücksichtigt; Paladin-Siegel/Richturteile und unklare Voraussetzung 113631 bleiben Prüfaufgaben. Keine neuen Laufzeitabfragen, keine Produktionsfreigabe.
+
+Alle 84 Grundkombinationen mit vollständigem 51-Punkte-Pfad abgedeckt, einschließlich ausdrücklich bedingter Forschungspfade. Regressionstest verlangt vollständige Abdeckung; die Freigabeprüfungen und blockierten Ränge bleiben unverändert.

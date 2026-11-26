@@ -988,6 +988,108 @@
       "url": "https://wowfdb.com/classes/rogue/changes/",
       "independenceGroup": "wowfdb-client-delta",
       "kind": "client_reference"
+    },
+    {
+      "id": "warrior-outpost-2311",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-warrior-level-60-talents/",
+      "independenceGroup": "outpost-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-arms-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/arms/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-fury-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/fury/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-protection-pvp",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/protection/pvp/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-cobalt-class",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/warrior/",
+      "independenceGroup": "cobalt-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "warrior-undying",
+      "url": "https://undying.app/classes/warrior",
+      "independenceGroup": "undying-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-outpost-2311",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-level-60-talents/",
+      "independenceGroup": "outpost-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-holy-wowforevergg",
+      "url": "https://wowforever.gg/en/guides/paladin-holy/",
+      "independenceGroup": "wowforevergg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-protection-wowforevergg",
+      "url": "https://wowforever.gg/en/guides/paladin-protection/",
+      "independenceGroup": "wowforevergg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-ret-wowforevergg-2511",
+      "url": "https://wowforever.gg/en/guides/paladin-retribution/",
+      "independenceGroup": "wowforevergg-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-ret-skillcapped-1911",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/retribution-paladin-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "paladin-talentsmith-2511",
+      "url": "https://talentsmith.app/classes/paladin.html",
+      "independenceGroup": "talentsmith-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-foreverhub-2011",
+      "url": "https://forever-hub.com/en/guides/shaman-guide",
+      "independenceGroup": "foreverhub-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-undying",
+      "url": "https://undying.app/classes/shaman",
+      "independenceGroup": "undying-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-enhance-pvp-skillcapped",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/enhancement-shaman-pvp-guide/talents/",
+      "independenceGroup": "skillcapped-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "shaman-mmonster-builds",
+      "url": "https://mmonster.co/wow-forever/tools/talent-calculator/shaman",
+      "independenceGroup": "mmonster-editorial",
+      "kind": "expert_guide"
+    },
+    {
+      "id": "class-builds-talentsmith-2511",
+      "url": "https://talentsmith.app/builds/",
+      "independenceGroup": "talentsmith-editorial",
+      "kind": "expert_guide"
     }
   ],
   "pilot": {
@@ -2302,6 +2404,391 @@
         "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
         "Legacy ranks 1–5 effective gates and comparative performance unverified.",
         "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      ]
+    },
+    {
+      "id": "warrior-arms-dungeons",
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-outpost-2311",
+        "warrior-cobalt-class",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Two-handed group damage; prioritize efficient Heroic Strike, Sweeping Strikes and Mortal Strike. Cleave only intended targets, no raid DPS claim.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-arms-pvp",
+      "classId": 1,
+      "treeId": 11650,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-cobalt-arms-pvp",
+        "warrior-outpost-2311",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Two-handed pressure with Mortal Strike, more Hamstring-related control and secondary rage/control. No guaranteed root or PvP uptime.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-fury-dungeons",
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-outpost-2311",
+        "warrior-cobalt-class",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Dual-wield group damage, early Arms efficiency/parry and sustained Fury rage, then Bloodthirst. No guarantee of hit cap or continuous flurry.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-fury-pvp",
+      "classId": 1,
+      "treeId": 11657,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-cobalt-fury-pvp",
+        "warrior-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early stance utility and defense before deep Fury; coordinated pressure with Death Wish and Bloodthirst, not equivalent to Mortal Strike.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-protection-leveling",
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "leveling",
+      "role": "tank",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "icyveins-protection-leveling",
+        "warrior-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Shield-first questing plus dungeons, earlier critical damage investment for solo fights; later Shield Slam than dedicated dungeon route.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "warrior-protection-pvp",
+      "classId": 1,
+      "treeId": 11670,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "warrior-cobalt-protection-pvp",
+        "warrior-cobalt-class",
+        "warrior-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Objective support, shield defense, early emergency button, interruption and team peeling. Not an ordinary dungeon tank recommendation.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      ]
+    },
+    {
+      "id": "paladin-holy-leveling",
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-holy-paladin-leveling",
+        "paladin-holy-wowforevergg",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healing-first mixed leveling, early mana-efficient instant abilities, later Holy Shock and Light's Vigil. Not faster than Retribution for solo questing.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-holy-pvp",
+      "classId": 2,
+      "treeId": 11486,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-holy-wowforevergg",
+        "paladin-talentsmith-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healing under pressure with early shield/intellect investment, later Holy capstone and blessing/hammer utility. No silence immunity assumed.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-protection-leveling",
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "leveling",
+      "role": "tank",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-protection-paladin-leveling",
+        "paladin-protection-wowforevergg",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early instant mana efficiency for questing while retaining shield, Holy Shield and Shieldsworn; not a raid defense-cap route.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-protection-pvp",
+      "classId": 2,
+      "treeId": 11541,
+      "goal": "pvp",
+      "role": "tank",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-protection-wowforevergg",
+        "paladin-talentsmith-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Shield objective support and mobility with secondary Retribution pressure. No guarantee of spell block or flag survival.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-retribution-dungeons",
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-outpost-2311",
+        "paladin-ret-wowforevergg-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early intellect and hit for repeated group fights; two-handed damage and Unsealed Wrath later than quest path. No assumed universal seal proc.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "paladin-retribution-pvp",
+      "classId": 2,
+      "treeId": 11559,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "paladin-ret-skillcapped-1911",
+        "paladin-ret-wowforevergg-2511",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Two-handed pressure with early mana reserve and later Freedom/hammer/shield-switch support. No guaranteed crowd-control immunity.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
+        "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      ]
+    },
+    {
+      "id": "shaman-elemental-dungeons",
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Early mana/hit support for repeated dungeon fights, then ranged Elemental damage; consider Chain Lightning threat and intended targets.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-elemental-pvp",
+      "classId": 7,
+      "treeId": 11326,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-mmonster-builds",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Shock pressure, Earthbound control and later off-healing/casting protection. Trade mana cost talents for shock frequency; no guaranteed proc chain.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-enhancement-dungeons",
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-undying",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Melee damage, Stormstrike and Maelstrom Weapon with early supplemental spell damage. No assumed double Clearcasting/Maelstrom benefit.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-enhancement-pvp",
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-enhance-pvp-skillcapped",
+        "shaman-foreverhub-2011",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Melee pressure, shock support and situational off-healing, not a copy of the cited endgame split.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-restoration-leveling",
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "leveling",
+      "role": "heal",
+      "playStyle": "mixed",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "iv-restoration-shaman-leveling",
+        "shaman-foreverhub-2011",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healer-oriented mixed questing with early lightning damage, later Riptide and emergency healing. Not optimized pure solo.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      ]
+    },
+    {
+      "id": "shaman-restoration-pvp",
+      "classId": 7,
+      "treeId": 11362,
+      "goal": "pvp",
+      "role": "heal",
+      "playStyle": "group",
+      "priority": "balanced",
+      "status": "research_only",
+      "sourceIds": [
+        "shaman-foreverhub-2011",
+        "shaman-mmonster-builds",
+        "official-hotfix-nov25"
+      ],
+      "proposal": "Healing under pressure, early intellect and crit, later Riptide and situational shock/lightning support. No assumed proc or control immunity.",
+      "openChecks": [
+        "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+        "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+        "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
       ]
     }
   ]

@@ -1,0 +1,347 @@
+{
+  "schemaVersion": 1,
+  "id": "shaman-enhancement-dungeons",
+  "version": 1,
+  "classId": 7,
+  "treeId": 11363,
+  "status": "research_only",
+  "requiresRespec": false,
+  "profiles": [
+    {
+      "classId": 7,
+      "treeId": 11363,
+      "goal": "dungeons",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11326": 20,
+    "11362": 0,
+    "11363": 31
+  },
+  "points": [
+    {
+      "talentId": 104753,
+      "rank": 1
+    },
+    {
+      "talentId": 104753,
+      "rank": 2
+    },
+    {
+      "talentId": 104753,
+      "rank": 3
+    },
+    {
+      "talentId": 104753,
+      "rank": 4
+    },
+    {
+      "talentId": 104753,
+      "rank": 5
+    },
+    {
+      "talentId": 104755,
+      "rank": 1
+    },
+    {
+      "talentId": 104755,
+      "rank": 2
+    },
+    {
+      "talentId": 104755,
+      "rank": 3
+    },
+    {
+      "talentId": 104751,
+      "rank": 1
+    },
+    {
+      "talentId": 104751,
+      "rank": 2
+    },
+    {
+      "talentId": 104772,
+      "rank": 1
+    },
+    {
+      "talentId": 104772,
+      "rank": 2
+    },
+    {
+      "talentId": 104772,
+      "rank": 3
+    },
+    {
+      "talentId": 104772,
+      "rank": 4
+    },
+    {
+      "talentId": 104772,
+      "rank": 5
+    },
+    {
+      "talentId": 104750,
+      "rank": 1
+    },
+    {
+      "talentId": 104750,
+      "rank": 2
+    },
+    {
+      "talentId": 104750,
+      "rank": 3
+    },
+    {
+      "talentId": 104749,
+      "rank": 1
+    },
+    {
+      "talentId": 104751,
+      "rank": 3
+    },
+    {
+      "talentId": 104743,
+      "rank": 1
+    },
+    {
+      "talentId": 104747,
+      "rank": 1
+    },
+    {
+      "talentId": 104747,
+      "rank": 2
+    },
+    {
+      "talentId": 104747,
+      "rank": 3
+    },
+    {
+      "talentId": 104747,
+      "rank": 4
+    },
+    {
+      "talentId": 104742,
+      "rank": 1
+    },
+    {
+      "talentId": 104742,
+      "rank": 2
+    },
+    {
+      "talentId": 104745,
+      "rank": 1
+    },
+    {
+      "talentId": 104744,
+      "rank": 1
+    },
+    {
+      "talentId": 104744,
+      "rank": 2
+    },
+    {
+      "talentId": 104741,
+      "rank": 1
+    },
+    {
+      "talentId": 104741,
+      "rank": 2
+    },
+    {
+      "talentId": 104741,
+      "rank": 3
+    },
+    {
+      "talentId": 104741,
+      "rank": 4
+    },
+    {
+      "talentId": 104741,
+      "rank": 5
+    },
+    {
+      "talentId": 104740,
+      "rank": 1
+    },
+    {
+      "talentId": 104773,
+      "rank": 1
+    },
+    {
+      "talentId": 104773,
+      "rank": 2
+    },
+    {
+      "talentId": 104773,
+      "rank": 3
+    },
+    {
+      "talentId": 104773,
+      "rank": 4
+    },
+    {
+      "talentId": 104773,
+      "rank": 5
+    },
+    {
+      "talentId": 104768,
+      "rank": 1
+    },
+    {
+      "talentId": 104771,
+      "rank": 1
+    },
+    {
+      "talentId": 104771,
+      "rank": 2
+    },
+    {
+      "talentId": 104771,
+      "rank": 3
+    },
+    {
+      "talentId": 104767,
+      "rank": 1
+    },
+    {
+      "talentId": 104767,
+      "rank": 2
+    },
+    {
+      "talentId": 104767,
+      "rank": 3
+    },
+    {
+      "talentId": 104767,
+      "rank": 4
+    },
+    {
+      "talentId": 104767,
+      "rank": 5
+    },
+    {
+      "talentId": 104770,
+      "rank": 1
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104753,
+      "count": 5,
+      "reason": "Kritische Trefferchance für Angriffe und Zauber erhöhen."
+    },
+    {
+      "talentId": 104755,
+      "count": 3,
+      "reason": "Angriffskraft aus Intelligenz erhöhen und Schlaghagel vorbereiten."
+    },
+    {
+      "talentId": 104751,
+      "count": 2,
+      "reason": "Blitzschlagschild stärken."
+    },
+    {
+      "talentId": 104772,
+      "count": 5,
+      "reason": "Schaden von Blitzzaubern und Erdschock erhöhen."
+    },
+    {
+      "talentId": 104750,
+      "count": 3,
+      "reason": "Waffenverzauberungen stärken."
+    },
+    {
+      "talentId": 104749,
+      "count": 1,
+      "reason": "Kosten von Schocks und Blitzschlagschild reduzieren."
+    },
+    {
+      "talentId": 104751,
+      "count": 1,
+      "reason": "Blitzschlagschild vervollständigen."
+    },
+    {
+      "talentId": 104743,
+      "count": 1,
+      "reason": "Sturmschlag freischalten."
+    },
+    {
+      "talentId": 104747,
+      "count": 4,
+      "reason": "Angriffstempo nach kritischen Nahkampftreffern stärken."
+    },
+    {
+      "talentId": 104742,
+      "count": 2,
+      "reason": "Manaregeneration und Abklingzeit-Resets nach dokumentierten Auslösern unterstützen."
+    },
+    {
+      "talentId": 104745,
+      "count": 1,
+      "reason": "Parieren und bedingte Bedrohungsanpassung freischalten."
+    },
+    {
+      "talentId": 104744,
+      "count": 2,
+      "reason": "Zauberschaden und Heilung aus Intelligenz erhöhen."
+    },
+    {
+      "talentId": 104741,
+      "count": 5,
+      "reason": "Waffe des Mahlstroms ausbauen."
+    },
+    {
+      "talentId": 104740,
+      "count": 1,
+      "reason": "Zorn des Scharfsehers freischalten."
+    },
+    {
+      "talentId": 104773,
+      "count": 5,
+      "reason": "Manakosten der genannten Elementarzauber reduzieren."
+    },
+    {
+      "talentId": 104768,
+      "count": 1,
+      "reason": "Freizauberzustand ergänzen."
+    },
+    {
+      "talentId": 104771,
+      "count": 3,
+      "reason": "Zauberzeit von Blitzschlag und Kettenblitz verringern."
+    },
+    {
+      "talentId": 104767,
+      "count": 5,
+      "reason": "Schock-Abklingzeit verringern."
+    },
+    {
+      "talentId": 104770,
+      "count": 1,
+      "reason": "Feuertotems und Feuerzauber ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "shaman-foreverhub-2011",
+      "shaman-undying",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Melee damage, Stormstrike and Maelstrom Weapon with early supplemental spell damage. No assumed double Clearcasting/Maelstrom benefit.",
+    "unresolved": [
+      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
+      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
+      "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}
