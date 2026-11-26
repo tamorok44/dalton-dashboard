@@ -1,0 +1,700 @@
+{
+  "schemaVersion": 1,
+  "captureKind": "extracted_text_comparison",
+  "capturedOn": "2026-11-26",
+  "releaseEligible": false,
+  "primaryUrl": "https://foreverdb.net/data/classes.json",
+  "secondaryAttribution": "TalentsForever (https://talentsforever.com), CC BY 4.0",
+  "method": "Compare named trees and zero-based versus one-based coordinates. Name, rank cap, prerequisite names and normalized tooltip strings separately. Text differences are not classified as gameplay changes. No exact live build or prerequisite rank proof.",
+  "classes": [
+    {
+      "classId": 1,
+      "className": "Warrior",
+      "sourceUrl": "https://talentsforever.com/export/warrior.json",
+      "generated": "2026-10-08",
+      "sourceBuild": "1.60.1.70291",
+      "counts": {
+        "primary": 53,
+        "secondary": 52,
+        "position": 50,
+        "name": 48,
+        "ranks": 47,
+        "edges": 48,
+        "text": 40
+      },
+      "issues": [
+        {
+          "talentId": 105954,
+          "treeId": 11650,
+          "primaryName": "Improved Tactical Mastery",
+          "secondaryName": "Improved Tactical Mastery",
+          "fields": [
+            "maxRank",
+            "rankDescriptions"
+          ],
+          "primaryMax": 3,
+          "secondaryMax": 5
+        },
+        {
+          "talentId": 105949,
+          "treeId": 11650,
+          "primaryName": "Spearing Strike",
+          "secondaryName": "Spearing Strike",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105948,
+          "treeId": 11650,
+          "primaryName": "Two-Handed Weapon Specialization",
+          "secondaryName": "Two-Handed Weapon Specialization",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 110524,
+          "treeId": 11650,
+          "primaryName": "Bloodthrill",
+          "secondaryName": "Bloodthrill",
+          "fields": [
+            "maxRank",
+            "rankDescriptions"
+          ],
+          "primaryMax": 2,
+          "secondaryMax": 5
+        },
+        {
+          "talentId": 110858,
+          "treeId": 11650,
+          "primaryName": "Improved Slam",
+          "secondaryName": "Improved Slam",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105938,
+          "treeId": 11657,
+          "primaryName": "Booming Voice",
+          "secondaryName": "Booming Voice",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105935,
+          "treeId": 11657,
+          "primaryName": "Piercing Howl",
+          "secondaryName": "Piercing Howl",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105931,
+          "treeId": 11657,
+          "primaryName": "Enrage",
+          "fields": [
+            "missingPosition"
+          ]
+        },
+        {
+          "talentId": 113636,
+          "treeId": 11657,
+          "primaryName": "Reckless Swings",
+          "secondaryName": "Raging Blows",
+          "fields": [
+            "name",
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 113569,
+          "treeId": 11657,
+          "primaryName": "Gore Drinker",
+          "fields": [
+            "missingPosition"
+          ]
+        },
+        {
+          "talentId": 105977,
+          "treeId": 11657,
+          "primaryName": "Improved Whirlwind",
+          "fields": [
+            "missingPosition"
+          ]
+        },
+        {
+          "talentId": 105928,
+          "treeId": 11657,
+          "primaryName": "Flurry",
+          "secondaryName": "Gore Drinker",
+          "fields": [
+            "name",
+            "maxRank",
+            "prerequisiteNames",
+            "rankDescriptions"
+          ],
+          "primaryMax": 3,
+          "secondaryMax": 2,
+          "primaryEdges": [],
+          "secondaryEdges": [
+            "enrage"
+          ]
+        },
+        {
+          "talentId": 105930,
+          "treeId": 11657,
+          "primaryName": "Bloodthirst",
+          "secondaryName": "Bloodthirst",
+          "fields": [
+            "prerequisiteNames"
+          ],
+          "primaryEdges": [
+            "death wish"
+          ],
+          "secondaryEdges": []
+        },
+        {
+          "treeId": 11657,
+          "secondaryName": "Enrage",
+          "fields": [
+            "extraPosition"
+          ]
+        },
+        {
+          "treeId": 11657,
+          "secondaryName": "Flurry",
+          "fields": [
+            "extraPosition"
+          ]
+        },
+        {
+          "talentId": 110856,
+          "treeId": 11670,
+          "primaryName": "Defiance",
+          "secondaryName": "Defiance",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 2,
+      "className": "Paladin",
+      "sourceUrl": "https://talentsforever.com/export/paladin.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 51,
+        "secondary": 51,
+        "position": 51,
+        "name": 51,
+        "ranks": 51,
+        "edges": 51,
+        "text": 47
+      },
+      "issues": [
+        {
+          "talentId": 105330,
+          "treeId": 11486,
+          "primaryName": "Oath of Light",
+          "secondaryName": "Oath of Light",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105320,
+          "treeId": 11486,
+          "primaryName": "Light's Vigil",
+          "secondaryName": "Light's Vigil",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105702,
+          "treeId": 11559,
+          "primaryName": "Vindication",
+          "secondaryName": "Vindication",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105696,
+          "treeId": 11559,
+          "primaryName": "Seal of Command",
+          "secondaryName": "Seal of Command",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 3,
+      "className": "Hunter",
+      "sourceUrl": "https://talentsforever.com/export/hunter.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 50,
+        "secondary": 50,
+        "position": 50,
+        "name": 50,
+        "ranks": 50,
+        "edges": 49,
+        "text": 48
+      },
+      "issues": [
+        {
+          "talentId": 104966,
+          "treeId": 11372,
+          "primaryName": "Summon Hawk",
+          "secondaryName": "Summon Hawk",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104964,
+          "treeId": 11372,
+          "primaryName": "Intimidation",
+          "secondaryName": "Intimidation",
+          "fields": [
+            "prerequisiteNames"
+          ],
+          "primaryEdges": [
+            "bestial swiftness",
+            "bestial wrath"
+          ],
+          "secondaryEdges": [
+            "bestial swiftness"
+          ]
+        },
+        {
+          "talentId": 104989,
+          "treeId": 11370,
+          "primaryName": "Counterattack",
+          "secondaryName": "Counterattack",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 4,
+      "className": "Rogue",
+      "sourceUrl": "https://talentsforever.com/export/rogue.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 54,
+        "secondary": 54,
+        "position": 54,
+        "name": 54,
+        "ranks": 54,
+        "edges": 54,
+        "text": 52
+      },
+      "issues": [
+        {
+          "talentId": 105709,
+          "treeId": 11580,
+          "primaryName": "Mutilate",
+          "secondaryName": "Mutilate",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 110866,
+          "treeId": 11572,
+          "primaryName": "Death Mark",
+          "secondaryName": "Death Mark",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "className": "Priest",
+      "sourceUrl": "https://talentsforever.com/export/priest.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 52,
+        "secondary": 52,
+        "position": 52,
+        "name": 52,
+        "ranks": 52,
+        "edges": 52,
+        "text": 48
+      },
+      "issues": [
+        {
+          "talentId": 105834,
+          "treeId": 11608,
+          "primaryName": "Penance",
+          "secondaryName": "Penance",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105840,
+          "treeId": 11608,
+          "primaryName": "Divine Aegis",
+          "secondaryName": "Divine Aegis",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105862,
+          "treeId": 11615,
+          "primaryName": "Holy Nova",
+          "secondaryName": "Holy Nova",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105851,
+          "treeId": 11615,
+          "primaryName": "Prayer of Mending",
+          "secondaryName": "Prayer of Mending",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 7,
+      "className": "Shaman",
+      "sourceUrl": "https://talentsforever.com/export/shaman.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 50,
+        "secondary": 50,
+        "position": 50,
+        "name": 50,
+        "ranks": 50,
+        "edges": 50,
+        "text": 49
+      },
+      "issues": [
+        {
+          "talentId": 104741,
+          "treeId": 11363,
+          "primaryName": "Maelstrom Weapon",
+          "secondaryName": "Maelstrom Weapon",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "className": "Mage",
+      "sourceUrl": "https://talentsforever.com/export/mage.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 53,
+        "secondary": 53,
+        "position": 53,
+        "name": 53,
+        "ranks": 53,
+        "edges": 53,
+        "text": 47
+      },
+      "issues": [
+        {
+          "talentId": 105806,
+          "treeId": 11582,
+          "primaryName": "Arcane Blast",
+          "secondaryName": "Arcane Blast",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 113627,
+          "treeId": 11582,
+          "primaryName": "Arcane Wrath",
+          "secondaryName": "Arcane Wrath",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105790,
+          "treeId": 11594,
+          "primaryName": "Pyroblast",
+          "secondaryName": "Pyroblast",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105783,
+          "treeId": 11594,
+          "primaryName": "Blast Wave",
+          "secondaryName": "Blast Wave",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105767,
+          "treeId": 11601,
+          "primaryName": "Ice Lance",
+          "secondaryName": "Ice Lance",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105762,
+          "treeId": 11601,
+          "primaryName": "Ice Barrier",
+          "secondaryName": "Ice Barrier",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "className": "Warlock",
+      "sourceUrl": "https://talentsforever.com/export/warlock.json",
+      "generated": "2026-10-27",
+      "sourceBuild": "1.60.1.70630",
+      "counts": {
+        "primary": 52,
+        "secondary": 52,
+        "position": 52,
+        "name": 52,
+        "ranks": 52,
+        "edges": 52,
+        "text": 43
+      },
+      "issues": [
+        {
+          "talentId": 105920,
+          "treeId": 11629,
+          "primaryName": "Improved Drains",
+          "secondaryName": "Improved Drains",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105911,
+          "treeId": 11629,
+          "primaryName": "Soul Siphon",
+          "secondaryName": "Soul Siphon",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105909,
+          "treeId": 11629,
+          "primaryName": "Wrack",
+          "secondaryName": "Wrack",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105900,
+          "treeId": 11636,
+          "primaryName": "Demonic Sacrifice",
+          "secondaryName": "Demonic Sacrifice",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105896,
+          "treeId": 11636,
+          "primaryName": "Demonic Brand",
+          "secondaryName": "Demonic Brand",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105884,
+          "treeId": 11637,
+          "primaryName": "Shadowburn",
+          "secondaryName": "Shadowburn",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105880,
+          "treeId": 11637,
+          "primaryName": "Conflagrate",
+          "secondaryName": "Conflagrate",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105875,
+          "treeId": 11637,
+          "primaryName": "Shadow and Flame",
+          "secondaryName": "Shadow and Flame",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 105874,
+          "treeId": 11637,
+          "primaryName": "Incinerate",
+          "secondaryName": "Incinerate",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "className": "Druid",
+      "sourceUrl": "https://talentsforever.com/export/druid.json",
+      "generated": "2026-11-25",
+      "sourceBuild": "1.60.1.70755",
+      "counts": {
+        "primary": 52,
+        "secondary": 52,
+        "position": 52,
+        "name": 49,
+        "ranks": 51,
+        "edges": 51,
+        "text": 43
+      },
+      "issues": [
+        {
+          "talentId": 104923,
+          "treeId": 11328,
+          "primaryName": "Improved Wrath",
+          "secondaryName": "Starlight Wrath",
+          "fields": [
+            "name",
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104931,
+          "treeId": 11328,
+          "primaryName": "Improved Moonfire",
+          "secondaryName": "Moon and Stars",
+          "fields": [
+            "name",
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104932,
+          "treeId": 11328,
+          "primaryName": "Vengeance",
+          "secondaryName": "Vengeance",
+          "fields": [
+            "prerequisiteNames"
+          ],
+          "primaryEdges": [
+            "improved moonfire"
+          ],
+          "secondaryEdges": [
+            "moon and stars"
+          ]
+        },
+        {
+          "talentId": 104933,
+          "treeId": 11328,
+          "primaryName": "Improved Starfire",
+          "secondaryName": "Improved Starfire",
+          "fields": [
+            "maxRank",
+            "rankDescriptions"
+          ],
+          "primaryMax": 5,
+          "secondaryMax": 2
+        },
+        {
+          "talentId": 104935,
+          "treeId": 11328,
+          "primaryName": "Eclipse",
+          "secondaryName": "Eclipse",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104936,
+          "treeId": 11328,
+          "primaryName": "Moonfury",
+          "secondaryName": "Dreamstate",
+          "fields": [
+            "name",
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104937,
+          "treeId": 11328,
+          "primaryName": "Moonkin Form",
+          "secondaryName": "Moonkin Form",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104944,
+          "treeId": 11347,
+          "primaryName": "Feral Charge",
+          "secondaryName": "Feral Charge",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 113563,
+          "treeId": 11347,
+          "primaryName": "Shifting Power",
+          "secondaryName": "Shifting Power",
+          "fields": [
+            "rankDescriptions"
+          ]
+        },
+        {
+          "talentId": 104910,
+          "treeId": 11340,
+          "primaryName": "Wild Growth",
+          "secondaryName": "Wild Growth",
+          "fields": [
+            "rankDescriptions"
+          ]
+        }
+      ]
+    }
+  ]
+}
