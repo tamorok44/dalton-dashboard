@@ -10368,6 +10368,1014 @@
           "version": 1
         }
       ]
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-leveling-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-leveling",
+      "planVersion": 1,
+      "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7",
+      "url": "https://forever-hub.com/en/guides/hunter-guide",
+      "claim": "Compares three leveling styles; BM pet uptime and lower downtime.",
+      "comparedOptions": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "solo",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-leveling",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-leveling-mixed-balanced",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-survival-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-leveling-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-beast-mastery-leveling",
+      "planVersion": 1,
+      "allocationDigest": "ae45116e0a7b2ea4758a3753aef83b571a12151922fdc79fb513e63ca7febfc7",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-hunter-leveling-talents/",
+      "claim": "Explicit safety, gear, downtime and group tradeoffs for three specs.",
+      "comparedOptions": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "solo",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-leveling",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-leveling-mixed-balanced",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-survival-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-dungeons-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-marksmanship-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "736c3f7d1cf68e83bed1c1cab201ae486ee9e7d8daa9ee05e9987323ac25f429",
+      "url": "https://forever-hub.com/en/guides/hunter-guide",
+      "claim": "Both MM and BM favored in level-30 dungeons; Survival melee alternative.",
+      "comparedOptions": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-survival-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-dungeons-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-marksmanship-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "736c3f7d1cf68e83bed1c1cab201ae486ee9e7d8daa9ee05e9987323ac25f429",
+      "url": "https://mmonster.co/wow-forever/guides/tier-lists/dungeon-tier-list",
+      "claim": "Favors BM over MM, but no spec-resolved level-60 dungeon logs. Our default is the ranged group role, not a performance ranking.",
+      "comparedOptions": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-survival-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-survival-pvp",
+      "planVersion": 1,
+      "allocationDigest": "f0ba90a0eaf8ab8d6b183d90eb618b9363ae32dc8a28fd44c48766e08ade3005",
+      "url": "https://forever-hub.com/en/guides/hunter-guide",
+      "claim": "Compares PvP control, trap, pet and ranged damage identities.",
+      "comparedOptions": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-pvp",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-pvp",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-survival-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 3,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "hunter-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "hunter-survival-pvp",
+      "planVersion": 1,
+      "allocationDigest": "f0ba90a0eaf8ab8d6b183d90eb618b9363ae32dc8a28fd44c48766e08ade3005",
+      "url": "https://conquestcapped.com/guides/wow-forever/wow-forever-tier-list/",
+      "claim": "Nov 26 update favors Survival PvP; does not benchmark our leveling routes.",
+      "comparedOptions": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-pvp",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-pvp",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-survival-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "priest-leveling-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-leveling",
+      "planVersion": 1,
+      "allocationDigest": "6813e956bbfee2d0c376abc3ae03fd1a24fd28de3b78d08118b387b3769ce15f",
+      "url": "https://www.wowhead.com/forever/guide/classes/priest/holy/healer-leveling-tips",
+      "claim": "Explicitly prefers Discipline early for hybrid damage/heal, Holy when dungeon healing is main activity.",
+      "comparedOptions": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "leveling",
+          "role": "heal",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "priest-discipline-leveling",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "leveling",
+          "role": "heal",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "priest-holy-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "priest-leveling-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-leveling",
+      "planVersion": 1,
+      "allocationDigest": "6813e956bbfee2d0c376abc3ae03fd1a24fd28de3b78d08118b387b3769ce15f",
+      "url": "https://wowforeverbuilder.com/classes/priest/compare/discipline-vs-holy/",
+      "claim": "Both viable leveling healers; shield vs direct healing identity.",
+      "comparedOptions": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "leveling",
+          "role": "heal",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "priest-discipline-leveling",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "leveling",
+          "role": "heal",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "priest-holy-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "priest-dungeons-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "bb44314358514ad9f4524c9277756d23d4b9854e459470729740866c50602551",
+      "url": "https://www.wowhead.com/forever/de/guide/classes/priest/discipline/overview-pve-healer",
+      "claim": "Strong shields and single target, weaker area healing; close Holy competition.",
+      "comparedOptions": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "dungeons",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-discipline-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "dungeons",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-holy-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "priest-dungeons-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "bb44314358514ad9f4524c9277756d23d4b9854e459470729740866c50602551",
+      "url": "https://forever-hub.com/en/guides/holy-priest-guide",
+      "claim": "Prayer of Mending, Litany, group healing and dungeon hybrid.",
+      "comparedOptions": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "dungeons",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-discipline-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "dungeons",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-holy-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "priest-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-pvp",
+      "planVersion": 1,
+      "allocationDigest": "669d94b95e25a182d3745af3d2e9e0c6c302657da72ee8d160749822ca646669",
+      "url": "https://wowforeverbuilder.com/classes/priest/compare/discipline-vs-holy/",
+      "claim": "Explicitly favors Discipline for PvP vs Holy for PvE.",
+      "comparedOptions": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "pvp",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-discipline-pvp",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "pvp",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-holy-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "priest-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-pvp",
+      "planVersion": 1,
+      "allocationDigest": "669d94b95e25a182d3745af3d2e9e0c6c302657da72ee8d160749822ca646669",
+      "url": "https://forever-hub.com/en/guides/discipline-priest-guide",
+      "claim": "Discipline shields, Penance, survivability; PvP comparison.",
+      "comparedOptions": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "pvp",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-discipline-pvp",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "pvp",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-holy-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-leveling-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-affliction-leveling",
+      "planVersion": 1,
+      "allocationDigest": "5d469d81856a1993e3059efdbc228e27f4c4055a663c3e30eb8e3d693016c6a7",
+      "url": "https://mobalytics.gg/wow-forever/classes/warlock-leveling-guide",
+      "claim": "Nov 23 compares Affliction and Demo as favored leveling, Destro mana intensive.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-affliction-leveling",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-demonology-leveling",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-destruction-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-leveling-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-affliction-leveling",
+      "planVersion": 1,
+      "allocationDigest": "5d469d81856a1993e3059efdbc228e27f4c4055a663c3e30eb8e3d693016c6a7",
+      "url": "https://forever-hub.com/en/guides/warlock-guide",
+      "claim": "Affliction sustain, Demonology pet and Destruction downtime.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-affliction-leveling",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-demonology-leveling",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-destruction-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-dungeons-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-destruction-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "1b932eafdea386a2a5b26317ef87f1c9d05416b72abcc8f6ea6ddf6e1d242c57",
+      "url": "https://forever-hub.com/en/guides/warlock-guide",
+      "claim": "Demonology favored in early dungeon tiers and fire variant for adds; all three viable, tradeoff with direct damage.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-affliction-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-demonology-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-destruction-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-dungeons-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-destruction-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "1b932eafdea386a2a5b26317ef87f1c9d05416b72abcc8f6ea6ddf6e1d242c57",
+      "url": "https://www.icy-veins.com/wow-forever/destruction-warlock-leveling/",
+      "claim": "Destruction mana intensive solo, strong group AoE and better after 40.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-affliction-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-demonology-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-destruction-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-pvp",
+      "planVersion": 1,
+      "allocationDigest": "70ec563fac00d491c1abc33fddf3ea47812a1f88fbfedb2e34cae074c518769f",
+      "url": "https://mobalytics.gg/wow-forever/profile/kargoz/guides/which-class-is-right-for-you-pvp-deep-dive",
+      "claim": "Explicit Demonology hybrid preference, Affliction sustained pressure and Destro burst.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-affliction-pvp",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-demonology-pvp",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-destruction-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-demonology-pvp",
+      "planVersion": 1,
+      "allocationDigest": "70ec563fac00d491c1abc33fddf3ea47812a1f88fbfedb2e34cae074c518769f",
+      "url": "https://foreverbattlegrounds.com/classes/warlock/",
+      "claim": "Compares three battleground roles; different situational preferences.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-affliction-pvp",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-demonology-pvp",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-destruction-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "druid-leveling-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "druid-feral-leveling-mixed-balanced",
+      "planVersion": 1,
+      "allocationDigest": "6915102db3cd230b1cc2628161eeccf82f9ed18217875da19831c9036f574d82",
+      "url": "https://mobalytics.gg/wow-forever/classes/druid-leveling-guide-1-60",
+      "claim": "Feral preferred for low downtime; Balance viable caster alternative.",
+      "comparedOptions": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-balance-leveling",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-feral-leveling-mixed-balanced",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "druid-leveling-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "druid-feral-leveling-mixed-balanced",
+      "planVersion": 1,
+      "allocationDigest": "6915102db3cd230b1cc2628161eeccf82f9ed18217875da19831c9036f574d82",
+      "url": "https://conquestcapped.com/guides/wow-forever/wow-forever-tier-list/",
+      "claim": "Nov 26 Balance change considered, Feral remains attractive for leveling.",
+      "comparedOptions": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-balance-leveling",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-feral-leveling-mixed-balanced",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "druid-dungeons-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "druid-feral-dungeons-damage",
+      "planVersion": 1,
+      "allocationDigest": "b9db5c78a85a15219ef77835f8b68bbd777f6fd555e4eb336224489d66adb0d9",
+      "url": "https://forever-hub.com/en/guides/druid-guide",
+      "claim": "Contrasts cat and balance dungeon roles; older simulations not a post-hotfix measurement.",
+      "comparedOptions": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "druid-balance-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "druid-feral-dungeons-damage",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "druid-dungeons-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "druid-feral-dungeons-damage",
+      "planVersion": 1,
+      "allocationDigest": "b9db5c78a85a15219ef77835f8b68bbd777f6fd555e4eb336224489d66adb0d9",
+      "url": "https://conquestcapped.com/guides/wow-forever/wow-forever-tier-list/",
+      "claim": "Nov 26 explicitly upgrades Balance PvE after talent rework.",
+      "comparedOptions": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "druid-balance-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "druid-feral-dungeons-damage",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "druid-pvp-full-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "druid-feral-pvp-damage",
+      "planVersion": 1,
+      "allocationDigest": "84fa2b32d86af86f20c3b64997c6cf24270df890994f3bb730c96abb2d0d1d4d",
+      "url": "https://forever-hub.com/en/guides/druid-guide",
+      "claim": "Feral mobility, charge and bear survivability vs Balance ranged play.",
+      "comparedOptions": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-balance-pvp",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-feral-pvp-damage",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 11,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "druid-pvp-full-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "druid-feral-pvp-damage",
+      "planVersion": 1,
+      "allocationDigest": "84fa2b32d86af86f20c3b64997c6cf24270df890994f3bb730c96abb2d0d1d4d",
+      "url": "https://conquestcapped.com/guides/wow-forever/wow-forever-tier-list/",
+      "claim": "Nov 26 compares both PvP styles; Balance update does not establish a universal PvP advantage.",
+      "comparedOptions": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-balance-pvp",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-feral-pvp-damage",
+          "version": 1
+        }
+      ]
     }
   ],
   "rulePacks": [
@@ -13830,126 +14838,6 @@
     {
       "options": [
         {
-          "classId": 9,
-          "treeId": 11629,
-          "goal": "dungeons",
-          "role": "damage",
-          "playStyle": "group",
-          "priority": "balanced",
-          "planId": "warlock-affliction-dungeons",
-          "version": 1
-        },
-        {
-          "classId": 9,
-          "treeId": 11637,
-          "goal": "dungeons",
-          "role": "damage",
-          "playStyle": "group",
-          "priority": "balanced",
-          "planId": "warlock-destruction-dungeons",
-          "version": 1
-        }
-      ],
-      "preferred": {
-        "classId": 9,
-        "treeId": 11637,
-        "goal": "dungeons",
-        "role": "damage",
-        "playStyle": "group",
-        "priority": "balanced",
-        "planId": "warlock-destruction-dungeons",
-        "version": 1
-      },
-      "reason": "Für häufige reguläre Dungeon-Gruppen mit einem verlässlichen Tank empfehlen wir unter den bisher freigegebenen Pfaden Zerstörung: direkte Zauber und situative Mehrzielangriffe passen zu kürzeren Gegnerkämpfen. Gebrechen bleibt die geprüfte Alternative für länger lebende Ziele, Ressourcenmanagement und Schaden während Bewegung. Ausrüstung, Trinkpausen und Pulltempo können die Entscheidung verändern. Dämonologie ist noch in Prüfung.",
-      "reviewedAt": "2026-11-26",
-      "evidenceIds": [
-        "warlock-dungeon-comparison-20261126-1",
-        "warlock-dungeon-comparison-20261126-2"
-      ]
-    },
-    {
-      "options": [
-        {
-          "classId": 3,
-          "treeId": 11371,
-          "goal": "leveling",
-          "role": "damage",
-          "playStyle": "mixed",
-          "priority": "balanced",
-          "planId": "hunter-marksmanship-leveling-mixed-balanced",
-          "version": 1
-        },
-        {
-          "classId": 3,
-          "treeId": 11370,
-          "goal": "leveling",
-          "role": "damage",
-          "playStyle": "mixed",
-          "priority": "balanced",
-          "planId": "hunter-survival-leveling",
-          "version": 1
-        }
-      ],
-      "preferred": {
-        "classId": 3,
-        "treeId": 11371,
-        "goal": "leveling",
-        "role": "damage",
-        "playStyle": "mixed",
-        "priority": "balanced",
-        "planId": "hunter-marksmanship-leveling-mixed-balanced",
-        "version": 1
-      },
-      "reason": "Unter den beiden bereits geprüften Pfaden empfehlen wir Treffsicherheit für gemischtes Leveln: Distanzschaden mit aktivem Begleiter ist von Beginn an gut nutzbar, während Überlebens Nah-/Fernkampfspielweise erst um Stufe 30 ihren Kern erhält. Überleben ist die Alternative für Spieler, die bewusst in Nahkampfreichweite wechseln möchten. Tierherrschaft ist noch in Prüfung und wird ausdrücklich nicht schlechter bewertet.",
-      "reviewedAt": "2026-11-26",
-      "evidenceIds": [
-        "hunter-leveling-comparison-20261126-1",
-        "hunter-leveling-comparison-20261126-2"
-      ]
-    },
-    {
-      "options": [
-        {
-          "classId": 3,
-          "treeId": 11371,
-          "goal": "pvp",
-          "role": "damage",
-          "playStyle": "mixed",
-          "priority": "balanced",
-          "planId": "hunter-marksmanship-pvp",
-          "version": 1
-        },
-        {
-          "classId": 3,
-          "treeId": 11370,
-          "goal": "pvp",
-          "role": "damage",
-          "playStyle": "mixed",
-          "priority": "balanced",
-          "planId": "hunter-survival-pvp",
-          "version": 1
-        }
-      ],
-      "preferred": {
-        "classId": 3,
-        "treeId": 11371,
-        "goal": "pvp",
-        "role": "damage",
-        "playStyle": "mixed",
-        "priority": "balanced",
-        "planId": "hunter-marksmanship-pvp",
-        "version": 1
-      },
-      "reason": "Unter den beiden bereits geprüften PvP-Pfaden empfehlen wir Treffsicherheit als vielseitigen Distanzangreifer: Streuschuss auf 30, direkter Fernkampfdruck und Heckenschützenschuss auf 40. Überleben ist die geprüfte Alternative für Fallen, Nah-/Fernkampfwechsel und frühe Defensive, besonders beim Schutz von Zielen. Tierherrschaft bleibt noch in Prüfung. Keine allgemeine PvP-Rangliste oder garantierte Überlegenheit.",
-      "reviewedAt": "2026-11-26",
-      "evidenceIds": [
-        "hunter-pvp-comparison-20261126-1",
-        "hunter-pvp-comparison-20261126-2"
-      ]
-    },
-    {
-      "options": [
-        {
           "classId": 8,
           "treeId": 11582,
           "goal": "leveling",
@@ -14285,6 +15173,546 @@
       "evidenceIds": [
         "warrior-pvp-full-comparison-20261126-1",
         "warrior-pvp-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "solo",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-leveling",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-leveling-mixed-balanced",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-survival-leveling",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 3,
+        "treeId": 11372,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "solo",
+        "priority": "balanced",
+        "planId": "hunter-beast-mastery-leveling",
+        "version": 1
+      },
+      "reason": "Für das Leveln empfehlen wir Tierherrschaft, besonders bei überwiegend eigenen Quests: der Begleiter bindet Gegner und erhält früh offensive Talente, der Falke folgt auf 25 und Zorn des Wildtiers auf 40. Treffsicherheit ist die Alternative für eigenen Fernkampfschaden und Überleben für Fallen und Nahkampfelemente. Auch gemeinsam sind alle drei spielbar; der Tierherrschaftspfad ist auf Solo-Quests ausgelegt, nicht auf garantierte Killgeschwindigkeit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "hunter-leveling-full-comparison-20261126-1",
+        "hunter-leveling-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "hunter-survival-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 3,
+        "treeId": 11371,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "hunter-marksmanship-dungeons",
+        "version": 1
+      },
+      "reason": "Für reguläre Level-Dungeons empfehlen wir Treffsicherheit, wenn die Gruppe zuverlässig tankt: Distanzschaden, Aura auf 25, Ressourcenunterstützung ab 30 und Heckenschützenschuss auf 40. Tierherrschaft ist gleichwertig als Spielstilalternative mit aktivem Begleiter und langlebigen Zielen; Überleben nutzt Fallen und Nahkampfpositionierung. Kein nachgewiesener DPS-Vorsprung; Ausrüstung und Pulltempo beeinflussen die Wahl.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "hunter-dungeons-full-comparison-20261126-1",
+        "hunter-dungeons-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 3,
+          "treeId": 11372,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-beast-mastery-pvp",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11371,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-marksmanship-pvp",
+          "version": 1
+        },
+        {
+          "classId": 3,
+          "treeId": 11370,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "hunter-survival-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 3,
+        "treeId": 11370,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "hunter-survival-pvp",
+        "version": 1
+      },
+      "reason": "Für gemischtes PvP empfehlen wir Überleben als kontrollorientierten Einstieg: Fallen, defensive Optionen und Wechsel zwischen Distanz und Nahkampf unterstützen das Schützen von Zielen. Treffsicherheit ist die Distanzalternative mit Streuschuss; Tierherrschaft bietet Begleiterdruck und Einschüchterung. Alle drei bleiben wählbar, insbesondere bei anderer Waffenwahl oder Gruppentaktik; keine garantierte Kontrolle.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "hunter-pvp-full-comparison-20261126-1",
+        "hunter-pvp-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "leveling",
+          "role": "heal",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "priest-discipline-leveling",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "leveling",
+          "role": "heal",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "priest-holy-leveling",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 5,
+        "treeId": 11608,
+        "goal": "leveling",
+        "role": "heal",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "priest-discipline-leveling",
+        "version": 1
+      },
+      "reason": "Für heilpriorisiertes gemischtes Leveln empfehlen wir Disziplin: Zauberstab, Schild und Ressourcenmanagement verbinden eigene Quests mit früher Dungeonheilung. Heilig bleibt die Alternative, wenn du fast ausschließlich mit Freunden oder als Heiler unterwegs bist. Schatten ist eine andere Rolle; hier vergleichen wir nur Heilpfade.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "priest-leveling-full-comparison-20261126-1",
+        "priest-leveling-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "dungeons",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-discipline-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "dungeons",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-holy-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 5,
+        "treeId": 11615,
+        "goal": "dungeons",
+        "role": "heal",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "priest-holy-dungeons",
+        "version": 1
+      },
+      "reason": "Für regelmäßige Dungeonheilung empfehlen wir Heilig: direkte Heilung, Litanei und Gebet der Besserung auf 40 unterstützen die gesamte Gruppe. Disziplin bleibt die Alternative für vorausschauende Schilde und Sühne ab 30, besonders bei konzentriertem Tankschaden. Bei früherem Einzelzielbedarf kann Disziplin sinnvoller sein. Keine gemessene Heilrangliste.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "priest-dungeons-full-comparison-20261126-1",
+        "priest-dungeons-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 5,
+          "treeId": 11608,
+          "goal": "pvp",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-discipline-pvp",
+          "version": 1
+        },
+        {
+          "classId": 5,
+          "treeId": 11615,
+          "goal": "pvp",
+          "role": "heal",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "priest-holy-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 5,
+        "treeId": 11608,
+        "goal": "pvp",
+        "role": "heal",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "priest-discipline-pvp",
+        "version": 1
+      },
+      "reason": "Für Gruppen-PvP in der Heilrolle empfehlen wir Disziplin: Schilde, Sühne ab 30 und defensive Werkzeuge helfen, gezielten Gegnerdruck abzufangen. Heilig bietet direkte Heilung und Gebet der Besserung, wenn Schutz und Positionierung stimmen. Keine garantierte Überlebenswirkung oder Unterbrechungsimmunität.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "priest-pvp-full-comparison-20261126-1",
+        "priest-pvp-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-affliction-leveling",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-demonology-leveling",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-destruction-leveling",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 9,
+        "treeId": 11629,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "warlock-affliction-leveling",
+        "version": 1
+      },
+      "reason": "Für gemischtes Leveln empfehlen wir Gebrechen: periodischer Schaden, Blutsauger und Aderlass unterstützen eine fortlaufende Questfolge. Dämonologie ist die Alternative mit stärkerem Begleiter und defensiven Talenten; Zerstörung passt zu direktem Schaden und Gruppen mit kurzen Gegnerkämpfen, verlangt jedoch mehr Ressourcenplanung. Keine gemessene Levelgeschwindigkeit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warlock-leveling-full-comparison-20261126-1",
+        "warlock-leveling-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-affliction-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-demonology-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-destruction-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 9,
+        "treeId": 11637,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "warlock-destruction-dungeons",
+        "version": 1
+      },
+      "reason": "Für reguläre Level-Dungeons mit verlässlichem Tank empfehlen wir Zerstörung als leicht nachvollziehbaren direkten Schadenspfad bei kurzen Gegnerkämpfen. Dämonologie ist eine starke Alternative mit aktivem Dämon, Brandmal und Feuerorientierung bei geeigneten Zielen; Gebrechen passt zu länger lebenden Gegnern und Ressourcenmanagement. Je nach Ausrüstung, Pulltempo und Begleiterlaufzeit kann Dämonologie sinnvoller sein. Kein DPS-Ranking.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warlock-dungeons-full-comparison-20261126-1",
+        "warlock-dungeons-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-affliction-pvp",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11636,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-demonology-pvp",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warlock-destruction-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 9,
+        "treeId": 11636,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "warlock-demonology-pvp",
+        "version": 1
+      },
+      "reason": "Für gemischtes PvP empfehlen wir Dämonologie: Seelenverbindung ab 30, Fel Domination und ein aktiver Dämon bieten defensive und taktische Optionen. Gebrechen ist die Alternative für kontinuierlichen Druck und Verlangsamungen; Zerstörung für direkte Angriffsfenster mit Unterstützung durch Mitspieler. Der Verlust des Dämons schwächt den Pfad; keine garantierte Überlegenheit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warlock-pvp-full-comparison-20261126-1",
+        "warlock-pvp-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-balance-leveling",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-feral-leveling-mixed-balanced",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 11,
+        "treeId": 11347,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "druid-feral-leveling-mixed-balanced",
+        "version": 1
+      },
+      "reason": "Für gemischtes Leveln als Schadensdruide empfehlen wir Wilden Kampf: Katzengestalt, Energie, Bär als Notfalloption und Heilung zwischen Kämpfen begrenzen die Abhängigkeit von Mana. Gleichgewicht ist die geprüfte Distanzalternative mit Insektenschwarm und seit 25.11. verstärkten Zaubern. Keine gemessene Levelzeit.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "druid-leveling-full-comparison-20261126-1",
+        "druid-leveling-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "druid-balance-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "druid-feral-dungeons-damage",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 11,
+        "treeId": 11347,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "druid-feral-dungeons-damage",
+        "version": 1
+      },
+      "reason": "Für reguläre Level-Dungeons als Schadensdruide empfehlen wir Wilden Kampf: Katzengestalt und Nahkampfdruck mit geringer Manaabhängigkeit, situativ Bär. Gleichgewicht ist die Alternative für Fernkampf, Gruppennutzen und Zauberpositionierung; der Hotfix vom 25.11. hat diese Option verbessert. Waffen, Zauberausrüstung und Gruppe können die Wahl verändern. Kein gemessener DPS-Vorsprung.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "druid-dungeons-full-comparison-20261126-1",
+        "druid-dungeons-full-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 11,
+          "treeId": 11328,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-balance-pvp",
+          "version": 1
+        },
+        {
+          "classId": 11,
+          "treeId": 11347,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "druid-feral-pvp-damage",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 11,
+        "treeId": 11347,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "druid-feral-pvp-damage",
+        "version": 1
+      },
+      "reason": "Für gemischtes PvP in der Schadensrolle empfehlen wir Wilden Kampf: Gestaltwechsel, Mobilität, Kontrolle und situative Bärenverteidigung helfen bei wechselnden Zielen. Gleichgewicht bleibt die Distanzalternative mit dem 30/21-Heilhybrid und Schnelligkeit der Natur. Kein pauschales PvP-Ranking; Gruppenzusammensetzung und Positionierung entscheiden.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "druid-pvp-full-comparison-20261126-1",
+        "druid-pvp-full-comparison-20261126-2"
       ]
     }
   ],

@@ -68,6 +68,9 @@ export function talentGuideOptions(profiles,selection={}){
       remaining=groups.find(([value])=>value===chosen)[1];
       continue;
     }
+    // If each specialization has exactly one route, the playstyle is a
+    // characteristic of that route, not a filter hiding other specializations.
+    if(key==='playStyle'&&[...new Set(remaining.map(p=>p.treeId))].every(tree=>new Set(remaining.filter(p=>p.treeId===tree).map(pathKey)).size===1))continue;
     const chosen=values.includes(selection[key])?selection[key]:'';
     fields.push({key,label,values,chosen});
     if(!chosen)return {fields,profiles:[],complete:false,inferred,unavailable:false};

@@ -323,11 +323,11 @@ console.log('Shaman: exact-build rank-zero release and higher-rank denial: OK');
 
 const hunterInfo=(await request({character:'qa-class-3'},{endpoint:orientationEndpoint})).body;
 assert.equal(hunterInfo.profiles.length,9);
-for(const goal of ['leveling','pvp']){
- const g=talentAssistantGuide(hunterInfo.profiles,{goal,role:'damage',...(goal==='leveling'?{playStyle:'mixed'}:{})},hunterInfo.specializations);
- assert.equal(specializationSelection(g,{treeId:11370},hunterInfo.specializationAdvice).profile.treeId,11370);
- if(goal==='pvp'){assert.equal(specializationSelection(g,{},hunterInfo.specializationAdvice).profile,null);assert.equal(specializationSelection(g,{treeId:11372},hunterInfo.specializationAdvice).profile.treeId,11372);}
- else{const solo=talentAssistantGuide(hunterInfo.profiles,{goal,role:'damage',playStyle:'solo'},hunterInfo.specializations);assert.equal(specializationSelection(solo,{treeId:11372},hunterInfo.specializationAdvice).profile.planId,'hunter-beast-mastery-leveling');}
+for(const [goal,preferred] of [['leveling','hunter-beast-mastery-leveling'],['dungeons','hunter-marksmanship-dungeons'],['pvp','hunter-survival-pvp']]){
+ const g=talentAssistantGuide(hunterInfo.profiles,{goal,role:'damage'},hunterInfo.specializations);
+ assert.equal(g.profiles.length,3);assert.ok(!g.fields.some(f=>f.key==='playStyle'));
+ assert.equal(specializationSelection(g,{},hunterInfo.specializationAdvice).profile.planId,preferred);
+ for(const p of g.profiles)assert.equal(specializationSelection(g,{treeId:p.treeId},hunterInfo.specializationAdvice).profile.planId,p.planId);
 }
 const warriorInfo=(await request({character:'qa-class-1'},{endpoint:orientationEndpoint})).body;
 const warriorGuide=talentAssistantGuide(warriorInfo.profiles,{goal:'leveling',role:'damage'},warriorInfo.specializations);
@@ -353,9 +353,30 @@ for(const [classId,defaults] of [[4,{leveling:'rogue-combat-leveling',dungeons:'
 const warlockInfo=(await request({character:'qa-class-9'},{endpoint:orientationEndpoint})).body;
 const warlockDungeonGuide=talentAssistantGuide(warlockInfo.profiles,{goal:'dungeons'},warlockInfo.specializations);
 assert.equal(warlockDungeonGuide.profiles.length,3);
-assert.equal(specializationSelection(warlockDungeonGuide,{},warlockInfo.specializationAdvice).profile,null,'two-option comparison does not select from three');
+assert.equal(specializationSelection(warlockDungeonGuide,{},warlockInfo.specializationAdvice).profile.planId,'warlock-destruction-dungeons');
 assert.equal(specializationSelection(warlockDungeonGuide,{treeId:11636},warlockInfo.specializationAdvice).profile.planId,'warlock-demonology-dungeons');
 assert.equal(specializationSelection(warlockDungeonGuide,{treeId:11629},warlockInfo.specializationAdvice).profile.planId,'warlock-affliction-dungeons');
+// Every genuinely comparative class/role/goal set must yield a reviewed default,
+ // every option stays selectable and no stale comparison can choose for a changed set.
+ let comparisons=0;
+ for(const c of allRoster){
+  const info=(await request({character:c.slug},{endpoint:orientationEndpoint})).body;
+  for(const goal of coverage.goals)for(const role of new Set(info.specializations.flatMap(s=>s.roles))){
+   const expected=info.specializations.filter(s=>s.roles.includes(role));
+   if(expected.length<2)continue;
+   const g=talentAssistantGuide(info.profiles,{goal,role},info.specializations);
+   assert.equal(g.profiles.length,expected.length,c.slug+' '+goal+' '+role);
+   assert.ok(!g.fields.some(f=>f.key==='playStyle'));
+   const selection=specializationSelection(g,{},info.specializationAdvice);
+   assert.equal(selection.recommended?.kind,'comparative',c.slug+' '+goal+' '+role);
+   assert.ok(selection.profile&&selection.recommended.reason.length>50);
+   for(const p of g.profiles)assert.equal(specializationSelection(g,{treeId:p.treeId},info.specializationAdvice).profile.planId,p.planId);
+   if(g.profiles.length>2)assert.equal(specializationRecommendation(g.profiles.slice(1),info.specializationAdvice),null);
+   comparisons++;
+  }
+ }
+ assert.equal(comparisons,24);
+ console.log('All 24 exact specialization comparisons and user overrides: OK');
 const shamanInfo=(await request({character:'qa-class-7'},{endpoint:orientationEndpoint})).body;
 const shamanGuide=talentAssistantGuide(shamanInfo.profiles,{goal:'leveling',role:'damage'},shamanInfo.specializations);
 assert.equal(specializationSelection(shamanGuide,{},shamanInfo.specializationAdvice).profile.planId,'shaman-enhancement-leveling');
