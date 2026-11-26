@@ -1,0 +1,7 @@
+# Begleiter-Regelwerk 2026.11.26.1
+Quellen: Blizzard-Hotfixes 25.11.2026 (https://worldofwarcraft.blizzard.com/en-us/news/24315281), historischer Fehlerbericht https://4evrbugs.com/bug/556 (Fixed), DB2-Prüfstand 71091 aus Serverlauf 26.11. 05:07 MEZ. 15/16 Quellen waren dort verified. Die serverseitige neue Krit-Formel ist nicht veröffentlicht.
+- Familienprofil, Ausbildung, Fokus und Gesundheitsfaktor bleiben bei ihren bisherigen Evidenzstufen; Gesundheit/Rüstung/AP bleiben Referenzmodelle, nicht Gesamtwerte.
+- Vier getrennte Skalierungsregeln; alter pet.scaling-Identifier bleibt für Verlauf und API-Kompatibilität als Übersichtsregel erhalten. Gemeinsame DB2- und Guide-Quellen bleiben bewusst gemeinsame Abhängigkeiten.
+- Die alte Hotfix-Baseline wird nur migriert, wenn Entfernen der exakt geprüften Zusatzsätze den alten Digest reproduziert. Unbekannte Abweichung oder Quellausfall sperrt weiterhin konservativ. Künftige eindeutig erkannte Einzelthemen sperren gezielt; andere Änderungen bleiben prüfpflichtig. Keine automatische neue Baseline bei geänderter Evidenz.
+- Offizielle Behebung der normalen Nahkampf-Krits ist von der numerischen Krit-Regel getrennt. Letztere bleibt review_required bis neue Messungen und eindeutige Eingabewerte vorliegen. Keine pauschale 100%-Annahme als Spielwert. Keine Add-on-/Roster-/Redis-Schemaänderung; bisherige Historie bleibt erhalten.
+- Der normale Serverlauf prüft weiterhin täglich, der separate lesende Benachrichtigungsdienst bleibt unverändert.
