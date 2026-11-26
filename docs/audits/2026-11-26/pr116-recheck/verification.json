@@ -1,0 +1,64 @@
+{
+  "reviewedCommit": "5a577232d4a07ef8cc032e100fccaed97d77c93d",
+  "baselineCommit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235",
+  "firstCandidateCommit": "42d651179b0928356568ce882703031e67b4b88e",
+  "redis": {
+    "version": "8.0.2",
+    "transport": "private Unix socket, TCP disabled",
+    "restartUsedLocalRdb": true
+  },
+  "localSuite": [
+    {
+      "node": "22.23.5",
+      "passed": 161,
+      "failed": 0,
+      "localRedisRequired": true,
+      "independentChecks": 35
+    },
+    {
+      "node": "26.13.1",
+      "passed": 161,
+      "failed": 0,
+      "localRedisRequired": true,
+      "independentChecks": 35
+    }
+  ],
+  "dependencyAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0
+  },
+  "diffCheck": "passed",
+  "githubActions": [
+    {
+      "workflow": "Dalton-Dashboard prüfen",
+      "run": 45894701760,
+      "result": "success"
+    },
+    {
+      "workflow": "Addon CI",
+      "run": 45894701613,
+      "result": "success"
+    },
+    {
+      "workflow": "Dalton Browser und Performance",
+      "run": 45894701593,
+      "result": "success"
+    }
+  ],
+  "vercelReadOnly": {
+    "previewCommit": "5a577232d4a07ef8cc032e100fccaed97d77c93d",
+    "previewState": "READY",
+    "newestListedProductionCommit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235",
+    "dedicatedArchiveTokenListedInProjectMetadata": false,
+    "actualPrivateStoreReadAndIsolationTested": false
+  },
+  "evidenceLimits": {
+    "blobSdk": "2.9.0, mocked HTTP transport",
+    "armoryAndBlizzard": "synthetic responses",
+    "productionRedisKeysInspected": false,
+    "providerQuotaMeasurementsAvailable": false
+  }
+}
