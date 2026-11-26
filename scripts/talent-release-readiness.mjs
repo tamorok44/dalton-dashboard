@@ -68,7 +68,7 @@ const rows=plans.map(p=>{
  }
  return {id:p.id,version:p.version,classId:p.classId,profiles:p.profiles,editorialStatus:p.status,
   primaryStructuralStatus:baseline.ok?'valid':baseline.code,primaryBlockPoint:baseline.ok?null:baseline.point,
-  crossBuildStatus:review.status,exactCurrentIndependentStatus:p.classId===8?'previous_separate_capture_retained':'not_verified',
+  crossBuildStatus:review.status,exactCurrentIndependentStatus:p.classId===8?'previous_separate_capture_retained':p.classId===7?'zephras_exact_structure_and_effects_match':'see_zephras_exact_diagnostic',
   issueId:issue?.id??null,affectedTalentIds:touched,hypotheticalStructure:adjusted?{ok:adjusted.ok,code:adjusted.code??null,releaseEligible:false}:null,
   legacyHypothesisStatus:hypothesis.status,verifiedLegacyRanks:p.status==='approved'?p.supportedLegacyRanks:[],
   explicitLevelConflicts,editorialReviewRequired:p.status!=='approved',liveReleaseChecked:false};

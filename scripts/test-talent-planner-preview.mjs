@@ -264,7 +264,7 @@ for(const c of allRoster){
    const g=talentAssistantGuide(info.profiles,{goal,role},info.specializations);
    assert.deepEqual(g.orientation.map(s=>s.treeId),info.specializations.filter(s=>s.roles.includes(role)).map(s=>s.treeId));
    assert.ok(g.profiles.every(p=>p.role===role&&p.goal===goal));
-   if(c.classId!==8||goal==='pvp'){
+   if(!info.profiles.some(p=>p.goal===goal&&p.role===role)){
      assert.equal(specializationSelection(g,{},info.specializationAdvice).profile,null);
      assert.equal(specializationSelection(g,{},info.specializationAdvice).recommended,null);
      assert.equal(g.unavailable,true);

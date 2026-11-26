@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 7,
   "treeId": 11326,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -342,15 +342,29 @@
     ],
     "editorialDecision": "Ranged elemental alternative; Earthbound, Lightning Overload and Lightning Mastery, then mana sustain; no Lava Burst.",
     "unresolved": [
-      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
-      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Verify overload, freecast and Chain Lightning after Nov 25."
+      "No controlled comparative performance benchmark; editorial route.",
+      "Effective Legacy ranks 1–5 are unverified."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
-      "catalogRevision": "a10ee22c8f0a98e794c903bd979f6eeb2e94f043bbbfd459bb812921471cb593",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Elementar",
+  "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
+  "ruleRevision": "shaman-elemental-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Distanzorientierte Alternative zum Verstärkungspfad beim Leveln. Früher Blitzschaden und kürzere Zauberzeiten, Freizauber ab 20; Erdgebunden kontrolliert Gegner ab 25, Blitzschlag-Überladung und kritischer Elementarschaden führen zu Blitzbeherrschung auf 40. Anschließend unterstützen Trefferchance, Manaregeneration, Wasserschild und situative Heilung längere Questserien. Die Reihenfolge priorisiert frühe Kontrolle und Blitzschaden statt Feuertotem-Schaden. Kein Anspruch auf schnellstes Leveln oder garantierte Freizauber-/Überladungs-Ketten.",
+    "adviceSummary": "Blitzschaden, Kontrolle und Manastabilität als Distanzalternative; Blitzbeherrschung auf 40.",
+    "evidenceIds": [
+      "shaman-elemental-leveling-rank0-71139-editorial-1",
+      "shaman-elemental-leveling-rank0-71139-editorial-2"
+    ]
   }
 }
