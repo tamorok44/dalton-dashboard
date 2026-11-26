@@ -73,9 +73,10 @@ const phases=[
 const expected=readdirSync(new URL('./',import.meta.url)).filter(f=>/^test-.*\.mjs$/.test(f)).map(f=>'scripts/'+f).sort();
 const assigned=phases.flatMap(p=>p.files);
 assert.deepEqual([...assigned].sort(),expected,'Every test script must belong to exactly one ordered phase');
-const syntax=new Set(["talent-planner.js","app.js","hunter-pets.js","reputation-data.js","api/refresh.js","api/data-version.js","api/characters.js","api/daily-snapshot.js","api/workshop.js","api/profession-planner.js","api/location-planner.js","api/spellbook-sync.js","api/addon-sync.js","api/addon-sync-status.js","api/addon-device-enroll.js","api/addon-device-promote.js","scripts/character-store.mjs","scripts/player-terminology.mjs","scripts/data-version.mjs","scripts/history-store.mjs","scripts/daily-snapshot-store.mjs","scripts/refresh-service.mjs","scripts/archive-images.mjs","scripts/armory-core.mjs","scripts/blizzard-api.mjs","scripts/forever-details.mjs","scripts/quest-catalog-store.mjs","scripts/game-catalog-store.mjs","scripts/media-registry.mjs","scripts/media-resolver.mjs","scripts/reputation-catalog-store.mjs","scripts/workshop-core.mjs","scripts/profession-planner.mjs","scripts/location-planner.mjs","scripts/learning-source-evidence.mjs","scripts/workshop-foreverdb.mjs","scripts/workshop-store.mjs","scripts/foreverdb-api.mjs","scripts/class-training-store.mjs","scripts/classic-npc-display-ids.mjs","scripts/spellbook-sync.mjs","scripts/savedvariables-parser.mjs","scripts/addon-sync.mjs","scripts/addon-sync-store.mjs","scripts/addon-device-auth.mjs","scripts/live-knowledge-store.mjs","scripts/dalton-sync-client.mjs","scripts/pet-rulebook.mjs","scripts/pet-rule-store.mjs","scripts/pet-localization-store.mjs"]);
-for(const dir of ['scripts','api'])for(const f of readdirSync(new URL('../'+dir+'/',import.meta.url),{withFileTypes:true})){
-  if(f.isFile()&&/\.(?:mjs|js)$/.test(f.name))syntax.add(dir+'/'+f.name);
+// Discover syntax targets rather than naming production modules in this test runner.
+const syntax=new Set();
+for(const dir of ['','scripts/','api/'])for(const f of readdirSync(new URL('../'+dir,import.meta.url),{withFileTypes:true})){
+  if(f.isFile()&&/\.(?:mjs|js)$/.test(f.name))syntax.add(dir+f.name);
 }
 const results=[];
 function run(phase,args){

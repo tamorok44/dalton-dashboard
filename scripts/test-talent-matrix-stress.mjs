@@ -70,5 +70,6 @@ for(const plan of plans){
  }
 }
 assert.equal(validated+blocked.length,plans.length);
-assert.ok(blocked.some(p=>p.id==='hunter-beast-mastery-leveling'),'known cyclic prerequisite must remain blocked until reviewed');
+// Any newly failing path is a regression; clearing this known blocker requires explicit review.
+assert.deepEqual(blocked,[{id:'hunter-beast-mastery-leveling',version:1,code:'prerequisite',point:21}],'Unexpected change to the current structural blocker set');
 console.log(JSON.stringify({kind:'offline_talent_matrix_stress',coverageCells:cells.length,activePlans:plans.length,validated,blocked,mutations,legacyHypotheses:legacy,researchReleaseGuards:rankChecks,releaseIndex:releaseIds.size,liveReleaseChecked:false},null,2));
