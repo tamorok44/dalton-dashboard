@@ -55,14 +55,6 @@
       "rank": 3
     },
     {
-      "talentId": 105907,
-      "rank": 1
-    },
-    {
-      "talentId": 105907,
-      "rank": 2
-    },
-    {
       "talentId": 105903,
       "rank": 1
     },
@@ -87,6 +79,14 @@
       "rank": 1
     },
     {
+      "talentId": 105898,
+      "rank": 1
+    },
+    {
+      "talentId": 105898,
+      "rank": 2
+    },
+    {
       "talentId": 105896,
       "rank": 1
     },
@@ -99,7 +99,7 @@
       "rank": 3
     },
     {
-      "talentId": 105898,
+      "talentId": 105897,
       "rank": 1
     },
     {
@@ -107,6 +107,10 @@
       "rank": 1
     },
     {
+      "talentId": 105897,
+      "rank": 2
+    },
+    {
       "talentId": 105893,
       "rank": 1
     },
@@ -117,10 +121,6 @@
     {
       "talentId": 105893,
       "rank": 3
-    },
-    {
-      "talentId": 105898,
-      "rank": 2
     },
     {
       "talentId": 105891,
@@ -239,11 +239,6 @@
       "reason": "Wichtel für die offensive Gruppenvariante verbessern."
     },
     {
-      "talentId": 105907,
-      "count": 2,
-      "reason": "Eigene Ausdauer ergänzen."
-    },
-    {
       "talentId": 105903,
       "count": 3,
       "reason": "Mana und Begleiterreserven ausbauen."
@@ -251,17 +246,12 @@
     {
       "talentId": 105899,
       "count": 2,
-      "reason": "Begleiterressourcen unterstützen."
+      "reason": "Eigener Zauberschaden unterstützt die Heilung des aktiven Dämons; Aderlass stellt auch dessen Mana wieder her."
     },
     {
       "talentId": 105900,
       "count": 1,
-      "reason": "Dämonische Opferung als Voraussetzung freischalten."
-    },
-    {
-      "talentId": 105896,
-      "count": 3,
-      "reason": "Dämonisches Brandmal für den aktiven Begleiter ausbauen."
+      "reason": "Dämonische Opferung als Voraussetzung freischalten. Ohne Dämonischen Pakt beendet das Beschwören eines Dämons den Bonus; aktiven Begleiter im normalen Spiel erhalten."
     },
     {
       "talentId": 105898,
@@ -269,29 +259,44 @@
       "reason": "Beschwörungskosten und -zeit senken."
     },
     {
-      "talentId": 105892,
-      "count": 1,
-      "reason": "Seelenverbindung auf Stufe 30 freischalten."
-    },
-    {
-      "talentId": 105893,
-      "count": 3,
-      "reason": "Zauberschaden mit aktivem Dämon erhöhen."
-    },
-    {
       "talentId": 105898,
       "count": 1,
       "reason": "Beschwörungstalent vervollständigen."
     },
     {
+      "talentId": 105896,
+      "count": 3,
+      "reason": "Dämonisches Brandmal: Sengender Schmerz verursacht weniger Bedrohung und markiert das Ziel für eine begrenzte Anzahl zusätzlicher Begleitertreffer. Exakter Zusatzschaden und Bedrohungswert nicht unabhängig numerisch bestätigt."
+    },
+    {
+      "talentId": 105897,
+      "count": 1,
+      "reason": "Decimation: Soul Fire und dessen Vorbereitung durch Schattenblitz oder Sengenden Schmerz bei niedriger Zielgesundheit unterstützen; keine garantierte Ausführung."
+    },
+    {
+      "talentId": 105892,
+      "count": 1,
+      "reason": "Seelenverbindung verteilt einen Teil des eigenen erlittenen Schadens auf den aktiven Dämon und unterstützt beider Schaden; Gesundheit beider Partner beachten."
+    },
+    {
+      "talentId": 105897,
+      "count": 1,
+      "reason": "Decimation: Soul Fire und dessen Vorbereitung durch Schattenblitz oder Sengenden Schmerz bei niedriger Zielgesundheit unterstützen; keine garantierte Ausführung."
+    },
+    {
+      "talentId": 105893,
+      "count": 3,
+      "reason": "Dämonisches Wissen erhöht bei aktivem Dämon den eigenen und dessen Zauberschaden abhängig von der eigenen Stufe."
+    },
+    {
       "talentId": 105891,
       "count": 5,
-      "reason": "Dämonenspezifische Vorteile ausbauen."
+      "reason": "Meister der Dämonologie: vom aktiven Dämontyp abhängige Schadens- oder Schutzboni, nicht pauschal dieselbe Wirkung für alle Begleiter."
     },
     {
       "talentId": 105890,
       "count": 1,
-      "reason": "Dämonischen Pakt auf Stufe 40 freischalten."
+      "reason": "Dämonischer Pakt erlaubt den Opferungsbonus mit einem anderen aktiven Dämon; erneutes Beschwören desselben Dämontyps beendet ihn. Persönlicher Effekt, kein pauschaler Gruppenbuff."
     },
     {
       "talentId": 105888,
@@ -306,7 +311,7 @@
     {
       "talentId": 105886,
       "count": 5,
-      "reason": "Feuerbrand und die Verlangsamung durch Feuersbrunst stärken; Feuersbrunst ist in diesem Pfad nicht erlernt."
+      "reason": "Aftermath verbessert den direkten Schaden von Feuerbrand; zusätzliche Feuersbrunst-Wirkung bleibt ungenutzt, da nicht erlernt."
     },
     {
       "talentId": 105883,
@@ -325,17 +330,55 @@
       "cobalt-warlock-demonology-pve-20261110",
       "outpost-warlock-dungeon-20261123"
     ],
-    "editorialDecision": "Fire-oriented active-demon group route, with Demonic Pact before the Destruction investment. Keep the tank's threat role; no guaranteed stacking or same-demon sacrifice carryover.",
+    "editorialDecision": "Feuerorientierter Dungeon-Schaden mit aktivem Wichtel, sofern die Situation passt. Zwei Ausdauerpunkte durch Decimation ersetzt: Brandmal 26–28, Seelenverbindung 30, Decimation auf 29 und 31, Dämonisches Wissen 32–34, Dämonischer Pakt 40. Tankbedrohung beachten, Brandmal nur bei genügend Zeit für Begleitertreffer. Opferung eines anderen Dämons erst nach dem Pakt; kein garantierter DPS-Vorteil oder pauschaler Gruppenbonus.",
     "unresolved": [
       "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
       "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
-      "November 25 pet crit corrections; verify Imp uptime, threat and choice of sacrifice target."
+      "November 25 pet crit corrections; verify Imp uptime, threat and choice of sacrifice target.",
+      "105896: gespeicherter Quellenvergleich bestätigt Trefferzahl und Bedrohungsfunktion qualitativ; exakter zusätzlicher Schadenswert nicht unabhängig bestätigt. Keine garantierte Bedrohungsübernahme.",
+      "Blizzard-Hotfix 25.11.: 0% Nahkampfgrundangriffs-Krit der Dämonen korrigiert, Sukkubus/Inkubus hatten 5% zu hohe Kritchance. Keine universelle aktuelle Pet-Kritformel daraus ableiten.",
+      "20.11. Dämonische Ägide kann nicht mehr durch Umskillen dauerhaft erhalten werden; 23.11. Intensity/Incinerate korrigiert. Diese Pfade nutzen diese Talente nicht.",
+      "Exakte aktuelle Quelle, vollständige Hotfix-Abhängigkeitsprüfung, Vermächtnisränge 1–5, vergleichende Messungen und reguläre CI bleiben Freigabevoraussetzungen."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+          "contribution": "Offizieller Hotfixverlauf bis 25.11.; Begleiter-Kritkorrekturen, Dämonische Ägide am 20.11. und Intensity am 23.11."
+        },
+        {
+          "url": "https://wowforeverclasses.com/classes/warlock/demonology/talents",
+          "contribution": "Talentfunktionen, Ranganzahlen, Seelenverbindung und Opferung/Pakt; keine unabhängige exakte numerische Servermessung des Brandmals."
+        },
+        {
+          "url": "https://www.wowhead.com/forever/guide/classes/warlock/demonology/talent-builds-pve-dps",
+          "contribution": "Dämonischer Pakt mit anderem aktiven Dämon, Brandmal vor Begleitertreffern und Decimation."
+        },
+        {
+          "url": "https://foreverspec.com/classes/warlock/demonology/",
+          "contribution": "Alternative Levelchronologie (älterer Build 70790), Quelle laut Anbieter TalentsForever; nicht als unabhängige aktuelle Rohdatenquelle gezählt."
+        },
+        {
+          "url": "https://forever-hub.com/en/guides/demonology-warlock-guide",
+          "contribution": "Guide vom 20.11., Rollen- und Dämonenwahl; kein Nachweis eigener optimaler Chronologie."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
