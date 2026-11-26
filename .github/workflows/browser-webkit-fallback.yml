@@ -1,0 +1,31 @@
+name: Einmaliger WebKit-Ersatzlauf
+on:
+  push:
+    branches: [talent-browser-webkit-fallback-20261126]
+permissions:
+  contents: read
+jobs:
+  webkit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --ignore-scripts
+      - run: npm install --prefix "${{ runner.temp }}/dalton-browser" --ignore-scripts --no-audit --no-fund playwright@1.56.1
+      - run: node "${{ runner.temp }}/dalton-browser/node_modules/playwright/cli.js" install --with-deps webkit
+      - name: WebKit Desktop und iPhone-Profil
+        env:
+          DALTON_PLAYWRIGHT_MODULE: ${{ runner.temp }}/dalton-browser/node_modules/playwright/index.mjs
+          DALTON_BROWSER: webkit
+          DALTON_BROWSER_REPORT: browser-report
+        run: node scripts/browser-talent-regression.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dalton-webkit-linux-fallback
+          path: browser-report/
+          if-no-files-found: warn
+          retention-days: 14
