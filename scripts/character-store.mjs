@@ -1,3 +1,4 @@
+import {rosterMatches} from './daily-roster.mjs';
 import {VERSION_METADATA_KEY,characterVersionMetadata} from './version-metadata.mjs';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
@@ -61,7 +62,7 @@ export const REDIS_ACL_GUARD="local function allowed(...) return type(redis.acl_
 export async function saveCharacters(data,lockToken,{dailyReceipt=null}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
   const args=normalizedCharacterWrite(data);
-  if(dailyReceipt&&(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dailyReceipt.date)||dailyReceipt.source!=='daily'||dailyReceipt.generatedAt!==data.generatedAt||!Number.isInteger(dailyReceipt.success)||dailyReceipt.success<=0||!Number.isInteger(dailyReceipt.total)||dailyReceipt.total!==data.characters.length||dailyReceipt.success>dailyReceipt.total||dailyReceipt.persisted!==true))throw new Error('Ungültiger Profil-Refresh-Nachweis');
+  if(dailyReceipt&&(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dailyReceipt.date)||dailyReceipt.source!=='daily'||dailyReceipt.generatedAt!==data.generatedAt||!Number.isInteger(dailyReceipt.success)||dailyReceipt.success<=0||!Number.isInteger(dailyReceipt.total)||dailyReceipt.total!==data.characters.length||!rosterMatches(dailyReceipt.roster,data.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})))||dailyReceipt.success>dailyReceipt.total||dailyReceipt.persisted!==true))throw new Error('Ungültiger Profil-Refresh-Nachweis');
   const lua=REDIS_TYPE_GUARD+REDIS_ACL_GUARD+"if not valid(KEYS[2],'string') or not valid(KEYS[3],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET', KEYS[1]) ~= ARGV[1] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not allowed('SET',KEYS[2],ARGV[2]) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end; if ARGV[4] then if not allowed('HSET',KEYS[3],'characters',ARGV[3],'daily-profile-refresh',ARGV[4]) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end else if not allowed('HSET',KEYS[3],'characters',ARGV[3]) then return redis.error_reply('ACL_PREFLIGHT_DENIED_OR_UNSUPPORTED') end end; if ARGV[4] then redis.call('HSET',KEYS[3],'characters',ARGV[3],'daily-profile-refresh',ARGV[4]) else redis.call('HSET',KEYS[3],'characters',ARGV[3]) end; redis.call('SET',KEYS[2],ARGV[2]); return 'OK'";
   const result=await redis(['EVAL',lua,3,LOCK,KEY,VERSION_METADATA_KEY,lockToken,...args,...(dailyReceipt?[JSON.stringify(dailyReceipt)]:[])]);
   if(result!=='OK')throw new Error('Charakterdaten nicht gespeichert');

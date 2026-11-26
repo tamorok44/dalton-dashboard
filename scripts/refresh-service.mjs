@@ -1,3 +1,4 @@
+import {canonicalRoster} from './daily-roster.mjs';
 import {repairProfessionKnowledge,preserveKnownRecipeDetails} from './profession-knowledge.mjs';
 import {getCachedForeverDbMasterRecipeIndex} from './workshop-store.mjs';
 import {refreshCharacters} from './armory-core.mjs';
@@ -87,7 +88,7 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   }
 
   const merged=mergeProfiles(previous,latest);
-  const dailyReceipt=source==='daily'&&dailyDate?{date:dailyDate,source:'daily',success,total:previous.characters.length,persisted:true,generatedAt:merged.generatedAt}:null;
+  const dailyReceipt=source==='daily'&&dailyDate?{date:dailyDate,source:'daily',success,total:previous.characters.length,roster:canonicalRoster(merged.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null}))),persisted:true,generatedAt:merged.generatedAt}:null;
   await saveCharacters(merged,lockToken,{dailyReceipt});
   let changeLog={count:0,id:null};
   try{

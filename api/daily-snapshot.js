@@ -1,3 +1,4 @@
+import {canonicalRoster,rosterMatches,rosterKey} from '../scripts/daily-roster.mjs';
 import {fetchForeverSnapshot,blizzardApiConfigured} from '../scripts/blizzard-api.mjs';
 import {saveDailySnapshot,recoverDailySnapshot,dailySnapshotStoreConfigured} from '../scripts/daily-snapshot-store.mjs';
 import {configured,loadCharacters,acquireRefreshLock,releaseRefreshLock,loadDailyProfileReceipt} from '../scripts/character-store.mjs';
@@ -26,26 +27,29 @@ export function berlinClock(date=new Date()){
   }).formatToParts(date).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
   return {date:parts.year+'-'+parts.month+'-'+parts.day,hour:Number(parts.hour),minute:Number(parts.minute)};
 }
-export function profileRefreshComplete(receipt,date){
+const identities=data=>canonicalRoster(data.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})));
+export function profileRefreshComplete(receipt,date,expectedRoster=null){
   return receipt?.source==='daily'&&receipt.date===date&&receipt.persisted===true&&
-    Number.isInteger(receipt.total)&&receipt.total>0&&receipt.success===receipt.total&&Number.isFinite(Date.parse(receipt.generatedAt));
+    Number.isInteger(receipt.total)&&receipt.total>0&&receipt.success===receipt.total&&Number.isFinite(Date.parse(receipt.generatedAt))&&
+    Array.isArray(receipt.roster)&&receipt.roster.length===receipt.total&&rosterMatches(receipt.roster,expectedRoster??receipt.roster);
 }
-function privateArchiveComplete(meta){
+function privateArchiveComplete(meta,expectedRoster=null){
   return meta?.archiveStatus==='private'&&['complete','partial'].includes(meta.quality?.status)&&
     typeof meta.url==='string'&&/^https:\/\/[^/]+\.private\.blob\.vercel-storage\.com\//.test(meta.url)&&
-    typeof meta.sha256==='string'&&/^[a-f0-9]{64}$/.test(meta.sha256);
+    typeof meta.sha256==='string'&&/^[a-f0-9]{64}$/.test(meta.sha256)&&Array.isArray(meta.roster)&&
+    meta.characters===meta.roster.length&&rosterMatches(meta.roster,expectedRoster??meta.roster)&&meta.rosterKey===rosterKey(meta.roster);
 }
 export function dailyRefreshComplete(snapshotMeta,archiveConfigured=false){
   return Boolean(profileRefreshComplete(snapshotMeta?.refresh,snapshotMeta?.date)&&
-    (privateArchiveComplete(snapshotMeta)||(!archiveConfigured&&snapshotMeta?.archiveStatus==='disabled')));
+    (privateArchiveComplete(snapshotMeta,snapshotMeta?.refresh?.roster)||(!archiveConfigured&&snapshotMeta?.archiveStatus==='disabled')));
 }
 
-export async function refreshDailyCharacters(date,{takeLock=acquireRefreshLockWithRetry,releaseLock=releaseRefreshLock,readReceipt=loadDailyProfileReceipt,refresh=refreshAndPersist}={}){
+export async function refreshDailyCharacters(date,{takeLock=acquireRefreshLockWithRetry,releaseLock=releaseRefreshLock,readReceipt=loadDailyProfileReceipt,refresh=refreshAndPersist,readRoster=loadCharacters}={}){
   const refreshLock=await takeLock();
   if(!refreshLock)return {pending:true,reason:'refresh_lock_unavailable',persisted:false};
   try{
     const prior=await readReceipt(date);
-    if(profileRefreshComplete(prior,date))return prior;
+    if(profileRefreshComplete(prior,date,identities((await readRoster()).data)))return prior;
     const result=await refresh({lockToken:refreshLock,source:'daily',dailyDate:date});
     return result.dailyReceipt??{source:'daily',date,success:result.success||0,persisted:false,reason:'profile_refresh_not_persisted'};
   }finally{
@@ -75,43 +79,46 @@ export function createDailySnapshotHandler(overrides={}){
   if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt'});
   if(!blizzardApiConfigured())return res.status(503).json({error:'Blizzard API-Zugangsdaten fehlen'});
   const archiveConfigured=dailySnapshotStoreConfigured();
-  const dailyLock=await acquireDailySnapshotLock(local.date);
-  if(!dailyLock)return res.status(200).json({pending:true,reason:'daily_snapshot_running'});
+  let dailyLock=null;
   try{
+    dailyLock=await acquireDailySnapshotLock(local.date);
+    if(!dailyLock)return res.status(200).json({pending:true,reason:'daily_snapshot_running'});
     const existing=await getDailySnapshot(local.date);
-    if(dailyRefreshComplete(existing,archiveConfigured)){
+    const currentRoster=identities((await loadCharacters()).data);
+    if(dailyRefreshComplete(existing,archiveConfigured)&&rosterMatches(existing.refresh.roster,currentRoster)){
       // Repair a pointer left behind by a pre-atomic historical writer.
       await registerDailySnapshot(existing,dailyLock);
       return res.status(200).json({skipped:true,reason:'already_completed',snapshot:existing});
     }
     const petRuleState=await ensurePetRuleState({force:!existing});
     let refresh=await loadDailyProfileReceipt(local.date);
-    if(!profileRefreshComplete(refresh,local.date))refresh=await refreshDailyCharacters(local.date);
+    if(!profileRefreshComplete(refresh,local.date,currentRoster))refresh=await refreshDailyCharacters(local.date);
     // Refresh takes priority. A retry finds its durable receipt, even if the
     // process died after committing the profile but before the daily index.
     let meta=existing||null,saved=false,recovered=false;
     const legacyArchive=existing?.legacyArchive??(existing?.url&&!privateArchiveComplete(existing)?{url:existing.url,pathname:existing.pathname??null,sha256:existing.sha256??null,archiveStatus:'legacy_unverified'}:null);
-    if(!privateArchiveComplete(meta)){
+    if(!privateArchiveComplete(meta,refresh?.roster)||!profileRefreshComplete(refresh,local.date)){
       const failedMeta=archiveStatus=>({date:local.date,createdAt:new Date().toISOString(),archiveStatus,...(legacyArchive?{legacyArchive}:{})});
       if(!archiveConfigured)meta=failedMeta('disabled');
+      else if(!profileRefreshComplete(refresh,local.date))meta=failedMeta('failed');
       else{
         const remaining=Math.min(12000,50000-(clock()-started));
         if(remaining<2000)meta=failedMeta('failed');
         else{
           const signal=AbortSignal.timeout(remaining);
           try{
-            const {data:current}=await loadCharacters();
-            const slugs=current.characters.map(c=>c.slug);
-            meta=await recoverDailySnapshot(local.date,{signal,expectedSlugs:slugs});
+            const roster=canonicalRoster(refresh.roster);
+            const slugs=roster.map(c=>c.slug);
+            meta=await recoverDailySnapshot(local.date,{signal,expectedRoster:roster});
             if(meta)recovered=true;
             else{
               const fetchImpl=(url,options={})=>fetch(url,{...options,signal:AbortSignal.any([signal,...(options.signal?[options.signal]:[])])});
               const snapshot=await fetchForeverSnapshot(slugs,{fetchImpl});
               signal.throwIfAborted();
-              meta=await saveDailySnapshot(snapshot,local.date,{signal,expectedSlugs:slugs});
+              meta=await saveDailySnapshot(snapshot,local.date,{signal,expectedRoster:roster});
               saved=true;
             }
-            if(!privateArchiveComplete(meta))throw new Error('Archivmetadaten nicht bestätigt');
+            if(!privateArchiveComplete(meta,refresh.roster))throw new Error('Archivmetadaten nicht bestätigt');
             if(legacyArchive)meta={...meta,legacyArchive};
           }catch{
             console.error('Privates Tagesarchiv fehlgeschlagen oder Zeitbudget erschöpft');
@@ -122,13 +129,13 @@ export function createDailySnapshotHandler(overrides={}){
     }
     const completedMeta={...meta,refresh};
     await registerDailySnapshot(completedMeta,dailyLock);
-    const complete=dailyRefreshComplete(completedMeta,archiveConfigured);
+    const complete=dailyRefreshComplete(completedMeta,archiveConfigured)&&rosterMatches(refresh?.roster,identities((await loadCharacters()).data));
     return res.status(complete?200:503).json({saved,recovered,retried:Boolean(existing),snapshot:completedMeta,refresh,petRules:publicPetRuleState(petRuleState)});
   }catch(error){
     console.error('Tageslauf fehlgeschlagen:',error);
     return res.status(503).json({error:'Tageslauf konnte nicht vollständig abgeschlossen werden'});
   }finally{
-    try{await releaseDailySnapshotLock(local.date,dailyLock)}catch(error){console.error('Daily-Snapshot-Sperre konnte nicht freigegeben werden:',error)}
+    try{if(dailyLock)await releaseDailySnapshotLock(local.date,dailyLock)}catch(error){console.error('Daily-Snapshot-Sperre konnte nicht freigegeben werden:',error)}
   }
 }
 }
