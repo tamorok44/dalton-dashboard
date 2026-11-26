@@ -1,4 +1,4 @@
-name: Einmaliger Zephras Client-Abgleich
+name: Einmaliger Effekt- und Rangabgleich
 on:
   push:
     branches: [talent-zephras-review-20261126]
@@ -17,10 +17,15 @@ jobs:
           run-id: 45813547795
           github-token: ${{ github.token }}
           path: evidence-capture/
-      - run: python scripts/zephras-review-once.py
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - uses: actions/download-artifact@v4
         with:
           name: zephras-exact-review
-          path: evidence-capture/zephras-*
+          run-id: 45816214866
+          github-token: ${{ github.token }}
+          path: evidence-capture/
+      - run: python scripts/zephras-effect-review.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zephras-effect-review
+          path: evidence-capture/effect-review.json
           retention-days: 14
