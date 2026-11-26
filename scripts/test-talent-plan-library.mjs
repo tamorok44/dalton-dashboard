@@ -7,6 +7,7 @@ import {isTalentClientBuild} from './talent-rule-watch.mjs';
 import {deriveTalentCoverage,deriveTalentWorkQueue} from './talent-plan-coverage.mjs';
 import {specializationOptionKey,specializationOptionSet} from '../talent-planner.js';
 import {CLASS_BY_ID} from './class-training-store.mjs';
+import {compareLegacyHypotheses} from './talent-legacy-research.mjs';
 
 const folder=new URL('../data/talent-planning/',import.meta.url);
 const files=readdirSync(folder).filter(name=>name.endsWith('.json')).sort();
@@ -456,6 +457,43 @@ for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-level
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,candidate.version])),[0]);
   assert.deepEqual(coverage.classes[candidate.classId].map(t=>candidate.expectedDistribution[t.treeId]),dist);
 }
+const legacyAudits=[];
+for(const plan of plans.filter(p=>p.status!=='retired'&&p.active!==false)){
+  const structural=plan.research?.structuralValidation;
+  const revision=structural?.catalogRevision??plan.catalogRevision;
+  const source=structural?.sourceRevision??release.rulePacks.find(p=>p.classId===plan.classId&&p.revision===plan.ruleRevision&&p.legacyTalentedRank===0)?.sourceRevision;
+  const key=proofKey(plan.classId,revision,source);
+  const proof=snapshots.get(key)??researchSnapshots.get(key);
+  if(!proof){
+    legacyAudits.push({planId:plan.id,version:plan.version,status:'catalog_missing',releaseEligible:false,ranks:[]});
+    continue;
+  }
+  const audit=compareLegacyHypotheses(plan,proof);
+  assert.equal(audit.releaseEligible,false);
+  assert.equal(audit.status,'hypotheses_only',plan.id+' unexpected baseline failure');
+  assert.equal(audit.ranks.length,6);
+  for(const row of audit.ranks){
+    assert.equal(row.releaseEligible,false);
+    assert.equal(row.firstPoint,10-row.rank);
+    assert.equal(row.lastPoint,60-row.rank);
+    assert.ok(row.shifted.ok&&row.fixedGateBanked.ok,plan.id+' hypothesis failure');
+    assert.equal(row.shifted.history.length,51);
+    assert.equal(row.fixedGateBanked.history.length,51);
+    assert.deepEqual(row.shifted.history.map(({talentId,rank})=>({talentId,rank})),plan.points);
+    assert.deepEqual(row.fixedGateBanked.history.map(({talentId,rank})=>({talentId,rank})),plan.points);
+    assert.equal(row.shifted.lastSpend,60-row.rank);
+    assert.ok(row.fixedGateBanked.lastSpend<=60);
+    if(row.rank===0)assert.equal(row.differing.length,0);
+    else assert.ok(row.differing.length&&row.fixedGateImmediate.code==='level_gate');
+  }
+  legacyAudits.push(audit);
+}
+assert.ok(legacyAudits.some(a=>a.status==='catalog_missing'),'unverified candidate must not disappear from legacy research');
+if(process.argv.includes('--legacy-research')){
+  console.log(JSON.stringify({kind:'legacy_gate_hypotheses',releaseEligible:false,
+    sources:['https://bindonforever.com/notes/legacy-system','https://www.destructoid.com/how-to-earn-and-spend-legacy-points-in-wow-forever/','https://foreverwow.com/guides/wow-forever-talent-planning/'],
+    audits:legacyAudits},null,2));
+}
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');
@@ -470,7 +508,8 @@ assert.equal(new Set(workQueue.queue.map(a=>JSON.stringify([a.kind,a.identity]))
 assert.ok(workQueue.queue.some(a=>a.kind==='check_current_release'));
 assert.ok(workQueue.queue.some(a=>a.kind==='research_profile'));
 assert.ok(workQueue.queue.some(a=>a.kind==='resolve_blocker'));
-if(process.argv.includes('--work-queue'))console.log(JSON.stringify(workQueue,null,2));
+if(process.argv.includes('--legacy-research')){}
+else if(process.argv.includes('--work-queue'))console.log(JSON.stringify(workQueue,null,2));
 else if(process.argv.includes('--coverage'))console.log(JSON.stringify(rows,null,2));
 else console.log('Talent plan library: unique identities, profile coverage and approved paths: OK');
 
