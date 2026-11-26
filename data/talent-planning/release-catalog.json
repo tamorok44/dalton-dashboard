@@ -4692,6 +4692,492 @@
       "url": "https://www.wowhead.com/forever/guide/classes/rogue/combat/dps-leveling-tips",
       "claim": "Nov 18: reactive disarm and defensive tools support progression; not a PvP comparison.",
       "id": "rogue-combat-pvp-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "1d1118fd83ce6f1b91ec91ff19fa1781b71efbaeebe7118c6e50bc08f0b3886d",
+      "id": "rogue-assassination-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "0ce10f4869c0dfa96926c7e21a9284e75569eb58b0e7a27a676f1ab994280126",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "107a614592abd6cef8e9435cc9352dcbeb1fad52cbb6a261f63c792495579d22",
+        "talentIds": [
+          105708,
+          105709,
+          105710,
+          105712,
+          105714,
+          105715,
+          105716,
+          105719,
+          105720,
+          105721,
+          105722,
+          105726,
+          105730,
+          105735,
+          105736,
+          105737,
+          105738,
+          105739,
+          105741,
+          113633
+        ],
+        "excludedConflictIds": [
+          110866
+        ],
+        "olderComparisonCaptureSha256": "8cab47b7567a3c5cdb72c36c3457e69592e56a625a9896ae9ce70b0b098433e0",
+        "olderBuild": "1.60.1.71091"
+      },
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ],
+        "allocationDigest": "107a614592abd6cef8e9435cc9352dcbeb1fad52cbb6a261f63c792495579d22"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105735,
+          "spellId": 14251,
+          "primaryHash": "b28115cf3a4e0a4afa9d52e27a013e02186e4b6ea1f5e5f8ed9a59ef9350ef71",
+          "secondaryHash": "3b76029e2cc5a56c7474ff933cf63ea5a37fe693a94efccc8951424c1acb2fb1",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "field": "baseDisarmDurationSeconds",
+          "value": 6,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/rogue/talents/riposte/",
+              "build": "1.60.1.71139",
+              "claim": "Build 71139 labelled talent text and footage verification show 6 sec; footage date not established."
+            },
+            {
+              "url": "https://db.icy-veins.com/wow-forever/spells/14251",
+              "claim": "Spell details confirm 6 sec duration and disarm; patch history first seen 70532, not exact current capture."
+            },
+            {
+              "url": "https://zephras.com/forever/enUS/spell/14251/",
+              "build": "1.60.1.71037",
+              "claim": "Older spell detail gives 6 sec duration although tooltip placeholder remains."
+            },
+            {
+              "url": "https://foreverdb.net/corrections",
+              "claim": "Nov 6 correction explains missing referenced server spell in tooltip and uses own duration of 6 sec."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/guide/classes/rogue/combat/dps-leveling-tips",
+              "claim": "Nov 18 leveling guide confirms 6 sec disarm after parry."
+            }
+          ],
+          "serverMeasured": false,
+          "scope": "base client description; no PvP duration guarantee or server measurement"
+        }
+      ],
+      "claim": "Exact retained 71139 structural comparison and older unchanged structure. Mutilate qualitative core corroborated, additive numeric difference explicitly not released. Scope excludes Death Mark and any unresolved effects not specifically reviewed for this allocation."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "1d1118fd83ce6f1b91ec91ff19fa1781b71efbaeebe7118c6e50bc08f0b3886d",
+      "id": "rogue-assassination-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "claim": "Reviewed Nov 2 talent rework and Nov 16/20/25 Shank, Blade Flurry, Poised and poison hotfixes; no reliance on fixed bugs."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-assassination-leveling",
+      "planVersion": 1,
+      "allocationDigest": "107a614592abd6cef8e9435cc9352dcbeb1fad52cbb6a261f63c792495579d22",
+      "url": "https://mobalytics.gg/wow-forever/classes/assassination-rogue-guide",
+      "claim": "Nov 25 guide supports poison and energy core but recommends Combat for faster leveling; own path is selected-spec alternative.",
+      "id": "rogue-assassination-leveling-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-assassination-leveling",
+      "planVersion": 1,
+      "allocationDigest": "107a614592abd6cef8e9435cc9352dcbeb1fad52cbb6a261f63c792495579d22",
+      "url": "https://grindclassic.com/wow-forever/leveling/rogue/assassination/",
+      "claim": "Nov 9 alternative with Mutilate capstone; own earlier level 40 without side points, not claimed optimal.",
+      "id": "rogue-assassination-leveling-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "f8acba78fb691a858777770eb1a0eddd2d768a8c8ad11294a46fd6da4102a616",
+      "id": "rogue-assassination-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "0ce10f4869c0dfa96926c7e21a9284e75569eb58b0e7a27a676f1ab994280126",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "abe1221d9f50ab60536dcaca37bcc6d9d1f8fe51025e4cbb99f46e3be4d290b1",
+        "talentIds": [
+          105708,
+          105709,
+          105710,
+          105712,
+          105714,
+          105715,
+          105716,
+          105719,
+          105720,
+          105721,
+          105722,
+          105726,
+          105730,
+          105732,
+          105736,
+          105737,
+          105739,
+          105741,
+          105759,
+          113633
+        ],
+        "excludedConflictIds": [
+          105735,
+          110866
+        ],
+        "olderComparisonCaptureSha256": "8cab47b7567a3c5cdb72c36c3457e69592e56a625a9896ae9ce70b0b098433e0",
+        "olderBuild": "1.60.1.71091"
+      },
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ],
+        "allocationDigest": "abe1221d9f50ab60536dcaca37bcc6d9d1f8fe51025e4cbb99f46e3be4d290b1"
+      },
+      "claim": "Exact retained 71139 structural comparison and older unchanged structure. Mutilate qualitative core corroborated, additive numeric difference explicitly not released. Scope excludes Death Mark and any unresolved effects not specifically reviewed for this allocation."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "f8acba78fb691a858777770eb1a0eddd2d768a8c8ad11294a46fd6da4102a616",
+      "id": "rogue-assassination-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "claim": "Reviewed Nov 2 talent rework and Nov 16/20/25 Shank, Blade Flurry, Poised and poison hotfixes; no reliance on fixed bugs."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-assassination-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "abe1221d9f50ab60536dcaca37bcc6d9d1f8fe51025e4cbb99f46e3be4d290b1",
+      "url": "https://www.method.gg/wow-forever/class-guides/assassination-rogue/rotation-and-playstyle",
+      "claim": "Nov 23 endgame poison Mutilate rotation, not exact progression; prioritize sustained single target and energy.",
+      "id": "rogue-assassination-dungeons-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-assassination-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "abe1221d9f50ab60536dcaca37bcc6d9d1f8fe51025e4cbb99f46e3be4d290b1",
+      "url": "https://mobalytics.gg/wow-forever/classes/assassination-rogue-guide",
+      "claim": "Nov 25 single-target and poison strengths, limited cleave. Our group route trades reactive parry for sprint and opener utility.",
+      "id": "rogue-assassination-dungeons-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "dabdee02c50ae594d285031ad2e9ff6b9eb6ac506e1c5ed4ad50253b7c1f1e4d",
+      "id": "rogue-assassination-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "0ce10f4869c0dfa96926c7e21a9284e75569eb58b0e7a27a676f1ab994280126",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "2549b658de4d2acab6fefce3040f3f2ee00289b84f5e03628eecf36f8192bfda",
+        "talentIds": [
+          105709,
+          105710,
+          105712,
+          105714,
+          105715,
+          105716,
+          105720,
+          105721,
+          105722,
+          105730,
+          105732,
+          105733,
+          105735,
+          105736,
+          105737,
+          105738,
+          105739,
+          105741,
+          113398,
+          113633
+        ],
+        "excludedConflictIds": [
+          110866
+        ],
+        "olderComparisonCaptureSha256": "8cab47b7567a3c5cdb72c36c3457e69592e56a625a9896ae9ce70b0b098433e0",
+        "olderBuild": "1.60.1.71091"
+      },
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ],
+        "allocationDigest": "2549b658de4d2acab6fefce3040f3f2ee00289b84f5e03628eecf36f8192bfda"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105735,
+          "spellId": 14251,
+          "primaryHash": "b28115cf3a4e0a4afa9d52e27a013e02186e4b6ea1f5e5f8ed9a59ef9350ef71",
+          "secondaryHash": "3b76029e2cc5a56c7474ff933cf63ea5a37fe693a94efccc8951424c1acb2fb1",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "field": "baseDisarmDurationSeconds",
+          "value": 6,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/rogue/talents/riposte/",
+              "build": "1.60.1.71139",
+              "claim": "Build 71139 labelled talent text and footage verification show 6 sec; footage date not established."
+            },
+            {
+              "url": "https://db.icy-veins.com/wow-forever/spells/14251",
+              "claim": "Spell details confirm 6 sec duration and disarm; patch history first seen 70532, not exact current capture."
+            },
+            {
+              "url": "https://zephras.com/forever/enUS/spell/14251/",
+              "build": "1.60.1.71037",
+              "claim": "Older spell detail gives 6 sec duration although tooltip placeholder remains."
+            },
+            {
+              "url": "https://foreverdb.net/corrections",
+              "claim": "Nov 6 correction explains missing referenced server spell in tooltip and uses own duration of 6 sec."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/guide/classes/rogue/combat/dps-leveling-tips",
+              "claim": "Nov 18 leveling guide confirms 6 sec disarm after parry."
+            }
+          ],
+          "serverMeasured": false,
+          "scope": "base client description; no PvP duration guarantee or server measurement"
+        }
+      ],
+      "claim": "Exact retained 71139 structural comparison and older unchanged structure. Mutilate qualitative core corroborated, additive numeric difference explicitly not released. Scope excludes Death Mark and any unresolved effects not specifically reviewed for this allocation."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "dabdee02c50ae594d285031ad2e9ff6b9eb6ac506e1c5ed4ad50253b7c1f1e4d",
+      "id": "rogue-assassination-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "claim": "Reviewed Nov 2 talent rework and Nov 16/20/25 Shank, Blade Flurry, Poised and poison hotfixes; no reliance on fixed bugs."
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-assassination-pvp",
+      "planVersion": 1,
+      "allocationDigest": "2549b658de4d2acab6fefce3040f3f2ee00289b84f5e03628eecf36f8192bfda",
+      "url": "https://foreverbattlegrounds.com/classes/rogue/assassination/",
+      "claim": "Nov 17 live 70938 guide supports dagger poison pressure, Deflection, Endurance, Improved Sprint; alternative burst build.",
+      "id": "rogue-assassination-pvp-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "rogue-assassination-pvp",
+      "planVersion": 1,
+      "allocationDigest": "2549b658de4d2acab6fefce3040f3f2ee00289b84f5e03628eecf36f8192bfda",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/assassination/pvp/",
+      "claim": "Nov 10 pressure, energy reserves, controlled openings and escape; own chronology with early mobility.",
+      "id": "rogue-assassination-pvp-rank0-71139-editorial-2"
     }
   ],
   "rulePacks": [
@@ -6500,6 +6986,126 @@
         "105760": 10,
         "105761": 10,
         "113398": 10
+      }
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "rogue-assassination-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "rogue-assassination-leveling-rank0-71139-client",
+        "rogue-assassination-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105708": 10,
+        "105709": 40,
+        "105710": 35,
+        "105712": 30,
+        "105714": 25,
+        "105715": 25,
+        "105716": 20,
+        "105719": 15,
+        "105720": 20,
+        "105721": 15,
+        "105722": 10,
+        "105726": 25,
+        "105730": 25,
+        "105735": 20,
+        "105736": 20,
+        "105737": 15,
+        "105738": 15,
+        "105739": 15,
+        "105741": 10,
+        "113633": 30
+      }
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "rogue-assassination-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "rogue-assassination-dungeons-rank0-71139-client",
+        "rogue-assassination-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105708": 10,
+        "105709": 40,
+        "105710": 35,
+        "105712": 30,
+        "105714": 25,
+        "105715": 25,
+        "105716": 20,
+        "105719": 15,
+        "105720": 20,
+        "105721": 15,
+        "105722": 10,
+        "105726": 25,
+        "105730": 25,
+        "105732": 15,
+        "105736": 20,
+        "105737": 15,
+        "105739": 15,
+        "105741": 10,
+        "105759": 20,
+        "113633": 30
+      }
+    },
+    {
+      "classId": 4,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "rogue-assassination-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "rogue-assassination-pvp-rank0-71139-client",
+        "rogue-assassination-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105709": 40,
+        "105710": 35,
+        "105712": 30,
+        "105714": 25,
+        "105715": 25,
+        "105716": 20,
+        "105720": 20,
+        "105721": 15,
+        "105722": 10,
+        "105730": 25,
+        "105732": 15,
+        "105733": 25,
+        "105735": 20,
+        "105736": 20,
+        "105737": 15,
+        "105738": 15,
+        "105739": 15,
+        "105741": 10,
+        "113398": 10,
+        "113633": 30
       }
     }
   ],
