@@ -6,27 +6,15 @@ permissions:
   contents: read
   actions: read
 jobs:
-  review:
+  inspect:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - run: npm ci --ignore-scripts
       - uses: actions/download-artifact@v4
         with:
           name: talent-evidence-capture-20261126
           run-id: 45813547795
           github-token: ${{ github.token }}
           path: evidence-capture/
-      - run: node scripts/review-captured-talent-evidence.mjs
-      - run: python scripts/inspect-talent-evidence.py
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: talent-evidence-review-20261126
-          path: evidence-capture/review-summary.json
-          retention-days: 14
-          if-no-files-found: error
+      - run: python scripts/inspect-current-talent-markup.py
