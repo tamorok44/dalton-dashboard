@@ -63,38 +63,6 @@
       "rank": 3
     },
     {
-      "talentId": 105332,
-      "rank": 1
-    },
-    {
-      "talentId": 105332,
-      "rank": 2
-    },
-    {
-      "talentId": 105332,
-      "rank": 3
-    },
-    {
-      "talentId": 105332,
-      "rank": 4
-    },
-    {
-      "talentId": 105332,
-      "rank": 5
-    },
-    {
-      "talentId": 105638,
-      "rank": 1
-    },
-    {
-      "talentId": 105638,
-      "rank": 2
-    },
-    {
-      "talentId": 105638,
-      "rank": 3
-    },
-    {
       "talentId": 105696,
       "rank": 1
     },
@@ -135,6 +103,10 @@
       "rank": 3
     },
     {
+      "talentId": 105694,
+      "rank": 1
+    },
+    {
       "talentId": 105693,
       "rank": 1
     },
@@ -145,10 +117,6 @@
     {
       "talentId": 105693,
       "rank": 3
-    },
-    {
-      "talentId": 105694,
-      "rank": 1
     },
     {
       "talentId": 105702,
@@ -177,6 +145,38 @@
     {
       "talentId": 105692,
       "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 1
+    },
+    {
+      "talentId": 105332,
+      "rank": 2
+    },
+    {
+      "talentId": 105332,
+      "rank": 3
+    },
+    {
+      "talentId": 105332,
+      "rank": 4
+    },
+    {
+      "talentId": 105332,
+      "rank": 5
+    },
+    {
+      "talentId": 105638,
+      "rank": 1
+    },
+    {
+      "talentId": 105638,
+      "rank": 2
+    },
+    {
+      "talentId": 105638,
+      "rank": 3
     },
     {
       "talentId": 113630,
@@ -230,98 +230,98 @@
   "rationaleBlocks": [
     {
       "talentId": 105706,
-      "count": 5,
-      "reason": "Manakosten von Sofortzaubern verringern."
+      "reason": "Manakosten von Sofortzaubern verringern.",
+      "count": 5
     },
     {
       "talentId": 105705,
-      "count": 2,
-      "reason": "Richturteil häufiger einsetzen."
+      "reason": "Richturteil häufiger einsetzen.",
+      "count": 2
     },
     {
       "talentId": 105701,
-      "count": 3,
-      "reason": "Mana durch Richturteile zurückgewinnen."
-    },
-    {
-      "talentId": 105332,
-      "count": 5,
-      "reason": "Intelligenz und Manareserve ergänzen."
-    },
-    {
-      "talentId": 105638,
-      "count": 3,
-      "reason": "Trefferchance verbessern."
+      "reason": "Mana durch Richturteile zurückgewinnen.",
+      "count": 3
     },
     {
       "talentId": 105696,
-      "count": 1,
-      "reason": "Siegel des Befehls freischalten."
+      "reason": "Siegel des Befehls für mögliche zusätzliche Heiligtreffer; Richturteil des Befehls zählt seit 13.11. als Nahkampfangriff und löst geeignete Treffereffekte aus. Keine feste Schadenskonstante.",
+      "count": 1
     },
     {
       "talentId": 105699,
-      "count": 2,
-      "reason": "Bewegungstempo für Questwege erhöhen."
+      "reason": "Bewegungstempo für Questwege erhöhen.",
+      "count": 2
     },
     {
       "talentId": 105703,
-      "count": 2,
-      "reason": "Kritische Trefferchance verbessern."
+      "reason": "Kritische Trefferchance verbessern.",
+      "count": 2
     },
     {
       "talentId": 105700,
-      "count": 1,
-      "reason": "Heiligen Richter für Heiligen Stoß und Richturteile freischalten."
+      "reason": "Heiligen Richter für Heiligen Stoß und Richturteile freischalten.",
+      "count": 1
     },
     {
       "talentId": 105697,
-      "count": 3,
-      "reason": "Schaden mit Zweihandwaffe verbessern."
+      "reason": "Schaden mit Zweihandwaffe verbessern.",
+      "count": 3
     },
     {
       "talentId": 105703,
-      "count": 1,
-      "reason": "Überzeugung vervollständigen."
-    },
-    {
-      "talentId": 105693,
-      "count": 3,
-      "reason": "Schadensbonus nach geeigneten kritischen Treffern ausbauen."
+      "reason": "Überzeugung vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105694,
-      "count": 1,
-      "reason": "Buße und Voraussetzung für den Abschluss freischalten."
+      "reason": "Buße gegen geeignete humanoide Ziele; Schaden kann die Kontrolle beenden.",
+      "count": 1
+    },
+    {
+      "talentId": 105693,
+      "reason": "Schadensbonus nach geeigneten kritischen Treffern ausbauen.",
+      "count": 3
     },
     {
       "talentId": 105702,
-      "count": 1,
-      "reason": "Angriffskraftschwächung ergänzen."
+      "reason": "Vindication kann gegnerische Angriffskraft bei schädigenden Nahkampfangriffen senken; Höhe und Skalierung offen.",
+      "count": 1
     },
     {
       "talentId": 110882,
-      "count": 5,
-      "reason": "Intelligenz-Skalierung und Hammer der Vergeltung stärken."
+      "reason": "Intelligenz-Skalierung und Hammer der Vergeltung stärken.",
+      "count": 5
     },
     {
       "talentId": 105692,
-      "count": 1,
-      "reason": "Entfesselten Zorn freischalten; unterschiedliche Siegel für gespeicherte Effekte beachten."
+      "reason": "Entfesselter Zorn speichert aktive Siegeleffekte bei Nahkampfangriffen; Treffer mit anderem Siegel verbraucht Stapel mit normaler Auslösechance, keine garantierten Zusatztreffer.",
+      "count": 1
+    },
+    {
+      "talentId": 105332,
+      "reason": "Intelligenz und Manareserve ergänzen.",
+      "count": 5
+    },
+    {
+      "talentId": 105638,
+      "reason": "Trefferchance steigern; unterschiedliche Angriffsklassifikation der Richturteile berücksichtigen.",
+      "count": 3
     },
     {
       "talentId": 113630,
-      "count": 5,
-      "reason": "Stärke erhöhen."
+      "reason": "Stärke erhöhen.",
+      "count": 5
     },
     {
       "talentId": 105334,
-      "count": 5,
-      "reason": "Schaden der Siegel und Richturteile verbessern."
+      "reason": "Schaden der Siegel und Richturteile verbessern.",
+      "count": 5
     },
     {
       "talentId": 105327,
-      "count": 2,
-      "reason": "Reinigung und situative offensive Zauber unterstützen."
+      "reason": "Reinigung und situative offensive Zauber unterstützen.",
+      "count": 2
     }
   ],
   "research": {
@@ -331,18 +331,53 @@
       "paladin-ret-wowforevergg-2511",
       "official-hotfix-nov25"
     ],
-    "editorialDecision": "Early intellect and hit for repeated group fights; two-handed damage and Unsealed Wrath later than quest path. No assumed universal seal proc.",
+    "editorialDecision": "Dungeon-Vergeltung: acht bisher frühe Schutzpunkte erst nach dem Vergeltungskern, weil Präzision fünf vorherige Schutzpunkte erfordert. Siegel des Befehls 20 statt 28, Buße 30 statt 41 und Entfesselter Zorn 40 statt 48. Frühere Kontrolle gegen späteren Trefferbonus ab 46 abgewogen; kein gemessener DPS-Vorteil. Zweihandwaffe und gezielte Bedrohungskontrolle vorausgesetzt.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
       "November 25 Paladin changes and November 11 Judgment ranged-attack classification require current seal, hit, weapon and healing interaction review.",
-      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition."
+      "Unresolved prerequisite for talent 113631 is not used; no inference about its condition.",
+      "105696/105702: exakte Schadens- bzw. AP-Skalierung offen. 13.11. Richturteil des Befehls als Nahkampfangriff; andere Richturteile nicht pauschal gleichsetzen. 25.11. Exorzismus-Kritfehler korrigiert. Reguläre CI und Vermächtnisränge 1–5 weiterhin offen."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://armorywowforever.com/talents/paladin",
+          "contribution": "Build 71139: Voraussetzungen Präzision, Siegel, Buße und Entfesselter Zorn; keine exakte Servermessung."
+        },
+        {
+          "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+          "contribution": "Offizieller Hotfix-Verlauf bis 25.11., einschließlich Ausnahme Richturteil des Befehls."
+        },
+        {
+          "url": "https://metammo.com/wow-forever/builds/paladin",
+          "contribution": "Vergeltungskern und Siegelwechsel; keine gemessene Überlegenheit."
+        },
+        {
+          "url": "https://www.wofwforever.com/en/guides/wow-forever-paladin-leveling-talents/",
+          "contribution": "Alternative Meilensteine, Stand 9.11."
+        },
+        {
+          "url": "https://wowfdb.com/talents/paladin/",
+          "contribution": "Qualitative AP-Minderung; widersprüchliche Skalierung."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
