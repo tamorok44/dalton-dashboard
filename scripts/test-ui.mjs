@@ -11,6 +11,8 @@ import {resolvePersonalTalentState} from '../talent-personal-state.js';
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
 const source=read('app.js'),css=read('styles.css'),data=JSON.parse(read('data/characters.json'));
+assert.match(read('index.html'),/data-view-link="talentPlanner">Talentplaner<\/a>/,'Released navigation must be visible without a payload');
+assert.ok(!source.includes('talentPlannerLink.hidden')&&!source.includes('payload.talentPlannerEnabled')&&!source.includes('talentPlannerEnabled&&'),'Refresh or fallback payload must never gate the released navigation');
 // Legacy JSON fixture is normalized into the new source-backed shape only for UI unit tests.
 const testClassIds={'Magier':8,'Jäger':3,'Druide':11};
 const testStatEnums={
