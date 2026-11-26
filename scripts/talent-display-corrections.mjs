@@ -26,12 +26,18 @@ const numericNotice='Zahlenwerte im Quelltext sind Tooltip-Angaben. Abweichende 
 
 const decimal=n=>String(n/10).replace('.',',');
 const corrections={
+  1:{
+    105935:n=>resolvedText(n,['Verlangsamt nahe Gegner laut Talent- und Zauberdetails in einem Radius von 10 Metern 6 Sek. lang um 50 %.'],'Der Grundradius, die Dauer und der Verlangsamungseffekt sind anhand der aktuellen Zauberdetails belegt; keine eigene Reichweitenmessung.',[{label:'Zephras',url:'https://zephras.com/forever/enUS/spell/12323/'},{label:'Wowhead',url:'https://www.wowhead.com/forever/spell%3D12323/piercing-howl'}])
+  },
   2:{
     105330:n=>summarize(n,['Schwört einem Verbündeten einen Eid für 60 Minuten und verstärkt die Heilung durch Heiliges Licht, Lichtblitz und Heiliger Schock auf diesem Ziel. Nur ein Eid gleichzeitig. Die exakte Heilskalierung ist noch in Prüfung.']),
     113631:n=>({...n,prerequisites:n.prerequisites.map(p=>p.id===105323?{...p,conditionKnown:true}:p),reviewNotice:'Voraussetzung Heiliger Schock durch unabhängigen Clientdatenabgleich bestätigt; keine Live-Lernprobe.'})
   },
   3:{
     104964:n=>({...n,prerequisites:n.prerequisites.filter(p=>p.id===104970),reviewNotice:'Talentverknüpfung nach unabhängigen Clientdaten korrigiert; keine Live-Lernprobe.'})
+  },
+  7:{
+    104741:n=>resolvedText(n,ranks(5,r=>'Schaden durch Nahkampfangriffe kann einen Stapel erzeugen, der Zauberzeit und Manakosten des nächsten Blitzschlags um 20 % verringert. Bis zu fünf Stapel, 30 Sek. Dauer. Auf Rang '+r+' beträgt die vorgesehene Auslöserate laut Hotfix '+(5+r)+' pro Minute; die Chance pro Angriff hängt vom Waffentempo ab.'),'Die neue Rangstaffelung stammt aus den offiziellen Hotfixes. Die Auslöserate ist ein Regelwert, keine garantierte Trefferzahl pro Minute.',[{label:'Blizzard',url:'https://worldofwarcraft.blizzard.com/de-de/news/24315281/wow-forever-hotfixes-november-13-2026'},{label:'WoW Forever Talents',url:'https://wowforevertalents.com/shaman/talents/maelstrom-weapon/'}])
   },
   8:{
     105764:n=>resolvedText(n,[1,2].map(r=>'Kälteeffekte haben laut aktuellem Clienttext eine Chance von 15 %, Eisige Finger auszulösen. '+(r===1?'Der nächste gewirkte Zauber wirkt':'Die nächsten zwei gewirkten Zauber wirken')+' so, als wäre das Ziel eingefroren. Der Effekt hält 15 Sek. an.'),'Unaufgelöste Mehrzahl im deutschen Quelltext bereinigt; die Zahl der Zauber ist quellenübergreifend belegt. Auslösechance und tatsächliches Verhalten sind nicht serverseitig gemessen.',[{label:'TalentsForever',url:'https://talentsforever.com/mage/talents/fingers-of-frost'},{label:'METAMMO',url:'https://metammo.com/wow-forever/abilities/fingers-of-frost-mage'}])
@@ -47,6 +53,12 @@ const corrections={
     104937:n=>summarize(n,['Mondkingestalt erhöht Arkan- und Naturschaden um 10 %, die Auslösechance von Omen der Klarsicht um 100 % und den Rüstungsbeitrag von Gegenständen um 360 %. Gruppen- und Schlachtzugsmitglieder im Umkreis von 45 Metern erhalten 3 % kritische Trefferchance. Die Gestalt schützt vor Verwandlung und verhindert Heilzauber; Gestaltwechsel löst Verwandlung und Bewegungseinschränkungen.'])
   }
 };
+// The source's shortened labels are preserved for exact Armory matching.
+function treeLabel(tree,classId){
+ const names=classId===7?{11363:['Verstärk','Verstärkung'],11362:['Wiederherst','Wiederherstellung']}:classId===11?{11340:['Wiederherst','Wiederherstellung']}:null;
+ const alias=names?.[tree.id];
+ return alias&&tree.name===alias[0]?{sourceName:tree.name,name:alias[1]}:{};
+}
 export function correctTalentDisplay(klass,master){
  const id=klass?.classId,table=corrections[id]??{},numericIds=numericReviewIds[id]??[];
  if((!Object.keys(table).length&&!numericIds.length)||master?.sourceRevision!==DISPLAY_CORRECTION_SOURCE||
@@ -56,7 +68,7 @@ export function correctTalentDisplay(klass,master){
  if(!Object.keys(table).every(k=>found.has(Number(k))))return klass;
  return {...klass,displayCorrection:true,
    ...(id===11?{personalMappingUnverified:true}:{}),
-   trees:klass.trees.map(t=>({...t,...(id===11&&t.id===11340&&t.name==='Wiederherst'?{name:'Wiederherstellung'}:{}),talents:t.talents.map(n=>{
+   trees:klass.trees.map(t=>({...t,...treeLabel(t,id),talents:t.talents.map(n=>{
      const node=table[n.id]?table[n.id](n):n;
      return numericIds.includes(n.id)?{...node,reviewNotice:[node.reviewNotice,numericNotice].filter(Boolean).join(' ')}:node;
    })}))};

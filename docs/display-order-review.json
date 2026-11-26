@@ -532,6 +532,7 @@
   "appImports": [
     "./hunter-pets.js",
     "./reputation-data.js",
-    "./talent-planner.js"
+    "./talent-planner.js",
+    "./talent-text-quality.js"
   ]
 }

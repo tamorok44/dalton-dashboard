@@ -243,7 +243,7 @@ function personalTalentRanks(c,klass){
   const lookup=new Map(klass.trees.flatMap(t=>t.talents.map(n=>[n.profileId,{node:n,tree:t}])));
   for(const tree of c.talentDetails){
     const name=tree.name;
-    const actual=klass.trees.find(t=>t.name===name);
+    const actual=klass.trees.find(t=>t.name===name||t.sourceName===name);
     if(!actual||!Number.isInteger(tree.spentPoints)||tree.spentPoints<0||!Array.isArray(tree.talents))return {verified:false,ranks:new Map(),points:new Map()};
     let total=0;
     for(const entry of tree.talents||[]){

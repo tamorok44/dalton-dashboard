@@ -168,13 +168,15 @@ console.log('Talent catalog: partial availability, read-only fallbacks and Previ
 // Display patches are source-bound and must never alter the raw planning master.
 const {correctTalentDisplay,DISPLAY_CORRECTION_SOURCE,DISPLAY_CORRECTION_CLASSES}=await import('./talent-display-corrections.mjs');
 const fake=(id,ids)=>({classId:id,trees:[{id:1,talents:ids.map(id=>({id,name:'Alt',profileId:id,spellId:id,maxRank:5,rankSpellIds:Array(5).fill(id),descriptions:['alt'],prerequisites:id===104964?[{id:104961,rank:1},{id:104970,rank:1}]:id===113631?[{id:105323,rank:1,conditionKnown:false}]:[]}))}]});
-for(const [id,ids] of [[2,[105330,113631]],[3,[104964,104966]],[8,[105764,105762]],[11,[104923,104924,104931,104933,104935,104936,104937,113563]]]){
+for(const [id,ids] of [[1,[105935]],[2,[105330,113631]],[3,[104964,104966]],[7,[104741]],[8,[105764,105762]],[11,[104923,104924,104931,104933,104935,104936,104937,113563]]]){
  const c=fake(id,ids),before=JSON.stringify(c),master={classes:{[id]:c},sourceRevision:DISPLAY_CORRECTION_SOURCE,classMechanicsRevisions:{[id]:DISPLAY_CORRECTION_CLASSES[id]}};
  assert.equal(correctTalentDisplay(c,{...master,sourceRevision:'changed'}),c);
  assert.equal(correctTalentDisplay(c,{...master,classMechanicsRevisions:{}}),c);
  assert.equal(correctTalentDisplay(structuredClone(c),master).displayCorrection,undefined);
  const out=correctTalentDisplay(c,master),n=out.trees[0].talents;
  assert.equal(out.displayCorrection,true);assert.equal(JSON.stringify(c),before);
+ if(id===1){assert.match(n[0].descriptions[0],/10 Metern 6 Sek.*50 %/);assert.match(n[0].reviewNotice,/serverseitige Wirkung/);}
+ if(id===7){assert.match(n[0].descriptions[0],/20 %.*6 pro Minute/);assert.match(n[0].descriptions[4],/20 %.*10 pro Minute/);assert.match(n[0].reviewNotice,/keine garantierte/);}
  if(id===2){assert.match(n[0].descriptions[0],/60 Minuten/);assert.equal(n[1].prerequisites[0].conditionKnown,true)}
  if(id===3){assert.deepEqual(n[0].prerequisites.map(p=>p.id),[104970]);assert.match(n[1].reviewNotice,/serverseitige Wirkung/);}
  if(id===8){assert.match(n[0].descriptions[0],/Der nächste/);assert.match(n[0].descriptions[1],/nächsten zwei/);assert.match(n[1].reviewNotice,/serverseitige Wirkung/);}
@@ -192,3 +194,11 @@ assert.equal(displayedTalentText(null),'Deutscher Originaltext derzeit nicht ver
 const audit=auditTalentLocalization({classes:{8:{classId:8,trees:[{id:1,name:'Frost',talents:[{id:4,name:'Test',maxRank:2,descriptions:['? Mana',null]}]}]}},stale:false});
 assert.equal(audit.summary.availableClasses,1);assert.equal(audit.summary.issues,2);assert.equal(audit.summary.exactReviewedClasses,0);assert.equal(audit.summary.ranks,2);
 console.log('Localization: placeholders, missing ranks, exact-source correction and preview audit: OK');
+
+const shaman=fake(7,[104741]);shaman.trees[0].id=11363;shaman.trees[0].name='Verstärk';
+shaman.trees.push({id:11362,name:'Wiederherst',talents:[]});
+const shamanMaster={classes:{7:shaman},sourceRevision:DISPLAY_CORRECTION_SOURCE,classMechanicsRevisions:{7:DISPLAY_CORRECTION_CLASSES[7]}};
+const shamanDisplay=correctTalentDisplay(shaman,shamanMaster);
+assert.equal(shamanDisplay.trees[0].name,'Verstärkung');assert.equal(shamanDisplay.trees[0].sourceName,'Verstärk');
+assert.equal(shamanDisplay.trees[1].name,'Wiederherstellung');assert.equal(shamanDisplay.trees[1].sourceName,'Wiederherst');
+assert.equal(shaman.trees[0].name,'Verstärk');

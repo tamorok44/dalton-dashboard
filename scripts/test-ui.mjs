@@ -1106,3 +1106,9 @@ const earlyDetail=ui.talentNodeDetail(earlyNode,earlyTree,{...earlyPersonal,plan
 assert.ok(earlyDetail.includes('Mit Talentiert Rang 5 ab Stufe 5 (regulär 10)'));
 assert.ok(earlyDetail.includes('nicht aufgelöste Angaben')&&!earlyDetail.includes('? Mana'));
 console.log('Talent display: effective Legacy gate and no unresolved tokens: OK');
+
+const aliasTree={id:11363,name:'Verstärkung',sourceName:'Verstärk',talents:[{id:124,profileId:124,maxRank:1,rankSpellIds:[124]}]};
+const aliasChar={talentDetailsVerified:true,talentDetails:[{name:'Verstärk',spentPoints:1,talents:[{id:124,rank:1,spellId:124}]}]};
+assert.equal(ui.personalTalentRanks(aliasChar,{trees:[aliasTree]}).verified,true);
+assert.equal(ui.personalTalentRanks({...aliasChar,talentDetails:[{...aliasChar.talentDetails[0],name:'Verstärkung'}]},{trees:[aliasTree]}).verified,true);
+assert.equal(ui.personalTalentRanks({...aliasChar,talentDetails:[{...aliasChar.talentDetails[0],name:'Nicht zugeordnet'}]},{trees:[aliasTree]}).verified,false);
