@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {gunzipSync,gzipSync} from 'node:zlib';
-import {mkdtempSync,rmSync,existsSync} from 'node:fs';
+import {mkdtempSync,rmSync,existsSync,readFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawn,spawnSync} from 'node:child_process';
@@ -13,6 +13,8 @@ import {prepareAddonSync,saveAddonSyncState,loadAddonSyncState} from './addon-sy
 import {saveCharacters,loadDailyProfileReceipt,acquireRefreshLock,releaseRefreshLock} from './character-store.mjs';
 import {registerDailySnapshot,getDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from './history-store.mjs';
 import {encodeCompactMaster} from './compact-master-cache.mjs';
+import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
+import {buildSafeAddonSyncPayload} from './addon-sync.mjs';
 
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async()=>{throw Error('Real network disabled')};
@@ -106,7 +108,7 @@ assert.deepEqual(events,['lock','roster','rules','refresh','register','roster','
 events.length=0;assert.equal((await runDaily()).value.reason,'already_completed');assert.deepEqual(events,['lock','roster','register','release']);
 events.length=0;privateConfigured=true;failArchive=true;
 const failed=await runDaily();assert.equal(failed.http,503);assert.equal(stored.archiveStatus,'failed');
-assert.deepEqual(stored.refresh,proof);assert.deepEqual(events,['lock','roster','rules','recover','raw','private','register','roster','release']);
+assert.deepEqual(stored.refresh,proof);assert.deepEqual(events,['lock','roster','rules','recover','raw','private','register','release']);
 events.length=0;failArchive=false;failIndex=true;
 assert.equal((await runDaily()).http,503);assert.equal(uploadExists,true);
 assert.deepEqual(events,['lock','roster','rules','recover','raw','private','register','release']);
@@ -185,14 +187,19 @@ if(!hasRedis){
         if(isSync&&mode==='lose-before'){cli('SET',lockKey,'other-owner');mode=null;}
         if(isSync&&mode==='fail-before'){mode=null;throw Error('fixture interruption before commit');}
         if(isSync&&mode==='drop-after'){mode=null;cli(...cmd);throw Error('fixture response lost after commit');}
+        if(op==='SET'&&key.includes(':history:daily:lock:')&&mode==='drop-lock-reply'){mode=null;cli(...cmd);throw Error('fixture lock response lost');}
         if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
         return Response.json({result:cli(...cmd)});
       }catch(error){return Response.json({error:String(error.message)});}
     };
     const call=async body=>{const res=response();await addon({method:'POST',headers:{authorization:'Bearer isolated-fixture'},body},res);return res};
     const firstCall=call(old);await waitRead;
-    const secondPayload=payload('Audit Two','two',[143],now);
-    secondPayload.sections.locationHistory={entries:[]};secondPayload.sections.instances={lockouts:[]};
+    const vars=parseLuaSavedVariable(readFileSync(new URL('./fixtures/bridge-savedvariables.lua',import.meta.url),'utf8'));
+    vars.character.name='Audit Two';vars.character.level=12;
+    for(const name of ['character','spellbook','location'])vars[name].capturedAt=now;
+    const secondPayload=buildSafeAddonSyncPayload(vars,{syncId:'savedvariables-v1'});
+    assert.equal(secondPayload.sections.locationHistory.capturedAt,undefined);
+    assert.equal(secondPayload.sections.instances.capturedAt,undefined);
     assert.equal((await call(secondPayload)).http,409);
     releaseRead();
     assert.equal((await firstCall).http,200);
@@ -256,7 +263,9 @@ if(!hasRedis){
     await saveCharacters(nextRoster,refreshLock,{dailyReceipt:actualProof});
     await releaseRefreshLock(refreshLock);
     assert.deepEqual(await loadDailyProfileReceipt(day),actualProof);
+    mode='drop-lock-reply';
     const guard=await acquireDailySnapshotLock(day);
+    assert.ok(guard);assert.equal(cli('GET','dalton-dashboard:history:daily:lock:'+day),guard);
     await registerDailySnapshot({...meta,refresh:actualProof},guard);
     assert.equal((await getDailySnapshot(day)).sha256,meta.sha256);
     const lastKey='dalton-dashboard:history:daily:last:v1';
