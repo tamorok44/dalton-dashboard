@@ -27,8 +27,3 @@ jobs:
         run: npm audit --audit-level=high
       - name: UI, Datenlogik und Architektur prüfen
         run: npm test
-      # Temporary, one-time editorial capture on the draft branch. Removed after review.
-      - name: Einmalige öffentliche Talentquellen-Prüfung
-        if: matrix.node-version == '22' && github.event_name == 'pull_request' && github.head_ref == 'talent-planner-foundation-v1'
-        timeout-minutes: 2
-        run: node scripts/capture-talent-review-once.mjs

@@ -181,6 +181,176 @@
           "version": 2
         }
       ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedFrom": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "f24caf48784028a9142412a0b7bed5706b61a1e64432d43f7c92b24fae4393d9",
+      "id": "mage-arcane-rank0-71139-client",
+      "kind": "client",
+      "url": "https://www.forever-xp.com/talents/mage/",
+      "sourceCaptureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "buildComparison": {
+        "status": "structure_matches",
+        "build": "1.60.1.71139",
+        "classId": 8,
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "rawSha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+        "localizedSha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+        "captureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+        "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+        "primaryNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "independentNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "talentCount": 53,
+        "unknownPrerequisites": [],
+        "cyclicPrerequisites": [],
+        "diff": []
+      },
+      "claim": "Exact current build 71139 independent comparison of all 53 Mage talents: IDs, tree membership, positions, ranks, prerequisites and point gates match; no unknown or cyclic prerequisite. Primary raw/localized source pair matches live observation. All Mage talent/spell changes from 71091 to 71139 are zero in ForeverDiff ledger."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedFrom": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "f24caf48784028a9142412a0b7bed5706b61a1e64432d43f7c92b24fae4393d9",
+      "id": "mage-arcane-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Reviewed the complete November 25 delta; prior canonical article digest recovered exactly. Other-class, dungeon, NPC, item, Legacy, battleground, profession, race, riding and quest changes do not alter this Mage rank-0 talent path. Revelation enchant changed but is not assumed by this route. No changes to point calendar or gates in the delta."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedFrom": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "reviewedAt": "2026-11-26",
+      "id": "mage-arcane-rank0-71139-editorial",
+      "kind": "editorial",
+      "url": "https://www.icy-veins.com/wow-forever/arcane-mage-leveling/",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "claim": "Reassessment of the previously reviewed exact allocation and rationale against the complete official delta and unchanged Mage talent/spell ledger. The original tradeoffs and recommendation remain valid for the specified mixed-leveling profile; no new comparative speed claim or alteration to the allocation."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedFrom": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "1434ff97b4c959f76ca4b30059bfd145157e4b59e52bc4220efdb1e60b020044",
+      "id": "mage-fire-rank0-71139-client",
+      "kind": "client",
+      "url": "https://www.forever-xp.com/talents/mage/",
+      "sourceCaptureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "buildComparison": {
+        "status": "structure_matches",
+        "build": "1.60.1.71139",
+        "classId": 8,
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "rawSha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+        "localizedSha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+        "captureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+        "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+        "primaryNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "independentNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "talentCount": 53,
+        "unknownPrerequisites": [],
+        "cyclicPrerequisites": [],
+        "diff": []
+      },
+      "claim": "Exact current build 71139 independent comparison of all 53 Mage talents: IDs, tree membership, positions, ranks, prerequisites and point gates match; no unknown or cyclic prerequisite. Primary raw/localized source pair matches live observation. All Mage talent/spell changes from 71091 to 71139 are zero in ForeverDiff ledger."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedFrom": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "1434ff97b4c959f76ca4b30059bfd145157e4b59e52bc4220efdb1e60b020044",
+      "id": "mage-fire-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Reviewed the complete November 25 delta; prior canonical article digest recovered exactly. Other-class, dungeon, NPC, item, Legacy, battleground, profession, race, riding and quest changes do not alter this Mage rank-0 talent path. Revelation enchant changed but is not assumed by this route. No changes to point calendar or gates in the delta."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedFrom": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "reviewedAt": "2026-11-26",
+      "id": "mage-fire-rank0-71139-editorial",
+      "kind": "editorial",
+      "url": "https://www.icy-veins.com/wow-forever/fire-mage-leveling",
+      "planId": "mage-fire-leveling-mixed-balanced",
+      "planVersion": 2,
+      "allocationDigest": "44cff0799de6283bcd5b6b341222bdfce335c2596f6ca604884b77da18462b33",
+      "claim": "Reassessment of the previously reviewed exact allocation and rationale against the complete official delta and unchanged Mage talent/spell ledger. The original tradeoffs and recommendation remain valid for the specified mixed-leveling profile; no new comparative speed claim or alteration to the allocation."
     }
   ],
   "rulePacks": [
@@ -303,5 +473,74 @@
       ]
     }
   ],
-  "revalidations": []
+  "revalidations": [
+    {
+      "status": "verified",
+      "planId": "mage-arcane-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cf6e72ccf220adb0ab94dba18d1f9b14c7168a39ce603c16c3df3ce78e8a5631",
+      "legacyTalentedRank": 0,
+      "ruleRevision": "mage-arcane-rank0-71091-v1",
+      "from": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "to": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71139",
+        "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b"
+      },
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "mage-arcane-rank0-71139-client",
+        "mage-arcane-rank0-71139-official",
+        "mage-arcane-rank0-71139-editorial"
+      ],
+      "scope": {
+        "completeHotfixReview": true,
+        "classAndSpellDependenciesUnchanged": true,
+        "pointCalendarAndGatesUnchanged": true,
+        "editorialRecommendationUnchanged": true
+      }
+    },
+    {
+      "status": "verified",
+      "planId": "mage-fire-leveling-mixed-balanced",
+      "planVersion": 2,
+      "allocationDigest": "44cff0799de6283bcd5b6b341222bdfce335c2596f6ca604884b77da18462b33",
+      "legacyTalentedRank": 0,
+      "ruleRevision": "mage-fire-rank0-71091-v2",
+      "from": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71091",
+        "hotfixRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7"
+      },
+      "to": {
+        "classId": 8,
+        "clientBuild": "1.60.1.71139",
+        "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b"
+      },
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "mage-fire-rank0-71139-client",
+        "mage-fire-rank0-71139-official",
+        "mage-fire-rank0-71139-editorial"
+      ],
+      "scope": {
+        "completeHotfixReview": true,
+        "classAndSpellDependenciesUnchanged": true,
+        "pointCalendarAndGatesUnchanged": true,
+        "editorialRecommendationUnchanged": true
+      }
+    }
+  ]
 }

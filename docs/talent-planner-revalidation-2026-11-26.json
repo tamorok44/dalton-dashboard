@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-26",
+  "buildComparison": {
+    "status": "structure_matches",
+    "build": "1.60.1.71139",
+    "classId": 8,
+    "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+    "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+    "rawSha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+    "localizedSha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+    "captureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+    "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+    "primaryNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+    "independentNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+    "talentCount": 53,
+    "unknownPrerequisites": [],
+    "cyclicPrerequisites": [],
+    "diff": []
+  },
+  "sourceJob": 139747228949,
+  "exactSourceJob": 139746122527,
+  "independentLedger": {
+    "url": "https://foreverdiff.com/builds/1.60.1.71139/mage/",
+    "captureSha256": "c94aea1c81a13988060b9f98fe10d65f876922f5ae50ba57b9f5c6e7b24c87c7",
+    "fromBuild": "1.60.1.71091",
+    "toBuild": "1.60.1.71139",
+    "changedMageTalents": 0,
+    "changedMageSpells": 0
+  },
+  "officialReview": {
+    "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+    "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+    "priorCanonicalRecovered": true,
+    "sections": [
+      "Other-class fixes (Druid, Hunter, Paladin, Rogue, Shaman, Warlock, Warrior)",
+      "Dungeon/NPC/item changes",
+      "Legacy achievement and durability fixes; free forms/Trueshot Aura, not talent point calendar",
+      "Alterac Valley changes",
+      "Revelation enchant proc fixes: once per AoE wave, not full channel; neither route relies on this enchant",
+      "Race/reputation, riding, quest adjustments"
+    ],
+    "conclusion": "No change to the Mage talents, dependencies, point calendar or the underlying editorial assumptions of the two rank-0 mixed-leveling routes. No claim about other classes or Legacy ranks."
+  }
+}
