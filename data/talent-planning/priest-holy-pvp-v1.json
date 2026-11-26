@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 5,
   "treeId": 11615,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -320,15 +320,13 @@
       "priest-holy-pvp-cobalt",
       "priest-battlegrounds"
     ],
-    "editorialDecision": "Heilig-PvP mit frühen defensiven Talenten, gezielten direkten Heilungen und Gebet der Besserung 40; später Disziplin-Schild und situativer Unterbrechungsschutz. Kein garantierter Sprung auf den gewünschten Verbündeten; Geist der Erlösung ist nur nach Tod relevant. Disziplin bleibt sinnvolle Alternative für Schild-/Kontrollspiel.",
+    "editorialDecision": "Heilig-PvP mit frühen defensiven Talenten, gezielten direkten Heilungen und Gebet der Besserung 40; später Disziplin-Schild und situativer Unterbrechungsschutz. Kein garantierter Sprung auf den gewünschten Verbündeten; Geist der Erlösung ist nur nach Tod relevant. Disziplin bleibt sinnvolle Alternative für Schild-/Kontrollspiel. Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform.",
-      "105851: Build 71139 zeigt einen skalierten Heilwert; unabhängige aktuelle Messung der tatsächlichen Heilskalierung fehlt. Keine exakte Heilformel freigeben.",
-      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative healing performance or actual server absorb/heal calculation; no guaranteed amount or target selection.",
+      "No assumption of undocumented proc interactions or immunity."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -363,7 +361,61 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105851,
+        "spellId": 401859,
+        "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+        "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "rankOneBaseHeal": 172,
+          "healingPowerCoefficient": 0.429,
+          "jumpsUpTo": 5,
+          "jumpRadiusYards": 20,
+          "durationPerJumpSeconds": 30,
+          "cooldownSeconds": 10,
+          "triggerDamageOrNonPeriodicHeal": true,
+          "oneTargetPerCaster": true
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+            "build": "1.60.1.71139",
+            "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+            "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+          },
+          {
+            "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+            "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
     }
+  },
+  "treeName": "Heilig",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-holy-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Heilig-PvP mit frühen defensiven Talenten, gezielten direkten Heilungen und Gebet der Besserung 40; später Disziplin-Schild und situativer Unterbrechungsschutz. Kein garantierter Sprung auf den gewünschten Verbündeten; Geist der Erlösung ist nur nach Tod relevant. Disziplin bleibt sinnvolle Alternative für Schild-/Kontrollspiel. Rang-1-Tooltip (172 + 42,9 Prozent Heilbonus) stimmt im aktuellen Build 71139 mit Wowhead überein. Sprung- und Auslösemechanik ebenfalls belegt; keine tatsächliche Heilformel, spätere Zauberränge oder garantierte Sprungzielwahl freigegeben. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "adviceSummary": "Heilig-PvP mit defensiven Heilfähigkeiten und Gebet der Besserung auf 40.",
+    "evidenceIds": [
+      "priest-holy-pvp-rank0-71139-editorial-1",
+      "priest-holy-pvp-rank0-71139-editorial-2"
+    ]
   }
 }
