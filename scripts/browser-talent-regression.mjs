@@ -100,7 +100,7 @@ try{
      await spec.waitFor({state:'visible'});
      assert.equal(await page.locator('[data-plan-result]').count(),0);
      assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);
-     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes('Plan noch in Prüfung'));
+     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes(Number(id)===7?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
    }
    await choose(8);await goal.selectOption('leveling');
    assert.equal(await spec.inputValue(),'11582','reviewed comparative recommendation should be preselected');

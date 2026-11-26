@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 7,
   "treeId": 11326,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -18,8 +18,8 @@
   ],
   "expectedDistribution": {
     "11326": 31,
-    "11362": 20,
-    "11363": 0
+    "11362": 15,
+    "11363": 5
   },
   "points": [
     {
@@ -147,6 +147,26 @@
       "rank": 1
     },
     {
+      "talentId": 104757,
+      "rank": 1
+    },
+    {
+      "talentId": 104757,
+      "rank": 2
+    },
+    {
+      "talentId": 104753,
+      "rank": 1
+    },
+    {
+      "talentId": 104753,
+      "rank": 2
+    },
+    {
+      "talentId": 104753,
+      "rank": 3
+    },
+    {
       "talentId": 104729,
       "rank": 1
     },
@@ -163,28 +183,8 @@
       "rank": 4
     },
     {
-      "talentId": 104729,
-      "rank": 5
-    },
-    {
       "talentId": 104739,
       "rank": 1
-    },
-    {
-      "talentId": 104739,
-      "rank": 2
-    },
-    {
-      "talentId": 104739,
-      "rank": 3
-    },
-    {
-      "talentId": 104739,
-      "rank": 4
-    },
-    {
-      "talentId": 104739,
-      "rank": 5
     },
     {
       "talentId": 104734,
@@ -197,6 +197,14 @@
     {
       "talentId": 104734,
       "rank": 3
+    },
+    {
+      "talentId": 104737,
+      "rank": 1
+    },
+    {
+      "talentId": 104737,
+      "rank": 2
     },
     {
       "talentId": 104733,
@@ -215,16 +223,8 @@
       "rank": 1
     },
     {
-      "talentId": 104736,
-      "rank": 1
-    },
-    {
-      "talentId": 104736,
+      "talentId": 104739,
       "rank": 2
-    },
-    {
-      "talentId": 104736,
-      "rank": 3
     }
   ],
   "rationaleBlocks": [
@@ -299,34 +299,49 @@
       "reason": "Blitzbeherrschung freischalten."
     },
     {
+      "talentId": 104757,
+      "count": 2,
+      "reason": "Reichweite des Erdbindungstotems und Haltbarkeit des Steinklauentotems verbessern."
+    },
+    {
+      "talentId": 104753,
+      "count": 3,
+      "reason": "Kritische Trefferchance für Angriffe und Zauber erhöhen."
+    },
+    {
       "talentId": 104729,
-      "count": 5,
-      "reason": "Heilkosten und Trefferchance verbessern."
+      "count": 4,
+      "reason": "Manakosten der Heilzauber senken; zusätzliche Trefferchance für situative Schadenszauber."
     },
     {
       "talentId": 104739,
-      "count": 5,
-      "reason": "Welle der Heilung beschleunigen."
+      "count": 1,
+      "reason": "Welle der Heilung vollständig beschleunigen."
     },
     {
       "talentId": 104734,
       "count": 3,
-      "reason": "Manaregeneration beim Zaubern ergänzen."
+      "reason": "Früh Manaregeneration während des Zauberns ermöglichen."
+    },
+    {
+      "talentId": 104737,
+      "count": 2,
+      "reason": "Maximale Gesundheit und Reinkarnationsoption verbessern."
     },
     {
       "talentId": 104733,
       "count": 3,
-      "reason": "Zauberzeitverlust bei Heilungen reduzieren."
+      "reason": "Heilfokus vollständig ausbauen."
     },
     {
       "talentId": 104732,
       "count": 1,
-      "reason": "Wasserschild freischalten."
+      "reason": "Wasserschild freischalten; Manarückgewinnung bei dokumentierten Treffern und kritischen Ergebnissen."
     },
     {
-      "talentId": 104736,
-      "count": 3,
-      "reason": "Zauberbedrohung reduzieren."
+      "talentId": 104739,
+      "count": 1,
+      "reason": "Welle der Heilung vollständig beschleunigen."
     }
   ],
   "research": {
@@ -338,15 +353,28 @@
     ],
     "editorialDecision": "Shock pressure, Earthbound control and later off-healing/casting protection. Trade mana cost talents for shock frequency; no guaranteed proc chain.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "November 25 Chain Lightning now consumes Clearcasting when five Maelstrom Weapon stacks coexist; no double-resource or proc assumption."
+      "No controlled comparative performance measurement; higher Legacy effective gates not verified."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Elementar",
+  "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
+  "ruleRevision": "shaman-elemental-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Schocks, Erdgebunden, Blitzreichweite und Blitzbeherrschung für Distanzdruck. Vier Punkte Gezeitenfokus, Gesundheit, Heilfokus, Wasserschild und größere Totemreichweite ergänzen die Defensive. Keine garantierte Kontrolle oder Proc-Kette.",
+    "adviceSummary": "Schocks, Erdgebunden, Blitzreichweite und Blitzbeherrschung für Distanzdruck. Vier Punkte Gezeitenfokus, Gesundheit, Heilfokus, Wasserschild und größere Totemreichweite ergänzen die Defensive. Keine garantierte Kontrolle oder Proc-Kette.",
+    "evidenceIds": [
+      "shaman-elemental-pvp-rank0-71139-editorial-1",
+      "shaman-elemental-pvp-rank0-71139-editorial-2"
+    ]
   }
 }
