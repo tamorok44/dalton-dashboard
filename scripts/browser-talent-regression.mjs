@@ -59,7 +59,8 @@ const server=createServer(async(req,res)=>{
    return;
  }
  if(url.pathname==='/api/characters'&&url.searchParams.get('view')==='talents'){displayRequests++;return send(200,displayCatalog)}
- if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},talentPlannerEnabled:true});
+ if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'}});
+ if(url.pathname==='/api/refresh')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},success:roster.length});
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
  if(url.pathname.startsWith('/api/')){unexpected.push(url.pathname);return send(404,{ok:false})}
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);
@@ -98,6 +99,17 @@ try{
    const character=page.locator('#talentPlannerCharacter');
    await character.waitFor({state:'visible'});
    assert.equal(await character.locator('option').count(),10);
+   const talentNav=page.locator('[data-view-link="talentPlanner"]');
+   assert.equal(await talentNav.isVisible(),true,'released tab visible without feature flag');
+   const refreshResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===200);
+   await page.locator('#refreshButton').click();
+   await refreshResponse;
+   await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
+   assert.equal(await talentNav.isVisible(),true,'refresh payload must never hide released tab');
+   await page.locator('[data-view-link="characters"]').click();
+   await talentNav.click();
+   await character.waitFor({state:'visible'});
+   assert.equal(await character.locator('option').count(),10,'planner accessible again after refresh and navigation');
    const choose=async id=>{await character.selectOption('qa-class-'+id);await page.locator('#talentGuide-goal').waitFor({state:'visible'})};
    const goal=page.locator('#talentGuide-goal'),role=page.locator('#talentGuide-role'),spec=page.locator('#talentPlannerProfile'),rank=page.locator('#talentPlannerLegacy');
    // All classes, including currently unavailable classes, permit meaningful navigation.

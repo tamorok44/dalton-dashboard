@@ -1110,9 +1110,12 @@ const workshopView=document.querySelector('#workshopView');
 const plannerRoot=document.querySelector('#plannerContent');
 const plannerView=document.querySelector('#plannerView');
 const talentPlannerView=document.querySelector('#talentPlannerView');
-const talentPlannerLink=document.querySelector('[data-view-link="talentPlanner"]');
-let talentPlannerEnabled=false,talentPlanner=null;
+let talentPlanner=null;
 function showTalentPlanner(){
+  if(!displayedData){
+    document.querySelector('#talentPlannerContent').innerHTML='<p class="talent-planner-card" role="status">Die Charakterdaten werden geladen. Ohne aktuelle Verbindung kann kein Talentplan geprüft werden.</p>';
+    return;
+  }
   if(!talentPlanner){
     let storage;
     try{storage=window.localStorage}catch{/* Browser storage can be unavailable. */}
@@ -1141,7 +1144,7 @@ function setMainView(view){
 function syncMainView(){
   const view=location.hash==='#vergleich'?'compare':location.hash==='#werkstatt'?'workshop':
     (location.hash==='#ortsplaner'||location.hash==='#berufsplaner')?'planner':
-      talentPlannerEnabled&&location.hash==='#talentplaner'?'talentPlanner':'characters';
+      location.hash==='#talentplaner'?'talentPlanner':'characters';
   setMainView(view);
 }
 window.addEventListener('hashchange',syncMainView);
@@ -2058,12 +2061,9 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
     invalidateWorkshopData({reloadVisible:true});
     invalidateLocationPlannerData({reloadVisible:true});
   }
-  const plannerEnabled=payload.talentPlannerEnabled===true||payload.talentPlannerPreview===true;
-  const plannerChanged=plannerEnabled!==talentPlannerEnabled;
-  talentPlannerEnabled=plannerEnabled;
-  talentPlannerLink.hidden=!plannerEnabled;
-  if(plannerChanged&&location.hash==='#talentplaner')syncMainView();
-  if(characterDataChanged&&talentPlanner&&!talentPlannerView.hidden){
+  // Released navigation is independent of character payloads (including refresh).
+  // The planner API still validates live sources, identity and rank for every plan.
+  if(location.hash==='#talentplaner'&&!talentPlannerView.hidden&&(characterDataChanged||!talentPlanner)){
     showTalentPlanner();
   }
   return true;
@@ -2086,9 +2086,11 @@ async function load({silent=false,force=false}={}){
           const fallbackData=await fallback.json();
           lastGeneratedAt=fallbackData.generatedAt||null;
           render(fallbackData);
+          if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)showTalentPlanner();
           status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';
         }catch{
           status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>';
+          if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)document.querySelector('#talentPlannerContent').innerHTML='<p class="talent-planner-card" role="status">Die Charakterdaten sind derzeit nicht erreichbar. Bitte lade die Seite erneut, sobald die Verbindung wieder verfügbar ist.</p>';
         }
       }
       return false;
