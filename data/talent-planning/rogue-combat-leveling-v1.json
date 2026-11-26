@@ -363,8 +363,8 @@
     ],
     "approval": "editorial_rank0_only",
     "structuralValidation": {
-      "catalogRevision": "aa44b443774e0b700e440f2e2e4ae70eeb4469afc458ecf8df3e036596839a8e",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     },
     "conflictFollowup": {
@@ -436,6 +436,11 @@
         "serverMeasured": false,
         "scope": "base client description; no PvP duration guarantee or server measurement"
       }
+    },
+    "previousStructuralValidation": {
+      "catalogRevision": "aa44b443774e0b700e440f2e2e4ae70eeb4469afc458ecf8df3e036596839a8e",
+      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "legacyTalentedRank": 0
     }
   },
   "treeName": "Kampf",
