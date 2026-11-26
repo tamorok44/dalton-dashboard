@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {redis} from './character-store.mjs';
+import {redis,REDIS_TYPE_GUARD} from './character-store.mjs';
 
 const CHANGE_KEY='dalton-dashboard:history:changes:v1';
 const DAILY_INDEX='dalton-dashboard:history:daily:index:v1';
@@ -169,11 +169,12 @@ export async function getDailySnapshot(date){
   const value=await redis(['HGET',DAILY_INDEX,date]);
   return value?JSON.parse(value):null;
 }
-export async function registerDailySnapshot(meta){
-  if(!meta?.date||(!meta?.url&&!['disabled','failed'].includes(meta?.archiveStatus)))throw new Error('Ungültige Snapshot-Metadaten');
-  const value=JSON.stringify(meta);
-  await redis(['HSET',DAILY_INDEX,meta.date,value]);
-  await redis(['SET',DAILY_LAST,value]);
+export async function registerDailySnapshot(meta,lockToken){
+  if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(meta?.date||'')||(!meta?.url&&!['disabled','failed','legacy_public'].includes(meta?.archiveStatus)))throw new Error('Ungültige Snapshot-Metadaten');
+  if(!lockToken)throw new Error('Tageslauf-Sperre erforderlich');
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') or not valid(KEYS[2],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[3] then return redis.error_reply('DAILY_LOCK_LOST') end; local old=redis.call('GET',KEYS[2]); local prior=nil; if old then prior=cjson.decode(old); if type(prior.date)~='string' then return redis.error_reply('INVALID_DAILY_POINTER') end end; redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]); if not prior or prior.date<=ARGV[1] then redis.call('SET',KEYS[2],ARGV[2]) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,DAILY_INDEX,DAILY_LAST,DAILY_LOCK_PREFIX+meta.date,meta.date,JSON.stringify(meta),lockToken]);
+  if(result!=='OK')throw new Error('Tagesindex nicht gespeichert');
 }
 export async function acquireDailySnapshotLock(date){
   const token=randomUUID();

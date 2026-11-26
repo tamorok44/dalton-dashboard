@@ -95,7 +95,7 @@ export default async function handler(req,res){
     });
   }catch(error){
     console.error('Spellbook-Synchronisierung fehlgeschlagen:',error);
-    const status=/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich/.test(String(error.message))?400:503;
+    const status=String(error.message).startsWith('STALE_SPELLBOOK')?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich/.test(String(error.message))?400:503;
     return res.status(status).json({error:String(error.message).slice(0,180)});
   }finally{
     try{await releaseRefreshLock(lockToken)}catch(error){console.error('Spellbook-Lock konnte nicht freigegeben werden:',error)}

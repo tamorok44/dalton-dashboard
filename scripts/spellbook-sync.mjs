@@ -95,6 +95,15 @@ export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized
   const capturedTime=Date.parse(snapshot.capturedAt);
   if(!Number.isFinite(capturedTime)||capturedTime>Date.now()+10*60*1000||capturedTime<Date.now()-30*24*60*60*1000)throw new Error('Spellbook-Code ist zeitlich nicht plausibel');
   const knownClassAbilities=expandKnownClassAbilities(snapshot.entries,classMaster,localized);
+  const priorTime=Date.parse(current.knownClassAbilitiesCapturedAt||'');
+  if(current.knownClassAbilitiesVerified===true&&Number.isFinite(priorTime)){
+    if(capturedTime<priorTime)throw new Error('STALE_SPELLBOOK: Zauberbuchaufnahme ist älter als der gespeicherte Stand');
+    if(capturedTime===priorTime){
+      const ids=list=>JSON.stringify((list||[]).map(x=>Number(x.id)).sort((a,b)=>a-b));
+      if(ids(current.knownClassAbilities)!==ids(knownClassAbilities))throw new Error('STALE_SPELLBOOK: widersprüchliche gleichzeitige Zauberbuchaufnahme');
+      return data;
+    }
+  }
   const nextCharacter={
     ...current,
     knownClassAbilities,

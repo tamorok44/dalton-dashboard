@@ -1,10 +1,10 @@
-import {loadCharacters,saveCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
+import {loadCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
-import {loadAddonSyncState,saveAddonSyncState} from '../scripts/addon-sync-store.mjs';
+import {loadAddonSyncState,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
 import {ingestAddonLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
 import {authorizeDeviceToken,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
@@ -81,20 +81,23 @@ export default async function handler(req,res){
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
+    if(Number(target.classId)!==Number(characterSection.classID))throw new Error('Klasse des Addon-Syncs passt nicht zum Charakter');
     if(device&&!deviceMaySync(device,target.slug,payload.client?.transport)){
       return res.status(403).json({error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
     }
     const previousState=await loadAddonSyncState(target.slug);
-    if(previousState?.payload?.syncId&&previousState.payload.syncId===payload.syncId){
+    const prepared=prepareAddonSync(previousState,payload);
+    if(prepared.duplicate){
+      // An acknowledged core commit may have been followed by an interrupted
+      // knowledge write. Replaying observations is idempotent and fenced.
+      const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken});
       return res.status(200).json({
-        duplicate:true,
-        liveKnowledge:{duplicate:true},
+        duplicate:true,liveKnowledge,
         character:{slug:target.slug,name:target.name},
         summary:publicAddonSyncSummary(previousState)
       });
     }
 
-    const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug});
     let updated=before;
     let spellbookApplied=false;
     let classMaster=null;
@@ -115,15 +118,17 @@ export default async function handler(req,res){
       let localized={};
       try{localized=await cachedGermanClassSpells(directIds)}catch{}
       updated=applySpellbookSnapshot(before,snapshot,{classMaster,localized,syncedAt:new Date().toISOString()});
-      updated=await archiveKnownAbilityIcons(updated,target.slug);
-      await saveCharacters(updated,lockToken);
+      spellbookApplied=updated!==before;
+      if(spellbookApplied)updated=await archiveKnownAbilityIcons(updated,target.slug);
+    }
+
+    const state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken:previewIsolated?null:lockToken,roster:spellbookApplied?updated:null,receipts:prepared.receipts});
+    const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken});
+    if(spellbookApplied){
       try{await appendChangeBatch(before,updated,{source:'addon-sync'})}catch(error){
         console.warn('Addon-Sync-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
       }
-      spellbookApplied=true;
     }
-
-    const state=await saveAddonSyncState(target.slug,payload,{lockToken:previewIsolated?null:lockToken});
     const character=(updated.characters||before.characters).find(entry=>entry.slug===target.slug)||target;
     return res.status(200).json({
       duplicate:false,
@@ -135,7 +140,7 @@ export default async function handler(req,res){
     });
   }catch(error){
     console.error('Addon-Synchronisierung fehlgeschlagen:',error);
-    const status=/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
+    const status=/^(SYNC_CONFLICT|STALE_SPELLBOOK)/.test(String(error.message))?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
     return res.status(status).json({error:String(error.message).slice(0,180)});
   }finally{
     if(lockToken&&!previewIsolated){

@@ -1,6 +1,6 @@
 import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
-import {redis,configured} from './character-store.mjs';
+import {redis,configured,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD} from './character-store.mjs';
 
 const SCHEMA_VERSION=1;
 const CHANGE_LIMIT=40;
@@ -207,21 +207,25 @@ async function loadRecord(key){
   if(!raw)return null;
   try{return JSON.parse(raw)}catch{return null}
 }
-async function saveRecord(key,value){
-  await redis(['SET',key,JSON.stringify(value)]);
-  await redis(['SADD',indexKey(),key]);
+async function saveRecord(key,value,{changed,lockToken,expectedRaw}){
+  const production=environmentScope()==='production';
+  if(production&&!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'set') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[5]=='1' and redis.call('GET',KEYS[4])~=ARGV[6] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('GET',KEYS[1]); if (old or '')~=ARGV[4] then return redis.error_reply('OBSERVATION_CONFLICT') end; redis.call('SADD',KEYS[2],KEYS[1]); redis.call('SET',KEYS[1],ARGV[1]); if ARGV[2]=='1' then redis.call('SET',KEYS[3],ARGV[3]) end; return 'OK'";
+  const result=await redis(['EVAL',lua,4,key,indexKey(),versionKey(),REFRESH_LOCK_KEY,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedRaw||'',production?'1':'0',lockToken||'']);
+  if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
 }
-async function ingestSnapshot(snapshot){
+async function ingestSnapshot(snapshot,{lockToken=null}={}){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
   const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
-  const existing=await loadRecord(key);
+  const expectedRaw=await redis(['GET',key]);
+  const existing=expectedRaw?JSON.parse(expectedRaw):null;
   const id=observationId(snapshot);
   const ids=Array.isArray(existing?.observationIds)?existing.observationIds:[];
   if(ids.includes(id))return {stored:false,duplicate:true,key};
 
   const fingerprint=contentFingerprint(snapshot);
   const previous=existing?.latestSnapshot||null;
-  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
+  if(previous&&Date.parse(previous.capturedAt)>=Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
   const previousFingerprint=previous?contentFingerprint(previous):null;
   const changed=previousFingerprint!==fingerprint;
   const delta=changed?diff(previous,snapshot):{added:[],removed:[]};
@@ -253,8 +257,7 @@ async function ingestSnapshot(snapshot){
     offers:snapshot.kind==='merchant'?mergeOfferKnowledge(existing?.offers,snapshot):undefined,
     services:snapshot.kind==='trainer'?mergeServiceKnowledge(existing?.services,snapshot):undefined
   };
-  await saveRecord(key,record);
-  if(changed)await redis(['SET',versionKey(),new Date().toISOString()]);
+  await saveRecord(key,record,{changed,lockToken,expectedRaw});
   return {stored:true,duplicate:false,changed,key,record};
 }
 
@@ -273,11 +276,11 @@ export function snapshotsFromAddonPayload(payload={}, {characterSlug=null}={}){
   return snapshots;
 }
 
-export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null}={}){
+export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null,lockToken=null}={}){
   if(!configured())return {stored:0,duplicates:0,changed:0};
   let stored=0,duplicates=0,changed=0;
   for(const snapshot of snapshotsFromAddonPayload(payload,{characterSlug})){
-    const result=await ingestSnapshot(snapshot);
+    const result=await ingestSnapshot(snapshot,{lockToken});
     if(result.stored)stored++;
     if(result.duplicate)duplicates++;
     if(result.changed)changed++;

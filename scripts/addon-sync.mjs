@@ -142,7 +142,7 @@ export function addonSpellbookSnapshot(payload,classMaster=null){
     characterSlug:text(character.name,120),
     classId:integer(character.classID),
     level:integer(character.level),
-    capturedAt:epochIso(spellbook.capturedAt)||epochIso(character.capturedAt)||new Date().toISOString(),
+    capturedAt:epochIso(spellbook.capturedAt)||epochIso(character.capturedAt),
     entries
   };
 }

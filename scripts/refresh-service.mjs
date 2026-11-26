@@ -11,7 +11,7 @@ import {collectCatalogRecords,saveCatalogRecords} from './game-catalog-store.mjs
 import {ensureReputationCatalog,loadPublicReputationCatalog} from './reputation-catalog-store.mjs';
 import {ensureGermanPetLocalizations,loadGermanPetLocalizations} from './pet-localization-store.mjs';
 
-export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
+export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true,dailyDate=null}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
   const start=Date.now();
   const {data:previous}=await loadCharacters();
@@ -87,7 +87,8 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   }
 
   const merged=mergeProfiles(previous,latest);
-  await saveCharacters(merged,lockToken);
+  const dailyReceipt=source==='daily'&&dailyDate?{date:dailyDate,source:'daily',success,total:previous.characters.length,persisted:true,generatedAt:merged.generatedAt}:null;
+  await saveCharacters(merged,lockToken,{dailyReceipt});
   let changeLog={count:0,id:null};
   try{
     changeLog=await appendChangeBatch(previous,merged,{source});
@@ -125,5 +126,5 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   if(!Object.keys(petCatalog).length&&petFamilySlugs.length){
     try{petCatalog=await loadGermanPetLocalizations(petFamilySlugs)}catch{}
   }
-  return {success,data:archived,questCatalog,reputationCatalog,petCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
+  return {success,data:archived,questCatalog,reputationCatalog,petCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id,dailyReceipt};
 }
