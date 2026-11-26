@@ -140,7 +140,13 @@ function storageBinding(storage,identity){
 export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,talentGraph,talentNodeDetail,fetchImpl=fetch,storage}){
   let characters=[],rosterVersion,character='',identity=null,profiles=[],profile=null,rank='',binding=null,selection={},specializations=[],advice=[];
   let busy=false,message='',plan=null,level=10,treeId=null,nodeId=null,requestId=0,expiry=null;
-  const warn=code=>blocking[code]||blocking.source_unavailable;
+  const warn=(code,evidence)=>{
+    const changes=evidence?.review?.reasons??[];
+    if(changes.some(item=>item.code==='client_build_changed'||item.code==='hotfix_changed')){
+      return 'WoW Forever wurde aktualisiert. Dieser Talentplan wird für den neuen Spielstand erneut geprüft. Deine Auswahl bleibt erhalten.';
+    }
+    return blocking[code]||blocking.source_unavailable;
+  };
   const clearPlan=()=>{
     clearTimeout(expiry);
     plan=null;
@@ -211,7 +217,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     try{
       const result=await request(query);
       if(id!==requestId)return;
-      if(!result.ok){message=warn(result.code);return}
+      if(!result.ok){message=warn(result.code,result.evidence);return}
       plan=result;
       treeId=profile.treeId;
       nodeId=null;

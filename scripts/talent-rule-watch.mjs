@@ -58,3 +58,23 @@ export function currentTalentRulesMatch(observation,rules,master,now=Date.now())
     catalogAt===Math.min(rawAt,localizedAt)&&Math.max(rawAt,localizedAt)<=now&&
     catalogAt>=revisionSince&&talentCatalogIsFresh(master.checkedAt,now);
 }
+
+// Review-only diagnostics. Never authorizes a transition or overrides the exact release gate.
+export function describeTalentRuleReview(observation,rules,master,now=Date.now()){
+  const reasons=[];
+  const observed=observation?.status==='observed';
+  const add=(code,expected,actual)=>reasons.push({code,expected:expected??null,actual:actual??null});
+  if(!observed)add('observation_unavailable','observed',observation?.status);
+  if(observed&&observation.clientBuild!==rules.clientBuild)add('client_build_changed',rules.clientBuild,observation.clientBuild);
+  if(observed&&observation.hotfixRevision!==rules.hotfixRevision)add('hotfix_changed',rules.hotfixRevision,observation.hotfixRevision);
+  const mechanics=master?.classMechanicsRevisions?.[rules.classId];
+  if(mechanics!==rules.catalogRevision)add('class_mechanics_changed_or_missing',rules.catalogRevision,mechanics);
+  if(master?.sourceRevision!==rules.sourceRevision)add('source_pair_changed_or_missing',rules.sourceRevision,master?.sourceRevision);
+  if(master?.stale!==false||!talentCatalogIsFresh(master?.checkedAt,now))add('catalog_not_fresh',null,master?.checkedAt);
+  const exact=currentTalentRulesMatch(observation,rules,master,now)&&master?.stale===false&&mechanics===rules.catalogRevision;
+  if(!exact&&!reasons.length)add('observation_or_provenance_unverified',null,null);
+  return {status:exact?'matches':'review_required',reasons,
+    classMechanicsUnchanged:digestId.test(mechanics)&&mechanics===rules.catalogRevision,
+    // These are capture metadata, not proof that the provider is up to date.
+    sourceDigests:master?.sourceDigests??null,sourceFreshAt:master?.sourceFreshAt??null};
+}

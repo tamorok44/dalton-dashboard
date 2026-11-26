@@ -232,8 +232,8 @@
   ],
   "expectedDistribution": {
     "11328": 0,
-    "11347": 39,
-    "11340": 12
+    "11340": 12,
+    "11347": 39
   },
   "rationaleBlocks": [
     {
@@ -347,13 +347,17 @@
     "sourceIds": [
       "icyveins-feral",
       "mobalytics-feral-leveling",
-      "icyveins-feral-pve"
+      "icyveins-feral-pve",
+      "feral-shifting-power-71139",
+      "feral-shifting-power-history",
+      "official-hotfix-nov25"
     ],
     "editorialDecision": "One mixed progression for players alternating Cat leveling and Bear tanking in level-appropriate dungeons. Favor form-independent gains and timely threat tools. Reserve dedicated solo-speed and dedicated dungeon-tank comparisons.",
     "unresolved": [
       "Current build attestation and client minimum levels",
       "Compare early Swipe threat against extra durability in representative dungeon pulls",
-      "Verify the current cost and usable energy of Powershift"
+      "Verify the current cost and usable energy of Powershift",
+      "Build 71139 hotfix-cache reference and older client ability data both report 55% base mana to 40 energy for Shifting Power; check cost reductions and actual use. Official 25 Nov Balance talent rework and current German preview projection disagree, so require reconciled class source before approval. Keep dedicated dungeon-tank review distinct from mixed leveling."
     ],
     "approval": null,
     "structuralValidation": {

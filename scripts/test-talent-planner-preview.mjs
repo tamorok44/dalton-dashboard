@@ -143,6 +143,12 @@ await blocked('unverified_current_catalog',query,{master:async()=>({...master,st
 await blocked('unverified_current_catalog',query,{master:async()=>({...master,classMechanicsRevisions:{}})});
 await blocked('unverified_current_rules',query,{master:async()=>({...master,sourceRevision:'a'.repeat(64)})});
 await blocked('unverified_current_rules',query,{observe:async()=>({...observation,clientBuild:'1.60.1.71092'})});
+const transition=(await request(query,{endpoint:handler({observe:async()=>({...observation,clientBuild:'1.60.1.71139',hotfixRevision:'a'.repeat(64)}),master:async()=>({...master,sourceRevision:'b'.repeat(64)})})})).body;
+assert.equal(transition.ok,false);
+assert.equal(transition.evidence.review.classMechanicsUnchanged,true);
+assert.deepEqual(transition.evidence.review.reasons.map(r=>r.code),['client_build_changed','hotfix_changed','source_pair_changed_or_missing']);
+assert.equal(transition.evidence.review.status,'review_required');
+assert.equal(good.evidence.review.status,'matches');
 await blocked('unverified_current_rules',query,{observe:async()=>({...observation,hotfixRevision:'a'.repeat(64)})});
 await blocked('unverified_current_rules',query,{observe:async()=>null});
 await blocked('unverified_current_rules',query,{clock:()=>start+TALENT_CATALOG_MAX_AGE_MS});

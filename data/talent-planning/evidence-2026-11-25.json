@@ -342,6 +342,42 @@
       "url": "https://wowforeverbuilder.com/classes/hunter/talents/intimidation/",
       "kind": "client_reference",
       "independenceGroup": "foreverbuilder-client-reference"
+    },
+    {
+      "id": "hunter-71139-edge-tracker",
+      "url": "https://wowforever.tools/talent-changes",
+      "kind": "client_reference",
+      "independenceGroup": "wowforever-tools-client-tracker"
+    },
+    {
+      "id": "hunter-fit-intimidation",
+      "url": "https://wowforever.fit/talents/hunter/",
+      "kind": "client_reference",
+      "independenceGroup": "wowforever-fit-client-reference"
+    },
+    {
+      "id": "feral-shifting-power-71139",
+      "url": "https://wowforevertalents.com/druid/talents/shifting-power/",
+      "kind": "client_reference",
+      "independenceGroup": "wowforevertalents-hotfix-cache"
+    },
+    {
+      "id": "feral-shifting-power-history",
+      "url": "https://talentsforever.com/druid/abilities/shifting-power",
+      "kind": "client_reference",
+      "independenceGroup": "talentsforever-client-export"
+    },
+    {
+      "id": "official-hotfix-nov25",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "kind": "official",
+      "independenceGroup": "blizzard-official"
+    },
+    {
+      "id": "frost-proc-report-nov25",
+      "url": "https://www.reddit.com/r/wowforever/comments/1y55sam/fingers_of_frost_talent_broken/",
+      "kind": "community_report",
+      "independenceGroup": "reddit-single-report"
     }
   ],
   "pilot": {
@@ -431,7 +467,10 @@
         "forevertalents-hunter-prerequisites",
         "metabot-hunter-intimidation",
         "wowfdb-hunter-tree",
-        "foreverbuilder-intimidation"
+        "foreverbuilder-intimidation",
+        "hunter-71139-edge-tracker",
+        "hunter-fit-intimidation",
+        "official-hotfix-nov25"
       ],
       "proposal": "Compare early pet utility and mobility with an earlier direct pet-damage investment while retaining the timely Summon Hawk milestone. Compare low and high pet-threat encounters separately.",
       "openChecks": [
@@ -439,7 +478,8 @@
         "Benefit and opportunity cost of pet revival, mobility and cleansing",
         "Current pet and Summon Hawk behavior, minimum levels and exact release revisions",
         "The export models Intimidation and Bestial Wrath as a cycle. Independently verify whether Bestial Swiftness is an alternative prerequisite in the current client before publishing a complete path.",
-        "Two published calculators report an alternative edge. The build-71091 TraitEdge export was inaccessible, and the public source tuple does not encode the operator. Review exact client edge type or a reproducible live allocation."
+        "Two published calculators report an alternative edge. The build-71091 TraitEdge export was inaccessible, and the public source tuple does not encode the operator. Review exact client edge type or a reproducible live allocation.",
+        "26 Nov 71139: live German projection still carries the reciprocal Intimidation/Bestial Wrath edges. Independent indexed calculators report Bestial Swiftness as required or an OR edge. Exact edge operator remains unverified. Nov 25 official hotfix changed pet melee crit and Hawk targeting/crit; update pet behavior evidence before release."
       ],
       "observedMilestones": [
         {

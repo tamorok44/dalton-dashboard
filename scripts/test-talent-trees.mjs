@@ -80,6 +80,8 @@ const cold=await loadTalentMaster({...coldOptions,fetchImpl:async(url,options)=>
 assert.equal(new Set(fetched).size,2);
 assert.equal(cold.classRevisions[8],master.classRevisions[8]);
 assert.match(cold.sourceRevision,/^[a-f0-9]{64}$/);
+assert.match(cold.sourceDigests.raw,/^[a-f0-9]{64}$/);
+assert.match(cold.sourceDigests.localized,/^[a-f0-9]{64}$/);
 assert.equal(Date.parse(cold.sourceFreshAt.raw),7000);
 assert.equal(Date.parse(cold.sourceFreshAt.localized),12000);
 assert.equal(cold.checkedAt,cold.sourceFreshAt.raw);

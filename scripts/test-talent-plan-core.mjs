@@ -119,3 +119,35 @@ const distribution=Object.fromEntries(fixtureTrees.map(t=>[t.id,structuralOnly.h
 assert.deepEqual(distribution,pilot.expectedDistribution);
 assert.equal(resolveApprovedTalentPlan(pilot.profiles[0],[pilot],pilotMaster,[pilotRules]).code,'no_approved_recommendation');
 console.log('Mage Frost pilot: 51 allocations valid in observed-constraint fixture; research candidate cannot be released: OK');
+
+// Research hypothesis for Hunter: all other gates can be audited without
+// pretending that the cyclic provider edges have a verified operator.
+const bmCandidate=JSON.parse(readFileSync(new URL('../data/talent-planning/hunter-beast-mastery-leveling-v1.json',import.meta.url),'utf8'));
+const hunterRows=[
+  [11372,[[104976,0,5],[104960,0,5],[104975,1,2],[104970,2,1],[104969,2,5],[104966,3,1],[104967,3,5],
+    [104964,4,1,[[104970,1],[104961,1]]],[104963,4,2],[104962,5,5,[[104967,5]]],[104961,6,1,[[104964,1]]]]],
+  [11371,[[105011,0,5],[105008,1,5],[105009,1,5],[105005,2,2],[105002,3,5,[[105008,5]]]]],
+  [11370,[]]
+];
+const hunterTrees=hunterRows.map(([id,rows])=>({id,talents:rows.map(([id,row,maxRank,pre=[]])=>({
+  id,row,maxRank,requiredPoints:row*5,prerequisites:pre.map(([id,rank])=>({id,rank,conditionKnown:true}))
+}))}));
+const hunterRevision='e'.repeat(64);
+const hunterMaster={stale:false,classes:{3:{trees:hunterTrees}},classMechanicsRevisions:{3:hunterRevision}};
+const hunterRules={...rules,classId:3,catalogRevision:hunterRevision,revision:'synthetic-hunter-hypothesis-only',
+  legacyTalentedRank:0,pointSpendMode:'immediate',minimumLevelByTalent:Object.fromEntries(hunterTrees.flatMap(t=>t.talents.map(n=>[n.id,10+5*n.row])))};
+const hunterPath={...bmCandidate,catalogRevision:hunterRevision,ruleRevision:hunterRules.revision};
+const cyclic=validateTalentPath(hunterPath,hunterMaster,hunterRules);
+assert.equal(cyclic.ok,false);
+assert.equal(cyclic.code,'prerequisite');
+assert.equal(cyclic.point,21);
+const conditional=structuredClone(hunterMaster);
+conditional.classes[3].trees[0].talents.find(n=>n.id===104964).prerequisites=[{id:104970,rank:1,conditionKnown:true}];
+const checkedHunter=validateTalentPath(hunterPath,conditional,hunterRules);
+assert.equal(checkedHunter.ok,true,JSON.stringify(checkedHunter));
+assert.equal(checkedHunter.history.length,51);
+assert.equal(checkedHunter.history.find(p=>p.talentId===104966).level,25);
+assert.equal(checkedHunter.history.find(p=>p.talentId===104961).level,40);
+assert.deepEqual([11372,11371,11370].map(id=>checkedHunter.history.filter(p=>p.treeId===id).length),[31,20,0]);
+assert.equal(resolveApprovedTalentPlan(bmCandidate.profiles[0],[bmCandidate],conditional,[hunterRules]).code,'no_approved_recommendation');
+console.log('Hunter research: 51-point conditional path; real projected cycle remains blocked: OK');

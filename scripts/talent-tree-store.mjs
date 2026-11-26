@@ -123,6 +123,7 @@ export async function loadTalentMaster({fetchImpl=fetch,redisImpl=redis,enabled=
           now:Math.min(raw.freshAt,localized.freshAt),observedBuilds
         });
         candidate.sourceRevision=talentSourcePairDigest(raw.digest,localized.digest);
+        candidate.sourceDigests={raw:raw.digest,localized:localized.digest};
         candidate.sourceFreshAt={
           raw:new Date(raw.freshAt).toISOString(),localized:new Date(localized.freshAt).toISOString()
         };

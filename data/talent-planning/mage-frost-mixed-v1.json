@@ -394,13 +394,19 @@
       {
         "url": "https://foreverdb.net/classes",
         "contribution": "Current class source and skill mechanics cross-reference."
+      },
+      {
+        "url": "https://www.reddit.com/r/wowforever/comments/1y55sam/fingers_of_frost_talent_broken/",
+        "date": "2026-11-25",
+        "contribution": "Uncontrolled observation of shared procs, not a confirmed server rule."
       }
     ],
     "unresolved": [
       "Effective level gates on the current server for all six Legacy ranks, accounting for points banked and perks activated after level-up",
       "Current build and server layout binding of the source data",
       "Exact shared proc conditions, charges and behavior on freeze-immune targets on the current server",
-      "Publish only after reviewed class rules and matching hotfix evidence"
+      "Publish only after reviewed class rules and matching hotfix evidence",
+      "26 Nov build 71139: fresh community report still describes coincident Frostbite/Fingers of Frost procs; another report describes rank-1 Frostbolt restrictions. No assumption of independent chances or downranking. Icy Veins suggests a later respec, excluded by V1. Current exact gate revalidation is pending."
     ],
     "approval": null,
     "structuralValidation": {

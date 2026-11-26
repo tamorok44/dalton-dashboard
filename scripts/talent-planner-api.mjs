@@ -2,7 +2,7 @@ import {loadCharacters} from './character-store.mjs';
 import {loadTalentMaster,loadTalentPlannerClass} from './talent-tree-store.mjs';
 import {profileKey,resolveApprovedTalentPlan} from './talent-plan-core.mjs';
 import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
-import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS} from './talent-rule-watch.mjs';
+import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS,describeTalentRuleReview} from './talent-rule-watch.mjs';
 import catalog from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import {talentPlanLibrary} from './talent-plan-index.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
@@ -92,6 +92,8 @@ export function createTalentPlannerHandler({
       const liveMaster=await master();
       const evidence={...observation,catalogRevision:liveMaster.classMechanicsRevisions?.[profile.classId]??null,
         sourceRevision:liveMaster.sourceRevision??null,catalogCheckedAt:liveMaster.checkedAt??null};
+      const applicable=catalog.rulePacks.filter(r=>r.revision===candidates[0].ruleRevision&&r.classId===profile.classId&&r.legacyTalentedRank===rank);
+      if(applicable.length===1)evidence.review=describeTalentRuleReview(ruleObservation,applicable[0],liveMaster,clock());
       const plan=resolveApprovedTalentPlan(profile,candidates,liveMaster,catalog.rulePacks,{ruleObservation,legacyTalentedRank:rank,now:clock()});
       if(!plan.ok)return blocked(409,plan.code,evidence);
       const klass=await project(liveMaster.classes[profile.classId]);

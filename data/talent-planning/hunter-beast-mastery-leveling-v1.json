@@ -1,0 +1,345 @@
+{
+  "schemaVersion": 1,
+  "id": "hunter-beast-mastery-leveling",
+  "version": 1,
+  "classId": 3,
+  "treeId": 11372,
+  "status": "research_only",
+  "requiresRespec": false,
+  "releaseBlocker": "hunter_prerequisite_semantics_unverified",
+  "profiles": [
+    {
+      "classId": 3,
+      "treeId": 11372,
+      "goal": "leveling",
+      "role": "damage",
+      "playStyle": "solo",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11370": 0,
+    "11371": 20,
+    "11372": 31
+  },
+  "points": [
+    {
+      "talentId": 104976,
+      "rank": 1
+    },
+    {
+      "talentId": 104976,
+      "rank": 2
+    },
+    {
+      "talentId": 104976,
+      "rank": 3
+    },
+    {
+      "talentId": 104976,
+      "rank": 4
+    },
+    {
+      "talentId": 104976,
+      "rank": 5
+    },
+    {
+      "talentId": 104975,
+      "rank": 1
+    },
+    {
+      "talentId": 104975,
+      "rank": 2
+    },
+    {
+      "talentId": 104960,
+      "rank": 1
+    },
+    {
+      "talentId": 104960,
+      "rank": 2
+    },
+    {
+      "talentId": 104960,
+      "rank": 3
+    },
+    {
+      "talentId": 104970,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 2
+    },
+    {
+      "talentId": 104969,
+      "rank": 3
+    },
+    {
+      "talentId": 104969,
+      "rank": 4
+    },
+    {
+      "talentId": 104966,
+      "rank": 1
+    },
+    {
+      "talentId": 104969,
+      "rank": 5
+    },
+    {
+      "talentId": 104967,
+      "rank": 1
+    },
+    {
+      "talentId": 104967,
+      "rank": 2
+    },
+    {
+      "talentId": 104967,
+      "rank": 3
+    },
+    {
+      "talentId": 104964,
+      "rank": 1
+    },
+    {
+      "talentId": 104967,
+      "rank": 4
+    },
+    {
+      "talentId": 104967,
+      "rank": 5
+    },
+    {
+      "talentId": 104963,
+      "rank": 1
+    },
+    {
+      "talentId": 104963,
+      "rank": 2
+    },
+    {
+      "talentId": 104962,
+      "rank": 1
+    },
+    {
+      "talentId": 104962,
+      "rank": 2
+    },
+    {
+      "talentId": 104962,
+      "rank": 3
+    },
+    {
+      "talentId": 104962,
+      "rank": 4
+    },
+    {
+      "talentId": 104962,
+      "rank": 5
+    },
+    {
+      "talentId": 104961,
+      "rank": 1
+    },
+    {
+      "talentId": 105011,
+      "rank": 1
+    },
+    {
+      "talentId": 105011,
+      "rank": 2
+    },
+    {
+      "talentId": 105011,
+      "rank": 3
+    },
+    {
+      "talentId": 105011,
+      "rank": 4
+    },
+    {
+      "talentId": 105011,
+      "rank": 5
+    },
+    {
+      "talentId": 105008,
+      "rank": 1
+    },
+    {
+      "talentId": 105008,
+      "rank": 2
+    },
+    {
+      "talentId": 105008,
+      "rank": 3
+    },
+    {
+      "talentId": 105008,
+      "rank": 4
+    },
+    {
+      "talentId": 105008,
+      "rank": 5
+    },
+    {
+      "talentId": 105005,
+      "rank": 1
+    },
+    {
+      "talentId": 105005,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 1
+    },
+    {
+      "talentId": 105009,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 3
+    },
+    {
+      "talentId": 105002,
+      "rank": 1
+    },
+    {
+      "talentId": 105002,
+      "rank": 2
+    },
+    {
+      "talentId": 105002,
+      "rank": 3
+    },
+    {
+      "talentId": 105002,
+      "rank": 4
+    },
+    {
+      "talentId": 105002,
+      "rank": 5
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 104976,
+      "count": 5,
+      "reason": "Begleiter beim frühen Leveln widerstandsfähiger machen."
+    },
+    {
+      "talentId": 104975,
+      "count": 2,
+      "reason": "Schaden von Jäger und Begleiter gemeinsam erhöhen."
+    },
+    {
+      "talentId": 104960,
+      "count": 3,
+      "reason": "Angriffstempo durch den aktiven Aspekt unterstützen."
+    },
+    {
+      "talentId": 104970,
+      "count": 1,
+      "reason": "Begleiter schneller zum Gegner bringen."
+    },
+    {
+      "talentId": 104969,
+      "count": 4,
+      "reason": "Direkten Schaden des Begleiters und Falken steigern."
+    },
+    {
+      "talentId": 104966,
+      "count": 1,
+      "reason": "Falke beschwören auf Stufe 25 freischalten."
+    },
+    {
+      "talentId": 104969,
+      "count": 1,
+      "reason": "Entfesselten Zorn vervollständigen."
+    },
+    {
+      "talentId": 104967,
+      "count": 3,
+      "reason": "Kritische Treffer des Begleiters und Falken ausbauen."
+    },
+    {
+      "talentId": 104964,
+      "count": 1,
+      "reason": "Einschüchterung auf 30 als Kontroll- und Bedrohungsoption, ausschließlich unter der noch ungeprüften alternativen Voraussetzung."
+    },
+    {
+      "talentId": 104967,
+      "count": 2,
+      "reason": "Wildheit für Raserei vollständig ausbauen."
+    },
+    {
+      "talentId": 104963,
+      "count": 2,
+      "reason": "Fokusregeneration des Tiers und eigene Manaregeneration unterstützen."
+    },
+    {
+      "talentId": 104962,
+      "count": 5,
+      "reason": "Raserei nach bestätigter Wildheit vervollständigen."
+    },
+    {
+      "talentId": 104961,
+      "count": 1,
+      "reason": "Zorn des Wildtiers auf 40, nur falls die Einschüchterungs-Voraussetzung geklärt ist."
+    },
+    {
+      "talentId": 105011,
+      "count": 5,
+      "reason": "Eigene kritische Trefferchance erhöhen."
+    },
+    {
+      "talentId": 105008,
+      "count": 5,
+      "reason": "Sorgfältiges Zielen als Voraussetzung für Todbringende Schüsse."
+    },
+    {
+      "talentId": 105005,
+      "count": 2,
+      "reason": "Schaden nach Gegnerkills unterstützen."
+    },
+    {
+      "talentId": 105009,
+      "count": 3,
+      "reason": "Manakosten der eigenen Fähigkeiten reduzieren."
+    },
+    {
+      "talentId": 105002,
+      "count": 5,
+      "reason": "Kritischen Distanzschaden ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "icyveins-beast-mastery",
+      "mobalytics-vareion-hunter",
+      "wow-forever-gg-hunter-prerequisites",
+      "forevertalents-hunter-prerequisites",
+      "metabot-hunter-intimidation",
+      "wowfdb-hunter-tree",
+      "foreverbuilder-intimidation",
+      "hunter-71139-edge-tracker",
+      "hunter-fit-intimidation",
+      "official-hotfix-nov25"
+    ],
+    "editorialDecision": "Prioritize pet durability and sustained damage with Summon Hawk on 25. Conditional candidate only. Do not treat the alternate prerequisite as confirmed.",
+    "unresolved": [
+      "Exact current client prerequisite operator for Intimidation. The current projection creates a cycle; CI checks the actual cycle fails and a separate hypothetical edge allows the route.",
+      "New 71139 build/source tuple and current class proof; effective minimum levels and rank 1–5 not verified.",
+      "Nov 25 official pet critical strike and Hawk hotfixes require refreshed mechanical evidence. No quantified damage advantage assumed."
+    ],
+    "approval": null
+  }
+}
