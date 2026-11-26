@@ -2,6 +2,16 @@
 
 Gültig seit 25.11.2026 für sämtliche bestehenden und zukünftigen Dashboard-Bereiche, APIs, Datenbanken, Cronjobs, Tests, Add-on, Relay und Sync-Companion. Vor jeder Änderung lesen und beachten. Ergänzt DATA_ARCHITECTURE.md, UI_CI.md und WOW_CI.md; deren übrige Qualitäts- und Sicherheitsvorgaben bleiben gültig.
 
+## Eigenentwicklung, Datenherkunft und Erklärlogik (verbindlich seit 26.11.2026)
+
+Das Dalton-Dashboard ist eine eigenständige Anwendung für WoW Forever. Grundsatz: **Externe Datenquellen. Eigene Datenanreicherung. Eigene Logik. Eigenes Design. Eigenständige Anwendung.**
+
+- In allen bestehenden und künftigen Ansichten, Modulen, Hilfetexten, der Projektdokumentation und Außendarstellung zuerst den Spielernutzen und die eigene Funktion erklären. Externe Datenbanken, APIs und Clientdaten als Datenquellen benennen, nicht als Anbieter unserer selbst entwickelten Funktionen.
+- Eigene Datenaufbereitung, Beobachtungen, Add-on-Erhebungen, Korrekturen, Validierungen, charakterbezogene Planungs- und Berechnungslogik sowie Benutzeroberfläche sachlich als Eigenleistung erklären, soweit tatsächlich selbst entwickelt.
+- Quellen und fremde Komponenten korrekt zuordnen und transparent, möglichst dezent und gemäß ihren Nutzungsbedingungen nennen. Quellenhinweise, Evidenzstufen, Unsicherheiten und wichtige Datenlücken nicht verschleiern.
+- Im normalen Spielerbereich verständliche deutsche Funktions- und Statusmeldungen statt API-, Schlüssel- oder Verbindungsdetails. Technische Diagnosen gehören in die Entwicklungs-/Betriebsdokumentation; fachlich relevante Einschränkungen bleiben sichtbar.
+- Gilt insbesondere für Charaktere, Vergleich, Werkstatt, Ortsplaner, Talente/Talentplaner, Begleiter und das eigene Add-on. Bei jeder UI-/Textänderung auf diese Erklärlogik prüfen; keine fremden Leistungen als eigene und keine unbestätigten Daten als gesichert darstellen.
+
 ## Erweiterbarkeit von Charakteren und Klassen (verbindlich)
 
 Das Dalton-Dashboard ist ein universelles WoW-Forever-Gruppendashboard. Die vier ursprünglichen Daltons sind der aktuelle Bestand, keine technische Grenze. Weitere Freunde, mehrere Charaktere desselben Spielers, andere Klassen und Völker müssen integrierbar sein.
