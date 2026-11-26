@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 3,
   "treeId": 11370,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -103,24 +103,24 @@
       "rank": 5
     },
     {
-      "talentId": 104983,
-      "rank": 1
-    },
-    {
-      "talentId": 104983,
-      "rank": 2
-    },
-    {
-      "talentId": 104985,
-      "rank": 1
-    },
-    {
-      "talentId": 104985,
-      "rank": 2
-    },
-    {
       "talentId": 104981,
       "rank": 1
+    },
+    {
+      "talentId": 104985,
+      "rank": 1
+    },
+    {
+      "talentId": 104985,
+      "rank": 2
+    },
+    {
+      "talentId": 104983,
+      "rank": 1
+    },
+    {
+      "talentId": 104983,
+      "rank": 2
     },
     {
       "talentId": 110859,
@@ -256,12 +256,12 @@
     {
       "talentId": 110861,
       "count": 5,
-      "reason": "Kritischen Nahkampf- und Schildhandschaden stärken."
+      "reason": "Kritischen Nahkampf- und Nebenhandschaden stärken."
     },
     {
-      "talentId": 104983,
-      "count": 2,
-      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken."
+      "talentId": 104981,
+      "count": 1,
+      "reason": "Streichertritt für Nahkampfschaden und kurzzeitiges Bewegungstempo freischalten."
     },
     {
       "talentId": 104985,
@@ -269,9 +269,9 @@
       "reason": "Aktivierung von Mungobiss unterstützen."
     },
     {
-      "talentId": 104981,
-      "count": 1,
-      "reason": "Situativen Tritt und Bewegungsvorteil freischalten."
+      "talentId": 104983,
+      "count": 2,
+      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken."
     },
     {
       "talentId": 110859,
@@ -320,17 +320,32 @@
       "wh-survival-hunter",
       "mob-survival-hunter"
     ],
-    "editorialDecision": "Melee-oriented Survival, traps, active pet; avoid cyclic Beast Mastery edge.",
+    "editorialDecision": "Überleben wird als bewusst gewählte Nah-/Fernkampfspielweise mit aktivem Begleiter bewertet. Trefferchance, Ausdauer und kritische Nahkampffähigkeiten zuerst, Streichertritt unmittelbar auf 30 statt 34; anschließend Expose Prey, Manakosten und Beweglichkeit. Mungobiss nur bei verfügbarer Aktivierung. Streichertritt verursacht Nahkampfschaden und erhöht Bewegungstempo; keine belegte Zauberunterbrechung behaupten. Später Begleiterunterstützung, kein Falkenbonus. Für reines Solotempo kann Tierherrschaft günstiger sein.",
     "unresolved": [
-      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
-      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Nov 25 pet crit fixes; verify melee weapon choice and trainer levels."
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Klassenweite Quellenabweichungen außerhalb der vergebenen Talente und Voraussetzungen bestehen weiterhin; keine vollständige Klassenfreigabe."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
-      "catalogRevision": "9fa5fb0f24d1f95d20f208b2829b5da45b1a7068e97aba2897cecd8be43cc16f",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Überleben",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "ruleRevision": "hunter-survival-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Überleben wird als bewusst gewählte Nah-/Fernkampfspielweise mit aktivem Begleiter bewertet. Trefferchance, Ausdauer und kritische Nahkampffähigkeiten zuerst, Streichertritt unmittelbar auf 30 statt 34; anschließend Expose Prey, Manakosten und Beweglichkeit. Mungobiss nur bei verfügbarer Aktivierung. Streichertritt verursacht Nahkampfschaden und erhöht Bewegungstempo; keine belegte Zauberunterbrechung behaupten. Später Begleiterunterstützung, kein Falkenbonus. Für reines Solotempo kann Tierherrschaft günstiger sein.",
+    "adviceSummary": "Nah- und Fernkampfwechsel mit aktivem Begleiter, Streichertritt auf 30 und Blutung durch Mungobiss auf 40.",
+    "evidenceIds": [
+      "hunter-survival-leveling-rank0-71139-editorial-1",
+      "hunter-survival-leveling-rank0-71139-editorial-2",
+      "hunter-survival-leveling-rank0-71139-editorial-3"
+    ]
   }
 }

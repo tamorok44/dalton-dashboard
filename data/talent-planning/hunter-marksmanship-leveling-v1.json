@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 3,
   "treeId": 11371,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -28,17 +28,15 @@
       "grindclassic-marksmanship-leveling",
       "wowhead-marksmanship-leveling"
     ],
-    "editorialDecision": "Keep an active pet for mixed questing and dungeons, do not invest in Lone Wolf. Early personal damage and mana sustain with aura at 25, Rapid Recuperation at 30, Sniper Shot at 40. Compare a deeper Marksmanship alternative and group-only petless path separately. Indexed source excerpts support early Lethal Attacks, Careful Aim, Rapid Killing and keeping a leveling pet, not this exact custom schedule.",
+    "editorialDecision": "Begleiter bindet Gegner beim Questen; kein Einsamer Wolf. Früher eigener Fernkampfschaden und Manaentlastung, Aura auf 25, Rasche Erholung auf 30–31 und Heckenschützenschuss auf 40. Streuschuss auf 33 als situative Kontrolle; später Begleiterhaltbarkeit, Schaden und Mobilität. Gegenüber einem früheren Tierherrschafts-Abstecher werden die Treffsicherheits-Meilensteine vorgezogen. Tierherrschaft kann für reines Sololeveln stärker sein; kein numerischer Vergleich, kein Falkenbonus.",
     "unresolved": [
-      "New exact build-specific independent Hunter catalog proof, level gates and official hotfix review. Conditional source access only; no editorial release.",
-      "Check Hunter pet threat and sustain after November 25 hotfix. No assumption of the disputed Beast Mastery prerequisite operator; this route does not use either affected talent.",
-      "Compare sustained leveling, recovery time and pet survival against Beast Mastery; no measured superiority claim.",
-      "26 Nov: validated all 51 points against complete extracted class catalog (not exact live hash). No used talent touches unresolved cyclic edge."
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Klassenweite Quellenabweichungen außerhalb der vergebenen Talente und Voraussetzungen bestehen weiterhin; keine vollständige Klassenfreigabe."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
-      "catalogRevision": "9fa5fb0f24d1f95d20f208b2829b5da45b1a7068e97aba2897cecd8be43cc16f",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
   },
@@ -339,5 +337,20 @@
       "count": 2,
       "reason": "Wiederbelebung des Begleiters erleichtern."
     }
-  ]
+  ],
+  "treeName": "Treffsicherheit",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "ruleRevision": "hunter-marksmanship-leveling-mixed-balanced-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Begleiter bindet Gegner beim Questen; kein Einsamer Wolf. Früher eigener Fernkampfschaden und Manaentlastung, Aura auf 25, Rasche Erholung auf 30–31 und Heckenschützenschuss auf 40. Streuschuss auf 33 als situative Kontrolle; später Begleiterhaltbarkeit, Schaden und Mobilität. Gegenüber einem früheren Tierherrschafts-Abstecher werden die Treffsicherheits-Meilensteine vorgezogen. Tierherrschaft kann für reines Sololeveln stärker sein; kein numerischer Vergleich, kein Falkenbonus.",
+    "adviceSummary": "Gemischtes Leveln mit aktivem Begleiter, Aura auf 25, Rascher Erholung auf 30 und Heckenschützenschuss auf 40.",
+    "evidenceIds": [
+      "hunter-marksmanship-leveling-mixed-balanced-rank0-71139-editorial-1",
+      "hunter-marksmanship-leveling-mixed-balanced-rank0-71139-editorial-2"
+    ]
+  }
 }

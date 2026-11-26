@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 3,
   "treeId": 11370,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -103,24 +103,24 @@
       "rank": 2
     },
     {
-      "talentId": 104983,
-      "rank": 1
-    },
-    {
-      "talentId": 104983,
-      "rank": 2
-    },
-    {
-      "talentId": 104985,
-      "rank": 1
-    },
-    {
-      "talentId": 104985,
-      "rank": 2
-    },
-    {
       "talentId": 104981,
       "rank": 1
+    },
+    {
+      "talentId": 104985,
+      "rank": 1
+    },
+    {
+      "talentId": 104985,
+      "rank": 2
+    },
+    {
+      "talentId": 104983,
+      "rank": 1
+    },
+    {
+      "talentId": 104983,
+      "rank": 2
     },
     {
       "talentId": 110859,
@@ -269,9 +269,9 @@
       "reason": "Kritischen Nahkampfschaden ergänzen."
     },
     {
-      "talentId": 104983,
-      "count": 2,
-      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken."
+      "talentId": 104981,
+      "count": 1,
+      "reason": "Streichertritt für Nahkampfschaden und kurzzeitiges Bewegungstempo freischalten."
     },
     {
       "talentId": 104985,
@@ -279,9 +279,9 @@
       "reason": "Mungobiss-Aktivierung unterstützen."
     },
     {
-      "talentId": 104981,
-      "count": 1,
-      "reason": "Streichertritt freischalten."
+      "talentId": 104983,
+      "count": 2,
+      "reason": "Kosten von Fallen und Nahkampffähigkeiten senken."
     },
     {
       "talentId": 110859,
@@ -325,17 +325,32 @@
       "skillcapped-survival-pvp-1911",
       "wowhead-survival-builds-1711"
     ],
-    "editorialDecision": "Control-focused mixed melee/ranged battleground route with active pet, Deterrence, Counterattack, Strider Kick and late Scatter Shot. Avoid the disputed BM prerequisite.",
+    "editorialDecision": "Überlebens-Kern für Nah-/Fernkampfwechsel: Gesundheit, Trefferchance, Abschreckung und Gegenangriff zuerst. Streichertritt auf 30 statt 34, danach Expose Prey, Fallen-/Nahkampfkosten und Beweglichkeit. Streuschuss am Ende ist der bewusste Kompromiss eines 30/21-Pfads ohne tiefstes Überlebenstalent; eine frühere Treffsicherheits-Ergänzung böte Streuschuss früher, verzögert aber Nahkampfwerkzeuge. Streichertritt ist Schaden und Bewegung, keine behauptete Zauberunterbrechung; Gegenangriff setzt Parieren voraus, Streuschuss kann durch Schaden brechen. Keine Immunitäts- oder Proc-Garantie.",
     "unresolved": [
-      "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
-      "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
-      "Compare earlier Scatter Shot versus deep Survival timing; trap shared cooldown and interrupt/control rules need independent current evidence."
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Klassenweite Quellenabweichungen außerhalb der vergebenen Talente und Voraussetzungen bestehen weiterhin; keine vollständige Klassenfreigabe."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Überleben",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "ruleRevision": "hunter-survival-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Überlebens-Kern für Nah-/Fernkampfwechsel: Gesundheit, Trefferchance, Abschreckung und Gegenangriff zuerst. Streichertritt auf 30 statt 34, danach Expose Prey, Fallen-/Nahkampfkosten und Beweglichkeit. Streuschuss am Ende ist der bewusste Kompromiss eines 30/21-Pfads ohne tiefstes Überlebenstalent; eine frühere Treffsicherheits-Ergänzung böte Streuschuss früher, verzögert aber Nahkampfwerkzeuge. Streichertritt ist Schaden und Bewegung, keine behauptete Zauberunterbrechung; Gegenangriff setzt Parieren voraus, Streuschuss kann durch Schaden brechen. Keine Immunitäts- oder Proc-Garantie.",
+    "adviceSummary": "Kontrollorientierter Überlebens-PvP-Pfad mit Abschreckung auf 23, Gegenangriff auf 25, Streichertritt auf 30 und Streuschuss auf 60.",
+    "evidenceIds": [
+      "hunter-survival-pvp-rank0-71139-editorial-1",
+      "hunter-survival-pvp-rank0-71139-editorial-2",
+      "hunter-survival-pvp-rank0-71139-editorial-3"
+    ]
   }
 }

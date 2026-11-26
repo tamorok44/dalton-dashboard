@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 3,
   "treeId": 11371,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -63,26 +63,6 @@
       "rank": 5
     },
     {
-      "talentId": 105009,
-      "rank": 1
-    },
-    {
-      "talentId": 105009,
-      "rank": 2
-    },
-    {
-      "talentId": 105009,
-      "rank": 3
-    },
-    {
-      "talentId": 105009,
-      "rank": 4
-    },
-    {
-      "talentId": 105009,
-      "rank": 5
-    },
-    {
       "talentId": 105007,
       "rank": 1
     },
@@ -92,6 +72,14 @@
     },
     {
       "talentId": 105005,
+      "rank": 2
+    },
+    {
+      "talentId": 105009,
+      "rank": 1
+    },
+    {
+      "talentId": 105009,
       "rank": 2
     },
     {
@@ -115,28 +103,24 @@
       "rank": 4
     },
     {
+      "talentId": 104999,
+      "rank": 1
+    },
+    {
+      "talentId": 104999,
+      "rank": 2
+    },
+    {
       "talentId": 105002,
       "rank": 5
     },
     {
-      "talentId": 104999,
-      "rank": 1
-    },
-    {
-      "talentId": 104999,
-      "rank": 2
-    },
-    {
       "talentId": 105001,
       "rank": 1
     },
     {
       "talentId": 105001,
       "rank": 2
-    },
-    {
-      "talentId": 105001,
-      "rank": 3
     },
     {
       "talentId": 104998,
@@ -161,6 +145,22 @@
     {
       "talentId": 104997,
       "rank": 1
+    },
+    {
+      "talentId": 105001,
+      "rank": 3
+    },
+    {
+      "talentId": 105009,
+      "rank": 3
+    },
+    {
+      "talentId": 105009,
+      "rank": 4
+    },
+    {
+      "talentId": 105009,
+      "rank": 5
     },
     {
       "talentId": 105006,
@@ -239,11 +239,6 @@
       "reason": "Sorgfältiges Zielen als Voraussetzung für Todbringende Schüsse."
     },
     {
-      "talentId": 105009,
-      "count": 5,
-      "reason": "Manakosten von Schüssen und Stichen reduzieren."
-    },
-    {
       "talentId": 105007,
       "count": 1,
       "reason": "Einsamer Wolf für Gruppenkämpfe ohne aktiven Begleiter."
@@ -254,13 +249,18 @@
       "reason": "Schneller Tod als Voraussetzung für Rasche Erholung."
     },
     {
+      "talentId": 105009,
+      "count": 2,
+      "reason": "Manakosten von Schüssen und Stichen reduzieren."
+    },
+    {
       "talentId": 105004,
       "count": 1,
-      "reason": "Aura des Volltreffers für die Gruppe freischalten."
+      "reason": "Aura des Volltreffers auf Stufe 25 für die Gruppe freischalten."
     },
     {
       "talentId": 105002,
-      "count": 5,
+      "count": 4,
       "reason": "Kritischen Distanzschaden erhöhen."
     },
     {
@@ -269,8 +269,13 @@
       "reason": "Rasche Erholung ergänzen."
     },
     {
+      "talentId": 105002,
+      "count": 1,
+      "reason": "Kritischen Distanzschaden erhöhen."
+    },
+    {
       "talentId": 105001,
-      "count": 3,
+      "count": 2,
       "reason": "Mehrfachschuss, Gezielten Schuss und Salve stärken."
     },
     {
@@ -281,7 +286,17 @@
     {
       "talentId": 104997,
       "count": 1,
-      "reason": "Heckenschützenschuss freischalten."
+      "reason": "Heckenschützenschuss auf Stufe 40 freischalten."
+    },
+    {
+      "talentId": 105001,
+      "count": 1,
+      "reason": "Mehrfachschuss, Gezielten Schuss und Salve stärken."
+    },
+    {
+      "talentId": 105009,
+      "count": 3,
+      "reason": "Manakosten von Schüssen und Stichen reduzieren."
     },
     {
       "talentId": 105006,
@@ -291,7 +306,7 @@
     {
       "talentId": 110870,
       "count": 1,
-      "reason": "Ergänzendes Treffsicherheitstalent; exakte Wirkung separat prüfen."
+      "reason": "Schlangengift verbessern; Vipern- und Skorpidstich situationsabhängig unterstützen."
     },
     {
       "talentId": 104960,
@@ -310,17 +325,32 @@
       "outpost-hunter-level60-2311",
       "metammo-hunter-pvp"
     ],
-    "editorialDecision": "Ranged group route without active pet after Lone Wolf, with early efficiency, aura and multi-target shots. No assumed benefit from pet-dependent talents while petless.",
+    "editorialDecision": "Regelmäßige Dungeon-Gruppen mit verlässlichem Tank: Einsamer Wolf erst nutzen, wenn kein aktiver Begleiter benötigt wird. Aura und Heckenschützenschuss werden gegenüber dem bisherigen Pfad auf 25 und 40 vorgezogen, mit Rascher Erholung und Mehrzielvorteilen dazwischen. Später verbesserte Schüsse, Stiche und aspektabhängiges Angriffstempo; kein Talent eingeplant, das einen aktiven Begleiter voraussetzt. Vor Einsamer Wolf oder ohne verlässlichen Tank darf der Jäger einen Begleiter verwenden; kein garantierter Schadensvorsprung. Volley aktiviert nach Hotfix keine Procs und endet bei Bewegung.",
     "unresolved": [
-      "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
-      "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
-      "Compare active-pet group route, threat and uptime; aura unlock gate discrepancy between official article and primary data. Verify the final optional Marksmanship node."
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Klassenweite Quellenabweichungen außerhalb der vergebenen Talente und Voraussetzungen bestehen weiterhin; keine vollständige Klassenfreigabe."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Treffsicherheit",
+  "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+  "ruleRevision": "hunter-marksmanship-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Regelmäßige Dungeon-Gruppen mit verlässlichem Tank: Einsamer Wolf erst nutzen, wenn kein aktiver Begleiter benötigt wird. Aura und Heckenschützenschuss werden gegenüber dem bisherigen Pfad auf 25 und 40 vorgezogen, mit Rascher Erholung und Mehrzielvorteilen dazwischen. Später verbesserte Schüsse, Stiche und aspektabhängiges Angriffstempo; kein Talent eingeplant, das einen aktiven Begleiter voraussetzt. Vor Einsamer Wolf oder ohne verlässlichen Tank darf der Jäger einen Begleiter verwenden; kein garantierter Schadensvorsprung. Volley aktiviert nach Hotfix keine Procs und endet bei Bewegung.",
+    "adviceSummary": "Distanz-Dungeonpfad: Einsamer Wolf ab 20, Aura auf 25, Rasche Erholung auf 30–31 und Heckenschützenschuss auf 40.",
+    "evidenceIds": [
+      "hunter-marksmanship-dungeons-rank0-71139-editorial-1",
+      "hunter-marksmanship-dungeons-rank0-71139-editorial-2",
+      "hunter-marksmanship-dungeons-rank0-71139-editorial-3"
+    ]
   }
 }

@@ -103,8 +103,14 @@ try{
      const hasDefault=Boolean(defaultTree);
       assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),hasDefault?1:0,'only a reviewed default may enable confirmation');
       if(hasDefault)assert.equal(await spec.inputValue(),defaultTree,'reviewed PvP default');
-     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes([1,7,8,9].includes(Number(id))?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
+     assert.ok((await page.locator('.talent-guide-orientation').innerText()).includes([1,3,7,8,9].includes(Number(id))?'Plan fachlich freigegeben':'Plan noch in Prüfung'));
    }
+   await choose(3);await goal.selectOption('pvp');
+   assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0,'no reviewed comparative hunter PvP default');
+   await spec.selectOption('11371');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
+   await spec.selectOption('11370');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
+   await spec.selectOption('11372');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),0);
+   await choose(2);await goal.selectOption('dungeons');await role.selectOption('tank');assert.equal(await spec.inputValue(),'11541');
    await choose(8);await goal.selectOption('pvp');
    assert.equal(await spec.inputValue(),'11582','reviewed group PvP default among released Mage plans');
    await spec.selectOption('11582');assert.equal(await page.locator('button[type=submit].talent-planner-action').count(),1);
