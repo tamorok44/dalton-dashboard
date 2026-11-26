@@ -151,7 +151,7 @@
       "rank": 1
     },
     {
-      "talentId": 104923,
+      "talentId": 104918,
       "rank": 1
     },
     {
@@ -169,10 +169,6 @@
     {
       "talentId": 104957,
       "rank": 4
-    },
-    {
-      "talentId": 104957,
-      "rank": 5
     },
     {
       "talentId": 104914,
@@ -217,6 +213,10 @@
     {
       "talentId": 104924,
       "rank": 5
+    },
+    {
+      "talentId": 104923,
+      "rank": 1
     },
     {
       "talentId": 104923,
@@ -289,14 +289,14 @@
       "count": 1
     },
     {
-      "talentId": 104923,
-      "reason": "Starlight Wrath: verkürzt Zorn und seit dem Hotfix vom 25.11. auch Sternenfeuer; senkt die Manakosten von Zorn.",
+      "talentId": 104918,
+      "reason": "Bloom heilt bei natürlichem Ablauf oder Bannung eigener Verjüngung beziehungsweise Nachwachsen abhängig von Willenskraft.",
       "count": 1
     },
     {
       "talentId": 104957,
       "reason": "Nature's Focus schützt Arkan- und Naturzauber vor Zauberzeitverlust durch erlittenen Schaden; keine Unterbrechungsimmunität.",
-      "count": 5
+      "count": 4
     },
     {
       "talentId": 104914,
@@ -321,7 +321,7 @@
     {
       "talentId": 104923,
       "reason": "Starlight Wrath: verkürzt Zorn und seit dem Hotfix vom 25.11. auch Sternenfeuer; senkt die Manakosten von Zorn.",
-      "count": 2
+      "count": 3
     }
   ],
   "research": {
@@ -330,7 +330,7 @@
       "druid-resto-pvp-wowhead",
       "druid-resto-pvp-skillcapped"
     ],
-    "editorialDecision": "",
+    "editorialDecision": "Mobile PvP-Heilrolle mit Rascher Heilung 25, Schnelligkeit der Natur 30, Wilder Attacke 41 und Wildwuchs 52. Fünf Ferocity-Punkte durch Furor ersetzt, da Gestaltwechsel-Ressourcen für diese Rolle sinnvoller sind als verbilligte Nahkampfangriffe. Bloom ab 42 statt eines Nature's-Focus-Ranges als situative Antwort auf ablaufende oder gebannte eigene HoTs. Keine garantierte Überlebenswirkung oder Unterbrechungsimmunität.",
     "unresolved": [
       "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
