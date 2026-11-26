@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 4,
   "treeId": 11580,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -191,20 +191,20 @@
       "rank": 3
     },
     {
-      "talentId": 105738,
+      "talentId": 105732,
       "rank": 1
     },
     {
-      "talentId": 105738,
+      "talentId": 105732,
       "rank": 2
     },
     {
-      "talentId": 105738,
-      "rank": 3
+      "talentId": 105759,
+      "rank": 1
     },
     {
-      "talentId": 105735,
-      "rank": 1
+      "talentId": 105759,
+      "rank": 2
     },
     {
       "talentId": 105736,
@@ -250,7 +250,7 @@
     },
     {
       "talentId": 105708,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt.",
+      "reason": "Coup de Grace verstärkt Ausweiden.",
       "count": 3
     },
     {
@@ -310,7 +310,7 @@
     },
     {
       "talentId": 105709,
-      "reason": "Verstümmeln mit zwei Dolchen freischalten; keine exakte zusätzliche Schadenskonstante voraussetzen.",
+      "reason": "Verstümmeln mit zwei Dolchen für Combopunkte und zusätzlichen Schaden gegen vergiftete Ziele; keine exakte zusätzliche Schadenskonstante voraussetzen.",
       "count": 1
     },
     {
@@ -319,14 +319,14 @@
       "count": 3
     },
     {
-      "talentId": 105738,
-      "reason": "Parieren stärken.",
-      "count": 3
+      "talentId": 105732,
+      "reason": "Verbessertes Sprinten für situationsabhängiges Lösen von Bewegungseinschränkungen.",
+      "count": 2
     },
     {
-      "talentId": 105735,
-      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen.",
-      "count": 1
+      "talentId": 105759,
+      "reason": "Composure verbessert die Energiekostenreduktion durch Poised; Sap und Distract verbrauchen Poised seit Hotfix 25.11.",
+      "count": 2
     },
     {
       "talentId": 105736,
@@ -351,16 +351,13 @@
       "rogue-outpost-2311",
       "rogue-hotfix-2511"
     ],
-    "editorialDecision": "Frühe 8 Kampf-Punkte für Trefferchance und günstige Angriffe, Kaltblütigkeit 33, Venom 38, Verstümmeln 48. Kompromiss gegen die frühere reine Meucheln-Variante; vor allem langlebige Einzelziele. Riposte nur bei eigenen Parierereignissen, keine erzwungene Frontposition.",
+    "editorialDecision": "Frühe 8 Kampf-Punkte für Trefferchance und günstige Angriffe, Kaltblütigkeit 33, Venom 38, Verstümmeln 48. Kompromiss zugunsten früher Trefferchance bei langlebigen Einzelzielen. Vier späte Parade-/Riposte-Punkte durch Sprint- und Composure-Ränge ersetzt: im Gruppenspiel mit Tank Mobilität und Eröffnungsnutzen statt eigener Paraden. Der widersprüchliche additive Rang-1-Schadenswert (39/39,6) ist für diese qualitative Talentwahl nicht entscheidend; keine konkrete Schadensprognose oder Rundungsregel. Giftverstärkung, Combopunkte und Dolchvoraussetzung sind belegt. Keine gemessene Überlegenheit.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim.",
-      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
-      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
-      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative performance or exact server rounding of Mutilate; no damage forecast.",
+      "Death Mark numerical discrepancy remains outside this path."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -391,7 +388,67 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ],
+        "allocationDigest": "abe1221d9f50ab60536dcaca37bcc6d9d1f8fe51025e4cbb99f46e3be4d290b1"
+      }
     }
+  },
+  "treeName": "Meucheln",
+  "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+  "ruleRevision": "rogue-assassination-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Frühe 8 Kampf-Punkte für Trefferchance und günstige Angriffe, Kaltblütigkeit 33, Venom 38, Verstümmeln 48. Kompromiss zugunsten früher Trefferchance bei langlebigen Einzelzielen. Vier späte Parade-/Riposte-Punkte durch Sprint- und Composure-Ränge ersetzt: im Gruppenspiel mit Tank Mobilität und Eröffnungsnutzen statt eigener Paraden. Der widersprüchliche additive Rang-1-Schadenswert (39/39,6) ist für diese qualitative Talentwahl nicht entscheidend; keine konkrete Schadensprognose oder Rundungsregel. Giftverstärkung, Combopunkte und Dolchvoraussetzung sind belegt. Keine gemessene Überlegenheit.",
+    "adviceSummary": "Meucheln-Dungeons: Trefferchance früh, Giftkern und Verstümmeln 48, Mobilität statt Parieren.",
+    "evidenceIds": [
+      "rogue-assassination-dungeons-rank0-71139-editorial-1",
+      "rogue-assassination-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }
