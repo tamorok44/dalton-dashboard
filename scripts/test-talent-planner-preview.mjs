@@ -64,6 +64,12 @@ await blocked('binding_unavailable',{...query,planId:'mage-arcane-leveling',vers
 await blocked('binding_unavailable',{...query,planId:'mage-arcane-leveling',version:'1',identity:'["us","",555]'});
 await blocked('binding_unavailable',{...query,goal:'pvp',planId:'mage-arcane-leveling',version:'1',identity:'["eu","",555]'});
 assert.equal(reads,0,'rejected requests and profile discovery do not inspect catalogs or providers');
+let auditMasterReads=0;
+const auditEndpoint=handler({diagnosticsEnabled:()=>true,master:async()=>{auditMasterReads++;return master}});
+const auditResponse=await request({character:mage.slug,audit:'localization'},{endpoint:auditEndpoint});
+assert.equal(auditResponse.body.kind,'preview_localization_audit');assert.equal(auditResponse.body.summary.availableClasses,1);assert.equal(auditMasterReads,1);assert.equal(reads,0);
+assert.equal((await request({character:mage.slug,audit:'localization'},{endpoint:handler({diagnosticsEnabled:()=>false})})).code,404);
+assert.equal((await request({...query,audit:'localization'},{endpoint:auditEndpoint})).code,404);assert.equal(auditMasterReads,1);
 
 const info=(await request({character:mage.slug})).body;
 assert.equal(info.profiles.length,9);

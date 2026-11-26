@@ -328,7 +328,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
           ': erlernt '+esc(row.learned)+' / geplant '+esc(row.planned)+'</li>').join('')+'</ul>'+
         '<p>Fehlende Ränge können auch unverteilte Punkte sein. Dies ist keine Empfehlung zum Umskillen.</p></details>':'';
     const shown=plan.history.filter(step=>step.level<=level);
-    const planned={verified:true,ranks:new Map(shown.map(step=>[step.talentId,step.rank]))};
+    const planned={verified:true,plannedLegacyRank:plan.legacyRank.rank,ranks:new Map(shown.map(step=>[step.talentId,step.rank]))};
     const pick=tree.talents.find(node=>node.id===nodeId);
     const next=progress.next;
     const progressText=progress.status==='unknown'?'Der erlernte Talentstand ist nicht vollständig bestätigt.'
@@ -358,7 +358,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       (pick?talentNodeDetail(pick,tree,planned,level,false,{planned:true}):'')+
       '<h4>Chronologischer Talentpfad bis Stufe '+esc(level)+'</h4>'+
       '<ol class="talent-planner-steps">'+displayList('fixedControls',shown,step=>'<li>Stufe '+step.level+' · '+esc(names.get(step.talentId))+' (Rang '+step.rank+')</li>').join('')+'</ol>'+
-      '<p class="workshop-credit">Eigenständiger Dalton-Talentplaner: charakterbezogene Empfehlungen und Soll-Ist-Abgleich. Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></p>'+
+      '<p class="workshop-credit">Eigenständiger Dalton-Talentplaner: charakterbezogene Empfehlungen und Soll-Ist-Abgleich. Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a>'+(plan.klass.displayCorrection?' · Eigene Korrekturen und Hinweise nach Blizzard sowie <a href="https://zephras.com" target="_blank" rel="noopener noreferrer">Zephras</a> (CC BY 4.0, angepasst).':'')+'</p>'+
       (!binding&&plan.identity?'<button type="button" class="talent-planner-action" data-plan-remember>Plan für diesen Charakter merken</button>':
         !binding?'<p>Ohne bestätigte Charakterkennung ist die Planbindung nicht verfügbar.</p>':'');
     result.querySelector('#talentPlannerLevel').addEventListener('change',event=>{

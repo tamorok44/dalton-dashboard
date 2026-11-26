@@ -140,6 +140,9 @@ try{
    assert.ok((await page.locator('[data-plan-result]').innerText()).includes('keine eigene Live-Lernprobe')||(await page.locator('[data-plan-result]').innerText()).includes('nicht durch eine eigene Live-Lernprobe'));
    await page.locator('#talentPlannerLevel').selectOption('54');assert.equal(await page.locator('.talent-planner-steps li').count(),50);
    await page.locator('#talentPlannerLevel').selectOption('55');assert.equal(await page.locator('.talent-planner-steps li').count(),51);
+   await page.locator('#talentPlannerLevel').selectOption('5');
+   await page.locator('.talent-node').first().click();
+   assert.ok((await page.locator('.talent-requirements').innerText()).includes('Mit Talentiert Rang 5 ab Stufe 5'));
    await page.locator('#talentPlannerLevel').selectOption('15');
    const afterResolve=plannerRequests;
    const layout=await page.evaluate(()=>{

@@ -1,6 +1,7 @@
 import {HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics} from './hunter-pets.js';
 import {reputationStages,reputationColors} from './reputation-data.js';
 import {createTalentPlanner} from './talent-planner.js';
+import {displayedTalentText} from './talent-text-quality.js';
 const cards=document.querySelector("#cards");const summary=document.querySelector("#summary");const status=document.querySelector("#status");const freshness=document.querySelector("#dataFreshness");const button=document.querySelector("#refreshButton");
 const esc=v=>String(v??"nicht verfügbar").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const classColorsById={8:'mage',3:'hunter',11:'druid'};
@@ -257,6 +258,10 @@ function personalTalentRanks(c,klass){
   }
   return {verified:true,ranks,points};
 }
+function effectiveTalentLevel(node,personal){
+  const rank=personal?.plannedLegacyRank;
+  return Number.isInteger(rank)&&rank>=1&&rank<=5&&node.requiredLevel===10+(node.requiredPoints??node.row*5)?node.requiredLevel-rank:node.requiredLevel;
+}
 function talentNodeStatus(node,tree,personal,level,catalogStale=false){
   if(!personal.verified)return 'unknown';
   const rank=personal.ranks.get(node.id)||0;
@@ -265,7 +270,7 @@ function talentNodeStatus(node,tree,personal,level,catalogStale=false){
   const before=tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0);
   const required=node.requiredPoints??node.row*5;
   if(before<required||node.prerequisites.some(p=>p.conditionKnown&&(personal.ranks.get(p.id)||0)<p.rank))return 'locked';
-  if(node.prerequisites.some(p=>!p.conditionKnown)||!Number.isInteger(Number(level))||Number(level)<node.requiredLevel)return 'unknown';
+  if(node.prerequisites.some(p=>!p.conditionKnown)||!Number.isInteger(Number(level))||Number(level)<effectiveTalentLevel(node,personal))return 'unknown';
   // This is a prerequisite state, NOT confirmation of free talent points.
   return 'unlocked';
 }
@@ -281,14 +286,14 @@ function talentNodeDetail(node,tree,personal,level,catalogStale,{planned=false}=
   const required=node.requiredPoints??node.row*5;
   const before=personal.verified?tree.talents.filter(t=>t.row<node.row).reduce((sum,t)=>sum+(personal.ranks.get(t.id)||0),0):null;
   const rankRows=displayList('fixedControls',Array.from({length:node.maxRank},(_,i)=>i+1),i=>{
-    const desc=node.descriptions?.[i-1]||'Deutscher Originaltext derzeit nicht verfügbar.';
+    const desc=displayedTalentText(node.descriptions?.[i-1]);
     const provenance=node.descriptionSources?.[i-1];
     return '<div class="talent-rank-description'+(i===rank?' is-current':'')+'"><strong>Rang '+i+(i===rank?(planned?' · geplant':' · aktuell'):!planned&&rank!==null&&i===rank+1?' · nächster Rang':'')+'</strong><p>'+esc(desc)+'</p>'+
       (provenance&&provenance!=='ForeverDB deutscher Clienttext'?'<small>'+esc(provenance)+'</small>':'')+'</div>';
   }).join('');
   return '<div class="talent-node-detail"><div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(node.iconUrl,36)+'<strong>'+esc(node.name)+'</strong></span><span>'+esc(rank===null?'Rang unbekannt':rank+'/'+node.maxRank)+'</span></div>'+
-    '<p class="talent-detail-state">'+esc(label)+'</p>'+(node.reviewNotice?'<p class="talent-catalog-notice">'+esc(node.reviewNotice)+'</p>':'')+
-    '<div class="talent-requirements"><strong>Voraussetzungen</strong><p>Regulär ab Stufe '+esc(node.requiredLevel)+' · '+esc(required)+' Punkte in vorherigen Reihen dieses Baums'+(before===null?'':' ('+before+' vorhanden)')+'</p>'+
+    '<p class="talent-detail-state">'+esc(label)+'</p>'+(node.reviewNotice?'<p class="talent-catalog-notice">'+esc(node.reviewNotice)+(node.reviewSources?.length?' Quellen: '+node.reviewSources.map(s=>'<a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.label)+'</a>').join(', '):'')+'</p>':'')+
+    '<div class="talent-requirements"><strong>Voraussetzungen</strong><p>'+ (planned&&effectiveTalentLevel(node,personal)!==node.requiredLevel?'Mit Talentiert Rang '+esc(personal.plannedLegacyRank)+' ab Stufe '+esc(effectiveTalentLevel(node,personal))+' (regulär '+esc(node.requiredLevel)+')':'Regulär ab Stufe '+esc(node.requiredLevel))+' · '+esc(required)+' Punkte in vorherigen Reihen dieses Baums'+(before===null?'':' ('+before+' vorhanden)')+'</p>'+
     (pre?'<ul class="talent-prerequisites">'+pre+'</ul>':'')+'</div>'+
     '<div class="talent-rank-list" aria-label="Alle Talentränge">'+rankRows+'</div></div>';
 }

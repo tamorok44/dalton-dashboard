@@ -8,6 +8,7 @@ import catalog from '../data/talent-planning/release-catalog.json' with {type:'j
 import {talentPlanLibrary} from './talent-plan-index.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
 import {deriveLegacyRelease} from './talent-legacy-release.mjs';
+import {auditTalentLocalization} from './talent-localization-audit.mjs';
 const effectiveRelease=deriveLegacyRelease(talentPlanLibrary,catalog);
 
 export const PERSONAL_TALENT_MAX_AGE_MS=26*60*60*1000;
@@ -17,7 +18,7 @@ export function isPersonalTalentFresh(character,now){
 }
 
 const validId=value=>typeof value==='string'&&/^[a-z0-9-]{1,80}$/.test(value);
-const params=['character','tree','goal','role','playStyle','priority','rank','rankSource','planId','version','identity'];
+const params=['audit','character','tree','goal','role','playStyle','priority','rank','rankSource','planId','version','identity'];
 const preview=()=>process.env.VERCEL_ENV==='preview';
 
 function characterIdentity(character){
@@ -30,7 +31,7 @@ function characterIdentity(character){
 }
 
 export function createTalentPlannerHandler({
-  enabled=preview,roster=loadCharacters,observe=loadPreviewTalentObservation,master=loadTalentMaster,
+  enabled=preview,diagnosticsEnabled=preview,roster=loadCharacters,observe=loadPreviewTalentObservation,master=loadTalentMaster,
   project=loadTalentPlannerClass,clock=Date.now,library=effectiveRelease.library,releaseCatalog=effectiveRelease.catalog
 }={}){
   return async function handler(req,res){
@@ -52,6 +53,10 @@ export function createTalentPlannerHandler({
       const matches=result.data.characters.filter(c=>c.slug===query.character);
       if(matches.length!==1)return blocked(404,'unknown_character');
       const character=matches[0];
+      if(query.audit!==undefined){
+        if(!diagnosticsEnabled()||query.audit!=='localization'||query.tree!==undefined)return blocked(404,'preview_unavailable');
+        return send(200,auditTalentLocalization(await master()));
+      }
       const classPlans=library.filter(plan=>plan.status==='approved'&&plan.classId===character.classId);
       const activePlans=classPlans.filter(plan=>plan.active!==false);
       const candidateIdentity=characterIdentity(character);
