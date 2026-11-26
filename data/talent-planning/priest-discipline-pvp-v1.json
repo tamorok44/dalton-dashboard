@@ -83,6 +83,10 @@
       "rank": 2
     },
     {
+      "talentId": 105839,
+      "rank": 1
+    },
+    {
       "talentId": 105843,
       "rank": 3
     },
@@ -99,16 +103,12 @@
       "rank": 2
     },
     {
-      "talentId": 105842,
-      "rank": 3
-    },
-    {
-      "talentId": 105839,
-      "rank": 1
-    },
-    {
       "talentId": 105834,
       "rank": 1
+    },
+    {
+      "talentId": 105842,
+      "rank": 3
     },
     {
       "talentId": 105835,
@@ -236,7 +236,7 @@
     {
       "talentId": 105848,
       "count": 3,
-      "reason": "Dauer ausgewählter Kontrollwirkungen und Bedrohung reduzieren."
+      "reason": "Zauberbedrohung und Dauer ausgewählter Betäubungs-, Furcht- und Stilleeffekte reduzieren; keine Kontrollimmunität."
     },
     {
       "talentId": 105845,
@@ -250,7 +250,17 @@
     },
     {
       "talentId": 105843,
-      "count": 3,
+      "count": 2,
+      "reason": "Manaregeneration beim Zaubern verbessern."
+    },
+    {
+      "talentId": 105839,
+      "count": 1,
+      "reason": "Seelenwehr verkürzt die Abklingzeit und senkt die Manakosten von Machtwort: Schild; Geschwächte Seele bleibt separat zu beachten."
+    },
+    {
+      "talentId": 105843,
+      "count": 1,
       "reason": "Manaregeneration beim Zaubern verbessern."
     },
     {
@@ -260,28 +270,28 @@
     },
     {
       "talentId": 105842,
-      "count": 3,
+      "count": 2,
       "reason": "Kosten von Sofortzaubern sowie Heiligem Feuer und Heiligem Schlag reduzieren."
-    },
-    {
-      "talentId": 105839,
-      "count": 1,
-      "reason": "Seelenwehr freischalten."
     },
     {
       "talentId": 105834,
       "count": 1,
-      "reason": "Sühne freischalten."
+      "reason": "Sühne als kanalisierte Heilung oder situativen Heiligschaden freischalten; Zauberunterbrechung bleibt möglich."
+    },
+    {
+      "talentId": 105842,
+      "count": 1,
+      "reason": "Kosten von Sofortzaubern sowie Heiligem Feuer und Heiligem Schlag reduzieren."
     },
     {
       "talentId": 105835,
       "count": 5,
-      "reason": "Erneuerte Hoffnung für passende geschwächte Ziele stärken."
+      "reason": "Erneuerte Hoffnung verbessert die kritische Heilchance der ausdrücklich genannten Heilzauber auf Zielen mit Geschwächter Seele und verkürzt deren Restdauer."
     },
     {
       "talentId": 105840,
       "count": 3,
-      "reason": "Absorption nach kritischen direkten Heilungen stärken."
+      "reason": "Göttliche Aegis: nichtperiodische kritische Heilungen erzeugen einen zusätzlichen Absorptionsschild; keine garantierte Auslösung oder feste Schildobergrenze voraussetzen."
     },
     {
       "talentId": 105836,
@@ -320,17 +330,50 @@
       "priest-discipline-pvp-skillcapped",
       "priest-discipline-pvp-cobalt"
     ],
-    "editorialDecision": "Defensive Discipline with early control-duration reduction, shield and conditional casting protection; late Holy magic mitigation. No immunity to control or interrupts.",
+    "editorialDecision": "Defensive PvP-Heilrolle mit früher Kontrollzeitreduktion und situativem Zauberschutz. Seelenwehr 25 statt 30, Sühne 30 statt 31, Seele der Macht 40. Heilig-Nebenbaum statt offensiver Schattenvariante: Zauberschadenminderung und direkte Heilung, keine behauptete Unterbrechungsimmunität oder Überlegenheit.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform."
+      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform.",
+      "105840: Build 71139 zeigt Obergrenze 1200 im Clienttext; unabhängige Quelle bestätigt die Grundwirkung, aber keine exakte stufenabhängige Servergrenze. Nicht numerisch freigeben.",
+      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+          "contribution": "Aktueller Build 71139; nichtperiodischer kritischer Heal, Absorption und Dauer; feste Obergrenze nicht als stufenunabhängige Serverregel übernehmen."
+        },
+        {
+          "url": "https://wow-forever.gg/talents/priest/",
+          "contribution": "Qualitative Übereinstimmung bei Divine Aegis, Soul Warding und Renewed Hope; keine zweite vollständige numerische Kappe."
+        },
+        {
+          "url": "https://guildorder.com/games/wow_forever/wiki/discipline-priest-field-guide",
+          "contribution": "25.11.: alternative 33/13/5 Levelroute, Priorität Schild, Sühne, Aegis, Ressourcen; keine gemessene Überlegenheit."
+        },
+        {
+          "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/discipline-priest-pvp-guide/talents/",
+          "contribution": "19.11.: Soul Warding, Inner Focus, Penance, Power Infusion als PvP-Kern."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "rawAudit": {
+        "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
