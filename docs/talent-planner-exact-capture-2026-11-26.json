@@ -1,0 +1,995 @@
+{
+  "schemaVersion": 1,
+  "kind": "one_time_public_capture",
+  "capturedAt": "2026-11-26T06:58:19.181Z",
+  "build": "1.60.1.71139",
+  "releaseEligible": false,
+  "requests": [
+    {
+      "index": 0,
+      "status": "fulfilled",
+      "sha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+      "length": 372360
+    },
+    {
+      "index": 1,
+      "status": "fulfilled",
+      "sha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+      "length": 193594
+    },
+    {
+      "index": 2,
+      "status": "fulfilled",
+      "sha256": "83cbc804062abc24c849a70df92e0ee475d954b0363d38d1c27e37b2effcc2ec",
+      "length": 240779
+    },
+    {
+      "index": 3,
+      "status": "fulfilled",
+      "sha256": "03c06a070db9fc7819138ce264018201dd1d3bef8518d81d735d029d646d4721",
+      "length": 84241
+    }
+  ],
+  "sourcePair": {
+    "rawSha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+    "localizedSha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+    "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+    "expected": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+    "exactMatch": true
+  },
+  "classRevisions": {
+    "1": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+    "2": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+    "3": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+    "4": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+    "5": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+    "7": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
+    "8": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+    "9": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+    "11": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92"
+  },
+  "classCount": 9,
+  "mageComparison": {
+    "status": "unverified",
+    "reason": "Independent capture build mismatch"
+  },
+  "classReview": [
+    {
+      "classId": 1,
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 2,
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 3,
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 4,
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 5,
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 7,
+      "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 8,
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "baselineCatalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "mechanicsUnchanged": true,
+      "mechanicsChanges": [],
+      "status": "independent_capture_unverified",
+      "error": "Independent capture build mismatch"
+    },
+    {
+      "classId": 9,
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "baselineCatalogRevision": null,
+      "mechanicsUnchanged": null,
+      "mechanicsChanges": null,
+      "status": "independent_capture_missing"
+    },
+    {
+      "classId": 11,
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "baselineCatalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "mechanicsUnchanged": true,
+      "mechanicsChanges": [],
+      "status": "independent_capture_missing"
+    }
+  ],
+  "mageCatalog": {
+    "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+    "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+    "proof": {
+      "classId": 8,
+      "trees": [
+        {
+          "id": 11582,
+          "talents": [
+            {
+              "id": 105798,
+              "row": 6,
+              "maxRank": 1,
+              "requiredLevel": 40,
+              "requiredPoints": 30,
+              "spellId": 12042,
+              "rankSpellIds": [
+                12042
+              ],
+              "prerequisites": [
+                {
+                  "id": 105801,
+                  "rank": 1,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "5ee2124f49f27242981d3a063d010cdb8b7cd6a47c8dfc7338e28f13f32f14e8"
+            },
+            {
+              "id": 105799,
+              "row": 5,
+              "maxRank": 3,
+              "requiredLevel": 35,
+              "requiredPoints": 25,
+              "spellId": 15058,
+              "rankSpellIds": [
+                15058,
+                15058,
+                15058
+              ],
+              "prerequisites": [],
+              "effectRevision": "2c060b5436d5de8022a5c2ff7804d0c6edcc1905921f52f71a7c34ccb7113c77"
+            },
+            {
+              "id": 105800,
+              "row": 4,
+              "maxRank": 5,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 11232,
+              "rankSpellIds": [
+                11232,
+                11232,
+                11232,
+                11232,
+                11232
+              ],
+              "prerequisites": [],
+              "effectRevision": "35d2cea196106909413db3cdcd32eff145f1f7bb2294606c7d4f7351b862ad92"
+            },
+            {
+              "id": 105801,
+              "row": 4,
+              "maxRank": 1,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 12043,
+              "rankSpellIds": [
+                12043
+              ],
+              "prerequisites": [],
+              "effectRevision": "537f404a633b068aa9b3a985688970dbf35c17df8aafa9a1148c3d16ddf56536"
+            },
+            {
+              "id": 105802,
+              "row": 0,
+              "maxRank": 3,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 28574,
+              "rankSpellIds": [
+                28574,
+                28574,
+                28574
+              ],
+              "prerequisites": [],
+              "effectRevision": "e014253fa5c02395f2ca083df7cfdd46a11c309e1c7b141792d6bc40f50241e8"
+            },
+            {
+              "id": 105803,
+              "row": 3,
+              "maxRank": 3,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 18462,
+              "rankSpellIds": [
+                18462,
+                18462,
+                18462
+              ],
+              "prerequisites": [
+                {
+                  "id": 105810,
+                  "rank": 5,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "cd064a48f67a3a13be12e5beaad9304e0c2b15f01ef4a5002f779d3ac3941a88"
+            },
+            {
+              "id": 105804,
+              "row": 3,
+              "maxRank": 2,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 11255,
+              "rankSpellIds": [
+                11255,
+                11255
+              ],
+              "prerequisites": [],
+              "effectRevision": "f96ee7a2461c71f86bf5f9dc471ccd622cd4b19cd7c7ebbf8ef1dd74b36fb814"
+            },
+            {
+              "id": 105805,
+              "row": 3,
+              "maxRank": 2,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 11252,
+              "rankSpellIds": [
+                11252,
+                11252
+              ],
+              "prerequisites": [],
+              "effectRevision": "36de1d517db3151d5d14eb0b1d4b0104e78dc7b893282cb562a8744e22ca8757"
+            },
+            {
+              "id": 105806,
+              "row": 2,
+              "maxRank": 1,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 400574,
+              "rankSpellIds": [
+                400574
+              ],
+              "prerequisites": [],
+              "effectRevision": "54ecc5497273b7e3a0ba3a5a55f31fbd377d51a35c4b8e3e123bd733774bd9fe"
+            },
+            {
+              "id": 105807,
+              "row": 2,
+              "maxRank": 3,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11242,
+              "rankSpellIds": [
+                11242,
+                11242,
+                11242
+              ],
+              "prerequisites": [],
+              "effectRevision": "7dd403d6308029f43dc2b4b86115b9eeae55c4c9a74e0c4a30bae07b98582930"
+            },
+            {
+              "id": 105808,
+              "row": 2,
+              "maxRank": 2,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11247,
+              "rankSpellIds": [
+                11247,
+                11247
+              ],
+              "prerequisites": [],
+              "effectRevision": "9795e9642d67035cf4ae0b4056c26fb59cc7c4dbb656342a33831cf5343e0559"
+            },
+            {
+              "id": 105809,
+              "row": 1,
+              "maxRank": 2,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 400588,
+              "rankSpellIds": [
+                400588,
+                400588
+              ],
+              "prerequisites": [],
+              "effectRevision": "455dc81c4775c33963d96cc1b6411099edd8919ca97196ce9e80cdac0faec460"
+            },
+            {
+              "id": 105810,
+              "row": 1,
+              "maxRank": 5,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11213,
+              "rankSpellIds": [
+                11213,
+                11213,
+                11213,
+                11213,
+                11213
+              ],
+              "prerequisites": [],
+              "effectRevision": "f3fc8d8f440672d217ffbdf2b963349d6634ec354551c0d96a00044c0f603287"
+            },
+            {
+              "id": 105811,
+              "row": 1,
+              "maxRank": 2,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 29441,
+              "rankSpellIds": [
+                29441,
+                29441
+              ],
+              "prerequisites": [],
+              "effectRevision": "3b3de1587b7df81f0ade531a4dbc2da8ccc1053a446066b7206d27650d634a03"
+            },
+            {
+              "id": 105812,
+              "row": 1,
+              "maxRank": 2,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11210,
+              "rankSpellIds": [
+                11210,
+                11210
+              ],
+              "prerequisites": [],
+              "effectRevision": "7280cf890b6352f05899ce06eb113283628cef5a15d19b0fde0b57ad0fb4e326"
+            },
+            {
+              "id": 105813,
+              "row": 0,
+              "maxRank": 5,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 11237,
+              "rankSpellIds": [
+                11237,
+                11237,
+                11237,
+                11237,
+                11237
+              ],
+              "prerequisites": [],
+              "effectRevision": "fa74a793356eb330e37268e6f06a48c354e0c3982ff59e3cf9e73ed4c96f1c19"
+            },
+            {
+              "id": 105815,
+              "row": 0,
+              "maxRank": 2,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 6057,
+              "rankSpellIds": [
+                6057,
+                6057
+              ],
+              "prerequisites": [],
+              "effectRevision": "d76ec07ddedc0e25681870338ae80cbe3594b9220d713bd109c60e37c163adb6"
+            },
+            {
+              "id": 113627,
+              "row": 3,
+              "maxRank": 1,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 1326079,
+              "rankSpellIds": [
+                1326079
+              ],
+              "prerequisites": [
+                {
+                  "id": 105806,
+                  "rank": 1,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "fa10b40e3c8f3457d086c605d49945db5616709126bdd3aa29d153c84648d22f"
+            }
+          ]
+        },
+        {
+          "id": 11594,
+          "talents": [
+            {
+              "id": 105781,
+              "row": 6,
+              "maxRank": 1,
+              "requiredLevel": 40,
+              "requiredPoints": 30,
+              "spellId": 11129,
+              "rankSpellIds": [
+                11129
+              ],
+              "prerequisites": [
+                {
+                  "id": 105784,
+                  "rank": 3,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "a0e06439783e718be914e65d2348aec91a2cde30b2e1738dbfc0e2c20c18ff79"
+            },
+            {
+              "id": 105782,
+              "row": 5,
+              "maxRank": 3,
+              "requiredLevel": 35,
+              "requiredPoints": 25,
+              "spellId": 11124,
+              "rankSpellIds": [
+                11124,
+                11124,
+                11124
+              ],
+              "prerequisites": [],
+              "effectRevision": "1ca59bccd632f987a5b031f3d24f4530c7b003cac8395602a4db1799acf355bc"
+            },
+            {
+              "id": 105783,
+              "row": 4,
+              "maxRank": 1,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 11113,
+              "rankSpellIds": [
+                11113
+              ],
+              "prerequisites": [],
+              "effectRevision": "3e7babfb3fcd8a1f2d3a334a65f6a9c70fa1e9562a39c72359de00392ede6cce"
+            },
+            {
+              "id": 105784,
+              "row": 4,
+              "maxRank": 3,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 11115,
+              "rankSpellIds": [
+                11115,
+                11115,
+                11115
+              ],
+              "prerequisites": [],
+              "effectRevision": "0bf0823f7e2149f3630abf76cb614cdea12836b4d73887b83be5e3a9b0ea19ed"
+            },
+            {
+              "id": 105785,
+              "row": 3,
+              "maxRank": 3,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 29074,
+              "rankSpellIds": [
+                29074,
+                29074,
+                29074
+              ],
+              "prerequisites": [],
+              "effectRevision": "673d8363e7dc7d676bba0f9639f788b5403abb4c588793acb5c60742d356d6ce"
+            },
+            {
+              "id": 105786,
+              "row": 3,
+              "maxRank": 1,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 400624,
+              "rankSpellIds": [
+                400624
+              ],
+              "prerequisites": [
+                {
+                  "id": 105790,
+                  "rank": 1,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "23e1d3c9ddde9262d8fdfb80f6f2cf95b4240a1e120c965fc091fde96f82f6f5"
+            },
+            {
+              "id": 105787,
+              "row": 3,
+              "maxRank": 2,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 11094,
+              "rankSpellIds": [
+                11094,
+                11094
+              ],
+              "prerequisites": [],
+              "effectRevision": "6cb0636dada76a95c81f859cce0ffb1cd770437944e60245c213e29857bf1787"
+            },
+            {
+              "id": 105788,
+              "row": 3,
+              "maxRank": 3,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 11095,
+              "rankSpellIds": [
+                11095,
+                11095,
+                11095
+              ],
+              "prerequisites": [],
+              "effectRevision": "fce3f8c84c6cd3300906fdff668682ff8b623f525257f33bd158f16d39c92e54"
+            },
+            {
+              "id": 105789,
+              "row": 2,
+              "maxRank": 3,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11083,
+              "rankSpellIds": [
+                11083,
+                11083,
+                11083
+              ],
+              "prerequisites": [],
+              "effectRevision": "a4d1b2c7fddfb04770440440bb4bb4e48fa36f043192c700b6fd713ff04a7a6b"
+            },
+            {
+              "id": 105790,
+              "row": 2,
+              "maxRank": 1,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11366,
+              "rankSpellIds": [
+                11366
+              ],
+              "prerequisites": [],
+              "effectRevision": "3cb926070ea25f588b072f2644b16c4a8c6a48ae76e2852625dae1be3aed3483"
+            },
+            {
+              "id": 105791,
+              "row": 2,
+              "maxRank": 3,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11108,
+              "rankSpellIds": [
+                11108,
+                11108,
+                11108
+              ],
+              "prerequisites": [],
+              "effectRevision": "a88c6dec519c534a9e5928f4e94a25d25d7406c3c5507ed3b5e806be618ea3cb"
+            },
+            {
+              "id": 105792,
+              "row": 1,
+              "maxRank": 3,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11103,
+              "rankSpellIds": [
+                11103,
+                11103,
+                11103
+              ],
+              "prerequisites": [],
+              "effectRevision": "05459c31f110c0c75dc4c15bc6ef9bec8945f95bf8bfee4ecf9f3e30bfe899db"
+            },
+            {
+              "id": 105793,
+              "row": 1,
+              "maxRank": 2,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11100,
+              "rankSpellIds": [
+                11100,
+                11100
+              ],
+              "prerequisites": [],
+              "effectRevision": "209df122024a2a8068c9e004e2ad4ec65b49ab7b59dcada9c43f39bdf604ee1e"
+            },
+            {
+              "id": 105794,
+              "row": 1,
+              "maxRank": 5,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11119,
+              "rankSpellIds": [
+                11119,
+                11119,
+                11119,
+                11119,
+                11119
+              ],
+              "prerequisites": [],
+              "effectRevision": "435297d2f772072492520790cee442f40160fb90256cc5a299f2d633f6d875e3"
+            },
+            {
+              "id": 105795,
+              "row": 0,
+              "maxRank": 5,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 11069,
+              "rankSpellIds": [
+                11069,
+                11069,
+                11069,
+                11069,
+                11069
+              ],
+              "prerequisites": [],
+              "effectRevision": "1aa42ba77f68d317eb4dcff8a71fd69ba51d205296b1afc4f33996dbb2910c62"
+            },
+            {
+              "id": 105796,
+              "row": 0,
+              "maxRank": 5,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 18459,
+              "rankSpellIds": [
+                18459,
+                18459,
+                18459,
+                18459,
+                18459
+              ],
+              "prerequisites": [],
+              "effectRevision": "bd33d1982331844ed4e2eb1db2082971bc4d9cea6d61675848619214bb167448"
+            },
+            {
+              "id": 105797,
+              "row": 2,
+              "maxRank": 2,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11078,
+              "rankSpellIds": [
+                11078,
+                11078
+              ],
+              "prerequisites": [],
+              "effectRevision": "fd20b7f313dcbb1b7936a626c346f2abc96f38929b19b5d3d89567aac699ee84"
+            }
+          ]
+        },
+        {
+          "id": 11601,
+          "talents": [
+            {
+              "id": 105762,
+              "row": 6,
+              "maxRank": 1,
+              "requiredLevel": 40,
+              "requiredPoints": 30,
+              "spellId": 11426,
+              "rankSpellIds": [
+                11426
+              ],
+              "prerequisites": [
+                {
+                  "id": 105766,
+                  "rank": 1,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "8e891d11bc001df0fda27c3faea8b358a31afb0a169be6e2bf136c0dc86b6cd7"
+            },
+            {
+              "id": 105763,
+              "row": 5,
+              "maxRank": 5,
+              "requiredLevel": 35,
+              "requiredPoints": 25,
+              "spellId": 11180,
+              "rankSpellIds": [
+                11180,
+                11180,
+                11180,
+                11180,
+                11180
+              ],
+              "prerequisites": [],
+              "effectRevision": "32dc636a0865a9580dc6aef3b976f2151a8d69b4cd2d8173e7526a00a4668fb7"
+            },
+            {
+              "id": 105764,
+              "row": 4,
+              "maxRank": 2,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 400647,
+              "rankSpellIds": [
+                400647,
+                400647
+              ],
+              "prerequisites": [
+                {
+                  "id": 105767,
+                  "rank": 1,
+                  "conditionKnown": true
+                }
+              ],
+              "effectRevision": "e8a8ff765454b6930e2adee61b9d1e57c93d48cb5df53081b83e784284f2309a"
+            },
+            {
+              "id": 105765,
+              "row": 4,
+              "maxRank": 3,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 11190,
+              "rankSpellIds": [
+                11190,
+                11190,
+                11190
+              ],
+              "prerequisites": [],
+              "effectRevision": "83921edbff0062834220f60bcc2fe1c5cf92557376420bff7b1d62ecf508e02f"
+            },
+            {
+              "id": 105766,
+              "row": 4,
+              "maxRank": 1,
+              "requiredLevel": 30,
+              "requiredPoints": 20,
+              "spellId": 12472,
+              "rankSpellIds": [
+                12472
+              ],
+              "prerequisites": [],
+              "effectRevision": "74a4f75ab97d0beeb3451a035bf3d25e442a995816dc0dbd6b859f81b6a1252e"
+            },
+            {
+              "id": 105767,
+              "row": 2,
+              "maxRank": 1,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 1312002,
+              "rankSpellIds": [
+                1312002
+              ],
+              "prerequisites": [],
+              "effectRevision": "21a524aea3a08901343bc5e13ebc6bcafa25f04548e86fce2c1d44924446b2a1"
+            },
+            {
+              "id": 105768,
+              "row": 3,
+              "maxRank": 3,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 11170,
+              "rankSpellIds": [
+                11170,
+                11170,
+                11170
+              ],
+              "prerequisites": [],
+              "effectRevision": "d961a8a5bedea141802f2cd5fc799421ca4e4878b2903184cd4e2b7b730a3a89"
+            },
+            {
+              "id": 105769,
+              "row": 3,
+              "maxRank": 1,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 11958,
+              "rankSpellIds": [
+                11958
+              ],
+              "prerequisites": [],
+              "effectRevision": "00b41b172f37cb00f60cfbc969a8e803288077b5b9b4bac50f1271a11c5e761a"
+            },
+            {
+              "id": 105770,
+              "row": 3,
+              "maxRank": 2,
+              "requiredLevel": 25,
+              "requiredPoints": 15,
+              "spellId": 16757,
+              "rankSpellIds": [
+                16757,
+                16757
+              ],
+              "prerequisites": [],
+              "effectRevision": "0437a51dcd7e17513d3b060cad17b91bef1c27b75932962363f883e27c78cd99"
+            },
+            {
+              "id": 105771,
+              "row": 2,
+              "maxRank": 3,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11185,
+              "rankSpellIds": [
+                11185,
+                11185,
+                11185
+              ],
+              "prerequisites": [],
+              "effectRevision": "c63b2af9a0c87bbcdf1442c7351376579e7731e3ec74e36f279c54c7ade47214"
+            },
+            {
+              "id": 105772,
+              "row": 2,
+              "maxRank": 3,
+              "requiredLevel": 20,
+              "requiredPoints": 10,
+              "spellId": 11160,
+              "rankSpellIds": [
+                11160,
+                11160,
+                11160
+              ],
+              "prerequisites": [],
+              "effectRevision": "a55a9a7c01d32ba89c9849e311e34795e3009811d10aed406d475c1316e05cba"
+            },
+            {
+              "id": 105774,
+              "row": 1,
+              "maxRank": 3,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11071,
+              "rankSpellIds": [
+                11071,
+                11071,
+                11071
+              ],
+              "prerequisites": [],
+              "effectRevision": "d8affc16b06ad51dc46afd4d7779152e66a689b8cd465c26a48392788a8239b0"
+            },
+            {
+              "id": 105775,
+              "row": 1,
+              "maxRank": 2,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11165,
+              "rankSpellIds": [
+                11165,
+                11165
+              ],
+              "prerequisites": [],
+              "effectRevision": "61792b304db44b0878a9ceafa20c47526c5759fa7fa56547c4ed2e6068421894"
+            },
+            {
+              "id": 105776,
+              "row": 1,
+              "maxRank": 3,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11175,
+              "rankSpellIds": [
+                11175,
+                11175,
+                11175
+              ],
+              "prerequisites": [],
+              "effectRevision": "d580411188a475f9dbe7dd4383a6a13ed954d6af1b882153d7c8bb68a901ae86"
+            },
+            {
+              "id": 105777,
+              "row": 1,
+              "maxRank": 5,
+              "requiredLevel": 15,
+              "requiredPoints": 5,
+              "spellId": 11207,
+              "rankSpellIds": [
+                11207,
+                11207,
+                11207,
+                11207,
+                11207
+              ],
+              "prerequisites": [],
+              "effectRevision": "3e9a401914cc4e3851adc0b68788ef8fc527009b16e272e189c013a6b7e28fb0"
+            },
+            {
+              "id": 105778,
+              "row": 0,
+              "maxRank": 3,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 29438,
+              "rankSpellIds": [
+                29438,
+                29438,
+                29438
+              ],
+              "prerequisites": [],
+              "effectRevision": "d9d7d9006a5090d6a7fa5c3f3036a9c785f46b0eb27a44e0ccfc0697952a6629"
+            },
+            {
+              "id": 105779,
+              "row": 0,
+              "maxRank": 5,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 11070,
+              "rankSpellIds": [
+                11070,
+                11070,
+                11070,
+                11070,
+                11070
+              ],
+              "prerequisites": [],
+              "effectRevision": "0191f0fc5b068da3fe18f12cdf08568d271f60326293c11d1ca69fa099a1cbeb"
+            },
+            {
+              "id": 105780,
+              "row": 0,
+              "maxRank": 2,
+              "requiredLevel": 10,
+              "requiredPoints": 0,
+              "spellId": 11189,
+              "rankSpellIds": [
+                11189,
+                11189
+              ],
+              "prerequisites": [],
+              "effectRevision": "2c90200c0b2636bc737a8ee2bebd2f83b6f29a0abf77acc9a974a57dea789fc6"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "hotfix": {
+    "actual": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+    "expected": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+    "exactMatch": true,
+    "recoveredPreviousRevision": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+    "expectedPrevious": "ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd",
+    "oldCanonicalRecovered": true,
+    "dateHeadings": [
+      "November 25, 2026",
+      "November 23, 2026",
+      "November 20, 2026",
+      "November 19, 2026",
+      "November 17, 2026",
+      "November 16, 2026",
+      "November 13, 2026",
+      "November 11, 2026",
+      "November 10, 2026",
+      "November 9, 2026",
+      "November 6, 2026",
+      "November 5, 2026"
+    ],
+    "completeHotfixReview": false
+  }
+}

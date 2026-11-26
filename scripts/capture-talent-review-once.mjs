@@ -1,60 +1,24 @@
 import {createHash} from 'node:crypto';
-import {readFileSync} from 'node:fs';
-import {fetchPublicClassFile} from './class-training-store.mjs';
-import {buildTalentMaster} from './talent-tree-store.mjs';
-import {buildTalentCatalogProof,talentSourcePairDigest} from './talent-catalog-proof.mjs';
-import {reviewTalentBuild,compareIndependentTalentClass} from './talent-build-review.mjs';
-import {hotfixArticleBody} from './pet-rulebook.mjs';
-import {talentHotfixRevision} from './talent-rule-watch.mjs';
-
-// One-time public editorial capture, not a server job. No secrets, Redis,
-// provider account credentials, cache deletion, or release writes.
-const sha=s=>createHash('sha256').update(s).digest('hex');
-const build='1.60.1.71139';
-const expected='9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b';
-const oldHotfix='ed43bdd2c1225b594ec34f99b4bffbf51942affd6d56c4148e24aced5df43afd';
-const currentHotfix='409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d';
-const get=async response=>{const r=await response;if(!r.ok)throw Error('HTTP '+r.status);return r.text()};
-const page=url=>get(fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; DaltonDashboard/1.0; +https://dalton-dashboard-eight.vercel.app)','accept':'text/html,application/xhtml+xml'},signal:AbortSignal.timeout(15000)}));
-const captures=await Promise.allSettled([
-  get(fetchPublicClassFile('classes.json',{cache:'no-cache'})),
-  get(fetchPublicClassFile('l10n/de/classes.json',{cache:'no-cache'})),
-  page('https://theforeverera.com/en/talents/mage/'),
-  page('https://worldofwarcraft.blizzard.com/en-us/news/24315281')
-]);
-const result={schemaVersion:1,kind:'one_time_public_capture',capturedAt:new Date().toISOString(),build,releaseEligible:false,requests:captures.map((r,i)=>({index:i,status:r.status,...(r.status==='rejected'?{reason:String(r.reason.message).slice(0,200)}:{sha256:sha(r.value),length:r.value.length})}))};
-const val=i=>captures[i].status==='fulfilled'?captures[i].value:null;
-try{
-  if(val(0)&&val(1)){
-    const raw=JSON.parse(val(0)),de=JSON.parse(val(1));
-    const master=buildTalentMaster(raw,de);
-    const rawSha256=sha(val(0)),localizedSha256=sha(val(1)),sourceRevision=talentSourcePairDigest(rawSha256,localizedSha256);
-    result.sourcePair={rawSha256,localizedSha256,sourceRevision,expected,exactMatch:sourceRevision===expected};
-    result.classRevisions=master.classMechanicsRevisions;
-    result.classCount=Object.keys(master.classes).length;
-    if(val(2))try{result.mageComparison=compareIndependentTalentClass(master.classes[8],val(2),build)}catch(e){result.mageComparison={status:'unverified',reason:e.message.slice(0,240)}}
-    if(sourceRevision===expected){
-      const old=JSON.parse(readFileSync(new URL('../data/talent-planning/catalog-proofs-2026-11-25.json',import.meta.url),'utf8'));
-      const review=reviewTalentBuild({date:'2026-11-26',build,rawBody:val(0),localizedBody:val(1),expectedSourceRevision:expected,baselineCatalogs:old.catalogs,independentCaptures:val(2)?{8:val(2)}:{}});
-      result.classReview=review.classes;
-      // Normalized proof is sufficient for editorial review; no raw data rehosting.
-      result.mageCatalog=review.catalogs.find(c=>c.proof.classId===8);
-    }
-  }
-}catch(e){result.catalogError=String(e.message).slice(0,240)}
-try{
-  if(val(3)){
-    const canonical=hotfixArticleBody(val(3)).trim().replace(/\s+/g,' ');
-    const actual=talentHotfixRevision(canonical);
-    const heading=/\b(?:January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, 20\d{2}\b/g;
-    const sections=[...canonical.matchAll(heading)];
-    const preamble=canonical.slice(0,sections[0]?.index??0);
-    const older=sections.find(s=>s[0]==='November 23, 2026');
-    // Only an exact canonical digest can establish that dropping newer dated
-    // sections recovers the historical article. Never assert a match otherwise.
-    const recovered=older?talentHotfixRevision(preamble+canonical.slice(older.index)):null;
-    result.hotfix={actual,expected:currentHotfix,exactMatch:actual===currentHotfix,recoveredPreviousRevision:recovered,expectedPrevious:oldHotfix,
-      oldCanonicalRecovered:recovered===oldHotfix,dateHeadings:sections.map(s=>s[0]),completeHotfixReview:false};
-  }
-}catch(e){result.hotfixError=String(e.message).slice(0,240)}
-console.log('TALENT_CAPTURE_RESULT '+JSON.stringify(result));
+const urls=['https://wowforevertalents.com/mage/','https://www.forever-xp.com/talents/mage/','https://foreverdiff.com/builds/1.60.1.71139/mage/'];
+const hash=s=>createHash('sha256').update(s).digest('hex');
+const results=await Promise.all(urls.map(async url=>{
+  try{
+    const response=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 (compatible; DaltonDashboard/1.0; +https://dalton-dashboard-eight.vercel.app)'},signal:AbortSignal.timeout(15000)});
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const html=await response.text();
+    const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].map(m=>({attributes:m[1],length:m[2].length,preview:m[2].trim().slice(0,320),data:(()=>{try{const v=JSON.parse(m[2]);return {keys:Object.keys(v),sample:JSON.stringify(v).slice(0,1600)}}catch{return null}})()}));
+    const tags=[...html.matchAll(/<(?:div|button|a)\b[^>]*(?:data-talent|data-node|data-tree|data-row|data-col)[^>]*>/gi)].slice(0,7).map(m=>m[0].slice(0,1400));
+    // For compact embedded class data, emit only structural fields, not source tooltip text.
+    const normalize=(v,path='')=>{
+      if(!v||typeof v!=='object')return [];
+      if(Array.isArray(v)){
+        if(v.length>=15&&v.every(n=>n&&typeof n==='object'&&('row'in n||'tier'in n)&&('name'in n||'id'in n)))return [{path,count:v.length,nodes:v.map(n=>Object.fromEntries(Object.entries(n).filter(([k,val])=>/^(id|talentId|nodeId|name|row|col|column|tier|max|maxRank|ranks|rankCount|points|requiredPoints|pre|req|requires|prerequisites|tree|treeId)$/.test(k)&&JSON.stringify(val).length<500)))}];
+        return v.flatMap((n,i)=>normalize(n,path+'/'+i));
+      }
+      return Object.entries(v).filter(([k])=>!['desc','description','tooltip','spellbook','classic'].includes(k)).flatMap(([k,n])=>normalize(n,path+'/'+k));
+    };
+    const structural=scripts.length?[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)].flatMap((m,i)=>{try{return normalize(JSON.parse(m[2]),'script'+i)}catch{return []}}):[];
+    return {url,sha256:hash(html),length:html.length,buildMarkers:[...new Set(html.match(/1\.60\.1\.\d+/g)||[])].slice(0,12),scripts:scripts.slice(0,15),tags,structural,ledger:/No Mage talent or spell changed between the Nov 25, 2026 build and the Nov 26, 2026 build/.test(html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' '))};
+  }catch(e){return {url,error:String(e.message).slice(0,200)}}
+}));
+console.log('TALENT_INDEPENDENT_RESULT '+JSON.stringify(results));
