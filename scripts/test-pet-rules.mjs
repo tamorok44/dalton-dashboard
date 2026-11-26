@@ -88,7 +88,12 @@ const first=await verifyPetRulebook({now,fetchImpl:async url=>{
   return fetchFrom(pages)(url);
 }});
 assert.equal(hotfixRequests,1);
-assert.equal(first.talentRuleObservation.status,'observed');
+assert.equal(first.talentRuleObservation.status,'observed',JSON.stringify({
+  observation:first.talentRuleObservation,
+  primary:first.sources.foreverDbBuild,
+  official:first.sources.blizzardHotfix,
+  secondary:first.sources.bindFox
+}));
 assert.equal(first.talentRuleObservation.clientBuild,'1.60.1.71091');
 assert.match(first.talentRuleObservation.hotfixRevision,/^[a-f0-9]{64}$/);
 assert.equal(publicPetRuleState(first).talentRuleObservation,undefined);
