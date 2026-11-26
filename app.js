@@ -238,7 +238,7 @@ function talentBuildHint(data){
 }
 function personalTalentRanks(c,klass){
   const ranks=new Map(),points=new Map();
-  if(c.talentDetailsVerified!==true||!Array.isArray(c.talentDetails))return {verified:false,ranks,points};
+  if(klass.personalMappingUnverified===true||c.talentDetailsVerified!==true||!Array.isArray(c.talentDetails))return {verified:false,ranks,points};
   const lookup=new Map(klass.trees.flatMap(t=>t.talents.map(n=>[n.profileId,{node:n,tree:t}])));
   for(const tree of c.talentDetails){
     const name=tree.name;
@@ -287,7 +287,7 @@ function talentNodeDetail(node,tree,personal,level,catalogStale,{planned=false}=
       (provenance&&provenance!=='ForeverDB deutscher Clienttext'?'<small>'+esc(provenance)+'</small>':'')+'</div>';
   }).join('');
   return '<div class="talent-node-detail"><div class="talent-entry-head"><span class="knowledge-title">'+knowledgeIcon(node.iconUrl,36)+'<strong>'+esc(node.name)+'</strong></span><span>'+esc(rank===null?'Rang unbekannt':rank+'/'+node.maxRank)+'</span></div>'+
-    '<p class="talent-detail-state">'+esc(label)+'</p>'+
+    '<p class="talent-detail-state">'+esc(label)+'</p>'+(node.reviewNotice?'<p class="talent-catalog-notice">'+esc(node.reviewNotice)+'</p>':'')+
     '<div class="talent-requirements"><strong>Voraussetzungen</strong><p>Regulär ab Stufe '+esc(node.requiredLevel)+' · '+esc(required)+' Punkte in vorherigen Reihen dieses Baums'+(before===null?'':' ('+before+' vorhanden)')+'</p>'+
     (pre?'<ul class="talent-prerequisites">'+pre+'</ul>':'')+'</div>'+
     '<div class="talent-rank-list" aria-label="Alle Talentränge">'+rankRows+'</div></div>';
@@ -326,13 +326,14 @@ function talentPanel(c){
     '<div class="talent-summary"><strong>'+esc(total===null?'Talentstand nicht bestätigt':total+' verteilte Talentpunkte')+'</strong><small>Aktueller Charakterstand · keine Talentplanung</small></div>'+
     (!personal.verified?'<p class="talent-catalog-notice">Persönliche Talentränge konnten nicht vollständig zugeordnet werden. Unbekannte Ränge werden nicht als 0 gewertet.</p>':'')+
     (stale?'<p class="talent-catalog-notice">Talentstruktur: letzter bestätigter Abruf</p>':'')+
+    (klass.personalMappingUnverified?'<p class="talent-catalog-notice">Der Gleichgewichtsbaum wurde durch einen Hotfix geändert. Persönliche Ränge werden erst nach bestätigter neuer Datenzuordnung wieder angezeigt.</p>':'')+
     '<div class="talent-tree-switch" dir="ltr" role="group" aria-label="Talentbaum">'+displayList('fixedControls',klass.trees,t=>'<button type="button" class="talent-tree-option'+(t.id===tree.id?' is-active':'')+'" data-talent-tree="'+t.id+'" aria-pressed="'+(t.id===tree.id)+'"><span>'+esc(t.name)+'</span><strong>'+esc(personal.verified?points.get(t.id)||0:'–')+'</strong></button>').join('')+'</div>'+
     '<div class="talent-tree talent-visual-tree"><div class="talent-tree-head"><strong>'+esc(tree.name)+'</strong><span>'+esc(personal.verified?points.get(tree.id)||0:'–')+' Punkte</span></div>'+talentGraph(tree,personal,c.level,stale,node?.id||0,c.slug)+'</div>'+
     '<div class="talent-legend"><span class="is-learned">Erlernt</span><span class="is-unlocked">Voraussetzungen erfüllt</span><span class="is-locked">Gesperrt</span></div>'+
     '<p class="talent-point-note">Freie Talentpunkte sind nicht bestätigt; die Freischaltung berücksichtigt die bekannten Voraussetzungen.</p>'+
     talentNodeDetail(node,tree,personal,c.level,stale)+
     (!personal.verified?learnedTalentList(c):'')+
-    '<p class="workshop-credit">Eigene Darstellung des persönlichen Talentstands. Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a></p></div>';
+    '<p class="workshop-credit">Eigene Darstellung des persönlichen Talentstands. Talentstruktur und deutsche Texte: <a href="https://foreverdb.net" target="_blank" rel="noopener noreferrer">ForeverDB.net</a>'+ (klass.displayCorrection?' · Eigene Korrekturen nach <a href="https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026" target="_blank" rel="noopener noreferrer">Blizzard-Hotfix</a> und <a href="https://zephras.com" target="_blank" rel="noopener noreferrer">Zephras</a> (Datenaufbereitung <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>, angepasst).':'')+'</p></div>';
 }
 function bindTalentPanel(panel,c){
   if(!panel||!c)return;

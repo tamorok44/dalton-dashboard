@@ -6,6 +6,12 @@ import {talentPlanLibrary} from './talent-plan-index.mjs';
 const folder=new URL('../data/talent-planning/',import.meta.url);
 const read=f=>JSON.parse(readFileSync(new URL(f,folder),'utf8'));
 const ledger=JSON.parse(readFileSync(new URL('../docs/talent-planner-zephras-review-2026-11-26.json',import.meta.url),'utf8'));
+const effects=JSON.parse(readFileSync(new URL('../docs/talent-planner-effect-review-2026-11-26.json',import.meta.url),'utf8'));
+assert.equal(effects.sourceSha256,ledger.sourceSha256);
+assert.equal(effects.primarySourceRevision,ledger.primarySourceRevision);
+assert.deepEqual(effects.rows.map(x=>x.id).sort((a,b)=>a-b),ledger.classes.flatMap(c=>c.effectTextDifferenceIds).sort((a,b)=>a-b));
+for(const row of effects.rows){assert.match(row.primaryHash,/^[a-f0-9]{64}$/);assert.match(row.secondaryHash,/^[a-f0-9]{64}$/);assert.equal(row.quantitativeClaimVerified,false);assert.ok(row.decision)}
+assert.deepEqual(Object.fromEntries(['editorial_format','incomplete_numeric','numeric_scale_or_rounding','official_hotfix'].map(k=>[k,effects.rows.filter(x=>x.classification===k).length])),{editorial_format:7,incomplete_numeric:8,numeric_scale_or_rounding:4,official_hotfix:7});
 const plans=readdirSync(folder).filter(f=>/-v\d+\.json$/.test(f)).map(read).filter(p=>p.status!=='retired'&&p.active!==false);
 const baseline=read('catalog-proofs-2026-11-25.json').catalogs.filter(c=>c.sourceRevision===ledger.primarySourceRevision);
 assert.equal(ledger.releaseEligible,false);assert.equal(ledger.build,'1.60.1.71139');assert.match(ledger.sourceSha256,/^[a-f0-9]{64}$/);

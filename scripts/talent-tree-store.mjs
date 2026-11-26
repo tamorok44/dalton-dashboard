@@ -1,4 +1,5 @@
 import {randomUUID,createHash} from 'node:crypto';
+import {correctTalentDisplay} from './talent-display-corrections.mjs';
 import {configured,redis} from './character-store.mjs';
 import {compressedMasterKey,decodeCompactMaster,readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {fetchPublicClassFile,CLASS_BY_ID} from './class-training-store.mjs';
@@ -182,6 +183,7 @@ export async function loadTalentTreeCatalog(data,addonSync={}, {fetchImpl=fetch,
       if(fallback)classes={...classes,[id]:fallback};
     }
   }
+  classes=Object.fromEntries(Object.entries(classes).map(([id,c])=>[id,correctTalentDisplay(c,master)]));
   const refs=refsFor(classes);
   const fetchableKeys=new Set(refsFor(projected.classes).map(n=>mediaIconKey(n.type,n.id)));
   const icons=enabled?await resolveIcons(refs,{characterSlug:data.characters?.[0]?.slug,maxNew:48,
