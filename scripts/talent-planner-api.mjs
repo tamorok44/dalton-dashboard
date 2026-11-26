@@ -1,5 +1,6 @@
 import {loadCharacters} from './character-store.mjs';
 import {loadTalentMaster,loadTalentPlannerClass} from './talent-tree-store.mjs';
+import {correctTalentDisplay} from './talent-display-corrections.mjs';
 import {profileKey,resolveApprovedTalentPlan,selectTalentRulePack} from './talent-plan-core.mjs';
 import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS,TALENT_RULE_MAX_AGE_MS,describeTalentRuleReview} from './talent-rule-watch.mjs';
@@ -103,13 +104,14 @@ export function createTalentPlannerHandler({
       }
       const plan=resolveApprovedTalentPlan(profile,candidates,liveMaster,catalog.rulePacks,{ruleObservation,legacyTalentedRank:rank,now,revalidations:catalog.revalidations});
       if(!plan.ok)return blocked(409,plan.code,evidence);
-      const klass=await project(liveMaster.classes[profile.classId]);
+      const corrected=correctTalentDisplay(liveMaster.classes[profile.classId],liveMaster);
+      const klass=await project(corrected);
       const expires=Math.min(Date.parse(evidence.catalogCheckedAt)+TALENT_CATALOG_MAX_AGE_MS,
         Date.parse(evidence.rulesCheckedAt)+TALENT_RULE_MAX_AGE_MS);
       evidence.validUntil=new Date(expires).toISOString();
       const details=character.talentDetails;
       const personalFresh=isPersonalTalentFresh(character,clock());
-      const detailsComplete=personalFresh&&character.talentDetailsVerified===true&&
+      const detailsComplete=corrected.personalMappingUnverified!==true&&personalFresh&&character.talentDetailsVerified===true&&
         Array.isArray(details)&&details.length===klass.trees.length&&
         details.every(tree=>Array.isArray(tree?.talents));
       return send(200,{...plan,profile,identity,klass,evidence,recommendation:candidates[0].review.rationale,legacyRank:{rank,source:'player_confirmed'},

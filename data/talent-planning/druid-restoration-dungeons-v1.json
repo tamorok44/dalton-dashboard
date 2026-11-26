@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 11,
   "treeId": 11340,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -290,7 +290,7 @@
     },
     {
       "talentId": 104910,
-      "reason": "Wildwuchs heilt das Ziel und dessen Gruppe über Zeit; regulär Zauberzeit und gemeinsame Abklingzeit aller Ränge beachten. Keine raidweite Zielwahl voraussetzen.",
+      "reason": "Wildwuchs heilt das Ziel und dessen Gruppe über Zeit; Zauberzeit und gemeinsame Abklingzeit aller Ränge beachten. Nicht im Laufen wirkbar, keine raidweite Sofortheilung.",
       "count": 1
     },
     {
@@ -335,20 +335,16 @@
       "iv-restoration-druid-leveling",
       "mob-restoration-druid"
     ],
-    "editorialDecision": "Dungeonheilung: Rasche Heilung 25, Bloom 26 statt 60 für früheren Nutzen der eigenen HoTs; Schnelligkeit der Natur 30 und Wildwuchs 40 bleiben Ziel. Letzter bisher vor Wildwuchs geplanter Nachwachsen-Kritrang folgt am Ende; Mana und HoT-Nutzen priorisiert.",
+    "editorialDecision": "Rasche Heilung 25, Bloom 26, Schnelligkeit der Natur 30, Wildwuchs 40. Bloom ist verzögert, nicht als Notfallheilung einplanen; Wildwuchs hat Zauberzeit, wirkt auf Zielgruppe, nicht als raidweite Sofortheilung.",
     "unresolved": [
-      "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
-      "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Verify Nov 25 Genesis/Tranquility correction and Wild Growth targeting.",
-      "25.11. Hotfix-Wirkungen qualitativ und offiziell quantitativ für Starlight Wrath, Moon and Stars, Eclipse, Improved Starfire und Moonkin bestätigt; exakte vollständige Hotfix-Katalogaufnahme inklusive IDs/Rangzauber und deutsche Lokalisierung ausstehend.",
-      "104928: zwei Ränge 104927 in Primärkatalog und wow-forever.gg, im separaten Zephras-Vergleich fehlt die Kante. Strengere Regel bleibt; nicht global freigegeben.",
-      "104933 jetzt maximal zwei Ränge und 104936 Dreamstate; beide werden in diesen Pfaden nicht vergeben. Keine Verwendung des alten Moonfury-Effekts.",
-      "Genesis seit 25.11. korrigiert, tatsächliche genaue Skalierung und Hotfix-gebundene Belege weiterhin offen. Vermächtnisränge 1–5 und reguläre CI ausstehend."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Dreamstate-Profil-/Rangzauberzuordnung und alte Improved Starfire-Ränge nicht in den freigegebenen Pfaden.",
+      "Keine garantierte numerische Heilungs-/Schadensleistung."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
-      "catalogRevision": "711a753c7815903c91d667dd8d67e9dbd5d876d6f4d9fd9e010a28f072d50e15",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     },
     "conflictFollowup": {
@@ -379,7 +375,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Wiederherstellung",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-restoration-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Rasche Heilung 25, Bloom 26, Schnelligkeit der Natur 30, Wildwuchs 40. Bloom ist verzögert, nicht als Notfallheilung einplanen; Wildwuchs hat Zauberzeit, wirkt auf Zielgruppe, nicht als raidweite Sofortheilung.",
+    "adviceSummary": "Rasche Heilung 25, Bloom 26, Schnelligkeit der Natur 30, Wildwuchs 40. Bloom ist verzögert, nicht als Notfallheilung einplanen; Wildwuchs hat Zauberzeit, wirkt auf Zielgruppe, nicht als raidweite Sofortheilung.",
+    "evidenceIds": [
+      "druid-restoration-dungeons-rank0-71139-editorial-1",
+      "druid-restoration-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

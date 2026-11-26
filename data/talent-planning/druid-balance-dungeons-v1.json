@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 11,
   "treeId": 11328,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -326,17 +326,13 @@
       "mob-balance-druid",
       "official-balance-2511"
     ],
-    "editorialDecision": "Dungeon-Schadensrolle: Moonkin 40 statt 53, Nature's Grace 30 und Eclipse ab 31. Mana-Regeneration nach fünf Intelligenzpunkten ab 46 vor Naturalist. Der spätere Mana-/Heilungsnebenbaum ist ein bewusster Kompromiss zugunsten früherer Schadens- und Gruppensynergien.",
+    "editorialDecision": "Moonkin 40, Nature's Grace 30, Eclipse ab 31. Mana/Heilungs-Nebenbaum statt Dreamstate; bei häufigem Anregen auf andere Spieler ist Dreamstate eine sinnvolle Alternative. Kein gemessener DPS-Vorteil.",
     "unresolved": [
-      "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks.",
-      "25.11. Hotfix-Wirkungen qualitativ und offiziell quantitativ für Starlight Wrath, Moon and Stars, Eclipse, Improved Starfire und Moonkin bestätigt; exakte vollständige Hotfix-Katalogaufnahme inklusive IDs/Rangzauber und deutsche Lokalisierung ausstehend.",
-      "104928: zwei Ränge 104927 in Primärkatalog und wow-forever.gg, im separaten Zephras-Vergleich fehlt die Kante. Strengere Regel bleibt; nicht global freigegeben.",
-      "104933 jetzt maximal zwei Ränge und 104936 Dreamstate; beide werden in diesen Pfaden nicht vergeben. Keine Verwendung des alten Moonfury-Effekts.",
-      "Genesis seit 25.11. korrigiert, tatsächliche genaue Skalierung und Hotfix-gebundene Belege weiterhin offen. Vermächtnisränge 1–5 und reguläre CI ausstehend."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Dreamstate-Profil-/Rangzauberzuordnung und alte Improved Starfire-Ränge nicht in den freigegebenen Pfaden.",
+      "Keine garantierte numerische Heilungs-/Schadensleistung."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -370,7 +366,23 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Gleichgewicht",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-balance-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Moonkin 40, Nature's Grace 30, Eclipse ab 31. Mana/Heilungs-Nebenbaum statt Dreamstate; bei häufigem Anregen auf andere Spieler ist Dreamstate eine sinnvolle Alternative. Kein gemessener DPS-Vorteil.",
+    "adviceSummary": "Moonkin 40, Nature's Grace 30, Eclipse ab 31. Mana/Heilungs-Nebenbaum statt Dreamstate; bei häufigem Anregen auf andere Spieler ist Dreamstate eine sinnvolle Alternative. Kein gemessener DPS-Vorteil.",
+    "evidenceIds": [
+      "druid-balance-dungeons-rank0-71139-editorial-1",
+      "druid-balance-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

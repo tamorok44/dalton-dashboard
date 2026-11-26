@@ -1,0 +1,73 @@
+{
+  "reviewedAt": "2026-11-26",
+  "classId": 11,
+  "clientBuild": "1.60.1.71139",
+  "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+  "official": "https://us.forums.blizzard.com/en/wow/t/balance-druid-adjustments-november-25/2429007",
+  "hotfix": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+  "independent": "https://playfulls.com/talent-calculator/druid/talents",
+  "splendorSources": [
+    "https://metabot.gg/en/wow-forever/talents/druid-natures-splendor",
+    "https://wowforeverbuilder.com/classes/druid/talents/natures-splendor/",
+    "https://wowforever.tools/talent-changes"
+  ],
+  "rawSourceUnchanged": true,
+  "excludedIds": [
+    104933,
+    104936
+  ],
+  "facts": {
+    "104923": {
+      "wrathAndStarfireCastReduction": true,
+      "wrathManaReduction": true,
+      "spellId": 16814,
+      "effectRevision": "6f214cd4ca28609b8eb69da7fe0cd9ab7b9536fc50abcaa998c201f79a662ece",
+      "primaryHash": "53bf3dcb884d9f634d90d4fb87bea746e15ba52748e7e88d7f7da8d17e6e0a1f",
+      "secondaryHash": "cde8d313be2a8bdb62f5ff3926124adfea74bbcd8bc15f50278cb700608c7a3e"
+    },
+    "104924": {
+      "periodicDamageHealing": true,
+      "hurricaneTranquilityFixed": true,
+      "spellId": 1223081,
+      "effectRevision": "568f8a16f62f6f526a00a73515d372c393aad0277b46a0306925e3c3d304ccf6",
+      "primaryHash": null,
+      "secondaryHash": null
+    },
+    "104928": {
+      "strictPrerequisiteId": 104927,
+      "strictPrerequisiteRank": 2,
+      "spellId": 1223083,
+      "effectRevision": "e09496b5d2ddd920e11302fb1cba536147973afd4902be2632272fd8f76b83a3",
+      "primaryHash": null,
+      "secondaryHash": null
+    },
+    "104931": {
+      "moonfireDamageAndCrit": true,
+      "starfirePushbackProtection": true,
+      "spellId": 16821,
+      "effectRevision": "3b98fab3d6bef2ef95fac3c4240fc9e1f9b8d6f198d55da9cf5226e75977c32b",
+      "primaryHash": "f67dd3bdcee26a62d62edc265507b553db6d3042f3ccd22a103a711298ba81bb",
+      "secondaryHash": "d8262c5a017dc827d91bd0bed1f94f31ab3c0228df20591cbde21e89cef455f3"
+    },
+    "104935": {
+      "permanentWrathCrit": true,
+      "wrathReducesStarfireCastTime": true,
+      "spellId": 408248,
+      "effectRevision": "c51bf2c5ea943b2ba864a1c09a5e90b16cf8666622287126a0a52567bbda04b6",
+      "primaryHash": "3a25bbc13fa89ae88fbeef3311abdc4a68cbe1a7050be2e0220fdda4cc6e35e7",
+      "secondaryHash": "025020c5926fc21969232b11e80bb554446ab7f7b6bf4c420c8945de36bf3830"
+    },
+    "104937": {
+      "moonkinArcaneNatureDamage": true,
+      "noHealingInForm": true,
+      "spellId": 24858,
+      "effectRevision": "457277e30e0edc64145a7a55733ef311ded2d575f83aaaed8d5897f0af862a20",
+      "primaryHash": "d562f37ff0525386c912f2b1c1c2aa63cdd360a4df3f854189d5fa19f920b368",
+      "secondaryHash": "9156373b38c8cebfd8387ec4273c701e6b3e0d0b6e139568b6cc072b2b5371ed"
+    }
+  },
+  "serverMeasured": false,
+  "scope": "Exact six paths only; no allocation of outdated Improved Starfire or Moonfury/Dreamstate; retain stricter Splendor prerequisite. Current names/descriptions in planner only through fingerprint-bound display correction. No quantitative combat simulation or server measurement."
+}

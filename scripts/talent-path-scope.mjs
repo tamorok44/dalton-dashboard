@@ -1,11 +1,11 @@
 // Path-scoped evidence does not certify the entire class or relax the live source binding.
 import {talentPlanEvidenceDigest} from './talent-catalog-proof.mjs';
 const sorted=values=>[...new Set(values)].sort((a,b)=>a-b);
-export function talentPathScope(plan,proof,ledger,cross,effects){
+export function talentPathScope(plan,proof,ledger,cross,effects,{druidGenesisAllocationDigest}={}){
  const cls=ledger.classes.find(x=>x.classId===plan.classId),older=cross.classes.find(x=>x.classId===plan.classId);
  if(!cls||!older||proof.classId!==plan.classId||cls.primaryCount!==cls.secondaryCount||cls.primaryCount!==proof.trees.reduce((n,t)=>n+t.talents.length,0))throw Error('missing class comparison');
  const nodes=new Map(proof.trees.flatMap(t=>t.talents.map(n=>[n.id,n])));
- const excluded=sorted([...cls.structureDifferences.map(x=>x.id),...older.changes.map(x=>x.id),...older.unknownPrerequisites,...older.cyclicPrerequisites.flat(),...effects.rows.filter(x=>x.classId===plan.classId&&x.classification!=='editorial_format').map(x=>x.id),...(plan.classId===11?[104924]:[])]);
+ const excluded=sorted([...cls.structureDifferences.map(x=>x.id),...older.changes.map(x=>x.id),...older.unknownPrerequisites,...older.cyclicPrerequisites.flat(),...effects.rows.filter(x=>x.classId===plan.classId&&x.classification!=='editorial_format').map(x=>x.id),...(plan.classId===11&&!( /^druid-(balance|restoration)-(leveling|dungeons|pvp)$/.test(plan.id)&&druidGenesisAllocationDigest===talentPlanEvidenceDigest(plan))?[104924]:[])]);
  const used=new Set(),visiting=new Set();
  function visit(id){
   if(visiting.has(id))throw Error('cyclic path prerequisite');

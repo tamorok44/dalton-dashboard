@@ -138,7 +138,7 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
       assert.equal(clients[0].sourceCaptureSha256,pathLedger.sourceSha256);
       assert.equal(clients[0].url,pathLedger.sourceUrl);
       // A scoped qualitative decision does not release a disputed damage formula.
-      let scopedEffects=effects;
+      let scopedEffects=effects,scopedLedger=pathLedger,scopeOptions={};
       if(['rogue-assassination-leveling','rogue-assassination-dungeons','rogue-assassination-pvp'].includes(plan.id)){
         const row=effects.rows.find(x=>x.classId===4&&x.id===105709);
         const detail=clients[0].qualitativeAllocationReview;
@@ -352,10 +352,49 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
         assert.throws(()=>talentPathScope({...plan,points:[{talentId:other,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
       }
-      const scope=talentPathScope(plan,proof,pathLedger,cross,scopedEffects);
+      if(/^druid-(balance|restoration)-(leveling|dungeons|pvp)$/.test(plan.id)){
+        const d=JSON.parse(readFileSync(new URL('../docs/talent-planner-druid-hotfix-reconciliation-2026-11-26.json',import.meta.url),'utf8'));
+        const r=clients[0].druidHotfixResolution;
+        assert.ok(r&&d);
+        assert.equal(r.kind,'druid_exact_path_hotfix_resolution');
+        assert.equal(r.allocationDigest,talentPlanEvidenceDigest(plan));
+        assert.equal(r.reviewDigest,talentRevisionDigest(d));
+        assert.equal(d.clientBuild,pack.clientBuild);
+        assert.equal(d.hotfixRevision,pack.hotfixRevision);
+        assert.equal(d.sourceRevision,pack.sourceRevision);
+        assert.equal(d.catalogRevision,pack.catalogRevision);
+        assert.equal(d.serverMeasured,false);
+        assert.equal(d.rawSourceUnchanged,true);
+        assert.equal(d.official,'https://us.forums.blizzard.com/en/wow/t/balance-druid-adjustments-november-25/2429007');
+        assert.equal(d.hotfix,'https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040');
+        assert.equal(d.independent,'https://playfulls.com/talent-calculator/druid/talents');
+        assert.ok(d.splendorSources.includes('https://metabot.gg/en/wow-forever/talents/druid-natures-splendor'));
+        assert.deepEqual(d.excludedIds,[104933,104936]);
+        const all=[104923,104924,104928,104931,104935,104937];
+        assert.deepEqual(Object.keys(d.facts).map(Number).sort((a,b)=>a-b),all);
+        const expected=all.filter(id=>plan.points.some(p=>p.talentId===id));
+        assert.deepEqual(r.resolvedIds,expected);
+        const byId=new Map(proof.trees.flatMap(t=>t.talents.map(n=>[n.id,n])));
+        assert.deepEqual(byId.get(104928).prerequisites,[{id:104927,rank:2,conditionKnown:true}]);
+        assert.deepEqual(d.facts[104928],{strictPrerequisiteId:104927,strictPrerequisiteRank:2,spellId:1223083,effectRevision:byId.get(104928).effectRevision,primaryHash:null,secondaryHash:null});
+        assert.equal(d.facts[104924].hurricaneTranquilityFixed,true);
+        assert.equal(d.facts[104924].periodicDamageHealing,true);
+        for(const id of expected){
+          const fact=d.facts[id],node=byId.get(id),row=effects.rows.find(x=>x.classId===11&&x.id===id);
+          assert.equal(fact.spellId,node.spellId);
+          assert.equal(fact.effectRevision,node.effectRevision);
+          if(row){assert.equal(row.classification,'official_hotfix');assert.equal(fact.primaryHash,row.primaryHash);assert.equal(fact.secondaryHash,row.secondaryHash);}
+          assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},proof,pathLedger,cross,effects),/unresolved source difference/);
+        }
+        assert.ok(!plan.points.some(p=>d.excludedIds.includes(p.talentId)));
+        scopedEffects={...effects,rows:effects.rows.filter(x=>x.classId!==11||!expected.includes(x.id))};
+        scopedLedger={...pathLedger,classes:pathLedger.classes.map(c=>c.classId!==11?c:{...c,structureDifferences:c.structureDifferences.filter(x=>x.id!==104928||!expected.includes(x.id))})};
+        if(expected.includes(104924))scopeOptions={druidGenesisAllocationDigest:r.allocationDigest};
+      }
+      const scope=talentPathScope(plan,proof,scopedLedger,cross,scopedEffects,scopeOptions);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
       if(frostScope)assert.deepEqual(scope.excludedConflictIds,[]);else assert.ok(scope.excludedConflictIds.length);
-      for(const id of scope.excludedConflictIds)assert.throws(()=>talentPathScope({...plan,points:[...plan.points,{talentId:id,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
+      for(const id of scope.excludedConflictIds)assert.throws(()=>talentPathScope({...plan,points:[{talentId:id,rank:1}]},proof,scopedLedger,cross,scopedEffects),/unresolved source difference/);
     }
     // Explicit, narrowly scoped client-text reconciliation; never a server measurement.
     if(plan.id==='warrior-arms-pvp'&&pack.clientBuild===pathLedger.build){
@@ -709,7 +748,7 @@ for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warl
 assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==false&&p.points.length===51).map(p=>p.treeId))].sort((a,b)=>a-b),[...treesById.keys()].sort((a,b)=>a-b));
 for(const [id,dist] of [["warrior-arms-leveling",[31,20,0]],["warrior-fury-leveling",[20,31,0]],["paladin-holy-dungeons",[31,20,0]],["paladin-protection-dungeons",[15,31,5]],["hunter-survival-leveling",[20,0,31]],["rogue-assassination-leveling",[31,20,0]],["rogue-subtlety-pvp",[0,20,31]],["priest-discipline-dungeons",[31,20,0]],["shaman-elemental-leveling",[31,0,20]],["shaman-restoration-dungeons",[0,5,46]],["druid-restoration-dungeons",[11,0,40]],["druid-balance-leveling",[31,0,20]]]){
   const candidate=plans.find(p=>p.id===id);
-  const scoped=['paladin-protection-dungeons','paladin-holy-dungeons','hunter-survival-leveling','rogue-assassination-leveling','rogue-subtlety-pvp','priest-discipline-dungeons','priest-holy-dungeons'].includes(id);
+  const scoped=['paladin-protection-dungeons','paladin-holy-dungeons','hunter-survival-leveling','rogue-assassination-leveling','rogue-subtlety-pvp','priest-discipline-dungeons','priest-holy-dungeons','druid-restoration-dungeons','druid-balance-leveling'].includes(id);
   const promoted=scoped||['shaman-elemental-leveling','shaman-restoration-dungeons','warrior-arms-leveling','warrior-fury-leveling'].includes(id);
   assert.ok(candidate&&candidate.status===(promoted?'approved':'research_only'));
   if(promoted){
@@ -970,7 +1009,7 @@ for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hu
 
 for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347":0}],["druid-balance-pvp",{"11328":30,"11340":21,"11347":0}],["druid-feral-dungeons-damage",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-damage",{"11328":0,"11340":16,"11347":35}],["druid-feral-leveling-tank",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-tank",{"11328":0,"11340":21,"11347":30}],["druid-restoration-leveling",{"11328":20,"11340":31,"11347":0}],["druid-restoration-pvp",{"11328":8,"11340":32,"11347":11}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status===(id.startsWith('druid-feral-')?'approved':'research_only'));
+ assert.ok(p&&p.status==='approved');
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -1056,8 +1095,9 @@ for(const [id,milestones] of [
  ['druid-restoration-pvp',[[104912,25],[104921,30],[104944,41],[104918,42],[104910,52]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,'research_only');
- assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(p.status,'approved');
+ assert.deepEqual(p.supportedLegacyRanks,[0]);
+ assert.equal(p.research.conflictFollowup.releaseEligible,true);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  assert.ok(!p.points.some(x=>[104933,104936].includes(x.talentId)));

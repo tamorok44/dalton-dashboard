@@ -23,6 +23,7 @@ const corrections={
   },
   11:{
     104923:n=>summarize(n,ranks(5,r=>'Verkürzt die Zauberzeit von Zorn und Sternenfeuer um '+decimal(r)+' Sek. und senkt die Manakosten von Zorn um '+10*r+' %.'),{name:'Zorn des Sternenlichts'}),
+    104924:n=>summarize(n,ranks(5,r=>'Erhöht periodischen Schaden und Heilung um '+2*r+' %. Seit dem Hotfix vom 25.11. gilt dies auch korrekt für Hurrikan und Gelassenheit.')),
     104931:n=>summarize(n,ranks(2,r=>'Erhöht Schaden und kritische Trefferchance von Mondfeuer um '+5*r+' %. Sternenfeuer verliert mit '+50*r+' % Wahrscheinlichkeit keine Zauberzeit durch erlittenen Schaden.'),{name:'Mond und Sterne'}),
     104933:n=>summarize(n,[8,15].map(v=>'Sternenfeuer hat eine Chance von '+v+' %, das Ziel 3 Sek. zu betäuben.'),{maxRank:2,rankSpellIds:n.rankSpellIds.slice(0,2)}),
     104935:n=>summarize(n,[7,13,20].map((v,i)=>'Erhöht die kritische Trefferchance von Zorn um '+v+' %. Zorn verkürzt die Zauberzeit der nächsten zwei Sternenfeuer-Zauber um '+['0,17','0,33','0,50'][i]+' Sek.; bis zu vier Aufladungen, 15 Sek. Dauer.')),
