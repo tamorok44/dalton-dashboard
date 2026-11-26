@@ -197,8 +197,51 @@
       "primaryRankCount": 1,
       "independentRankCount": 1,
       "classification": "numeric_scale_or_rounding",
-      "decision": "39 gegenüber 39,6; keine Rundungsregel als Servermechanik ableiten.",
-      "quantitativeClaimVerified": false
+      "decision": "Gespeicherte aktuelle Vergleichspaarung: 39 und 39,6 im additiven Rang-1-Tooltipwert. Blizzard bestätigt Waffenanteil und Talentumbau; weitere Zauberdetails bestätigen die Grundfunktion. Nur konkrete qualitative Meucheln-Pfade freigabefähig; keine Rundungsregel oder exakte Serverzahl freigegeben.",
+      "quantitativeClaimVerified": false,
+      "qualitativeAllocationReview": {
+        "kind": "qualitative_allocation_review",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105709,
+        "spellId": 399956,
+        "primaryHash": "e47c2f141b334d35456248680481ecbfae996a3f63598c5866c58ff1e7d13c86",
+        "secondaryHash": "54901778eb08f1692b7030098575a36a5634fb9274756b49ca5f8924d37dd2bc",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "observedAdditionalDamageTexts": [
+          39,
+          39.6
+        ],
+        "confirmedCore": {
+          "weaponDamagePercent": 90,
+          "poisonedTargetBonusPercent": 20,
+          "comboPoints": 2,
+          "requiresDaggers": true
+        },
+        "numericFormulaReleased": false,
+        "serverMeasured": false,
+        "scope": "Only the three exact Assassination allocations; no server rounding, damage prediction, or ranking. The retained current pair agrees on the core and differs by 0.6 in the displayed rank-one additive value.",
+        "sources": [
+          {
+            "url": "https://us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-november-2/2360696/9",
+            "claim": "Official Nov 2 notes confirm row 7, 90% weapon damage and increased additive amount, Venom as Shank-triggered poison buff."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/399956-mutilate/",
+            "claim": "Rank 1, two weapon attacks, 90%, poison target bonus 20%, two combo points, dagger requirement and 39.6 display. No exact build label."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/399956/",
+            "build": "1.60.1.71037",
+            "claim": "Older spell detail confirms 39.6, not current live rounding."
+          },
+          {
+            "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+            "build": "1.60.1.71139",
+            "claim": "Retained exact-build talent comparison: 39 versus 39.6, qualitative core agrees; no new live measurement."
+          }
+        ]
+      }
     },
     {
       "id": 110866,
@@ -209,7 +252,33 @@
       "independentRankCount": 1,
       "classification": "incomplete_numeric",
       "decision": "Schadensobergrenzen in Zephras nicht aufgelöst; Prozente und Grundmechanik gleich.",
-      "quantitativeClaimVerified": false
+      "quantitativeClaimVerified": false,
+      "followup": {
+        "reviewedAt": "2026-11-26",
+        "build": "1.60.1.71139",
+        "releaseEligible": false,
+        "sources": [
+          {
+            "url": "https://www.wowhead.com/forever/spell=1316709/death-mark",
+            "claim": "Rank 1 tooltip formula cap (63 + 102 * CP + .04 * CP * AP) * (1 + crit fraction), stored 12% per CP and double bleeds; server-side script not verified."
+          },
+          {
+            "url": "https://wowforevertalents.com/rogue/talents/death-mark/",
+            "build": "1.60.1.71037",
+            "claim": "Older rendered formula agrees with Wowhead, cap base 165 to 573 before AP/crit. Not current build."
+          },
+          {
+            "url": "https://zephras.com/forever/enUS/spell/1316709/",
+            "build": "1.60.1.71037",
+            "claim": "Storage percentages agree, cap placeholder unresolved."
+          },
+          {
+            "url": "https://wow-forever.gg/db/spells/1316709-death-mark/",
+            "claim": "Formula intentionally omitted because values are resolved in play."
+          }
+        ],
+        "decision": "Current cap and interactions with Coup de Grace remain material to choosing the finisher. Keep blocked; do not infer server rounding or release formula."
+      }
     },
     {
       "id": 105840,
