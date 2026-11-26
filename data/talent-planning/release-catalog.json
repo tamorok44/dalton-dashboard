@@ -5178,6 +5178,780 @@
       "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/assassination/pvp/",
       "claim": "Nov 10 pressure, energy reserves, controlled openings and escape; own chronology with early mobility.",
       "id": "rogue-assassination-pvp-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "948571dbe73dfaefd71cd4512cc4713c68f040ad39854df61b3511a00ef0bae4",
+      "id": "priest-discipline-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "6813e956bbfee2d0c376abc3ae03fd1a24fd28de3b78d08118b387b3769ce15f",
+        "talentIds": [
+          105834,
+          105835,
+          105836,
+          105837,
+          105839,
+          105840,
+          105842,
+          105843,
+          105844,
+          105846,
+          105848,
+          105849,
+          105850,
+          105857,
+          105858,
+          105860,
+          105862,
+          105863,
+          105866,
+          110855
+        ],
+        "excludedConflictIds": [
+          105851
+        ],
+        "olderComparisonCaptureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+        "olderBuild": "1.60.1.71091"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105840,
+          "spellId": 431622,
+          "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+          "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "tooltipFields": {
+            "nonPeriodicCriticalHeal": true,
+            "absorbPercentByRank": [
+              5,
+              10,
+              15
+            ],
+            "tooltipCap": 1200,
+            "durationSeconds": 12
+          },
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+              "build": "1.60.1.71139",
+              "claim": "Client build 71139 and Nov 25 hotfix cache explicitly identified; all three ranks 5/10/15%, displayed cap 1200, 12 sec."
+            },
+            {
+              "url": "https://raiddex.com/de/wow-forever/zauber/goettliche-aegis",
+              "claim": "German spell 431622 displays same 15% at max rank, 1200 cap and 12 sec. No current build label."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/changes/talents/priest/divine-aegis",
+              "claim": "Separate talent change reference corroborates displayed cap, not a measured server value."
+            }
+          ],
+          "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+        }
+      ],
+      "claim": "Exact retained 71139 structure comparison 52/52 nodes and older unchanged prerequisite structure; current tooltip corroboration and exact allocation scope. No server healing or absorb formula released."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "948571dbe73dfaefd71cd4512cc4713c68f040ad39854df61b3511a00ef0bae4",
+      "id": "priest-discipline-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "claim": "Reviewed Nov 25 cumulative official hotfix mirror: Nov 9 Power Infusion on allies and Fear Ward, Nov 10 Holy Nova removal/Revelation, Nov 16 Dark Inspiration and Vampiric Embrace. No reliance on fixed bugs or obsolete shadow healing values."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-leveling",
+      "planVersion": 1,
+      "allocationDigest": "6813e956bbfee2d0c376abc3ae03fd1a24fd28de3b78d08118b387b3769ce15f",
+      "url": "https://mobalytics.gg/wow-forever/classes/discipline-priest-guide-progress",
+      "claim": "Nov 25 guide supports wand, mana efficiency and transition to healing without respec, with Divine Aegis, Renewed Hope and Penance; own exact sequence differs.",
+      "id": "priest-discipline-leveling-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-leveling",
+      "planVersion": 1,
+      "allocationDigest": "6813e956bbfee2d0c376abc3ae03fd1a24fd28de3b78d08118b387b3769ce15f",
+      "url": "https://www.icy-veins.com/wow-forever/discipline-priest-leveling/",
+      "claim": "Nov 16 Discipline leveling guide supports role-specific progression, not measured optimality.",
+      "id": "priest-discipline-leveling-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "ddfd0c96100677333fc90b9f954a888f93a12a6a2d0de540ebaf55572d91ac73",
+      "id": "priest-discipline-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "aa9a52bb85291af6320b1e6b6bac42483a2a36e92e5a9ad4c59d00fddfdaea94",
+        "talentIds": [
+          105834,
+          105835,
+          105836,
+          105837,
+          105839,
+          105840,
+          105842,
+          105843,
+          105844,
+          105846,
+          105848,
+          105849,
+          105858,
+          105860,
+          105862,
+          105863,
+          105866,
+          110855
+        ],
+        "excludedConflictIds": [
+          105851
+        ],
+        "olderComparisonCaptureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+        "olderBuild": "1.60.1.71091"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105840,
+          "spellId": 431622,
+          "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+          "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "tooltipFields": {
+            "nonPeriodicCriticalHeal": true,
+            "absorbPercentByRank": [
+              5,
+              10,
+              15
+            ],
+            "tooltipCap": 1200,
+            "durationSeconds": 12
+          },
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+              "build": "1.60.1.71139",
+              "claim": "Client build 71139 and Nov 25 hotfix cache explicitly identified; all three ranks 5/10/15%, displayed cap 1200, 12 sec."
+            },
+            {
+              "url": "https://raiddex.com/de/wow-forever/zauber/goettliche-aegis",
+              "claim": "German spell 431622 displays same 15% at max rank, 1200 cap and 12 sec. No current build label."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/changes/talents/priest/divine-aegis",
+              "claim": "Separate talent change reference corroborates displayed cap, not a measured server value."
+            }
+          ],
+          "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+        }
+      ],
+      "claim": "Exact retained 71139 structure comparison 52/52 nodes and older unchanged prerequisite structure; current tooltip corroboration and exact allocation scope. No server healing or absorb formula released."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "ddfd0c96100677333fc90b9f954a888f93a12a6a2d0de540ebaf55572d91ac73",
+      "id": "priest-discipline-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "claim": "Reviewed Nov 25 cumulative official hotfix mirror: Nov 9 Power Infusion on allies and Fear Ward, Nov 10 Holy Nova removal/Revelation, Nov 16 Dark Inspiration and Vampiric Embrace. No reliance on fixed bugs or obsolete shadow healing values."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "aa9a52bb85291af6320b1e6b6bac42483a2a36e92e5a9ad4c59d00fddfdaea94",
+      "url": "https://undying.app/classes/priest/discipline",
+      "claim": "Nov 15 group healing shield, Soul Warding, Renewed Hope, Penance and Power Infusion core; own point order.",
+      "id": "priest-discipline-dungeons-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "aa9a52bb85291af6320b1e6b6bac42483a2a36e92e5a9ad4c59d00fddfdaea94",
+      "url": "https://mobalytics.gg/wow-forever/classes/discipline-priest-guide-progress",
+      "claim": "Nov 25 supports tank-healing core and mana management; not proof of precise output.",
+      "id": "priest-discipline-dungeons-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e8b87c1724347af6d49da5c1a3c99253d0e97a017482d3bb6def5e89598afefc",
+      "id": "priest-discipline-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "669d94b95e25a182d3745af3d2e9e0c6c302657da72ee8d160749822ca646669",
+        "talentIds": [
+          105834,
+          105835,
+          105836,
+          105839,
+          105840,
+          105842,
+          105843,
+          105844,
+          105845,
+          105846,
+          105848,
+          105849,
+          105863,
+          105864,
+          105866,
+          105867,
+          110855
+        ],
+        "excludedConflictIds": [
+          105851
+        ],
+        "olderComparisonCaptureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+        "olderBuild": "1.60.1.71091"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105840,
+          "spellId": 431622,
+          "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+          "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "tooltipFields": {
+            "nonPeriodicCriticalHeal": true,
+            "absorbPercentByRank": [
+              5,
+              10,
+              15
+            ],
+            "tooltipCap": 1200,
+            "durationSeconds": 12
+          },
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+              "build": "1.60.1.71139",
+              "claim": "Client build 71139 and Nov 25 hotfix cache explicitly identified; all three ranks 5/10/15%, displayed cap 1200, 12 sec."
+            },
+            {
+              "url": "https://raiddex.com/de/wow-forever/zauber/goettliche-aegis",
+              "claim": "German spell 431622 displays same 15% at max rank, 1200 cap and 12 sec. No current build label."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/changes/talents/priest/divine-aegis",
+              "claim": "Separate talent change reference corroborates displayed cap, not a measured server value."
+            }
+          ],
+          "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+        }
+      ],
+      "claim": "Exact retained 71139 structure comparison 52/52 nodes and older unchanged prerequisite structure; current tooltip corroboration and exact allocation scope. No server healing or absorb formula released."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "e8b87c1724347af6d49da5c1a3c99253d0e97a017482d3bb6def5e89598afefc",
+      "id": "priest-discipline-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "claim": "Reviewed Nov 25 cumulative official hotfix mirror: Nov 9 Power Infusion on allies and Fear Ward, Nov 10 Holy Nova removal/Revelation, Nov 16 Dark Inspiration and Vampiric Embrace. No reliance on fixed bugs or obsolete shadow healing values."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-pvp",
+      "planVersion": 1,
+      "allocationDigest": "669d94b95e25a182d3745af3d2e9e0c6c302657da72ee8d160749822ca646669",
+      "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/discipline-priest-pvp-guide/talents/",
+      "claim": "Nov 19 presents 31/20/0 and other PvP alternatives; our shield-focused progression is separately authored.",
+      "id": "priest-discipline-pvp-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-discipline-pvp",
+      "planVersion": 1,
+      "allocationDigest": "669d94b95e25a182d3745af3d2e9e0c6c302657da72ee8d160749822ca646669",
+      "url": "https://mobalytics.gg/wow-forever/classes/priest-pvp-guide",
+      "claim": "Nov 19 PvP guide supports Penance and defensive play; no guaranteed immunity.",
+      "id": "priest-discipline-pvp-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "d03c4184e6b408ca3a0900d9e63374bca9226fd8637008edab7f36874e140bc8",
+      "id": "priest-holy-leveling-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "cbdebfd0c0a57428943a220bf9f80a56d17d540881d32ca83f6160437e17a358",
+        "talentIds": [
+          105833,
+          105837,
+          105843,
+          105848,
+          105849,
+          105850,
+          105851,
+          105852,
+          105853,
+          105854,
+          105856,
+          105857,
+          105858,
+          105860,
+          105862,
+          105863,
+          105866,
+          110855
+        ],
+        "excludedConflictIds": [
+          105840
+        ],
+        "olderComparisonCaptureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+        "olderBuild": "1.60.1.71091"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105851,
+          "spellId": 401859,
+          "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+          "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "tooltipFields": {
+            "rankOneBaseHeal": 172,
+            "healingPowerCoefficient": 0.429,
+            "jumpsUpTo": 5,
+            "jumpRadiusYards": 20,
+            "durationPerJumpSeconds": 30,
+            "cooldownSeconds": 10,
+            "triggerDamageOrNonPeriodicHeal": true,
+            "oneTargetPerCaster": true
+          },
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+              "build": "1.60.1.71139",
+              "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+              "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+            },
+            {
+              "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+              "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+            }
+          ],
+          "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+        }
+      ],
+      "claim": "Exact retained 71139 structure comparison 52/52 nodes and older unchanged prerequisite structure; current tooltip corroboration and exact allocation scope. No server healing or absorb formula released."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "d03c4184e6b408ca3a0900d9e63374bca9226fd8637008edab7f36874e140bc8",
+      "id": "priest-holy-leveling-rank0-71139-official",
+      "kind": "official",
+      "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "claim": "Reviewed Nov 25 cumulative official hotfix mirror: Nov 9 Power Infusion on allies and Fear Ward, Nov 10 Holy Nova removal/Revelation, Nov 16 Dark Inspiration and Vampiric Embrace. No reliance on fixed bugs or obsolete shadow healing values."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cbdebfd0c0a57428943a220bf9f80a56d17d540881d32ca83f6160437e17a358",
+      "url": "https://mobalytics.gg/wow-forever/classes/holy-priest-guide",
+      "claim": "Nov 25 supports wand and mana management, optional early Holy Nova and Prayer of Mending; explicitly not fastest solo spec.",
+      "id": "priest-holy-leveling-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-leveling",
+      "planVersion": 1,
+      "allocationDigest": "cbdebfd0c0a57428943a220bf9f80a56d17d540881d32ca83f6160437e17a358",
+      "url": "https://www.icy-veins.com/wow-forever/holy-priest-leveling/",
+      "claim": "Nov 16 Holy progression includes Prayer of Mending and Holy healing talents; own no-respec order.",
+      "id": "priest-holy-leveling-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "006b889067eac84939bb2e7ead550cfc645bd7f67a8a66f933a12f256249ed30",
+      "id": "priest-holy-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "bb44314358514ad9f4524c9277756d23d4b9854e459470729740866c50602551",
+        "talentIds": [
+          105837,
+          105843,
+          105844,
+          105846,
+          105848,
+          105849,
+          105851,
+          105852,
+          105853,
+          105854,
+          105855,
+          105856,
+          105858,
+          105860,
+          105862,
+          105863,
+          105866,
+          110855
+        ],
+        "excludedConflictIds": [
+          105840
+        ],
+        "olderComparisonCaptureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+        "olderBuild": "1.60.1.71091"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105851,
+          "spellId": 401859,
+          "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+          "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "tooltipFields": {
+            "rankOneBaseHeal": 172,
+            "healingPowerCoefficient": 0.429,
+            "jumpsUpTo": 5,
+            "jumpRadiusYards": 20,
+            "durationPerJumpSeconds": 30,
+            "cooldownSeconds": 10,
+            "triggerDamageOrNonPeriodicHeal": true,
+            "oneTargetPerCaster": true
+          },
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+              "build": "1.60.1.71139",
+              "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+              "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+            },
+            {
+              "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+              "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+            }
+          ],
+          "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+        }
+      ],
+      "claim": "Exact retained 71139 structure comparison 52/52 nodes and older unchanged prerequisite structure; current tooltip corroboration and exact allocation scope. No server healing or absorb formula released."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "006b889067eac84939bb2e7ead550cfc645bd7f67a8a66f933a12f256249ed30",
+      "id": "priest-holy-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "claim": "Reviewed Nov 25 cumulative official hotfix mirror: Nov 9 Power Infusion on allies and Fear Ward, Nov 10 Holy Nova removal/Revelation, Nov 16 Dark Inspiration and Vampiric Embrace. No reliance on fixed bugs or obsolete shadow healing values."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "bb44314358514ad9f4524c9277756d23d4b9854e459470729740866c50602551",
+      "url": "https://www.method.gg/wow-forever/class-guides/holy-priest/rotation-and-playstyle",
+      "claim": "Nov 10 endgame guide supports Prayer of Mending, Litany and mana management; not exact progression or measured optimality.",
+      "id": "priest-holy-dungeons-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "bb44314358514ad9f4524c9277756d23d4b9854e459470729740866c50602551",
+      "url": "https://mobalytics.gg/wow-forever/classes/holy-priest-guide",
+      "claim": "Nov 25 supports group healing and mana tradeoffs.",
+      "id": "priest-holy-dungeons-rank0-71139-editorial-2"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "0af1beb34c4b236d139599646818bc496e38a2bee1328caedbfe74bd5e87049d",
+      "id": "priest-holy-pvp-rank0-71139-client",
+      "kind": "client",
+      "url": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+      "sourceCaptureSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+      "comparisonDigest": "018d0da8323fc3fdf6876c6fbbc1d3b0715bd89119bbbe78c0bcb1d7d4217fc6",
+      "pathScope": {
+        "kind": "allocation_dependency_closure",
+        "allocationDigest": "c9e7d390e12a4c07ace1345f93f4a5d5dd4463d070c63ab9236e7e7b18dd3453",
+        "talentIds": [
+          105842,
+          105843,
+          105844,
+          105845,
+          105846,
+          105848,
+          105849,
+          105851,
+          105853,
+          105854,
+          105856,
+          105860,
+          105863,
+          105864,
+          105866,
+          105867,
+          110855
+        ],
+        "excludedConflictIds": [
+          105840
+        ],
+        "olderComparisonCaptureSha256": "7984b189dce83db7cd857ab6508255ac55301d83e4492f9a02b7e5977e21057c",
+        "olderBuild": "1.60.1.71091"
+      },
+      "clientTextResolutions": [
+        {
+          "kind": "client_spell_detail_reconciliation",
+          "reviewedAt": "2026-11-26",
+          "clientBuild": "1.60.1.71139",
+          "talentId": 105851,
+          "spellId": 401859,
+          "primaryHash": "f28568bf0f69a3690cf02fd60a380fbd4bb1da4f7b11efc7d3f40f301907e813",
+          "secondaryHash": "4ecd0d80b94d4b3386c17674bc052cef86ef6688da6135a49c6dcc3f2fe1c120",
+          "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+          "tooltipFields": {
+            "rankOneBaseHeal": 172,
+            "healingPowerCoefficient": 0.429,
+            "jumpsUpTo": 5,
+            "jumpRadiusYards": 20,
+            "durationPerJumpSeconds": 30,
+            "cooldownSeconds": 10,
+            "triggerDamageOrNonPeriodicHeal": true,
+            "oneTargetPerCaster": true
+          },
+          "serverMeasured": false,
+          "numericFormulaReleased": false,
+          "sources": [
+            {
+              "url": "https://wowforevertalents.com/priest/talents/prayer-of-mending/",
+              "build": "1.60.1.71139",
+              "claim": "Current page build and Nov 25 cache 71139; rank 1 base 172 plus 42.9% healing power, trigger and bounce rules."
+            },
+            {
+              "url": "https://www.wowhead.com/forever/spell=401859/prayer-of-mending",
+              "claim": "Independent rendered spell detail corroborates base 172 and coefficient 0.42899999, trigger and bounce rules; no exact build label."
+            },
+            {
+              "url": "https://talentsforever.com/priest/abilities/prayer-of-mending",
+              "claim": "Older spellbook rows from 70755, checked against Nov 25 hotfixes: rank 1 base 172, later learned ranks differ. No coefficient or live measurement inferred from older ranks."
+            }
+          ],
+          "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+        }
+      ],
+      "claim": "Exact retained 71139 structure comparison 52/52 nodes and older unchanged prerequisite structure; current tooltip corroboration and exact allocation scope. No server healing or absorb formula released."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "0af1beb34c4b236d139599646818bc496e38a2bee1328caedbfe74bd5e87049d",
+      "id": "priest-holy-pvp-rank0-71139-official",
+      "kind": "official",
+      "url": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "claim": "Reviewed Nov 25 cumulative official hotfix mirror: Nov 9 Power Infusion on allies and Fear Ward, Nov 10 Holy Nova removal/Revelation, Nov 16 Dark Inspiration and Vampiric Embrace. No reliance on fixed bugs or obsolete shadow healing values."
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-pvp",
+      "planVersion": 1,
+      "allocationDigest": "c9e7d390e12a4c07ace1345f93f4a5d5dd4463d070c63ab9236e7e7b18dd3453",
+      "url": "https://foreverbattlegrounds.com/classes/priest/holy/",
+      "claim": "Nov 12 guide with Nov 16 hotfixes supports mobile group healing, Prayer of Mending and limitations compared with Discipline.",
+      "id": "priest-holy-pvp-rank0-71139-editorial-1"
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "priest-holy-pvp",
+      "planVersion": 1,
+      "allocationDigest": "c9e7d390e12a4c07ace1345f93f4a5d5dd4463d070c63ab9236e7e7b18dd3453",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/priest/holy/pvp/",
+      "claim": "Nov 10 source review supports defensive healing and group support; explicitly not an exact build or performance proof.",
+      "id": "priest-holy-pvp-rank0-71139-editorial-2"
     }
   ],
   "rulePacks": [
@@ -7106,6 +7880,234 @@
         "105741": 10,
         "113398": 10,
         "113633": 30
+      }
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "priest-discipline-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "priest-discipline-leveling-rank0-71139-client",
+        "priest-discipline-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105834": 30,
+        "105835": 30,
+        "105836": 40,
+        "105837": 15,
+        "105839": 25,
+        "105840": 35,
+        "105842": 20,
+        "105843": 20,
+        "105844": 20,
+        "105846": 20,
+        "105848": 15,
+        "105849": 10,
+        "105850": 10,
+        "105857": 25,
+        "105858": 25,
+        "105860": 20,
+        "105862": 20,
+        "105863": 15,
+        "105866": 10,
+        "110855": 10
+      }
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "priest-discipline-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "priest-discipline-dungeons-rank0-71139-client",
+        "priest-discipline-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105834": 30,
+        "105835": 30,
+        "105836": 40,
+        "105837": 15,
+        "105839": 25,
+        "105840": 35,
+        "105842": 20,
+        "105843": 20,
+        "105844": 20,
+        "105846": 20,
+        "105848": 15,
+        "105849": 10,
+        "105858": 25,
+        "105860": 20,
+        "105862": 20,
+        "105863": 15,
+        "105866": 10,
+        "110855": 10
+      }
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "priest-discipline-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "priest-discipline-pvp-rank0-71139-client",
+        "priest-discipline-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105834": 30,
+        "105835": 30,
+        "105836": 40,
+        "105839": 25,
+        "105840": 35,
+        "105842": 20,
+        "105843": 20,
+        "105844": 20,
+        "105845": 15,
+        "105846": 20,
+        "105848": 15,
+        "105849": 10,
+        "105863": 15,
+        "105864": 15,
+        "105866": 10,
+        "105867": 10,
+        "110855": 10
+      }
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "priest-holy-leveling-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "priest-holy-leveling-rank0-71139-client",
+        "priest-holy-leveling-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105833": 10,
+        "105837": 15,
+        "105843": 20,
+        "105848": 15,
+        "105849": 10,
+        "105850": 10,
+        "105851": 40,
+        "105852": 35,
+        "105853": 30,
+        "105854": 30,
+        "105856": 25,
+        "105857": 25,
+        "105858": 25,
+        "105860": 20,
+        "105862": 20,
+        "105863": 15,
+        "105866": 10,
+        "110855": 10
+      }
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "priest-holy-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "priest-holy-dungeons-rank0-71139-client",
+        "priest-holy-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105837": 15,
+        "105843": 20,
+        "105844": 20,
+        "105846": 20,
+        "105848": 15,
+        "105849": 10,
+        "105851": 40,
+        "105852": 35,
+        "105853": 30,
+        "105854": 30,
+        "105855": 30,
+        "105856": 25,
+        "105858": 25,
+        "105860": 20,
+        "105862": 20,
+        "105863": 15,
+        "105866": 10,
+        "110855": 10
+      }
+    },
+    {
+      "classId": 5,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "priest-holy-pvp-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "priest-holy-pvp-rank0-71139-client",
+        "priest-holy-pvp-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105842": 20,
+        "105843": 20,
+        "105844": 20,
+        "105845": 15,
+        "105846": 20,
+        "105848": 15,
+        "105849": 10,
+        "105851": 40,
+        "105853": 30,
+        "105854": 30,
+        "105856": 25,
+        "105860": 20,
+        "105863": 15,
+        "105864": 15,
+        "105866": 10,
+        "105867": 10,
+        "110855": 10
       }
     }
   ],
