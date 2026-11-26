@@ -83,6 +83,10 @@
       "rank": 2
     },
     {
+      "talentId": 104966,
+      "rank": 1
+    },
+    {
       "talentId": 104969,
       "rank": 3
     },
@@ -93,10 +97,6 @@
     {
       "talentId": 104969,
       "rank": 5
-    },
-    {
-      "talentId": 104966,
-      "rank": 1
     },
     {
       "talentId": 104967,
@@ -230,73 +230,78 @@
   "rationaleBlocks": [
     {
       "talentId": 104960,
-      "count": 5,
-      "reason": "Aspektabhängiges Angriffstempo steigern."
+      "reason": "Aspektabhängige Angriffstempo-Procs unterstützen, keine dauerhafte Tempoerhöhung voraussetzen.",
+      "count": 5
     },
     {
       "talentId": 104976,
-      "count": 5,
-      "reason": "Begleiter widerstandsfähiger machen."
+      "reason": "Begleiter widerstandsfähiger machen.",
+      "count": 5
     },
     {
       "talentId": 104975,
-      "count": 2,
-      "reason": "Schaden bei aktivem Begleiter ergänzen."
+      "reason": "Schaden bei aktivem Begleiter ergänzen.",
+      "count": 2
     },
     {
       "talentId": 104970,
-      "count": 1,
-      "reason": "Laufwege des Begleiters verkürzen."
+      "reason": "Laufwege des Begleiters verkürzen.",
+      "count": 1
     },
     {
       "talentId": 104969,
-      "count": 5,
-      "reason": "Schaden von Begleiter und Falken erhöhen."
+      "reason": "Schaden von Begleiter und Falken erhöhen.",
+      "count": 2
     },
     {
       "talentId": 104966,
-      "count": 1,
-      "reason": "Falke beschwören freischalten; geteilte Abklingzeit beachten."
+      "reason": "Falkenbeschwörung für geeignete langlebige Ziele freischalten; gemeinsame Abklingzeit mit Arkanem Schuss und Manakosten beachten. Falke kann auch bei passivem Begleiter angreifen.",
+      "count": 1
+    },
+    {
+      "talentId": 104969,
+      "reason": "Schaden von Begleiter und Falken erhöhen.",
+      "count": 3
     },
     {
       "talentId": 104967,
-      "count": 5,
-      "reason": "Wildheit für Raserei vervollständigen."
+      "reason": "Wildheit für Raserei vervollständigen.",
+      "count": 5
     },
     {
       "talentId": 104963,
-      "count": 2,
-      "reason": "Ressourcenregeneration unterstützen."
+      "reason": "Ressourcenregeneration unterstützen.",
+      "count": 2
     },
     {
       "talentId": 104962,
-      "count": 4,
-      "reason": "Raserei ergänzen."
+      "reason": "Raserei ergänzen.",
+      "count": 4
     },
     {
       "talentId": 105011,
-      "count": 5,
-      "reason": "Eigene kritische Trefferchance erhöhen."
+      "reason": "Kritische Trefferchance aller Angriffe erhöhen.",
+      "count": 5
     },
     {
       "talentId": 105008,
-      "count": 5,
-      "reason": "Sorgfältiges Zielen als Voraussetzung für Todbringende Schüsse."
+      "reason": "Sorgfältiges Zielen als Voraussetzung für Todbringende Schüsse.",
+      "count": 5
     },
     {
       "talentId": 105009,
-      "count": 5,
-      "reason": "Manakosten von Schüssen und Stichen reduzieren."
+      "reason": "Manakosten von Schüssen und Stichen reduzieren.",
+      "count": 5
     },
     {
       "talentId": 105004,
-      "count": 1,
-      "reason": "Aura des Volltreffers als Gruppennutzen freischalten."
+      "reason": "Aura des Volltreffers als Gruppennutzen freischalten.",
+      "count": 1
     },
     {
       "talentId": 105002,
-      "count": 5,
-      "reason": "Kritischen Distanzschaden erhöhen."
+      "reason": "Kritischen Distanzschaden erhöhen.",
+      "count": 5
     }
   ],
   "research": {
@@ -305,17 +310,48 @@
       "outpost-hunter-level60-2311",
       "foreverhub-hunter-2011"
     ],
-    "editorialDecision": "Pet-assisted regular dungeons, Hawk, mana sustain, group aura. Not the standard capstone build; respects the cyclic prerequisite rather than editing it.",
+    "editorialDecision": "Forschungsalternative mit aktivem Begleiter und frühestmöglichem Falken auf 25, danach weitere Begleiter-Synergien. Die fehlenden Kernfähigkeiten Einschüchterung und Zorn des Wildtiers bleiben ein fachlicher Freigabeblocker; keine alternative vollständige Tierherrschaftsempfehlung vortäuschen.",
     "unresolved": [
       "Exact primary structure at build 71139 only. Independent class comparison and complete server hotfix reconciliation remain necessary.",
       "Legacy ranks 1–5 and comparative performance are unverified. November 25 pet and Hawk fixes must be accounted for; no numerical pet scaling claim.",
-      "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved."
+      "Conditional research alternative: no Intimidation or Bestial Wrath because the exact primary catalog has a cyclic prerequisite. Not a substitute for the complete BM recommendation; must review after the edge is resolved.",
+      "Einschüchterung/Zorn des Wildtiers fehlen bewusst wegen zyklischer Primärvoraussetzung. Eine fachlich vollständige Tierherrschaft-Variante erst nach bestätigtem Operator prüfen.",
+      "104966: genaue Falken-Schadensskalierung und effektive Kritchance nach 25.11. nicht unabhängig gemessen. 10.11. Kosten und 25.11. Zielwahl/Entlassung bestätigt; keine garantierte Trefferzahl.",
+      "Vermächtnisränge 1–5, komplette Hotfix-/Pfadfreigabe und CI ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "official": "https://worldofwarcraft.blizzard.com/en-us/news/24315281/wow-forever-hotfixes-november-25-2026",
+      "mirror": "https://www.bluetracker.gg/wow/topic/eu-en/24315281-wow-forever-hotfixes-november-25-2026/",
+      "sources": [
+        {
+          "url": "https://forevertalents.net/talents/hunter/",
+          "contribution": "Alternative ODER-Bedingung Bestial Wrath oder Bestial Swiftness für Intimidation; keine beobachtete Vergabe im aktuellen Client."
+        },
+        {
+          "url": "https://foreverdiff.com/talents/hunter/intimidation-1387/",
+          "contribution": "Zwei Voraussetzungen gelistet; Operator nicht eindeutig bestätigt."
+        },
+        {
+          "url": "https://foreverdb.net/class/hunter",
+          "contribution": "Öffentliche Simulator-/Guide-Daten, älterer Build 71091; keine aktuelle exakte Schadensformel."
+        }
+      ],
+      "rawAudit": {
+        "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
