@@ -3,7 +3,7 @@ import charactersApi from '../api/characters.js';
 import {createTalentPlannerHandler} from './talent-planner-api.mjs';
 import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS} from './talent-rule-watch.mjs';
-import {talentAllocationDifference,compareTalentProgress,talentGuideOptions,planIsCurrent,specializationRecommendation,specializationSelection} from '../talent-planner.js';
+import {talentAllocationDifference,compareTalentProgress,talentGuideOptions,talentAssistantGuide,planIsCurrent,specializationRecommendation,specializationSelection} from '../talent-planner.js';
 import {talentPlanLibrary} from './talent-plan-index.mjs';
 import release from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import proofs from '../data/talent-planning/catalog-proofs-2026-11-25.json' with {type:'json'};
@@ -248,3 +248,32 @@ assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,2]]),11).row
 assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,2]]),12).rows,[{talentId:2,planned:1,learned:0}]);
 assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,1]]),9).rows,[{talentId:1,planned:0,learned:1}]);
 console.log('Talent allocation: level-specific differences, unspent ambiguity and verified data: OK');
+
+// Every class exposes its orientation without provider reads or research allocations.
+const coverage=(await import('../data/talent-planning/coverage-2026-11-25.json',{with:{type:'json'}})).default;
+const allRoster=Object.keys(coverage.classes).map(id=>({...mage,slug:'qa-class-'+id,classId:Number(id),blizzardCharacterId:700+Number(id)}));
+const orientationEndpoint=handler({roster:async()=>({data:{characters:allRoster}})});
+const initialReads=reads;
+for(const c of allRoster){
+ const info=(await request({character:c.slug},{endpoint:orientationEndpoint})).body;
+ assert.equal(info.specializations.length,3);
+ assert.ok(info.specializations.every(s=>s.roles.length&&s.focus.length));
+ assert.ok(info.profiles.every(p=>p.classId===c.classId&&p.supportedLegacyRanks.includes(0)));
+ assert.equal(talentAssistantGuide(info.profiles,{},info.specializations).fields[0].key,'goal');
+ for(const goal of coverage.goals)for(const role of new Set(info.specializations.flatMap(s=>s.roles))){
+   const g=talentAssistantGuide(info.profiles,{goal,role},info.specializations);
+   assert.deepEqual(g.orientation.map(s=>s.treeId),info.specializations.filter(s=>s.roles.includes(role)).map(s=>s.treeId));
+   assert.ok(g.profiles.every(p=>p.role===role&&p.goal===goal));
+   if(c.classId!==8||goal==='pvp'){
+     assert.equal(specializationSelection(g,{},info.specializationAdvice).profile,null);
+     assert.equal(specializationSelection(g,{},info.specializationAdvice).recommended,null);
+     assert.equal(g.unavailable,true);
+   }
+ }
+}
+assert.equal(reads,initialReads,'orientation remains offline, no provider reads');
+const rolesInfo=(await request({character:'qa-class-11'},{endpoint:orientationEndpoint})).body;
+assert.deepEqual(talentAssistantGuide([], {goal:'dungeons'},rolesInfo.specializations).fields.map(f=>f.key),['goal','role']);
+assert.equal(talentAssistantGuide([], {goal:'dungeons',role:'tank'},rolesInfo.specializations).orientation[0].treeId,11347);
+assert.equal(talentAssistantGuide(info.profiles,{goal:'leveling'},info.specializations).fields.length,1);
+console.log('Talent assistant: all nine classes, role navigation, exact reviewed defaults, unavailable alternatives and zero provider reads: OK');

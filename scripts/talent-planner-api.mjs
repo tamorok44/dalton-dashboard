@@ -64,7 +64,9 @@ export function createTalentPlannerHandler({
           .filter(tree=>typeof tree.treeName==='string'&&tree.treeName.trim())
           .map(tree=>[tree.treeId,tree.treeName]));
         for(const plan of classPlans)names.set(plan.treeId,plan.treeName);
-        const specializations=[...names].map(([treeId,name])=>({treeId,name}));
+        const orientationFocus=Object.freeze({"11326":"Blitz- und Elementarzauber aus Distanz","11328":"Natur- und Arkanzauber aus Distanz","11340":"Heilung und Heilung über Zeit","11347":"Katzen- oder Bärengestalt je nach Rolle","11362":"Heilung und Unterstützung der Gruppe","11363":"Nahkampf mit Elementarzaubern","11370":"Fallen, Kontrolle und Nahkampfoptionen","11371":"Schüsse und Distanzwaffen","11372":"Kampf mit dem Tierbegleiter","11486":"Direkte Heilung und Unterstützung","11541":"Schild und Schutz der Gruppe","11559":"Nahkampfschaden mit Heiligmagie","11572":"Verstohlenheit, Eröffnung und Kontrolle","11573":"Kontinuierlicher Waffenschaden","11580":"Gifte, Dolche und Finishing-Moves","11582":"Arkanzauber und Ressourcenmanagement","11594":"Feuerzauber und kritische Treffer","11601":"Frostzauber und Gegnerkontrolle","11608":"Schilde und unterstützende Heilung","11615":"Direkte Heilung und Gruppenheilung","11622":"Schattenschaden und Schadenszauber","11629":"Schaden über Zeit und Flüche","11636":"Dämonenbegleiter und Unterstützung","11637":"Direkte Schadenszauber","11650":"Zweihand-Nahkampf und gezielte Angriffe","11657":"Kontinuierlicher Nahkampfschaden und Wut","11670":"Schild, Schutz und Gegnerbindung"});
+        const specializations=[...names].map(([treeId,name])=>({treeId,name,
+          roles:coverage.classes[character.classId]?.find(t=>t.treeId===treeId)?.roles??[],focus:orientationFocus[treeId]??''}));
         const specializationAdvice=(catalog.specializationAdvice??[]).filter(entry=>entry.preferred.classId===character.classId&&
           entry.options.every(option=>profiles.some(p=>p.planId===option.planId&&p.version===option.version&&profileKey(p)===profileKey(option))));
         return send(200,{ok:true,profiles,identity,specializations,specializationAdvice});

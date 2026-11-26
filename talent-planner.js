@@ -83,6 +83,31 @@ export function talentGuideOptions(profiles,selection={}){
   const choices=[...trees.values()].filter(items=>new Set(items.map(pathKey)).size===1).map(items=>items[0]);
   return {fields,profiles:choices,complete:choices.length>0,inferred,unavailable:!choices.length};
 }
+
+// The class coverage is navigation metadata, never a talent path or a ranking.
+// With no approved path it still lets the player express the intended role.
+export function talentAssistantGuide(profiles,selection={},specializations=[]){
+  const known=specializations.filter(s=>Number.isSafeInteger(s.treeId)&&Array.isArray(s.roles)&&s.roles.length);
+  if(!known.length)return {...talentGuideOptions(profiles,selection),orientation:specializations};
+  const base=talentGuideOptions(profiles,selection);
+  const goal=allGoals.includes(selection.goal)?selection.goal:base.inferred.goal??'';
+  const fields=base.fields.filter(f=>f.key==='goal');
+  const inferred={...base.inferred};
+  if(!goal)return {fields,profiles:[],complete:false,inferred,unavailable:false,orientation:[]};
+  const roles=preferredValues.role.filter(role=>known.some(s=>s.roles.includes(role)));
+  const roleGroups=roles.map(role=>JSON.stringify(known.filter(s=>s.roles.includes(role)).map(s=>s.treeId).sort())+'|'+pathSet(profiles.filter(p=>p.goal===goal&&p.role===role&&p.priority==='balanced')));
+  const distinguish=new Set(roleGroups).size>1;
+  const role=roles.includes(selection.role)?selection.role:distinguish?'':roles[0];
+  if(distinguish)fields.push({key:'role',label:guideFields[1][1],values:roles,chosen:role});
+  else inferred.role=role;
+  if(!role)return {fields,profiles:[],complete:false,inferred,unavailable:false,orientation:[]};
+  const orientation=known.filter(s=>s.roles.includes(role));
+  const eligible=profiles.filter(p=>p.goal===goal&&p.role===role&&orientation.some(s=>s.treeId===p.treeId));
+  const refined=talentGuideOptions(eligible,{...selection,goal,role});
+  return {...refined,fields:[...fields,...refined.fields.filter(f=>f.key==='playStyle')],
+    inferred:{...inferred,...refined.inferred},orientation};
+}
+
 // Bind a comparative editorial decision to the exact available profiles and
 // versions. Adding or replacing a plan invalidates the comparative default.
 export const specializationOptionKey=p=>JSON.stringify([p.classId,p.treeId,p.goal,p.role,p.playStyle,p.priority,p.planId,p.version]);
@@ -155,7 +180,7 @@ function storageBinding(storage,identity){
 
 export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,talentGraph,talentNodeDetail,fetchImpl=fetch,storage}){
   let characters=[],rosterVersion,character='',identity=null,profiles=[],profile=null,rank='',binding=null,selection={},specializations=[],advice=[];
-  let busy=false,message='',plan=null,level=10,treeId=null,nodeId=null,requestId=0,expiry=null;
+  let busy=false,message='',plan=null,level=10,treeId=null,nodeId=null,requestId=0,expiry=null,renderedPersonalFresh=null;
   const warn=(code,evidence)=>{
     const changes=evidence?.review?.reasons??[];
     if(changes.some(item=>item.code==='client_build_changed'||item.code==='hotfix_changed')){
@@ -166,6 +191,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
   const clearPlan=()=>{
     clearTimeout(expiry);
     plan=null;
+    renderedPersonalFresh=null;
   };
   async function request(query){
     const reply=await fetchImpl('/api/characters?view=talent-planner&'+new URLSearchParams(query),{cache:'no-store'});
@@ -200,7 +226,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
         binding=identity?storageBinding(storage,identity):null;
         const selected=previous&&previous.identity===identity?profiles.find(option=>matches(option,previous.profile)):null;
         selection=binding?.profile??(previous&&previous.identity===identity?previous.selection:{});
-        const guide=talentGuideOptions(profiles,selection);
+        const guide=talentAssistantGuide(profiles,selection,specializations);
         profile=binding?.profile??specializationSelection(guide,selection,advice).profile;
         rank=binding?.rank?.toString()??(selected&&matches(selected,profile)?previous.rank:'');
         if(binding&&binding.identity!==result.identity)message=warn('binding_unavailable');
@@ -224,6 +250,9 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       message=warn('unverified_legacy_rank');
       render('#talentPlannerLegacy');
       return;
+    }
+    if(!binding&&Array.isArray(profile.supportedLegacyRanks)&&!profile.supportedLegacyRanks.includes(Number(rank))){
+      message=warn('unsupported_legacy_rank');render('#talentPlannerLegacy');return;
     }
     const {treeId:tree,goal,role,playStyle,priority}=profile;
     const query={character,tree,goal,role,playStyle,priority,rank,rankSource:'player_confirmed'};
@@ -285,6 +314,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     const tree=plan.klass.trees.find(value=>value.id===treeId);
     const names=new Map(plan.klass.trees.flatMap(value=>value.talents.map(node=>[node.id,node.name])));
     const personalFresh=plan.character.talentDetailsFresh===true&&Date.parse(plan.character.personalValidUntil)>Date.now();
+    renderedPersonalFresh=personalFresh;
     const actual=personalTalentRanks({...plan.character,talentDetailsVerified:personalFresh&&plan.character.talentDetailsVerified},plan.klass);
     const progress=compareTalentProgress(plan.history,actual,plan.character.level);
     const difference=talentAllocationDifference(plan.history,actual,plan.character.level);
@@ -341,19 +371,20 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
   }
   function renderGuide(disabled){
     if(!character||binding||busy||(!profiles.length&&!specializations.length))return '';
-    const guide=talentGuideOptions(profiles,selection);
+    const guide=talentAssistantGuide(profiles,selection,specializations);
     const fieldHtml=guide.fields.map(field=>'<label class="talent-planner-field" for="talentGuide-'+field.key+'">'+esc(field.label)+'<select id="talentGuide-'+field.key+'" data-guide-field="'+field.key+'"'+disabled+'><option value="">Bitte wählen</option>'+field.values.map(value=>'<option value="'+esc(value)+'"'+(field.chosen===value?' selected':'')+'>'+esc(labels[value]||value)+'</option>').join('')+'</select></label>').join('');
     if(!guide.profiles.length&&!guide.unavailable)return fieldHtml;
     const {treeId,recommended}=specializationSelection(guide,selection,advice);
-    const options=new Map(specializations.map(p=>[p.treeId,p.name]));
+    const options=new Map(guide.orientation.map(p=>[p.treeId,p.name]));
     for(const p of guide.profiles)options.set(p.treeId,p.name);
     const context=profile?[profile.role,profile.playStyle].map(value=>labels[value]||value).join(' · '):'';
     const explanation=recommended
-      ?'<p><strong>Unsere Empfehlung: '+esc(recommended.profile.name)+'</strong></p>'+
+      ?'<p><strong>'+esc(recommended.kind==='comparative'?'Unsere Empfehlung: ':'Derzeit verfügbar: ')+esc(recommended.profile.name)+'</strong></p>'+
         (recommended.reason?'<p>'+esc(recommended.reason)+'</p>':'')+
         (recommended.kind==='available'?'<p class="talent-point-note">Derzeit einziger fachlich freigegebener Plan für diese Auswahl; kein abschließender Vergleich aller Spezialisierungen.</p>':'')
       :guide.unavailable?'<p>Für diese Ausrichtung ist noch kein fachlich freigegebener Talentplan verfügbar.</p>'
       :'<p class="talent-point-note">Eine vergleichende Empfehlung ist für diese Auswahl noch nicht fachlich bestätigt.</p>';
+    const orientationHtml=guide.orientation.length?'<div class="talent-guide-orientation"><strong>Spielweisen für deine Auswahl</strong><ul>'+guide.orientation.map(option=>'<li><strong>'+esc(option.name)+'</strong>'+(option.focus?' · '+esc(option.focus):'')+' <small>'+esc(guide.profiles.some(p=>p.treeId===option.treeId)?'Plan fachlich freigegeben':'Plan noch in Prüfung')+'</small></li>').join('')+'</ul></div>':'';
     const specialization=options.size
       ?'<label class="talent-planner-field" for="talentPlannerProfile">Welche Spezialisierung möchtest du spielen?<select id="talentPlannerProfile"'+disabled+'><option value="">Spezialisierung wählen</option>'+[...options].map(([id,name])=>{
         const available=guide.profiles.some(p=>p.treeId===id);
@@ -361,7 +392,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
         return '<option value="'+esc(id)+'"'+(treeId===id?' selected':'')+'>'+esc(label)+'</option>';
       }).join('')+'</select></label>':'';
     const missing=treeId&&!profile?'<p role="status">Für deine gewählte Spezialisierung steht bei dieser Ausrichtung noch kein fachlich freigegebener Plan bereit. Wir ersetzen deine Wahl nicht automatisch.</p>':'';
-    return fieldHtml+explanation+specialization+missing+(guide.profiles.length?'<p class="talent-point-note">Die Empfehlung beruht auf redaktionell geprüften Pfaden. Die Gültigkeit für den aktuellen Spielstand wird beim Erstellen des Plans geprüft.</p>':'')+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
+    return fieldHtml+explanation+orientationHtml+specialization+missing+(guide.profiles.length?'<p class="talent-point-note">Die Empfehlung beruht auf redaktionell geprüften Pfaden. Die Gültigkeit für den aktuellen Spielstand wird beim Erstellen des Plans geprüft.</p>':'')+(context?'<p class="talent-point-note">Der Plan ist ausgelegt auf: '+esc(context)+'.</p>':'');
   }
   function render(focus){
     const disabled=busy?' disabled':'';
@@ -372,7 +403,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
         renderGuide(disabled))+
       (binding?'<p class="talent-point-note">Nur in diesem Browser gespeichert; keine geräteübergreifende Synchronisierung.</p>':'')+
       (profile&&!binding?'<p class="talent-point-note">Für die korrekte Anzahl der Talentpunkte benötigen wir noch eine Angabe aus dem Spiel.</p><label class="talent-planner-field" for="talentPlannerLegacy">Vermächtnisrang „Talentiert“<select id="talentPlannerLegacy"'+disabled+'><option value="">Rang im Spiel nachsehen</option>'+
-        displayList('fixedControls',[0,1,2,3,4,5],value=>'<option value="'+value+'"'+(rank===String(value)?' selected':'')+'>Rang '+value+'</option>').join('')+
+        displayList('fixedControls',[0,1,2,3,4,5],value=>'<option value="'+value+'"'+(rank===String(value)?' selected':'')+'>Rang '+value+(profile.supportedLegacyRanks?.includes(value)===false?' (noch nicht freigegeben)':'')+'</option>').join('')+
         '</select></label>':'')+
       (profile?'<button type="submit" class="talent-planner-action"'+disabled+'>'+(binding?'Gemerkten Plan prüfen':'Rang bestätigen und Plan prüfen')+'</button>':'')+
       (binding?'<button type="button" class="talent-planner-action" data-plan-forget'+disabled+'>Bindung lösen</button>':'')+
@@ -386,7 +417,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       for(const [field] of guideFields.slice(index+1))delete selection[field];
       delete selection.treeId;
       selection[key]=event.target.value;
-      const guide=talentGuideOptions(profiles,selection);
+      const guide=talentAssistantGuide(profiles,selection,specializations);
       profile=specializationSelection(guide,selection,advice).profile;
       rank='';message='';clearPlan();render('#talentGuide-'+key);
     }));
@@ -394,7 +425,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       const treeId=Number(event.target.value);
       if(Number.isSafeInteger(treeId)&&treeId>0)selection.treeId=treeId;
       else delete selection.treeId;
-      profile=specializationSelection(talentGuideOptions(profiles,selection),selection,advice).profile;
+      profile=specializationSelection(talentAssistantGuide(profiles,selection,specializations),selection,advice).profile;
       rank='';
       message='';
       clearPlan();
@@ -410,7 +441,12 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     renderPath();
     if(focus)root.querySelector(focus)?.focus();
   }
-  const recheck=()=>{if(!ensureCurrent())render();else if(plan&&root.querySelector('[data-plan-result]'))renderPath();};
+  const recheck=()=>{
+    if(!ensureCurrent()){render();return;}
+    if(!plan||root.closest('[hidden]'))return;
+    const fresh=plan.character.talentDetailsFresh===true&&Date.parse(plan.character.personalValidUntil)>Date.now();
+    if(fresh!==renderedPersonalFresh)renderPath();
+  };
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)recheck()});
   window.addEventListener('focus',recheck);
   window.addEventListener('pageshow',recheck);
@@ -420,6 +456,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     characters=roster;
     if(character&&!characters.some(c=>c.slug===character)){selectCharacter('');return}
     if(character&&changed){selectCharacter(character,{keepSelection:true});return}
+    if(!changed&&root.querySelector('form')){recheck();return;}
     render();
   }};
 }
