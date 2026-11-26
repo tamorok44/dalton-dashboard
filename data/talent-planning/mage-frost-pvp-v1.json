@@ -346,13 +346,42 @@
     "editorialDecision": "Prioritize control and defensive Frost milestones, then improved Counterspell and mana. Unlike mixed questing, defensive reset and silence are explicit priorities. No assumption of a simultaneous double hit from one charge.",
     "unresolved": [
       "Current server-side Frostbite/Fingers of Frost proc and charge consumption behavior including AoE and downranking remains unverified.",
-      "No measured PvP advantage and no Legacy rank 1–5 gates."
+      "No measured PvP advantage and no Legacy rank 1–5 gates.",
+      "Erneute Prüfung 26.11.: Eisbarriere-Absorptionswert nicht unabhängig exakt bestätigt; keine feste Schutzmenge. Frostbite als tatsächliche Wurzelkontrolle und Eisige Finger für situative Angriffsfenster, keine additiven Chancen. Vergleich mit 17/0/34-Alternative ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://www.wowhead.com/forever/guide/classes/mage/frost/dps-leveling-tips",
+          "contribution": "Unterschiedliche Prioritäten für Dungeon und Solo, Frostbite/Fingers of Frost nicht additiv; vorgeschlagene Umskillung nicht übernommen."
+        },
+        {
+          "url": "https://undying.app/classes/mage/frost",
+          "contribution": "Frost- und Arkan-Kombinationen für Gruppen; Winterkälte/Kältekegel und tiefer Frost als Alternativen."
+        },
+        {
+          "url": "https://www.skill-capped.com/wowarticles/forever/guides/frost-mage-pvp-guide/talents/",
+          "contribution": "PvP-Alternative 17/0/34 mit Frost-Kontrolle und verbessertem Gegenzauber."
+        },
+        {
+          "url": "https://wowforevertalents.com/mage/talents/ice-barrier/",
+          "contribution": "Build 71139: Talentfunktion und Cold Snap-Voraussetzung; Absorptionswert nicht als Servermessung übernehmen."
+        },
+        {
+          "url": "https://theforeverera.com/en/classes/mage/frost/",
+          "contribution": "Winterkälte verstärkt Kältekegel nach Frostblitz und verstärkter Eislanze; kein pauschaler Frostschadensbonus."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "releaseEligible": false
     }
   }
 }
