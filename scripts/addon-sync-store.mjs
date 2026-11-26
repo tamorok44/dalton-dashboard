@@ -33,7 +33,10 @@ export function prepareAddonSync(previous,payload,{now=Date.now()}={}){
     const prior=sections[name];
     const before=epoch(prior?.capturedAt),after=epoch(value?.capturedAt);
     const same=prior&&digest(prior)===digest(value);
-    if(Number.isFinite(after)&&(after>now+10*60*1000||after<now-30*24*60*60*1000))throw new Error('SYNC_CONFLICT: unplausible Aufnahmezeit '+name);
+    if(Number.isFinite(after)&&(after>now+10*60*1000||after<now-30*24*60*60*1000)){
+      if(same)continue;
+      throw new Error('SYNC_CONFLICT: unplausible Aufnahmezeit '+name);
+    }
     if(Number.isFinite(before)&&(!Number.isFinite(after)||after<before||after===before&&!same)){
       if(same)continue;
       throw new Error('SYNC_CONFLICT: ältere oder widersprüchliche Aufnahme '+name);
