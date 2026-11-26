@@ -1,4 +1,4 @@
-export const HUNTER_PET_RULEBOOK_VERSION='2026.11.25.3';
+export const HUNTER_PET_RULEBOOK_VERSION='2026.11.26.1';
 // Versioniertes Forever-Jägerwissen. Live-Zustand eines konkreten Tiers kommt ausschließlich von Blizzard.
 export const hunterPetFamilies=Object.freeze({
   fox:Object.freeze({
@@ -16,9 +16,9 @@ export function hunterPetFamily(slug){
 
 export const hunterPetMechanics=Object.freeze({
   inherited:Object.freeze({
-    healthPerHunterStamina:Object.freeze({ruleId:'pet.scaling',factor:2,version:1}),
-    armorFromHunter:Object.freeze({ruleId:'pet.scaling',factor:0.30,version:1}),
-    critFromHunter:Object.freeze({ruleId:'pet.scaling',sourceRuleId:'pet.crit.inheritance',factor:1,displayKind:'inherited_component',version:2})
+    healthPerHunterStamina:Object.freeze({ruleId:'pet.scaling.health',factor:2,version:1}),
+    armorFromHunter:Object.freeze({ruleId:'pet.scaling.armor',factor:0.30,version:1}),
+    critFromHunter:Object.freeze({ruleId:'pet.scaling.crit',sourceRuleId:'pet.crit.inheritance',factor:1,displayKind:'inherited_component',version:2})
   }),
   focus:Object.freeze({ruleId:'pet.focus',maximum:150,regenPerSecond:10,version:1}),
   globalHealth:Object.freeze({ruleId:'pet.health.global',factor:1.15,percent:115,version:1})
@@ -82,7 +82,7 @@ export function hunterPetCombatProfile(character){
         unitName:crit.name
       },
       attackPower:{
-        ruleId:'pet.scaling',
+        ruleId:'pet.scaling.ap',
         value:null,
         reason:'Das 10-%-Modell bleibt Referenzwissen; Blizzard stellt in der aktuellen Online-Armory die höhere Nahkampf-/Fernkampf-Angriffskraft nicht getrennt und damit nicht eindeutig bereit.'
       },

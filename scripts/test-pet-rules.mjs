@@ -84,9 +84,11 @@ function fetchFrom(currentPages,failPart=null,alterDb2=null){
 const now=new Date('2026-11-22T04:07:00.000Z');
 const first=await verifyPetRulebook({fetchImpl:fetchFrom(pages),now});
 assert.equal(first.rulebookVersion,PET_RULEBOOK_VERSION);
-assert.equal(first.overall,'verified');
-assert.equal(Object.keys(first.rules).length,8);
-assert.ok(Object.values(first.rules).every(rule=>rule.status==='verified'));
+assert.equal(first.overall,'review_required');
+assert.equal(Object.keys(first.rules).length,12);
+assert.ok(Object.values(first.rules).filter(rule=>!['pet.scaling.crit','pet.autoswing.crit'].includes(rule.id)).every(rule=>rule.status==='verified'));
+assert.equal(first.rules['pet.scaling.crit'].status,'review_required');
+assert.equal(first.rules['pet.autoswing.crit'].status,'review_required');
 assert.ok(Object.values(first.sources).every(source=>source.status==='verified'));
 assert.equal(first.sources.bindFox.build,'1.60.1.70959');
 assert.equal(first.sources.efficientPets.build,'70959');
@@ -95,13 +97,13 @@ assert.equal(first.rules['pet.scaling'].evidence,'reference_model');
 assert.equal(first.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
 assert.equal(first.rules['pet.crit.inheritance'].evidence,'official');
 assert.equal(first.rules['pet.expertise'].evidence,'official');
-assert.equal(first.rules['pet.autoswing.crit'].evidence,'measured');
+assert.equal(first.rules['pet.autoswing.crit'].evidence,'official');
 assert.equal(first.rules['pet.focus'].evidence,'client');
 assert.equal(first.rules['pet.health.global'].evidence,'official');
 assert.equal(first.rules['fox.family.profile'].evidence,'client');
 
 const same=await verifyPetRulebook({fetchImpl:fetchFrom(pages),previousState:first,now:new Date('2026-11-22T05:07:00.000Z')});
-assert.equal(same.overall,'verified','Unchanged rule evidence stays verified');
+assert.equal(same.overall,'review_required','Unresolved numeric crit stays blocked even with unchanged sources');
 assert.equal(same.sources.blizzardHotfix.baselineDigest,first.sources.blizzardHotfix.baselineDigest);
 
 const changedHotfix={...pages,
@@ -111,10 +113,8 @@ const changedHotfix={...pages,
 const changed=await verifyPetRulebook({fetchImpl:fetchFrom(changedHotfix),previousState:first,now:new Date('2026-11-22T06:07:00.000Z')});
 assert.equal(changed.sources.blizzardHotfix.status,'review_required','New pet hotfix evidence freezes the old baseline');
 assert.equal(changed.overall,'review_required');
-for(const id of ['fox.family.profile','fox.training','pet.scaling','pet.crit.inheritance','pet.expertise','pet.focus','pet.health.global']){
-  assert.equal(changed.rules[id].status,'review_required',id+' is blocked by a changed official pet hotfix baseline');
-}
-assert.equal(changed.rules['pet.autoswing.crit'].status,'verified','Independent controlled measurement remains available');
+for(const id of ['pet.scaling','pet.scaling.armor'])assert.equal(changed.rules[id].status,'review_required');
+for(const id of ['fox.family.profile','fox.training','pet.scaling.health','pet.scaling.ap','pet.crit.inheritance','pet.expertise','pet.focus','pet.health.global'])assert.equal(changed.rules[id].status,'verified',id+' is independent from the armor hotfix');
 
 const historicalBuildOnly={...pages,
   'foreverdb.net/changelog':pages['foreverdb.net/changelog'].replace('1.60.1.70959','1.60.1.70958')
@@ -151,20 +151,41 @@ assert.equal(focusUnavailable.sources.foreverSimFocusAudit.status,'source_unavai
 assert.equal(focusUnavailable.rules['pet.focus'].status,'source_unavailable','Focus fails closed when a required audit source is unavailable');
 assert.equal(focusUnavailable.rules['pet.scaling'].status,'verified','Scaling remains independently verified');
 
-const measurementUnavailable=await verifyPetRulebook({
-  fetchImpl:fetchFrom(pages,'4evrbugs.com'),
-  previousState:first,
-  now:new Date('2026-11-22T10:07:00.000Z')
-});
-assert.equal(measurementUnavailable.rules['pet.autoswing.crit'].status,'source_unavailable');
-assert.equal(measurementUnavailable.rules['pet.crit.inheritance'].status,'verified','Official crit inheritance source remains independent from the measured white-swing discrepancy');
+const fixedLine='<li>Fixed an issue where pets had 0% critical strike chance on melee basic attacks.</li>';
+const fixedPages={...pages,'worldofwarcraft.blizzard.com/en-us/news/24315281':pages['worldofwarcraft.blizzard.com/en-us/news/24315281']+fixedLine+fixedLine+"<li>Summoned Hawks now attack the target they're summoned on even if the player's pet is set to Passive.</li><li>Summoned Hawks are now dismissed when the Dismiss Pet spell is completed.</li>"};
+const productionLegacy=structuredClone(first);
+productionLegacy.rulebookVersion='2026.11.25.3';
+delete productionLegacy.sources.blizzardHotfix.baselineEvidence;
+const approvedFix=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages),previousState:productionLegacy,now});
+assert.equal(approvedFix.sources.blizzardHotfix.status,'verified','Only exact reviewed hotfix additions migrate the old digest');
+assert.equal(approvedFix.rules['pet.autoswing.crit'].status,'verified');
+assert.equal(approvedFix.rules['pet.scaling.crit'].status,'review_required');
+for(const id of ['fox.family.profile','fox.training','pet.scaling.health','pet.scaling.armor','pet.scaling.ap','pet.crit.inheritance','pet.expertise','pet.focus','pet.health.global'])assert.equal(approvedFix.rules[id].status,'verified',id);
+const repeatFix=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages,'4evrbugs.com'),previousState:approvedFix,now});
+assert.equal(repeatFix.rules['pet.autoswing.crit'].status,'verified','Historical bug tracker is no longer a live dependency');
+const unknownPages={...fixedPages,'worldofwarcraft.blizzard.com/en-us/news/24315281':fixedPages['worldofwarcraft.blizzard.com/en-us/news/24315281']+'<li>Hunter pets now behave differently in combat.</li>'};
+const badMigration=await verifyPetRulebook({fetchImpl:fetchFrom(unknownPages),previousState:productionLegacy,now});
+assert.equal(badMigration.sources.blizzardHotfix.status,'review_required');
+assert.equal(badMigration.rules['fox.family.profile'].status,'review_required','Unknown legacy delta must not be approved');
+const unknownAfter=await verifyPetRulebook({fetchImpl:fetchFrom(unknownPages),previousState:approvedFix,now});
+assert.equal(unknownAfter.rules['pet.focus'].status,'review_required','Unknown new delta fails closed');
+const postArmor={...fixedPages,'worldofwarcraft.blizzard.com/en-us/news/24315281':fixedPages['worldofwarcraft.blizzard.com/en-us/news/24315281']+'<li>Hunter pets now gain a different amount of Armor from their owner.</li>'};
+const postArmorState=await verifyPetRulebook({fetchImpl:fetchFrom(postArmor),previousState:approvedFix,now});
+assert.equal(postArmorState.rules['pet.scaling.armor'].status,'review_required');
+assert.equal(postArmorState.rules['pet.scaling.health'].status,'verified');
+assert.equal(postArmorState.rules['pet.autoswing.crit'].status,'verified');
+const officialOffline=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages,'worldofwarcraft.blizzard.com'),previousState:approvedFix,now});
+assert.equal(officialOffline.rules['pet.autoswing.crit'].status,'source_unavailable');
+const recovered=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages),previousState:officialOffline,now});
+assert.equal(recovered.rules['pet.autoswing.crit'].status,'verified');
+
 
 const client=publicPetRuleState(first);
-assert.equal(client.overall,'verified');
+assert.equal(client.overall,'review_required');
 assert.ok(!('digest' in client.sources.blizzardHotfix),'Internal fingerprints are never exposed to the browser');
 assert.equal(client.rules['pet.scaling'].evidenceLabel,'Referenzmodell');
 assert.equal(client.rules['pet.crit.inheritance'].evidenceLabel,'Offiziell');
-assert.equal(client.rules['pet.autoswing.crit'].evidenceLabel,'Gemessen');
+assert.equal(client.rules['pet.autoswing.crit'].evidenceLabel,'Offiziell');
 assert.equal(client.rules['pet.expertise'].evidenceLabel,'Offiziell');
 assert.equal(client.rules['pet.focus'].evidenceLabel,'Clientdaten');
 assert.equal(client.rules['pet.health.global'].evidenceLabel,'Offiziell');

@@ -105,7 +105,7 @@ globalThis.fetch=async (url,options={})=>{
     assert.ok(spec,'Only the reviewed DB2 datasets are requested');
     return {ok:true,status:200,text:async()=>[spec.header,...spec.rows].join('\n')};
   }
-  if(sourceUrl.includes('worldofwarcraft.blizzard.com/en-us/news/24315281'))return {ok:true,status:200,text:async()=>'<li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li>'};
+  if(sourceUrl.includes('worldofwarcraft.blizzard.com/en-us/news/24315281'))return {ok:true,status:200,text:async()=>'<li>Hunter Pets erroneously had 150% of their normal health. This is now corrected to 115% of their normal health.</li><li>Fixed an issue where pets had 0% critical strike chance on melee basic attacks.</li>'};
   if(sourceUrl.includes('us.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes'))return {ok:true,status:200,text:async()=>`Pets now correctly benefit from Expertise.
 Fixed an issue where pets were only ever inheriting the player's Melee Critical Strike chance instead of whichever is higher, melee or ranged.`};
   if(sourceUrl.includes('4evrbugs.com/bug/556'))return {ok:true,status:200,text:async()=>`White swings get none of the crit inherited from the hunter. Claw and Bite crit at about the Hunter's crit chance.`};
@@ -178,11 +178,13 @@ try{
   assert.equal(result.payload.persisted,true);
   assert.ok(saved,'Redis contains a durable snapshot');
   assert.ok(petRulesSaved,'Redis contains a durable Pet rule state');
-  assert.equal(result.payload.petRules.overall,'verified','Rule guard is checked before the profile refresh');
+  assert.equal(result.payload.petRules.overall,'review_required','Unresolved numeric crit is retained in the rule guard');
+  assert.equal(result.payload.petRules.rules['pet.scaling.health'].status,'verified');
   assert.equal(result.payload.petRules.rules['pet.scaling'].evidence,'reference_model');
   assert.equal(result.payload.petRules.rules['pet.crit.inheritance'].evidence,'official');
   assert.equal(result.payload.petRules.rules['pet.expertise'].evidence,'official');
-  assert.equal(result.payload.petRules.rules['pet.autoswing.crit'].evidence,'measured');
+  assert.equal(result.payload.petRules.rules['pet.autoswing.crit'].evidence,'official');
+  assert.equal(result.payload.petRules.rules['pet.autoswing.crit'].status,'verified');
   assert.equal(result.payload.petRules.sources.foreverDbBuild.build,'1.60.1.71091');
   assert.ok(Array.isArray(result.payload.petRules.history)&&result.payload.petRules.history.length>0,'Rule state transitions are persisted and exposed');
   assert.ok(result.payload.changes>0,'Manual refresh reports meaningful changes');
