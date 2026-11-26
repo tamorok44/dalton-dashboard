@@ -103,12 +103,12 @@
       "rank": 1
     },
     {
-      "talentId": 105947,
-      "rank": 2
-    },
-    {
       "talentId": 105945,
       "rank": 1
+    },
+    {
+      "talentId": 105947,
+      "rank": 2
     },
     {
       "talentId": 105944,
@@ -270,13 +270,18 @@
     },
     {
       "talentId": 105947,
-      "count": 2,
+      "count": 1,
       "reason": "Kritischen Fähigkeitenschaden erhöhen."
     },
     {
       "talentId": 105945,
       "count": 1,
       "reason": "Mehrzielangriffe ermöglichen."
+    },
+    {
+      "talentId": 105947,
+      "count": 1,
+      "reason": "Kritischen Fähigkeitenschaden erhöhen."
     },
     {
       "talentId": 105944,
@@ -341,17 +346,37 @@
       "warrior-outpost-2311",
       "official-hotfix-nov25"
     ],
-    "editorialDecision": "Two-handed pressure with Mortal Strike, more Hamstring-related control and secondary rage/control. No guaranteed root or PvP uptime.",
+    "editorialDecision": "Gemischtes Waffen-PvP ohne Umskillung: Zweihanddruck, Weitreichende Stöße auf 30, Tödlicher Stoß auf 40, Bewegungsbindung und Waffenmeister für die gewählte Spielweise. Durchdringendes Heulen auf 51 als situative Flächenkontrolle; Reichweite nicht voraussetzen. Wutgewinn statt stärkerer Schrei-Spezialisierung ist eine redaktionelle Abwägung, keine gemessene PvP-Überlegenheit.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and current server-hotfix reconciliation still required. The cited guides support the general play goal, not the exact custom chronology.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "November 25 Weaponmaster reapplication on battleground death corrected; earlier rage/cleave hotfixes must be reviewed before approval."
+      "Exakte aktuelle Reichweite von Durchdringendem Heulen (105935) nicht unabhängig gemessen; Interaktion mit Donnernder Stimme und abweichende Wut-/Kontroll-Prioritäten der Guides weiter prüfen.",
+      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert.",
+      "Vollständige offizielle Hotfixprüfung und reguläre CI-Freigabe noch ausstehend."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://skill-capped-wow-articles.vercel.app/wowarticles/forever/guides/arms-warrior-pvp-guide/talents/",
+          "contribution": "32/19-Schadensvariante; Waffenkern, Bewegungsbindung als Präferenz und Flächenverlangsamung."
+        },
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/warrior-pvp-guide",
+          "contribution": "Alternative Schrei-Spezialisierung statt Wutgewinn; keine direkte Messung unseres Pfads."
+        },
+        {
+          "url": "https://wowforeverbuilder.com/builds/arms-warrior-pvp/",
+          "contribution": "31/20-Alternative mit abweichender Reihenfolge; kein Nachweis unserer Chronologie."
+        }
+      ],
+      "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
+      "releaseEligible": false
     }
   }
 }
