@@ -434,7 +434,7 @@ for(const entry of release.revalidations??[]){
   auditRevalidation(entry,plans,{evidence,packs},snapshots);
 }
 const bearPlan=plans.find(p=>p.id==='druid-feral-dungeons-tank-group-balanced');
-assert.ok(bearPlan&&bearPlan.status==='research_only');
+assert.ok(bearPlan&&bearPlan.status==='approved');
 assert.deepEqual(validatedRanks.get(JSON.stringify([bearPlan.id,bearPlan.version])),[0]);
 assert.ok(!bearPlan.points.some(p=>[104951,113563].includes(p.talentId)),'Bear route deliberately avoids cat-specific mechanic');
 // Distinct goal-specific research paths, no release without full evidence.
@@ -710,9 +710,9 @@ for(const [id,distribution] of [["hunter-beast-mastery-dungeons",[30,21,0]],["hu
   assert.ok(p.points.every(step=>![104961,104964].includes(step.talentId)));
 }
 
-for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347":0}],["druid-balance-pvp",{"11328":30,"11340":21,"11347":0}],["druid-feral-dungeons-damage",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-damage",{"11328":0,"11340":21,"11347":30}],["druid-feral-leveling-tank",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-tank",{"11328":0,"11340":21,"11347":30}],["druid-restoration-leveling",{"11328":20,"11340":31,"11347":0}],["druid-restoration-pvp",{"11328":8,"11340":32,"11347":11}]]){
+for(const [id,dist] of [["druid-balance-dungeons",{"11328":31,"11340":20,"11347":0}],["druid-balance-pvp",{"11328":30,"11340":21,"11347":0}],["druid-feral-dungeons-damage",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-damage",{"11328":0,"11340":16,"11347":35}],["druid-feral-leveling-tank",{"11328":0,"11340":12,"11347":39}],["druid-feral-pvp-tank",{"11328":0,"11340":21,"11347":30}],["druid-restoration-leveling",{"11328":20,"11340":31,"11347":0}],["druid-restoration-pvp",{"11328":8,"11340":32,"11347":11}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status==='research_only');
+ assert.ok(p&&p.status===(id.startsWith('druid-feral-')?'approved':'research_only'));
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -772,4 +772,8 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
 
 for(const [id,milestones] of [['hunter-marksmanship-dungeons',[[105007,20],[105004,25],[104999,30],[104997,40]]],['hunter-survival-leveling',[[104981,30],[104984,40]]],['hunter-survival-pvp',[[104981,30],[105000,60]]],['paladin-protection-dungeons',[[105628,30],[110875,40]]],['paladin-protection-leveling',[[105628,35],[110875,45]]]]){
  const p=plans.find(x=>x.id===id);for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+
+for(const [id,milestones] of [['druid-feral-dungeons-damage',[[104944,20],[113563,40],[104956,41]]],['druid-feral-leveling-mixed-balanced',[[104949,25],[113563,40],[104956,41]]],['druid-feral-leveling-tank',[[104944,20],[104949,25],[104956,40]]],['druid-feral-dungeons-tank-group-balanced',[[104944,20],[104949,25],[104956,40]]],['druid-feral-pvp-damage',[[113563,40],[104912,60]]],['druid-feral-pvp-tank',[[104921,60]]]]){
+ const p=plans.find(x=>x.id===id);assert.equal(p.status,'approved');for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }

@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 11,
   "treeId": 11347,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -66,16 +66,16 @@
       "rank": 3
     },
     {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
       "talentId": 104948,
       "rank": 1
     },
     {
       "talentId": 104948,
       "rank": 2
-    },
-    {
-      "talentId": 104944,
-      "rank": 1
     },
     {
       "talentId": 104946,
@@ -102,28 +102,28 @@
       "rank": 3
     },
     {
+      "talentId": 104951,
+      "rank": 1
+    },
+    {
       "talentId": 104947,
       "rank": 1
+    },
+    {
+      "talentId": 104947,
+      "rank": 2
     },
     {
       "talentId": 104955,
       "rank": 1
     },
     {
-      "talentId": 104947,
-      "rank": 2
-    },
-    {
       "talentId": 104950,
       "rank": 1
     },
     {
       "talentId": 104950,
       "rank": 2
-    },
-    {
-      "talentId": 104951,
-      "rank": 1
     },
     {
       "talentId": 104953,
@@ -144,6 +144,10 @@
     {
       "talentId": 104953,
       "rank": 5
+    },
+    {
+      "talentId": 113563,
+      "rank": 1
     },
     {
       "talentId": 104956,
@@ -168,10 +172,6 @@
     {
       "talentId": 104954,
       "rank": 5
-    },
-    {
-      "talentId": 113563,
-      "rank": 1
     },
     {
       "talentId": 104940,
@@ -239,107 +239,102 @@
     {
       "talentId": 104938,
       "count": 5,
-      "reason": "Wut- und Energiekosten häufiger Form-Fähigkeiten senken"
+      "reason": "Kosten zentraler Formfähigkeiten senken."
     },
     {
       "talentId": 104943,
       "count": 2,
-      "reason": "Ausweichchance verbessern und Bewegung in Katzengestalt vorbereiten"
+      "reason": "Bewegung in Katzengestalt und Ausweichen verbessern."
     },
     {
       "talentId": 104942,
       "count": 3,
-      "reason": "Basisrüstung für Katzen- und Bärengestalt verbessern"
-    },
-    {
-      "talentId": 104948,
-      "count": 2,
-      "reason": "Schaden häufiger Formangriffe erhöhen und Aufschlitzen vorbereiten"
+      "reason": "Rüstung in Gestalt erhöhen."
     },
     {
       "talentId": 104944,
       "count": 1,
-      "reason": "Wilde Attacke für Annäherung und Unterbrechungen freischalten"
+      "reason": "Wilde Attacke als situative Annäherung und Kontrolle freischalten; Gestaltvoraussetzungen beachten."
+    },
+    {
+      "talentId": 104948,
+      "count": 2,
+      "reason": "Häufige Formangriffe stärken und Aufschlitzen vorbereiten."
     },
     {
       "talentId": 104946,
       "count": 2,
-      "reason": "Kritchance in beiden Formen für Blutraserei vorbereiten"
+      "reason": "Kritische Trefferchance in beiden Kampfgestalten stärken."
     },
     {
       "talentId": 104949,
       "count": 1,
-      "reason": "Aufschlitzen als stapelbare Blutung und Bedrohungsquelle freischalten"
+      "reason": "Aufschlitzen für stapelbare Blutung und Bärenbedrohung freischalten."
     },
     {
       "talentId": 104952,
       "count": 3,
-      "reason": "Angriffskraft und Voraussetzung für Beißen und Reißen stärken"
-    },
-    {
-      "talentId": 104947,
-      "count": 1,
-      "reason": "Wut beziehungsweise Combopunkte bei kritischen Treffern unterstützen"
-    },
-    {
-      "talentId": 104955,
-      "count": 1,
-      "reason": "Kritchance der Gruppe erhöhen und Urtümlichen Biss vorbereiten"
-    },
-    {
-      "talentId": 104947,
-      "count": 1,
-      "reason": "Combopunkt- und Wutunterstützung vervollständigen"
-    },
-    {
-      "talentId": 104950,
-      "count": 2,
-      "reason": "Kritischen Nahkampfschaden und situative Heilung verbessern"
+      "reason": "Angriffskraft in Gestalt erhöhen und Beißen und Reißen vorbereiten."
     },
     {
       "talentId": 104951,
       "count": 1,
-      "reason": "Wilden Biss verbessern und Machtverschiebung vorbereiten"
+      "reason": "Raubtierdisziplin als Voraussetzung für Machtverschiebung freischalten."
+    },
+    {
+      "talentId": 104947,
+      "count": 2,
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
+    },
+    {
+      "talentId": 104955,
+      "count": 1,
+      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses freischalten."
+    },
+    {
+      "talentId": 104950,
+      "count": 2,
+      "reason": "Kritischen Nahkampfschaden und Heilung in Abhängigkeit von Intelligenz unterstützen."
     },
     {
       "talentId": 104953,
       "count": 5,
-      "reason": "Schaden gegen blutende Gegner in beiden Rollen verbessern"
-    },
-    {
-      "talentId": 104956,
-      "count": 1,
-      "reason": "Eine starke Bedrohungsfähigkeit für Bären freischalten"
-    },
-    {
-      "talentId": 104954,
-      "count": 5,
-      "reason": "Ausweichchance und Wut in Bärengestalt verbessern"
+      "reason": "Nahkampffähigkeiten gegen blutende Ziele stärken."
     },
     {
       "talentId": 113563,
       "count": 1,
-      "reason": "Energieoption für längere Einsätze in Katzengestalt freischalten"
+      "reason": "Machtverschiebung als Energieoption in Katzengestalt freischalten; Manakosten und Abklingzeit beachten."
+    },
+    {
+      "talentId": 104956,
+      "count": 1,
+      "reason": "Urtümlichen Biss als starke Bedrohungsfähigkeit für Bären freischalten."
+    },
+    {
+      "talentId": 104954,
+      "count": 5,
+      "reason": "Ausweichen und Wut in Bärengestalt unterstützen."
     },
     {
       "talentId": 104940,
       "count": 2,
-      "reason": "Prankenhieb und Schleichen für häufige Gruppen und Wege unterstützen"
+      "reason": "Prankenhieb und Schleichen für Gruppen und Wege unterstützen."
     },
     {
       "talentId": 104958,
       "count": 5,
-      "reason": "Rollenübergreifende Form- und Attributsynergien ergänzen"
+      "reason": "Herz der Wildnis: Intelligenz sowie gestaltspezifisch Ausdauer oder Stärke erhöhen."
     },
     {
       "talentId": 104922,
       "count": 5,
-      "reason": "Schaden erhöhen und die Zauberzeit unterstützender Heilzauber verkürzen"
+      "reason": "Verursachten Schaden erhöhen und Heilzauber beschleunigen."
     },
     {
       "talentId": 104919,
       "count": 2,
-      "reason": "Ressourcenkosten situativer Gestaltwechsel verringern"
+      "reason": "Manakosten von Gestaltwechseln reduzieren."
     }
   ],
   "research": {
@@ -352,18 +347,33 @@
       "feral-shifting-power-history",
       "official-hotfix-nov25"
     ],
-    "editorialDecision": "One mixed progression for players alternating Cat leveling and Bear tanking in level-appropriate dungeons. Favor form-independent gains and timely threat tools. Reserve dedicated solo-speed and dedicated dungeon-tank comparisons.",
+    "editorialDecision": "Der gemischte Pfad hält beide Gestalten spielbar. Aufschlitzen auf 25 ist früher als im Katzen-Dungeonpfad, Machtverschiebung auf 40 unterstützt Questen und Urtümlicher Biss auf 41 das Tanken. Danach Natural Reaction für Bärenhaltbarkeit, später Attribute und geringere Gestaltwechselkosten. Kein klassisches Powershifting oder feste Manakosten. Für regelmäßige Tank-Gruppen den eigenständigen Bärenpfad wählen.",
     "unresolved": [
-      "Current build attestation and client minimum levels",
-      "Compare early Swipe threat against extra durability in representative dungeon pulls",
-      "Verify the current cost and usable energy of Powershift",
-      "Build 71139 hotfix-cache reference and older client ability data both report 55% base mana to 40 energy for Shifting Power; check cost reductions and actual use. Official 25 Nov Balance talent rework and current German preview projection disagree, so require reconciled class source before approval. Keep dedicated dungeon-tank review distinct from mixed leveling."
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Gleichgewichtsbaum und Rangzauberzuordnung von Traumzustand noch nicht vollständig abgeglichen; diese Vergabe verwendet ausschließlich Wilder Kampf/Wiederherstellung. Keine vollständige Klassenfreigabe.",
+      "Effektive Manakosten von Machtverschiebung nicht numerisch behauptet."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
-      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Wilder Kampf",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-feral-leveling-mixed-balanced-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Der gemischte Pfad hält beide Gestalten spielbar. Aufschlitzen auf 25 ist früher als im Katzen-Dungeonpfad, Machtverschiebung auf 40 unterstützt Questen und Urtümlicher Biss auf 41 das Tanken. Danach Natural Reaction für Bärenhaltbarkeit, später Attribute und geringere Gestaltwechselkosten. Kein klassisches Powershifting oder feste Manakosten. Für regelmäßige Tank-Gruppen den eigenständigen Bärenpfad wählen.",
+    "adviceSummary": "Gemischtes Leveln als Katze und gelegentliches Bärentanken: Aufschlitzen auf 25, Machtverschiebung auf 40, Urtümlicher Biss auf 41.",
+    "evidenceIds": [
+      "druid-feral-leveling-mixed-balanced-rank0-71139-editorial-1",
+      "druid-feral-leveling-mixed-balanced-rank0-71139-editorial-2",
+      "druid-feral-leveling-mixed-balanced-rank0-71139-editorial-3"
+    ]
   }
 }

@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 11,
   "treeId": 11347,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -43,15 +43,15 @@
       "rank": 5
     },
     {
-      "talentId": 104940,
+      "talentId": 104939,
       "rank": 1
     },
     {
-      "talentId": 104940,
+      "talentId": 104939,
       "rank": 2
     },
     {
-      "talentId": 104940,
+      "talentId": 104939,
       "rank": 3
     },
     {
@@ -63,16 +63,16 @@
       "rank": 2
     },
     {
+      "talentId": 104944,
+      "rank": 1
+    },
+    {
       "talentId": 104948,
       "rank": 1
     },
     {
       "talentId": 104948,
       "rank": 2
-    },
-    {
-      "talentId": 104944,
-      "rank": 1
     },
     {
       "talentId": 104946,
@@ -215,15 +215,15 @@
       "rank": 5
     },
     {
-      "talentId": 104945,
+      "talentId": 104940,
       "rank": 1
     },
     {
-      "talentId": 104945,
+      "talentId": 104940,
       "rank": 2
     },
     {
-      "talentId": 104945,
+      "talentId": 104940,
       "rank": 3
     }
   ],
@@ -231,17 +231,22 @@
     {
       "talentId": 104938,
       "count": 5,
-      "reason": "Kosten zentraler Formfähigkeiten reduzieren."
+      "reason": "Kosten zentraler Formfähigkeiten senken."
     },
     {
-      "talentId": 104940,
+      "talentId": 104939,
       "count": 3,
-      "reason": "Prankenhieb früh für Gruppenbedrohung und Schaden stärken."
+      "reason": "Wut beim Bärenwechsel und Erhalt vorhandener Katzenenergie verbessern; kein klassisches Powershifting voraussetzen."
     },
     {
       "talentId": 104943,
       "count": 2,
-      "reason": "Ausweichen in Bärengestalt und Beweglichkeit beim Questen verbessern."
+      "reason": "Bewegung in Katzengestalt und Ausweichen verbessern."
+    },
+    {
+      "talentId": 104944,
+      "count": 1,
+      "reason": "Wilde Attacke als situative Annäherung und Kontrolle freischalten; Gestaltvoraussetzungen beachten."
     },
     {
       "talentId": 104948,
@@ -249,79 +254,74 @@
       "reason": "Häufige Formangriffe stärken und Aufschlitzen vorbereiten."
     },
     {
-      "talentId": 104944,
-      "count": 1,
-      "reason": "Wilde Attacke für Annäherung und Unterbrechung."
-    },
-    {
       "talentId": 104946,
       "count": 2,
-      "reason": "Kritische Trefferchance und Voraussetzung für Blutraserei."
+      "reason": "Kritische Trefferchance in beiden Kampfgestalten stärken."
     },
     {
       "talentId": 104949,
       "count": 1,
-      "reason": "Aufschlitzen als stapelbare Bedrohungsquelle auf Stufe 25."
+      "reason": "Aufschlitzen für stapelbare Blutung und Bärenbedrohung freischalten."
     },
     {
       "talentId": 104942,
       "count": 3,
-      "reason": "Basisrüstung in Gestalt erhöhen."
+      "reason": "Rüstung in Gestalt erhöhen."
     },
     {
       "talentId": 104947,
       "count": 1,
-      "reason": "Zusätzliche Wut bei kritischen Treffern vorbereiten."
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
     },
     {
       "talentId": 104955,
       "count": 1,
-      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses."
+      "reason": "Rudelführer zur Gruppenunterstützung und Vorbereitung des Urtümlichen Bisses freischalten."
     },
     {
       "talentId": 104947,
       "count": 1,
-      "reason": "Wutunterstützung vervollständigen."
+      "reason": "Situative zusätzliche Wut oder Combopunkte bei kritischen Treffern ermöglichen."
     },
     {
       "talentId": 104952,
       "count": 3,
-      "reason": "Angriffskraft in Gestalt und Voraussetzung für Beißen und Reißen."
+      "reason": "Angriffskraft in Gestalt erhöhen und Beißen und Reißen vorbereiten."
     },
     {
       "talentId": 104954,
       "count": 5,
-      "reason": "Ausweichen und Wut in Bärengestalt vor dem Abschluss ausbauen."
+      "reason": "Ausweichen und Wut in Bärengestalt unterstützen."
     },
     {
       "talentId": 104956,
       "count": 1,
-      "reason": "Urtümlichen Biss für Bedrohung auf Stufe 40 freischalten."
+      "reason": "Urtümlichen Biss als starke Bedrohungsfähigkeit für Bären freischalten."
     },
     {
       "talentId": 104958,
       "count": 5,
-      "reason": "Ressourcenreserve durch Intelligenz ergänzen."
+      "reason": "Herz der Wildnis: Intelligenz sowie gestaltspezifisch Ausdauer oder Stärke erhöhen."
     },
     {
       "talentId": 104922,
       "count": 5,
-      "reason": "Zauberzeit unterstützender Heilungen verkürzen."
+      "reason": "Verursachten Schaden erhöhen und Heilzauber beschleunigen."
     },
     {
       "talentId": 104920,
       "count": 2,
-      "reason": "Manaregeneration beim Zaubern ausbauen."
+      "reason": "Manaregeneration beim Zaubern unterstützen."
     },
     {
       "talentId": 104953,
       "count": 5,
-      "reason": "Nahkampfschaden gegen blutende Ziele erhöhen."
+      "reason": "Nahkampffähigkeiten gegen blutende Ziele stärken."
     },
     {
-      "talentId": 104945,
+      "talentId": 104940,
       "count": 3,
-      "reason": "Wutkosten von Aufschlitzen reduzieren."
+      "reason": "Prankenhieb und Schleichen für Gruppen und Wege unterstützen."
     }
   ],
   "research": {
@@ -330,17 +330,33 @@
       "icyveins-feral-pve",
       "grindclassic-feral-leveling"
     ],
-    "editorialDecision": "Bear-first leveling with earlier cross-form utility than the dedicated dungeon path.",
+    "editorialDecision": "Beim gemischten Leveln mit Tankrolle werden frühe Furor-Punkte statt sofortiger Prankenhieb-Spezialisierung eingesetzt. Wilde Attacke auf 20, Aufschlitzen auf 25, Urtümlicher Biss auf 40; danach früher Herz der Wildnis und Naturalist für beide Formen. Die letzten Punkte holen Blutungsschaden und Prankenhieb nach. Der Dungeonpfad priorisiert Gruppenbedrohung schon ab 15. Keine Block- oder Parierfähigkeit behauptet; Zauberschaden und Heilungsbedarf bleiben situationsabhängig.",
     "unresolved": [
-      "Structural audit against retained build 71139 primary projection only; class source still disagrees with November 25 Balance hotfix. Independent current class attestation required.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Review current spell effects, form interactions and German labels; no assumption of old Moonfury or five Improved Starfire ranks."
+      "Legacy-Ränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Gleichgewichtsbaum und Rangzauberzuordnung von Traumzustand noch nicht vollständig abgeglichen; diese Vergabe verwendet ausschließlich Wilder Kampf/Wiederherstellung. Keine vollständige Klassenfreigabe.",
+      "Effektive Manakosten von Machtverschiebung nicht numerisch behauptet."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Wilder Kampf",
+  "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92",
+  "ruleRevision": "druid-feral-leveling-tank-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Beim gemischten Leveln mit Tankrolle werden frühe Furor-Punkte statt sofortiger Prankenhieb-Spezialisierung eingesetzt. Wilde Attacke auf 20, Aufschlitzen auf 25, Urtümlicher Biss auf 40; danach früher Herz der Wildnis und Naturalist für beide Formen. Die letzten Punkte holen Blutungsschaden und Prankenhieb nach. Der Dungeonpfad priorisiert Gruppenbedrohung schon ab 15. Keine Block- oder Parierfähigkeit behauptet; Zauberschaden und Heilungsbedarf bleiben situationsabhängig.",
+    "adviceSummary": "Bärenorientiertes Leveln mit früher Formwechsel-Wut, Aufschlitzen auf 25 und Urtümlichem Biss auf 40.",
+    "evidenceIds": [
+      "druid-feral-leveling-tank-rank0-71139-editorial-1",
+      "druid-feral-leveling-tank-rank0-71139-editorial-2",
+      "druid-feral-leveling-tank-rank0-71139-editorial-3"
+    ]
   }
 }
