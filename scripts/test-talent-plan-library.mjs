@@ -184,7 +184,7 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url==='https://wowforevertalents.com/rogue/talents/riposte/'));
         assert.ok(detail.sources.some(s=>s.url==='https://db.icy-veins.com/wow-forever/spells/14251'));
         assert.ok(plan.points.some(p=>p.talentId===105735));
-        assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,scopedEffects),/unresolved source difference 105735/);
+        assert.throws(()=>talentPathScope({...plan,points:[{talentId:105735,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference 105735/);
         scopedEffects={...scopedEffects,rows:scopedEffects.rows.filter(x=>x!==row)};
       }
       if(["priest-discipline-leveling","priest-discipline-dungeons","priest-discipline-pvp","priest-holy-leveling","priest-holy-dungeons","priest-holy-pvp"].includes(plan.id)){
