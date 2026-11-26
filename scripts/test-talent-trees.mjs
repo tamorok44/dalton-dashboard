@@ -168,7 +168,7 @@ console.log('Talent catalog: partial availability, read-only fallbacks and Previ
 // Display patches are source-bound and must never alter the raw planning master.
 const {correctTalentDisplay,DISPLAY_CORRECTION_SOURCE,DISPLAY_CORRECTION_CLASSES}=await import('./talent-display-corrections.mjs');
 const fake=(id,ids)=>({classId:id,trees:[{id:1,talents:ids.map(id=>({id,name:'Alt',profileId:id,spellId:id,maxRank:5,rankSpellIds:Array(5).fill(id),descriptions:['alt'],prerequisites:id===104964?[{id:104961,rank:1},{id:104970,rank:1}]:id===113631?[{id:105323,rank:1,conditionKnown:false}]:[]}))}]});
-for(const [id,ids] of [[2,[105330,113631]],[3,[104964]],[11,[104923,104931,104933,104935,104936,104937]]]){
+for(const [id,ids] of [[2,[105330,113631]],[3,[104964]],[11,[104923,104924,104931,104933,104935,104936,104937]]]){
  const c=fake(id,ids),before=JSON.stringify(c),master={classes:{[id]:c},sourceRevision:DISPLAY_CORRECTION_SOURCE,classMechanicsRevisions:{[id]:DISPLAY_CORRECTION_CLASSES[id]}};
  assert.equal(correctTalentDisplay(c,{...master,sourceRevision:'changed'}),c);
  assert.equal(correctTalentDisplay(c,{...master,classMechanicsRevisions:{}}),c);
@@ -177,6 +177,6 @@ for(const [id,ids] of [[2,[105330,113631]],[3,[104964]],[11,[104923,104931,10493
  assert.equal(out.displayCorrection,true);assert.equal(JSON.stringify(c),before);
  if(id===2){assert.match(n[0].descriptions[0],/60 Minuten/);assert.equal(n[1].prerequisites[0].conditionKnown,true)}
  if(id===3)assert.deepEqual(n[0].prerequisites.map(p=>p.id),[104970]);
- if(id===11){assert.equal(out.personalMappingUnverified,true);assert.equal(n.find(t=>t.id===104933).maxRank,2);assert.equal(n.find(t=>t.id===104936).spellId,408258);assert.equal(n.find(t=>t.id===104936).profileId,null);assert.deepEqual(n.find(t=>t.id===104936).rankSpellIds,[])}
+ if(id===11){assert.match(n.find(t=>t.id===104924).descriptions[4],/10 %.*Hurrikan und Gelassenheit/);assert.equal(out.personalMappingUnverified,true);assert.equal(n.find(t=>t.id===104933).maxRank,2);assert.equal(n.find(t=>t.id===104936).spellId,408258);assert.equal(n.find(t=>t.id===104936).profileId,null);assert.deepEqual(n.find(t=>t.id===104936).rankSpellIds,[])}
 }
 console.log('Exact-source display corrections, immutable raw proof, unresolved personal mapping: OK');
