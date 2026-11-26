@@ -130,7 +130,7 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
     const proof=snapshots.get(proofKey(pack.classId,pack.catalogRevision,pack.sourceRevision));
     assert.ok(proof,file+' has no exact catalog proof for Legacy rank '+rank);
     const pathLedger=JSON.parse(readFileSync(new URL('../docs/talent-planner-zephras-review-2026-11-26.json',import.meta.url),'utf8'));
-    if(pack.clientBuild===pathLedger.build&&pack.sourceRevision===pathLedger.primarySourceRevision&&pathLedger.classes.find(c=>c.classId===plan.classId)?.structureDifferences.length){
+    if(pack.clientBuild===pathLedger.build&&pack.sourceRevision===pathLedger.primarySourceRevision&&(pathLedger.classes.find(c=>c.classId===plan.classId)?.structureDifferences.length||pack.sources.some(id=>evidence.get(id)?.pathScope))){
       const cross=JSON.parse(readFileSync(new URL('../docs/talent-planner-cross-build-review-2026-11-26.json',import.meta.url),'utf8'));
       const effects=JSON.parse(readFileSync(new URL('../docs/talent-planner-effect-review-2026-11-26.json',import.meta.url),'utf8'));
       const clients=pack.sources.map(id=>evidence.get(id)).filter(x=>x.kind==='client'&&x.pathScope);
@@ -756,7 +756,7 @@ for(const treeId of [11608,11615,11622])for(const goal of ['leveling','dungeons'
 
 for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"11580":31}],["rogue-assassination-pvp",{"11572":0,"11573":20,"11580":31}],["rogue-combat-dungeons",{"11572":0,"11573":31,"11580":20}],["rogue-combat-pvp",{"11572":20,"11573":31,"11580":0}],["rogue-subtlety-leveling",{"11572":31,"11573":20,"11580":0}],["rogue-subtlety-dungeons",{"11572":31,"11573":8,"11580":12}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status==='research_only');
+ assert.ok(p&&p.status===(id==='rogue-combat-dungeons'?'approved':'research_only'));
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -863,8 +863,8 @@ for(const [id,milestones] of [
  ['rogue-subtlety-pvp',[[105743,20],[105746,30],[110866,40],[105708,43],[105735,60]]]
 ]){
  const p=plans.find(x=>x.id===id);
- assert.equal(p.status,'research_only');
- assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(p.status,id==='rogue-combat-dungeons'?'approved':'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,id==='rogue-combat-dungeons');
  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
  assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
