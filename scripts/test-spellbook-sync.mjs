@@ -50,4 +50,7 @@ assert.throws(()=>parseSpellbookCode('nichts'),/Ungültiger Spellbook-Code/);
 assert.throws(()=>applySpellbookSnapshot(data,{...snapshot,classId:11},{syncedAt:now}),/Klasse/);
 assert.throws(()=>applySpellbookSnapshot(data,{...snapshot,level:20},{syncedAt:now}),/Charakterlevel/);
 
+assert.throws(()=>applySpellbookSnapshot(updated,{...snapshot,capturedAt:'2026-11-23T05:54:00Z'},{classMaster}),/STALE_SPELLBOOK/);
+assert.throws(()=>applySpellbookSnapshot(updated,{...snapshot,entries:[{id:133}]},{classMaster}),/STALE_SPELLBOOK/);
+assert.equal(applySpellbookSnapshot(updated,snapshot,{classMaster}),updated,'Equal timestamp and same IDs are idempotent');
 console.log('Spellbook Sync: Code, Rang-Expansion, Validierung und persistenter Lernstand: OK');

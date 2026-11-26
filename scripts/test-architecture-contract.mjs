@@ -93,7 +93,7 @@ assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefre
 const refreshApi=sourceByFile.get('api/refresh.js')||'';
 const dailyApi=sourceByFile.get('api/daily-snapshot.js')||'';
 assert.ok(refreshApi.includes('async function runLockedRefresh')&&refreshApi.includes('releaseRefreshLock(lockToken)'),'Refresh lock release must cover pre-refresh validation failures');
-assert.ok(dailyApi.includes('dailyRefreshComplete(existing,archiveConfigured)')&&dailyApi.includes('dailyRefreshComplete(secondCheck,archiveConfigured)')&&dailyApi.includes('registerDailySnapshot(completedMeta)'),'Daily snapshot must not suppress retry of an incomplete persisted refresh');
+assert.ok(dailyApi.includes('dailyRefreshComplete(existing,archiveConfigured)')&&dailyApi.includes('registerDailySnapshot(completedMeta,dailyLock)')&&dailyApi.includes('loadDailyProfileReceipt(local.date)'),'Daily snapshot must not suppress retry of an incomplete persisted refresh');
 const vercelConfig=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
 assert.deepEqual(vercelConfig.regions,['fra1'],'Vercel functions must stay colocated with Redis and Blob in Frankfurt');
 const dailySchedules=(vercelConfig.crons||[]).filter(job=>job.path==='/api/daily-snapshot').map(job=>job.schedule).sort();

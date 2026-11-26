@@ -52,4 +52,5 @@ assert.equal(summerRetry.hour,6,'04:37 UTC remains inside the Berlin summer retr
 assert.equal(dailyRefreshComplete(null),false,'Ohne Snapshot-Metadaten ist der Tageslauf nicht vollständig');
 assert.equal(dailyRefreshComplete({date:'2026-11-22'}),false,'Ein gespeicherter Snapshot allein darf einen fehlgeschlagenen Profil-Refresh nicht verdecken');
 assert.equal(dailyRefreshComplete({refresh:{persisted:false}}),false,'Nicht persistierter Refresh bleibt wiederholbar');
-assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),true,'Erst ein persistierter Profil-Refresh schliesst den Tageslauf ab');
+assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),false,'Legacy generatedAt heuristic is not proof');
+assert.equal(dailyRefreshComplete({date:'2026-11-22',archiveStatus:'disabled',refresh:{date:'2026-11-22',source:'daily',persisted:true,success:1,total:1,generatedAt:'2026-11-22T05:00:00Z'}}),true,'Explicit complete daily receipt and disabled archive are accepted');

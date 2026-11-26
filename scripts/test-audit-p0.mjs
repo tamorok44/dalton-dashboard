@@ -1,148 +1,223 @@
 import assert from 'node:assert/strict';
-import {gunzipSync} from 'node:zlib';
-import {dailySnapshotStoreConfigured,saveDailySnapshot} from './daily-snapshot-store.mjs';
-import {dailyRefreshComplete,createDailySnapshotHandler} from '../api/daily-snapshot.js';
+import {gunzipSync,gzipSync} from 'node:zlib';
+import {mkdtempSync,rmSync,existsSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {spawn,spawnSync} from 'node:child_process';
+import {setTimeout as delay} from 'node:timers/promises';
+import {FOREVER_CHARACTER_ENDPOINTS} from './blizzard-api.mjs';
+import {dailySnapshotStoreConfigured,saveDailySnapshot,recoverDailySnapshot,classifySnapshot} from './daily-snapshot-store.mjs';
+import {dailyRefreshComplete,createDailySnapshotHandler,refreshDailyCharacters} from '../api/daily-snapshot.js';
+import {prepareAddonSync,saveAddonSyncState,loadAddonSyncState} from './addon-sync-store.mjs';
+import {saveCharacters,loadDailyProfileReceipt,acquireRefreshLock,releaseRefreshLock} from './character-store.mjs';
+import {registerDailySnapshot,getDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from './history-store.mjs';
+import {encodeCompactMaster} from './compact-master-cache.mjs';
+
 const originalFetch=globalThis.fetch;
 globalThis.fetch=async()=>{throw Error('Real network disabled')};
 for(const key of ['KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','BLOB_STORE_ID','BLOB_READ_WRITE_TOKEN','DALTON_PRIVATE_ARCHIVE_TOKEN','DALTON_SYNC_TOKEN','SPELLBOOK_SYNC_TOKEN','FOREVERDB_API_KEY','BLIZZARD_CLIENT_ID','BLIZZARD_CLIENT_SECRET'])delete process.env[key];
 process.env.VERCEL_ENV='production';
 process.env.BLOB_READ_WRITE_TOKEN='public-media-fixture';
 process.env.BLOB_STORE_ID='public-media-fixture';
-const snapshot={snapshotAt:'2026-11-26T05:00:00Z',characters:{test:{profile:{ok:true,data:{level:12}}}}};
-let uploads=0;
+const day='2026-11-26';
+const snapshot={snapshotAt:day+'T05:00:00Z',characters:{test:Object.fromEntries(Object.keys(FOREVER_CHARACTER_ENDPOINTS).map(key=>[key,{status:200,ok:true,data:{id:123}}]))}};
+let uploads=0,blob=null,compressed=null;
 const putImpl=async(path,body,options)=>{
   uploads++;
   assert.equal(options.access,'private');assert.equal(options.token,'private-archive-fixture');
-  assert.equal(path,'history/daily/2026/11/26/daltons-full.json.gz');
+  assert.equal(options.allowOverwrite,false);assert.ok(options.abortSignal instanceof AbortSignal);
+  assert.equal(path,'history/private/v2/daily/2026/11/26/daltons-full.json.gz');
   assert.deepEqual(JSON.parse(gunzipSync(body).toString()),snapshot);
-  return {url:'https://store-fixture.private.blob.vercel-storage.com/'+path,pathname:path};
+  compressed=Buffer.from(body);blob={url:'https://store-fixture.private.blob.vercel-storage.com/'+path,pathname:path};
+  return blob;
+};
+const getImpl=async(path,options)=>{
+  assert.equal(options.access,'private');assert.equal(options.token,'private-archive-fixture');
+  assert.equal(options.useCache,false);assert.ok(options.abortSignal instanceof AbortSignal);
+  if(!blob)return null;
+  assert.equal(path,blob.pathname);
+  return {statusCode:200,blob,stream:new Response(compressed).body};
 };
 assert.equal(dailySnapshotStoreConfigured(),false);
-await assert.rejects(saveDailySnapshot(snapshot,'2026-11-26',{putImpl}));
+await assert.rejects(saveDailySnapshot(snapshot,day,{putImpl}));
 assert.equal(uploads,0,'public media credentials must never be used for raw snapshots');
 process.env.DALTON_PRIVATE_ARCHIVE_TOKEN='private-archive-fixture';
 process.env.VERCEL_ENV='preview';
 assert.equal(dailySnapshotStoreConfigured(),false);
-await assert.rejects(saveDailySnapshot(snapshot,'2026-11-26',{putImpl}));assert.equal(uploads,0);
+await assert.rejects(saveDailySnapshot(snapshot,day,{putImpl}));assert.equal(uploads,0);
 process.env.VERCEL_ENV='production';
 assert.equal(dailySnapshotStoreConfigured(),true);
-const meta=await saveDailySnapshot(snapshot,'2026-11-26',{putImpl});
-assert.equal(meta.archiveStatus,'private');assert.equal(uploads,1);
-await assert.rejects(saveDailySnapshot(snapshot,'2026-11-26',{putImpl:async()=>({url:'https://fixture.public.blob.vercel-storage.com/test'})}),/private URL/);
-assert.equal(dailyRefreshComplete({archiveStatus:'disabled',refresh:{persisted:true}},false),true);
-assert.equal(dailyRefreshComplete({archiveStatus:'disabled',refresh:{persisted:true}},true),false);
-assert.equal(dailyRefreshComplete({archiveStatus:'failed',refresh:{persisted:true}},true),false);
-// Exercise the real daily handler with no external requests: disabled archive
-// must not block profile updates, failed archive must be retriable, and preview
-// may not enter the production pipeline at all.
-let stored=null,privateConfigured=false,failArchive=false;
+assert.equal(await recoverDailySnapshot(day,{getImpl}),null);
+const bad=structuredClone(snapshot);
+for(const v of Object.values(bad.characters.test)){v.status=503;v.ok=false;v.data={error:'offline'};}
+await assert.rejects(saveDailySnapshot(bad,day,{putImpl}),/bestätigtes Charakterprofil/);
+assert.equal(uploads,0,'all-endpoints failure is not a valid archive');
+const partial=structuredClone(snapshot);partial.characters.test.hunterPets={status:404,ok:false,data:null};
+assert.equal(classifySnapshot(partial).status,'partial');
+const meta=await saveDailySnapshot(snapshot,day,{putImpl,expectedSlugs:['test']});
+assert.equal(meta.archiveStatus,'private');assert.equal(meta.quality.status,'complete');assert.equal(uploads,1);
+assert.deepEqual(await recoverDailySnapshot(day,{getImpl,expectedSlugs:['test']}),meta);
+assert.equal(uploads,1,'orphaned upload is recovered rather than overwritten');
+await assert.rejects(recoverDailySnapshot(day,{getImpl,expectedSlugs:['other']}),/Roster/);
+await assert.rejects(saveDailySnapshot(snapshot,day,{putImpl:async()=>({url:'https://fixture.public.blob.vercel-storage.com/test',pathname:blob.pathname})}),/private URL/);
+
+const proof={date:day,source:'daily',success:1,total:1,persisted:true,generatedAt:day+'T05:01:00Z'};
+assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:{persisted:true}},false),false);
+assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:proof},false),true);
+assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:proof},true),false);
+assert.equal(dailyRefreshComplete({date:day,archiveStatus:'failed',refresh:proof},true),false);
+assert.equal(dailyRefreshComplete({...meta,refresh:{...proof,total:2}},true),false);
+const pending=await refreshDailyCharacters(day,{takeLock:async()=>null,readReceipt:async()=>{throw Error('No lock')},refresh:async()=>{throw Error('No lock')}});
+assert.equal(pending.persisted,false,'Addon write cannot be mistaken for a profile refresh');
+let persisted=null,stored=null,privateConfigured=false,failArchive=false,failIndex=false,uploadExists=false;
 const events=[];
 process.env.CRON_SECRET='isolated-cron';
 const daily=createDailySnapshotHandler({
   configured:()=>true,blizzardApiConfigured:()=>true,dailySnapshotStoreConfigured:()=>privateConfigured,
-  berlinClock:()=>({date:'2026-11-26',hour:5,minute:7}),
+  berlinClock:()=>({date:day,hour:5,minute:7}),
   getDailySnapshot:async()=>stored,acquireDailySnapshotLock:async()=>{events.push('lock');return 'daily-lock'},
   releaseDailySnapshotLock:async()=>events.push('release'),
   ensurePetRuleState:async()=>{events.push('rules');return {}},
+  loadDailyProfileReceipt:async()=>persisted,
   loadCharacters:async()=>{events.push('roster');return {data:{characters:[{slug:'test'}]}}},
+  recoverDailySnapshot:async()=>{events.push('recover');return uploadExists?meta:null},
   fetchForeverSnapshot:async()=>{events.push('raw');return snapshot},
-  saveDailySnapshot:async()=>{events.push('private');if(failArchive)throw Error('fixture archive failed');return meta},
-  registerDailySnapshot:async value=>{events.push('register');stored=structuredClone(value)},
-  refreshDailyCharacters:async()=>{events.push('refresh');return {success:1,persisted:true}},
+  saveDailySnapshot:async()=>{events.push('private');if(failArchive)throw Error('fixture archive failed');uploadExists=true;return meta},
+  registerDailySnapshot:async(value,token)=>{assert.equal(token,'daily-lock');events.push('register');if(failIndex)throw Error('index unavailable');stored=structuredClone(value)},
+  refreshDailyCharacters:async()=>{events.push('refresh');persisted=proof;return proof},
   publicPetRuleState:()=>({})
 });
+function response(){return {http:200,value:null,setHeader(){},status(n){this.http=n;return this},json(value){this.value=value}}}
 const runDaily=async()=>{const res=response();await daily({method:'GET',headers:{authorization:'Bearer isolated-cron'}},res);return res};
 const disabled=await runDaily();
-assert.equal(disabled.http,200);assert.equal(stored.archiveStatus,'disabled');assert.equal(stored.refresh.persisted,true);
+assert.equal(disabled.http,200);assert.equal(stored.archiveStatus,'disabled');assert.deepEqual(stored.refresh,proof);
 assert.deepEqual(events,['lock','rules','refresh','register','release']);
-events.length=0;assert.equal((await runDaily()).value.reason,'already_completed');assert.deepEqual(events,[]);
-privateConfigured=true;failArchive=true;
+events.length=0;assert.equal((await runDaily()).value.reason,'already_completed');assert.deepEqual(events,['lock','register','release']);
+events.length=0;privateConfigured=true;failArchive=true;
 const failed=await runDaily();assert.equal(failed.http,503);assert.equal(stored.archiveStatus,'failed');
-assert.equal(stored.refresh.persisted,true);assert.deepEqual(events,['lock','rules','roster','raw','private','register','release']);
-events.length=0;failArchive=false;
-const recovered=await runDaily();assert.equal(recovered.http,200);assert.equal(stored.archiveStatus,'private');
-assert.equal(stored.refresh.persisted,true);assert.deepEqual(events,['lock','rules','roster','raw','private','register','register','release']);
+assert.deepEqual(stored.refresh,proof);assert.deepEqual(events,['lock','rules','roster','recover','raw','private','register','release']);
+events.length=0;failArchive=false;failIndex=true;
+assert.equal((await runDaily()).http,503);assert.equal(uploadExists,true);
+assert.deepEqual(events,['lock','rules','roster','recover','raw','private','register','release']);
+events.length=0;failIndex=false;
+const recovered=await runDaily();assert.equal(recovered.http,200);assert.equal(stored.archiveStatus,'private');assert.equal(recovered.value.recovered,true);
+assert.deepEqual(stored.refresh,proof);assert.deepEqual(events,['lock','rules','roster','recover','register','release']);
 events.length=0;process.env.VERCEL_ENV='preview';
 assert.equal((await runDaily()).value.reason,'non_production');assert.deepEqual(events,[]);
 process.env.VERCEL_ENV='production';delete process.env.CRON_SECRET;
-console.log('F01: production-only dedicated private archive; disabled/failed/retried daily lifecycle, rule order and preview isolation: OK');
+console.log('F01/F06/F14: private immutable archive, quality gate, orphan recovery and verified daily refresh: OK');
 delete process.env.BLOB_STORE_ID;delete process.env.BLOB_READ_WRITE_TOKEN;delete process.env.DALTON_PRIVATE_ARCHIVE_TOKEN;
-const date=(minutes=0)=>new Date(Date.now()+minutes*60000).toISOString();
-function response(){return {http:200,value:null,setHeader(){},status(n){this.http=n;return this},json(value){this.value=value}}}
 
-const {encodeCompactMaster}=await import('./compact-master-cache.mjs');
-process.env.VERCEL_ENV='production';
-process.env.UPSTASH_REDIS_REST_URL='https://offline-audit.invalid';
-process.env.UPSTASH_REDIS_REST_TOKEN='isolated-fixture';
-process.env.DALTON_SYNC_TOKEN='isolated-fixture';
-const {default:addon}=await import('../api/addon-sync.js');
-let current=JSON.stringify({generatedAt:date(-4),characters:[
- {slug:'audit-one',name:'Audit One',classId:8,level:12},
- {slug:'audit-two',name:'Audit Two',classId:8,level:12}
-]});
-const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
-const state=new Map();
-let receivedReads=0,owner=null,lockAttempts=0,forceConflict=false,loseBeforeStatus=false;
-let allowSecond;
-const allowSecondPromise=new Promise(resolve=>{allowSecond=resolve});
-const commands=[];
-globalThis.fetch=async(url,options={})=>{
-  assert.equal(String(url),'https://offline-audit.invalid','auditor blocks all real destinations');
-  const [op,k,a,...rest]=JSON.parse(options.body);
-  commands.push(op);
-  let result=null;
-  if(op==='GET'){
-    if(k.endsWith(':characters:v1')){
-      result=current;
-      receivedReads++;
-      assert.ok(owner,'F02: roster read must take place while lock is held');
-    }else if(k.includes('class-master')&&k.endsWith(':gz1'))result=classFixture;
-    else result=state.get(k)??null;
-  }else if(op==='SET'&&k.endsWith(':refresh:lock')){
-    if(forceConflict)return Response.json({result:null});
-    const attempted=++lockAttempts;
-    if(attempted===2)await allowSecondPromise;
-    assert.equal(owner,null);owner=a;result='OK';
-  }else if(op==='HMGET'){
-    result=[a,...rest].map(id=>JSON.stringify({id:Number(id),name:'Feuerball',rank:'Rang'}));
-  }else if(op==='RPUSH'){result=1}
-  else if(op==='EVAL'){
-    const count=a,keys=rest.slice(0,count),values=rest.slice(count);
-    if(keys[0].endsWith(':refresh:lock')&&keys.length===3){
-      assert.equal(values[0],owner);
-      current=values[1];result='OK';
-    }else if(keys[0].endsWith(':refresh:lock')&&keys.length===1){
-      assert.equal(values[0],owner);owner=null;result=1;
-      allowSecond();
-    }else if(keys[0].includes(':addon-sync:')){
-      assert.equal(keys.length,3,'production addon status must be fenced');
-      if(loseBeforeStatus||owner!==values[3])return Response.json({error:'REFRESH_LOCK_LOST'});
-      state.set(keys[0],values[0]);result='OK';
-    }else throw Error('Unexpected fixture Lua command');
-  }else throw Error('Unsupported fixture command '+op);
-  return Response.json({result});
-};
-const payload=name=>({schemaVersion:1,addon:{build:'71139',gameVersion:'1.60.1',locale:'deDE'},
-  sections:{character:{name,classID:8,level:12,capturedAt:Math.floor(Date.now()/1000)},
-    spellbook:{capturedAt:Math.floor(Date.now()/1000),entryCount:1,entries:[{spellID:143,name:'Feuerball',known:true}]}}});
-const req=name=>({method:'POST',headers:{authorization:'Bearer isolated-fixture'},body:payload(name)});
-const first=response(),second=response();
-await Promise.all([addon(req('Audit One'),first),addon(req('Audit Two'),second)]);
-assert.deepEqual([first.http,second.http],[200,200]);
-assert.deepEqual([first.value.spellbookApplied,second.value.spellbookApplied],[true,true]);
-const remaining=JSON.parse(current).characters.filter(c=>c.knownClassAbilitiesVerified===true).map(c=>c.slug);
-assert.deepEqual(remaining,['audit-one','audit-two']);
-assert.equal(receivedReads,2);
-assert.equal(owner,null);
-const savedBefore=current;
-forceConflict=true;
-const conflict=response();await addon(req('Audit One'),conflict);
-assert.equal(conflict.http,409);assert.equal(current,savedBefore);assert.equal(receivedReads,2);
-forceConflict=false;
-const denied=response();await addon(req('Unknown Character'),denied);
-assert.equal(denied.http,400);assert.equal(owner,null);assert.equal(current,savedBefore);
-loseBeforeStatus=true;
-const lost=response();await addon(req('Audit One'),lost);
-assert.equal(lost.http,503);assert.equal(owner,null);
-console.log('F02: two successful interleaved writes retain both characters, contention and lock-loss fail closed: OK');
+const date=(minutes=0)=>new Date(Date.now()+minutes*60000).toISOString();
+const now=Math.floor(Date.now()/1000);
+const payload=(name,id,spells,stamp=now)=>({schemaVersion:1,syncId:id,addon:{build:'71139',gameVersion:'1.60.1',locale:'deDE'},
+  sections:{character:{name,classID:8,level:12,capturedAt:stamp},
+    spellbook:{capturedAt:stamp,entryCount:spells.length,entries:spells.map(spellID=>({spellID,name:'Feuerball',known:true}))}}});
+const old=payload('Audit One','old',[133],now-60),newer=payload('Audit One','new',[133,143],now);
+const oldPrep=prepareAddonSync(null,old);
+const newerPrep=prepareAddonSync({payload:oldPrep.payload,receipts:oldPrep.receipts},newer);
+assert.equal(prepareAddonSync({payload:newerPrep.payload,receipts:newerPrep.receipts},old).duplicate,true);
+assert.throws(()=>prepareAddonSync({payload:newerPrep.payload,receipts:newerPrep.receipts},{...old,syncId:'unknown-old'}),/SYNC_CONFLICT/);
+assert.throws(()=>prepareAddonSync({payload:newerPrep.payload,receipts:newerPrep.receipts},payload('Audit One','new',[133],now)),/SYNC_CONFLICT/);
+const missing=payload('Audit One','missing',[133,143],now+1);delete missing.sections.spellbook;
+assert.deepEqual(prepareAddonSync({payload:newerPrep.payload,receipts:newerPrep.receipts},missing).payload.sections.spellbook,newer.sections.spellbook);
+console.log('F03: bounded receipts, older capture and identity conflicts, missing-domain preservation: OK');
+
+const hasRedis=['redis-server','redis-cli'].every(command=>spawnSync(command,['--version'],{stdio:'ignore'}).status===0);
+if(!hasRedis){
+  assert.notEqual(process.env.DALTON_REQUIRE_LOCAL_REDIS,'1','CI must provide real local Redis');
+  console.log('F02 real Redis: SKIPPED locally (redis-server / redis-cli absent); mandatory on CI');
+}else{
+  const dir=mkdtempSync(join(tmpdir(),'dalton-redis-audit-')),socket=join(dir,'redis.sock');
+  const server=spawn('redis-server',['--port','0','--unixsocket',socket,'--unixsocketperm','700','--save','','--appendonly','no','--dir',dir],{stdio:'ignore'});
+  const cli=(...args)=>{
+    const r=spawnSync('redis-cli',['-s',socket,'--json','-e',...args.map(String)],{encoding:'utf8',timeout:5000});
+    if(r.error||r.status!==0)throw Error((r.stderr||r.stdout||r.error?.message||'Redis failed').trim());
+    try{return JSON.parse(r.stdout);}catch{throw Error(r.stdout.trim());}
+  };
+  try{
+    for(let i=0;i<100&&!existsSync(socket);i++)await delay(20);
+    assert.equal(cli('PING'),'PONG');
+    process.env.UPSTASH_REDIS_REST_URL='https://offline-audit.invalid';
+    process.env.UPSTASH_REDIS_REST_TOKEN='isolated-fixture';
+    process.env.DALTON_SYNC_TOKEN='isolated-fixture';
+    const {default:addon}=await import('../api/addon-sync.js');
+    const rosterKey='dalton-dashboard:characters:v1',lockKey='dalton-dashboard:refresh:lock',versionKey='dalton-dashboard:data-version:meta:v1';
+    const syncKey=slug=>'dalton-dashboard:addon-sync:v1:production:'+slug;
+    cli('SET',rosterKey,JSON.stringify({generatedAt:date(-4),characters:[
+      {slug:'audit-one',name:'Audit One',classId:8,level:12},
+      {slug:'audit-two',name:'Audit Two',classId:8,level:12}
+    ]}));
+    const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
+    let mode=null,releaseRead=null,readReached=null;
+    const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
+    let pauseFirst=true;
+    globalThis.fetch=async(url,options={})=>{
+      assert.equal(String(url),'https://offline-audit.invalid','all real destinations blocked');
+      const cmd=JSON.parse(options.body),[op,key]=cmd;
+      try{
+        if(op==='GET'&&key===rosterKey&&pauseFirst){
+          pauseFirst=false;assert.ok(cli('GET',lockKey));readReached();await continueRead;
+        }
+        if(op==='GET'&&key.includes('class-master')&&key.endsWith(':gz1'))return Response.json({result:classFixture});
+        if(op==='HMGET')return Response.json({result:cmd.slice(2).map(id=>JSON.stringify({id:Number(id),name:'Feuerball',rank:'Rang'}))});
+        const isSync=op==='EVAL'&&cmd[3]?.includes(':addon-sync:');
+        if(isSync&&mode==='lose-before'){cli('SET',lockKey,'other-owner');mode=null;}
+        if(isSync&&mode==='fail-before'){mode=null;throw Error('fixture interruption before commit');}
+        if(isSync&&mode==='drop-after'){mode=null;cli(...cmd);throw Error('fixture response lost after commit');}
+        return Response.json({result:cli(...cmd)});
+      }catch(error){return Response.json({error:String(error.message)});}
+    };
+    const call=async body=>{const res=response();await addon({method:'POST',headers:{authorization:'Bearer isolated-fixture'},body},res);return res};
+    const firstCall=call(old);await waitRead;
+    const secondPayload=payload('Audit Two','two',[143],now);
+    assert.equal((await call(secondPayload)).http,409);
+    releaseRead();
+    assert.equal((await firstCall).http,200);
+    assert.equal((await call(secondPayload)).http,200);
+    const roster=()=>JSON.parse(cli('GET',rosterKey));
+    const ids=slug=>roster().characters.find(x=>x.slug===slug).knownClassAbilities.map(x=>x.id).sort((a,b)=>a-b);
+    assert.deepEqual(ids('audit-one'),[133]);assert.deepEqual(ids('audit-two'),[133,143]);
+    const oldState=cli('GET',syncKey('audit-one')),oldRoster=cli('GET',rosterKey);
+    mode='fail-before';
+    assert.equal((await call(newer)).http,503);assert.equal(cli('GET',rosterKey),oldRoster);assert.equal(cli('GET',syncKey('audit-one')),oldState);
+    mode='lose-before';
+    assert.equal((await call(newer)).http,503);assert.equal(cli('GET',rosterKey),oldRoster);assert.equal(cli('GET',syncKey('audit-one')),oldState);assert.equal(cli('GET',lockKey),'other-owner');
+    cli('DEL',lockKey);
+    mode='drop-after';
+    assert.equal((await call(newer)).http,503);assert.deepEqual(ids('audit-one'),[133,143]);
+    assert.equal((await call(newer)).value.duplicate,true);
+    assert.equal((await call(old)).value.duplicate,true);
+    assert.deepEqual(ids('audit-one'),[133,143]);assert.equal((await loadAddonSyncState('audit-one')).payload.syncId,'new');
+    assert.equal((await call({...old,syncId:'unrecognized-old'})).http,409);
+    const snapshotBefore=cli('GET',rosterKey),stateBefore=cli('GET',syncKey('audit-one'));
+    cli('DEL',versionKey);cli('SET',versionKey,'invalid type');
+    const third=payload('Audit One','third',[133],now+1);
+    assert.equal((await call(third)).http,503);assert.equal(cli('GET',rosterKey),snapshotBefore);assert.equal(cli('GET',syncKey('audit-one')),stateBefore);
+    cli('DEL',versionKey);
+    const refreshLock=await acquireRefreshLock();
+    const nextRoster={...roster(),generatedAt:proof.generatedAt};
+    await saveCharacters(nextRoster,refreshLock,{dailyReceipt:proof});
+    await releaseRefreshLock(refreshLock);
+    assert.deepEqual(await loadDailyProfileReceipt(day),proof);
+    const guard=await acquireDailySnapshotLock(day);
+    await registerDailySnapshot({...meta,refresh:proof},guard);
+    assert.equal((await getDailySnapshot(day)).sha256,meta.sha256);
+    const lastKey='dalton-dashboard:history:daily:last:v1';
+    assert.equal(JSON.parse(cli('GET',lastKey)).date,day);
+    await releaseDailySnapshotLock(day,guard);
+    await assert.rejects(registerDailySnapshot({...meta,refresh:proof},guard),/DAILY_LOCK_LOST/);
+    const older='2026-11-25',olderLock=await acquireDailySnapshotLock(older);
+    await registerDailySnapshot({date:older,archiveStatus:'disabled'},olderLock);
+    assert.equal(JSON.parse(cli('GET',lastKey)).date,day,'last pointer cannot move backwards');
+    await releaseDailySnapshotLock(older,olderLock);
+    console.log('F02/F03/F14 real isolated Redis: contention, lock loss, lost response, stale retry, type preflight, daily proof and atomic index: OK');
+  }finally{
+    globalThis.fetch=originalFetch;
+    server.kill('SIGTERM');
+    for(let i=0;i<100&&server.exitCode===null;i++)await delay(20);
+    if(server.exitCode===null)server.kill('SIGKILL');
+    rmSync(dir,{recursive:true,force:true});
+  }
+}
 globalThis.fetch=originalFetch;

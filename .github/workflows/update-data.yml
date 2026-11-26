@@ -26,9 +26,12 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Abhängigkeiten auf bekannte Schwachstellen prüfen
         run: npm audit --audit-level=high
+      - name: Isolierte Redis-Testlaufzeit bereitstellen
+        run: command -v redis-server && command -v redis-cli || (sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends redis-server redis-tools)
       - name: Geordneten Gesamttest ausführen
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         env:
+          DALTON_REQUIRE_LOCAL_REDIS: '1'
           DALTON_TEST_REPORT: ${{ runner.temp }}/dalton-test-report.json
         run: npm test
       - name: Gesamttest-Bericht archivieren
