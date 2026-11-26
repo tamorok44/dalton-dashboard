@@ -1,0 +1,331 @@
+{
+  "caseType": "Benign local fixture, CPU 4x Chromium",
+  "rows": [
+    {
+      "size": 4,
+      "state": {
+        "characters": 4,
+        "documentNodes": 1156,
+        "cardNodes": 1041,
+        "loadedToRenderMs": 971,
+        "reflowW": 520,
+        "viewportW": 520,
+        "versionRequests": 1,
+        "jsHeapBytes": 1494084
+      },
+      "sections": [
+        {
+          "link": "compare",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "workshop",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "planner",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "talentPlanner",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "characters",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "afterRefresh": true
+    },
+    {
+      "size": 16,
+      "state": {
+        "characters": 16,
+        "documentNodes": 4279,
+        "cardNodes": 4164,
+        "loadedToRenderMs": 754,
+        "reflowW": 520,
+        "viewportW": 520,
+        "versionRequests": 1,
+        "jsHeapBytes": 1607700
+      },
+      "sections": [
+        {
+          "link": "compare",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "workshop",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "planner",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "talentPlanner",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        },
+        {
+          "link": "characters",
+          "measures": [
+            {
+              "viewport": 320,
+              "scrollWidth": 320
+            },
+            {
+              "viewport": 390,
+              "scrollWidth": 390
+            },
+            {
+              "viewport": 520,
+              "scrollWidth": 520
+            },
+            {
+              "viewport": 740,
+              "scrollWidth": 740
+            },
+            {
+              "viewport": 1440,
+              "scrollWidth": 1440
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "afterRefresh": true
+    }
+  ],
+  "paths": {
+    "/": 2,
+    "/skyborne-mainstreet-mobile.svg": 2,
+    "/styles.css": 2,
+    "/app.js": 2,
+    "/dalton-crest.svg": 2,
+    "/hunter-pets.js": 2,
+    "/reputation-data.js": 2,
+    "/talent-planner.js": 2,
+    "/talent-text-quality.js": 2,
+    "/talent-personal-state.js": 2,
+    "/api/characters": 2,
+    "/api/data-version": 2,
+    "/bridge-tray.svg": 14,
+    "/level-sheriff.svg": 2,
+    "/skyborne-horizon.svg": 2,
+    "/api/workshop": 2,
+    "/api/location-planner": 2,
+    "/api/refresh": 2
+  },
+  "assets": [
+    {
+      "file": "app.js",
+      "raw": 151858,
+      "gzip": 42363
+    },
+    {
+      "file": "styles.css",
+      "raw": 107212,
+      "gzip": 21995
+    },
+    {
+      "file": "talent-planner.js",
+      "raw": 30370,
+      "gzip": 9350
+    },
+    {
+      "file": "sw.js",
+      "raw": 1582,
+      "gzip": 747
+    }
+  ]
+}

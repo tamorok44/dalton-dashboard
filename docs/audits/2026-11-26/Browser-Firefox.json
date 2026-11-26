@@ -1,0 +1,92 @@
+{
+  "engine": "firefox",
+  "platform": "linux",
+  "fixture": "synthetic roster and graph labels/coordinates, real approved plan engine; no live services",
+  "rawScriptBytes": 30370,
+  "gzipScriptBytes": 9350,
+  "cases": [
+    {
+      "name": "desktop",
+      "status": "passed",
+      "layout": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "rootWidth": 870,
+        "rootScroll": 870,
+        "gridWidth": 420,
+        "gridScroll": 420,
+        "buttons": 18,
+        "minTarget": 54,
+        "domNodes": 281
+      },
+      "interactionP95Ms": 48,
+      "interactionMaxMs": 48,
+      "cpuThrottle": 1,
+      "additionalClassPaths": 2,
+      "legacyRank5Verified": true,
+      "correctedCharacterViews": 3,
+      "characterCatalogReads": 1,
+      "plannerRequests": 26,
+      "externalRequestsBlocked": 0
+    },
+    {
+      "name": "tablet",
+      "status": "passed",
+      "layout": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "rootWidth": 726,
+        "rootScroll": 726,
+        "gridWidth": 360,
+        "gridScroll": 360,
+        "buttons": 18,
+        "minTarget": 54,
+        "domNodes": 281
+      },
+      "interactionP95Ms": 36,
+      "interactionMaxMs": 36,
+      "cpuThrottle": 1,
+      "additionalClassPaths": 2,
+      "legacyRank5Verified": true,
+      "correctedCharacterViews": 3,
+      "characterCatalogReads": 1,
+      "plannerRequests": 26,
+      "externalRequestsBlocked": 0
+    },
+    {
+      "name": "compact",
+      "status": "passed",
+      "layout": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "rootWidth": 294,
+        "rootScroll": 294,
+        "gridWidth": 244,
+        "gridScroll": 244,
+        "buttons": 18,
+        "minTarget": 38.399993896484375,
+        "domNodes": 281
+      },
+      "interactionP95Ms": 19,
+      "interactionMaxMs": 19,
+      "cpuThrottle": 1,
+      "additionalClassPaths": 2,
+      "legacyRank5Verified": true,
+      "correctedCharacterViews": 3,
+      "characterCatalogReads": 1,
+      "plannerRequests": 26,
+      "externalRequestsBlocked": 0
+    }
+  ],
+  "pwa": {
+    "status": "passed",
+    "cachedStaticAssets": 23,
+    "apiCached": false,
+    "offlineAssets": 4,
+    "offlineLiveBlocked": true,
+    "networkFailure": "fixture_socket_abort"
+  },
+  "discoveryBytes": 13117,
+  "pathBytes": 32214,
+  "providerReads": 9
+}

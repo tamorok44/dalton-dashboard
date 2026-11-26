@@ -1,0 +1,111 @@
+{
+  "files": 315,
+  "bytes": 4784486,
+  "extensions": {
+    ".yml": 3,
+    ".md": 37,
+    ".lua": 11,
+    ".toc": 1,
+    "(ohne)": 1,
+    ".svg": 13,
+    ".js": 19,
+    ".png": 2,
+    ".cmd": 3,
+    ".command": 4,
+    ".txt": 2,
+    ".ps1": 3,
+    ".json": 108,
+    ".html": 3,
+    ".webmanifest": 1,
+    ".mjs": 103,
+    ".css": 1
+  },
+  "groups": {
+    "CI/CD": 3,
+    "Dokumentation": 10,
+    "Add-on/Bridge": 38,
+    "Asset": 15,
+    "quellen-katalog": 15,
+    "backend-betrieb": 11,
+    "ortsplaner": 11,
+    "werkstatt": 4,
+    "Frontend/PWA": 10,
+    "Talentplaner": 145,
+    "Konfiguration/Projekt": 5,
+    "Jägerbegleiter": 7,
+    "medien": 4,
+    "Test": 34,
+    "Testfixture": 1,
+    "Historische Designvorschau": 2
+  },
+  "staticEdges": 402,
+  "resolvedTargets": 157,
+  "unresolvedImports": [
+    [
+      "scripts/build-talent-plan-index.mjs",
+      16,
+      "../data/talent-planning/"
+    ],
+    [
+      "scripts/test-foreverdb-budget.mjs",
+      47,
+      "./workshop-store.mjs?budget-test=1"
+    ],
+    [
+      "scripts/test-talent-trees.mjs",
+      126,
+      "./talent-tree-store.mjs?production"
+    ],
+    [
+      "scripts/test-talent-trees.mjs",
+      128,
+      "./talent-tree-store.mjs?preview"
+    ],
+    [
+      "scripts/test-ui.mjs",
+      38,
+      "./hunter-pets.js"
+    ],
+    [
+      "scripts/test-ui.mjs",
+      39,
+      "./reputation-data.js"
+    ],
+    [
+      "scripts/test-ui.mjs",
+      40,
+      "./talent-planner.js"
+    ],
+    [
+      "scripts/test-ui.mjs",
+      41,
+      "./talent-text-quality.js"
+    ],
+    [
+      "scripts/test-ui.mjs",
+      42,
+      "./talent-personal-state.js"
+    ]
+  ],
+  "json": 109,
+  "jsonIssues": [],
+  "keys": 41,
+  "hosts": 113,
+  "duplicateFiles": [
+    [
+      "vorschau-abzeichen.html",
+      "vorschau.html"
+    ]
+  ],
+  "scriptsWithoutStaticImporters": [
+    "scripts/browser-talent-regression.mjs",
+    "scripts/build-talent-plan-index.mjs",
+    "scripts/compare-mage-talent-sources.mjs",
+    "scripts/official-scrape.mjs",
+    "scripts/run-test-suite.mjs",
+    "scripts/scrape.mjs",
+    "scripts/talent-full-release-gate.mjs",
+    "scripts/talent-release-readiness.mjs",
+    "scripts/talent-zephras-audit.mjs"
+  ]
+}

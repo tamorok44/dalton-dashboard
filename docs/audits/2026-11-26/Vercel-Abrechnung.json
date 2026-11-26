@@ -1,0 +1,20 @@
+{
+  "type": "redacted-provider-observation",
+  "scope": "Kontoweite Teamstichprobe, keine Projektzuordnung",
+  "conclusions": {
+    "billedCost": "Im betrachteten Fenster vernachlässigbar",
+    "largestEffectiveCostCategory": "Build CPU",
+    "observedCategories": [
+      "Functions CPU",
+      "Provisioned Memory",
+      "Blob Storage",
+      "Blob Operations"
+    ],
+    "remainingQuotas": "Nicht verifiziert"
+  },
+  "redacted": [
+    "Kontometadaten",
+    "exakte Beträge",
+    "Rohdatensätze und Datensatzanzahlen"
+  ]
+}

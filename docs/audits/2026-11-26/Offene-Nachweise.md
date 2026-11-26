@@ -1,0 +1,9 @@
+# Offene Nachweise und verbleibende Risiken
+
+Auditstand 26. November 2026, Commit `0608cf575f6e46e3bbdee800c790ce5ae7c13235`. [Vollständiger Prüfbericht](Prüfbericht.md)
+
+- **Echte Redis-/Blob-Inhalte** einschließlich Schlüssel-/Objektzählung, Speicher, Nutzdaten, verwaiste Referenzen, TTL-Verteilung, Keys pro Umgebung, realer Quotenverbrauch, Wiederherstellung und App-übergreifendes Berechtigungsprofil. Upstash OAuth fehlte, Blob-Objektleserechte standen nicht zur Verfügung. Die öffentliche Archivkonfiguration aus dem Code ersetzt keinen Kontozugriff.
+- **Produktive Datenflüsse mit Seiteneffekten** einschließlich Refresh, Cron, Medien-Autofill, öffentliche Versionsmigrationen, Add-on-Write und Geräteeinrichtung. Auswertung erfolgte statisch, mit Verbindungsmocks oder über rein lesende Provider-Metadaten. Die Auslieferung der Produktions-Shell ist gesichert, kein umfassender funktionaler End-to-End-Nachweis auf echtem Roster.
+- **Native Geräte und Native WoW-Laufzeit.** macOS/iOS/iPadOS Safari, installierte PWA nach Update, echte Android-Hardware, Windows-Installer/Bridge, Screenreader und reale Add-on CPU-/RAM-/Netzfrequenz. Browser-Emulation und remote CI sind jeweils eigene Nachweisarten.
+- **Vollständige Datenrechtsprüfung** für Blizzard-Profilarchiv, Drittlizenzen und fremde Clientauszüge. Anbieterbeschreibungen und Herkunft wurden erfasst. Projektinterne Freigaben, Zustimmungen, Langzeitaufbewahrung und Rechte an tatsächlichen produktiven Altbeständen sind offen.
+- **Echte Gameplay-Berechtigung und Quellenunterbrechungen.** Serverannahme effektiver Talentgates, Kombinationen bei Frost, einige Talentkanten, getrennte Nah-/Fernkampf-Kritwerte, zusätzliche Klassen-/Rollen-Synergien und echte Trainingsdaten im WoW-Client. Die analytischen Freigaben dokumentieren ihre Annahmen.
