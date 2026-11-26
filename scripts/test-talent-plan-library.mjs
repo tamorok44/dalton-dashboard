@@ -787,6 +787,29 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
+// Rogue conflict follow-up: preserve scoped rank-zero research and exact milestones.
+for(const [id,milestones] of [
+ ['rogue-assassination-leveling',[[105715,25],[105712,30],[105709,40]]],
+ ['rogue-assassination-dungeons',[[105715,33],[105712,38],[105709,48]]],
+ ['rogue-assassination-pvp',[[105715,35],[105712,40],[105709,50]]],
+ ['rogue-combat-leveling',[[105735,20],[108100,25],[105728,30],[105724,40]]],
+ ['rogue-combat-dungeons',[[108100,25],[105728,30],[105724,40]]],
+ ['rogue-combat-pvp',[[105735,20],[105733,25],[105728,30],[105724,40]]],
+ ['rogue-subtlety-leveling',[[105743,25],[105746,35],[110866,45]]],
+ ['rogue-subtlety-dungeons',[[105743,20],[105746,30],[110866,40],[105708,41]]],
+ ['rogue-subtlety-pvp',[[105743,20],[105746,30],[110866,40],[105708,43],[105735,60]]]
+]){
+ const p=plans.find(x=>x.id===id);
+ assert.equal(p.status,'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+ assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+const rogueGroup=plans.find(p=>p.id==='rogue-combat-dungeons');
+assert.ok(!rogueGroup.points.some(p=>[105735,105738].includes(p.talentId)));
+assert.equal(rogueGroup.points.filter(p=>p.talentId===105740).length,5);
+
 // Priest conflict candidates: rank-zero schedule only, no quantitative release.
 for(const [id,milestones] of [
  ['priest-discipline-leveling',[[105839,28],[105834,32],[105836,40]]],
