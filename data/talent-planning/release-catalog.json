@@ -351,6 +351,238 @@
       "planVersion": 2,
       "allocationDigest": "44cff0799de6283bcd5b6b341222bdfce335c2596f6ca604884b77da18462b33",
       "claim": "Reassessment of the previously reviewed exact allocation and rationale against the complete official delta and unchanged Mage talent/spell ledger. The original tradeoffs and recommendation remain valid for the specified mixed-leveling profile; no new comparative speed claim or alteration to the allocation."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "f24caf48784028a9142412a0b7bed5706b61a1e64432d43f7c92b24fae4393d9",
+      "id": "mage-arcane-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://www.forever-xp.com/talents/mage/",
+      "sourceCaptureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "buildComparison": {
+        "status": "structure_matches",
+        "build": "1.60.1.71139",
+        "classId": 8,
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "rawSha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+        "localizedSha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+        "captureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+        "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+        "primaryNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "independentNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "talentCount": 53,
+        "unknownPrerequisites": [],
+        "cyclicPrerequisites": [],
+        "diff": []
+      },
+      "claim": "Same independently verified full 71139 Mage structure and current exact source pair; minimum level gates checked for this specific 51-point rank-zero dungeon allocation."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "f24caf48784028a9142412a0b7bed5706b61a1e64432d43f7c92b24fae4393d9",
+      "id": "mage-arcane-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Complete Nov 25 official delta reviewed; no Mage talent or rank-zero gate changes. Revelation enchant changed but is not assumed by this route. No assumption of later undocumented mechanics."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-arcane-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "851be0018bfbb66ce396c3a0a70be3f8b9fbb450d2ffaa5f41225a268824ee76",
+      "url": "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+      "claim": "Wowhead 24 Nov supports Arcane Concentration and Meditation specifically for dungeon uptime and early Precision. The proposed route trades earlier Arcane Blast for threat/hit, not a quoted build."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-arcane-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "851be0018bfbb66ce396c3a0a70be3f8b9fbb450d2ffaa5f41225a268824ee76",
+      "url": "https://mobalytics.gg/wow-forever/classes/arcane-mage-guide-progress",
+      "claim": "Indexed Avoid guide 25 Nov supports Arcane sustain and Precision in dungeon/open world. Full page timed out on this review. Exact sequence is our editorial choice."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "8c71817def010eeda17d817b4942d2e7e8de7c35f963603ef581db7a49a2eca8",
+      "id": "mage-fire-dungeons-rank0-71139-client",
+      "kind": "client",
+      "url": "https://www.forever-xp.com/talents/mage/",
+      "sourceCaptureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+      "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+      "buildComparison": {
+        "status": "structure_matches",
+        "build": "1.60.1.71139",
+        "classId": 8,
+        "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "rawSha256": "293f3adb08a486e029a1b2e7071281d819f07f120bccb6caa5d788fefde37a3b",
+        "localizedSha256": "2940775ddf29052f1beeab4e81d0021d2f46ee365a186f0abecd3f1deb76e06e",
+        "captureSha256": "95e3db6115787b57f7b99b622b580c5b10d0e2b4b0200773c944f15297f51524",
+        "comparisonDigest": "a477e578b68cd8ea4315561c8c30f41f101b0f4ddfff696d3d2f33ed2a637e4a",
+        "primaryNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "independentNormalizedSha256": "87ba13ddbc43262b2e8fe9cd4fc6e506a22205ccaebf09603b0758942c2fa293",
+        "talentCount": 53,
+        "unknownPrerequisites": [],
+        "cyclicPrerequisites": [],
+        "diff": []
+      },
+      "claim": "Same independently verified full 71139 Mage structure and current exact source pair; minimum level gates checked for this specific 51-point rank-zero dungeon allocation."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "reviewedAt": "2026-11-26",
+      "legacyTalentedRank": 0,
+      "ruleDigest": "8c71817def010eeda17d817b4942d2e7e8de7c35f963603ef581db7a49a2eca8",
+      "id": "mage-fire-dungeons-rank0-71139-official",
+      "kind": "official",
+      "url": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "completeHotfixReview": true,
+      "hotfixDeltaReviewed": true,
+      "claim": "Complete Nov 25 official delta reviewed; no Mage talent or rank-zero gate changes. Revelation enchant changed but is not assumed by this route. No assumption of later undocumented mechanics."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-fire-dungeons-rank0-71139-editorial-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-fire-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "5d7e7d73b50bc5ca1909331e01991d3ebbdb018c9bd5c97bdb4fb83d76ece915",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/fire/pve/",
+      "claim": "Complete Cobalt guide supports Heating Up, Accelerant, Precision, Master of Elements and situational AoE. Ground ticks no longer spend Clearcasting; the build makes no stacking assumption."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-fire-dungeons-rank0-71139-editorial-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-fire-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "5d7e7d73b50bc5ca1909331e01991d3ebbdb018c9bd5c97bdb4fb83d76ece915",
+      "url": "https://wowforeverforge.com/mage/fire/guide/",
+      "claim": "Indexed separate guide supports Master of Elements, Arcane Concentration, Precision and Burning Soul, with Improved Flamestrike for groups. Does not benchmark this path."
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "arcane-fire-dungeon-wowhead-20261126",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "851be0018bfbb66ce396c3a0a70be3f8b9fbb450d2ffaa5f41225a268824ee76",
+      "url": "https://www.wowhead.com/forever/guide/classes/mage/arcane/dps-leveling-tips",
+      "claim": "Arcane dungeon uptime is directly described by Wowhead. The reviewed Arcane path brings Meditation at 27–29, the Fire path uses Master of Elements and later Clearcasting instead. No controlled comparison.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "arcane-fire-dungeon-cobalt-20261126",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "851be0018bfbb66ce396c3a0a70be3f8b9fbb450d2ffaa5f41225a268824ee76",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/mage/fire/pve/",
+      "claim": "Complete Fire PvE guide supports a viable situational group Fire route and resource management, not a blanket advantage. Editorial comparison prioritizes sustained mana and fewer pauses for ordinary groups over Fire crit/ground-effect dependence.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-dungeons",
+          "version": 1
+        }
+      ]
     }
   ],
   "rulePacks": [
@@ -429,6 +661,82 @@
         "105812": 15,
         "105813": 10
       }
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "mage-arcane-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "mage-arcane-dungeons-rank0-71139-client",
+        "mage-arcane-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105778": 10,
+        "105795": 10,
+        "105796": 10,
+        "105798": 40,
+        "105799": 35,
+        "105800": 30,
+        "105801": 30,
+        "105803": 25,
+        "105804": 25,
+        "105805": 25,
+        "105806": 20,
+        "105807": 20,
+        "105808": 20,
+        "105809": 15,
+        "105810": 15,
+        "105812": 15,
+        "105813": 10,
+        "113627": 25
+      }
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "revision": "mage-fire-dungeons-rank0-71139",
+      "status": "verified",
+      "reviewedAt": "2026-11-26",
+      "sources": [
+        "mage-fire-dungeons-rank0-71139-client",
+        "mage-fire-dungeons-rank0-71139-official"
+      ],
+      "legacyTalentedRank": 0,
+      "pointCalendarRevision": "forever-talented-v1",
+      "pointSpendMode": "immediate",
+      "gateMode": "earlier_rows",
+      "minimumLevelByTalent": {
+        "105778": 10,
+        "105781": 40,
+        "105782": 35,
+        "105784": 30,
+        "105785": 25,
+        "105786": 25,
+        "105788": 25,
+        "105789": 20,
+        "105790": 20,
+        "105791": 20,
+        "105794": 15,
+        "105795": 10,
+        "105797": 20,
+        "105806": 20,
+        "105809": 15,
+        "105810": 15,
+        "105812": 15,
+        "105813": 10
+      }
     }
   ],
   "specializationAdvice": [
@@ -470,6 +778,46 @@
       "evidenceIds": [
         "arcane-fire-comparison-icyveins-20261126",
         "arcane-fire-comparison-avoid-20261126"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 8,
+        "treeId": 11582,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "mage-arcane-dungeons",
+        "version": 1
+      },
+      "reason": "Für reguläre Dungeon-Gruppen empfehlen wir unter den derzeit freigegebenen Pfaden Arkan: frühe Bedrohungsreduktion und Arkane Meditation unterstützen einen gleichmäßigen Spielfluss. Feuer ist eine geprüfte Alternative mit frühen Treffer- und Feuertalenten sowie Flammenstoß für passende Gruppen. Frost ist noch nicht freigegeben. Kein gemessener Geschwindigkeitsvergleich.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "arcane-fire-dungeon-wowhead-20261126",
+        "arcane-fire-dungeon-cobalt-20261126"
       ]
     }
   ],

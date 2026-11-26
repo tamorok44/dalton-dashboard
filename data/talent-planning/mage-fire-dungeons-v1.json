@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11594,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -343,18 +343,31 @@
       "wowforeverprogress-fire-pve",
       "wowhead-fire-leveling-2411"
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
-      "sourceRevision": "bf08d9a30ef452a11c8a6414bb0564235e39f6f4183a15ab84fb8fd8cfa1e2d7",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     },
     "editorialDecision": "Direct Fire dungeon progression prioritizes early Precision 3/3, Burning Soul, Master of Elements and Improved Flamestrike for multi-target encounters. Keeps the timely Heating Up unlock. Late Arcane package supports an alternate damage school and free casts, with no Arcane Meditation in this variant. The point sequence is our own; raid guides are not evidence of the best leveling schedule.",
     "unresolved": [
-      "Exact current build 71139 class proof and complete hotfix delta pending. Structural validation is against retained 71091 proof.",
-      "Compare the gain from earlier hit and Flamestrike with losing Arcane Meditation from the mixed-leveling route; compare sustained dungeon sessions, not only peak damage.",
-      "Check Flamestrike periodic damage and Clearcasting after official hotfixes, Heating Up timing, target fire resistance and longer Scorch fights. No quantitative AoE or threat guarantee.",
-      "Legacy ranks 1–5 minimum levels unverified."
+      "No controlled comparative dungeon leveling benchmark; editorial recommendation only.",
+      "Effective Legacy rank 1–5 gates unverified."
+    ]
+  },
+  "treeName": "Feuer",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-fire-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für reguläre Dungeon-Gruppen mit längeren Einzelzielen und Mehrzielkämpfen bleiben Aufwärmen auf 25 und Brennende Seele erhalten. Präzision ist auf 28 vollständig, Flammenstoß wird ab 36 verstärkt und Verbrennung auf 43 freigeschaltet. Verbesserter Flammenstoß und Versengen werden nur für passende Gegner gewertet; kein mehrfach gestapelter Flächenbrand, keine garantierten kritischen Treffer oder Freizauber durch periodische Flammenstoß-Ticks. Der spätere Arkan-Nebenbaum ergänzt Freizauber und eine zweite Schadensschule. Verzicht auf Arkane Meditation zugunsten der Feuerinvestitionen; nicht als spezieller Mage-Cleave-Farmplan oder messbar schnellste Route ausgewiesen.",
+    "adviceSummary": "Aufwärmen, Brennende Seele, frühe vollständige Präzision und Flammenstoß für reguläre Dungeon-Gruppen. Weniger späte Arkan-Manaregeneration als im Questpfad.",
+    "evidenceIds": [
+      "mage-fire-dungeons-rank0-71139-editorial-1",
+      "mage-fire-dungeons-rank0-71139-editorial-2"
     ]
   }
 }

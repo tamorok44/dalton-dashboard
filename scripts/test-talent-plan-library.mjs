@@ -429,7 +429,7 @@ for(const [id,milestones,distribution] of [
   ['mage-fire-dungeons',[[105786,25],[105778,26],[105791,36],[105781,43]],[15,33,3]]
 ]){
   const candidate=plans.find(p=>p.id===id);
-  assert.ok(candidate&&candidate.status==='research_only');
+  assert.ok(candidate&&candidate.status==='approved');
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,candidate.version])),[0]);
   assert.equal(candidate.profiles[0].goal,'dungeons');
   assert.equal(candidate.profiles[0].playStyle,'group');
@@ -494,6 +494,35 @@ if(process.argv.includes('--legacy-research')){
     sources:['https://bindonforever.com/notes/legacy-system','https://www.destructoid.com/how-to-earn-and-spend-legacy-points-in-wow-forever/','https://foreverwow.com/guides/wow-forever-talent-planning/'],
     audits:legacyAudits},null,2));
 }
+// Current exact primary proof audit for all active paths; independent/editorial
+// release remains a separate requirement. A passing result cannot publish a plan.
+const currentSource=release.revalidations.find(r=>r.to.clientBuild==='1.60.1.71139')?.to.sourceRevision;
+const currentAudit=plans.filter(p=>p.status!=='retired'&&p.active!==false).map(plan=>{
+  const record=proofFile.catalogs.find(r=>r.proof.classId===plan.classId&&r.sourceRevision===currentSource);
+  if(!record)return {id:plan.id,version:plan.version,status:'missing_exact_primary',releaseEligible:false};
+  const proof=record.proof;
+  const pack={status:'verified',classId:plan.classId,catalogRevision:record.catalogRevision,revision:'current-primary-audit',
+    sources:['exact primary structure only'],reviewedAt:'2026-11-26',pointCalendarRevision:TALENT_POINT_CALENDAR_REVISION,
+    legacyTalentedRank:0,pointSpendMode:'immediate',gateMode:'earlier_rows',
+    minimumLevelByTalent:Object.fromEntries(proof.trees.flatMap(t=>t.talents.map(n=>[n.id,n.requiredLevel])))};
+  const result=auditPath({...plan,catalogRevision:pack.catalogRevision,ruleRevision:pack.revision},pack,proof);
+  const old=plan.research?.structuralValidation;
+  const key=old&&proofKey(plan.classId,old.catalogRevision,old.sourceRevision);
+  const baseline=key&&(snapshots.get(key)??researchSnapshots.get(key));
+  const map=p=>new Map((p?.trees??[]).flatMap(t=>t.talents.map(n=>[n.id,{...n,treeId:t.id}])));
+  const prev=map(baseline),next=map(proof);
+  const changed=[...new Set(plan.points.map(p=>p.talentId))].filter(id=>prev.has(id)&&
+    talentRevisionDigest(prev.get(id))!==talentRevisionDigest(next.get(id)??null));
+  return {id:plan.id,version:plan.version,classId:plan.classId,editorialStatus:plan.status,
+    status:result.ok?'primary_structure_matches':'primary_structure_blocked',blocker:result.ok?null:result.code,point:result.point??null,
+    changedUsedNodes:changed,sourceRevision:record.sourceRevision,releaseEligible:false};
+});
+assert.ok(currentAudit.every(a=>a.releaseEligible===false));
+for(const id of ['mage-arcane-dungeons','mage-fire-dungeons','mage-frost-pvp','warlock-affliction-leveling','warlock-demonology-leveling','warlock-destruction-leveling']){
+  assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches',id+' exact current structural audit');
+}
+assert.equal(currentAudit.find(a=>a.id==='hunter-beast-mastery-leveling')?.status,'primary_structure_blocked');
+if(process.argv.includes('--current-audit'))console.log(JSON.stringify({kind:'current_primary_audit',releaseEligible:false,sourceRevision:currentSource,paths:currentAudit},null,2));
 const rows=deriveTalentCoverage(coverage,research.candidateTracks,plans,validatedRanks);
 assert.equal(rows.length,[...treesById.values()].reduce((total,tree)=>total+tree.roles.length*coverage.goals.length,0));
 assert.ok(rows.some(row=>row.status==='unresearched'),'unresearched cells must appear');
@@ -508,7 +537,7 @@ assert.equal(new Set(workQueue.queue.map(a=>JSON.stringify([a.kind,a.identity]))
 assert.ok(workQueue.queue.some(a=>a.kind==='check_current_release'));
 assert.ok(workQueue.queue.some(a=>a.kind==='research_profile'));
 assert.ok(workQueue.queue.some(a=>a.kind==='resolve_blocker'));
-if(process.argv.includes('--legacy-research')){}
+if(process.argv.includes('--legacy-research')||process.argv.includes('--current-audit')){}
 else if(process.argv.includes('--work-queue'))console.log(JSON.stringify(workQueue,null,2));
 else if(process.argv.includes('--coverage'))console.log(JSON.stringify(rows,null,2));
 else console.log('Talent plan library: unique identities, profile coverage and approved paths: OK');

@@ -673,6 +673,18 @@
       "url": "https://eu.forums.blizzard.com/en/wow/t/balance-druid-adjustments-25-november/645939",
       "kind": "expert_guide",
       "independenceGroup": "official-balance-2511-editorial"
+    },
+    {
+      "id": "skillcapped-frost-pvp-1911",
+      "url": "https://www.skill-capped.com/wowarticles/forever/guides/frost-mage-pvp-guide/talents/",
+      "kind": "expert_guide",
+      "independenceGroup": "skillcapped-editorial"
+    },
+    {
+      "id": "foreverbattlegrounds-frost",
+      "url": "https://foreverbattlegrounds.com/classes/mage/frost/",
+      "kind": "expert_guide",
+      "independenceGroup": "foreverbattlegrounds-editorial"
     }
   ],
   "pilot": {
@@ -833,15 +845,18 @@
       "goal": "pvp",
       "role": "damage",
       "playStyle": "group",
-      "priority": "control",
+      "priority": "balanced",
       "sourceIds": [
         "cobalt-frost-pvp",
-        "blizzard-forever-hotfix-24315281"
+        "blizzard-forever-hotfix-24315281",
+        "skillcapped-frost-pvp-1911",
+        "foreverbattlegrounds-frost"
       ],
       "releaseBlocker": "frost_proc_and_charge_behavior_unverified",
       "proposal": "Bewerte Kontrollfenster, Überleben und Schaden im Gruppen-PvP unter den aktuellen Regeln.",
       "openChecks": [
-        "Clientbeobachtung zu Erfrierung, Eisigen Fingern, geteilten Abklingeffekten von Wurzeln und Verbrauch der Ladungen bei Mehrzielen."
+        "Clientbeobachtung zu Erfrierung, Eisigen Fingern, geteilten Abklingeffekten von Wurzeln und Verbrauch der Ladungen bei Mehrzielen.",
+        "Complete guides retrieved 26 Nov. Skill Capped uses 17/0/34, ForeverBattlegrounds 20/0/31. Both support Shatter, Ice Block, Cold Snap, Ice Barrier and Counterspell. No guaranteed double spell, independent proc or charge consumption assumed."
       ],
       "status": "research_only"
     },

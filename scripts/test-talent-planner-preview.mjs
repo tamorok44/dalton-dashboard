@@ -65,7 +65,7 @@ await blocked('binding_unavailable',{...query,goal:'pvp',planId:'mage-arcane-lev
 assert.equal(reads,0,'rejected requests and profile discovery do not inspect catalogs or providers');
 
 const info=(await request({character:mage.slug})).body;
-assert.equal(info.profiles.length,2);
+assert.equal(info.profiles.length,4);
 assert.equal(info.identity,'["eu","",555]');
 assert.equal(info.profiles[0].name,'Arkan');
 assert.deepEqual(info.profiles[0].supportedLegacyRanks,[0]);
@@ -74,21 +74,25 @@ assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).profiles.length,0);
 assert.equal(talentGuideOptions(info.profiles,{goal:'leveling'}).profiles.length,2);
 assert.deepEqual(talentGuideOptions(info.profiles,{goal:'leveling'}).fields.map(f=>f.key),['goal']);
 assert.equal(talentGuideOptions(info.profiles,{goal:'pvp'}).unavailable,true);
-assert.equal(info.profiles[0].planId,'mage-arcane-leveling');
+assert.equal(info.profiles.find(p=>p.goal==='leveling'&&p.treeId===11582).planId,'mage-arcane-leveling');
 assert.equal(info.profiles[0].version,1);
 assert.deepEqual(info.specializations.map(p=>p.name),['Arkan','Feuer','Frost']);
-assert.equal(info.specializationAdvice.length,1);
+assert.equal(info.specializationAdvice.length,2);
+const dungeonGuide=talentGuideOptions(info.profiles,{goal:'dungeons'});
+assert.equal(dungeonGuide.profiles.length,2);
+assert.equal(specializationSelection(dungeonGuide,{},info.specializationAdvice).profile.planId,'mage-arcane-dungeons');
+assert.equal(specializationSelection(dungeonGuide,{treeId:11594},info.specializationAdvice).profile.planId,'mage-fire-dungeons');
 const pilotGuide=talentGuideOptions(info.profiles,{goal:'leveling'});
 assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).profile.treeId,11582);
 assert.equal(specializationSelection(pilotGuide,{},info.specializationAdvice).recommended.kind,'comparative');
-assert.equal(specializationSelection(talentGuideOptions([info.profiles[0]],{goal:'leveling'})).recommended.kind,'available');
+assert.equal(specializationSelection(talentGuideOptions([info.profiles.find(p=>p.goal==='leveling'&&p.treeId===11582)],{goal:'leveling'})).recommended.kind,'available');
 assert.ok(specializationSelection(pilotGuide,{},info.specializationAdvice).recommended.reason.length>0);
 assert.equal(specializationSelection(pilotGuide,{treeId:11594}).treeId,11594);
 assert.equal(specializationSelection(pilotGuide,{treeId:11594},info.specializationAdvice).profile.planId,'mage-fire-leveling-mixed-balanced');
 assert.equal(specializationSelection(pilotGuide,{treeId:11601}).profile,null);
 // Synthetic future profiles: the questions adapt to actual distinct approved
 // plan identities, not class names, a roster size or internal priority axes.
-const baseProfile={...info.profiles[0],classId:11,treeId:101,planId:'cat-leveling'};
+const baseProfile={...info.profiles.find(p=>p.goal==='leveling'&&p.treeId===11582),classId:11,treeId:101,planId:'cat-leveling'};
 const cat={...baseProfile,role:'damage',playStyle:'mixed'};
 const bear={...baseProfile,role:'tank',playStyle:'mixed',planId:'bear-leveling'};
 const heal={...baseProfile,role:'heal',playStyle:'mixed',treeId:102,planId:'heal-leveling'};
@@ -149,13 +153,23 @@ assert.equal(transition.evidence.review.classMechanicsUnchanged,true);
 assert.deepEqual(transition.evidence.review.reasons.map(r=>r.code),['client_build_changed','hotfix_changed','source_pair_changed_or_missing']);
 assert.equal(transition.evidence.review.status,'review_required');
 assert.equal(good.evidence.review.status,'matches');
+const updated=release.rulePacks.find(p=>p.revision==='mage-arcane-dungeons-rank0-71139');
+const liveEndpoint=handler({master:async()=>({...master,sourceRevision:updated.sourceRevision}),observe:async()=>({...observation,clientBuild:updated.clientBuild,hotfixRevision:updated.hotfixRevision})});
+for(const [tree,planId] of [['11582','mage-arcane-dungeons'],['11594','mage-fire-dungeons']]){
+  const dungeonQuery={...query,tree,goal:'dungeons',playStyle:'group'};
+  const result=(await request(dungeonQuery,{endpoint:liveEndpoint})).body;
+  assert.equal(result.ok,true);
+  assert.equal(result.planId,planId);
+  assert.equal(result.history.length,51);
+  await blocked('unverified_current_rules',dungeonQuery);
+}
 await blocked('unverified_current_rules',query,{observe:async()=>({...observation,hotfixRevision:'a'.repeat(64)})});
 await blocked('unverified_current_rules',query,{observe:async()=>null});
 await blocked('unverified_current_rules',query,{clock:()=>start+TALENT_CATALOG_MAX_AGE_MS});
 await blocked('source_unavailable',query,{observe:async()=>{throw Error('Redis down')}});
 await blocked('source_unavailable',query,{master:async()=>{throw Error('network down')}});
 
-const [current]=talentPlanLibrary;
+const current=talentPlanLibrary.find(p=>p.id==='mage-arcane-leveling');
 const archived={...current,active:false};
 const newer={...current,version:2};
 const versions=handler({library:[archived,newer]});
@@ -163,7 +177,7 @@ assert.equal((await request(query,{endpoint:versions})).body.version,2);
 assert.equal((await request({...query,planId:current.id,version:'1',identity:info.identity},{endpoint:versions})).body.version,1);
 assert.equal((await request({character:mage.slug},{endpoint:versions})).body.profiles.length,1);
 const newCharacter={...mage,slug:'second-mage',blizzardCharacterId:777};
-assert.equal((await request({character:newCharacter.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,newCharacter]}})})})).body.profiles.length,2);
+assert.equal((await request({character:newCharacter.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,newCharacter]}})})})).body.profiles.length,4);
 assert.equal((await request({character:mage.slug},{endpoint:handler({roster:async()=>({data:{characters:[mage,{...mage,slug:'duplicate-id'}]}})})})).body.identity,null);
 const stalePersonal=(await request(query,{endpoint:handler({roster:async()=>({data:{characters:[{...mage,scrapedAt:'2026-11-20T10:00:00Z'}]}})})})).body;
 assert.equal(stalePersonal.ok,true);

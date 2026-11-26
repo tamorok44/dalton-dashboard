@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "id": "mage-frost-pvp",
+  "version": 1,
+  "classId": 8,
+  "treeId": 11601,
+  "status": "research_only",
+  "requiresRespec": false,
+  "releaseBlocker": "frost_proc_and_charge_behavior_unverified",
+  "profiles": [
+    {
+      "classId": 8,
+      "treeId": 11601,
+      "goal": "pvp",
+      "role": "damage",
+      "playStyle": "group",
+      "priority": "balanced"
+    }
+  ],
+  "expectedDistribution": {
+    "11582": 20,
+    "11594": 0,
+    "11601": 31
+  },
+  "points": [
+    {
+      "talentId": 105779,
+      "rank": 1
+    },
+    {
+      "talentId": 105779,
+      "rank": 2
+    },
+    {
+      "talentId": 105779,
+      "rank": 3
+    },
+    {
+      "talentId": 105779,
+      "rank": 4
+    },
+    {
+      "talentId": 105779,
+      "rank": 5
+    },
+    {
+      "talentId": 105778,
+      "rank": 1
+    },
+    {
+      "talentId": 105778,
+      "rank": 2
+    },
+    {
+      "talentId": 105778,
+      "rank": 3
+    },
+    {
+      "talentId": 105776,
+      "rank": 1
+    },
+    {
+      "talentId": 105776,
+      "rank": 2
+    },
+    {
+      "talentId": 105767,
+      "rank": 1
+    },
+    {
+      "talentId": 105774,
+      "rank": 1
+    },
+    {
+      "talentId": 105774,
+      "rank": 2
+    },
+    {
+      "talentId": 105774,
+      "rank": 3
+    },
+    {
+      "talentId": 105775,
+      "rank": 1
+    },
+    {
+      "talentId": 105769,
+      "rank": 1
+    },
+    {
+      "talentId": 105768,
+      "rank": 1
+    },
+    {
+      "talentId": 105768,
+      "rank": 2
+    },
+    {
+      "talentId": 105768,
+      "rank": 3
+    },
+    {
+      "talentId": 105775,
+      "rank": 2
+    },
+    {
+      "talentId": 105766,
+      "rank": 1
+    },
+    {
+      "talentId": 105764,
+      "rank": 1
+    },
+    {
+      "talentId": 105764,
+      "rank": 2
+    },
+    {
+      "talentId": 105770,
+      "rank": 1
+    },
+    {
+      "talentId": 105770,
+      "rank": 2
+    },
+    {
+      "talentId": 105777,
+      "rank": 1
+    },
+    {
+      "talentId": 105777,
+      "rank": 2
+    },
+    {
+      "talentId": 105777,
+      "rank": 3
+    },
+    {
+      "talentId": 105777,
+      "rank": 4
+    },
+    {
+      "talentId": 105777,
+      "rank": 5
+    },
+    {
+      "talentId": 105762,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 1
+    },
+    {
+      "talentId": 105813,
+      "rank": 2
+    },
+    {
+      "talentId": 105813,
+      "rank": 3
+    },
+    {
+      "talentId": 105813,
+      "rank": 4
+    },
+    {
+      "talentId": 105813,
+      "rank": 5
+    },
+    {
+      "talentId": 105812,
+      "rank": 1
+    },
+    {
+      "talentId": 105812,
+      "rank": 2
+    },
+    {
+      "talentId": 105809,
+      "rank": 1
+    },
+    {
+      "talentId": 105809,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 1
+    },
+    {
+      "talentId": 105810,
+      "rank": 2
+    },
+    {
+      "talentId": 105810,
+      "rank": 3
+    },
+    {
+      "talentId": 105810,
+      "rank": 4
+    },
+    {
+      "talentId": 105810,
+      "rank": 5
+    },
+    {
+      "talentId": 105806,
+      "rank": 1
+    },
+    {
+      "talentId": 105804,
+      "rank": 1
+    },
+    {
+      "talentId": 105804,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 1
+    },
+    {
+      "talentId": 105803,
+      "rank": 2
+    },
+    {
+      "talentId": 105803,
+      "rank": 3
+    }
+  ],
+  "rationaleBlocks": [
+    {
+      "talentId": 105779,
+      "count": 5,
+      "reason": "Frostblitz beschleunigen."
+    },
+    {
+      "talentId": 105778,
+      "count": 3,
+      "reason": "Trefferchance aller Zauber verbessern."
+    },
+    {
+      "talentId": 105776,
+      "count": 2,
+      "reason": "Verlangsamungen verstärken."
+    },
+    {
+      "talentId": 105767,
+      "count": 1,
+      "reason": "Eislanze auf 20 freischalten; gemeinsame Abklingzeit mit Feuerschlag beachten."
+    },
+    {
+      "talentId": 105774,
+      "count": 3,
+      "reason": "Gelegentliche Festfriereffekte ergänzen; keine unabhängige Proc-Chance annehmen."
+    },
+    {
+      "talentId": 105775,
+      "count": 1,
+      "reason": "Frostnova häufiger einsetzen."
+    },
+    {
+      "talentId": 105769,
+      "count": 1,
+      "reason": "Eisblock auf 25 freischalten."
+    },
+    {
+      "talentId": 105768,
+      "count": 3,
+      "reason": "Kritische Trefferchance gegen eingefrorene Ziele erhöhen."
+    },
+    {
+      "talentId": 105775,
+      "count": 1,
+      "reason": "Frostnova vervollständigen."
+    },
+    {
+      "talentId": 105766,
+      "count": 1,
+      "reason": "Kälteeinbruch auf 30 freischalten."
+    },
+    {
+      "talentId": 105764,
+      "count": 2,
+      "reason": "Eisige Finger als situatives Fenster ausbauen; keine ungeprüfte Doppelauslösung voraussetzen."
+    },
+    {
+      "talentId": 105770,
+      "count": 2,
+      "reason": "Reichweite für Abstand und Kontrolle erhöhen."
+    },
+    {
+      "talentId": 105777,
+      "count": 5,
+      "reason": "Kritischen Frostschaden ergänzen."
+    },
+    {
+      "talentId": 105762,
+      "count": 1,
+      "reason": "Eisbarriere auf 40 freischalten."
+    },
+    {
+      "talentId": 105813,
+      "count": 5,
+      "reason": "Arkanzauber gegen Zauberzeitverlust absichern."
+    },
+    {
+      "talentId": 105812,
+      "count": 2,
+      "reason": "Widerstandsreduktion und Bedrohungseffekt ergänzen; kein negativer Widerstandsbonus angenommen."
+    },
+    {
+      "talentId": 105809,
+      "count": 2,
+      "reason": "Geschosssalve ergänzen."
+    },
+    {
+      "talentId": 105810,
+      "count": 5,
+      "reason": "Freizauber ausbauen."
+    },
+    {
+      "talentId": 105806,
+      "count": 1,
+      "reason": "Arkanschlag als ergänzende Schadensschule freischalten."
+    },
+    {
+      "talentId": 105804,
+      "count": 2,
+      "reason": "Gegenzauber um eine Schweigeoption erweitern."
+    },
+    {
+      "talentId": 105803,
+      "count": 3,
+      "reason": "Manaregeneration beim Zaubern ergänzen."
+    }
+  ],
+  "research": {
+    "reviewedAt": "2026-11-26",
+    "sourceIds": [
+      "cobalt-frost-pvp",
+      "blizzard-forever-hotfix-24315281",
+      "skillcapped-frost-pvp-1911",
+      "foreverbattlegrounds-frost"
+    ],
+    "editorialDecision": "Prioritize control and defensive Frost milestones, then improved Counterspell and mana. Unlike mixed questing, defensive reset and silence are explicit priorities. No assumption of a simultaneous double hit from one charge.",
+    "unresolved": [
+      "Current server-side Frostbite/Fingers of Frost proc and charge consumption behavior including AoE and downranking remains unverified.",
+      "No measured PvP advantage and no Legacy rank 1–5 gates."
+    ],
+    "approval": null,
+    "structuralValidation": {
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "legacyTalentedRank": 0
+    }
+  }
+}
