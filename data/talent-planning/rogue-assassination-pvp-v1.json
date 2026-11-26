@@ -123,6 +123,10 @@
       "rank": 3
     },
     {
+      "talentId": 105715,
+      "rank": 1
+    },
+    {
       "talentId": 105714,
       "rank": 1
     },
@@ -143,6 +147,10 @@
       "rank": 5
     },
     {
+      "talentId": 105712,
+      "rank": 1
+    },
+    {
       "talentId": 113633,
       "rank": 1
     },
@@ -159,10 +167,6 @@
       "rank": 4
     },
     {
-      "talentId": 105712,
-      "rank": 1
-    },
-    {
       "talentId": 105710,
       "rank": 1
     },
@@ -173,10 +177,6 @@
     {
       "talentId": 105710,
       "rank": 3
-    },
-    {
-      "talentId": 105715,
-      "rank": 1
     },
     {
       "talentId": 113633,
@@ -279,9 +279,19 @@
       "reason": "Zerhäckseln vervollständigen."
     },
     {
+      "talentId": 105715,
+      "count": 1,
+      "reason": "Kaltblütigkeit für einen gezielten kritischen Angriff freischalten."
+    },
+    {
       "talentId": 105714,
       "count": 5,
       "reason": "Giftschaden steigern."
+    },
+    {
+      "talentId": 105712,
+      "count": 1,
+      "reason": "Venom: Shank eröffnet ein zeitlich begrenztes Fenster für stärkere und häufiger angewandte Gifte; keine garantierte Anwendung."
     },
     {
       "talentId": 113633,
@@ -289,19 +299,9 @@
       "reason": "Energierückfluss verbessern."
     },
     {
-      "talentId": 105712,
-      "count": 1,
-      "reason": "Toxin freischalten."
-    },
-    {
       "talentId": 105710,
       "count": 3,
       "reason": "Zusätzliche Combopunkte bei kritischen Fähigkeiten unterstützen."
-    },
-    {
-      "talentId": 105715,
-      "count": 1,
-      "reason": "Kaltblütigkeit freischalten."
     },
     {
       "talentId": 113633,
@@ -311,7 +311,7 @@
     {
       "talentId": 105709,
       "count": 1,
-      "reason": "Verstümmeln freischalten."
+      "reason": "Verstümmeln mit zwei Dolchen freischalten; keine exakte zusätzliche Schadenskonstante voraussetzen."
     },
     {
       "talentId": 105736,
@@ -326,12 +326,12 @@
     {
       "talentId": 105733,
       "count": 2,
-      "reason": "Unterbrechung um Stille ergänzen."
+      "reason": "Tritt um einen Schweigeeffekt gegen geeignete Gegner ergänzen; keine garantierte Kontrolle."
     },
     {
       "talentId": 105735,
       "count": 1,
-      "reason": "Riposte freischalten."
+      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen."
     },
     {
       "talentId": 105730,
@@ -346,17 +346,47 @@
       "rogue-assassination-pvp-cobalt",
       "rogue-hotfix-2511"
     ],
-    "editorialDecision": "Poison pressure with early Sprint mobility, later Mutilate and defensive Combat tools. No guaranteed control duration.",
+    "editorialDecision": "Früher 10-Punkte-Abstecher für Trefferchance und Sprint-Kontrolle; Kaltblütigkeit 35, Venom 40, Verstümmeln 50. Bewusster Mobilitätskompromiss gegenüber früherem Giftkern; keine garantierte Gift- oder Kontrollwirkung.",
     "unresolved": [
       "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required.",
       "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim."
+      "Nov 25 poisons and blinding powder temporarily bind on pickup; Poised is removed by Sap/Distract while stealthed. Nov 20 Blade Flurry copies Shank damage; verify exact poison, offhand, weapon, energy and PvP control behavior. No numerical uptime claim.",
+      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
+      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
+      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wow-forever.gg/talents/rogue/",
+          "contribution": "Talentfunktionen, Voraussetzungen Riposte, Venom und Todesmal, Coup de Grace und Boot Knife; keine unabhängige numerische Servermessung."
+        },
+        {
+          "url": "https://endgametools.com/en/wow-forever/news/wow-forever-rogue",
+          "contribution": "Build 71139 ausgewiesen; Shank ab 24 und neue Talentkerne; kein Beweis der exakten Serverkoeffizienten."
+        },
+        {
+          "url": "https://mobalytics.gg/wow-forever/classes/assassination-rogue-guide",
+          "contribution": "25.11.: Gift-/Dolchspielweise, Shank, alternative Levelchronologie und zwei Dolche für Mutilate."
+        }
+      ],
+      "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "rawAudit": {
+        "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
