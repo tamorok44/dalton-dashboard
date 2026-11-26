@@ -1765,6 +1765,80 @@
       "allocationDigest": "10e21ebea997dc5b3ca1532b7291db5ef05d7db161c304924ca9b138106b2151",
       "url": "https://grindclassic.com/wow-forever/leveling/warrior/fury/",
       "claim": "Nov 22 guide supports Gore Drinker from 31, Bloodthirst from 40, stance quest and ability training. Own 20/31 allocation."
+    },
+    {
+      "classId": 1,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warrior-leveling-comparison-outpost-20261126",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warrior-arms-leveling",
+      "planVersion": 1,
+      "allocationDigest": "68cd8eacecb7f81780fd2b7982237bf423ee4ccd49cac72b3a3348cf0096b327",
+      "url": "https://wofwforever.com/en/guides/wow-forever-warrior-leveling-talents/",
+      "claim": "Explicit comparison of three trees by toolkit, no official kill-speed numbers. Supports two-handed Arms and dual-wield Fury alternatives.",
+      "comparedOptions": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-arms-leveling",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-fury-leveling",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 1,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warrior-leveling-comparison-mobalytics-20261126",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warrior-arms-leveling",
+      "planVersion": 1,
+      "allocationDigest": "68cd8eacecb7f81780fd2b7982237bf423ee4ccd49cac72b3a3348cf0096b327",
+      "url": "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+      "claim": "Nov 19 comparison: Arms focuses on heavy two-handed strikes and cleave, Fury on sustained melee damage. Own recommendation uses weapon availability and no speed claim.",
+      "comparedOptions": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-arms-leveling",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-fury-leveling",
+          "version": 1
+        }
+      ]
     }
   ],
   "rulePacks": [
@@ -2734,6 +2808,46 @@
       "evidenceIds": [
         "shaman-dungeon-comparison-icyveins-20261126",
         "shaman-dungeon-comparison-mobalytics-20261126"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-arms-leveling",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "leveling",
+          "role": "damage",
+          "playStyle": "mixed",
+          "priority": "balanced",
+          "planId": "warrior-fury-leveling",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 1,
+        "treeId": 11650,
+        "goal": "leveling",
+        "role": "damage",
+        "playStyle": "mixed",
+        "priority": "balanced",
+        "planId": "warrior-arms-leveling",
+        "version": 1
+      },
+      "reason": "Für gemischtes Leveln als Schadenskrieger empfehlen wir Waffen als Einstieg: eine passende Zweihandwaffe, Verwunden, Überwältigen und Mehrzielangriffe. Furor bleibt die geprüfte Alternative mit zwei geeigneten Waffen und Regeneration durch Gore Drinker und Blutdurst. Kein allgemeiner Geschwindigkeitsvorsprung belegt; Schutz ist eine andere Rolle und wird hier nicht verglichen.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warrior-leveling-comparison-outpost-20261126",
+        "warrior-leveling-comparison-mobalytics-20261126"
       ]
     }
   ],
