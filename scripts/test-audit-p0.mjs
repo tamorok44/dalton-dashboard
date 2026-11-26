@@ -23,13 +23,14 @@ process.env.VERCEL_ENV='production';
 process.env.BLOB_READ_WRITE_TOKEN='public-media-fixture';
 process.env.BLOB_STORE_ID='public-media-fixture';
 const day='2026-11-26';
-const snapshot={snapshotAt:day+'T05:00:00Z',characters:{test:Object.fromEntries(Object.keys(FOREVER_CHARACTER_ENDPOINTS).map(key=>[key,{status:200,ok:true,data:{id:123}}]))}};
+const testRoster=[{slug:'test',id:123}];
+const snapshot={snapshotAt:day+'T05:00:00Z',characters:{test:Object.fromEntries(Object.keys(FOREVER_CHARACTER_ENDPOINTS).map(key=>[key,{status:200,ok:true,data:key==='profile'?{id:123,name:'Test',level:12}:{id:123,entries:[]}}]))}};
 let uploads=0,blob=null,compressed=null;
 const putImpl=async(path,body,options)=>{
   uploads++;
   assert.equal(options.access,'private');assert.equal(options.token,'private-archive-fixture');
   assert.equal(options.allowOverwrite,false);assert.ok(options.abortSignal instanceof AbortSignal);
-  assert.equal(path,'history/private/v3/daily/2026/11/26/'+rosterKey(['test'])+'/daltons-full.json.gz');
+  assert.equal(path,'history/private/v3/daily/2026/11/26/'+rosterKey(testRoster)+'/daltons-full.json.gz');
   assert.deepEqual(JSON.parse(gunzipSync(body).toString()),snapshot);
   compressed=Buffer.from(body);blob={url:'https://store-fixture.private.blob.vercel-storage.com/'+path,pathname:path};
   return blob;
@@ -49,31 +50,42 @@ assert.equal(dailySnapshotStoreConfigured(),false);
 await assert.rejects(saveDailySnapshot(snapshot,day,{putImpl}));assert.equal(uploads,0);
 process.env.VERCEL_ENV='production';
 assert.equal(dailySnapshotStoreConfigured(),true);
-assert.equal(await recoverDailySnapshot(day,{getImpl,expectedSlugs:['test']}),null);
+assert.equal(await recoverDailySnapshot(day,{getImpl,expectedRoster:testRoster}),null);
 const bad=structuredClone(snapshot);
 for(const v of Object.values(bad.characters.test)){v.status=503;v.ok=false;v.data={error:'offline'};}
-await assert.rejects(saveDailySnapshot(bad,day,{putImpl}),/bestätigtes Charakterprofil/);
+await assert.rejects(saveDailySnapshot(bad,day,{putImpl,expectedRoster:testRoster}),/bestätigtes Charakterprofil/);
 assert.equal(uploads,0,'all-endpoints failure is not a valid archive');
 const partial=structuredClone(snapshot);partial.characters.test.hunterPets={status:404,ok:false,data:null};
 assert.equal(classifySnapshot(partial).status,'partial');
-const meta=await saveDailySnapshot(snapshot,day,{putImpl,expectedSlugs:['test']});
+const meta=await saveDailySnapshot(snapshot,day,{putImpl,expectedRoster:testRoster});
 assert.equal(meta.archiveStatus,'private');assert.equal(meta.quality.status,'complete');assert.equal(uploads,1);
-assert.deepEqual(await recoverDailySnapshot(day,{getImpl,expectedSlugs:['test']}),meta);
+assert.deepEqual(await recoverDailySnapshot(day,{getImpl,expectedRoster:testRoster}),meta);
 assert.equal(uploads,1,'orphaned upload is recovered rather than overwritten');
-assert.equal(await recoverDailySnapshot(day,{getImpl,expectedSlugs:['other']}),null,'different roster has independent immutable object path');
-const duplicated=structuredClone(snapshot);duplicated.characters.other=structuredClone(duplicated.characters.test);
+assert.equal(await recoverDailySnapshot(day,{getImpl,expectedRoster:[{slug:'other',id:321}]}),null,'different roster has independent immutable object path');
+const duplicated=structuredClone(snapshot);duplicated.characters.other=structuredClone(duplicated.characters.test);duplicated.characters.other.profile.data.name='Other';
 assert.throws(()=>classifySnapshot(duplicated),/Doppelte Profil-ID/);
 const errorProfile=structuredClone(snapshot);errorProfile.characters.test.profile.data={id:123,error:'fixture'};
 assert.throws(()=>classifySnapshot(errorProfile),/bestätigtes Charakterprofil/);
 const errorOptional=structuredClone(snapshot);errorOptional.characters.test.statistics.data={error:'fixture'};
 assert.equal(classifySnapshot(errorOptional).status,'partial');
 assert.throws(()=>classifySnapshot(snapshot,{expectedRoster:[{slug:'test',id:321}]}),/Profil-ID/);
+assert.throws(()=>classifySnapshot(snapshot,{expectedRoster:[{slug:'test',id:null}]}),/Profil-ID nicht/);
+const wrongName=structuredClone(snapshot);wrongName.characters.test.profile.data.name='Andere';
+assert.throws(()=>classifySnapshot(wrongName,{expectedRoster:testRoster}),/Name oder Stufe/);
+const idOnly=structuredClone(snapshot);idOnly.characters.test.profile.data={id:123};
+assert.throws(()=>classifySnapshot(idOnly,{expectedRoster:testRoster}),/bestätigtes Charakterprofil/);
+const empty=structuredClone(snapshot);empty.characters.test.statistics.data={id:123};
+assert.equal(classifySnapshot(empty,{expectedRoster:testRoster}).status,'partial');
+const noPutBefore=uploads;
+const large=structuredClone(snapshot);large.characters.test.statistics.data={entries:Array.from({length:25000},(_,i)=>({id:i,name:'Synthetic'}))};
+await assert.rejects(saveDailySnapshot(large,day,{putImpl,expectedRoster:testRoster,signal:AbortSignal.timeout(1),deadlineAt:performance.now()+1}),/Archivfrist|aborted|timeout|operation/i);
+assert.equal(uploads,noPutBefore,'no provider PUT may start after synchronous work exhausted budget');
 const started=Date.now();
 await assert.rejects(withinArchiveDeadline(()=>delay(1000),AbortSignal.timeout(35)));
 assert.ok(Date.now()-started<500,'caller must not wait for SDK backoff');
-await assert.rejects(saveDailySnapshot(snapshot,day,{putImpl:async()=>({url:'https://fixture.public.blob.vercel-storage.com/test',pathname:blob.pathname})}),/private URL/);
+await assert.rejects(saveDailySnapshot(snapshot,day,{expectedRoster:testRoster,putImpl:async()=>({url:'https://fixture.public.blob.vercel-storage.com/test',pathname:blob.pathname})}),/private URL/);
 
-const proof={date:day,source:'daily',success:1,total:1,roster:[{slug:'test',id:null}],persisted:true,generatedAt:day+'T05:01:00Z'};
+const proof={date:day,source:'daily',success:1,total:1,roster:testRoster,persisted:true,generatedAt:day+'T05:01:00Z'};
 assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:{persisted:true}},false),false);
 assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:proof},false),true);
 assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:proof},true),false);
@@ -92,12 +104,12 @@ const daily=createDailySnapshotHandler({
   releaseDailySnapshotLock:async()=>events.push('release'),
   ensurePetRuleState:async()=>{events.push('rules');return {}},
   loadDailyProfileReceipt:async()=>persisted,
-  loadCharacters:async()=>{events.push('roster');return {data:{characters:[{slug:currentSlug}]}}},
+  loadCharacters:async()=>{events.push('roster');return {data:{characters:[{slug:currentSlug,blizzardCharacterId:currentSlug==='test'?123:321}]}}},
   recoverDailySnapshot:async()=>{events.push('recover');return uploadExists?meta:null},
   fetchForeverSnapshot:async()=>{events.push('raw');return snapshot},
   saveDailySnapshot:async()=>{events.push('private');if(failArchive)throw Error('fixture archive failed');uploadExists=true;return meta},
   registerDailySnapshot:async(value,token)=>{assert.equal(token,'daily-lock');events.push('register');if(failIndex)throw Error('index unavailable');stored=structuredClone(value)},
-  refreshDailyCharacters:async()=>{events.push('refresh');persisted={...proof,roster:[{slug:currentSlug,id:null}]};return persisted},
+  refreshDailyCharacters:async()=>{events.push('refresh');persisted={...proof,roster:[{slug:currentSlug,id:currentSlug==='test'?123:321}]};return persisted},
   publicPetRuleState:()=>({})
 });
 function response(){return {http:200,value:null,setHeader(){},status(n){this.http=n;return this},json(value){this.value=value}}}
@@ -134,6 +146,11 @@ const old=payload('Audit One','old',[133],now-60),newer=payload('Audit One','new
 const legacy=structuredClone(old);legacy.sections.locationHistory={entries:[]};legacy.sections.instances={lockouts:[]};
 assert.deepEqual(prepareAddonSync(null,legacy).payload.sections.instances,legacy.sections.instances);
 assert.deepEqual(prepareAddonSync(null,legacy).payload.sections.locationHistory,legacy.sections.locationHistory);
+const legacyNext=structuredClone(legacy);legacyNext.syncId='legacy-next';legacyNext.sections.character.capturedAt++;legacyNext.sections.character.level=13;legacyNext.sections.locationHistory.entries.push({zone:'Test'});
+const legacyFollow=prepareAddonSync({payload:legacy},legacyNext);
+assert.equal(legacyFollow.payload.sections.character.level,13);
+assert.deepEqual(legacyFollow.payload.sections.locationHistory,legacy.sections.locationHistory);
+assert.deepEqual(legacyFollow.ignoredSections,[{section:'locationHistory',reason:'legacy_capture_time_missing'}]);
 const oldPrep=prepareAddonSync(null,old);
 const newerPrep=prepareAddonSync({payload:oldPrep.payload,receipts:oldPrep.receipts},newer);
 assert.equal(prepareAddonSync({payload:newerPrep.payload,receipts:newerPrep.receipts},old).duplicate,true);
@@ -171,7 +188,7 @@ if(!hasRedis){
       {slug:'audit-two',name:'Audit Two',classId:8,level:12}
     ]}));
     const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
-    let mode=null,releaseRead=null,readReached=null;
+    let mode=null,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
     const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
     let pauseFirst=true;
     globalThis.fetch=async(url,options={})=>{
@@ -189,7 +206,11 @@ if(!hasRedis){
         if(isSync&&mode==='drop-after'){mode=null;cli(...cmd);throw Error('fixture response lost after commit');}
         if(op==='SET'&&key.includes(':history:daily:lock:')&&mode==='drop-lock-reply'){mode=null;cli(...cmd);throw Error('fixture lock response lost');}
         if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
-        return Response.json({result:cli(...cmd)});
+        const result=cli(...cmd);
+        if(mode==='hold-preview-observation'&&op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:preview:records:v2'){
+          mode=null;previewObserved();await continuePreview;
+        }
+        return Response.json({result});
       }catch(error){return Response.json({error:String(error.message)});}
     };
     const call=async body=>{const res=response();await addon({method:'POST',headers:{authorization:'Bearer isolated-fixture'},body},res);return res};
@@ -258,6 +279,24 @@ if(!hasRedis){
     const priced=JSON.parse(cli('HGET',knowledgeIndex,knowledgeKey));
     assert.equal(priced.observationCount,3);assert.equal(priced.services[0].priceCopper,30);
     assert.ok(priced.changes.some(x=>x.sameSecond===true&&x.previousEntries[0].priceCopper===20&&x.entries[0].priceCopper===30));
+    // Actual scoped preview lock: hold the response after writing the
+    // earlier observation, then try the later request before the ack.
+    const beforePreview=cli('GET',syncKey('audit-one'));
+    process.env.VERCEL_ENV='preview';
+    try{
+      const early=payload('Audit One','preview-first',[133],now+5);
+      early.sections.interactions={capturedAt:now+5,trainerHistory:[{capturedAt:now+5,complete:true,npc:{id:12345,name:'Test Trainer'},services:[{name:'Test Ability',priceCopper:10}]}]};
+      const late=payload('Audit One','preview-second',[133,143],now+6);
+      mode='hold-preview-observation';const firstPreview=call(early);await observedPreview;
+      assert.equal((await call(late)).http,409);
+      previewRelease();assert.equal((await firstPreview).http,200);
+      assert.equal((await call(late)).http,200);
+      const finalPreview=await loadAddonSyncState('audit-one');
+      assert.equal(finalPreview.payload.syncId,'preview-second');
+      assert.ok(finalPreview.receipts.some(x=>x.id==='preview-first')&&finalPreview.receipts.some(x=>x.id==='preview-second'));
+      assert.equal(cli('GET',syncKey('audit-one')),beforePreview,'preview must not change production state');
+      assert.equal(cli('GET',lockKey+':preview-addon'),null);
+    }finally{previewRelease();process.env.VERCEL_ENV='production';}
     const refreshLock=await acquireRefreshLock();
     const actualProof={...proof,success:2,total:2,roster:[{slug:'audit-one',id:null},{slug:'audit-two',id:null}]};
     const nextRoster={...roster(),generatedAt:actualProof.generatedAt};
@@ -284,7 +323,18 @@ if(!hasRedis){
     await registerDailySnapshot({date:older,archiveStatus:'disabled'},olderLock);
     assert.equal((await getLastDailySnapshot()).date,day,'last pointer cannot move backwards');
     await releaseDailySnapshotLock(older,olderLock);
-    console.log('F02/F03/F14 real isolated Redis: contention, lock loss, lost response, stale retry, type preflight, daily proof and atomic index: OK');
+    // Re-upgrade: an intervening v1 write must never hide newer daily data.
+    const newDay='2026-11-28',newRow={date:newDay,archiveStatus:'disabled'};
+    cli('HSET','dalton-dashboard:history:daily:index:v1',newDay,JSON.stringify(newRow));cli('SET',lastKey,JSON.stringify(newRow));
+    assert.equal((await getLastDailySnapshot()).date,newDay);
+    const oldDayLock=await acquireDailySnapshotLock(older);
+    await registerDailySnapshot({date:older,archiveStatus:'disabled'},oldDayLock);
+    await releaseDailySnapshotLock(older,oldDayLock);
+    assert.equal((await getLastDailySnapshot()).date,newDay);
+    const legacyReceipt={...actualProof,generatedAt:day+'T06:00:00Z'};
+    cli('HSET','dalton-dashboard:data-version:meta:v1','daily-profile-refresh',JSON.stringify(legacyReceipt));
+    assert.deepEqual(await loadDailyProfileReceipt(day),legacyReceipt);
+    console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof and index reconciliation: OK');
   }finally{
     globalThis.fetch=originalFetch;
     server.kill('SIGTERM');

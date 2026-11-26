@@ -128,5 +128,12 @@ assert.equal(historicalCalls.filter(c=>c[0]==='MGET').length,1,'Historical snaps
 
 const migratedCalls=[];const modernRecord={...records[0],npc:{id:123,name:'Modern'}};
 const modern=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
- migratedCalls.push(command);if(command[0]==='SMEMBERS')return [...current,old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];throw Error('Legacy payload must not be read for migrated record: '+command[0]);
+ migratedCalls.push(command);if(command[0]==='SMEMBERS')return [current[1],old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];throw Error('Unneeded legacy payload must not be read for a modern-only record: '+command[0]);
 }});assert.equal(modern.length,1);assert.equal(modern[0].npc.id,123);assert.equal(migratedCalls.filter(c=>c[0]==='MGET').length,0);
+
+const {reconcileKnowledgeRecords}=await import('./storage-reconciliation.mjs');
+const v2={...records[1],observationIds:['v2'],observationCount:1,latestSnapshot:{...trainer,capturedAt:'2026-11-26T05:00:00Z',entries:[{name:'Spinnenwurst',priceCopper:20}]},services:[{key:'spinnenwurst',priceCopper:20,lastSeenAt:'2026-11-26T05:00:00Z'}]};
+const v1={...v2,observationIds:['v1'],latestSnapshot:{...v2.latestSnapshot,capturedAt:'2026-11-26T06:00:00Z',entries:[{name:'Spinnenwurst',priceCopper:30}]},services:[{key:'spinnenwurst',priceCopper:30,lastSeenAt:'2026-11-26T06:00:00Z'}]};
+const merged=reconcileKnowledgeRecords(v2,v1);assert.equal(merged.latestSnapshot.entries[0].priceCopper,30);assert.deepEqual(new Set(merged.observationIds),new Set(['v1','v2']));
+assert.throws(()=>reconcileKnowledgeRecords(v2,{...v1,latestSnapshot:{...v1.latestSnapshot,capturedAt:v2.latestSnapshot.capturedAt}}),/MIGRATION_CONFLICT/);
+const both=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{if(op==='SMEMBERS'||op==='HKEYS')return [current[1]];if(op==='HMGET')return [JSON.stringify(v2)];if(op==='MGET')return [JSON.stringify(v1)];throw Error(op);}});assert.equal(both[0].latestSnapshot.entries[0].priceCopper,30);

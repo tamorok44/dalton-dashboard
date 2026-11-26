@@ -65,3 +65,8 @@ const scopedKey='dalton-dashboard:core:compact:v2:'+(process.env.VERCEL_ENV==='p
 compact.set(coreKey,JSON.stringify({characters:{generatedAt:'2026-11-26T06:00:00Z',slugs:['cole-dalton','dolly-dalton']},addon:{}}));
 const scoped=JSON.parse(compact.get(scopedKey)||'{}');scoped.addon={'cole-dalton':{syncId:'v2',receivedAt:'2026-11-26T06:01:00Z'}};compact.set(scopedKey,JSON.stringify(scoped));
 const modern=await readCompactVersion(inputs);assert.equal(modern.generatedAt,'2026-11-26T06:00:00Z');assert.ok(modern.addonSyncVersion.includes('cole-dalton:v2'));assert.equal(fullReads,4,'modern compact metadata is preferred without full payload reads');
+fields.set('characters',JSON.stringify({generatedAt:'2026-11-26T07:00:00Z',slugs:['cole-dalton','dolly-dalton']}));
+const legacyAddonField='addon:'+(process.env.VERCEL_ENV==='production'?'production':'preview')+':cole-dalton';
+fields.set(legacyAddonField,JSON.stringify({syncId:'intervening-v1',receivedAt:'2026-11-26T07:01:00Z'}));
+const upgraded=await readCompactVersion(inputs);
+assert.equal(upgraded.generatedAt,'2026-11-26T07:00:00Z');assert.ok(upgraded.addonSyncVersion.includes('intervening-v1'));assert.equal(fullReads,4,'re-upgrade detects newer v1 metadata without full payload reads');
