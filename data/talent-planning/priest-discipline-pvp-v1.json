@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 5,
   "treeId": 11608,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -330,15 +330,13 @@
       "priest-discipline-pvp-skillcapped",
       "priest-discipline-pvp-cobalt"
     ],
-    "editorialDecision": "Defensive PvP-Heilrolle mit früher Kontrollzeitreduktion und situativem Zauberschutz. Seelenwehr 25 statt 30, Sühne 30 statt 31, Seele der Macht 40. Heilig-Nebenbaum statt offensiver Schattenvariante: Zauberschadenminderung und direkte Heilung, keine behauptete Unterbrechungsimmunität oder Überlegenheit.",
+    "editorialDecision": "Defensive PvP-Heilrolle mit früher Kontrollzeitreduktion und situativem Zauberschutz. Seelenwehr 25 statt 30, Sühne 30 statt 31, Seele der Macht 40. Heilig-Nebenbaum statt offensiver Schattenvariante: Zauberschadenminderung und direkte Heilung, keine behauptete Unterbrechungsimmunität oder Überlegenheit. Aktueller Build 71139 und weitere Talentbeschreibungen bestätigen die Tooltip-Grenze von 1200, 5/10/15 Prozent und 12 Sekunden. Keine Messung der tatsächlichen Schildgrenze, Stapelung oder stufenabhängigen Serverwerte. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
     "unresolved": [
-      "Exact build 71139 primary structure checked; independent full class structure and hotfix reconciliation still required. Current public tooltip reference is not full attestation.",
-      "Legacy ranks 1–5 effective gates and comparative performance unverified.",
-      "Verify November Vampiric Embrace party-heal reduction and personal healing, Spirit Tap trigger, Holy/Shadow school conditions, and actual Weakened Soul mechanics where relevant. No guarantee of critical chains, control immunity or healing in Shadowform.",
-      "105840: Build 71139 zeigt Obergrenze 1200 im Clienttext; unabhängige Quelle bestätigt die Grundwirkung, aber keine exakte stufenabhängige Servergrenze. Nicht numerisch freigeben.",
-      "Vollständige offizielle Hotfixprüfung je Abhängigkeit und reguläre CI-Freigabe noch ausstehend."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No measured comparative healing performance or actual server absorb/heal calculation; no guaranteed amount or target selection.",
+      "No assumption of undocumented proc interactions or immunity."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -373,7 +371,61 @@
         "points": 51,
         "errors": []
       },
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "editorial_rank0_only_no_production_deployment",
+      "clientTextResolution": {
+        "kind": "client_spell_detail_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "talentId": 105840,
+        "spellId": 431622,
+        "primaryHash": "69be3eafae3977ac3772b881a27442833309c9e21afd3afe7da597e0cce65335",
+        "secondaryHash": "46070ba746f1a45cd0211f05689c57233d6e34396f0e1c27d85d9a9417392056",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "tooltipFields": {
+          "nonPeriodicCriticalHeal": true,
+          "absorbPercentByRank": [
+            5,
+            10,
+            15
+          ],
+          "tooltipCap": 1200,
+          "durationSeconds": 12
+        },
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/priest/talents/divine-aegis/",
+            "build": "1.60.1.71139",
+            "claim": "Client build 71139 and Nov 25 hotfix cache explicitly identified; all three ranks 5/10/15%, displayed cap 1200, 12 sec."
+          },
+          {
+            "url": "https://raiddex.com/de/wow-forever/zauber/goettliche-aegis",
+            "claim": "German spell 431622 displays same 15% at max rank, 1200 cap and 12 sec. No current build label."
+          },
+          {
+            "url": "https://www.wowhead.com/forever/changes/talents/priest/divine-aegis",
+            "claim": "Separate talent change reference corroborates displayed cap, not a measured server value."
+          }
+        ],
+        "scope": "Exact Priest rank-zero allocations only; corroborated client description, not verified server scaling or actual heal/absorb prediction."
+      }
     }
+  },
+  "treeName": "Disziplin",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-discipline-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Defensive PvP-Heilrolle mit früher Kontrollzeitreduktion und situativem Zauberschutz. Seelenwehr 25 statt 30, Sühne 30 statt 31, Seele der Macht 40. Heilig-Nebenbaum statt offensiver Schattenvariante: Zauberschadenminderung und direkte Heilung, keine behauptete Unterbrechungsimmunität oder Überlegenheit. Aktueller Build 71139 und weitere Talentbeschreibungen bestätigen die Tooltip-Grenze von 1200, 5/10/15 Prozent und 12 Sekunden. Keine Messung der tatsächlichen Schildgrenze, Stapelung oder stufenabhängigen Serverwerte. Die Talentwahl beruht auf der bestätigten Grundfunktion, Ressourcen und Rolle, nicht auf einer garantierten Heil- oder Absorptionsmenge.",
+    "adviceSummary": "Disziplin-PvP mit Kontrollschutz, Sühne 30 und defensiver Schildunterstützung.",
+    "evidenceIds": [
+      "priest-discipline-pvp-rank0-71139-editorial-1",
+      "priest-discipline-pvp-rank0-71139-editorial-2"
+    ]
   }
 }
