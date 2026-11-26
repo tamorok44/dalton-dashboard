@@ -81,7 +81,7 @@ assert.equal(hunter.hypotheticalStructure.ok,true);
 assert.ok(rows.filter(x=>x.classId===2).every(x=>!x.affectedTalentIds.includes(113631)));
 assert.ok(rows.filter(x=>x.classId===11).every(x=>x.hypotheticalStructure.ok),'No existing path may overspend the confirmed Starfire cap');
 assert.deepEqual(rows.filter(x=>x.editorialStatus==='approved').map(x=>JSON.stringify([x.id,x.version])).sort(),talentPlanLibrary.map(p=>JSON.stringify([p.id,p.version])).sort());
-const summary={activePaths:rows.length,primaryValid:rows.filter(x=>x.primaryStructuralStatus==='valid').length,approvedPaths:rows.filter(x=>x.editorialStatus==='approved').length,
+const summary={activePaths:rows.length,primaryValid:rows.filter(x=>x.primaryStructuralStatus==='valid').length,rawBlockedPaths:rows.filter(x=>x.primaryStructuralStatus!=='valid').map(x=>x.id),approvedPaths:rows.filter(x=>x.editorialStatus==='approved').length,
  crossBuildCleanClasses:ledger.classes.filter(x=>x.status==='structure_matches').length,issueExposure:ledger.issues.map(i=>({id:i.id,paths:rows.filter(x=>x.issueId===i.id).length,affectedPaths:rows.filter(x=>x.issueId===i.id&&x.affectedTalentIds.length).length})),
  explicitLevelConflicts:rows.flatMap(x=>x.explicitLevelConflicts.map(c=>({id:x.id,...c}))),legacyCalendarConfirmed:true,legacyEffectiveGatesVerified:false,liveReleaseChecked:false};
 assert.deepEqual(summary.explicitLevelConflicts,[],'Explicit milestone in rationale must agree with the chronological rank-0 path');

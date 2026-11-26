@@ -79,7 +79,7 @@ const rows=plans.map(p=>{
  return {id:p.id,version:p.version,classId:p.classId,status:p.status,rawStructure:unchanged.ok?'valid':unchanged.code,
  correctedStructure:'valid',usedEffectDifferences:discrepancies,usedStructuralCorrections:structure,druidCondition,fixedGateBanked,releaseEligible:false};
 });
-assert.equal(rows.length,84);assert.equal(rows.filter(r=>r.rawStructure!=='valid').length,1);
+assert.equal(rows.length,84);assert.deepEqual(rows.filter(r=>r.rawStructure!=='valid').map(r=>r.id).sort(),['dungeons','leveling','pvp'].map(g=>'hunter-beast-mastery-'+g));
 assert.equal(rows.find(r=>r.id==='hunter-beast-mastery-leveling').correctedStructure,'valid');
 assert.equal(rows.filter(r=>r.status==='approved').length,talentPlanLibrary.length);
 assert.ok(rows.every(r=>!r.releaseEligible));

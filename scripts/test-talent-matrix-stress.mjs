@@ -8,6 +8,7 @@ const folder=new URL('../data/talent-planning/',import.meta.url);
 const read=f=>JSON.parse(readFileSync(new URL(f,folder),'utf8'));
 const plans=readdirSync(folder).filter(f=>/-v\d+\.json$/.test(f)).map(read).filter(p=>p.status!=='retired'&&p.active!==false);
 const catalogs=read('catalog-proofs-2026-11-25.json').catalogs;
+const release=read('release-catalog.json');
 const source='9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b';
 const current=new Map(catalogs.filter(c=>c.sourceRevision===source).map(c=>[c.proof.classId,c]));
 const coverage=read('coverage-2026-11-25.json');
@@ -17,7 +18,7 @@ const keys=new Set(plans.flatMap(p=>p.profiles.map(x=>JSON.stringify([x.classId,
 for(const cell of cells)assert.ok(keys.has(JSON.stringify(cell)),'Missing complete profile '+JSON.stringify(cell));
 const releaseIds=new Set(talentPlanLibrary.map(p=>JSON.stringify([p.id,p.version])));
 assert.deepEqual([...releaseIds].sort(),plans.filter(p=>p.status==='approved').map(p=>JSON.stringify([p.id,p.version])).sort());
-let validated=0,mutations=0,legacy=0,rankChecks=0;
+let validated=0,correctedValidated=0,mutations=0,legacy=0,rankChecks=0;
 const blocked=[];
 for(const plan of plans){
  const label=plan.id+' v'+plan.version;
@@ -40,9 +41,21 @@ for(const plan of plans){
  const hypotheses=compareLegacyHypotheses(plan,proof);
  assert.equal(hypotheses.releaseEligible,false,label);
  if(!result.ok){
-   assert.notEqual(plan.status,'approved',label+' approved path fails current retained structure');
    assert.equal(hypotheses.status,'baseline_blocked',label);
    blocked.push({id:plan.id,version:plan.version,code:result.code,point:result.point});
+   assert.match(plan.id,/^hunter-beast-mastery-(leveling|dungeons|pvp)$/);
+   assert.equal(result.code,'prerequisite');assert.equal(result.point,21);
+   const pack=release.rulePacks.find(r=>r.revision===plan.ruleRevision&&r.legacyTalentedRank===0);
+   assert.ok(pack?.prerequisiteCorrection,label+' missing reviewed correction');
+   const exactMaster={...master,sourceRevision:source};
+   const fixed=validateTalentPath(plan,exactMaster,pack);
+   assert.equal(fixed.ok,true,label+' exact correction: '+JSON.stringify(fixed));
+   assert.deepEqual(fixed.history.map(({talentId,rank})=>({talentId,rank})),plan.points);
+   assert.deepEqual(Object.fromEntries(proof.trees.map(t=>[t.id,fixed.history.filter(s=>s.treeId===t.id).length])),plan.expectedDistribution);
+   assert.equal(validateTalentPath(plan,{...exactMaster,sourceRevision:'f'.repeat(64)},pack).code,'unverified_current_rules');
+   assert.equal(validateTalentPath(plan,exactMaster,{...pack,prerequisiteCorrection:undefined}).code,'prerequisite');
+   assert.equal(validateTalentPath({...plan,version:plan.version+1},exactMaster,pack).code,'unverified_current_rules');
+   mutations+=3;correctedValidated++;
    continue;
  }
  validated++;
@@ -71,5 +84,6 @@ for(const plan of plans){
 }
 assert.equal(validated+blocked.length,plans.length);
 // Any newly failing path is a regression; clearing this known blocker requires explicit review.
-assert.deepEqual(blocked,[{id:'hunter-beast-mastery-leveling',version:1,code:'prerequisite',point:21}],'Unexpected change to the current structural blocker set');
-console.log(JSON.stringify({kind:'offline_talent_matrix_stress',coverageCells:cells.length,activePlans:plans.length,validated,blocked,mutations,legacyHypotheses:legacy,researchReleaseGuards:rankChecks,releaseIndex:releaseIds.size,liveReleaseChecked:false},null,2));
+assert.deepEqual(blocked,['dungeons','leveling','pvp'].map(goal=>({id:'hunter-beast-mastery-'+goal,version:1,code:'prerequisite',point:21})),'Unexpected change to the raw structural blocker set');
+assert.equal(correctedValidated,3);assert.equal(validated+correctedValidated,plans.length);
+console.log(JSON.stringify({kind:'offline_talent_matrix_stress',coverageCells:cells.length,activePlans:plans.length,validated,correctedValidated,rawBlocked:blocked,mutations,legacyHypotheses:legacy,researchReleaseGuards:rankChecks,releaseIndex:releaseIds.size,liveReleaseChecked:false},null,2));
