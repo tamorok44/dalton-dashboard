@@ -63,6 +63,10 @@
       "rank": 2
     },
     {
+      "talentId": 105743,
+      "rank": 1
+    },
+    {
       "talentId": 105755,
       "rank": 1
     },
@@ -119,10 +123,6 @@
       "rank": 2
     },
     {
-      "talentId": 105743,
-      "rank": 1
-    },
-    {
       "talentId": 105750,
       "rank": 1
     },
@@ -155,16 +155,24 @@
       "rank": 2
     },
     {
+      "talentId": 105708,
+      "rank": 1
+    },
+    {
+      "talentId": 105708,
+      "rank": 2
+    },
+    {
+      "talentId": 105708,
+      "rank": 3
+    },
+    {
       "talentId": 113398,
       "rank": 1
     },
     {
       "talentId": 113398,
       "rank": 2
-    },
-    {
-      "talentId": 113398,
-      "rank": 3
     },
     {
       "talentId": 105732,
@@ -217,14 +225,6 @@
     {
       "talentId": 105735,
       "rank": 1
-    },
-    {
-      "talentId": 105730,
-      "rank": 1
-    },
-    {
-      "talentId": 105730,
-      "rank": 2
     }
   ],
   "rationaleBlocks": [
@@ -242,6 +242,11 @@
       "talentId": 105745,
       "count": 2,
       "reason": "Kosten der Eröffnung senken."
+    },
+    {
+      "talentId": 105743,
+      "count": 1,
+      "reason": "Premeditation für vorbereitete Combopunkte freischalten."
     },
     {
       "talentId": 105755,
@@ -289,19 +294,14 @@
       "reason": "Erkennung und Schutz vor Distanzangriffen verbessern."
     },
     {
-      "talentId": 105743,
-      "count": 1,
-      "reason": "Konzentration für vorbereitete Combopunkte ergänzen."
-    },
-    {
       "talentId": 105750,
       "count": 5,
-      "reason": "Combopunkte aus Shank ausbauen."
+      "reason": "Boot Knife verbessert die Combopunkt-Erzeugung durch Shank auf dem getroffenen Ziel."
     },
     {
       "talentId": 110866,
       "count": 1,
-      "reason": "Todesmal freischalten."
+      "reason": "Todesmal als Finisher speichert einen Teil des eigenen Schadens, Blutungen besonders stark; verzögerte Auszahlung mit begrenzter Skalierung, keine feste Obergrenze voraussetzen."
     },
     {
       "talentId": 105741,
@@ -309,8 +309,13 @@
       "reason": "Energiekosten häufiger Angriffe reduzieren."
     },
     {
-      "talentId": 113398,
+      "talentId": 105708,
       "count": 3,
+      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
+    },
+    {
+      "talentId": 113398,
+      "count": 2,
       "reason": "Ausweichen ergänzen."
     },
     {
@@ -336,17 +341,12 @@
     {
       "talentId": 105733,
       "count": 2,
-      "reason": "Unterbrechung um Stille ergänzen."
+      "reason": "Tritt um einen Schweigeeffekt gegen geeignete Gegner ergänzen; keine garantierte Kontrolle."
     },
     {
       "talentId": 105735,
       "count": 1,
-      "reason": "Riposte freischalten."
-    },
-    {
-      "talentId": 105730,
-      "count": 2,
-      "reason": "Schaden häufiger Angriffe ergänzen."
+      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen."
     }
   ],
   "research": {
@@ -355,17 +355,51 @@
       "skillcapped-subtlety-pvp",
       "foreverbattlegrounds-subtlety"
     ],
-    "editorialDecision": "Control, opener, bleeds, resets then Combat utility; not leveling-speed recommendation.",
+    "editorialDecision": "Täuschung-PvP: Premeditation 20, Vorbereitung 30, Todesmal 40. Coup de Grace 43–45 unterstützt Todesmal; dafür weniger Ausweichen und allgemeiner Angriffsschaden, Sprint-Kontrolle später. Keine garantierte Kontrolle oder feste Todesmal-Obergrenze.",
     "unresolved": [
       "Exact live raw pair and independent live-client proof required; extracted catalog cannot authorize release.",
       "Effective Legacy 1–5 minimum levels and comparative performance not established.",
-      "Verify current PvP diminishing returns, reset scope and Death Mark limits."
+      "Verify current PvP diminishing returns, reset scope and Death Mark limits.",
+      "Numerische Konflikte 105735 (Entwaffnungsdauer), 105709 (Zusatzschaden/Rundung), 110866 (Schadensobergrenze) bleiben separat offen, soweit vom Pfad berührt. Keine festen unbestätigten Konstanten.",
+      "Offizielle Hotfixes 16.11. Shank/Combopunkte, 20.11. Klingenwirbel/Shank, 25.11. Poised und vorübergehend gebundene Gifte/Blendpulver berücksichtigt; vollständige CI und Freigabe ausstehend.",
+      "Vermächtnisränge 1–5 und vergleichende Leistung nicht verifiziert."
     ],
     "approval": null,
     "structuralValidation": {
       "catalogRevision": "aa44b443774e0b700e440f2e2e4ae70eeb4469afc458ecf8df3e036596839a8e",
       "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
       "legacyTalentedRank": 0
+    },
+    "conflictFollowup": {
+      "reviewedAt": "2026-11-26",
+      "build": "1.60.1.71139",
+      "sources": [
+        {
+          "url": "https://wow-forever.gg/talents/rogue/",
+          "contribution": "Talentfunktionen, Voraussetzungen Riposte, Venom und Todesmal, Coup de Grace und Boot Knife; keine unabhängige numerische Servermessung."
+        },
+        {
+          "url": "https://endgametools.com/en/wow-forever/news/wow-forever-rogue",
+          "contribution": "Build 71139 ausgewiesen; Shank ab 24 und neue Talentkerne; kein Beweis der exakten Serverkoeffizienten."
+        },
+        {
+          "url": "https://www.method.gg/wow-forever/class-guides/subtlety-rogue/talents",
+          "contribution": "23.11.: Todesmal-Build als Alternative."
+        },
+        {
+          "url": "https://games.cobaltgraphics.eu/wow-forever/rogue/subtlety/pvp/",
+          "contribution": "10.11.: PvP-Eröffnung, Kontrolle, Blutungen und Resets."
+        }
+      ],
+      "official": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+      "rawAudit": {
+        "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "legacyTalentedRank": 0,
+        "points": 51,
+        "errors": []
+      },
+      "releaseEligible": false
     }
   }
 }
