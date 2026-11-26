@@ -7,6 +7,7 @@ const require=createRequire(import.meta.url);
 const initial=require('../data/characters.json');
 export const CHARACTER_KEY='dalton-dashboard:characters:v1';
 export const REFRESH_LOCK_KEY='dalton-dashboard:refresh:lock';
+export const addonSyncLockKey=()=>process.env.VERCEL_ENV==='production'?REFRESH_LOCK_KEY:REFRESH_LOCK_KEY+':preview-addon';
 const KEY=CHARACTER_KEY,LOCK=REFRESH_LOCK_KEY;
 export const DAILY_PROFILE_RECEIPT_FIELD='daily-profile-refresh';
 const COOLDOWN='dalton-dashboard:refresh:manual:cooldown';
@@ -36,14 +37,19 @@ export async function loadCharacters(){
   if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Gespeicherter Datensatz ist ungültig');
   return {data:normalizeVerifiedPlayerTerminology(data),fallback:false};
 }
-export async function acquireRefreshLock(){
-  const token=randomUUID();
-  const ok=await redis(['SET',LOCK,token,'EX',120,'NX']);
-  return ok==='OK'?token:null;
+export async function acquireRefreshLock({addon=false}={}){
+  const token=randomUUID(),key=addon?addonSyncLockKey():LOCK;
+  try{
+    const ok=await redis(['SET',key,token,'EX',120,'NX']);
+    return ok==='OK'?token:null;
+  }catch(error){
+    try{if(await redis(['GET',key])===token)return token;}catch{}
+    throw error;
+  }
 }
-export async function releaseRefreshLock(token){
+export async function releaseRefreshLock(token,{addon=false}={}){
   const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
-  return redis(['EVAL',lua,1,LOCK,token]);
+  return redis(['EVAL',lua,1,addon?addonSyncLockKey():LOCK,token]);
 }
 export async function manualCooldown(){
   return (await redis(['SET',COOLDOWN,'1','EX',60,'NX']))==='OK';

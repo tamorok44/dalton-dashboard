@@ -76,7 +76,7 @@ export default async function handler(req,res){
     // The entire production read/modify/write sequence must use the same lock.
     // Taking it after reading the roster would allow an older roster to erase
     // an already successful sync for another character.
-    lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
+    lockToken=await acquireRefreshLock({addon:true});
     if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
@@ -86,20 +86,21 @@ export default async function handler(req,res){
       return res.status(403).json({error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
     }
     let previousState=await loadAddonSyncState(target.slug);
-    const writeOptions={lockToken:previewIsolated?null:lockToken};
+    const writeOptions={lockToken};
+    const confirmedReceipts=receipts=>(Array.isArray(receipts)?receipts:[]).map((receipt,i,all)=>i===all.length-1?{...receipt,observationsConfirmed:true}:receipt);
     // A durable outbox is held in the same character state as the core commit.
     // Drain it before accepting a new sync, so no later receipt can hide it.
     if(previousState?.pendingObservations===true){
-      await ingestAddonLiveKnowledge(previousState.payload,{characterSlug:target.slug,lockToken:writeOptions.lockToken});
-      previousState=await saveAddonSyncState(target.slug,previousState.payload,{...writeOptions,receipts:previousState.receipts,receivedAt:previousState.receivedAt,pendingObservations:false});
+      await ingestAddonLiveKnowledge(previousState.pendingObservationPayload??previousState.payload,{characterSlug:target.slug,lockToken:writeOptions.lockToken});
+      previousState=await saveAddonSyncState(target.slug,previousState.payload,{...writeOptions,receipts:confirmedReceipts(previousState.receipts),receivedAt:previousState.receivedAt,pendingObservations:false});
     }
     const prepared=prepareAddonSync(previousState,payload);
     if(prepared.duplicate){
       // An acknowledged core commit may have been followed by an interrupted
       // knowledge write. Replaying observations is idempotent and fenced.
-      const liveKnowledge=prepared.replayPayload?await ingestAddonLiveKnowledge(prepared.replayPayload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken}):{stored:0,duplicates:0,changed:0};
+      const liveKnowledge=prepared.replayPayload?await ingestAddonLiveKnowledge(prepared.replayPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
       return res.status(200).json({
-        duplicate:true,liveKnowledge,
+        duplicate:true,liveKnowledge,ignoredSections:prepared.ignoredSections,
         character:{slug:target.slug,name:target.name},
         summary:publicAddonSyncSummary(previousState)
       });
@@ -133,10 +134,15 @@ export default async function handler(req,res){
       if(spellbookApplied)updated=await archiveKnownAbilityIcons(updated,target.slug);
     }
 
-    const pendingObservations=snapshotsFromAddonPayload(prepared.payload,{characterSlug:target.slug}).length>0;
-    let state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken:previewIsolated?null:lockToken,roster:spellbookApplied?updated:null,receipts:prepared.receipts,pendingObservations});
-    const liveKnowledge=await ingestAddonLiveKnowledge(prepared.payload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken});
-    if(pendingObservations)state=await saveAddonSyncState(target.slug,state.payload,{...writeOptions,receipts:state.receipts,receivedAt:state.receivedAt,pendingObservations:false});
+    // Only the accepted, actually supplied interaction domain may create
+    // pending work. Inherited history must not be replayed on every sync.
+    const incomingInteractions=payload.sections.interactions;
+    const pendingObservationPayload=incomingInteractions&&prepared.payload.sections.interactions===incomingInteractions
+      ?{addon:payload.addon,sections:{interactions:incomingInteractions}}:null;
+    const pendingObservations=Boolean(pendingObservationPayload&&snapshotsFromAddonPayload(pendingObservationPayload,{characterSlug:target.slug}).length);
+    let state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken,roster:spellbookApplied?updated:null,receipts:pendingObservations?prepared.receipts:confirmedReceipts(prepared.receipts),pendingObservations,pendingObservationPayload});
+    const liveKnowledge=pendingObservations?await ingestAddonLiveKnowledge(pendingObservationPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
+    if(pendingObservations)state=await saveAddonSyncState(target.slug,state.payload,{...writeOptions,receipts:confirmedReceipts(state.receipts),receivedAt:state.receivedAt,pendingObservations:false});
     if(spellbookApplied){
       try{await appendChangeBatch(before,updated,{source:'addon-sync'})}catch(error){
         console.warn('Addon-Sync-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
@@ -145,6 +151,7 @@ export default async function handler(req,res){
     const character=(updated.characters||before.characters).find(entry=>entry.slug===target.slug)||target;
     return res.status(200).json({
       duplicate:false,
+      ignoredSections:prepared.ignoredSections,
       previewIsolated,
       spellbookApplied,
       liveKnowledge,
@@ -156,8 +163,8 @@ export default async function handler(req,res){
     const status=/^(SYNC_CONFLICT|STALE_SPELLBOOK)/.test(String(error.message))?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
     return res.status(status).json({error:String(error.message).slice(0,180)});
   }finally{
-    if(lockToken&&!previewIsolated){
-      try{await releaseRefreshLock(lockToken)}catch(error){console.error('Addon-Sync-Lock konnte nicht freigegeben werden:',error)}
+    if(lockToken){
+      try{await releaseRefreshLock(lockToken,{addon:true})}catch(error){console.error('Addon-Sync-Lock konnte nicht freigegeben werden:',error)}
     }
   }
 }

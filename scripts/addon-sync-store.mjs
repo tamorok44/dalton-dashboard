@@ -1,5 +1,5 @@
 import {addonCompactKey,addonVersionMetadata} from './version-metadata.mjs';
-import {redis,configured,CHARACTER_KEY,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD,REDIS_COMPACT_READ,normalizedCharacterWrite} from './character-store.mjs';
+import {redis,configured,CHARACTER_KEY,addonSyncLockKey,REDIS_TYPE_GUARD,REDIS_COMPACT_READ,normalizedCharacterWrite} from './character-store.mjs';
 import {createHash} from 'node:crypto';
 import {addonSyncContentIdentity} from './addon-sync.mjs';
 import {publicAddonSyncSummary} from './addon-sync.mjs';
@@ -35,9 +35,9 @@ export function prepareAddonSync(previous,payload,{now=Date.now()}={}){
     // duplicate must never ingest newly supplied, unvalidated capture times.
     const replayPayload=match.exactDigest===next.exactDigest?payload:
       previous.payload?.syncId===next.id&&digest(previous.payload)===next.digest?previous.payload:null;
-    return {duplicate:true,payload:previous.payload,receipts,replayPayload};
+    return {duplicate:true,payload:previous.payload,receipts,replayPayload:match.observationsConfirmed===true?null:replayPayload,ignoredSections:match.ignoredSections||[]};
   }
-  const sections={...previous?.payload?.sections};
+  const sections={...previous?.payload?.sections},ignoredSections=[];
   for(const [name,value] of Object.entries(payload.sections||{})){
     const prior=sections[name];
     const before=epoch(prior?.capturedAt),after=epoch(value?.capturedAt);
@@ -48,32 +48,41 @@ export function prepareAddonSync(previous,payload,{now=Date.now()}={}){
     }
     if(Number.isFinite(before)&&(!Number.isFinite(after)||after<before||after===before&&!same)){
       if(same)continue;
+      if(!Number.isFinite(after)&&['locationHistory','instances'].includes(name)){
+        ignoredSections.push({section:name,reason:'legacy_capture_time_missing'});
+        continue;
+      }
       throw new Error('SYNC_CONFLICT: ältere oder widersprüchliche Aufnahme '+name);
     }
     // Older SavedVariables versions did not timestamp these two domains.
     // Accept an untimed first import as legacy evidence, never as newer data.
     if(!Number.isFinite(after)&&!same){
-      if(!prior&&['locationHistory','instances'].includes(name)){sections[name]=value;continue;}
+      if(['locationHistory','instances'].includes(name)){
+        if(!prior)sections[name]=value;
+        else ignoredSections.push({section:name,reason:'legacy_capture_time_missing'});
+        continue;
+      }
       throw new Error('SYNC_CONFLICT: Aufnahmezeit fehlt '+name);
     }
     sections[name]=value;
   }
-  return {duplicate:false,payload:{...payload,sections},receipts:[...receipts,next].slice(-RECEIPT_LIMIT)};
+  return {duplicate:false,payload:{...payload,sections},receipts:[...receipts,{...next,ignoredSections}].slice(-RECEIPT_LIMIT),ignoredSections};
 }
-export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,roster=null,receipts=[],pendingObservations=false,receivedAt=new Date().toISOString()}={}){
+export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,roster=null,receipts=[],pendingObservations=false,pendingObservationPayload=null,receivedAt=new Date().toISOString()}={}){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
-  const state={characterSlug,receivedAt,payload,receipts,pendingObservations};
+  const state={characterSlug,receivedAt,payload,receipts,pendingObservations,...(pendingObservations&&pendingObservationPayload?{pendingObservationPayload}:{})};
   const args=[JSON.stringify(state),characterSlug,JSON.stringify(addonVersionMetadata(state))];
   const production=environmentScope()==='production';
-  if(production&&!lockToken)throw new Error('Schreibsperre für Addon-Sync erforderlich');
+  if(!lockToken)throw new Error('Schreibsperre für Addon-Sync erforderlich');
+  if(!production&&roster)throw new Error('Preview darf keine Charakterdaten schreiben');
   const guard=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
   const prepare="local meta=compact(KEYS[2]); if meta.addon~=nil and type(meta.addon)~='table' then return redis.error_reply('INVALID_COMPACT_METADATA') end; meta.addon=meta.addon or {}; meta.addon[ARGV[2]]=cjson.decode(ARGV[3]); ";
   const write="return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],cjson.encode(meta))";
   const atomic=guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[5] then meta.characters=cjson.decode(ARGV[6]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[5],KEYS[2],cjson.encode(meta)) end; "+write;
   const result=production
-    ?await redis(['EVAL',atomic,4,keyFor(characterSlug),addonCompactKey(),REFRESH_LOCK_KEY,CHARACTER_KEY,...args,lockToken,...(roster?normalizedCharacterWrite(roster):[])])
-    :await redis(['EVAL',guard+prepare+write,2,keyFor(characterSlug),addonCompactKey(),...args]);
+    ?await redis(['EVAL',atomic,4,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),CHARACTER_KEY,...args,lockToken,...(roster?normalizedCharacterWrite(roster):[])])
+    :await redis(['EVAL',guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; "+prepare+write,3,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),...args,lockToken]);
   if(result!=='OK')throw new Error('Addon-Sync-Status nicht gespeichert');
   return state;
 }

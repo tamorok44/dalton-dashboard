@@ -229,7 +229,7 @@ if(!hasRedis){
     restrictedUser='limited-sync';
     const aclFailure=await call(third);
     restrictedUser=null;
-    assert.equal(aclFailure.http,503);assert.match(aclFailure.value.error,/NOPERM|ACL|permission/i);
+    assert.equal(aclFailure.http,503);assert.match(aclFailure.value.error,/NOPERM|ACL|permission|can't run this command/i);
     assert.deepEqual([cli('GET',rosterKey),cli('GET',syncKey('audit-one')),cli('GET',versionKey)],beforeACL);
     cli('ACL','DELUSER','limited-sync');
     const observation=payload('Audit One','observation',[133,143],now+2);
@@ -276,7 +276,7 @@ if(!hasRedis){
     const aclDay='2026-11-27',aclLock=await acquireDailySnapshotLock(aclDay);
     cli('ACL','SETUSER','limited-index','on','>local-fixture-password','~*','+@all','-hset');
     restrictedUser='limited-index';
-    await assert.rejects(registerDailySnapshot({date:aclDay,archiveStatus:'disabled'},aclLock),/NOPERM|ACL|permission/i);
+    await assert.rejects(registerDailySnapshot({date:aclDay,archiveStatus:'disabled'},aclLock),/NOPERM|ACL|permission|can't run this command/i);
     restrictedUser=null;
     assert.equal(await getDailySnapshot(aclDay),null);assert.equal((await getLastDailySnapshot()).date,day);assert.equal(cli('GET',lastKey),null,'legacy pointer is never dual-written');
     cli('ACL','DELUSER','limited-index');await releaseDailySnapshotLock(aclDay,aclLock);

@@ -1,6 +1,6 @@
 import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
-import {redis,configured,REFRESH_LOCK_KEY,REDIS_TYPE_GUARD} from './character-store.mjs';
+import {redis,configured,addonSyncLockKey,REDIS_TYPE_GUARD} from './character-store.mjs';
 
 const SCHEMA_VERSION=1;
 const CHANGE_LIMIT=40;
@@ -207,12 +207,11 @@ function mergeServiceKnowledge(existing=[],snapshot={}){
   return [...map.values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'de'));
 }
 async function saveRecord(key,value,{changed,lockToken,expectedRaw}){
-  const production=environmentScope()==='production';
-  if(production&&!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
+  if(!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
   // Record, implicit index and version are fields of one hash. The one
   // HSET is the sole mutation; legacy records are read-only fallbacks.
-  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if ARGV[6]=='1' and redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('HGET',KEYS[1],ARGV[1]); if not old then old=redis.call('GET',KEYS[2]) end; if (old or '')~=ARGV[5] then return redis.error_reply('OBSERVATION_CONFLICT') end; if ARGV[3]=='1' then redis.call('HSET',KEYS[1],ARGV[1],ARGV[2],ARGV[8],ARGV[4]) else redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]) end; return 'OK'";
-  const result=await redis(['EVAL',lua,3,recordsKey(),key,REFRESH_LOCK_KEY,key,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedRaw||'',production?'1':'0',lockToken||'',VERSION_FIELD]);
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local old=redis.call('HGET',KEYS[1],ARGV[1]); if not old then old=redis.call('GET',KEYS[2]) end; if (old or '')~=ARGV[5] then return redis.error_reply('OBSERVATION_CONFLICT') end; if ARGV[3]=='1' then redis.call('HSET',KEYS[1],ARGV[1],ARGV[2],ARGV[8],ARGV[4]) else redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,recordsKey(),key,addonSyncLockKey(),key,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedRaw||'','1',lockToken,VERSION_FIELD]);
   if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
 }
 async function ingestSnapshot(snapshot,{lockToken=null}={}){
