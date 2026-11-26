@@ -2477,6 +2477,228 @@
       "allocationDigest": "1c642b0b1fabd3c8f1c8e81c48afafa9ea582e3399289c88f5f500d0cc328981",
       "url": "https://mobalytics.gg/wow-forever/classes/affliction-warlock-guide",
       "claim": "Guide supports Nightfall and Pandemic/Malevolence/Shadow Mastery; its deeper Wrack route is considered as a different choice for longer fights, not copied."
+    },
+    {
+      "classId": 1,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warrior-dungeon-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warrior-arms-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "720d11022670b0fce12a8cf80b535ce6b8ff9a13e36b9ae80dad45c65e2fbd33",
+      "url": "https://mobalytics.gg/wow-forever/classes/warrior-leveling-guide",
+      "claim": "Nov 19 comparison emphasizes Arms two-handed cleave, Fury sustained damage and weapon-dependent switch around 36 or later.",
+      "comparedOptions": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warrior-arms-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warrior-fury-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 1,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warrior-dungeon-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warrior-arms-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "720d11022670b0fce12a8cf80b535ce6b8ff9a13e36b9ae80dad45c65e2fbd33",
+      "url": "https://www.wofwforever.com/en/guides/wow-forever-warrior-level-60-guide/",
+      "claim": "Nov 15 review compares Arms and Fury group gameplay and rage. Supports a gear-conditional default rather than measured DPS superiority.",
+      "comparedOptions": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warrior-arms-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warrior-fury-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-pvp-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-pvp",
+      "planVersion": 1,
+      "allocationDigest": "50864650f544e32c637b8577285bb6fb27bfd6785b526fb28a9786579f2b0038",
+      "url": "https://foreverbattlegrounds.com/classes/mage/",
+      "claim": "Nov 14/16 class comparison rates Arcane and Fire as attackers and distinguishes controlled silence/burst from Fire pressure; Frost stronger control is explicitly outside current released set.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 8,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "mage-pvp-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "mage-arcane-pvp",
+      "planVersion": 1,
+      "allocationDigest": "50864650f544e32c637b8577285bb6fb27bfd6785b526fb28a9786579f2b0038",
+      "url": "https://forever-hub.com/en/guides/mage-guide",
+      "claim": "Class comparison identifies improved Counterspell and Arcane Power/Presence of Mind as on-demand PvP advantages. Preference is for the exact group profile.",
+      "comparedOptions": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-pvp",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-dungeon-comparison-20261126-1",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-destruction-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "1b932eafdea386a2a5b26317ef87f1c9d05416b72abcc8f6ea6ddf6e1d242c57",
+      "url": "https://www.wowhead.com/forever/guide/classes/warlock/destruction/dps-leveling-tips",
+      "claim": "Nov 6 guide explicitly distinguishes dedicated dungeon Destruction from solo leveling and favors early Incinerate for dungeon progression.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-affliction-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-destruction-dungeons",
+          "version": 1
+        }
+      ]
+    },
+    {
+      "classId": 9,
+      "clientBuild": "1.60.1.71139",
+      "hotfixRevision": "409f97269c59bb22c7ba4f8fc2c0bd68cb8d1b4898585883c6ffc598ca0af78d",
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+      "id": "warlock-dungeon-comparison-20261126-2",
+      "kind": "editorial",
+      "reviewedAt": "2026-11-26",
+      "planId": "warlock-destruction-dungeons",
+      "planVersion": 1,
+      "allocationDigest": "1b932eafdea386a2a5b26317ef87f1c9d05416b72abcc8f6ea6ddf6e1d242c57",
+      "url": "https://games.cobaltgraphics.eu/wow-forever/leveling/warlock/",
+      "claim": "Nov 10 class comparison distinguishes sustained Affliction, Demonology pet and protected direct Destruction; recommends comparing complete dungeon sessions, not isolated DPS.",
+      "comparedOptions": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-affliction-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-destruction-dungeons",
+          "version": 1
+        }
+      ]
     }
   ],
   "rulePacks": [
@@ -3874,6 +4096,126 @@
       "evidenceIds": [
         "warrior-leveling-comparison-outpost-20261126",
         "warrior-leveling-comparison-mobalytics-20261126"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 1,
+          "treeId": 11650,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warrior-arms-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 1,
+          "treeId": 11657,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warrior-fury-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 1,
+        "treeId": 11650,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "warrior-arms-dungeons",
+        "version": 1
+      },
+      "reason": "Für reguläre Level-Dungeons empfehlen wir Waffen als Einstieg: eine geeignete Zweihandwaffe und Weitreichende Stöße auf 30 ergeben eine gut nachvollziehbare Mehrzielrotation. Furor bleibt die geprüfte Alternative für zwei passende Einhandwaffen und häufige Gruppenkämpfe mit ausreichender Wut, insbesondere nach Blutdurst auf 40. Kein gemessener DPS-Vorsprung; Ausrüstung und Gruppentempo beeinflussen die Wahl.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warrior-dungeon-comparison-20261126-1",
+        "warrior-dungeon-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 8,
+          "treeId": 11582,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-arcane-pvp",
+          "version": 1
+        },
+        {
+          "classId": 8,
+          "treeId": 11594,
+          "goal": "pvp",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "mage-fire-pvp",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 8,
+        "treeId": 11582,
+        "goal": "pvp",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "mage-arcane-pvp",
+        "version": 1
+      },
+      "reason": "Für koordiniertes Gruppen-PvP empfehlen wir unter den bisher freigegebenen Pfaden Arkan: verbesserter Gegenzauber schafft gezielte Unterbrechungsfenster, Geistesgegenwart und Arkane Macht unterstützen abgesprochene Angriffe. Feuer bietet als geprüfte Alternative anhaltenden Druck und situative Kontrolle durch Impact und Druckwelle. Frost bleibt noch in Prüfung und ist nicht Teil dieses Vergleichs; kein generelles PvP-Ranking.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "mage-pvp-comparison-20261126-1",
+        "mage-pvp-comparison-20261126-2"
+      ]
+    },
+    {
+      "options": [
+        {
+          "classId": 9,
+          "treeId": 11629,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-affliction-dungeons",
+          "version": 1
+        },
+        {
+          "classId": 9,
+          "treeId": 11637,
+          "goal": "dungeons",
+          "role": "damage",
+          "playStyle": "group",
+          "priority": "balanced",
+          "planId": "warlock-destruction-dungeons",
+          "version": 1
+        }
+      ],
+      "preferred": {
+        "classId": 9,
+        "treeId": 11637,
+        "goal": "dungeons",
+        "role": "damage",
+        "playStyle": "group",
+        "priority": "balanced",
+        "planId": "warlock-destruction-dungeons",
+        "version": 1
+      },
+      "reason": "Für häufige reguläre Dungeon-Gruppen mit einem verlässlichen Tank empfehlen wir unter den bisher freigegebenen Pfaden Zerstörung: direkte Zauber und situative Mehrzielangriffe passen zu kürzeren Gegnerkämpfen. Gebrechen bleibt die geprüfte Alternative für länger lebende Ziele, Ressourcenmanagement und Schaden während Bewegung. Ausrüstung, Trinkpausen und Pulltempo können die Entscheidung verändern. Dämonologie ist noch in Prüfung.",
+      "reviewedAt": "2026-11-26",
+      "evidenceIds": [
+        "warlock-dungeon-comparison-20261126-1",
+        "warlock-dungeon-comparison-20261126-2"
       ]
     }
   ],
