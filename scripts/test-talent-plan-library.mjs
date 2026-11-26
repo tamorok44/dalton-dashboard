@@ -142,6 +142,31 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
       assert.ok(scope.excludedConflictIds.length);
       for(const id of scope.excludedConflictIds)assert.throws(()=>talentPathScope({...plan,points:[...plan.points,{talentId:id,rank:1}]},proof,pathLedger,cross,effects),/unresolved source difference/);
     }
+    // Explicit, narrowly scoped client-text reconciliation; never a server measurement.
+    if(plan.id==='warrior-arms-pvp'&&pack.clientBuild===pathLedger.build){
+      const effects=JSON.parse(readFileSync(new URL('../docs/talent-planner-effect-review-2026-11-26.json',import.meta.url),'utf8'));
+      const row=effects.rows.find(x=>x.classId===1&&x.id===105935);
+      const client=pack.sources.map(id=>evidence.get(id)).find(x=>x.kind==='client'&&x.clientTextResolutions);
+      assert.ok(row&&client&&client.clientTextResolutions.length===1);
+      const detail=client.clientTextResolutions[0];
+      assert.deepEqual(detail,row.clientTextResolution);
+      assert.equal(detail.kind,'client_spell_detail_reconciliation');
+      assert.equal(detail.clientBuild,pack.clientBuild);
+      assert.equal(detail.sourceRevision,pack.sourceRevision);
+      assert.equal(detail.talentId,105935);
+      assert.equal(detail.spellId,12323);
+      assert.equal(proof.trees.flatMap(t=>t.talents).find(n=>n.id===105935)?.spellId,detail.spellId);
+      assert.equal(detail.primaryHash,row.primaryHash);
+      assert.equal(detail.secondaryHash,row.secondaryHash);
+      assert.equal(detail.field,'baseRadiusYards');
+      assert.equal(detail.value,10);
+      assert.deepEqual(detail.referenceEffects,{slowPercent:50,durationSeconds:6});
+      assert.equal(detail.serverMeasured,false);
+      assert.equal(row.quantitativeClaimVerified,false);
+      assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url==='https://zephras.com/forever/enUS/spell/12323/'));
+      assert.ok(detail.sources.some(s=>s.url==='https://wow-forever.gg/db/spells/12323-piercing-howl/'));
+      assert.ok(plan.points.some(p=>p.talentId===105935));
+    }
     for(const id of pack.sources){
       const entry=evidence.get(id);
       if(entry.comparisonDigest!==undefined)assert.equal(entry.comparisonDigest,talentStructureDigest(proof),
@@ -700,8 +725,8 @@ for(const [id,distribution] of [['mage-arcane-pvp',[31,0,20]],['mage-fire-pvp',[
 // Conflict research is deliberately kept outside the published rank-zero library.
 for(const id of ['warrior-arms-pvp','mage-frost-dungeons','mage-frost-leveling-mixed-balanced','mage-frost-pvp']){
   const candidate=plans.find(p=>p.id===id);
-  assert.ok(candidate&&candidate.status==='research_only');
-  assert.equal(candidate.research.conflictFollowup.releaseEligible,false);
+  assert.ok(candidate&&candidate.status===(id==='warrior-arms-pvp'?'approved':'research_only'));
+  assert.equal(candidate.research.conflictFollowup.releaseEligible,id==='warrior-arms-pvp');
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
   const rationale=candidate.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId));
   assert.deepEqual(rationale,candidate.points.map(x=>x.talentId));
@@ -764,7 +789,7 @@ for(const [id,dist] of [["rogue-assassination-dungeons",{"11572":0,"11573":20,"1
 
 for(const [id,dist] of [["warrior-arms-dungeons",{"11650":31,"11657":20,"11670":0}],["warrior-arms-pvp",{"11650":31,"11657":20,"11670":0}],["warrior-fury-dungeons",{"11650":20,"11657":31,"11670":0}],["warrior-fury-pvp",{"11650":20,"11657":31,"11670":0}],["warrior-protection-leveling",{"11650":15,"11657":5,"11670":31}],["warrior-protection-pvp",{"11650":15,"11657":5,"11670":31}],["paladin-holy-leveling",{"11486":31,"11541":5,"11559":15}],["paladin-holy-pvp",{"11486":31,"11541":20,"11559":0}],["paladin-protection-leveling",{"11486":15,"11541":31,"11559":5}],["paladin-protection-pvp",{"11486":0,"11541":31,"11559":20}],["paladin-retribution-dungeons",{"11486":12,"11541":8,"11559":31}],["paladin-retribution-pvp",{"11486":0,"11541":20,"11559":31}],["shaman-elemental-dungeons",{"11326":31,"11362":15,"11363":5}],["shaman-elemental-pvp",{"11326":31,"11362":15,"11363":5}],["shaman-enhancement-dungeons",{"11326":17,"11362":0,"11363":34}],["shaman-enhancement-pvp",{"11326":11,"11362":5,"11363":35}],["shaman-restoration-leveling",{"11326":20,"11362":31,"11363":0}],["shaman-restoration-pvp",{"11326":0,"11362":41,"11363":10}]]){
  const p=plans.find(x=>x.id===id);
- assert.ok(p&&p.status===(id.startsWith('shaman-')||['warrior-protection-leveling','warrior-protection-pvp','warrior-arms-dungeons','warrior-fury-dungeons','warrior-fury-pvp','paladin-protection-leveling'].includes(id)?'approved':'research_only'));
+ assert.ok(p&&p.status===(id.startsWith('shaman-')||['warrior-protection-leveling','warrior-protection-pvp','warrior-arms-dungeons','warrior-arms-pvp','warrior-fury-dungeons','warrior-fury-pvp','paladin-protection-leveling'].includes(id)?'approved':'research_only'));
  if(id.startsWith('shaman-'))assert.deepEqual(p.supportedLegacyRanks,[0]);
  assert.deepEqual(p.expectedDistribution,dist);
  assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
