@@ -787,6 +787,23 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
+// Demonology: scoped rank-zero research, no numeric brand release.
+for(const [id,milestones] of [
+ ['warlock-demonology-leveling',[[105896,25],[105892,30],[105895,31],[105890,40]]],
+ ['warlock-demonology-dungeons',[[105896,26],[105897,29],[105892,30],[105890,40]]],
+ ['warlock-demonology-pvp',[[105892,30],[105895,31],[105890,40],[105885,53],[105884,58]]]
+]){
+ const p=plans.find(x=>x.id===id);
+ assert.equal(p.status,'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+ assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+const demonGroup=plans.find(p=>p.id==='warlock-demonology-dungeons');
+assert.equal(demonGroup.points.filter(x=>x.talentId===105897).length,2);
+assert.ok(!demonGroup.points.some(x=>x.talentId===105907));
+
 // Druid hotfix research: strict retained prerequisite, no obsolete talent effects released.
 for(const [id,milestones] of [
  ['druid-balance-leveling',[[104935,30],[104937,40]]],
