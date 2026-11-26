@@ -787,6 +787,29 @@ for(const [id,milestones] of [['warrior-arms-dungeons',[[105945,30],[110524,32],
  for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
 }
 
+// Druid hotfix research: strict retained prerequisite, no obsolete talent effects released.
+for(const [id,milestones] of [
+ ['druid-balance-leveling',[[104935,30],[104937,40]]],
+ ['druid-balance-dungeons',[[104935,31],[104937,40],[104920,46]]],
+ ['druid-balance-pvp',[[104912,50],[104921,55]]],
+ ['druid-restoration-leveling',[[104912,35],[104921,40],[104910,60]]],
+ ['druid-restoration-dungeons',[[104912,25],[104918,26],[104921,30],[104910,40]]],
+ ['druid-restoration-pvp',[[104912,25],[104921,30],[104944,41],[104918,42],[104910,52]]]
+]){
+ const p=plans.find(x=>x.id===id);
+ assert.equal(p.status,'research_only');
+ assert.equal(p.research.conflictFollowup.releaseEligible,false);
+ assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
+ assert.deepEqual(p.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId)),p.points.map(x=>x.talentId));
+ assert.ok(!p.points.some(x=>[104933,104936].includes(x.talentId)));
+ const splendor=p.points.findIndex(x=>x.talentId===104928);
+ if(splendor>=0)assert.equal(p.points.slice(0,splendor).filter(x=>x.talentId===104927).length,2);
+ for(const [talentId,level] of milestones)assert.equal(p.points.findIndex(x=>x.talentId===talentId)+10,level,id+' milestone');
+}
+const restoPvp=plans.find(x=>x.id==='druid-restoration-pvp');
+assert.equal(restoPvp.points.filter(x=>x.talentId===104939).length,5);
+assert.ok(!restoPvp.points.some(x=>x.talentId===104938));
+
 // Paladin conflict follow-up: rank zero, research only; avoid disputed Boundless Light prerequisite.
 for(const [id,milestones] of [
  ['paladin-holy-leveling',[[105330,30],[105323,35],[105320,45]]],
