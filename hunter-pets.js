@@ -55,7 +55,6 @@ function enduranceTraining(character){
 export function hunterPetCombatProfile(character){
   const stamina=freshCharacterStat(character,'STAMINA');
   const armor=freshCharacterStat(character,'ARMOR');
-  const crit=freshCharacterStat(character,'CRITICALSTRIKE');
   const healthName=(Array.isArray(character?.statsDetails)?character.statsDetails:[])
     .find(entry=>entry?.enum==='HEALTH'&&typeof entry?.name==='string')?.name||null;
   return {
@@ -74,13 +73,9 @@ export function hunterPetCombatProfile(character){
         value:armor.value*hunterPetMechanics.inherited.armorFromHunter.factor,
         unitName:armor.name
       },
-      crit:crit===null?null:{
-        ruleId:hunterPetMechanics.inherited.critFromHunter.ruleId,
-        inputName:crit.name,input:crit.value,
-        factor:hunterPetMechanics.inherited.critFromHunter.factor,
-        value:crit.value*hunterPetMechanics.inherited.critFromHunter.factor,
-        unitName:crit.name
-      },
+      // The single Armory CRITICALSTRIKE enum does not identify the higher
+      // melee/ranged input. Do not compute a numeric contribution from it.
+      crit:null,
       attackPower:{
         ruleId:'pet.scaling.ap',
         value:null,

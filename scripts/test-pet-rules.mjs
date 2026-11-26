@@ -161,6 +161,11 @@ assert.equal(approvedFix.sources.blizzardHotfix.status,'verified','Only exact re
 assert.equal(approvedFix.rules['pet.autoswing.crit'].status,'verified');
 assert.equal(approvedFix.rules['pet.scaling.crit'].status,'review_required');
 for(const id of ['fox.family.profile','fox.training','pet.scaling.health','pet.scaling.armor','pet.scaling.ap','pet.crit.inheritance','pet.expertise','pet.focus','pet.health.global'])assert.equal(approvedFix.rules[id].status,'verified',id);
+const failedMigration=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages,'worldofwarcraft.blizzard.com'),previousState:productionLegacy,now});
+assert.equal(failedMigration.sources.blizzardHotfix.status,'source_unavailable');
+const retriedMigration=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages),previousState:failedMigration,now});
+assert.equal(retriedMigration.sources.blizzardHotfix.status,'verified','A temporary outage during migration must not destroy the explicitly reviewed legacy digest');
+assert.equal(retriedMigration.rules['pet.autoswing.crit'].status,'verified');
 const repeatFix=await verifyPetRulebook({fetchImpl:fetchFrom(fixedPages,'4evrbugs.com'),previousState:approvedFix,now});
 assert.equal(repeatFix.rules['pet.autoswing.crit'].status,'verified','Historical bug tracker is no longer a live dependency');
 const unknownPages={...fixedPages,'worldofwarcraft.blizzard.com/en-us/news/24315281':fixedPages['worldofwarcraft.blizzard.com/en-us/news/24315281']+'<li>Hunter pets now behave differently in combat.</li>'};

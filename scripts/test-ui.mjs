@@ -327,7 +327,7 @@ assert.ok(combat.includes('Trefferchance und Expertise')&&combat.includes('Autoa
 const derived=hunterPetCombatProfile(petDolly);
 assert.equal(derived.inherited.health.value,60);
 assert.equal(derived.inherited.armor.value,76.8);
-assert.equal(derived.inherited.crit.value,5.0689);
+assert.equal(derived.inherited.crit,null,'The single Armory crit enum is not a verified higher melee/ranged input');
 assert.equal(derived.focus.maximum,150);
 assert.equal(derived.focus.regenPerSecond,10);
 assert.equal(derived.enduranceTraining.rank,1);

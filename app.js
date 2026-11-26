@@ -670,8 +670,6 @@ function hunterPetCombatPanel(c,active){
   const healthScalingAllowed=petRuleVerified('pet.scaling.health');
   const armorScalingAllowed=petRuleVerified('pet.scaling.armor');
   const apScalingAllowed=petRuleVerified('pet.scaling.ap');
-  const critScalingAllowed=petRuleVerified('pet.scaling.crit');
-  const critSourceAllowed=petRuleVerified('pet.crit.inheritance');
   const focusAllowed=petRuleVerified('pet.focus');
   const healthRuleAllowed=petRuleVerified('pet.health.global');
   const inherited=profile.inherited||{};
@@ -681,9 +679,6 @@ function hunterPetCombatPanel(c,active){
   }
   if(armorScalingAllowed&&inherited.armor){
     inheritedRows.push('<div class="pet-combat-stat"><small>'+esc((inherited.armor.unitName||'Abgeleiteter Wert')+' aus Dolly')+'</small><strong>+'+esc(petNumber(inherited.armor.value,{maximumFractionDigits:1}))+'</strong><span>'+esc(petNumber(inherited.armor.input))+(inherited.armor.inputName?' '+esc(inherited.armor.inputName):'')+' × 30 % · rechnerischer Anteil vor Server-Rundung</span></div>');
-  }
-  if(critScalingAllowed&&critSourceAllowed&&inherited.crit?.sourceConfirmed===true){
-    inheritedRows.push('<div class="pet-combat-stat"><small>Vererbte Krit-Komponente aus Dolly</small><strong>+'+esc(petNumber(inherited.crit.value,{minimumFractionDigits:2,maximumFractionDigits:2}))+' %-Pkt.</strong><span>Rechnerische Vererbungskomponente aus dem aktuellen Blizzard-Armory-Wert'+(inherited.crit.inputName?' · '+esc(inherited.crit.inputName):'')+'. Blizzard bestätigt als Quelle den höheren Nah-/Fernkampf-Kritwert; die tatsächliche Krit-Chance der Autoangriffe wird daraus nicht abgeleitet.</span></div>');
   }
   if(apScalingAllowed)inheritedRows.push('<div class="pet-combat-stat is-unavailable"><small>Angriffskraft aus Dolly</small><strong>–</strong><span>'+esc(inherited.attackPower?.reason||'Der benötigte Ausgangswert ist online nicht eindeutig verfügbar.')+'</span></div>');
   const inheritedBlock=inheritedRows.length

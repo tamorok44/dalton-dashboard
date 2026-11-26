@@ -313,7 +313,7 @@ function inspectHotfixEvidence(semantic,previousSource,previousRulebookVersion){
   // evidence minus the specifically reviewed additions. No unknown change
   // can be swallowed by the rulebook version bump.
   const legacy=evidence.filter((line,i)=>i===0||!reviewedHotfixLines.includes(line));
-  const approved=Boolean(oldDigest&&previousRulebookVersion==='2026.11.25.3'&&
+  const approved=Boolean(oldDigest&&['2026.11.25.3','2026.11.26.1'].includes(previousRulebookVersion)&&
     PET_RULEBOOK_VERSION==='2026.11.26.1'&&evidence.includes(fixedCritLine)&&sha(legacy.join('\n'))===oldDigest);
   if(!oldDigest||oldDigest===digest||approved)baselineEvidence=evidence;
   const baselineDigest=(!oldDigest||approved)?digest:oldDigest;
@@ -416,7 +416,7 @@ export async function verifyPetRulebook({fetchImpl=fetch,previousState=null,now=
         Array.isArray(source.affectedRuleIds)&&!source.affectedRuleIds.includes(id))return 'verified';
       return source?.status||'source_unavailable';
     });
-    if(id==='pet.autoswing.crit'&&!sourceResults.blizzardHotfix?.fixedCritPresent&&sourceResults.blizzardHotfix?.status==='verified')statuses.push('review_required');
+    if(id==='pet.autoswing.crit'&&sourceResults.blizzardHotfix?.fixedCritPresent!==true&&sourceResults.blizzardHotfix?.status!=='source_unavailable')statuses.push('review_required');
     if(rule.requiresNewMeasurement)statuses.push('review_required');
     const status=worstStatus(statuses);
     return [id,{
