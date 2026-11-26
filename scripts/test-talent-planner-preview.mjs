@@ -3,7 +3,7 @@ import charactersApi from '../api/characters.js';
 import {createTalentPlannerHandler} from './talent-planner-api.mjs';
 import {loadPreviewTalentObservation} from './talent-preview-observation.mjs';
 import {TALENT_CATALOG_MAX_AGE_MS} from './talent-rule-watch.mjs';
-import {compareTalentProgress,talentGuideOptions,planIsCurrent,specializationRecommendation,specializationSelection} from '../talent-planner.js';
+import {talentAllocationDifference,compareTalentProgress,talentGuideOptions,planIsCurrent,specializationRecommendation,specializationSelection} from '../talent-planner.js';
 import {talentPlanLibrary} from './talent-plan-index.mjs';
 import release from '../data/talent-planning/release-catalog.json' with {type:'json'};
 import proofs from '../data/talent-planning/catalog-proofs-2026-11-25.json' with {type:'json'};
@@ -230,3 +230,21 @@ await assert.rejects(call({check:async()=>{throw Error('upstream unavailable')}}
 assert.equal(await call(),null,'failed attempts count toward the shared budget');
 assert.equal(calls,2);
 console.log('Talent Preview: roster, exact binding, rank, live gates, no fallback, shared attempt budget and personal progress: OK');
+
+ // An allocation comparison is independent of the number already spent.
+const sampleHistory=[
+  {level:10,talentId:1,rank:1},{level:11,talentId:1,rank:2},
+  {level:12,talentId:2,rank:1},{level:13,talentId:2,rank:2}
+];
+const known=ranks=>({verified:true,ranks:new Map(ranks)});
+assert.equal(talentAllocationDifference(sampleHistory,{verified:false,ranks:new Map()},12),null);
+assert.equal(talentAllocationDifference(sampleHistory,known([[1,-1]]),12),null);
+assert.equal(talentAllocationDifference(sampleHistory,known([]),0),null);
+assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,2],[2,1]]),12),
+  {level:12,plannedPoints:3,learnedPoints:3,rows:[]});
+assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,1],[3,1]]),12),
+  {level:12,plannedPoints:3,learnedPoints:2,rows:[{talentId:1,planned:2,learned:1},{talentId:2,planned:1,learned:0},{talentId:3,planned:0,learned:1}]});
+assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,2]]),11).rows,[]);
+assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,2]]),12).rows,[{talentId:2,planned:1,learned:0}]);
+assert.deepEqual(talentAllocationDifference(sampleHistory,known([[1,1]]),9).rows,[{talentId:1,planned:0,learned:1}]);
+console.log('Talent allocation: level-specific differences, unspent ambiguity and verified data: OK');

@@ -128,6 +128,22 @@ export function compareTalentProgress(history,actual,level){
   return {status:'matches',count,next:history[count]??null};
 }
 
+// Compare the allocation at the actual character level, not the selected
+// preview level or the count of points spent. A missing planned rank may
+// simply be unspent; this is never a respec or available-point instruction.
+export function talentAllocationDifference(history,actual,level){
+  if(!actual?.verified||!(actual.ranks instanceof Map)||!Number.isInteger(level)||level<1)return null;
+  if([...actual.ranks].some(([id,rank])=>!Number.isSafeInteger(id)||id<=0||!Number.isSafeInteger(rank)||rank<=0))return null;
+  const target=new Map(history.filter(step=>step.level<=level).map(step=>[step.talentId,step.rank]));
+  const rows=[];
+  for(const id of new Set([...target.keys(),...actual.ranks.keys()])){
+    const planned=target.get(id)??0,learned=actual.ranks.get(id)??0;
+    if(planned!==learned)rows.push({talentId:id,planned,learned});
+  }
+  return {level,plannedPoints:[...target.values()].reduce((sum,n)=>sum+n,0),
+    learnedPoints:[...actual.ranks.values()].reduce((sum,n)=>sum+n,0),rows};
+}
+
 const bindingKey=identity=>'dalton-talent-plan:'+identity;
 function storageBinding(storage,identity){
   try{
@@ -271,6 +287,13 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
     const personalFresh=plan.character.talentDetailsFresh===true&&Date.parse(plan.character.personalValidUntil)>Date.now();
     const actual=personalTalentRanks({...plan.character,talentDetailsVerified:personalFresh&&plan.character.talentDetailsVerified},plan.klass);
     const progress=compareTalentProgress(plan.history,actual,plan.character.level);
+    const difference=talentAllocationDifference(plan.history,actual,plan.character.level);
+    const differenceHtml=difference?.rows.length
+      ?'<details class="talent-point-note"><summary>Abgleich auf Charakterstufe '+esc(difference.level)+' ('+esc(difference.rows.length)+' Talente)</summary>'+
+        '<p>Geplant: '+esc(difference.plannedPoints)+' Punkte · Erlernt: '+esc(difference.learnedPoints)+' Punkte</p>'+
+        '<ul>'+difference.rows.map(row=>'<li>'+esc(names.get(row.talentId)??'Unbekanntes Talent')+
+          ': erlernt '+esc(row.learned)+' / geplant '+esc(row.planned)+'</li>').join('')+'</ul>'+
+        '<p>Fehlende Ränge können auch unverteilte Punkte sein. Dies ist keine Empfehlung zum Umskillen.</p></details>':'';
     const shown=plan.history.filter(step=>step.level<=level);
     const planned={verified:true,ranks:new Map(shown.map(step=>[step.talentId,step.rank]))};
     const pick=tree.talents.find(node=>node.id===nodeId);
@@ -288,6 +311,7 @@ export function createTalentPlanner(root,{esc,displayList,personalTalentRanks,ta
       '<p><strong>Vermächtnisrang „Talentiert“ '+esc(plan.legacyRank.rank)+'</strong> · von dir im Spiel bestätigt</p>'+
       '<p><strong>Ist-Abgleich</strong> '+esc(progressText)+'</p>'+
       (!personalFresh?'<p class="talent-point-note">Der persönliche Spielstand ist nicht ausreichend aktuell. Aktualisiere die Charakterdaten über die vorhandene Funktion.</p>':'')+
+      differenceHtml+
       '<p><strong>Nächster Punkt</strong> '+esc(nextText)+'</p>'+
       (next?'<p class="talent-point-note">Der Abgleich bestätigt keine unverteilten Talentpunkte.</p>':'')+
       '<label class="talent-planner-field" for="talentPlannerLevel">Geplante Talente auf dieser Stufe<select id="talentPlannerLevel">'+
