@@ -103,11 +103,11 @@
       "rank": 5
     },
     {
-      "talentId": 104914,
+      "talentId": 104921,
       "rank": 1
     },
     {
-      "talentId": 104921,
+      "talentId": 104914,
       "rank": 1
     },
     {
@@ -264,13 +264,13 @@
       "count": 3
     },
     {
-      "talentId": 104914,
-      "reason": "Verjüngung stärken.",
+      "talentId": 104921,
+      "reason": "Schnelligkeit der Natur macht den nächsten geeigneten Naturzauber sofort wirkbar, seit 10.11. auch Wildwuchs.",
       "count": 1
     },
     {
-      "talentId": 104921,
-      "reason": "Schnelligkeit der Natur macht den nächsten geeigneten Naturzauber sofort wirkbar, seit 10.11. auch Wildwuchs.",
+      "talentId": 104914,
+      "reason": "Verjüngung stärken.",
       "count": 1
     },
     {
