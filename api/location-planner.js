@@ -256,8 +256,25 @@ export default async function handler(req,res){
     const professionMasterErrors=professionMasterValues.filter(value=>value?.error).length;
     const professionRanks=professionMasterValues.flatMap(value=>Array.isArray(value?.ranks)?value.ranks:[]);
     const professionTrainers=professionMasterValues.flatMap(value=>Array.isArray(value?.trainers)?value.trainers:[]);
+    const debug=url.searchParams.get('debug')==='1'
+      ?{
+        professions:professionMasterValues.filter(value=>value&&!value.error).map(value=>({
+          slug:value.slug,
+          ranks:(value.ranks||[]).map(rank=>({
+            id:rank.id??null,name:rank.name??null,skillCap:rank.skillCap??null,
+            requiredSkill:rank.requiredSkill??null,requiredLevel:rank.requiredLevel??null,
+            priceCopper:rank.priceCopper??null
+          })),
+          trainers:(value.trainers||[]).slice(0,30).map(source=>({
+            id:source.id??null,name:source.name??null,npcTitle:source.npcTitle??null,
+            evidence:source.evidence??null,side:source.side??null,location:source.location??null
+          }))
+        }))
+      }
+      :undefined;
     return res.status(200).json({
       ...planner,
+      ...(debug?{debug}:{}),
       catalog:{
         connected:true,
         readOnlyCache:!remoteReady,
