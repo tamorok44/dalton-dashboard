@@ -174,7 +174,8 @@ assert.ok((sourceByFile.get('scripts/addon-sync-store.mjs')||'').includes("?'pro
 assert.ok(sourceByFile.has('scripts/live-knowledge-store.mjs'),'Persistent build-scoped Dalton live-knowledge store is required');
 assert.ok((sourceByFile.get('scripts/live-knowledge-store.mjs')||'').includes("record:'+kind+':'+encodeURIComponent(build)"),'Live knowledge must be keyed by build, NPC and interaction kind');
 assert.ok((sourceByFile.get('scripts/live-knowledge-store.mjs')||'').includes('changes.slice(-CHANGE_LIMIT)'),'Live knowledge must keep only bounded factual change history instead of unbounded snapshots');
-assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('ingestAddonLiveKnowledge(payload,{characterSlug:target.slug})'),'Every addon sync must feed the shared live-knowledge layer');
+const syncHandler=sourceByFile.get('api/addon-sync.js')||'';
+assert.ok(syncHandler.includes('ingestAddonLiveKnowledge(payload,{characterSlug:target.slug,lockToken:')&&syncHandler.includes('ingestAddonLiveKnowledge(prepared.replayPayload,{characterSlug:target.slug,lockToken:')&&syncHandler.indexOf('const state=await saveAddonSyncState')<syncHandler.lastIndexOf('ingestAddonLiveKnowledge(payload,'),'Every accepted sync must feed the shared live-knowledge layer after the core commit, including safe retries');
 assert.ok((sourceByFile.get('scripts/data-version.mjs')||'').includes('loadLiveKnowledgeVersion'),'Live-knowledge changes must participate in the global frontend data version');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('liveKnowledgeDiscoveries'),'Location planner must surface unresolved live learning-item discoveries without pretending they are classified recipes');
 assert.ok((sourceByFile.get('app.js')||'').includes('Live beobachtete neue Händlerangebote'),'Frontend must visibly separate unresolved live discoveries from selectable confirmed actions');

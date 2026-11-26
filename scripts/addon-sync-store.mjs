@@ -18,7 +18,12 @@ function epoch(value){
   const n=Number(value);
   return Number.isFinite(n)&&n>0?n*1000:Date.parse(value);
 }
-function receipt(payload){return {id:payload.syncId||null,digest:digest(payload)}}
+function canonical(value){
+  if(Array.isArray(value))return value.map(canonical);
+  if(!value||typeof value!=='object')return value;
+  return Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])]));
+}
+function receipt(payload){return {id:payload.syncId||null,digest:digest(payload),exactDigest:createHash('sha256').update(JSON.stringify(canonical(payload))).digest('hex')};}
 export function prepareAddonSync(previous,payload,{now=Date.now()}={}){
   const next=receipt(payload);
   const receipts=Array.isArray(previous?.receipts)?previous.receipts.slice(-RECEIPT_LIMIT):[];
@@ -26,7 +31,11 @@ export function prepareAddonSync(previous,payload,{now=Date.now()}={}){
   const match=receipts.find(r=>next.id?r.id===next.id:!r.id&&r.digest===next.digest);
   if(match){
     if(match.digest!==next.digest)throw new Error('SYNC_CONFLICT: Synchronisations-ID mit anderem Inhalt');
-    return {duplicate:true,payload:previous.payload,receipts};
+    // The bridge's content ID deliberately ignores volatile timestamps. A
+    // duplicate must never ingest newly supplied, unvalidated capture times.
+    const replayPayload=match.exactDigest===next.exactDigest?payload:
+      previous.payload?.syncId===next.id&&digest(previous.payload)===next.digest?previous.payload:null;
+    return {duplicate:true,payload:previous.payload,receipts,replayPayload};
   }
   const sections={...previous?.payload?.sections};
   for(const [name,value] of Object.entries(payload.sections||{})){

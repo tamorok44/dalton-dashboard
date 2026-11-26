@@ -30,7 +30,7 @@ function iso(value){
   const n=Number(value);
   if(Number.isFinite(n)&&n>0)return new Date(n*1000).toISOString();
   const parsed=Date.parse(value||'');
-  return Number.isFinite(parsed)?new Date(parsed).toISOString():new Date().toISOString();
+  return Number.isFinite(parsed)?new Date(parsed).toISOString():null;
 }
 function buildOf(snapshot={},addon={}){
   const raw=text(snapshot.build)||text(addon.build);
@@ -120,10 +120,12 @@ function canonicalSnapshot(kind,snapshot,addon){
   if(kind==='merchant'&&snapshot.complete!==true)return null;
   const entries=kind==='merchant'?merchantItems(snapshot):trainerServices(snapshot);
   if(kind==='trainer'&&!entries.length)return null;
+  const capturedAt=iso(snapshot.capturedAt);
+  if(!capturedAt||Date.parse(capturedAt)>Date.now()+10*60*1000)return null;
   return {
     kind,
     build,
-    capturedAt:iso(snapshot.capturedAt),
+    capturedAt,
     complete:snapshot.complete===true,
     npc,
     location:locationOf(snapshot),

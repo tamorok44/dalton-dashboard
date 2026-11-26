@@ -90,7 +90,7 @@ export default async function handler(req,res){
     if(prepared.duplicate){
       // An acknowledged core commit may have been followed by an interrupted
       // knowledge write. Replaying observations is idempotent and fenced.
-      const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken});
+      const liveKnowledge=prepared.replayPayload?await ingestAddonLiveKnowledge(prepared.replayPayload,{characterSlug:target.slug,lockToken:previewIsolated?null:lockToken}):{stored:0,duplicates:0,changed:0};
       return res.status(200).json({
         duplicate:true,liveKnowledge,
         character:{slug:target.slug,name:target.name},
@@ -111,6 +111,10 @@ export default async function handler(req,res){
       console.warn('Klassenmaster beim Addon-Sync nicht verfügbar:',String(error.message).slice(0,140));
     }
 
+    const entries=payload.sections.spellbook?.entries;
+    const containsSpellbook=entries&&typeof entries==='object'&&Object.keys(entries).length>0;
+    if(!previewIsolated&&containsSpellbook&&(!Array.isArray(classMaster?.abilities)||!classMaster.abilities.length))
+      throw new Error('Klassenstammdaten derzeit nicht verfügbar; Synchronisation erneut versuchen');
     const snapshot=addonSpellbookSnapshot(payload,classMaster);
     if(snapshot&&classMaster&&!previewIsolated){
       snapshot.characterSlug=target.slug;

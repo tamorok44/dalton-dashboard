@@ -165,6 +165,7 @@ if(!hasRedis){
         if(isSync&&mode==='lose-before'){cli('SET',lockKey,'other-owner');mode=null;}
         if(isSync&&mode==='fail-before'){mode=null;throw Error('fixture interruption before commit');}
         if(isSync&&mode==='drop-after'){mode=null;cli(...cmd);throw Error('fixture response lost after commit');}
+        if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
         return Response.json({result:cli(...cmd)});
       }catch(error){return Response.json({error:String(error.message)});}
     };
@@ -195,18 +196,33 @@ if(!hasRedis){
     const third=payload('Audit One','third',[133],now+1);
     assert.equal((await call(third)).http,503);assert.equal(cli('GET',rosterKey),snapshotBefore);assert.equal(cli('GET',syncKey('audit-one')),stateBefore);
     cli('DEL',versionKey);
+    const observation=payload('Audit One','observation',[133,143],now+2);
+    observation.sections.interactions={capturedAt:now+2,trainerHistory:[{capturedAt:now+2,complete:true,npc:{id:12345,name:'Test Trainer'},location:{zone:'Test'},services:[{name:'Test Ability',priceCopper:10}]}]};
+    mode='fail-knowledge';
+    assert.equal((await call(observation)).http,503);
+    assert.equal((await loadAddonSyncState('audit-one')).payload.syncId,'observation');
+    const knowledgeIndex='dalton-dashboard:live-knowledge:v1:production:index';
+    assert.equal(cli('SCARD',knowledgeIndex),0);
+    const repair=await call(observation);
+    assert.equal(repair.http,200);assert.equal(repair.value.duplicate,true);
+    assert.equal(cli('SCARD',knowledgeIndex),1);
+    const knowledgeKey=cli('SMEMBERS',knowledgeIndex)[0];
+    const record=cli('GET',knowledgeKey);
+    assert.equal(JSON.parse(record).observationCount,1);
+    const retry=await call(observation);assert.equal(retry.value.duplicate,true);assert.equal(cli('GET',knowledgeKey),record);
     const refreshLock=await acquireRefreshLock();
-    const nextRoster={...roster(),generatedAt:proof.generatedAt};
-    await saveCharacters(nextRoster,refreshLock,{dailyReceipt:proof});
+    const actualProof={...proof,success:2,total:2};
+    const nextRoster={...roster(),generatedAt:actualProof.generatedAt};
+    await saveCharacters(nextRoster,refreshLock,{dailyReceipt:actualProof});
     await releaseRefreshLock(refreshLock);
-    assert.deepEqual(await loadDailyProfileReceipt(day),proof);
+    assert.deepEqual(await loadDailyProfileReceipt(day),actualProof);
     const guard=await acquireDailySnapshotLock(day);
-    await registerDailySnapshot({...meta,refresh:proof},guard);
+    await registerDailySnapshot({...meta,refresh:actualProof},guard);
     assert.equal((await getDailySnapshot(day)).sha256,meta.sha256);
     const lastKey='dalton-dashboard:history:daily:last:v1';
     assert.equal(JSON.parse(cli('GET',lastKey)).date,day);
     await releaseDailySnapshotLock(day,guard);
-    await assert.rejects(registerDailySnapshot({...meta,refresh:proof},guard),/DAILY_LOCK_LOST/);
+    await assert.rejects(registerDailySnapshot({...meta,refresh:actualProof},guard),/DAILY_LOCK_LOST/);
     const older='2026-11-25',olderLock=await acquireDailySnapshotLock(older);
     await registerDailySnapshot({date:older,archiveStatus:'disabled'},olderLock);
     assert.equal(JSON.parse(cli('GET',lastKey)).date,day,'last pointer cannot move backwards');
