@@ -103,12 +103,12 @@
       "rank": 4
     },
     {
-      "talentId": 105714,
-      "rank": 5
-    },
-    {
       "talentId": 105712,
       "rank": 1
+    },
+    {
+      "talentId": 105714,
+      "rank": 5
     },
     {
       "talentId": 113633,
@@ -230,113 +230,118 @@
   "rationaleBlocks": [
     {
       "talentId": 105722,
-      "count": 5,
-      "reason": "Kritische Trefferchance erhöhen."
+      "reason": "Kritische Trefferchance erhöhen.",
+      "count": 5
     },
     {
       "talentId": 105721,
-      "count": 3,
-      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+      "reason": "Combopunkte nach Finishing-Moves unterstützen.",
+      "count": 3
     },
     {
       "talentId": 105739,
-      "count": 2,
-      "reason": "Zerhäckseln verlängern."
+      "reason": "Zerhäckseln verlängern.",
+      "count": 2
     },
     {
       "talentId": 105716,
-      "count": 2,
-      "reason": "Kritischen Fähigkeitenschaden erhöhen."
+      "reason": "Kritischen Fähigkeitenschaden erhöhen.",
+      "count": 2
     },
     {
       "talentId": 105720,
-      "count": 2,
-      "reason": "Energiereserve steigern."
+      "reason": "Energiereserve steigern.",
+      "count": 2
     },
     {
       "talentId": 105739,
-      "count": 1,
-      "reason": "Zerhäckseln vervollständigen."
+      "reason": "Zerhäckseln vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105715,
-      "count": 1,
-      "reason": "Kaltblütigkeit für einen gezielten kritischen Angriff freischalten."
+      "reason": "Kaltblütigkeit für einen gezielten kritischen Angriff freischalten.",
+      "count": 1
     },
     {
       "talentId": 105714,
-      "count": 5,
-      "reason": "Giftschaden steigern."
+      "reason": "Giftschaden steigern.",
+      "count": 4
     },
     {
       "talentId": 105712,
-      "count": 1,
-      "reason": "Venom: Shank eröffnet ein zeitlich begrenztes Fenster für stärkere und häufiger angewandte Gifte; keine garantierte Anwendung."
+      "reason": "Venom: Shank eröffnet ein zeitlich begrenztes Fenster für stärkere und häufiger angewandte Gifte; keine garantierte Anwendung.",
+      "count": 1
+    },
+    {
+      "talentId": 105714,
+      "reason": "Giftschaden steigern.",
+      "count": 1
     },
     {
       "talentId": 113633,
-      "count": 4,
-      "reason": "Energierückfluss verbessern."
+      "reason": "Energierückfluss verbessern.",
+      "count": 4
     },
     {
       "talentId": 105710,
-      "count": 3,
-      "reason": "Zusätzliche Combopunkte bei kritischen Fähigkeiten unterstützen."
+      "reason": "Zusätzliche Combopunkte bei kritischen Fähigkeiten unterstützen.",
+      "count": 3
     },
     {
       "talentId": 113633,
-      "count": 1,
-      "reason": "Unerbittliche Stöße vervollständigen."
+      "reason": "Unerbittliche Stöße vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105709,
-      "count": 1,
-      "reason": "Verstümmeln mit zwei Dolchen freischalten; keine exakte zusätzliche Schadenskonstante voraussetzen."
+      "reason": "Verstümmeln mit zwei Dolchen freischalten; keine exakte zusätzliche Schadenskonstante voraussetzen.",
+      "count": 1
     },
     {
       "talentId": 105741,
-      "count": 2,
-      "reason": "Kosten häufiger Angriffe senken."
+      "reason": "Kosten häufiger Angriffe senken.",
+      "count": 2
     },
     {
       "talentId": 105708,
-      "count": 3,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
+      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt.",
+      "count": 3
     },
     {
       "talentId": 105737,
-      "count": 3,
-      "reason": "Trefferchance erhöhen."
+      "reason": "Trefferchance erhöhen.",
+      "count": 3
     },
     {
       "talentId": 105719,
-      "count": 3,
-      "reason": "Kritische Dolchfähigkeiten stärken."
+      "reason": "Kritische Dolchfähigkeiten stärken.",
+      "count": 3
     },
     {
       "talentId": 105738,
-      "count": 3,
-      "reason": "Parieren stärken."
+      "reason": "Parieren stärken.",
+      "count": 3
     },
     {
       "talentId": 105735,
-      "count": 1,
-      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen."
+      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen.",
+      "count": 1
     },
     {
       "talentId": 105736,
-      "count": 2,
-      "reason": "Defensive und Bewegung häufiger einsetzen."
+      "reason": "Defensive und Bewegung häufiger einsetzen.",
+      "count": 2
     },
     {
       "talentId": 105726,
-      "count": 2,
-      "reason": "Ausweichen und Parieren der Gegner verringern."
+      "reason": "Ausweichen und Parieren der Gegner verringern.",
+      "count": 2
     },
     {
       "talentId": 105730,
-      "count": 1,
-      "reason": "Schaden häufiger Angriffe ergänzen."
+      "reason": "Schaden häufiger Angriffe ergänzen.",
+      "count": 1
     }
   ],
   "research": {
