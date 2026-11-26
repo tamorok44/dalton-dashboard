@@ -512,6 +512,50 @@
           }
         ],
         "decision": "Exact independent same-level absorption and rounding confirmation absent. Do not approve numerical formula or paths under current gate."
+      },
+      "iceBarrierResolution": {
+        "kind": "mage_ice_barrier_qualitative_reconciliation",
+        "reviewedAt": "2026-11-26",
+        "clientBuild": "1.60.1.71139",
+        "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+        "talentId": 105762,
+        "spellId": 11426,
+        "primaryHash": "6fd5a9cf41a64278438c931f57a33bbead861a3e4acd50094258f565211360a8",
+        "secondaryHash": "a101f80713f7eefe8d3c383cbe5c252ff735834e079b2e72ab18505adcb8252d",
+        "serverMeasured": false,
+        "numericFormulaReleased": false,
+        "confirmedCore": {
+          "requiresColdSnap": true,
+          "requiredFrostPoints": 30,
+          "absorbsDamage": true,
+          "preventsPushbackWhileShielded": true,
+          "frostDamageBuffOnCast": true,
+          "additionalFrostDamageWhileShielded": true
+        },
+        "referenceTooltips": {
+          "currentBuildBase": 448,
+          "rankOneAtLevel40": 431,
+          "rankOneAtLevel46": 447,
+          "coefficient": 0.1,
+          "castDamagePercent": 15,
+          "shieldDamagePercent": 5
+        },
+        "unresolved": "Exact scaling by character level, spell rank, Frost Warding, rounding and server-side absorption; reference numbers are not a released calculation.",
+        "sources": [
+          {
+            "url": "https://wowforevertalents.com/mage/talents/ice-barrier/",
+            "build": "1.60.1.71139",
+            "claim": "25 Nov cache, 448 + 10% Frost spell power, damage buff and pushback while shielded, 30 Frost points and Cold Snap."
+          },
+          {
+            "url": "https://raiddex.com/en/wow-forever/spells/ice-barrier-rank-1",
+            "claim": "Rank one 431 + 10% spell power, corroborates damage buff; not same-level exact server measurement."
+          },
+          {
+            "url": "https://talentsforever.com/mage/leveling/course/l/barrier/",
+            "claim": "Level 40 rank one 431, growing to 447 by 46; separate damage and shield-holds buffs, no cast-time loss while shielded. Explains level dependence but no verified formula."
+          }
+        ]
       }
     },
     {

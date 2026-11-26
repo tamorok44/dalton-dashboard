@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11601,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "releaseBlocker": "frost_proc_and_charge_behavior_unverified",
   "profiles": [
@@ -282,7 +282,7 @@
     {
       "talentId": 105764,
       "count": 2,
-      "reason": "Eisige Finger als situatives Fenster ausbauen; keine ungeprüfte Doppelauslösung voraussetzen."
+      "reason": "Eisige Finger für situative Frost-Synergie; keine garantierten oder additiven Procs und keine garantierte Doppelauslösung."
     },
     {
       "talentId": 105770,
@@ -297,7 +297,7 @@
     {
       "talentId": 105762,
       "count": 1,
-      "reason": "Eisbarriere auf 40 freischalten."
+      "reason": "Eisbarriere als Schutz- und Frostschadensfenster freischalten; Zauberzeitverlust nur bei bestehendem Schild verhindert, keine feste Absorptionsmenge."
     },
     {
       "talentId": 105813,
@@ -343,13 +343,13 @@
       "skillcapped-frost-pvp-1911",
       "foreverbattlegrounds-frost"
     ],
-    "editorialDecision": "Prioritize control and defensive Frost milestones, then improved Counterspell and mana. Unlike mixed questing, defensive reset and silence are explicit priorities. No assumption of a simultaneous double hit from one charge.",
+    "editorialDecision": "Kontrolle und Frostverteidigung zuerst: Eislanze 20, Eisblock 25, Kälteeinbruch 30, Eisbarriere 40. Frostbite/Eisige Finger ohne additive oder garantierte Doppelauslösung. Gegenzauber-Schweigen erst 56–57; gegenüber 17/0/34 bewusst drei weitere Arkanpunkte für Meditation statt zusätzlicher Frostpunkte. Keine allgemeine PvP-Überlegenheit oder Downrank-Proc-Garantie.",
     "unresolved": [
-      "Current server-side Frostbite/Fingers of Frost proc and charge consumption behavior including AoE and downranking remains unverified.",
-      "No measured PvP advantage and no Legacy rank 1–5 gates.",
-      "Erneute Prüfung 26.11.: Eisbarriere-Absorptionswert nicht unabhängig exakt bestätigt; keine feste Schutzmenge. Frostbite als tatsächliche Wurzelkontrolle und Eisige Finger für situative Angriffsfenster, keine additiven Chancen. Vergleich mit 17/0/34-Alternative ausstehend."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Eisbarriere-Absorption, Skalierung und Rundung nicht freigegeben.",
+      "Keine verifizierte zusätzliche Proc-Chance, garantierte Doppelauslösung oder Downranking-Vorteile."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -381,7 +381,23 @@
         }
       ],
       "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Frost",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-frost-pvp-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Kontrolle und Frostverteidigung zuerst: Eislanze 20, Eisblock 25, Kälteeinbruch 30, Eisbarriere 40. Frostbite/Eisige Finger ohne additive oder garantierte Doppelauslösung. Gegenzauber-Schweigen erst 56–57; gegenüber 17/0/34 bewusst drei weitere Arkanpunkte für Meditation statt zusätzlicher Frostpunkte. Keine allgemeine PvP-Überlegenheit oder Downrank-Proc-Garantie.",
+    "adviceSummary": "Frost-PvP mit Eisblock 25, Kälteeinbruch 30, Eisbarriere 40 und verbessertem Gegenzauber ab 56.",
+    "evidenceIds": [
+      "mage-frost-pvp-rank0-71139-editorial-1",
+      "mage-frost-pvp-rank0-71139-editorial-2"
+    ]
   }
 }

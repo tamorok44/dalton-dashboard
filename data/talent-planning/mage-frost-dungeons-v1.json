@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11601,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -246,7 +246,7 @@
     {
       "talentId": 105771,
       "count": 3,
-      "reason": "Blizzard-Verlangsamung ausbauen."
+      "reason": "Blizzard-Verlangsamung für kontrollierte Gruppenpulls; Schaden kann Frostnova brechen."
     },
     {
       "talentId": 105772,
@@ -276,12 +276,12 @@
     {
       "talentId": 105764,
       "count": 1,
-      "reason": "Eisige Finger als situatives Fenster ergänzen."
+      "reason": "Eisige Finger für situative Frost-Synergie; keine garantierten oder additiven Procs und keine garantierte Doppelauslösung."
     },
     {
       "talentId": 105764,
       "count": 1,
-      "reason": "Eisige Finger vervollständigen; keine garantierten oder additiven Procs."
+      "reason": "Eisige Finger für situative Frost-Synergie; keine garantierten oder additiven Procs und keine garantierte Doppelauslösung."
     },
     {
       "talentId": 105765,
@@ -296,7 +296,7 @@
     {
       "talentId": 105762,
       "count": 1,
-      "reason": "Eisbarriere auf Stufe 40 freischalten."
+      "reason": "Eisbarriere als Schutz- und Frostschadensfenster freischalten; Zauberzeitverlust nur bei bestehendem Schild verhindert, keine feste Absorptionsmenge."
     },
     {
       "talentId": 105770,
@@ -341,13 +341,13 @@
       "foreverhub-mage-dungeons",
       "icyveins-frost"
     ],
-    "editorialDecision": "Regelmäßige Gruppendungeons ohne Umskillung: frühe Präzision, kontrollierte Blizzard-Verlangsamung und Frostkanalisierung, dann Eisige Finger, Kältekegel und Eissplitter vervollständigen bzw. ausbauen, Eisbarriere auf 40. Winterkälte ist eine sinnvolle Alternative für lange Ziele mit wiederholtem Frostblitz und verstärkter Eislanze vor Kältekegel, aber nicht pauschal für kurze Gruppenpulls. Diese Variante bevorzugt direkte Frost-Synergien vor dem Aufbau einer zusätzlichen Zielmechanik. Kein Solo-AoE-Farm-Build und keine gemessene DPS-Überlegenheit.",
+    "editorialDecision": "Frühe Präzision, Blizzard-Verlangsamung und Frostkanalisierung; Eislanze 26, Kälteeinbruch 30, Eisbarriere 40. Kurze Gruppenpulls und Mana-/Bedrohungskontrolle priorisiert, nicht Solo-AoE-Farming. Keine Eisblock-Freischaltung in dieser Variante: bewusster Verzicht für Gruppenpunkte, kein Notfall-Eisblock versprochen. Winterkälte für längere Ziele ist eine legitime Alternative. Später Arkanregeneration; keine garantierten Procs.",
     "unresolved": [
-      "Unabhängige exakte numerische Bestätigung des Absorptionswertes von Eisbarriere (105762) ausstehend; keine feste Absorptionszahl.",
-      "Keine garantierten Eisige-Finger-Procs auf immunen Gegnern oder gleichzeitige Auslösung; Frostnova bricht auch durch Blizzard-/Proc-Schaden.",
-      "Vermächtnisränge 1–5, vollständige Hotfixprüfung und Vergleich mit Winterkälte-Variante ausstehend."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Eisbarriere-Absorption, Skalierung und Rundung nicht freigegeben.",
+      "Keine verifizierte zusätzliche Proc-Chance, garantierte Doppelauslösung oder Downranking-Vorteile."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -379,7 +379,23 @@
         }
       ],
       "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Frost",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-frost-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Frühe Präzision, Blizzard-Verlangsamung und Frostkanalisierung; Eislanze 26, Kälteeinbruch 30, Eisbarriere 40. Kurze Gruppenpulls und Mana-/Bedrohungskontrolle priorisiert, nicht Solo-AoE-Farming. Keine Eisblock-Freischaltung in dieser Variante: bewusster Verzicht für Gruppenpunkte, kein Notfall-Eisblock versprochen. Winterkälte für längere Ziele ist eine legitime Alternative. Später Arkanregeneration; keine garantierten Procs.",
+    "adviceSummary": "Gruppen-Frost mit früher Präzision, kontrolliertem Blizzard und Eisbarriere auf 40.",
+    "evidenceIds": [
+      "mage-frost-dungeons-rank0-71139-editorial-1",
+      "mage-frost-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

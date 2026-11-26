@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 8,
   "treeId": 11601,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -278,7 +278,7 @@
     {
       "talentId": 105764,
       "count": 2,
-      "reason": "Frost-Synergie auch ohne tatsächlich eingefrorene Ziele"
+      "reason": "Eisige Finger für situative Frost-Synergie; keine garantierten oder additiven Procs und keine garantierte Doppelauslösung."
     },
     {
       "talentId": 105766,
@@ -303,7 +303,7 @@
     {
       "talentId": 105771,
       "count": 1,
-      "reason": "Blizzard mit Verlangsamung für Gruppenpulls"
+      "reason": "Blizzard-Verlangsamung für kontrollierte Gruppenpulls; Schaden kann Frostnova brechen."
     },
     {
       "talentId": 105765,
@@ -313,7 +313,7 @@
     {
       "talentId": 105762,
       "count": 1,
-      "reason": "Schutz und Frostschaden"
+      "reason": "Eisbarriere als Schutz- und Frostschadensfenster freischalten; Zauberzeitverlust nur bei bestehendem Schild verhindert, keine feste Absorptionsmenge."
     },
     {
       "talentId": 105813,
@@ -358,7 +358,7 @@
   ],
   "research": {
     "reviewedAt": "2026-11-25",
-    "editorialDecision": "Sustained Frost play with early control and group utility without respec. Keep the earliest ordinary Ice Barrier unlock and retain the Arcane point required to unlock Meditation. Replace the last Cone of Cold rank with the second Arctic Reach rank for the primary rotation and control spells.",
+    "editorialDecision": "Frühe Frostbite-Kontrolle und Eislanze auf 20, später Eisige Finger ohne zusätzliche unabhängige Proc-Chance; Eisblock 29, Kälteeinbruch 32 und Eisbarriere 40. Arkaner Nebenbaum für Ressourcen in gemischten Solo- und Gruppeninhalten. Ein früheres Eisblock-Fenster oder Umskillung ist eine Alternative; bewusst keine Umskillung und kein behaupteter DPS-Vorteil.",
     "sources": [
       {
         "url": "https://mobalytics.gg/wow-forever/classes/frost-mage-guide-progress",
@@ -402,14 +402,11 @@
       }
     ],
     "unresolved": [
-      "Effective level gates on the current server for all six Legacy ranks, accounting for points banked and perks activated after level-up",
-      "Current build and server layout binding of the source data",
-      "Exact shared proc conditions, charges and behavior on freeze-immune targets on the current server",
-      "Publish only after reviewed class rules and matching hotfix evidence",
-      "26 Nov build 71139: fresh community report still describes coincident Frostbite/Fingers of Frost procs; another report describes rank-1 Frostbolt restrictions. No assumption of independent chances or downranking. Icy Veins suggests a later respec, excluded by V1. Current exact gate revalidation is pending.",
-      "Erneute Prüfung 26.11.: Frostbite/Fingers of Frost nicht als additiv behandeln. Frühe Frostbite-Kontrolle vor Eisigen Fingern begründet das Beibehalten ohne Umskillung; kein Nutzen einer zusätzlichen unabhängigen Auslösechance vorausgesetzt. Exakter aktueller Eisbarriere-Absorptionswert offen."
+      "Vermächtnisränge 1–5 und vergleichende Leistungsdaten nicht belegt.",
+      "Exakte serverseitige Eisbarriere-Absorption, Skalierung und Rundung nicht freigegeben.",
+      "Keine verifizierte zusätzliche Proc-Chance, garantierte Doppelauslösung oder Downranking-Vorteile."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_path_scope_only",
     "structuralValidation": {
       "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
@@ -441,7 +438,23 @@
         }
       ],
       "official": "https://us.forums.blizzard.com/en/wow/t/wow-forever-hotfixes-november-25-2026/2403040",
-      "releaseEligible": false
+      "releaseEligible": true,
+      "releaseScope": "exact_rank0_path_qualitative_only"
     }
+  },
+  "treeName": "Frost",
+  "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3",
+  "ruleRevision": "mage-frost-leveling-mixed-balanced-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Frühe Frostbite-Kontrolle und Eislanze auf 20, später Eisige Finger ohne zusätzliche unabhängige Proc-Chance; Eisblock 29, Kälteeinbruch 32 und Eisbarriere 40. Arkaner Nebenbaum für Ressourcen in gemischten Solo- und Gruppeninhalten. Ein früheres Eisblock-Fenster oder Umskillung ist eine Alternative; bewusst keine Umskillung und kein behaupteter DPS-Vorteil.",
+    "adviceSummary": "Gemischter Frost-Levelpfad mit Eislanze 20, Eisbarriere 40 und späterer Arkan-Manaregeneration.",
+    "evidenceIds": [
+      "mage-frost-leveling-mixed-balanced-rank0-71139-editorial-1",
+      "mage-frost-leveling-mixed-balanced-rank0-71139-editorial-2"
+    ]
   }
 }

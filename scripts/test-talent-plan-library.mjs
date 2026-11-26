@@ -251,9 +251,36 @@ function validatePlanEvidence(plan,{evidence,packs},snapshots,file){
         assert.ok(!plan.points.some(p=>p.talentId===113631));
         assert.throws(()=>talentPathScope({...plan,points:[...plan.points,{talentId:113631,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
       }
+      // Frost: full class structure matches; only the exact Barrier effect exception is allowed.
+      const frostScope=['mage-frost-leveling-mixed-balanced','mage-frost-dungeons','mage-frost-pvp'].includes(plan.id);
+      if(frostScope){
+        const row=effects.rows.find(x=>x.classId===8&&x.id===105762);
+        const detail=clients[0].iceBarrierResolution;
+        assert.ok(row&&detail&&row.iceBarrierResolution);
+        assert.deepEqual(detail,{...row.iceBarrierResolution,allocationDigest:talentPlanEvidenceDigest(plan)});
+        assert.equal(detail.kind,'mage_ice_barrier_qualitative_reconciliation');
+        assert.equal(detail.clientBuild,pack.clientBuild);
+        assert.equal(detail.sourceRevision,pack.sourceRevision);
+        assert.equal(detail.spellId,11426);
+        assert.equal(proof.trees.flatMap(t=>t.talents).find(n=>n.id===105762)?.spellId,detail.spellId);
+        assert.equal(detail.primaryHash,row.primaryHash);
+        assert.equal(detail.secondaryHash,row.secondaryHash);
+        assert.equal(row.classification,'incomplete_numeric');
+        assert.equal(row.quantitativeClaimVerified,false);
+        assert.equal(detail.serverMeasured,false);
+        assert.equal(detail.numericFormulaReleased,false);
+        assert.deepEqual(detail.confirmedCore,{requiresColdSnap:true,requiredFrostPoints:30,absorbsDamage:true,preventsPushbackWhileShielded:true,frostDamageBuffOnCast:true,additionalFrostDamageWhileShielded:true});
+        assert.ok(detail.sources.some(s=>s.build===pack.clientBuild&&s.url==='https://wowforevertalents.com/mage/talents/ice-barrier/'));
+        assert.ok(detail.sources.some(s=>s.url==='https://raiddex.com/en/wow-forever/spells/ice-barrier-rank-1'));
+        assert.ok(detail.sources.some(s=>s.url==='https://talentsforever.com/mage/leveling/course/l/barrier/'));
+        assert.equal(plan.points[30].talentId,105762);
+        assert.ok(plan.points.slice(0,30).some(p=>p.talentId===105766));
+        assert.throws(()=>talentPathScope(plan,proof,pathLedger,cross,effects),/unresolved source difference 105762/);
+        scopedEffects={...effects,rows:effects.rows.filter(x=>x!==row)};
+      }
       const scope=talentPathScope(plan,proof,pathLedger,cross,scopedEffects);
       assert.deepEqual(clients[0].pathScope,scope,'scoped dependency proof mismatch');
-      assert.ok(scope.excludedConflictIds.length);
+      if(frostScope)assert.deepEqual(scope.excludedConflictIds,[]);else assert.ok(scope.excludedConflictIds.length);
       for(const id of scope.excludedConflictIds)assert.throws(()=>talentPathScope({...plan,points:[...plan.points,{talentId:id,rank:1}]},proof,pathLedger,cross,scopedEffects),/unresolved source difference/);
     }
     // Explicit, narrowly scoped client-text reconciliation; never a server measurement.
@@ -831,16 +858,17 @@ for(const treeId of [11629,11636,11637])for(const goal of ['leveling','dungeons'
 
 for(const [id,distribution] of [['mage-arcane-pvp',[31,0,20]],['mage-fire-pvp',[0,31,20]],['mage-frost-dungeons',[18,0,33]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status===(id==='mage-frost-dungeons'?'research_only':'approved'));
+  assert.ok(p&&p.status==='approved');
   assert.deepEqual(Object.values(p.expectedDistribution),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
 }
-// Conflict research is deliberately kept outside the published rank-zero library.
+// Individually reconciled Warrior and Frost rank-zero paths; numerical formulas remain unpublished.
 for(const id of ['warrior-arms-pvp','mage-frost-dungeons','mage-frost-leveling-mixed-balanced','mage-frost-pvp']){
   const candidate=plans.find(p=>p.id===id);
-  assert.ok(candidate&&candidate.status===(id==='warrior-arms-pvp'?'approved':'research_only'));
-  assert.equal(candidate.research.conflictFollowup.releaseEligible,id==='warrior-arms-pvp');
+  assert.ok(candidate&&candidate.status==='approved');
+  assert.deepEqual(candidate.supportedLegacyRanks,[0]);
+  assert.equal(candidate.research.conflictFollowup.releaseEligible,true);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
   const rationale=candidate.rationaleBlocks.flatMap(x=>Array(x.count).fill(x.talentId));
   assert.deepEqual(rationale,candidate.points.map(x=>x.talentId));
