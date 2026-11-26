@@ -70,6 +70,10 @@ const browser=await pw[engine].launch({headless:true});
 const cases=[{name:'desktop',options:{viewport:{width:1440,height:900}}},{name:'tablet',options:{viewport:{width:768,height:1024},hasTouch:true}},{name:'compact',options:{viewport:{width:320,height:720}}}];
 if(engine==='chromium')cases.push({name:'android',options:{...pw.devices['Pixel 7']}});
 if(engine==='webkit')cases.push({name:'iphone',options:{...pw.devices['iPhone 13']}});
+// Offline app-shell assets must include new imports; no live data are cached.
+const shell=readFileSync(resolve(root,'sw.js'),'utf8'),index=readFileSync(resolve(root,'index.html'),'utf8');
+assert.ok(shell.includes('"/talent-text-quality.js"'),'localization helper not precached');
+for(const asset of [...index.matchAll(/(?:src|href)="(\/(?:app\.js|styles\.css)\?v=[^"]+)"/g)].map(m=>m[1]))assert.ok(shell.includes('"'+asset+'"'),'app-shell cache/version mismatch '+asset);
 const scriptBytes=readFileSync(resolve(root,'talent-planner.js'));
 const report={engine,platform:process.platform,fixture:'synthetic roster and graph labels/coordinates, real approved plan engine; no live services',rawScriptBytes:scriptBytes.length,gzipScriptBytes:gzipSync(scriptBytes).length,cases:[]};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
