@@ -95,10 +95,6 @@
       "rank": 2
     },
     {
-      "talentId": 105730,
-      "rank": 3
-    },
-    {
       "talentId": 105726,
       "rank": 1
     },
@@ -177,6 +173,10 @@
     {
       "talentId": 113398,
       "rank": 5
+    },
+    {
+      "talentId": 105730,
+      "rank": 3
     },
     {
       "talentId": 105722,
@@ -230,118 +230,123 @@
   "rationaleBlocks": [
     {
       "talentId": 105741,
-      "count": 2,
-      "reason": "Energiekosten häufiger Angriffe senken."
+      "reason": "Energiekosten häufiger Angriffe senken.",
+      "count": 2
     },
     {
       "talentId": 105708,
-      "count": 3,
-      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt."
+      "reason": "Coup de Grace verstärkt Ausweiden und die Schadens-/Speichermechanik von Todesmal, sofern erlernt.",
+      "count": 3
     },
     {
       "talentId": 105737,
-      "count": 2,
-      "reason": "Trefferchance erhöhen."
+      "reason": "Trefferchance erhöhen.",
+      "count": 2
     },
     {
       "talentId": 105738,
-      "count": 2,
-      "reason": "Parierchance verbessern."
+      "reason": "Parierchance verbessern.",
+      "count": 2
     },
     {
       "talentId": 105738,
-      "count": 1,
-      "reason": "Abwehr vervollständigen."
+      "reason": "Abwehr vervollständigen.",
+      "count": 1
     },
     {
       "talentId": 105735,
-      "count": 1,
-      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen."
+      "reason": "Riposte nach eigenem Parieren freischalten; situative Entwaffnung gegen geeignete Ziele, keine feste Dauer oder Auslösung voraussetzen.",
+      "count": 1
     },
     {
       "talentId": 105737,
-      "count": 1,
-      "reason": "Trefferchance erhöhen."
+      "reason": "Trefferchance erhöhen.",
+      "count": 1
     },
     {
       "talentId": 105736,
-      "count": 2,
-      "reason": "Sprinten und Entrinnen häufiger einsetzen."
+      "reason": "Sprinten und Entrinnen häufiger einsetzen.",
+      "count": 2
     },
     {
       "talentId": 113398,
-      "count": 1,
-      "reason": "Ausweichen ergänzen."
+      "reason": "Ausweichen ergänzen.",
+      "count": 1
     },
     {
       "talentId": 108100,
-      "count": 1,
-      "reason": "Kosten von Ausweiden verringern."
+      "reason": "Kosten von Ausweiden verringern.",
+      "count": 1
     },
     {
       "talentId": 105730,
-      "count": 3,
-      "reason": "Schaden häufiger Angriffe erhöhen."
+      "reason": "Schaden häufiger Angriffe erhöhen.",
+      "count": 2
     },
     {
       "talentId": 105726,
-      "count": 2,
-      "reason": "Ausweichen und Parieren durch Gegner reduzieren."
+      "reason": "Ausweichen und Parieren durch Gegner reduzieren.",
+      "count": 2
     },
     {
       "talentId": 105728,
-      "count": 1,
-      "reason": "Klingenwirbel für kontrollierte Mehrzielkämpfe; seit Hotfix 20.11. auch Shank-Schaden auf ein zusätzliches Ziel, keine ungewollten Pulls."
+      "reason": "Klingenwirbel für kontrollierte Mehrzielkämpfe; seit Hotfix 20.11. auch Shank-Schaden auf ein zusätzliches Ziel, keine ungewollten Pulls.",
+      "count": 1
     },
     {
       "talentId": 113635,
-      "count": 2,
-      "reason": "Schaden der Schildhandwaffe verbessern."
+      "reason": "Schaden der Schildhandwaffe verbessern.",
+      "count": 2
     },
     {
       "talentId": 105727,
-      "count": 2,
-      "reason": "Hack and Slash: waffenabhängigen Zusatzangriff bzw. Kritbonus passend zur Ausrüstung unterstützen."
+      "reason": "Hack and Slash: waffenabhängigen Zusatzangriff bzw. Kritbonus passend zur Ausrüstung unterstützen.",
+      "count": 2
     },
     {
       "talentId": 105740,
-      "count": 5,
-      "reason": "Flash of Steel verstärkt Shanks Energierückgewinnung und verkürzt seine Abklingzeit."
+      "reason": "Flash of Steel verstärkt Shanks Energierückgewinnung und verkürzt seine Abklingzeit.",
+      "count": 5
     },
     {
       "talentId": 105724,
-      "count": 1,
-      "reason": "Adrenalinrausch auf 40 freischalten."
+      "reason": "Adrenalinrausch auf 40 freischalten.",
+      "count": 1
     },
     {
       "talentId": 105727,
-      "count": 3,
-      "reason": "Hack and Slash: waffenabhängigen Zusatzangriff bzw. Kritbonus passend zur Ausrüstung unterstützen."
+      "reason": "Hack and Slash: waffenabhängigen Zusatzangriff bzw. Kritbonus passend zur Ausrüstung unterstützen.",
+      "count": 3
     },
     {
       "talentId": 113398,
-      "count": 4,
-      "reason": "Ausweichen vervollständigen."
+      "reason": "Ausweichen vervollständigen.",
+      "count": 4
+    },
+    {
+      "talentId": 105730,
+      "reason": "Schaden häufiger Angriffe erhöhen.",
+      "count": 1
     },
     {
       "talentId": 105722,
-      "count": 5,
-      "reason": "Kritische Trefferchance ergänzen."
+      "reason": "Kritische Trefferchance ergänzen.",
+      "count": 5
     },
     {
       "talentId": 105723,
-      "count": 2,
-      "reason": "Folgeangriffe nach Gegnerkills unterstützen."
+      "reason": "Folgeangriffe nach Gegnerkills unterstützen.",
+      "count": 2
     },
     {
       "talentId": 105721,
-      "count": 3,
-      "reason": "Combopunkte nach Finishing-Moves unterstützen."
+      "reason": "Combopunkte nach Finishing-Moves unterstützen.",
+      "count": 3
     },
     {
       "talentId": 105739,
-      "count": 2,
-      "reason": "Dauer von Zerhäckseln verlängern."
+      "reason": "Dauer von Zerhäckseln verlängern.",
+      "count": 2
     }
   ],
   "research": {
