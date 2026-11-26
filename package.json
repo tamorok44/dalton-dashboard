@@ -11,7 +11,8 @@
     "talent:legacy-research": "node scripts/test-talent-plan-library.mjs --legacy-research",
     "talent:current-audit": "node scripts/test-talent-plan-library.mjs --current-audit",
     "test:talents": "node scripts/test-talent-matrix-stress.mjs",
-    "talent:readiness": "node scripts/talent-release-readiness.mjs"
+    "talent:readiness": "node scripts/talent-release-readiness.mjs",
+    "talent:zephras-audit": "node scripts/talent-zephras-audit.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.0.0"

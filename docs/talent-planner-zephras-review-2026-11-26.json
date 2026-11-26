@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 1,
+  "kind": "exact_build_independent_structure_review",
+  "date": "2026-11-26",
+  "primarySourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
+  "build": "1.60.1.71139",
+  "sourceUrl": "https://zephras.com/data/forever/enUS/talents/1.60.1.71139.json",
+  "sourceSha256": "3a67ab3a76e57709a76a1bf04da1e3157600c4b81ccbad30e352a33e68f351ad",
+  "credit": "Zephras (https://zephras.com), CC BY 4.0; derived structural comparison and German effect summaries by Dalton Dashboard. Game data © Blizzard Entertainment.",
+  "captureRun": 45816214866,
+  "releaseEligible": false,
+  "classes": [
+    {
+      "classId": 1,
+      "primaryCount": 53,
+      "secondaryCount": 53,
+      "structureDifferences": [],
+      "effectTextMatches": 51,
+      "effectTextDifferenceCount": 2,
+      "effectTextDifferenceIds": [
+        105935,
+        105944
+      ],
+      "targets": [],
+      "catalogRevision": "b413f38ab98a5ea84399c5850307b0f55f81375b76b47fbc49c62cb9fec5b4d4"
+    },
+    {
+      "classId": 2,
+      "primaryCount": 51,
+      "secondaryCount": 51,
+      "structureDifferences": [
+        {
+          "id": 113631,
+          "changes": {
+            "extraPrimaryCondition": [
+              [
+                105323,
+                1,
+                1
+              ]
+            ]
+          }
+        }
+      ],
+      "effectTextMatches": 48,
+      "effectTextDifferenceCount": 3,
+      "effectTextDifferenceIds": [
+        105330,
+        105696,
+        105702
+      ],
+      "targets": [
+        {
+          "id": 113631,
+          "name": "Boundless Light",
+          "maxRank": 2,
+          "spellId": 1328550,
+          "arrows": [
+            [
+              105323,
+              true
+            ]
+          ]
+        },
+        {
+          "id": 105323,
+          "name": "Holy Shock",
+          "maxRank": 1,
+          "spellId": 1311606,
+          "arrows": []
+        }
+      ],
+      "catalogRevision": "8b6b219cd39f596ee51aa72c45ebb81100792323e6c7925f253721c0db9e75ae"
+    },
+    {
+      "classId": 3,
+      "primaryCount": 50,
+      "secondaryCount": 50,
+      "structureDifferences": [
+        {
+          "id": 104964,
+          "changes": {
+            "edgeIds": [
+              [
+                104961,
+                104970
+              ],
+              [
+                104970
+              ]
+            ]
+          }
+        }
+      ],
+      "effectTextMatches": 49,
+      "effectTextDifferenceCount": 1,
+      "effectTextDifferenceIds": [
+        104966
+      ],
+      "targets": [
+        {
+          "id": 104964,
+          "name": "Intimidation",
+          "maxRank": 1,
+          "spellId": 19577,
+          "arrows": [
+            [
+              104970,
+              true
+            ]
+          ]
+        },
+        {
+          "id": 104961,
+          "name": "Bestial Wrath",
+          "maxRank": 1,
+          "spellId": 19574,
+          "arrows": [
+            [
+              104964,
+              true
+            ]
+          ]
+        },
+        {
+          "id": 104970,
+          "name": "Bestial Swiftness",
+          "maxRank": 1,
+          "spellId": 19596,
+          "arrows": []
+        }
+      ],
+      "catalogRevision": "2fb7fcb0bdd7aeed67de0e09cf62a46c1803be51e7ea089ae3e79107f4d63119"
+    },
+    {
+      "classId": 4,
+      "primaryCount": 54,
+      "secondaryCount": 54,
+      "structureDifferences": [],
+      "effectTextMatches": 48,
+      "effectTextDifferenceCount": 6,
+      "effectTextDifferenceIds": [
+        105709,
+        105727,
+        105735,
+        105747,
+        105761,
+        110866
+      ],
+      "targets": [],
+      "catalogRevision": "460978c32f241a579ebe88e15894ae8655c4503366666e676202dafd731965ad"
+    },
+    {
+      "classId": 5,
+      "primaryCount": 52,
+      "secondaryCount": 52,
+      "structureDifferences": [],
+      "effectTextMatches": 50,
+      "effectTextDifferenceCount": 2,
+      "effectTextDifferenceIds": [
+        105840,
+        105851
+      ],
+      "targets": [],
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d"
+    },
+    {
+      "classId": 7,
+      "primaryCount": 50,
+      "secondaryCount": 50,
+      "structureDifferences": [],
+      "effectTextMatches": 50,
+      "effectTextDifferenceCount": 0,
+      "effectTextDifferenceIds": [],
+      "targets": [],
+      "catalogRevision": "c8af4b43c6f2f22e2db491409feffea0bd4d5efd9567b2dac1238407b5c6fa7f"
+    },
+    {
+      "classId": 8,
+      "primaryCount": 53,
+      "secondaryCount": 53,
+      "structureDifferences": [],
+      "effectTextMatches": 52,
+      "effectTextDifferenceCount": 1,
+      "effectTextDifferenceIds": [
+        105762
+      ],
+      "targets": [],
+      "catalogRevision": "6a4fd74ab6e2e9ac468fbfd98292ea2c6d48859c4ea44a9d672385f36dc474b3"
+    },
+    {
+      "classId": 9,
+      "primaryCount": 52,
+      "secondaryCount": 52,
+      "structureDifferences": [],
+      "effectTextMatches": 49,
+      "effectTextDifferenceCount": 3,
+      "effectTextDifferenceIds": [
+        105896,
+        105900,
+        105909
+      ],
+      "targets": [],
+      "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf"
+    },
+    {
+      "classId": 11,
+      "primaryCount": 52,
+      "secondaryCount": 52,
+      "structureDifferences": [
+        {
+          "id": 104928,
+          "changes": {
+            "extraPrimaryCondition": [
+              [
+                104927,
+                2,
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "id": 104933,
+          "changes": {
+            "maxRank": [
+              5,
+              2
+            ]
+          }
+        },
+        {
+          "id": 104936,
+          "changes": {
+            "spell": [
+              16896,
+              408258
+            ]
+          }
+        }
+      ],
+      "effectTextMatches": 44,
+      "effectTextDifferenceCount": 8,
+      "effectTextDifferenceIds": [
+        104923,
+        104931,
+        104933,
+        104935,
+        104936,
+        104937,
+        104940,
+        104944
+      ],
+      "targets": [
+        {
+          "id": 104923,
+          "name": "Starlight Wrath",
+          "maxRank": 5,
+          "spellId": 16814,
+          "arrows": []
+        },
+        {
+          "id": 104931,
+          "name": "Moon and Stars",
+          "maxRank": 2,
+          "spellId": 16821,
+          "arrows": []
+        },
+        {
+          "id": 104933,
+          "name": "Improved Starfire",
+          "maxRank": 2,
+          "spellId": 16850,
+          "arrows": []
+        },
+        {
+          "id": 104935,
+          "name": "Eclipse",
+          "maxRank": 3,
+          "spellId": 408248,
+          "arrows": []
+        },
+        {
+          "id": 104936,
+          "name": "Dreamstate",
+          "maxRank": 5,
+          "spellId": 408258,
+          "arrows": []
+        },
+        {
+          "id": 104937,
+          "name": "Moonkin Form",
+          "maxRank": 1,
+          "spellId": 24858,
+          "arrows": []
+        },
+        {
+          "id": 104924,
+          "name": "Genesis",
+          "maxRank": 5,
+          "spellId": 1223081,
+          "arrows": []
+        }
+      ],
+      "catalogRevision": "6d132472ec288437d5d5fc8c96a31208c8d0c740477c462b3ad3c90ae2616a92"
+    }
+  ],
+  "talentedPerk": [
+    {
+      "rank": 5,
+      "firstPointLevel": 5,
+      "points": 1
+    },
+    {
+      "rank": 4,
+      "firstPointLevel": 6,
+      "points": 1
+    },
+    {
+      "rank": 3,
+      "firstPointLevel": 7,
+      "points": 1
+    },
+    {
+      "rank": 2,
+      "firstPointLevel": 8,
+      "points": 1
+    },
+    {
+      "rank": 1,
+      "firstPointLevel": 9,
+      "points": 1
+    }
+  ],
+  "legacy": {
+    "acquisitionConfirmed": true,
+    "effectiveGatesVerified": false,
+    "cap": 51,
+    "releaseEligible": false
+  },
+  "officialHotfix": "https://news.blizzard.com/en-us/article/24315281/wow-forever-hotfixes-november-25-2026",
+  "changes": [
+    {
+      "classId": 3,
+      "id": 104964,
+      "from": [
+        [
+          104961,
+          1
+        ],
+        [
+          104970,
+          1
+        ]
+      ],
+      "to": [
+        [
+          104970,
+          1
+        ]
+      ],
+      "status": "independent_exact_build_correction",
+      "reason": "Reverse edge creates a cycle; both older independent structure and exact Zephras required arrows support Bestial Swiftness → Intimidation → Bestial Wrath."
+    },
+    {
+      "classId": 2,
+      "id": 113631,
+      "from": [
+        [
+          105323,
+          1,
+          1
+        ]
+      ],
+      "to": [
+        [
+          105323,
+          1
+        ]
+      ],
+      "status": "independent_exact_build_correction",
+      "reason": "Zephras required arrow from Holy Shock (single rank) corroborates the earlier independent structure; no additional prerequisite operator is inferred."
+    },
+    {
+      "classId": 11,
+      "id": 104933,
+      "fromMaxRank": 5,
+      "toMaxRank": 2,
+      "status": "official_and_exact_build_correction"
+    },
+    {
+      "classId": 11,
+      "id": 104936,
+      "fromSpellId": 16896,
+      "toSpellId": 408258,
+      "maxRank": 5,
+      "status": "official_and_exact_build_correction",
+      "rankSpellIdsVerified": false
+    }
+  ],
+  "effectSummaries": {
+    "104923": "Zorn und Sternenfeuer werden je Rang um 0,1 Sekunden schneller; die Manakosten von Zorn sinken je Rang um 10 Prozent.",
+    "104924": "Genesis wirkt nach dem Hotfix auch korrekt auf Hurrikan-Schaden und Gelassenheit-Heilung.",
+    "104931": "Mondfeuer erhält je Rang 5 Prozent zusätzlichen Schaden und kritische Trefferchance. Sternenfeuer verliert bei erlittenem Schaden mit 50 bzw. 100 Prozent Wahrscheinlichkeit keine Zauberzeit.",
+    "104933": "Sternenfeuer hat mit einem bzw. zwei Talentpunkten eine Betäubungschance von 8 bzw. 15 Prozent.",
+    "104935": "Das Talent erhöht dauerhaft die kritische Trefferchance von Zorn um 7, 13 bzw. 20 Prozent; die bisherige Wirkung auf die Zauberzeit von Sternenfeuer bleibt erhalten.",
+    "104936": "Beim Wirken von Anregen auf ein anderes Ziel erhält der Druide selbst je Rang 20 Prozent des Effekts.",
+    "104937": "In Moonkingestalt werden Arkan- und Naturschaden zusätzlich um 10 Prozent erhöht."
+  },
+  "note": "Exact structural agreement is not a full effect/level-gate/plan attestation. Zephras does not provide all rank spell IDs or server effective level gates. Projection below is a diagnostic only; raw source and runtime release stay unchanged."
+}

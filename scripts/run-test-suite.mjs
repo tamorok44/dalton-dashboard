@@ -92,7 +92,10 @@ for(const file of [...syntax].sort())run('00 – Syntax',['--check',file]);
 run('00 – Generierter Freigabeindex',['scripts/build-talent-plan-index.mjs','--check']);
 for(const phase of phases){
   for(const file of phase.files)run(phase.label,[file]);
-  if(phase.label.startsWith('02'))run(phase.label,['scripts/talent-release-readiness.mjs','--summary']);
+  if(phase.label.startsWith('02')){
+    run(phase.label,['scripts/talent-release-readiness.mjs','--summary']);
+    run(phase.label,['scripts/talent-zephras-audit.mjs','--summary']);
+  }
 }
 const failed=results.filter(x=>x.status==='failed');
 const report={schemaVersion:1,node:process.version,commit:process.env.GITHUB_SHA??null,passed:results.length-failed.length,failed:failed.length,results};
