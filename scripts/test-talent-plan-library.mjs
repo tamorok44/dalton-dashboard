@@ -444,7 +444,7 @@ assert.deepEqual([...new Set(plans.filter(p=>p.status!=='retired'&&p.active!==fa
   Object.keys(CLASS_BY_ID).map(Number).sort((a,b)=>a-b));
 for(const [id,distribution] of [["warlock-affliction-leveling",[38,13,0]],["warlock-demonology-leveling",[20,31,0]],["warlock-destruction-leveling",[20,0,31]],["warrior-protection-dungeons",[15,5,31]],["priest-holy-dungeons",[20,31,0]],["priest-shadow-leveling",[20,0,31]],["paladin-retribution-leveling",[12,8,31]],["rogue-combat-leveling",[12,39,0]],["shaman-enhancement-leveling",[20,31,0]]]){
   const p=plans.find(p=>p.id===id);
-  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling'].includes(id);
+  const promoted=['shaman-enhancement-leveling','warlock-destruction-leveling','priest-shadow-leveling','warrior-protection-dungeons'].includes(id);
   assert.ok(p&&p.status===(promoted?'approved':'research_only'));
   if(promoted)assert.deepEqual(p.supportedLegacyRanks,[0]);
   assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,p.version])),[0]);
@@ -667,7 +667,7 @@ for(const [id,distribution] of [['warlock-affliction-dungeons',[30,0,21]],['warl
 
 for(const [id,distribution] of [['warlock-affliction-pvp',[35,16,0]],['warlock-demonology-dungeons',[2,31,18]],['warlock-destruction-dungeons',[5,11,35]],['warlock-destruction-pvp',[18,0,33]]]){
   const p=plans.find(x=>x.id===id);
-  assert.ok(p&&p.status==='research_only');
+  assert.ok(p&&p.status===(id==='warlock-destruction-dungeons'?'approved':'research_only'));
   assert.deepEqual(Object.values(p.expectedDistribution),distribution);
   assert.deepEqual(validatedRanks.get(JSON.stringify([id,1])),[0]);
   assert.equal(currentAudit.find(a=>a.id===id)?.status,'primary_structure_matches');
@@ -714,7 +714,7 @@ for(const [id,dist] of [["priest-discipline-leveling",{"11608":33,"11615":18,"11
 
 {
  const p=plans.find(x=>x.id==='priest-shadow-dungeons');
- assert.ok(p&&p.status==='research_only');
+ assert.ok(p&&p.status==='approved');
  assert.deepEqual(p.expectedDistribution,{"11608":18,"11615":0,"11622":33});
  assert.deepEqual(validatedRanks.get(JSON.stringify([p.id,1])),[0]);
  assert.equal(currentAudit.find(a=>a.id===p.id)?.status,'primary_structure_matches');

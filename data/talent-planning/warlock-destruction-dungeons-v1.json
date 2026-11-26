@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 9,
   "treeId": 11637,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -322,15 +322,29 @@
     ],
     "editorialDecision": "Direct fire damage and multi-target utility for ordinary leveling dungeons, not a pure raid build or unconditional AoE spam. Prioritize a sustainable rotation; sacrifice remains optional.",
     "unresolved": [
-      "Independent exact-build comparison of all class talent nodes, coordinates, prerequisite ranks and complete server-hotfix review still required.",
-      "No verified ranks 1–5 minimum-level rule; no measured performance superiority.",
-      "Review target-lifetime dependence, threat, exact Shadow and Flame interactions and demon choice."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
       "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
       "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Zerstörung",
+  "catalogRevision": "063818bd857c04a7d28fb452866acd28bd760ed840951891160dbe445384e8cf",
+  "ruleRevision": "warlock-destruction-dungeons-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Direkte Schadenszauber sind für kurze Dungeonkämpfe ein sinnvoller Schwerpunkt. Der Pfad erreicht Schattenbrand auf 23, Feuersbrunst auf 29, Omen der Verwüstung auf 30 und Verbrennen auf 40. Mehrzielschaden nur auf vom Tank gebundene Ziele; spätere Trefferchance, Bedrohungsreduktion und Ausdauer ergänzen den Pfad. Dämonische Opferung auf 60 ist eine freiwillige Option, keine Voraussetzung für die Rotation. Keine garantierten Proc-Ketten, keine Pet-Krit- oder DPS-Schätzung.",
+    "adviceSummary": "Direkte Zauber und kontrollierter Mehrzielschaden, Verbrennen auf 40; spätere Bedrohungsreduktion und Ausdauer.",
+    "evidenceIds": [
+      "warlock-destruction-dungeons-rank0-71139-editorial-1",
+      "warlock-destruction-dungeons-rank0-71139-editorial-2"
+    ]
   }
 }

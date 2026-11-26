@@ -4,7 +4,7 @@
   "version": 1,
   "classId": 5,
   "treeId": 11622,
-  "status": "research_only",
+  "status": "approved",
   "requiresRespec": false,
   "profiles": [
     {
@@ -332,15 +332,29 @@
     ],
     "editorialDecision": "Two early wand points deliberately delay Shadowform to 42 and avoid respec. Spirit Tap supports solo/mixed kills; Vampiric Embrace and later Shadowform form the sustained caster route. Shadowform is a damage role, not a healer plan.",
     "unresolved": [
-      "Structural validation against complete extracted primary data, not an exact live source-pair attestation. Current build-independent source comparison and server-rule reconciliation still required.",
-      "No rank 1–5 effective minimum-level evidence or measured comparative optimality.",
-      "November 16 Vampiric Embrace party-healing reduction and doubled personal healing reflected in extracted text; verify current kill-credit condition, periodic crit, and early wand tradeoff against direct Shadow."
+      "Effective minimum-level rules for Legacy ranks 1–5 remain unverified.",
+      "No controlled comparison establishing universal optimality; scope is the exact role, goal and playstyle."
     ],
-    "approval": null,
+    "approval": "editorial_rank0_only",
     "structuralValidation": {
-      "catalogRevision": "36644f1250c676c821759683b69bfecf3d0eb5c3c0ebf7c76b97846a4dd139d7",
-      "sourceRevision": "7063ee5e989fe323b095260e58675d24b77d340a87e71e73448e650d2010d956",
+      "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+      "sourceRevision": "9600e28baa503d22d80ea631dc48f6844aa7be3b02576ff9bd7094e67b8e318b",
       "legacyTalentedRank": 0
     }
+  },
+  "treeName": "Schatten",
+  "catalogRevision": "a725838248d601b8c1cbc8bf2274a7be7edbadee65a96142e72ae212b9761d2d",
+  "ruleRevision": "priest-shadow-leveling-rank0-71139",
+  "supportedLegacyRanks": [
+    0
+  ],
+  "review": {
+    "reviewedAt": "2026-11-26",
+    "rationale": "Für gemischtes Leveln ohne Umskillen werden zunächst zwei Zauberstabpunkte investiert. Willenskraft nach geeigneten Gegnerkills, Trefferchance und Gedankenschinden folgen; die Schattengestalt wird bewusst erst auf 42 erreicht. Das spart einen obligatorischen Talentreset gegenüber der frühen Disziplin-Variante. Spätere Disziplin-Punkte unterstützen Mana, Schilde und Sofortzauber. Ein geeigneter Zauberstab ist wichtig; bei wenig Kill-Gutschriften ist die Regeneration geringer. Keine garantierte Proc-Kette.",
+    "adviceSummary": "Früher Zauberstab und Mana-Erholung, dann konsequenter Schattenpfad; Schattengestalt auf 42 ohne Umskillen.",
+    "evidenceIds": [
+      "priest-shadow-leveling-rank0-71139-editorial-1",
+      "priest-shadow-leveling-rank0-71139-editorial-2"
+    ]
   }
 }
