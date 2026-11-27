@@ -230,44 +230,80 @@ async function readLegacy(keys,redisImpl=redis){
 }
 async function inspectStoredPair(key,modern,legacy,redisImpl=redis){
   if(!['none','string'].includes(legacy.type))return {record:null,reason:'invalid_storage_type',unknownTime:true,latestTime:Infinity};
-  let marker=null;
-  try{marker=JSON.parse(modern)?.migrationRepair;}catch{}
-  if(marker){
+  const proofChecks=new Map();
+  for(const raw of [modern,legacy.raw]){
+    let marker=null;
+    try{marker=JSON.parse(raw)?.migrationRepair;}catch{}
+    if(!marker)continue;
     const field='__quarantine:v1:'+marker.quarantineDigest;
-    const proof=await redisImpl(['HGET',recordsKey(),field]);
+    let proof;
+    try{proof=proofChecks.has(field)?proofChecks.get(field):await redisImpl(['HGET',recordsKey(),field]);}
+    catch{return {record:null,reason:'repair_evidence_unavailable',unknownTime:true,latestTime:Infinity};}
     if(!repairMarkerMatches(key,marker,proof))return {record:null,reason:'missing_repair_evidence',unknownTime:true,latestTime:Infinity};
+    proofChecks.set(field,proof);
   }
-  return inspectKnowledgePair(modern,legacy.raw,key);
+  return {...inspectKnowledgePair(modern,legacy.raw,key),proofChecks:[...proofChecks]};
 }
-async function saveRecord(key,value,{changed,lockToken,expectedModern,expectedLegacy,legacyType=expectedLegacy===null?'none':'string',quarantine=null}){
+// A damaged occupied digest must not block a character forever. Use a
+// new content-addressed envelope containing the exact colliding bytes.
+// Never overwrite or delete the original field. Bounded retries handle
+// ordinary interleavings; a persistent provider failure stays retryable.
+async function writableQuarantine(key,modern,legacy,reason,snapshot){
+  let collision=null;
+  for(let attempt=0;attempt<4;attempt++){
+    const q=knowledgeQuarantine(key,modern,legacy.raw,reason,snapshot,legacy.type,collision);
+    const actual=await redis(['HGET',recordsKey(),q.field]);
+    if(actual==null||actual===JSON.stringify(q.evidence))return q;
+    collision={field:q.field,raw:actual,previous:collision};
+  }
+  throw Error('QUARANTINE_COLLISION_LIMIT');
+}
+}
+async function saveRecord(key,value,{changed,lockToken,expectedModern,expectedLegacy,legacyType=expectedLegacy===null?'none':'string',quarantine=null,proofChecks=[]}){
   if(!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
   // Record, implicit index and version are fields of one hash. The one
   // HSET is the sole mutation; legacy records are read-only fallbacks.
-  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local modern=redis.call('HGET',KEYS[1],ARGV[1]); local typ=redis.call('TYPE',KEYS[2]).ok; local legacy=false; if typ=='string' then legacy=redis.call('GET',KEYS[2]) end; if typ~=ARGV[11] or (modern or '')~=ARGV[5] or (legacy or '')~=ARGV[6] then return redis.error_reply('OBSERVATION_CONFLICT') end; local fields={}; if ARGV[2]~='' then table.insert(fields,ARGV[1]); table.insert(fields,ARGV[2]); end; if ARGV[9]~='' then local evidence=redis.call('HGET',KEYS[1],ARGV[9]); if evidence and evidence~=ARGV[10] then return redis.error_reply('QUARANTINE_EVIDENCE_CONFLICT') end; if not evidence then table.insert(fields,ARGV[9]); table.insert(fields,ARGV[10]); end end; if ARGV[3]=='1' or (#fields>0 and ARGV[9]~='') then table.insert(fields,ARGV[8]); table.insert(fields,ARGV[4]); end; if #fields>0 then redis.call('HSET',KEYS[1],unpack(fields)) end; return 'OK'";
-  const result=await redis(['EVAL',lua,3,recordsKey(),key,addonSyncLockKey(),key,value?JSON.stringify(value):'',changed?'1':'0',new Date().toISOString(),expectedModern||'',expectedLegacy||'',lockToken,VERSION_FIELD,quarantine?.field||'',quarantine?JSON.stringify(quarantine.evidence):'',legacyType]);
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local modern=redis.call('HGET',KEYS[1],ARGV[1]); local typ=redis.call('TYPE',KEYS[2]).ok; local legacy=false; if typ=='string' then legacy=redis.call('GET',KEYS[2]) end; if typ~=ARGV[11] or (modern or '')~=ARGV[5] or (legacy or '')~=ARGV[6] then return redis.error_reply('OBSERVATION_CONFLICT') end; for _,proof in ipairs(cjson.decode(ARGV[12])) do if redis.call('HGET',KEYS[1],proof[1])~=proof[2] then return redis.error_reply('REPAIR_EVIDENCE_CHANGED') end end; local fields={}; if ARGV[2]~='' then table.insert(fields,ARGV[1]); table.insert(fields,ARGV[2]); end; if ARGV[9]~='' then local evidence=redis.call('HGET',KEYS[1],ARGV[9]); if evidence and evidence~=ARGV[10] then return redis.error_reply('QUARANTINE_EVIDENCE_CONFLICT') end; if not evidence then table.insert(fields,ARGV[9]); table.insert(fields,ARGV[10]); end end; if ARGV[3]=='1' or (#fields>0 and ARGV[9]~='') then table.insert(fields,ARGV[8]); table.insert(fields,ARGV[4]); end; if #fields>0 then redis.call('HSET',KEYS[1],unpack(fields)) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,recordsKey(),key,addonSyncLockKey(),key,value?JSON.stringify(value):'',changed?'1':'0',new Date().toISOString(),expectedModern||'',expectedLegacy||'',lockToken,VERSION_FIELD,quarantine?.field||'',quarantine?JSON.stringify(quarantine.evidence):'',legacyType,JSON.stringify(proofChecks)]);
   if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
 }
-async function ingestSnapshot(snapshot,{lockToken=null}={}){
+async function ingestSnapshot(snapshot,options={}){
+  for(let attempt=0;;attempt++){
+    try{return await ingestSnapshotOnce(snapshot,options);}
+    catch(error){
+      if(attempt>=2||!/REPAIR_EVIDENCE_CHANGED|QUARANTINE_EVIDENCE_CONFLICT|OBSERVATION_CONFLICT/.test(String(error?.message)))throw error;
+    }
+  }
+}
+async function ingestSnapshotOnce(snapshot,{lockToken=null}={}){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
   const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
   const [expectedModern,[legacy]]=await Promise.all([redis(['HGET',recordsKey(),key]),readLegacy([key])]);
   const expectedLegacy=legacy.raw;
   const inspected=await inspectStoredPair(key,expectedModern,legacy);
-  const quarantine=inspected.reason?knowledgeQuarantine(key,expectedModern,expectedLegacy,inspected.reason,snapshot,legacy.type):null;
+  const quarantine=inspected.reason?await writableQuarantine(key,expectedModern,legacy,inspected.reason,snapshot):null;
+  const proofChecks=inspected.proofChecks||[];
+  const writeOptions={lockToken,expectedModern,expectedLegacy,legacyType:legacy.type,proofChecks};
   if(quarantine&&(inspected.unknownTime||!Number.isFinite(inspected.latestTime)||Date.parse(snapshot.capturedAt)<=inspected.latestTime)){
     // No ordering proof. Persist the incoming evidence, do not choose a
     // price and do not leave the character's core outbox blocked.
-    await saveRecord(key,null,{changed:false,lockToken,expectedModern,expectedLegacy,legacyType:legacy.type,quarantine});
+    await saveRecord(key,null,{changed:false,...writeOptions,quarantine});
     return {stored:false,duplicate:false,quarantined:true,key};
   }
   const existing=inspected.record;
   const id=observationId(snapshot);
   const ids=Array.isArray(existing?.observationIds)?existing.observationIds:[];
-  if(ids.includes(id))return {stored:false,duplicate:true,key};
+  if(ids.includes(id)){
+    if(proofChecks.length)await saveRecord(key,null,{changed:false,...writeOptions});
+    return {stored:false,duplicate:true,key};
+  }
 
   const fingerprint=contentFingerprint(snapshot);
   const previous=existing?.latestSnapshot||null;
-  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
+  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt)){
+    if(proofChecks.length)await saveRecord(key,null,{changed:false,...writeOptions});
+    return {stored:false,duplicate:true,key};
+  }
   // Different fingerprints in the same second are distinct evidence. Keep
   // both in the bounded history, without asserting a finer clock resolution.
   const previousFingerprint=previous?contentFingerprint(previous):null;
@@ -303,7 +339,7 @@ async function ingestSnapshot(snapshot,{lockToken=null}={}){
     offers:snapshot.kind==='merchant'?mergeOfferKnowledge(existing?.offers,snapshot):undefined,
     services:snapshot.kind==='trainer'?mergeServiceKnowledge(existing?.services,snapshot):undefined
   };
-  await saveRecord(key,record,{changed,lockToken,expectedModern,expectedLegacy,legacyType:legacy.type,quarantine});
+  await saveRecord(key,record,{changed,...writeOptions,quarantine});
   return {stored:true,duplicate:false,changed,key,record,...(quarantine?{repaired:true}:{})};
 }
 
@@ -358,6 +394,9 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
       const modernRaw=modernByKey.get(key),legacyValue=legacyByKey.get(key),legacyRaw=legacyValue.raw;
       const inspected=await inspectStoredPair(key,modernRaw,legacyValue,redisImpl);
       if(inspected.reason){
+        if(inspected.reason==='repair_evidence_unavailable'){
+          issues.push({key,reason:inspected.reason,preserved:false});continue;
+        }
         // Evidence-only append. Never alter the active record in a reader.
         // Preserve the exact bytes observed, even if a legacy writer has
         // since replaced them. HSETNX is idempotent and a single mutation.

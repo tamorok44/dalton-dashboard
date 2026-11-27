@@ -124,9 +124,10 @@ export function inspectKnowledgePair(modernRaw,legacyRaw,key=null){
   }
   return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(m.floor,l.floor),unknownTime:(m.invalid&&!Number.isFinite(m.floor))||(l.invalid&&!Number.isFinite(l.floor))};
 }
-export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null,legacyType=null){
+export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null,legacyType=null,collision=null){
   const evidence={schema:1,key,reason,modernRaw:modernRaw??null,legacyRaw:legacyRaw??null,incoming,
-    ...(legacyType&&!['none','string'].includes(legacyType)?{legacyType,legacyRawUnavailable:true}:{})};
+    ...(legacyType&&!['none','string'].includes(legacyType)?{legacyType,legacyRawUnavailable:true}:{}),
+    ...(collision?{collision}: {})};
   const digest=createHash('sha256').update(JSON.stringify(canonical(evidence))).digest('hex');
   return {field:'__quarantine:v1:'+digest,evidence,digest};
 }
@@ -136,7 +137,7 @@ export function validQuarantineEvidence(field,raw,key=null){
     if(typeof raw!=='string')return false;
     const evidence=JSON.parse(raw);
     if(evidence?.schema!==1||typeof evidence.key!=='string'||(key&&key!==evidence.key)||
-      !['invalid_record','conflicting_record','invalid_storage_type','missing_repair_evidence'].includes(evidence.reason)||
+      !['invalid_record','conflicting_record','invalid_storage_type','missing_repair_evidence','repair_evidence_unavailable'].includes(evidence.reason)||
       !Object.hasOwn(evidence,'incoming')||
       !['modernRaw','legacyRaw'].every(side=>Object.hasOwn(evidence,side)&&(evidence[side]===null||typeof evidence[side]==='string')))return false;
     return field==='__quarantine:v1:'+createHash('sha256').update(JSON.stringify(canonical(evidence))).digest('hex');
