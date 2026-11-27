@@ -59,6 +59,13 @@ export function armSyncFence({key,token,deadlineMs}){
   const scope=assertSyncBudget();
   if(scope)scope.fence={key,token,deadlineMs};
 }
+// Bind the exact authorized Redis record, not the bearer token. A changed
+// or deleted record invalidates further writes in this request.
+export function armDeviceWriteFence({key,raw}){
+  const scope=assertSyncBudget();
+  if(!scope||scope.deviceFence||typeof key!=='string'||!key||typeof raw!=='string'||!raw)throw Error('INVALID_DEVICE_FENCE');
+  scope.deviceFence=Object.freeze({key,raw});
+}
 const reads=new Set(['GET','MGET','HGET','HMGET','HGETALL','HKEYS','HEXISTS','HLEN','SMEMBERS','SISMEMBER','SCARD','TYPE','TTL','PTTL','EXISTS','TIME','LRANGE','LLEN','ZRANGE','ZSCORE']);
 const oneKeyWrites=new Set(['SET','HSET','HSETNX','HDEL','DEL','RPUSH','LPUSH','SADD','SREM','INCR','INCRBY','EXPIRE','PEXPIRE','SETEX','PSETEX','ZADD','ZREM']);
 const READ_TABLE=[...reads].map(x=>x+'=true').join(',');
@@ -69,7 +76,9 @@ const READ_TABLE=[...reads].map(x=>x+'=true').join(',');
 export function fenceRedisCommand(command){
   const scope=assertSyncBudget(),f=scope?.fence;
   const op=String(command[0]).toUpperCase();
-  if(!f||reads.has(op))return command;
+  if(reads.has(op))return command;
+  const device=scope?.deviceFence;
+  if(!f){if(device)throw Error('DEVICE_WRITE_FENCE_NOT_ARMED');return command;}
   let keys,args,script;
   if(op==='EVAL'){
     const n=Number(command[2]);
@@ -82,11 +91,16 @@ export function fenceRedisCommand(command){
   }else throw Error('Nicht freigegebener Redis-Befehl im Sync: '+op);
   let index=keys.indexOf(f.key),extra=false;
   if(index<0){index=keys.length;keys.push(f.key);extra=true;}
-  const prefix="-- addon-sync-fence:v1\n"+
+  // Append the device key last, then remove it before the original script.
+  // Existing key and argument positions are preserved, including multi-key commits.
+  if(device)keys.push(device.key);
+  const deviceEnvelope=device?"local deviceRaw=table.remove(ARGV); local deviceKey=table.remove(KEYS); ":"";
+  const deviceCheck=device?" if rawRedis.call('GET',deviceKey)~=deviceRaw then error('DEVICE_AUTH_REVOKED') end; ":"";
+  const prefix="-- addon-sync-fence:v1\n"+deviceEnvelope+
     "local syncDeadline=tonumber(table.remove(ARGV)); local syncToken=table.remove(ARGV); local syncLock=KEYS["+ (index+1) +"]; "+
     (extra?"table.remove(KEYS); ":"")+
-    "local rawRedis=redis; local function checkSyncFence() local t=rawRedis.call('TIME'); if tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000)>=syncDeadline then error('ADDON_SYNC_DEADLINE') end; if rawRedis.call('GET',syncLock)~=syncToken then error('REFRESH_LOCK_LOST') end end; checkSyncFence(); "+
+    "local rawRedis=redis; local function checkSyncFence() local t=rawRedis.call('TIME'); if tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000)>=syncDeadline then error('ADDON_SYNC_DEADLINE') end; if rawRedis.call('GET',syncLock)~=syncToken then error('REFRESH_LOCK_LOST') end; "+deviceCheck+"end; checkSyncFence(); "+
     "local syncReads={"+READ_TABLE+"}; local mutationStarted=false; local function beforeSyncCommand(cmd) if not mutationStarted and not syncReads[string.upper(cmd)] then checkSyncFence(); mutationStarted=true end end; "+
     "local redis=setmetatable({call=function(cmd,...) beforeSyncCommand(cmd); return rawRedis.call(cmd,...) end,pcall=function(cmd,...) beforeSyncCommand(cmd); return rawRedis.pcall(cmd,...) end},{__index=rawRedis}); ";
-  return ['EVAL',prefix+script,keys.length,...keys,...args,f.token,String(f.deadlineMs)];
+  return ['EVAL',prefix+script,keys.length,...keys,...args,f.token,String(f.deadlineMs),...(device?[device.raw]:[])];
 }
