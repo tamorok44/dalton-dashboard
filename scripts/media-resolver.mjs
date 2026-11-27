@@ -24,6 +24,7 @@ function extensionFor(type){
   return 'jpg';
 }
 export function imageStoreConfigured(){
+  if(['preview','development'].includes(process.env.VERCEL_ENV))return false;
   return Boolean(process.env.BLOB_STORE_ID||process.env.BLOB_READ_WRITE_TOKEN);
 }
 export function sourceImageAllowed(url){
