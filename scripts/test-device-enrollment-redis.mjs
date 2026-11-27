@@ -146,6 +146,37 @@ try{
   assert.deepEqual(JSON.parse(await admin('GET',inviteKey(lost.code))),{consumed:true});
   assert.equal((await admin('KEYS',prefix+'token:*')).length,1);
   await assert.rejects(redeemDeviceEnrollment(lost.code),/bereits verwendet/);
+  // Actual enrollment API must pass the issuer to the atomic write boundary.
+  const {default:enrollmentApi}=await import('../api/addon-device-enroll.js');
+  const hubToken='ddv1_'+'synthetic-hub-'.repeat(4);
+  const hubKey=tokenKey(hubToken);
+  const hubRaw=JSON.stringify({schemaVersion:1,deviceId:'qa-hub',characterSlug:'cole-dalton',revokedAt:null});
+  const apiCall=async(token,characterSlug)=>{
+    const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+    await enrollmentApi({method:'POST',headers:{authorization:'Device '+token},body:{action:'create',characterSlug}},res);
+    return res;
+  };
+  await admin('SET',hubKey,hubRaw);
+  const allowed=await apiCall(hubToken,'dolly-dalton');
+  assert.equal(allowed.code,200);
+  assert.equal(JSON.parse(await admin('GET',inviteKey(allowed.body.code))).characterSlug,'dolly-dalton');
+  const beforeInvites=(await admin('KEYS',prefix+'invite:*')).sort();
+  assert.equal((await apiCall(hubToken,'cole-dalton')).code,401);
+  assert.equal((await apiCall(hubToken,'constructor')).code,401);
+  let raced=false;
+  intercept=async(args,run)=>{
+    if(args[0]==='EVAL'&&args[3]===hubKey){
+      raced=true;
+      await admin('DEL',hubKey);
+    }
+    return run();
+  };
+  assert.equal((await apiCall(hubToken,'viola-dalton')).code,401);
+  intercept=null;
+  assert.ok(raced,'Issuer revalidation must be atomic at invitation write');
+  assert.deepEqual((await admin('KEYS',prefix+'invite:*')).sort(),beforeInvites);
+  assert.equal((await apiCall(hubToken,'viola-dalton')).code,401);
+  console.log('F18 API issuer regression: allowed peer enrollment, self/prototype denial, revoked issuer before mutation, no new invite: OK');
   console.log('Redis device regression: NX failure, denied MSET, concurrent redemption/revocation, expiry, CAS, collision, cleanup denial, revoke denial and ambiguous response: OK');
 }finally{
   globalThis.fetch=oldFetch;
