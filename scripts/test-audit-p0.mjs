@@ -225,8 +225,9 @@ if(!hasRedis){
         if(op==='SET'&&key.includes(':history:daily:lock:')&&mode==='drop-lock-reply'){mode=null;cli(...cmd);throw Error('fixture lock response lost');}
         if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
         const knowledgeCommit=op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:production:records:v2'&&cmd.length>=18;
+        const luaArg=n=>cmd[2]+2+n;
         if(mode==='empty-record-before-commit'&&knowledgeCommit){
-          mode=null;assert.equal(cmd[18],'0');cli('HSET',cmd[3],cmd[6],'');
+          mode=null;assert.equal(cmd[luaArg(13)],'0');cli('HSET',cmd[3],cmd[luaArg(1)],'');
         }
         if(mode==='stall-proof-read'&&op==='HGET'&&cmd[2]===proofTarget){
           mode=null;stallObserved=true;await new Promise(resolve=>{stalledRelease=resolve});
@@ -251,14 +252,14 @@ if(!hasRedis){
         if((mode==='fail-proof-read'||mode==='persistent-proof-read')&&op==='HGET'&&cmd[2]===proofTarget){if(mode==='fail-proof-read')mode=null;throw Error('fixture proof read unavailable');}
         if(mode==='restore-proof-before-commit'&&knowledgeCommit){
           mode=null;
-          const checked=JSON.parse(cmd[17]);
+          const checked=JSON.parse(cmd[luaArg(12)]);
           assert.ok(checked.some(([field,raw])=>field===proofTarget&&raw===null),'missing proof must be fenced even with additional v1 references');
           assert.equal(new Set(checked.map(([field])=>field)).size,checked.length);
           cli('HSET',cmd[3],proofTarget,restoreProof);
         }
         if(mode==='drop-proof-before-commit'&&knowledgeCommit){mode=null;cli('HDEL',cmd[3],proofTarget);}
-        if(mode==='collide-before-commit'&&knowledgeCommit&&String(cmd[14]).startsWith('__quarantine:v1:')){
-          mode=null;collisionTarget=cmd[14];cli('HSET',cmd[3],collisionTarget,'{"corrupt-fixture":true}');
+        if(mode==='collide-before-commit'&&knowledgeCommit&&String(cmd[luaArg(9)]).startsWith('__quarantine:v1:')){
+          mode=null;collisionTarget=cmd[luaArg(9)];cli('HSET',cmd[3],collisionTarget,'{"corrupt-fixture":true}');
         }
         const result=cli(...cmd);
         if(mode==='hold-preview-observation'&&op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:preview:records:v2'){
