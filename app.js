@@ -2115,13 +2115,36 @@ async function checkForNewData(){
   })();
   try{return await versionCheckPromise}finally{versionCheckPromise=null}
 }
+// Only the dedicated refresh credential is retained in this open tab.
+let manualRefreshCode=null;
+const refreshDialog=document.querySelector('#refreshAuthorizationDialog');
+const refreshCodeInput=document.querySelector('#refreshAuthorizationCode');
+function requestRefreshCode(){
+  return new Promise(resolve=>{
+    refreshCodeInput.value='';
+    refreshDialog.returnValue='cancel';
+    refreshDialog.addEventListener('close',()=>{
+      const value=refreshDialog.returnValue==='confirm'?refreshCodeInput.value.trim():null;
+      refreshCodeInput.value='';
+      resolve(value||null);
+    },{once:true});
+    refreshDialog.showModal();
+    refreshCodeInput.focus();
+  });
+}
 async function refreshLive(){
-  if(button.disabled)return;
+  if(button.disabled||refreshDialog.open)return;
+  if(!manualRefreshCode){
+    manualRefreshCode=await requestRefreshCode();
+    if(!manualRefreshCode)return;
+  }
   button.disabled=true;button.textContent="↻ Wird aktualisiert …";
   if(freshness)freshness.textContent="Live-Abfrage läuft …";
   status.textContent="Blizzard-Profile werden jetzt direkt abgefragt …";
   try{
-    const r=await fetch('/api/refresh?t='+Date.now(),{cache:"no-store"});
+    const r=await fetch('/api/refresh?t='+Date.now(),{method:'POST',cache:'no-store',redirect:'error',
+      headers:{Authorization:'Bearer '+manualRefreshCode}});
+    if(r.status===401){manualRefreshCode=null;throw new Error('REFRESH_UNAUTHORIZED');}
     if(!r.ok)throw new Error('HTTP '+r.status);
     const response=await r.json();
     if(response.pending){
@@ -2132,7 +2155,9 @@ async function refreshLive(){
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
     applyServerPayload(response,{live:true,success:response.success,force:true});
   }catch(e){
-    status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
+    status.textContent=e.message==='REFRESH_UNAUTHORIZED'
+      ?'Aktualisierungscode ungültig oder Live-Aktualisierung nicht freigeschaltet. Der gespeicherte Stand bleibt sichtbar.'
+      :'Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
   }finally{button.disabled=false;button.textContent="↻ Aktualisieren"}
 }
