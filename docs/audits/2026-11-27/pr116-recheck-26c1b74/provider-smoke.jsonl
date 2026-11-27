@@ -1,0 +1,7 @@
+{"targetGuards":true,"namespaceMapping":true,"providerContacted":false}
+{"inventorySelfTest":true,"missingPairSideDetected":true,"missingQuarantineDetected":true,"metadataAndScopeBound":true,"missingReferencedQuarantineDetected":true,"nonmatchingQuarantineBytesDetected":true}
+{"freezeEvidenceGuard":true,"authoritativeExportGate":true,"legacyActivationGate":true,"providerContacted":false}
+{"phase":"redis-reader-capabilities","typeAwareLua":true,"readOnlyLua":"denied","refusedHsetnx":true,"exactEvidenceContentRequired":true,"typedLegacyLeftIntact":true}
+{"phase":"redis-single-commands","msetAndHset":true,"readonlyDenialsPreservedState":true,"staleLockFenced":true,"readerHsetnxAndReadOnlyRefusal":true,"readerReplayDeduplicates":true,"quarantineAndRepair":true}
+{"phase":"blob-private-object","authenticatedRecovery":true,"anonymousStatus":403,"overwriteRejected":true,"bytes":295}
+{"phase":"finished","requests":94,"requestBytes":64004,"responseBytes":69131,"elapsedMs":1106,"cleanupPassed":true,"result":"passed"}

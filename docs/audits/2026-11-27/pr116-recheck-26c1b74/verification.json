@@ -1,0 +1,72 @@
+{
+  "reviewedCommit": "26c1b74065616d0b5f44b59ec9c0af990df7b2b0",
+  "previousCommit": "94223457bd8a6d4986e49c2580efd4af638fa068",
+  "previousAuditCommit": "ea71da5d79ad115dabf683e1ca17bb0b7006791d",
+  "reviewDateBerlin": "2026-11-27",
+  "matrix": [
+    {
+      "redis": "7.0.15",
+      "node": "22.23.5",
+      "previousGroupsControlled": 88,
+      "previousGroupsRerun": 88,
+      "additionalGroups": 11,
+      "totalGroups": 99,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0
+    },
+    {
+      "redis": "8.0.2",
+      "node": "26.13.1",
+      "previousGroupsControlled": 88,
+      "previousGroupsRerun": 88,
+      "additionalGroups": 11,
+      "totalGroups": 99,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0
+    }
+  ],
+  "technicalBlockersConfirmedByBoth": [
+    "legacy-half-repair-reference-skipped-at-runtime",
+    "damaged-quarantine-blocks-valid-follow-up-core",
+    "repair-proof-disappears-after-validation-before-commit",
+    "one-repair-proof-read-error-blocks-entire-view"
+  ],
+  "actions": [
+    {
+      "run": 45989793209,
+      "result": "success"
+    },
+    {
+      "run": 45989793147,
+      "result": "success"
+    },
+    {
+      "run": 45989793299,
+      "result": "success"
+    }
+  ],
+  "cutover": {
+    "realHistoricalHandlerFencedByLocalRedisAcl": true,
+    "offlineGateSelfTestPassed": true,
+    "cliCleanProjectionPasses": true,
+    "cliQuarantinedForensicProjectionPasses": true,
+    "cliQuarantinedLegacyActivationDenied": true,
+    "actualWriterRetirementRun": false
+  },
+  "provider": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 94,
+    "cleanupPassed": true,
+    "mocksBlobTransport": true,
+    "realProviderRun": false,
+    "realQuotasMeasured": false
+  },
+  "localRedisIsolation": {
+    "privateUnixSocket": true,
+    "syntheticData": true
+  }
+}
