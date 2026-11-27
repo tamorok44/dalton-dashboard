@@ -44,7 +44,8 @@ const mageCharacter=roster.find(c=>c.classId===8),mageFrost=displayMaster.classe
 mageCharacter.talentDetailsVerified=true;mageCharacter.talentsVerified=true;mageCharacter.talents='Frost: 3';mageCharacter.talentDetails=[{name:'Frost',spentPoints:3,talents:[{id:mageNode.profileId,rank:3,spellId:mageNode.rankSpellIds[0]}]}];
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
-let offlineFixture=false;
+let offlineFixture=false,refreshRequests=0;
+const syntheticRefreshCode='synthetic-browser-refresh-code-0123456789';
 const server=createServer(async(req,res)=>{
  if(offlineFixture){req.socket.destroy();return;}
  try{
@@ -60,7 +61,12 @@ const server=createServer(async(req,res)=>{
  }
  if(url.pathname==='/api/characters'&&url.searchParams.get('view')==='talents'){displayRequests++;return send(200,displayCatalog)}
  if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'}});
- if(url.pathname==='/api/refresh')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},success:roster.length});
+ if(url.pathname==='/api/refresh'){
+   refreshRequests++;
+   if(req.method!=='POST')return send(405,{error:'Method not allowed'});
+   if(req.headers.authorization!=='Bearer '+syntheticRefreshCode)return send(401,{error:'Nicht autorisiert'});
+   return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},success:roster.length});
+ }
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
  if(url.pathname.startsWith('/api/')){unexpected.push(url.pathname);return send(404,{ok:false})}
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);
@@ -101,11 +107,46 @@ try{
    assert.equal(await character.locator('option').count(),10);
    const talentNav=page.locator('[data-view-link="talentPlanner"]');
    assert.equal(await talentNav.isVisible(),true,'released tab visible without feature flag');
+   const beforeRefresh=refreshRequests;
+   const refreshDialog=page.locator('#refreshAuthorizationDialog');
+   const refreshInput=page.locator('#refreshAuthorizationCode');
+   await page.locator('#refreshButton').click();
+   await refreshDialog.waitFor({state:'visible'});
+   await refreshInput.fill('cancelled-synthetic-code');
+   await refreshDialog.locator('button[value="cancel"]').click();
+   await refreshDialog.waitFor({state:'hidden'});
+   assert.equal(refreshRequests,beforeRefresh,'Cancelling must not contact the refresh endpoint');
+   const deniedResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===401);
+   await page.locator('#refreshButton').click();
+   await refreshDialog.waitFor({state:'visible'});
+   assert.equal(await refreshInput.inputValue(),'','Cancelled code must not survive the dialog');
+   await refreshInput.fill('invalid-synthetic-code');
+   await refreshDialog.locator('button[value="confirm"]').click();
+   await deniedResponse;
+   await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
+   assert.equal(refreshRequests,beforeRefresh+1,'Exactly one rejected refresh attempt');
    const refreshResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===200);
    await page.locator('#refreshButton').click();
-   await refreshResponse;
+   await page.locator('#refreshAuthorizationDialog').waitFor({state:'visible'});
+   assert.equal(await refreshInput.inputValue(),'','Rejected code must not survive the dialog');
+   await refreshInput.fill(syntheticRefreshCode);
+   await page.locator('#refreshAuthorizationDialog button[value="confirm"]').click();
+   const authorizedRefresh=await refreshResponse;
+   assert.equal(authorizedRefresh.request().method(),'POST');
+   assert.equal((await authorizedRefresh.request().allHeaders()).authorization,'Bearer '+syntheticRefreshCode);
+   assert.ok(!authorizedRefresh.url().includes(syntheticRefreshCode),'Credential must not be in URL');
    await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
    assert.equal(await talentNav.isVisible(),true,'refresh payload must never hide released tab');
+   assert.equal(await refreshInput.inputValue(),'','Code must be cleared from the input');
+   const stored=await page.evaluate(()=>JSON.stringify([Object.entries(localStorage),Object.entries(sessionStorage)]));
+   assert.ok(!stored.includes(syntheticRefreshCode),'Refresh credential must not persist in browser storage');
+   const repeatResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===200);
+   await page.locator('#refreshButton').click();
+   const repeat=await repeatResponse;
+   assert.equal((await repeat.request().allHeaders()).authorization,'Bearer '+syntheticRefreshCode);
+   await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
+   assert.equal(await refreshDialog.isVisible(),false,'Valid code may be reused in the current tab');
+   assert.equal(refreshRequests,beforeRefresh+3,'Only rejected and two authorized attempts reach the fixture');
    await page.locator('[data-view-link="characters"]').click();
    await talentNav.click();
    await character.waitFor({state:'visible'});
@@ -294,12 +335,16 @@ try{
      await navigator.serviceWorker.register('/sw.js');
    });
    await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,{},{timeout:20000});
-   const installed=await page.evaluate(async()=>{
-     const keys=await caches.keys(),cache=await caches.open(keys.find(k=>k.startsWith('daltons-talent-planner-'))??'missing');
+   const expectedCache=/^const CACHE="([^"]+)";/m.exec(shell)?.[1];
+   assert.ok(expectedCache,'Service worker cache version must be declared');
+   const installed=await page.evaluate(async(expected)=>{
+     const keys=await caches.keys();
+     if(!keys.includes(expected))return {keys,paths:[],apiCached:false};
+     const cache=await caches.open(expected);
      const paths=(await cache.keys()).map(r=>new URL(r.url).pathname+new URL(r.url).search);
      return {keys,paths,apiCached:paths.some(p=>p.startsWith('/api/')||p.startsWith('/data/'))};
-   });
-   assert.equal(installed.keys.filter(k=>k.startsWith('daltons-talent-planner-')).length,1);
+   },expectedCache);
+   assert.deepEqual(installed.keys,[expectedCache],'Only the current declared app-shell cache may remain');
    assert.ok(installed.paths.includes('/talent-planner.js')&&installed.paths.includes('/talent-personal-state.js')&&installed.paths.includes('/talent-text-quality.js'));
    assert.ok(installed.paths.includes('/')&&installed.paths.some(p=>p.startsWith('/app.js?v=')));
    assert.equal(installed.apiCached,false);
@@ -312,10 +357,13 @@ try{
      }));
      let liveUnavailable=false;
      try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8',{cache:'no-store'});liveUnavailable=!r.ok}catch{liveUnavailable=true}
-     return {results,liveUnavailable};
+     let refreshUnavailable=false;
+     try{const r=await fetch('/api/refresh',{method:'POST',headers:{Authorization:'Bearer offline-synthetic-code'},cache:'no-store'});refreshUnavailable=!r.ok}catch{refreshUnavailable=true}
+     return {results,liveUnavailable,refreshUnavailable};
    });
    assert.deepEqual(staticResult.results,[true,true,true,true],'app shell must remain available offline');
    assert.equal(staticResult.liveUnavailable,true,'live plans must not be served by service worker offline');
+   assert.equal(staticResult.refreshUnavailable,true,'Authorized POST must never be answered by offline cache');
    assert.equal(providerReads,before,'PWA install/offline cache must not trigger provider observation');
    report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true,networkFailure:'fixture_socket_abort'};
  }catch(error){report.pwa={status:'failed',error:String(error.stack||error)};console.error(report.pwa.error);throw error}
