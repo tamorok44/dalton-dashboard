@@ -1,6 +1,6 @@
 import {canonicalRoster,rosterMatches,rosterKey} from '../scripts/daily-roster.mjs';
 import {fetchForeverSnapshot,blizzardApiConfigured} from '../scripts/blizzard-api.mjs';
-import {saveDailySnapshot,recoverDailySnapshot,dailySnapshotStoreConfigured,withinArchiveDeadline} from '../scripts/daily-snapshot-store.mjs';
+import {saveDailySnapshot,recoverDailySnapshot,dailySnapshotStoreConfigured,withinArchiveDeadline,archivePath,verifyBlob} from '../scripts/daily-snapshot-store.mjs';
 import {configured,loadCharacters,acquireRefreshLock,releaseRefreshLock,loadDailyProfileReceipt} from '../scripts/character-store.mjs';
 import {getDailySnapshot,registerDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from '../scripts/history-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
@@ -34,6 +34,7 @@ export function profileRefreshComplete(receipt,date,expectedRoster=null){
     Array.isArray(receipt.roster)&&receipt.roster.length===receipt.total&&rosterMatches(receipt.roster,expectedRoster??receipt.roster);
 }
 function privateArchiveComplete(meta,expectedRoster=null){
+  try{verifyBlob(meta,archivePath(meta.date,meta.roster));}catch{return false;}
   return meta?.archiveStatus==='private'&&['complete','partial'].includes(meta.quality?.status)&&meta.quality?.identity==='roster_id_and_slug'&&
     typeof meta.url==='string'&&/^https:\/\/[^/]+\.private\.blob\.vercel-storage\.com\//.test(meta.url)&&
     typeof meta.sha256==='string'&&/^[a-f0-9]{64}$/.test(meta.sha256)&&Array.isArray(meta.roster)&&

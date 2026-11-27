@@ -1,4 +1,4 @@
-import {reconcileKnowledgeRecords} from './storage-reconciliation.mjs';
+import {inspectKnowledgePair,knowledgeQuarantine,knowledgeRawDigest} from './storage-reconciliation.mjs';
 import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
 import {redis,configured,addonSyncLockKey,REDIS_TYPE_GUARD} from './character-store.mjs';
@@ -207,19 +207,27 @@ function mergeServiceKnowledge(existing=[],snapshot={}){
   }
   return [...map.values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'de'));
 }
-async function saveRecord(key,value,{changed,lockToken,expectedModern,expectedLegacy}){
+async function saveRecord(key,value,{changed,lockToken,expectedModern,expectedLegacy,quarantine=null}){
   if(!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
   // Record, implicit index and version are fields of one hash. The one
   // HSET is the sole mutation; legacy records are read-only fallbacks.
-  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local modern=redis.call('HGET',KEYS[1],ARGV[1]); local legacy=redis.call('GET',KEYS[2]); if (modern or '')~=ARGV[5] or (legacy or '')~=ARGV[6] then return redis.error_reply('OBSERVATION_CONFLICT') end; if ARGV[3]=='1' then redis.call('HSET',KEYS[1],ARGV[1],ARGV[2],ARGV[8],ARGV[4]) else redis.call('HSET',KEYS[1],ARGV[1],ARGV[2]) end; return 'OK'";
-  const result=await redis(['EVAL',lua,3,recordsKey(),key,addonSyncLockKey(),key,JSON.stringify(value),changed?'1':'0',new Date().toISOString(),expectedModern||'',expectedLegacy||'',lockToken,VERSION_FIELD]);
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local modern=redis.call('HGET',KEYS[1],ARGV[1]); local legacy=redis.call('GET',KEYS[2]); if (modern or '')~=ARGV[5] or (legacy or '')~=ARGV[6] then return redis.error_reply('OBSERVATION_CONFLICT') end; local fields={}; if ARGV[2]~='' then table.insert(fields,ARGV[1]); table.insert(fields,ARGV[2]); end; if ARGV[9]~='' and redis.call('HEXISTS',KEYS[1],ARGV[9])==0 then table.insert(fields,ARGV[9]); table.insert(fields,ARGV[10]); end; if ARGV[3]=='1' or (#fields>0 and ARGV[9]~='') then table.insert(fields,ARGV[8]); table.insert(fields,ARGV[4]); end; if #fields>0 then redis.call('HSET',KEYS[1],unpack(fields)) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,recordsKey(),key,addonSyncLockKey(),key,value?JSON.stringify(value):'',changed?'1':'0',new Date().toISOString(),expectedModern||'',expectedLegacy||'',lockToken,VERSION_FIELD,quarantine?.field||'',quarantine?JSON.stringify(quarantine.evidence):'']);
   if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
 }
 async function ingestSnapshot(snapshot,{lockToken=null}={}){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
   const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
   const [expectedModern,expectedLegacy]=await Promise.all([redis(['HGET',recordsKey(),key]),redis(['GET',key])]);
-  const existing=reconcileKnowledgeRecords(expectedModern?JSON.parse(expectedModern):null,expectedLegacy?JSON.parse(expectedLegacy):null);
+  const inspected=inspectKnowledgePair(expectedModern,expectedLegacy);
+  const quarantine=inspected.reason?knowledgeQuarantine(key,expectedModern,expectedLegacy,inspected.reason,snapshot):null;
+  if(quarantine&&Date.parse(snapshot.capturedAt)<=inspected.latestTime){
+    // No ordering proof. Persist the incoming evidence, do not choose a
+    // price and do not leave the character's core outbox blocked.
+    await saveRecord(key,null,{changed:false,lockToken,expectedModern,expectedLegacy,quarantine});
+    return {stored:false,duplicate:false,quarantined:true,key};
+  }
+  const existing=inspected.record;
   const id=observationId(snapshot);
   const ids=Array.isArray(existing?.observationIds)?existing.observationIds:[];
   if(ids.includes(id))return {stored:false,duplicate:true,key};
@@ -256,13 +264,14 @@ async function ingestSnapshot(snapshot,{lockToken=null}={}){
     observationCount:(Number(existing?.observationCount)||0)+1,
     contentChangeCount:(Number(existing?.contentChangeCount)||0)+(changed?1:0),
     latestSnapshot:snapshot,
+    ...(quarantine?{migrationRepair:{resolvedAt:snapshot.capturedAt,legacyDigest:knowledgeRawDigest(expectedLegacy),quarantineDigest:quarantine.digest}}:existing?.migrationRepair?{migrationRepair:existing.migrationRepair}:{}),
     observationIds,
     changes:changes.slice(-CHANGE_LIMIT),
     offers:snapshot.kind==='merchant'?mergeOfferKnowledge(existing?.offers,snapshot):undefined,
     services:snapshot.kind==='trainer'?mergeServiceKnowledge(existing?.services,snapshot):undefined
   };
-  await saveRecord(key,record,{changed,lockToken,expectedModern,expectedLegacy});
-  return {stored:true,duplicate:false,changed,key,record};
+  await saveRecord(key,record,{changed,lockToken,expectedModern,expectedLegacy,quarantine});
+  return {stored:true,duplicate:false,changed,key,record,...(quarantine?{repaired:true}:{})};
 }
 
 export function snapshotsFromAddonPayload(payload={}, {characterSlug=null}={}){
@@ -282,14 +291,16 @@ export function snapshotsFromAddonPayload(payload={}, {characterSlug=null}={}){
 
 export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null,lockToken=null}={}){
   if(!configured())return {stored:0,duplicates:0,changed:0};
-  let stored=0,duplicates=0,changed=0;
+  let stored=0,duplicates=0,changed=0,quarantined=0,repaired=0;
   for(const snapshot of snapshotsFromAddonPayload(payload,{characterSlug})){
     const result=await ingestSnapshot(snapshot,{lockToken});
     if(result.stored)stored++;
     if(result.duplicate)duplicates++;
     if(result.changed)changed++;
+    if(result.quarantined)quarantined++;
+    if(result.repaired)repaired++;
   }
-  return {stored,duplicates,changed};
+  return {stored,duplicates,changed,...(quarantined?{quarantined}:{}),...(repaired?{repaired}:{})};
 }
 
 export async function loadLiveKnowledge({build=null,kind=null,historicalMerchantsOnly=false,redisImpl=redis,enabled=configured()}={}){
@@ -302,16 +313,17 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
     if(historicalMerchantsOnly)return parts[0]==='merchant'&&parts[1]!==encodeURIComponent(build);
     return (!kind||parts[0]===kind)&&(!build||parts[1]===encodeURIComponent(build));
   });
-  const result=[];
+  const result=[],issues=[];
   // Read only the requested build, in bounded batches. Preserve all evidence.
   for(let i=0;i<keys.length;i+=8){
     const batch=keys.slice(i,i+8),modern=batch.filter(key=>current.has(key)),legacy=batch.filter(key=>legacyKeys.has(key));
     const [modernValues,legacyValues]=await Promise.all([modern.length?redisImpl(['HMGET',recordsKey(),...modern]):[],legacy.length?redisImpl(['MGET',...legacy]):[]]);
-    const decode=value=>value?JSON.parse(value):null;
-    const modernByKey=new Map(modern.map((key,i)=>[key,decode(modernValues?.[i])]));
-    const legacyByKey=new Map(legacy.map((key,i)=>[key,decode(legacyValues?.[i])]));
+    const modernByKey=new Map(modern.map((key,i)=>[key,modernValues?.[i]??null]));
+    const legacyByKey=new Map(legacy.map((key,i)=>[key,legacyValues?.[i]??null]));
     for(const key of batch){
-      const record=reconcileKnowledgeRecords(modernByKey.get(key),legacyByKey.get(key));
+      const inspected=inspectKnowledgePair(modernByKey.get(key),legacyByKey.get(key));
+      if(inspected.reason){issues.push({key,reason:inspected.reason});continue;}
+      const record=inspected.record;
       if(!record)continue;
       if(historicalMerchantsOnly){if(record.kind!=='merchant'||record.build===build||record.latestSnapshot?.complete!==true)continue;}
       else if(build&&record.build!==build)continue;
@@ -319,6 +331,7 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
       result.push(record);
     }
   }
+  Object.defineProperty(result,'integrityIssues',{value:issues,enumerable:false});
   return result.sort((a,b)=>String(b.lastObservedAt||'').localeCompare(String(a.lastObservedAt||'')));
 }
 
@@ -328,6 +341,7 @@ export function publicLiveKnowledgeSummary(records=[]){
   const trainers=list.filter(record=>record.kind==='trainer');
   return {
     recordCount:list.length,
+    excludedIntegrityRecords:records?.integrityIssues?.length||0,
     merchantCount:merchants.length,
     trainerCount:trainers.length,
     observationCount:list.reduce((sum,record)=>sum+(Number(record.observationCount)||0),0),

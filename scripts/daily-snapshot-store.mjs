@@ -6,7 +6,7 @@ import {canonicalRoster,rosterKey} from './daily-roster.mjs';
 import {FOREVER_CHARACTER_ENDPOINTS,foreverProfileSlug} from './blizzard-api.mjs';
 
 const MAX_COMPRESSED=16*1024*1024,MAX_RAW=64*1024*1024;
-function archivePath(date,roster){
+export function archivePath(date,roster){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error('Ungültiges Snapshot-Datum');
   const [year,month,day]=date.split('-');
   return 'history/private/v3/daily/'+year+'/'+month+'/'+day+'/'+rosterKey(roster)+'/daltons-full.json.gz';
@@ -18,9 +18,9 @@ function options(signal){
   if(!dailySnapshotStoreConfigured())throw new Error('Privater Blob-Speicher nicht konfiguriert');
   return {access:'private',token:process.env.DALTON_PRIVATE_ARCHIVE_TOKEN,abortSignal:signal};
 }
-function verifyBlob(blob,path){
+export function verifyBlob(blob,path){
   const url=new URL(blob?.url);
-  if(url.protocol!=='https:'||!url.hostname.endsWith('.private.blob.vercel-storage.com')||url.pathname!=='/'+path||blob.pathname!==path)
+  if(url.protocol!=='https:'||url.username||url.password||url.port||url.search||url.hash||!url.hostname.endsWith('.private.blob.vercel-storage.com')||url.pathname!=='/'+path||blob.pathname!==path)
     throw new Error('Archivspeicher hat keine bestätigte private URL');
 }
 export function classifySnapshot(snapshot,{expectedSlugs=null,expectedRoster=null,date=null}={}){
@@ -63,12 +63,14 @@ function assertBudget(signal,deadlineAt){
 }
 export async function withinArchiveDeadline(work,signal,deadlineAt=Infinity){
   assertBudget(signal,deadlineAt);
-  let onAbort;
-  const aborted=new Promise((_,reject)=>{onAbort=()=>reject(signal.reason??new Error('Archivfrist abgelaufen'));signal.addEventListener('abort',onAbort,{once:true});});
+  let onAbort,timer;
+  const aborted=new Promise((_,reject)=>{onAbort=()=>reject(signal.reason??new Error('Archivfrist abgelaufen'));signal.addEventListener('abort',onAbort,{once:true});
+    if(Number.isFinite(deadlineAt))timer=setTimeout(()=>reject(new Error('Archivfrist abgelaufen')),Math.max(0,deadlineAt-performance.now()));
+  });
   try{
     const result=await Promise.race([Promise.resolve().then(()=>{assertBudget(signal,deadlineAt);return work();}),aborted]);
     assertBudget(signal,deadlineAt);return result;
-  }finally{signal.removeEventListener('abort',onAbort);}
+  }finally{clearTimeout(timer);signal.removeEventListener('abort',onAbort);}
 }
 export async function saveDailySnapshot(snapshot,date,{putImpl,signal=AbortSignal.timeout(10000),deadlineAt=performance.now()+10000,expectedSlugs=null,expectedRoster=null}={}){
   const opts=options(signal);

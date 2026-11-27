@@ -1,4 +1,6 @@
 // Pure helpers: reconcile v1 and v2 evidence without mutating either store.
+import {createHash} from 'node:crypto';
+import {canonicalRoster} from './daily-roster.mjs';
 function at(value){const n=Date.parse(value||'');return Number.isFinite(n)?n:-Infinity;}
 export function selectVersionEvidence(modern,legacy,timeField){
   if(modern==null)return {value:legacy??null,conflict:false};
@@ -15,9 +17,10 @@ export function selectVersionEvidence(modern,legacy,timeField){
 export function selectDailyReceipt(modern,legacy,date){
   const valid=x=>x?.date===date&&x.source==='daily'&&x.persisted===true&&
     Array.isArray(x.roster)&&x.roster.length===x.total&&Number.isInteger(x.success)&&x.success>0&&
-    x.success<=x.total&&Number.isFinite(Date.parse(x.generatedAt));
+    x.success<=x.total&&Number.isFinite(Date.parse(x.generatedAt))&&validRoster(x.roster);
+  function validRoster(roster){try{canonicalRoster(roster);return true;}catch{return false;}}
   const rows=[modern,legacy].filter(valid).sort((a,b)=>at(b.generatedAt)-at(a.generatedAt));
-  if(rows.length===2&&at(rows[0].generatedAt)===at(rows[1].generatedAt)&&JSON.stringify(rows[0])!==JSON.stringify(rows[1]))return null;
+  if(rows.length===2&&at(rows[0].generatedAt)===at(rows[1].generatedAt)&&!same({...rows[0],roster:canonicalRoster(rows[0].roster)},{...rows[1],roster:canonicalRoster(rows[1].roster)}))return null;
   return rows[0]??null;
 }
 export function selectDailyPointer(modern,legacy){
@@ -74,4 +77,40 @@ function mergeEvidence(latest,older){
     contentChangeCount:Math.max(changes.length,Number(latest.contentChangeCount)||0,Number(older.contentChangeCount)||0),
     ...(latest.kind==='merchant'?{offers:mergeRows(older.offers,latest.offers,true)}:{services:mergeRows(older.services,latest.services)}),
     migrationEvidence:{reconciled:true,countMayBeLowerBound:true}};
+}
+
+export const knowledgeRawDigest=raw=>raw==null?null:createHash('sha256').update(String(raw)).digest('hex');
+function decodeRecord(raw){
+  if(raw==null)return {record:null,invalid:false};
+  try{
+    const record=typeof raw==='string'?JSON.parse(raw):raw;
+    if(!record||!['merchant','trainer'].includes(record.kind)||typeof record.build!=='string'||!record.npc||
+      !Number.isFinite(timeOf(record))||!Array.isArray(record.latestSnapshot?.entries)||
+      (record.observationIds!=null&&!Array.isArray(record.observationIds))||
+      (record.changes!=null&&!Array.isArray(record.changes))||
+      (record.offers!=null&&!Array.isArray(record.offers))||
+      (record.services!=null&&!Array.isArray(record.services)))throw Error('invalid');
+    return {record,invalid:false};
+  }catch{return {record:null,invalid:true};}
+}
+// One record's ambiguous data is never substituted for another's. Keep both
+// raw inputs separately; a later independently captured observation may
+// become current without inventing an order for the historical conflict.
+export function inspectKnowledgePair(modernRaw,legacyRaw){
+  const m=decodeRecord(modernRaw),l=decodeRecord(legacyRaw);
+  const marker=m.record?.migrationRepair;
+  if(marker&&legacyRaw!=null&&marker.legacyDigest===knowledgeRawDigest(legacyRaw)&&
+      Number.isFinite(at(marker.resolvedAt))&&timeOf(m.record)>=at(marker.resolvedAt))
+    return {record:m.record,reason:null,modern:m.record,legacy:l.record};
+  let reason=m.invalid||l.invalid?'invalid_record':null;
+  if(!reason){
+    try{return {record:reconcileKnowledgeRecords(m.record,l.record),reason:null,modern:m.record,legacy:l.record};}
+    catch{reason='conflicting_record';}
+  }
+  return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(timeOf(m.record),timeOf(l.record))};
+}
+export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null){
+  const evidence={schema:1,key,reason,modernRaw:modernRaw??null,legacyRaw:legacyRaw??null,incoming};
+  const digest=createHash('sha256').update(JSON.stringify(canonical(evidence))).digest('hex');
+  return {field:'__quarantine:v1:'+digest,evidence,digest};
 }
