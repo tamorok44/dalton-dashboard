@@ -68,6 +68,7 @@ const server=createServer(async(req,res)=>{
    return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},success:roster.length});
  }
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
+ if(url.pathname==='/qa-sw-shell'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<!doctype html><title>Isolated service worker test</title>')}
  if(url.pathname.startsWith('/api/')){unexpected.push(url.pathname);return send(404,{ok:false})}
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);
  const file=resolve(root,'.'+pathname);
@@ -330,9 +331,10 @@ try{
    await page.route(url=>url.origin!==origin,r=>r.abort());
    const before=providerReads;
    // A static same-origin document without the app's auto-registration.
-   await page.goto(origin+'/icon.svg');
+   await page.goto(origin+'/qa-sw-shell');
    await page.evaluate(async()=>{
-     await caches.open('unrelated-qa-cache');
+     const foreign=await caches.open('unrelated-qa-cache');
+     await foreign.put('/qa-foreign-only',new Response('foreign cache sentinel'));
      await caches.open('daltons-talent-planner-obsolete-qa');
      await caches.open('daltons-refresh-security-obsolete-qa');
      if(!('serviceWorker' in navigator))throw Error('service worker unavailable');
@@ -363,11 +365,14 @@ try{
      try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8',{cache:'no-store'});liveUnavailable=!r.ok}catch{liveUnavailable=true}
      let refreshUnavailable=false;
      try{const r=await fetch('/api/refresh',{method:'POST',headers:{Authorization:'Bearer offline-synthetic-code'},cache:'no-store'});refreshUnavailable=!r.ok}catch{refreshUnavailable=true}
-     return {results,liveUnavailable,refreshUnavailable};
+     let foreignUnavailable=false;
+     try{const r=await fetch('/qa-foreign-only');foreignUnavailable=!r.ok}catch{foreignUnavailable=true}
+     return {results,liveUnavailable,refreshUnavailable,foreignUnavailable};
    });
    assert.deepEqual(staticResult.results,[true,true,true,true],'app shell must remain available offline');
    assert.equal(staticResult.liveUnavailable,true,'live plans must not be served by service worker offline');
    assert.equal(staticResult.refreshUnavailable,true,'Authorized POST must never be answered by offline cache');
+   assert.equal(staticResult.foreignUnavailable,true,'Worker must never serve assets from unrelated caches');
    assert.equal(providerReads,before,'PWA install/offline cache must not trigger provider observation');
    report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true,networkFailure:'fixture_socket_abort'};
  }catch(error){report.pwa={status:'failed',error:String(error.stack||error)};console.error(report.pwa.error);throw error}
