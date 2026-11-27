@@ -126,14 +126,17 @@ export default async function handler(req,res){
     return res.status(405).json({error:'Methode nicht erlaubt'});
   }
   try{
-    const stored=await loadCharacters();
     const url=queryUrl(req);
     const character=(url.searchParams.get('character')||'').trim()||null;
     const location=(url.searchParams.get('location')||'').trim()||null;
+    if(character&&!/^[a-z0-9-]{1,80}$/.test(character)||location&&location.length>120)return res.status(400).json({error:'Ungültige Ortsplaner-Anfrage'});
+    const stored=await loadCharacters();
     // The initial character picker does not need any game-master data.
     if(!character){
       return res.status(200).json(buildLocationPlanner(stored.data,{recipes:[],professions:[]}));
     }
+    const selectedCharacter=(stored.data?.characters||[]).find(entry=>entry?.slug===character);
+    if(!selectedCharacter)return res.status(404).json({error:'Charakter nicht gefunden'});
     const remoteReady=foreverDbConfigured();
     const characterSlugs=(stored.data?.characters||[]).map(character=>character.slug).filter(Boolean);
     const [recipeIndex,addonStates]=await Promise.all([
@@ -160,9 +163,6 @@ export default async function handler(req,res){
       learningSourceEvidenceForIndex(recipeIndex,addonStates,combineLiveKnowledge(liveKnowledge,historicalMerchants)),
       {characterSlug:character}
     );
-    const selectedCharacter=character
-      ?(stored.data?.characters||[]).find(entry=>entry?.slug===character)
-      :null;
     const selectedProfessionSlugs=selectedCharacter
       ?workshopProfessionSlugs({characters:[selectedCharacter]})
       :[];
