@@ -253,7 +253,7 @@ async function ingestSnapshot(snapshot,{lockToken=null}={}){
   const [expectedModern,[legacy]]=await Promise.all([redis(['HGET',recordsKey(),key]),readLegacy([key])]);
   const expectedLegacy=legacy.raw;
   const inspected=await inspectStoredPair(key,expectedModern,legacy);
-  const quarantine=inspected.reason?knowledgeQuarantine(key,expectedModern,expectedLegacy,inspected.reason,snapshot):null;
+  const quarantine=inspected.reason?knowledgeQuarantine(key,expectedModern,expectedLegacy,inspected.reason,snapshot,legacy.type):null;
   if(quarantine&&(inspected.unknownTime||!Number.isFinite(inspected.latestTime)||Date.parse(snapshot.capturedAt)<=inspected.latestTime)){
     // No ordering proof. Persist the incoming evidence, do not choose a
     // price and do not leave the character's core outbox blocked.
@@ -361,7 +361,7 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
         // Evidence-only append. Never alter the active record in a reader.
         // Preserve the exact bytes observed, even if a legacy writer has
         // since replaced them. HSETNX is idempotent and a single mutation.
-        const q=knowledgeQuarantine(key,modernRaw,legacyRaw,inspected.reason);
+        const q=knowledgeQuarantine(key,modernRaw,legacyRaw,inspected.reason,null,legacyValue.type);
         let preserved=false;
         try{
           const expected=JSON.stringify(q.evidence);

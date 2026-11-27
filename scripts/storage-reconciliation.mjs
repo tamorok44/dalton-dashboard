@@ -124,8 +124,9 @@ export function inspectKnowledgePair(modernRaw,legacyRaw,key=null){
   }
   return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(m.floor,l.floor),unknownTime:(m.invalid&&!Number.isFinite(m.floor))||(l.invalid&&!Number.isFinite(l.floor))};
 }
-export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null){
-  const evidence={schema:1,key,reason,modernRaw:modernRaw??null,legacyRaw:legacyRaw??null,incoming};
+export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null,legacyType=null){
+  const evidence={schema:1,key,reason,modernRaw:modernRaw??null,legacyRaw:legacyRaw??null,incoming,
+    ...(legacyType&&!['none','string'].includes(legacyType)?{legacyType,legacyRawUnavailable:true}:{})};
   const digest=createHash('sha256').update(JSON.stringify(canonical(evidence))).digest('hex');
   return {field:'__quarantine:v1:'+digest,evidence,digest};
 }

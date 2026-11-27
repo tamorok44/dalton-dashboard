@@ -90,6 +90,7 @@ assert.ok(evidence.observations.some(entry=>entry.source==='dalton-addon'&&entry
 
 console.log('Live-Wissen: Normalisierung, persistierbare Snapshots und unbekannte Lerngegenstände: OK');
 
+const typed=values=>values.map(raw=>raw==null?['none',null]:['string',raw]);
 const calls=[];const scope=process.env.VERCEL_ENV==='production'?'production':'preview';
 const pref='dalton-dashboard:live-knowledge:v1:'+scope+':record:';
 const current=[pref+'merchant:1.60.1.71037:id-257006',pref+'trainer:1.60.1.71037:id-257006'];
@@ -98,11 +99,11 @@ const found=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enable
   calls.push(command);
   if(command[0]==='SMEMBERS')return [...current,old];
   if(command[0]==='HKEYS')return [];
-  if(command[0]==='MGET')return command.slice(1).map(()=>JSON.stringify(records[0]));
+  if(command[0]==='EVAL')return typed(command.slice(3).map(()=>JSON.stringify(records[0])));
   throw Error(command[0]);
 }});
 assert.equal(found.length,1);
-assert.deepEqual(calls.find(c=>c[0]==='MGET'),['MGET',current[0]],'Read only matching build and kind, no obsolete snapshot payloads');
+assert.deepEqual(calls.find(c=>c[0]==='EVAL').slice(2),[1,current[0]],'Read only matching build and kind, no obsolete snapshot payloads');
 
 const personal=snapshotsFromAddonPayload(payload,{characterSlug:'cole-dalton'});
 assert.equal(personal.find(s=>s.kind==='merchant').characterSlug,'cole-dalton');
@@ -118,25 +119,25 @@ const fake=async ([op,key,...args])=>{
  if(op==='SMEMBERS')return [...current,old];
  if(op==='HKEYS')return [];
  if(op==='HGET')return null;
- if(op==='MGET')return [key,...args].map(()=>JSON.stringify(oldRecord));
+ if(op==='EVAL')return typed(args.slice(1).map(()=>JSON.stringify(oldRecord)));
  throw Error(op);
 };
 const history=await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true});
 assert.equal(history.length,1);assert.equal(history[0].build,'1.60.1.70999');assert.equal(history[0].changes,undefined);
 assert.deepEqual(await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true}),history);
-assert.equal(historicalCalls.filter(c=>c[0]==='MGET').length,2,'Historical migration reads must detect unmarked legacy writes');
+assert.equal(historicalCalls.filter(c=>c[0]==='EVAL').length,2,'Historical migration reads must detect unmarked legacy writes');
 
 const migratedCalls=[];const modernRecord=records[0];
 const modern=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
- migratedCalls.push(command);if(command[0]==='SMEMBERS')return [current[1],old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];if(command[0]==='MGET')return [null];throw Error(command[0]);
-}});assert.equal(modern.length,1);assert.equal(modern[0].npc.id,257006);assert.equal(migratedCalls.filter(c=>c[0]==='MGET').length,1);
+ migratedCalls.push(command);if(command[0]==='SMEMBERS')return [current[1],old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];if(command[0]==='EVAL')return typed([null]);throw Error(command[0]);
+}});assert.equal(modern.length,1);assert.equal(modern[0].npc.id,257006);assert.equal(migratedCalls.filter(c=>c[0]==='EVAL').length,1);
 
 const {reconcileKnowledgeRecords}=await import('./storage-reconciliation.mjs');
 const v2={...records[1],observationIds:['v2'],observationCount:1,latestSnapshot:{...trainer,capturedAt:'2026-11-26T05:00:00Z',entries:[{name:'Spinnenwurst',priceCopper:20}]},services:[{key:'spinnenwurst',priceCopper:20,lastSeenAt:'2026-11-26T05:00:00Z'}]};
 const v1={...v2,observationIds:['v1'],latestSnapshot:{...v2.latestSnapshot,capturedAt:'2026-11-26T06:00:00Z',entries:[{name:'Spinnenwurst',priceCopper:30}]},services:[{key:'spinnenwurst',priceCopper:30,lastSeenAt:'2026-11-26T06:00:00Z'}]};
 const merged=reconcileKnowledgeRecords(v2,v1);assert.equal(merged.latestSnapshot.entries[0].priceCopper,30);assert.deepEqual(new Set(merged.observationIds),new Set(['v1','v2']));
 assert.throws(()=>reconcileKnowledgeRecords(v2,{...v1,latestSnapshot:{...v1.latestSnapshot,capturedAt:v2.latestSnapshot.capturedAt}}),/MIGRATION_CONFLICT/);
-const both=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{if(op==='SMEMBERS'||op==='HKEYS')return [current[1]];if(op==='HMGET')return [JSON.stringify(v2)];if(op==='MGET')return [JSON.stringify(v1)];throw Error(op);}});assert.equal(both[0].latestSnapshot.entries[0].priceCopper,30);
+const both=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{if(op==='SMEMBERS'||op==='HKEYS')return [current[1]];if(op==='HMGET')return [JSON.stringify(v2)];if(op==='EVAL')return typed([JSON.stringify(v1)]);throw Error(op);}});assert.equal(both[0].latestSnapshot.entries[0].priceCopper,30);
 
 const {publicLiveKnowledgeSummary}=await import('./live-knowledge-store.mjs');
 const sameSecond={...v1,latestSnapshot:{...v1.latestSnapshot,capturedAt:v2.latestSnapshot.capturedAt}};
@@ -147,7 +148,8 @@ for(const oldRaw of [JSON.stringify(sameSecond),'{invalid-json']){
     if(op==='SMEMBERS')return [current[1]];
     if(op==='HKEYS')return [current[1],otherKey];
     if(op==='HMGET')return [JSON.stringify(v2),JSON.stringify(other)];
-    if(op==='MGET')return [oldRaw,null];
+    if(op==='EVAL')return typed([oldRaw,null]);
+    if(op==='HGET')return null;
     if(op==='HSETNX')return 1;
     throw Error(op);
   }});
@@ -170,7 +172,8 @@ const orphan=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled
   if(op==='SMEMBERS')return [];
   if(op==='HKEYS')return [current[1],otherKey];
   if(op==='HMGET')return [JSON.stringify(v2),JSON.stringify(other)];
-  if(op==='MGET')return [JSON.stringify(sameSecond),null];
+  if(op==='EVAL')return typed([JSON.stringify(sameSecond),null]);
+  if(op==='HGET')return qWrites[0]?.[2]??null;
   if(op==='HSETNX'){qWrites.push(args);return 1;}
   throw Error(op);
 }});
@@ -180,8 +183,34 @@ const wrongRows=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enab
   if(op==='SMEMBERS')return [];
   if(op==='HKEYS')return [current[1]];
   if(op==='HMGET')return [JSON.stringify(wrongIdentity)];
-  if(op==='MGET')return [null];
+  if(op==='EVAL')return typed([null]);
+  if(op==='HGET')return null;
   if(op==='HSETNX')throw Error('fixture write denied');
   throw Error(op);
 }});
 assert.equal(wrongRows.length,0);assert.equal(publicLiveKnowledgeSummary(wrongRows).unpreservedIntegrityRecords,1);
+
+for(const stored of [null,'{invalid evidence}']){
+  const rows=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{
+    if(op==='SMEMBERS'||op==='HKEYS')return [current[1]];
+    if(op==='HMGET')return [JSON.stringify(v2)];
+    if(op==='EVAL')return typed([JSON.stringify(sameSecond)]);
+    if(op==='HGET')return stored;
+    if(op==='HSETNX')return 0;
+    throw Error(op);
+  }});
+  assert.equal(rows.length,0);
+  assert.equal(publicLiveKnowledgeSummary(rows).unpreservedIntegrityRecords,1);
+}
+const wrongType=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{
+  if(op==='SMEMBERS')return [];
+  if(op==='HKEYS')return [current[1]];
+  if(op==='HMGET')return [JSON.stringify(v2)];
+  if(op==='EVAL')return [['list',null]];
+  if(op==='HGET')return null;
+  if(op==='HSETNX')return 1;
+  throw Error(op);
+}});
+assert.equal(wrongType.length,0);
+assert.equal(wrongType.integrityIssues[0].reason,'invalid_storage_type');
+assert.equal(publicLiveKnowledgeSummary(wrongType).unpreservedIntegrityRecords,1);
