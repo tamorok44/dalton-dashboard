@@ -217,7 +217,13 @@ if(!hasRedis){
         if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
         const knowledgeCommit=op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:production:records:v2'&&cmd.length>=18;
         if((mode==='fail-proof-read'||mode==='persistent-proof-read')&&op==='HGET'&&cmd[2]===proofTarget){if(mode==='fail-proof-read')mode=null;throw Error('fixture proof read unavailable');}
-        if(mode==='restore-proof-before-commit'&&knowledgeCommit){mode=null;assert.deepEqual(JSON.parse(cmd[17]),[[proofTarget,null]]);cli('HSET',cmd[3],proofTarget,restoreProof);}
+        if(mode==='restore-proof-before-commit'&&knowledgeCommit){
+          mode=null;
+          const checked=JSON.parse(cmd[17]);
+          assert.ok(checked.some(([field,raw])=>field===proofTarget&&raw===null),'missing proof must be fenced even with additional v1 references');
+          assert.equal(new Set(checked.map(([field])=>field)).size,checked.length);
+          cli('HSET',cmd[3],proofTarget,restoreProof);
+        }
         if(mode==='drop-proof-before-commit'&&knowledgeCommit){mode=null;cli('HDEL',cmd[3],proofTarget);}
         if(mode==='collide-before-commit'&&knowledgeCommit&&String(cmd[14]).startsWith('__quarantine:v1:')){
           mode=null;collisionTarget=cmd[14];cli('HSET',cmd[3],collisionTarget,'{"corrupt-fixture":true}');
@@ -495,7 +501,7 @@ if(!hasRedis){
     const recovered=payload('Audit One','restore-negative-proof',[133,143],now+19);
     recovered.sections.interactions={capturedAt:now+19,trainerHistory:[{...trainer(83),capturedAt:now+19}]};
     mode='restore-proof-before-commit';
-    assert.equal((await call(recovered)).value.liveKnowledge.stored,1);
+    const recoveredResponse=await call(recovered);assert.equal(recoveredResponse.http,200,JSON.stringify(recoveredResponse.value));assert.equal(recoveredResponse.value.liveKnowledge.stored,1);
     assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,83);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
     const beforeRace=cli('HGET',knowledgeIndex,knowledgeKey);
