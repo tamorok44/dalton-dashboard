@@ -68,6 +68,20 @@ function npcKey(npc={}){
 function recordKey(kind,build,npc,characterSlug=null){
   return prefix()+'record:'+kind+':'+encodeURIComponent(build)+':'+npcKey(npc)+(kind==='merchant'&&characterSlug?':observer:'+encodeURIComponent(characterSlug):'');
 }
+export function liveKnowledgeEvidenceKeys(observation={}){
+  const kind=observation.sourceType==='vendor'?'merchant':observation.sourceType==='trainer'?'trainer':null;
+  const npc=npcOf({npc:{id:observation.npcId,name:observation.npcName}});
+  if(!kind||!npc||!observation.build)return [];
+  const base=recordKey(kind,observation.build,npc);
+  return kind==='merchant'&&observation.characterSlug?[base,recordKey(kind,observation.build,npc,observation.characterSlug)]:[base];
+}
+function attachIntegrityIssues(records,issues){
+  Object.defineProperty(records,'integrityIssues',{value:issues,enumerable:false});
+  return records;
+}
+export function combineLiveKnowledge(...lists){
+  return attachIntegrityIssues(lists.flat(),[...new Map(lists.flatMap(list=>list?.integrityIssues||[]).map(issue=>[issue.key,issue])).values()]);
+}
 function offerKey(item={}){
   const id=integer(item.itemID??item.id);
   if(id)return 'item:'+id;
@@ -331,8 +345,7 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
       result.push(record);
     }
   }
-  Object.defineProperty(result,'integrityIssues',{value:issues,enumerable:false});
-  return result.sort((a,b)=>String(b.lastObservedAt||'').localeCompare(String(a.lastObservedAt||'')));
+  return attachIntegrityIssues(result.sort((a,b)=>String(b.lastObservedAt||'').localeCompare(String(a.lastObservedAt||''))),issues);
 }
 
 export function publicLiveKnowledgeSummary(records=[]){
@@ -370,11 +383,12 @@ export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,ena
   const key=prefix()+'merchant-conflict-history:v1';
   const cached=await readCompactMaster(key,{redisImpl});
   if(cached?.build===build&&cached.version===version&&Array.isArray(cached.records))return cached.records;
-  const records=(await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled})).map(record=>({
+  const source=await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled});
+  const records=source.map(record=>({
     kind:'merchant',build:record.build,characterSlug:record.characterSlug||null,
     npc:record.npc,location:record.location||null,lastObservedAt:record.lastObservedAt||null,
     latestSnapshot:record.latestSnapshot
   }));
-  if(await loadLiveKnowledgeVersion({redisImpl,enabled})===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
-  return records;
+  if(!source.integrityIssues?.length&&await loadLiveKnowledgeVersion({redisImpl,enabled})===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
+  return attachIntegrityIssues(records,source.integrityIssues||[]);
 }

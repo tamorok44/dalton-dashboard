@@ -1,3 +1,4 @@
+import {liveKnowledgeEvidenceKeys} from './live-knowledge-store.mjs';
 import {hydrateRecipeIndex} from './workshop-foreverdb.mjs';
 import {readFileSync} from 'node:fs';
 
@@ -544,9 +545,15 @@ export function mergeLearningSourceEvidence(...documents){
 }
 
 export function learningSourceEvidenceForIndex(recipeIndex={},addonStates=[],liveKnowledge=[]){
+  const excluded=new Set((liveKnowledge?.integrityIssues||[]).map(issue=>issue.key));
+  const addonEvidence=buildAddonLearningSourceEvidence(recipeIndex,addonStates);
+  // Raw character snapshots are a second input path. Never let them
+  // reintroduce a price from a known unresolved persisted record.
+  if(excluded.size)addonEvidence.observations=addonEvidence.observations.filter(
+    observation=>!liveKnowledgeEvidenceKeys(observation).some(key=>excluded.has(key)));
   return mergeLearningSourceEvidence(
     loadLearningSourceEvidence(),
-    buildAddonLearningSourceEvidence(recipeIndex,addonStates),
+    addonEvidence,
     buildLiveKnowledgeLearningSourceEvidence(recipeIndex,liveKnowledge)
   );
 }

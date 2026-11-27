@@ -153,3 +153,12 @@ for(const oldRaw of [JSON.stringify(sameSecond),'{invalid-json']){
   assert.equal(rows.length,1);assert.equal(rows[0].npc.id,3);
   assert.equal(publicLiveKnowledgeSummary(rows).excludedIntegrityRecords,1);
 }
+
+const {combineLiveKnowledge,liveKnowledgeEvidenceKeys}=await import('./live-knowledge-store.mjs');
+const {learningSourceEvidenceForIndex}=await import('./learning-source-evidence.mjs');
+const trainerConflictKey=liveKnowledgeEvidenceKeys({sourceType:'trainer',build:trainer.build,npcId:trainer.npc.id,npcName:trainer.npc.name})[0];
+const omitted=[];Object.defineProperty(omitted,'integrityIssues',{value:[{key:trainerConflictKey,reason:'conflicting_record'}]});
+const combined=combineLiveKnowledge([],omitted);
+const safeEvidence=learningSourceEvidenceForIndex(recipeIndex,[{characterSlug:'cole-dalton',payload}],combined);
+assert.ok(!safeEvidence.observations.some(o=>o.source==='dalton-addon'&&o.sourceType==='trainer'&&o.npcId===trainer.npc.id&&o.build===trainer.build));
+assert.ok(safeEvidence.observations.some(o=>o.source==='dalton-addon'&&o.sourceType==='vendor'));

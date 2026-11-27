@@ -9,7 +9,7 @@ import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {classicNpcDisplayId} from '../scripts/classic-npc-display-ids.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex,liveKnowledgeDiscoveries} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
-import {loadLiveKnowledge,loadHistoricalMerchantKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
+import {loadLiveKnowledge,loadHistoricalMerchantKnowledge,publicLiveKnowledgeSummary,combineLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
 import {preferredForeverZoneName,foreverZoneIdentity} from '../scripts/player-terminology.mjs';
 import {collectPlannerKnownLocations,sharedPlannerLocations} from '../scripts/location-catalog.mjs';
 
@@ -157,7 +157,7 @@ export default async function handler(req,res){
     ]);
     const evaluatedRecipeIndex=applyLearningSourceEvidence(
       recipeIndex,
-      learningSourceEvidenceForIndex(recipeIndex,addonStates,[...liveKnowledge,...historicalMerchants]),
+      learningSourceEvidenceForIndex(recipeIndex,addonStates,combineLiveKnowledge(liveKnowledge,historicalMerchants)),
       {characterSlug:character}
     );
     const selectedCharacter=character
