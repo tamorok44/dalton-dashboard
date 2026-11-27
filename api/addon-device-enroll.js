@@ -29,7 +29,7 @@ export default async function handler(req,res){
       const master=masterSyncTokenMatches(authToken(req,'Bearer'));
       const device=master?null:await authorizeDeviceToken(authToken(req,'Device'));
       if(!master&&!deviceMayCreateEnrollment(device,characterSlug))return res.status(401).json({error:'Nicht berechtigt'});
-      const created=await createDeviceEnrollment(characterSlug);
+      const created=await createDeviceEnrollment(characterSlug,{issuerToken:master?null:authToken(req,'Device')});
       return res.status(200).json(created);
     }
     if(body?.action==='revoke'){
@@ -47,6 +47,7 @@ export default async function handler(req,res){
     });
   }catch(error){
     const message=String(error.message||error).slice(0,180);
+    if(error.code==='DEVICE_ENROLLMENT_DENIED')return res.status(401).json({error:'Nicht berechtigt'});
     const status=/ungültig|abgelaufen|verwendet|Unbekannter|keinem freigegebenen/.test(message)?400:503;
     return res.status(status).json({error:message});
   }
