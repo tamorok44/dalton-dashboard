@@ -1130,3 +1130,15 @@ assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMap
 assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[102]}).verified,true);
 assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[101]}).verified,false);
 console.log('Sparse verified Armory snapshot, exact ID/rank/spell, scoped ambiguous mapping: OK');
+
+
+// F16: raw character values are not a strength ranking across classes or
+// levels, and stale values must never determine a highlighted maximum.
+{
+  const c=(classId,level,value,stale=false)=>({slug:'qa-'+classId+'-'+value,classId,level,scrapeOk:!stale,statsDetails:[{enum:'HEALTH',name:'Gesundheit'}],statsByEnum:{HEALTH:value},statsFreshEnums:['HEALTH']});
+  const health=chars=>ui.cmpSectionRows('stats',chars).find(row=>row.includes('Gesundheit'));
+  assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(3,20,200)])));
+  assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(8,21,200)])));
+  assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(8,20,200,true)])));
+  assert.ok(/compare-best/.test(health([c(8,20,100),c(8,20,200)])));
+}
