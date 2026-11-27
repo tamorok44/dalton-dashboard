@@ -8,12 +8,12 @@ import {inspectKnowledgePair,knowledgeQuarantine,selectDailyReceipt} from './sto
 // token or sends a command. A complete, quiescent export is a precondition.
 // The resulting projection is for testing old-format READERS in a clone;
 // it does not authorize restoring the previously vulnerable old writers.
-export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dailyRows,petMetadata,modernReceipt=null,legacyReceipt=null,date,scope='production',inventory,quarantineRecords=[]}){
+export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dailyRows,petMetadata,modernReceipt,legacyReceipt,date,scope,inventory,quarantineRecords}){
   if(!['production','preview'].includes(scope))throw new Error('Ungültiger Speicherbereich');
   if(!Array.isArray(addonStates)||!Array.isArray(knowledgePairs)||!Array.isArray(dailyRows))throw new Error('Vollständiger Export erforderlich');
   // Independent inventory must include both raw halves, their exact hashes,
   // and explicit nulls. Names alone cannot prove export completeness.
-  verifyRestoreInventory({roster,addonStates,knowledgePairs,dailyRows,quarantineRecords},inventory);
+  verifyRestoreInventory({roster,addonStates,knowledgePairs,dailyRows,quarantineRecords,petMetadata,modernReceipt,legacyReceipt,date,scope},inventory);
   const identities=canonicalRoster(roster?.characters?.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})));
   if(!Number.isFinite(Date.parse(roster.generatedAt)))throw new Error('Ungültiger Roster-Export');
   const commands=[['SET','dalton-dashboard:characters:v1',JSON.stringify(roster)]],metadata=['characters',JSON.stringify(characterVersionMetadata(roster)),'pet',JSON.stringify(petMetadata??null)];

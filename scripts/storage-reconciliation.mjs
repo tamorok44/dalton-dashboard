@@ -122,10 +122,28 @@ export function inspectKnowledgePair(modernRaw,legacyRaw,key=null){
     try{return {record:reconcileKnowledgeRecords(m.record,l.record),reason:null,modern:m.record,legacy:l.record};}
     catch{reason='conflicting_record';}
   }
-  return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(m.floor,l.floor)};
+  return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(m.floor,l.floor),unknownTime:(m.invalid&&!Number.isFinite(m.floor))||(l.invalid&&!Number.isFinite(l.floor))};
 }
 export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null){
   const evidence={schema:1,key,reason,modernRaw:modernRaw??null,legacyRaw:legacyRaw??null,incoming};
   const digest=createHash('sha256').update(JSON.stringify(canonical(evidence))).digest('hex');
   return {field:'__quarantine:v1:'+digest,evidence,digest};
+}
+
+export function validQuarantineEvidence(field,raw,key=null){
+  try{
+    if(typeof raw!=='string')return false;
+    const evidence=JSON.parse(raw);
+    if(evidence?.schema!==1||typeof evidence.key!=='string'||(key&&key!==evidence.key)||
+      !['invalid_record','conflicting_record','invalid_storage_type','missing_repair_evidence'].includes(evidence.reason)||
+      !Object.hasOwn(evidence,'incoming')||
+      !['modernRaw','legacyRaw'].every(side=>Object.hasOwn(evidence,side)&&(evidence[side]===null||typeof evidence[side]==='string')))return false;
+    return field==='__quarantine:v1:'+createHash('sha256').update(JSON.stringify(canonical(evidence))).digest('hex');
+  }catch{return false;}
+}
+export function repairMarkerMatches(key,marker,raw){
+  if(!marker||!/^[a-f0-9]{64}$/.test(marker.quarantineDigest||''))return false;
+  if(!validQuarantineEvidence('__quarantine:v1:'+marker.quarantineDigest,raw,key))return false;
+  const evidence=JSON.parse(raw);
+  return knowledgeRawDigest(evidence.legacyRaw)===marker.legacyDigest&&evidence.incoming?.capturedAt===marker.resolvedAt&&Number.isFinite(at(marker.resolvedAt));
 }
