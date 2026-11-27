@@ -197,7 +197,7 @@ if(!hasRedis){
       {slug:'audit-two',name:'Audit Two',classId:8,level:12}
     ]}));
     const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
-    let mode=null,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
+    let mode=null,proofTarget=null,collisionTarget=null,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
     const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
     let pauseFirst=true;
     globalThis.fetch=async(url,options={})=>{
@@ -215,6 +215,12 @@ if(!hasRedis){
         if(isSync&&mode==='drop-after'){mode=null;cli(...cmd);throw Error('fixture response lost after commit');}
         if(op==='SET'&&key.includes(':history:daily:lock:')&&mode==='drop-lock-reply'){mode=null;cli(...cmd);throw Error('fixture lock response lost');}
         if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
+        const knowledgeCommit=op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:production:records:v2'&&cmd.length>=18;
+        if(mode==='fail-proof-read'&&op==='HGET'&&cmd[2]===proofTarget){mode=null;throw Error('fixture one proof read unavailable');}
+        if(mode==='drop-proof-before-commit'&&knowledgeCommit){mode=null;cli('HDEL',cmd[3],proofTarget);}
+        if(mode==='collide-before-commit'&&knowledgeCommit&&String(cmd[14]).startsWith('__quarantine:v1:')){
+          mode=null;collisionTarget=cmd[14];cli('HSET',cmd[3],collisionTarget,'{"corrupt-fixture":true}');
+        }
         const result=cli(...cmd);
         if(mode==='hold-preview-observation'&&op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:preview:records:v2'){
           mode=null;previewObserved();await continuePreview;
@@ -447,14 +453,59 @@ if(!hasRedis){
     lateRepair.sections.interactions={capturedAt:now+16,trainerHistory:[{...trainer(80),capturedAt:now+16}]};
     const lateResult=await call(lateRepair);assert.equal(lateResult.http,200);assert.equal(lateResult.value.liveKnowledge.repaired,1);
     assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,80);
+    // Both storage halves are subject to the same repair proof contract.
+    const repairedRaw=cli('HGET',knowledgeIndex,knowledgeKey),legacyBefore=cli('GET',knowledgeKey);
+    const repairedMarker=JSON.parse(repairedRaw).migrationRepair;
+    proofTarget='__quarantine:v1:'+repairedMarker.quarantineDigest;
+    const validProof=cli('HGET',knowledgeIndex,proofTarget);
+    assert.ok(validProof);
+    cli('HDEL',knowledgeIndex,knowledgeKey);cli('SET',knowledgeKey,repairedRaw);
+    assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,80);
+    cli('HDEL',knowledgeIndex,proofTarget);
+    const legacyMissing=await loadLiveKnowledge();
+    assert.ok(!legacyMissing.some(x=>x.npc.id===12345));
+    assert.equal(legacyMissing.integrityIssues.find(x=>x.key===knowledgeKey).reason,'missing_repair_evidence');
+    cli('SET',knowledgeKey,legacyBefore);
+    cli('HSET',knowledgeIndex,knowledgeKey,repairedRaw,proofTarget,validProof);
+    // A single proof read failure must not discard the healthy neighbour.
+    mode='fail-proof-read';
+    const unavailable=await loadLiveKnowledge();
+    assert.ok(unavailable.some(x=>x.npc.id===12346));
+    assert.ok(!unavailable.some(x=>x.npc.id===12345));
+    assert.equal(unavailable.integrityIssues.find(x=>x.key===knowledgeKey).reason,'repair_evidence_unavailable');
+    assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,80);
+    // Delete a verified proof after validation but before the atomic commit.
+    // Retry must quarantine the new capture, not publish price 85.
+    const raced=payload('Audit One','raced-proof',[133,143],now+17);
+    raced.sections.interactions={capturedAt:now+17,trainerHistory:[{...trainer(85),capturedAt:now+17}]};
+    mode='drop-proof-before-commit';
+    const raceResult=await call(raced);
+    assert.equal(raceResult.http,200);assert.equal(raceResult.value.liveKnowledge.quarantined,1);
+    assert.equal(cli('HGET',knowledgeIndex,knowledgeKey),repairedRaw);
+    assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
+    assert.ok(!(await loadLiveKnowledge()).some(x=>x.npc.id===12345));
+    // Collision discovered only inside the write CAS. Preserve corrupt
+    // bytes in place and use a new content-addressed envelope.
+    const collision=payload('Audit One','collision-recovery',[133,143],now+18);
+    collision.sections.interactions={capturedAt:now+18,trainerHistory:[{...trainer(86),capturedAt:now+18}]};
+    mode='collide-before-commit';
+    const collisionResult=await call(collision);
+    assert.equal(collisionResult.http,200);assert.equal(collisionResult.value.liveKnowledge.quarantined,1);
+    assert.equal(cli('HGET',knowledgeIndex,collisionTarget),'{"corrupt-fixture":true}');
+    assert.ok(cli('HKEYS',knowledgeIndex).filter(k=>k.startsWith('__quarantine:v1:')).some(k=>{
+      const q=JSON.parse(cli('HGET',knowledgeIndex,k));
+      return q.collision?.field===collisionTarget&&q.collision.raw==='{"corrupt-fixture":true}'&&q.incoming?.entries?.[0]?.priceCopper===86;
+    }));
+    assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
+    assert.equal((await call(payload('Audit One','after-collision-core',[133,143],now+19))).http,200);
     // Wrong-type legacy key: retain the source list; no active price,
     // persist the incoming observation without blocking later core sync.
     cli('DEL',knowledgeKey);cli('RPUSH',knowledgeKey,'original-list-value');
     const badType=await loadLiveKnowledge();
     assert.ok(!badType.some(x=>x.npc.id===12345));
     assert.equal(publicLiveKnowledgeSummary(badType).unpreservedIntegrityRecords,1);
-    const typedSync=payload('Audit One','typed-conflict',[133,143],now+17);
-    typedSync.sections.interactions={capturedAt:now+17,trainerHistory:[{...trainer(90),capturedAt:now+17}]};
+    const typedSync=payload('Audit One','typed-conflict',[133,143],now+20);
+    typedSync.sections.interactions={capturedAt:now+20,trainerHistory:[{...trainer(90),capturedAt:now+20}]};
     const typedResult=await call(typedSync);
     assert.equal(typedResult.http,200);assert.equal(typedResult.value.liveKnowledge.quarantined,1);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
