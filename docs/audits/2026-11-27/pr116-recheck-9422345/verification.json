@@ -1,0 +1,71 @@
+{
+  "reviewedCommit": "94223457bd8a6d4986e49c2580efd4af638fa068",
+  "previousCommit": "177b14712a1dbd26c569ecb670cc2906b10920d7",
+  "previousAuditCommit": "c0663ee9838b2c9b41bd383a85033d3d7ac4195f",
+  "reviewDateBerlin": "2026-11-27",
+  "matrix": [
+    {
+      "redis": "7.0.15",
+      "node": "22.23.5",
+      "controlGroups": 74,
+      "previousIdsRerun": 74,
+      "additionalGroups": 14,
+      "totalGroups": 88,
+      "auditExitCode": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0
+    },
+    {
+      "redis": "8.0.2",
+      "node": "26.13.1",
+      "controlGroups": 74,
+      "previousIdsRerun": 74,
+      "additionalGroups": 14,
+      "totalGroups": 88,
+      "auditExitCode": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0
+    }
+  ],
+  "findingsConfirmedByBothRedisVersions": [
+    "read-before-quarantine",
+    "read-evidence-false-preserved-damaged-existing",
+    "read-evidence-false-preserved-stale-field-list",
+    "read-evidence-false-preserved-nonmatching-concurrent-write",
+    "read-evidence-unindexed-wrong-physical-type",
+    "read-evidence-repair-without-comparable-timestamps",
+    "restore-inventory-unbound-projection-inputs",
+    "restore-repair-marker-without-referenced-evidence"
+  ],
+  "actions": [
+    {
+      "run": 45986972824,
+      "result": "success"
+    },
+    {
+      "run": 45986972840,
+      "result": "success"
+    },
+    {
+      "run": 45986972826,
+      "result": "success"
+    }
+  ],
+  "isolation": {
+    "privateUnixSocket": true,
+    "syntheticData": true,
+    "blobTransportStubbed": true,
+    "testedHistoricalReaderCommits": [
+      "0608cf5",
+      "5a57723"
+    ]
+  },
+  "provider": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 63,
+    "cleanupPassed": true,
+    "inventorySelfTestPassed": true,
+    "realProviderRun": false,
+    "realQuotasMeasured": false
+  }
+}

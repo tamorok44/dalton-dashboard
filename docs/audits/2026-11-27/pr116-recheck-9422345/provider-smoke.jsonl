@@ -1,0 +1,5 @@
+{"targetGuards":true,"namespaceMapping":true,"providerContacted":false}
+{"inventorySelfTest":true,"missingPairSideDetected":true,"missingQuarantineDetected":true,"metadataAndScopeBound":true,"missingReferencedQuarantineDetected":true,"nonmatchingQuarantineBytesDetected":true}
+{"phase":"redis-single-commands","msetAndHset":true,"readonlyDenialsPreservedState":true,"staleLockFenced":true,"readerHsetnxAndReadOnlyRefusal":true,"readerReplayDeduplicates":true,"quarantineAndRepair":true}
+{"phase":"blob-private-object","authenticatedRecovery":true,"anonymousStatus":403,"overwriteRejected":true,"bytes":293}
+{"phase":"finished","requests":63,"requestBytes":51426,"responseBytes":38794,"elapsedMs":667,"cleanupPassed":true,"result":"passed"}
