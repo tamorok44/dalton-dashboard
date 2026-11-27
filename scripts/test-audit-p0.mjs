@@ -200,7 +200,7 @@ if(!hasRedis){
       {slug:'audit-two',name:'Audit Two',classId:8,level:12}
     ]}));
     const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
-    let mode=null,proofTarget=null,restoreProof=null,collisionTarget=null,stalledRelease=null,stallObserved=false,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
+    let mode=null,proofTarget=null,restoreProof=null,collisionTarget=null,lateCommand=null,stalledRelease=null,stallObserved=false,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
     const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
     let pauseFirst=true;
     globalThis.fetch=async(url,options={})=>{
@@ -224,6 +224,13 @@ if(!hasRedis){
         }
         if(mode==='stall-proof-read'&&op==='HGET'&&cmd[2]===proofTarget){
           mode=null;stallObserved=true;await new Promise(resolve=>{stalledRelease=resolve});
+        }
+        if(mode==='defer-acquire'&&op==='EVAL'&&cmd[3]===lockKey&&cmd[1].includes('addon-lock-acquire:v1')){
+          mode=null;lateCommand=cmd;throw Error('fixture acquisition transport lost before execution');
+        }
+        if(mode==='defer-observation-and-cleanup'&&knowledgeCommit){
+          mode='stall-release';lateCommand=cmd;stallObserved=true;await new Promise(resolve=>{stalledRelease=resolve});
+          return Response.json({result:'delayed transport'});
         }
         if(mode==='stall-lock-reply'&&op==='EVAL'&&cmd[3]===lockKey&&cmd[1].includes('addon-lock-acquire:v1')){
           mode=null;assert.equal(cli(...cmd),'OK');stallObserved=true;
@@ -628,6 +635,45 @@ if(!hasRedis){
     assert.equal(cli('GET',lockKey),null,'lease expires at work cutoff even when cleanup stalls');
     stalledRelease();
     assert.equal((await call(payload('Audit Two','after-lease-expiry',[133,143],now+27))).http,200);
+    // Real late acquisition after an EMPTY but successful cleanup, before
+    // the original server deadline. Revoked permit, not client abort, rejects it.
+    const delayedAcquire=payload('Audit One','deferred-acquire',[133,143],now+28);
+    mode='defer-acquire';lateCommand=null;
+    const delayedAcquireResult=await call(delayedAcquire);
+    assert.equal(delayedAcquireResult.http,503);assert.ok(lateCommand);
+    assert.equal(cli('GET',lockKey),null);
+    const acquireCommand=lateCommand;
+    const [sec,micros]=cli('TIME').map(Number);
+    assert.ok(sec*1000+micros/1000<Number(acquireCommand.at(-1)),'exercise revocation BEFORE expiry');
+    assert.equal(cli('GET',acquireCommand[4]),null);
+    assert.throws(()=>cli(...acquireCommand),/ADDON_PERMIT_REVOKED/);
+    assert.equal(cli('GET',lockKey),null);
+    assert.equal((await call(payload('Audit Two','after-deferred-acquire',[133,143],now+28))).http,200);
+    assert.equal((await call(delayedAcquire)).http,200);
+    // Real observation command executes AFTER 503 while cleanup did not
+    // execute. Even artificially retaining the original token cannot bypass TIME.
+    const lateKey=knowledgeKey.replace('id-12345','id-12348');
+    const delayedCommit=payload('Audit One','deferred-observation',[133,143],now+29);
+    delayedCommit.sections.interactions={capturedAt:now+29,trainerHistory:[{...trainer(92),npc:{id:12348,name:'Delayed commit fixture'},capturedAt:now+29}]};
+    mode='defer-observation-and-cleanup';lateCommand=null;stallObserved=false;
+    const lateStart=performance.now(),delayedCommitResult=await call(delayedCommit,boundedAddon);
+    assert.equal(delayedCommitResult.http,503);assert.ok(lateCommand&&stallObserved);
+    assert.ok(performance.now()-lateStart<1800);
+    const commitCommand=lateCommand;
+    assert.equal(cli('GET',lockKey),null);
+    assert.equal(cli('HGET',knowledgeIndex,lateKey),null);
+    assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,true);
+    assert.throws(()=>cli(...commitCommand),/ADDON_SYNC_DEADLINE/);
+    cli('SET',lockKey,commitCommand.at(-2),'EX',2);
+    assert.throws(()=>cli(...commitCommand),/ADDON_SYNC_DEADLINE/);
+    assert.equal(cli('HGET',knowledgeIndex,lateKey),null);
+    cli('DEL',lockKey);stalledRelease();
+    assert.equal((await call(payload('Audit Two','after-deferred-commit',[133,143],now+29))).http,200);
+    assert.equal((await call(delayedCommit)).http,200);
+    const exactlyOnce=JSON.parse(cli('HGET',knowledgeIndex,lateKey));
+    assert.equal(exactlyOnce.observationCount,1);assert.equal(exactlyOnce.latestSnapshot.entries[0].priceCopper,92);
+    assert.equal((await call(delayedCommit)).value.duplicate,true);
+    assert.equal(cli('HGET',knowledgeIndex,lateKey),JSON.stringify(exactlyOnce));
     // Closing a scope also blocks subsequent Redis commands in work that
     // ignored cancellation and finished after the deadline.
     const {redis}=await import('./character-store.mjs');let lateError=null;
