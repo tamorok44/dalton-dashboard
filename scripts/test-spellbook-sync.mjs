@@ -54,3 +54,25 @@ assert.throws(()=>applySpellbookSnapshot(updated,{...snapshot,capturedAt:'2026-1
 assert.throws(()=>applySpellbookSnapshot(updated,{...snapshot,entries:[{id:133}]},{classMaster}),/STALE_SPELLBOOK/);
 assert.equal(applySpellbookSnapshot(updated,snapshot,{classMaster}),updated,'Equal timestamp and same IDs are idempotent');
 console.log('Spellbook Sync: Code, Rang-Expansion, Validierung und persistenter Lernstand: OK');
+
+
+// Legacy spellbook endpoint must never touch providers in non-production,
+// even if a production-capable token is accidentally present.
+{
+  const {default:legacyHandler}=await import('../api/spellbook-sync.js');
+  const before=process.env.VERCEL_ENV,token=process.env.SPELLBOOK_SYNC_TOKEN,fetchBefore=globalThis.fetch;
+  try{
+    globalThis.fetch=async()=>{throw Error('Forbidden provider call in preview')};
+    process.env.SPELLBOOK_SYNC_TOKEN='synthetic-legacy-spellbook-token';
+    for(const scope of ['preview','development','',undefined]){
+      if(scope===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=scope;
+      const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await legacyHandler({method:'POST',body:{code:'synthetic'}},res);
+      assert.equal(res.code,403);
+    }
+  }finally{
+    globalThis.fetch=fetchBefore;
+    if(before===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=before;
+    if(token===undefined)delete process.env.SPELLBOOK_SYNC_TOKEN;else process.env.SPELLBOOK_SYNC_TOKEN=token;
+  }
+}
