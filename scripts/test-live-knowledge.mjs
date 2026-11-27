@@ -137,3 +137,19 @@ const v1={...v2,observationIds:['v1'],latestSnapshot:{...v2.latestSnapshot,captu
 const merged=reconcileKnowledgeRecords(v2,v1);assert.equal(merged.latestSnapshot.entries[0].priceCopper,30);assert.deepEqual(new Set(merged.observationIds),new Set(['v1','v2']));
 assert.throws(()=>reconcileKnowledgeRecords(v2,{...v1,latestSnapshot:{...v1.latestSnapshot,capturedAt:v2.latestSnapshot.capturedAt}}),/MIGRATION_CONFLICT/);
 const both=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{if(op==='SMEMBERS'||op==='HKEYS')return [current[1]];if(op==='HMGET')return [JSON.stringify(v2)];if(op==='MGET')return [JSON.stringify(v1)];throw Error(op);}});assert.equal(both[0].latestSnapshot.entries[0].priceCopper,30);
+
+const {publicLiveKnowledgeSummary}=await import('./live-knowledge-store.mjs');
+const sameSecond={...v1,latestSnapshot:{...v1.latestSnapshot,capturedAt:v2.latestSnapshot.capturedAt}};
+const otherKey=pref+'trainer:1.60.1.71037:id-3';
+const other={...v2,npc:{id:3,name:'Unabhängiger Lehrer'},latestSnapshot:{...v2.latestSnapshot,npc:{id:3,name:'Unabhängiger Lehrer'}}};
+for(const oldRaw of [JSON.stringify(sameSecond),'{invalid-json']){
+  const rows=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{
+    if(op==='SMEMBERS')return [current[1]];
+    if(op==='HKEYS')return [current[1],otherKey];
+    if(op==='HMGET')return [JSON.stringify(v2),JSON.stringify(other)];
+    if(op==='MGET')return [oldRaw];
+    throw Error(op);
+  }});
+  assert.equal(rows.length,1);assert.equal(rows[0].npc.id,3);
+  assert.equal(publicLiveKnowledgeSummary(rows).excludedIntegrityRecords,1);
+}

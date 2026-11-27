@@ -84,6 +84,9 @@ assert.equal(uploads,noPutBefore,'no provider PUT may start after synchronous wo
 const started=Date.now();
 await assert.rejects(withinArchiveDeadline(()=>delay(1000),AbortSignal.timeout(35)));
 assert.ok(Date.now()-started<500,'caller must not wait for SDK backoff');
+const monotonicStart=performance.now();
+await assert.rejects(withinArchiveDeadline(()=>delay(1000),new AbortController().signal,performance.now()+35),/Archivfrist/);
+assert.ok(performance.now()-monotonicStart<500,'independent monotonic deadline bounds the caller');
 await assert.rejects(saveDailySnapshot(snapshot,day,{expectedRoster:testRoster,putImpl:async()=>({url:'https://fixture.public.blob.vercel-storage.com/test',pathname:blob.pathname})}),/private URL/);
 
 const proof={date:day,source:'daily',success:1,total:1,roster:testRoster,persisted:true,generatedAt:day+'T05:01:00Z'};
@@ -92,6 +95,11 @@ assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:pro
 assert.equal(dailyRefreshComplete({date:day,archiveStatus:'disabled',refresh:proof},true),false);
 assert.equal(dailyRefreshComplete({date:day,archiveStatus:'failed',refresh:proof},true),false);
 assert.equal(dailyRefreshComplete({...meta,refresh:{...proof,total:2}},true),false);
+assert.equal(dailyRefreshComplete({...meta,refresh:proof},true),true);
+assert.equal(dailyRefreshComplete({...meta,refresh:proof,pathname:'wrong',url:meta.url.replace(meta.pathname,'wrong')},true),false);
+const {selectDailyReceipt}=await import('./storage-reconciliation.mjs');
+const reordered=Object.fromEntries(Object.entries(proof).reverse());
+assert.deepEqual(selectDailyReceipt(proof,reordered,day),proof);
 assert.equal(dailyRefreshComplete({...meta,refresh:{...proof,roster:[{slug:'other',id:null}]}},true),false);
 const pending=await refreshDailyCharacters(day,{takeLock:async()=>null,readReceipt:async()=>{throw Error('No lock')},refresh:async()=>{throw Error('No lock')}});
 assert.equal(pending.persisted,false,'Addon write cannot be mistaken for a profile refresh');
@@ -260,7 +268,7 @@ if(!hasRedis){
     assert.equal((await call(observation)).http,503);
     assert.equal((await loadAddonSyncState('audit-one')).payload.syncId,'observation');
     const knowledgeIndex='dalton-dashboard:live-knowledge:v1:production:records:v2';
-    const knowledgeRecords=()=>cli('HKEYS',knowledgeIndex).filter(key=>key!=='__version:v2');
+    const knowledgeRecords=()=>cli('HKEYS',knowledgeIndex).filter(key=>key.includes(':record:'));
     assert.equal(knowledgeRecords().length,0);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,true);
     const later=payload('Audit One','later',[133,143],now+3);
@@ -345,16 +353,24 @@ if(!hasRedis){
     legacyRecord.latestSnapshot.entries[0].priceCopper=40;legacyRecord.services[0].priceCopper=40;legacyRecord.services[0].lastSeenAt=legacyRecord.lastObservedAt;
     legacyRecord.observationIds.push('intervening-legacy-fixture');
     const input={roster:sourceRoster,addonStates:states,knowledgePairs:[{key:knowledgeKey,modern:modernRecord,legacy:legacyRecord}],
-      dailyRows:[await getDailySnapshot(day),newRow],petMetadata:null,modernReceipt:actualProof,legacyReceipt,date:day};
+      dailyRows:[await getDailySnapshot(day),newRow],petMetadata:null,modernReceipt:actualProof,legacyReceipt,date:day,
+      inventory:{addonSlugs:states.map(x=>x.characterSlug),knowledgeKeys:[knowledgeKey],dailyDates:[day,newDay],quarantineFields:[]}};
     const projection=buildLegacyReadProjection(input);
     assert.equal(projection.manifest.latestDate,newDay);assert.equal(projection.manifest.observations,1);
+    assert.throws(()=>buildLegacyReadProjection({...input,knowledgePairs:[]}),/Export-Inventur/);
+    const conflictLegacy=structuredClone(modernRecord);conflictLegacy.observationIds=['disjoint'];conflictLegacy.latestSnapshot.entries[0].priceCopper=99;
+    const conflictedProjection=buildLegacyReadProjection({...input,knowledgePairs:[{key:knowledgeKey,modern:modernRecord,legacy:conflictLegacy}]});
+    assert.equal(conflictedProjection.manifest.completeForLegacyReaders,false);assert.equal(conflictedProjection.manifest.quarantined.length,1);
+    assert.ok(conflictedProjection.commands.some(c=>c[0]==='HSET'&&c[2].startsWith('__quarantine:v1:')));
+    assert.ok(!conflictedProjection.commands.some(c=>c[0]==='SET'&&c[1]===knowledgeKey));
     assert.throws(()=>buildLegacyReadProjection({...input,addonStates:[{...states[0],pendingObservations:true},states[1]]}),/Ausstehende Beobachtungen/);
     const rawRoster=cli('GET',rosterKey),rawStates=states.map(state=>[syncKey(state.characterSlug),cli('GET',syncKey(state.characterSlug))]);
     database=1;
     try{
       assert.equal(cli('DBSIZE'),0);
-      cli('SET',rosterKey,rawRoster);for(const [key,value] of rawStates)cli('SET',key,value);
       for(const command of projection.commands)cli(...command);
+      assert.deepEqual(JSON.parse(cli('GET',rosterKey)),JSON.parse(rawRoster));
+      for(const [key,value] of rawStates)assert.deepEqual(JSON.parse(cli('GET',key)),JSON.parse(value));
       assert.equal(JSON.parse(cli('HGET','dalton-dashboard:data-version:meta:v1','addon:production:audit-one')).syncId,states[0].payload.syncId);
       assert.equal(JSON.parse(cli('GET',knowledgeKey)).latestSnapshot.entries[0].priceCopper,40);
       assert.equal(JSON.parse(cli('GET',lastKey)).date,newDay);
@@ -364,6 +380,36 @@ if(!hasRedis){
       assert.deepEqual(await loadDailyProfileReceipt(day),legacyReceipt);
     }finally{database=0;}
     assert.equal(cli('GET',rosterKey),rawRoster,'offline projection never changes the source');
+    const {loadLiveKnowledge,publicLiveKnowledgeSummary}=await import('./live-knowledge-store.mjs');
+    const legacyIndex='dalton-dashboard:live-knowledge:v1:production:index';
+    const conflictRaw=JSON.stringify(conflictLegacy);
+    cli('SET',knowledgeKey,conflictRaw);cli('SADD',legacyIndex,knowledgeKey);
+    const independentKey=knowledgeKey.replace('id-12345','id-12346');
+    const independent={...modernRecord,npc:{id:12346,name:'Independent'},latestSnapshot:{...modernRecord.latestSnapshot,npc:{id:12346,name:'Independent'}}};
+    cli('HSET',knowledgeIndex,independentKey,JSON.stringify(independent));
+    const ambiguous=await loadLiveKnowledge();
+    assert.equal(ambiguous.length,1);assert.equal(ambiguous[0].npc.id,12346);
+    assert.equal(publicLiveKnowledgeSummary(ambiguous).excludedIntegrityRecords,1);
+    // Older observation of an unresolved pair is durably quarantined, not
+    // asserted as current; a strictly later one can repair the active view.
+    const conflictSync=payload('Audit One','conflict-sync',[133,143],now+9);
+    conflictSync.sections.interactions={capturedAt:now+9,trainerHistory:[trainer(98)]};
+    const conflicted=await call(conflictSync);assert.equal(conflicted.http,200);assert.equal(conflicted.value.liveKnowledge.quarantined,1);
+    assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
+    assert.equal(cli('GET',knowledgeKey),conflictRaw);
+    assert.ok(cli('HKEYS',knowledgeIndex).some(k=>k.startsWith('__quarantine:v1:')));
+    const fresh=payload('Audit One','fresh-evidence',[133,143],now+10);
+    fresh.sections.interactions={capturedAt:now+10,trainerHistory:[{...trainer(50),capturedAt:now+10}]};
+    const repaired=await call(fresh);assert.equal(repaired.http,200);assert.equal(repaired.value.liveKnowledge.repaired,1);
+    const freshRows=await loadLiveKnowledge();assert.equal(freshRows.find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,50);
+    assert.equal(cli('GET',knowledgeKey),conflictRaw);
+    cli('SET',knowledgeKey,'{broken-json');
+    const damaged=await loadLiveKnowledge();assert.equal(damaged.length,1);assert.equal(publicLiveKnowledgeSummary(damaged).excludedIntegrityRecords,1);
+    const repairBroken=payload('Audit One','repair-broken',[133,143],now+11);
+    repairBroken.sections.interactions={capturedAt:now+11,trainerHistory:[{...trainer(60),capturedAt:now+11}]};
+    const brokenResult=await call(repairBroken);assert.equal(brokenResult.http,200);assert.equal(brokenResult.value.liveKnowledge.repaired,1);
+    assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,60);
+    assert.equal(cli('GET',knowledgeKey),'{broken-json');
     console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof, index reconciliation and offline legacy-reader projection: OK');
   }finally{
     globalThis.fetch=originalFetch;

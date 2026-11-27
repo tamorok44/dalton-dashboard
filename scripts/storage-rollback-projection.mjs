@@ -7,9 +7,20 @@ import {inspectKnowledgePair,knowledgeQuarantine,selectDailyReceipt} from './sto
 // token or sends a command. A complete, quiescent export is a precondition.
 // The resulting projection is for testing old-format READERS in a clone;
 // it does not authorize restoring the previously vulnerable old writers.
-export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dailyRows,petMetadata,modernReceipt=null,legacyReceipt=null,date,scope='production'}){
+export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dailyRows,petMetadata,modernReceipt=null,legacyReceipt=null,date,scope='production',inventory,quarantineRecords=[]}){
   if(!['production','preview'].includes(scope))throw new Error('Ungültiger Speicherbereich');
   if(!Array.isArray(addonStates)||!Array.isArray(knowledgePairs)||!Array.isArray(dailyRows))throw new Error('Vollständiger Export erforderlich');
+  // Inventory must be collected independently from the quiescent source.
+  // This checks omission against that inventory, not provider completeness.
+  const match=(actual,expected)=>{
+    if(!Array.isArray(expected)||new Set(expected).size!==expected.length||
+      JSON.stringify([...actual].sort())!==JSON.stringify([...expected].sort()))throw Error('Export-Inventur stimmt nicht überein');
+  };
+  if(!inventory||!Array.isArray(quarantineRecords))throw Error('Unabhängige Export-Inventur erforderlich');
+  match(addonStates.map(x=>x?.characterSlug),inventory.addonSlugs);
+  match(knowledgePairs.map(x=>x?.key),inventory.knowledgeKeys);
+  match(dailyRows.map(x=>x?.date),inventory.dailyDates);
+  match(quarantineRecords.map(x=>x?.field),inventory.quarantineFields);
   const identities=canonicalRoster(roster?.characters?.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})));
   if(!Number.isFinite(Date.parse(roster.generatedAt)))throw new Error('Ungültiger Roster-Export');
   const commands=[['SET','dalton-dashboard:characters:v1',JSON.stringify(roster)]],metadata=['characters',JSON.stringify(characterVersionMetadata(roster)),'pet',JSON.stringify(petMetadata??null)];
@@ -29,6 +40,10 @@ export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dai
   commands.push(['HSET',VERSION_METADATA_KEY,...metadata]);
   const prefix='dalton-dashboard:live-knowledge:v1:'+scope+':';
   const records=new Map(),seenKeys=new Set(),quarantined=[];
+  for(const entry of quarantineRecords){
+    if(!/^__quarantine:v1:[a-f0-9]{64}$/.test(entry.field)||typeof entry.raw!=='string')throw Error('Ungültiger Quarantäne-Export');
+    commands.push(['HSET',prefix+'records:v2',entry.field,entry.raw]);
+  }
   for(const entry of knowledgePairs){
     if(typeof entry?.key!=='string'||!entry.key.startsWith(prefix+'record:')||seenKeys.has(entry.key))throw new Error('Ungültige Beobachtungs-Exportidentität');
     seenKeys.add(entry.key);
@@ -57,6 +72,6 @@ export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dai
   const dates=[...days.keys()].sort();
   for(const key of dates)commands.push(['HSET','dalton-dashboard:history:daily:index:v1',key,JSON.stringify(days.get(key))]);
   if(dates.length)commands.push(['SET','dalton-dashboard:history:daily:last:v1',JSON.stringify(days.get(dates.at(-1)))]);
-  return {commands,manifest:{schema:'legacy-read-projection-v1',scope,roster:identities.length,addonStates:states.size,observations:ordered.length,quarantined,sourceObservationPairs:seenKeys.size,completeForLegacyReaders:quarantined.length===0,days:dates.length,latestDate:dates.at(-1)??null,
+  return {commands,manifest:{schema:'legacy-read-projection-v1',scope,roster:identities.length,addonStates:states.size,observations:ordered.length,quarantined,sourceObservationPairs:seenKeys.size,preservedQuarantineRecords:quarantineRecords.length,completeForLegacyReaders:quarantined.length===0,inventoryVerified:true,days:dates.length,latestDate:dates.at(-1)??null,
     sha256:createHash('sha256').update(JSON.stringify(commands)).digest('hex')}};
 }
