@@ -11,3 +11,6 @@ Die öffentliche Rohdatenerfassung und der Upload werden vorübergehend vollstä
 
 ## Abnahme vor Veröffentlichung
 Repository-CI, synthetischer Handler-Test (Auth, erste Ausführung, fehlgeschlagener Refresh, Retry, alte Referenzen, kein Raw-Fetch/Blob-Upload), unabhängig vom Sanierungs-PR. Tatsächlicher Provider-Bestand, öffentliche Altarchive, frühere Deployments mit weiterhin gültigen Zugangsdaten und Entzug alter Writer bleiben offen. Nach Veröffentlichung muss die alte öffentliche Upload-Route auch in früheren Deployments gesperrt werden; bloßer Aliaswechsel garantiert das nicht. Private Archivierung erst nach autorisierter isolierter Provider-Abnahme und genehmigter Aufbewahrung. Keine echten Datensätze oder Secret-Werte im Bericht.
+
+## Zusätzliche Scope-Eindämmung (QA 27.11.)
+Der Tageshandler verweigert außerhalb von VERCEL_ENV=production sämtliche GET-Ausführungen mit 403, auch bei gültigem Cron-Token, vor Uhrzeitprüfung, Datenbank- und Providerzugriff. Regressionen prüfen Preview, Development, fehlende/leere und falsch geschriebene Umgebung sowie Produktionsauthentifizierung, Erstlauf und Retry. Keine Änderung der Cron-Zeitpläne. Keine Isolation des gemeinsamen Speichers durch dieses Code-Gate allein: Altdeployments und andere Writer bleiben separat zu sperren. PR #116 muss dieselbe Schutzgrenze unabhängig übernehmen, bevor er veröffentlicht wird.
