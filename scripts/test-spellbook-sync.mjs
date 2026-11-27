@@ -76,3 +76,21 @@ console.log('Spellbook Sync: Code, Rang-Expansion, Validierung und persistenter 
     if(token===undefined)delete process.env.SPELLBOOK_SYNC_TOKEN;else process.env.SPELLBOOK_SYNC_TOKEN=token;
   }
 }
+
+
+// F13: full Sync names may not use ambiguous prefixes or duplicate
+// identities. Old manual codes retain a unique, explicit first-name fallback.
+{
+  const roster={characters:[
+    {slug:'cole-dalton',name:'Cole Dalton',classId:8,realm:{slug:'forever-test'}},
+    {slug:'cole-other',name:'Cole Other',classId:8,realm:{slug:'another-realm'}}
+  ]};
+  const resolve=(name,realm,legacy=false)=>resolveSpellbookCharacter(roster,{characterSlug:name,classId:8,realm},{allowLegacyFirstName:legacy});
+  assert.equal(resolve('Cole Dalton','Forever Test').slug,'cole-dalton');
+  assert.equal(resolve('Cole-Dalton',null).slug,'cole-dalton');
+  assert.throws(()=>resolve('Cole',null),/nicht eindeutig/);
+  assert.throws(()=>resolve('Cole',null,true),/nicht eindeutig/);
+  assert.throws(()=>resolve('Cole Dal',null),/nicht eindeutig/);
+  assert.throws(()=>resolve('Cole Dalton','another-realm'),/Realm/);
+  assert.throws(()=>resolveSpellbookCharacter({characters:[roster.characters[0],{...roster.characters[0]}]},{characterSlug:'cole-dalton',classId:8}),/nicht eindeutig/);
+}
