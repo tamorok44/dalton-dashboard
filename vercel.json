@@ -13,6 +13,10 @@
       ]
     }
   ],
+  "redirects": [
+    {"source": "/vorschau.html", "destination": "/", "permanent": false},
+    {"source": "/vorschau-abzeichen.html", "destination": "/", "permanent": false}
+  ],
   "crons": [
     {
       "path": "/api/daily-snapshot",
