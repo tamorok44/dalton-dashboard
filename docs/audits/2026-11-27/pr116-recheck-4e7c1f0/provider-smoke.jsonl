@@ -1,0 +1,9 @@
+{"targetGuards":true,"namespaceMapping":true,"providerContacted":false}
+{"freezeEvidenceGuard":true,"authoritativeExportGate":true,"legacyActivationGate":true,"providerContacted":false}
+{"inventorySelfTest":true,"missingPairSideDetected":true,"missingQuarantineDetected":true,"metadataAndScopeBound":true,"missingReferencedQuarantineDetected":true,"nonmatchingQuarantineBytesDetected":true}
+{"phase":"redis-permit-and-fence","serverTimeAndAbsoluteLease":true,"addonLeaseMs":21909,"fencedMutation":true,"revokedPermitAndLock":true,"oldWriteRejectedByServer":true}
+{"phase":"redis-commit-evidence","collisionEnvelopePreservesOriginal":true,"validatedProofComparedInCommit":true,"attemptsAfterProofRemoval":2,"unverifiedNewPriceNotCommitted":true,"attemptsAfterProofRestoration":2,"oneShotTransportFailureRecovered":true,"readerAlternateExact":true}
+{"phase":"redis-reader-capabilities","typeAwareLua":true,"readOnlyLua":"denied","refusedHsetnx":true,"exactEvidenceContentRequired":true,"typedLegacyLeftIntact":true}
+{"phase":"redis-single-commands","msetAndHset":true,"readonlyDenialsPreservedState":true,"staleLockFenced":true,"readerHsetnxAndReadOnlyRefusal":true,"readerReplayDeduplicates":true,"quarantineAndRepair":true}
+{"phase":"blob-private-object","authenticatedRecovery":true,"anonymousStatus":403,"overwriteRejected":true,"bytes":295}
+{"phase":"finished","requests":148,"requestBytes":151125,"responseBytes":119459,"elapsedMs":834,"cleanupPassed":true,"result":"passed"}

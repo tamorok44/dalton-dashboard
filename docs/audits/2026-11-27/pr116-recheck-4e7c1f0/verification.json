@@ -1,0 +1,134 @@
+{
+  "reviewedCommit": "4e7c1f0d7dda5021cb5ea062e9ac10abbc6a7c13",
+  "previousCommit": "6569cd13173d23ce8be1b57aa40d4afc6aeab7bd",
+  "previousAuditCommit": "2c6f9b01575f58260b41c3a0d58ed9b29ff236e9",
+  "reviewDateBerlin": "2026-11-27",
+  "matrix": [
+    {
+      "redis": "7.0.15",
+      "node": "22.23.5",
+      "previousGroupsControlled": 132,
+      "previousGroupsRerun": 132,
+      "additionalGroups": 9,
+      "totalGroups": 141,
+      "candidateCoreExit": 0,
+      "controlExit": 0,
+      "deadlineGroupExitCodes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "repositoryPassed": 166,
+      "repositoryFailed": 0,
+      "threeProofTimeoutsHandlerMs": 22009,
+      "handlerWithStalledCleanupMs": 27017,
+      "realLateObservationAttemptMs": 28210,
+      "realLeaseExpiryAfterWorkerStartMs": 22500
+    },
+    {
+      "redis": "8.0.2",
+      "node": "26.13.1",
+      "previousGroupsControlled": 132,
+      "previousGroupsRerun": 132,
+      "additionalGroups": 9,
+      "totalGroups": 141,
+      "candidateCoreExit": 0,
+      "controlExit": 0,
+      "deadlineGroupExitCodes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "repositoryPassed": 166,
+      "repositoryFailed": 0,
+      "threeProofTimeoutsHandlerMs": 22104,
+      "handlerWithStalledCleanupMs": 27005,
+      "realLateObservationAttemptMs": 28201,
+      "realLeaseExpiryAfterWorkerStartMs": 22464
+    }
+  ],
+  "budget": {
+    "workMs": 22000,
+    "cleanupUntilMs": 27000,
+    "configuredFunctionsSeconds": 30,
+    "addOnLeaseMaxSeconds": 22,
+    "refreshLeaseSeconds": 120,
+    "defaultBudgetsUsed": true,
+    "actualVercelCancellationTested": false
+  },
+  "technicalBlockers": [
+    "replayed-issuance-resurrects-confirmed-revoked-permit",
+    "simulated-provider-clock-divergence-defeats-max-lease"
+  ],
+  "faultInjection": {
+    "reissuedExactPermitCommand": true,
+    "serverClockSampleAdvancedSeconds": 40,
+    "hostClockChanged": false,
+    "liveProviderContacted": false
+  },
+  "actions": [
+    {
+      "run": 46030878866,
+      "result": "success"
+    },
+    {
+      "run": 46030878835,
+      "result": "success"
+    },
+    {
+      "run": 46030878780,
+      "firstConclusion": "failure",
+      "firstMacJob": "cancelled",
+      "successfulJobs": 4,
+      "macJobRerun": 140622499544,
+      "rerunAtAudit": "queued"
+    }
+  ],
+  "restore": {
+    "legacyGateSelfTestPassed": true,
+    "cliCleanProjectionPasses": true,
+    "cliQuarantinedLegacyActivationDenied": true,
+    "liveProviderRestore": false,
+    "actualLegacyWriterRetirement": false
+  },
+  "provider": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 148,
+    "cleanupPassed": true,
+    "mocksBlobTransport": true,
+    "realProviderRun": false,
+    "realQuotasMeasured": false
+  },
+  "localRedisIsolation": {
+    "privateUnixSocket": true,
+    "syntheticData": true
+  }
+}
