@@ -48,19 +48,20 @@ export async function createDeviceEnrollment(characterSlug){
   if(!isTrustedCharacterSlug(characterSlug))throw new Error('Unbekannter Dalton-Charakter');
   const code='dalton-'+randomBytes(24).toString('base64url');
   const record={characterSlug,createdAt:now(),expiresInSeconds:ENROLL_TTL_SECONDS};
-  await redis(['SET',inviteKey(code),JSON.stringify(record),'EX',ENROLL_TTL_SECONDS,'NX']);
+  const saved=await redis(['SET',inviteKey(code),JSON.stringify(record),'EX',ENROLL_TTL_SECONDS,'NX']);
+  if(saved!=='OK')throw new Error('Einrichtungscode konnte nicht gespeichert werden');
   return {code,characterSlug,characterName:trustedCharacterName(characterSlug),expiresInSeconds:ENROLL_TTL_SECONDS};
 }
 export async function redeemDeviceEnrollment(code){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(typeof code!=='string'||code.length<20||code.length>200)throw new Error('Ungültiger Einrichtungscode');
   const key=inviteKey(code);
-  const lua="local v=redis.call('GET',KEYS[1]); if not v then return nil end; redis.call('DEL',KEYS[1]); return v";
-  const raw=await redis(['EVAL',lua,1,key]);
+  const raw=await redis(['GET',key]);
   if(!raw)throw new Error('Einrichtungscode ungültig, abgelaufen oder bereits verwendet');
   let invite;
   try{invite=JSON.parse(raw)}catch{throw new Error('Einrichtungscode beschädigt')}
-  if(!isTrustedCharacterSlug(invite.characterSlug))throw new Error('Einrichtungscode gehört zu keinem freigegebenen Charakter');
+  if(invite?.consumed===true)throw new Error('Einrichtungscode bereits verwendet');
+  if(!isTrustedCharacterSlug(invite?.characterSlug))throw new Error('Einrichtungscode gehört zu keinem freigegebenen Charakter');
 
   const token='ddv1_'+randomBytes(32).toString('base64url');
   const deviceId=randomUUID();
@@ -72,7 +73,25 @@ export async function redeemDeviceEnrollment(code){
     createdAt:now(),
     revokedAt:null
   };
-  await redis(['SET',deviceKey(token),JSON.stringify(record)]);
+  // Redis scripts do not roll back earlier writes on later command errors.
+  // Compare the exact invitation and commit its invalidation + device in ONE MSET.
+  // Cleanup of the invalid marker is deliberately best effort, never part of success.
+  const lua=`
+local raw=redis.call('GET',KEYS[1])
+if not raw or raw~=ARGV[1] then return 0 end
+local ttl=redis.call('PTTL',KEYS[1])
+if ttl<=0 then return 0 end
+if redis.call('EXISTS',KEYS[2])~=0 then return -1 end
+redis.call('MSET',KEYS[1],ARGV[2],KEYS[2],ARGV[3])
+local cleanup=redis.pcall('PEXPIRE',KEYS[1],ttl)
+if type(cleanup)=='table' and cleanup.err then return 2 end
+if cleanup~=1 then return 2 end
+return 1
+`;
+  const committed=await redis(['EVAL',lua,2,key,deviceKey(token),raw,JSON.stringify({consumed:true}),JSON.stringify(record)]);
+  if(committed===0)throw new Error('Einrichtungscode ungültig, abgelaufen oder bereits verwendet');
+  if(committed!==1&&committed!==2)throw new Error('Geräteberechtigung konnte nicht gespeichert werden');
+  if(committed===2)console.warn('Verbrauchter Einrichtungscode: automatische Marker-Bereinigung nicht bestätigt');
   return {token,...record};
 }
 export async function authorizeDeviceToken(token,{targetScope=scope()}={}){
@@ -90,6 +109,8 @@ export async function authorizeDeviceToken(token,{targetScope=scope()}={}){
 export async function revokeDeviceToken(token){
   const record=await authorizeDeviceToken(token);
   if(!record)return false;
-  await redis(['DEL',deviceKey(token)]);
-  return true;
+  // Concurrent revocations must not both claim that they removed the record.
+  const removed=await redis(['DEL',deviceKey(token)]);
+  if(removed!==0&&removed!==1)throw new Error('Gerätewiderruf konnte nicht bestätigt werden');
+  return removed===1;
 }
