@@ -60,6 +60,8 @@ const {clock=berlinClock,configured:redisConfigured=configured,blizzardConfigure
 return async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
+  // A shared or accidentally copied Cron credential must not enable Preview writes.
+  if(process.env.VERCEL_ENV!=='production')return res.status(403).json({error:'Tageslauf nur in Produktion verfügbar'});
   const secret=process.env.CRON_SECRET;
   if(!secret||req.headers?.authorization!=='Bearer '+secret)return res.status(401).json({error:'Nicht autorisiert'});
   const local=clock();
