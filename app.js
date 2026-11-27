@@ -2107,6 +2107,37 @@ async function load({silent=false,force=false}={}){
   })();
   try{return await dataLoadPromise}finally{dataLoadPromise=null}
 }
+// Share only a short-lived PUBLIC version hint, never a payload or credential.
+// Web Locks prevents overlapping version requests across same-origin tabs.
+// Without Web Locks or writable storage we retain the per-tab polling path.
+const SHARED_VERSION_KEY='dalton-public-version-check-v1';
+const SHARED_VERSION_TTL_MS=90000;
+async function sharedVersionCheck({locks,storage,fetchVersion,clock=Date.now}){
+  const read=()=>{
+    try{
+      const cached=JSON.parse(storage?.getItem(SHARED_VERSION_KEY)||'null');
+      const age=clock()-cached?.checkedAt;
+      if(typeof cached?.version==='string'&&cached.version.length>0&&cached.version.length<=4096&&Number.isFinite(age)&&age>=0&&age<SHARED_VERSION_TTL_MS)return cached.version;
+    }catch{}
+    return null;
+  };
+  const fetchAndRemember=async()=>{
+    const version=await fetchVersion();
+    if(typeof version!=='string'||!version||version.length>4096)return null;
+    try{storage?.setItem(SHARED_VERSION_KEY,JSON.stringify({version,checkedAt:clock()}));}catch{}
+    return version;
+  };
+  const fresh=read();
+  if(fresh)return fresh;
+  if(!locks?.request||!storage)return fetchAndRemember();
+  let invoked=false;
+  try{
+    return await locks.request(SHARED_VERSION_KEY,{ifAvailable:true,mode:'exclusive'},async lock=>{
+      invoked=true;
+      return read()||(lock?await fetchAndRemember():null);
+    });
+  }catch{return invoked?null:fetchAndRemember();}
+}
 async function checkForNewData(){
   if(document.visibilityState==='hidden'||button.disabled||versionCheckPromise)return false;
   const now=Date.now();
@@ -2114,11 +2145,15 @@ async function checkForNewData(){
   lastVersionCheckStarted=now;
   versionCheckPromise=(async()=>{
     try{
-      const response=await fetch('/api/data-version?t='+Date.now(),{cache:'no-store'});
-      if(!response.ok)return false;
-      const version=await response.json();
-      if(!version?.version)return false;
-      if(!lastDataVersion||version.version!==lastDataVersion){
+      let storage=null,locks=null;
+      try{storage=window.localStorage;locks=navigator.locks;}catch{}
+      const version=await sharedVersionCheck({storage,locks,fetchVersion:async()=>{
+        const response=await fetch('/api/data-version?t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(10000)});
+        if(!response.ok)return null;
+        return (await response.json())?.version??null;
+      }});
+      if(!version)return false;
+      if(!lastDataVersion||version!==lastDataVersion){
         await load({silent:true,force:true});
         return true;
       }
