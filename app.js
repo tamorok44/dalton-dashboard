@@ -951,12 +951,12 @@ function characterTabsNav(c){
   const active=activeCharacterTabFor(c);
   return '<div class="character-tabs" role="tablist" aria-label="Details von '+esc(c.name)+'">'+characterTabsFor(c).map(tab=>{
     const selected=tab.id===active;
-    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-slug="'+esc(c.slug)+'" data-character-tab="'+tab.id+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
+    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-slug="'+esc(c.slug)+'" data-character-tab="'+tab.id+'" id="'+esc(c.slug+'-tab-'+tab.id)+'" tabindex="'+(selected?'0':'-1')+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
   }).join('')+'</div>';
 }
 function characterTabPanel(c,id,content){
   const active=activeCharacterTabFor(c);
-  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?'':' hidden')+'>'+content+'</section>';
+  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" aria-labelledby="'+esc(c.slug+'-tab-'+id)+'" tabindex="0" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?'':' hidden')+'>'+content+'</section>';
 }
 function setActiveCharacterTab(slug,tab){
   const character=displayedData?.characters?.find(item=>item.slug===slug);
@@ -967,6 +967,7 @@ function setActiveCharacterTab(slug,tab){
     const selected=button.dataset.characterTab===tab;
     button.classList.toggle('is-active',selected);
     button.setAttribute('aria-selected',String(selected));
+    button.tabIndex=selected?0:-1;
   });
   cards.querySelectorAll('[data-character-panel]').forEach(panel=>{
     if(panel.dataset.characterSlug!==slug)return;
@@ -975,9 +976,21 @@ function setActiveCharacterTab(slug,tab){
   if(tab==='talents')loadTalentCatalog();
 }
 function installCharacterTabs(){
-  cards.querySelectorAll('button[data-character-tab]').forEach(button=>
-    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab))
-  );
+  cards.querySelectorAll('button[data-character-tab]').forEach(button=>{
+    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab));
+    button.addEventListener('keydown',event=>{
+      if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+      const siblings=[...button.closest('[role="tablist"]').querySelectorAll('button[data-character-tab]')];
+      const index=siblings.indexOf(button);
+      if(index<0||!siblings.length)return;
+      const next=event.key==='Home'?0:event.key==='End'?siblings.length-1:
+        (index+(event.key==='ArrowRight'?1:-1)+siblings.length)%siblings.length;
+      event.preventDefault();
+      const target=siblings[next];
+      setActiveCharacterTab(target.dataset.characterSlug,target.dataset.characterTab);
+      target.focus();
+    });
+  });
 }
 let displayedData=null;
 function keepNewestProfiles(data){
