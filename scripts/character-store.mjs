@@ -14,13 +14,27 @@ const KEY=CHARACTER_KEY,LOCK=REFRESH_LOCK_KEY;
 export const DAILY_PROFILE_RECEIPT_FIELD='daily-profile-refresh';
 const COOLDOWN='dalton-dashboard:refresh:manual:cooldown';
 
+// A deployed preview must never silently use the ordinary production
+// binding. Only explicit, distinct preview credentials are eligible.
+// Distinct URLs are a guard, not a proof of separate physical stores.
+export function redisConnection(env=process.env){
+  const standardUrl=env.KV_REST_API_URL||env.UPSTASH_REDIS_REST_URL;
+  const standardToken=env.KV_REST_API_TOKEN||env.UPSTASH_REDIS_REST_TOKEN;
+  const preview=env.VERCEL_ENV==='preview'||env.VERCEL_ENV==='development';
+  const url=preview?env.DALTON_PREVIEW_REDIS_REST_URL:standardUrl;
+  const token=preview?env.DALTON_PREVIEW_REDIS_REST_TOKEN:standardToken;
+  if(!url||!token)return null;
+  try{
+    const parsed=new URL(url);
+    if(parsed.protocol!=='https:'||parsed.username||parsed.password||parsed.search||parsed.hash)return null;
+    if(preview&&((standardUrl&&new URL(standardUrl).origin===parsed.origin)||(standardToken&&token===standardToken)))return null;
+    return {url:parsed.origin+parsed.pathname.replace(/\/$/,''),token};
+  }catch{return null;}
+}
 function settings(){
-  const url=process.env.KV_REST_API_URL||process.env.UPSTASH_REDIS_REST_URL;
-  const token=process.env.KV_REST_API_TOKEN||process.env.UPSTASH_REDIS_REST_TOKEN;
-  if(!url||!token)throw new Error('Redis-Datenbank nicht konfiguriert');
-  const parsed=new URL(url);
-  if(parsed.protocol!=='https:')throw new Error('Redis muss HTTPS verwenden');
-  return {url:parsed.origin+parsed.pathname.replace(/\/$/,''),token};
+  const config=redisConnection();
+  if(!config)throw new Error('Redis-Datenbank nicht konfiguriert oder Umgebung nicht isoliert');
+  return config;
 }
 export async function redis(command,{control=false}={}){
   const {url,token}=settings();
@@ -33,7 +47,7 @@ export async function redis(command,{control=false}={}){
     return payload.result;
   });
 }
-export function configured(){return Boolean((process.env.KV_REST_API_URL||process.env.UPSTASH_REDIS_REST_URL)&&(process.env.KV_REST_API_TOKEN||process.env.UPSTASH_REDIS_REST_TOKEN))}
+export function configured(){return Boolean(redisConnection())}
 export async function loadCharacters(){
   if(!configured())return {data:normalizeVerifiedPlayerTerminology(initial),fallback:true};
   const value=await redis(['GET',KEY]);
