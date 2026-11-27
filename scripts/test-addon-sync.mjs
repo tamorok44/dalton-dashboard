@@ -153,3 +153,51 @@ assert.ok(previewStoreSource.includes("process.env.VERCEL_ENV==='production'?'pr
 if(originalVercelEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalVercelEnv;
 
 console.log('Addon Sync: SavedVariables-Parser, Privacy-Whitelist, Klassenfilter, Preview-Isolation und Refresh-Persistenz: OK');
+
+
+// Device namespace and retired-promotion regression: no provider access.
+const {authorizeDeviceToken,isTrustedCharacterSlug}=await import('./addon-device-auth.mjs');
+const {default:retiredPromotion}=await import('../api/addon-device-promote.js');
+for(const invalid of ['__proto__','constructor','toString','hasOwnProperty','unknown']){
+  assert.equal(trustedCharacterName(invalid),null);assert.equal(isTrustedCharacterSlug(invalid),false);
+  assert.equal(deviceMayCreateEnrollment(coleDevice,invalid),false);
+}
+const savedEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN'].map(k=>[k,process.env[k]]));
+const savedFetch=globalThis.fetch;
+const requests=[];
+const fakeToken='ddv1_'+'fixture'.repeat(7);
+const validRecord={deviceId:'synthetic-existing',characterSlug:'cole-dalton',revokedAt:null,promotedAt:'2026-11-20T00:00:00Z'};
+try{
+  process.env.KV_REST_API_URL='https://fixture.invalid';
+  process.env.KV_REST_API_TOKEN='synthetic';
+  let returnedRecord=validRecord;
+  globalThis.fetch=async (url,options)=>{
+    assert.equal(String(url),'https://fixture.invalid');
+    const command=JSON.parse(options.body);requests.push(command);
+    assert.equal(command[0],'GET');
+    return Response.json({result:JSON.stringify(returnedRecord)});
+  };
+  for(const scope of ['preview','production']){
+    process.env.VERCEL_ENV=scope;
+    requests.length=0;
+    for(const method of ['GET','POST','DELETE']){
+      const response={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await retiredPromotion({method,headers:{authorization:'Device '+fakeToken}},response);
+      assert.equal(response.code,410);assert.ok(!response.body.deviceToken);
+    }
+    assert.equal(requests.length,0);
+    assert.equal(await authorizeDeviceToken(fakeToken,{targetScope:scope==='preview'?'production':'preview'}),null);
+    assert.equal(requests.length,0);
+    assert.deepEqual(await authorizeDeviceToken(fakeToken),validRecord);
+    assert.equal(requests.length,1);assert.ok(requests[0][1].includes(':'+scope+':token:'));
+    returnedRecord={...validRecord,characterSlug:'constructor'};
+    assert.equal(await authorizeDeviceToken(fakeToken),null);
+    returnedRecord={...validRecord,revokedAt:'2026-11-27T00:00:00Z'};
+    assert.equal(await authorizeDeviceToken(fakeToken),null);
+    returnedRecord=validRecord;
+  }
+  console.log('Privacy: promotion closed, scope-bound authorization and existing production devices preserved: OK');
+}finally{
+  globalThis.fetch=savedFetch;
+  for(const [key,value] of Object.entries(savedEnv)){if(value===undefined)delete process.env[key];else process.env[key]=value;}
+}
