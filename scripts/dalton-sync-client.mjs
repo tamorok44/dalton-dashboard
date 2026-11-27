@@ -74,56 +74,6 @@ async function revokeDevice(config){
   await saveConfig(clean);
   return {revoked:true,characterName:config.characterName||null};
 }
-async function promoteToProduction(config,{endpointOverride=null,previewShareUrlOverride=null}={}){
-  const token=config?.deviceToken;
-  const endpoint=endpointOverride||config?.endpoint;
-  if(!token||!endpoint)throw new Error('Aktive Preview-Kopplung fehlt');
-  if(config.characterSlug!=='cole-dalton')throw new Error('Nur Coles Hub kann auf Produktion umgestellt werden');
-  const base=new URL(endpoint);
-  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-promote');
-  const cookie=await previewCookie(previewShareUrlOverride||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
-  const headers={
-    Authorization:'Device '+token,
-    'Content-Type':'application/json',
-    'User-Agent':'DaltonDashboardBridge/'+VERSION
-  };
-  if(cookie)headers.Cookie=cookie;
-  const response=await fetch(base,{
-    method:'POST',
-    headers,
-    body:'{}',
-    signal:AbortSignal.timeout(15000)
-  });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('Produktionsübernahme fehlgeschlagen: '+String(body.error||response.statusText).slice(0,180));
-  const next={
-    ...config,
-    deviceToken:body.deviceToken,
-    characterSlug:body.characterSlug||config.characterSlug,
-    characterName:body.characterName||config.characterName,
-    endpoint:body.productionEndpoint||'https://dalton-dashboard-eight.vercel.app/api/addon-sync',
-    previewShareUrl:null,
-    promotedAt:new Date().toISOString()
-  };
-  await saveConfig(next);
-  try{
-    const revokeUrl=new URL(endpoint);
-    revokeUrl.pathname=revokeUrl.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
-    const revokeHeaders={
-      Authorization:'Device '+token,
-      'Content-Type':'application/json',
-      'User-Agent':'DaltonDashboardBridge/'+VERSION
-    };
-    if(cookie)revokeHeaders.Cookie=cookie;
-    await fetch(revokeUrl,{
-      method:'POST',
-      headers:revokeHeaders,
-      body:JSON.stringify({action:'revoke'}),
-      signal:AbortSignal.timeout(10000)
-    });
-  }catch{}
-  return next;
-}
 async function createEnrollment(endpoint,characterSlug,auth,{previewShareUrl=null}={}){
   if(!auth)throw new Error('Kein berechtigter Hub-Zugang für Einrichtungscodes vorhanden');
   const base=new URL(endpoint);
@@ -169,7 +119,7 @@ function help(){
   console.log('  node scripts/dalton-sync-client.mjs --enroll <Einrichtungscode>');
   console.log('  node scripts/dalton-sync-client.mjs --create-enroll <character-slug>   # nur Administrator');
   console.log('  node scripts/dalton-sync-client.mjs --revoke-device                    # Gerätezugang widerrufen');
-  console.log('  node scripts/dalton-sync-client.mjs --promote-production               # Cole: Preview auf Produktion umstellen');
+  console.log('  Produktionskopplung: regulären Einrichtungscode der Zielumgebung verwenden.');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
   console.log('Normale Spieler verwenden einen individuellen Gerätezugang; Cole kann damit zusätzlich Peer-Codes erzeugen.');
@@ -449,14 +399,7 @@ async function main(){
     return;
   }
   if(options.promoteProduction){
-    const config=await loadConfig();
-    const promoted=await promoteToProduction(config,{
-      endpointOverride:options.endpointProvided?options.endpoint:null,
-      previewShareUrlOverride:options.previewShareUrl
-    });
-    console.log('Bridge auf Produktion umgestellt: '+String(promoted.characterName||promoted.characterSlug));
-    console.log('Endpunkt: '+promoted.endpoint);
-    return;
+    throw new Error('Automatische Geräteübernahme deaktiviert. Bitte einen regulären Einrichtungscode für die Produktionsumgebung verwenden.');
   }
 
   const config=await loadConfig();

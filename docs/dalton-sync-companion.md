@@ -107,3 +107,7 @@ Die Geräteberechtigungen bleiben eng begrenzt:
 - nur Coles Hub-Gerät darf zusätzlich einen echten `dalton-peer-relay`-Datensatz von Chucky, Dolly oder Viola weiterleiten;
 - Coles Hub-Gerät darf **keinen** fremden Direkt-Sync vortäuschen;
 - Peer-Geräte dürfen weder andere Dalton-Charaktere synchronisieren noch weitere Einrichtungscodes erzeugen.
+
+## Getrennte Kopplung von Preview und Produktion
+
+Die automatische Übernahme eines Preview-Geräts in die Produktion ist abgeschaltet. Für eine neue Produktionskopplung ist ein regulär autorisierter Einrichtungscode aus der Produktionsumgebung erforderlich. Bereits gültige Produktionsgeräte bleiben unverändert gekoppelt. Ein Preview-Code oder Preview-Gerät gilt nicht als Produktionsberechtigung. Historische Deployments und bestehende Gerätezugänge müssen bei der betrieblichen Abnahme separat inventarisiert und gegebenenfalls widerrufen werden.
