@@ -1408,10 +1408,11 @@ function workshopTreeHtml(node,depth=0){
   const craftable=node.status==='craftable'&&node.recipe;
   const status=craftable
     ?'<span class="workshop-node-status is-craftable">Herstellbar · '+esc(workshopCrafterText(node.recipe.crafters||[]))+'</span>'
-    :'<span class="workshop-node-status is-obtain">Muss beschafft werden</span>';
+    :node.status==='from-surplus'?'<span class="workshop-node-status is-craftable">Aus bereits geplanter Herstellung</span>':'<span class="workshop-node-status is-obtain">Muss beschafft werden</span>';
   const recipe=craftable
     ?'<div class="workshop-node-meta"><span>'+esc(node.recipe.profession||'Beruf')+'</span><span>'+esc(node.recipe.craftsRequired)+'× Herstellung</span>'+
-      (node.recipe.yieldPerCraft?.variable?'<span>Ausbeute '+esc(node.recipe.yieldPerCraft.min)+'–'+esc(node.recipe.yieldPerCraft.max)+'</span>':'')+'</div>'
+      (node.recipe.yieldPerCraft?.variable?'<span>Ausbeute '+esc(node.recipe.yieldPerCraft.min)+'–'+esc(node.recipe.yieldPerCraft.max)+'</span>':'')+
+      (node.fromSurplus?'<span>'+esc(node.fromSurplus)+'× aus geplanter Herstellung</span>':'')+'</div>'
     :'';
   const children=displayList('materialBranches',node.materials||[],child=>workshopTreeHtml(child,depth+1)).join('');
   return '<div class="workshop-tree-node" style="--workshop-depth:'+depth+'"><div class="workshop-node-card">'+
@@ -1424,15 +1425,19 @@ function workshopResultHtml(){
   const item=result.item||{};
   const tree=result.plan?.tree;
   const topCrafters=tree?.recipe?.crafters||item.crafters||[];
-  const craftable=tree?.status==='craftable';
+  const blocked=result.plan?.complete===false;
+  const craftable=!blocked&&tree?.status==='craftable';
   const base=(result.plan?.externalMaterials||[]);
+  const issue=result.plan?.issues?.[0]?.code;
+  const blockedReason=issue==='cycle-detected'?'Die Rezeptabhängigkeiten bilden einen Kreis.':'Die Berechnung überschreitet eine sichere Mengen- oder Strukturgrenze.';
   return '<article class="workshop-result">'+
-    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3 class="knowledge-title">'+knowledgeIcon(item.iconUrl,40)+esc(item.name||('Item '+item.id))+'</h3>'+
+    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(blocked?'PRODUKTIONSPLAN NICHT BERECHENBAR':craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3 class="knowledge-title">'+knowledgeIcon(item.iconUrl,40)+esc(item.name||('Item '+item.id))+'</h3>'+
     '<p>'+esc(workshopCrafterText(topCrafters))+'</p></div>'+
     (craftable?'<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label>':'')+'</div>'+
     (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
     (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+displayList('alphabetical',base,material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
-    (!craftable?workshopLearningHtml(result):'')+
+    (blocked?'<p class="error">'+esc(blockedReason)+' Es kann keine verlässliche Materialliste angezeigt werden.</p>':'')+
+    (!craftable&&!blocked?workshopLearningHtml(result):'')+
     (result.source==='foreverdb'?'<p class="workshop-credit">Rezeptdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</article>';
 }

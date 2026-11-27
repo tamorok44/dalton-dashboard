@@ -157,10 +157,11 @@ export default async function handler(req,res){
     return res.status(405).json({error:'Methode nicht erlaubt'});
   }
   try{
-    const stored=await loadCharacters();
-    const catalog=buildWorkshopCatalog(stored.data);
     const url=queryUrl(req);
     const q=(url.searchParams.get('q')||'').trim();
+    if(url.searchParams.has('q')&&(q.length<3||q.length>120))return res.status(400).json({error:'Suchbegriff muss 3 bis 120 Zeichen enthalten'});
+    const stored=await loadCharacters();
+    const catalog=buildWorkshopCatalog(stored.data);
     const itemId=Number(url.searchParams.get('item'));
     const quantity=Math.max(1,Math.min(9999,Math.ceil(Number(url.searchParams.get('quantity'))||1)));
     const remoteReady=foreverDbConfigured();
@@ -183,7 +184,11 @@ export default async function handler(req,res){
         }
       }
       if(!suggestions.length&&scope==='all'){
-        suggestions=searchWorkshopItems(catalog,q,{limit:50}).map(publicItem);
+        const local=searchWorkshopItems(catalog,q,{limit:50}).map(publicItem);
+        if(local.length||source!=='foreverdb'){
+          suggestions=local;
+          source='blizzard-known';
+        }
       }
       return res.status(200).json({
         query:q,

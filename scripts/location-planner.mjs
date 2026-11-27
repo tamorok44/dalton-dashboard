@@ -69,8 +69,9 @@ function sourceAllowedForCharacter(source,character){
   if(source?.offerObservedFor&&source.offerObservedFor!==character?.slug)return false;
   if(source?.type==='vendor'&&source.notEveryoneSees===true&&source.offerObservedFor!==character?.slug)return false;
   const faction=norm(character?.faction);
-  if(source?.side==='horde'&&/(allianz|alliance)/.test(faction))return false;
-  if(source?.side==='alliance'&&/horde/.test(faction))return false;
+  // Faction-restricted offers require positive evidence of membership.
+  if(source?.side==='horde'&&faction!=='horde')return false;
+  if(source?.side==='alliance'&&!['allianz','alliance'].includes(faction))return false;
   return true;
 }
 function eligibleNpcSources(sources,character,{types=['vendor','trainer']}={}){
