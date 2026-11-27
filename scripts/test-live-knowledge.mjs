@@ -214,3 +214,29 @@ const wrongType=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enab
 assert.equal(wrongType.length,0);
 assert.equal(wrongType.integrityIssues[0].reason,'invalid_storage_type');
 assert.equal(publicLiveKnowledgeSummary(wrongType).unpreservedIntegrityRecords,1);
+
+// Reader collision: preserve original bytes and recover deterministically,
+// including a collision installed between HGET and HSETNX.
+const {knowledgeQuarantine}=await import('./storage-reconciliation.mjs');
+for(const concurrent of [false,true]){
+  const modernRaw=JSON.stringify(v2),legacyRaw=JSON.stringify(sameSecond);
+  const primary=knowledgeQuarantine(current[1],modernRaw,legacyRaw,'conflicting_record');
+  const bad='occupied evidence \\n';
+  const store=new Map(concurrent?[]:[[primary.field,bad]]);let writes=0;
+  const fake=async ([op,key,...args])=>{
+    if(op==='SMEMBERS'||op==='HKEYS')return [current[1]];
+    if(op==='HMGET')return [modernRaw];
+    if(op==='EVAL')return typed([legacyRaw]);
+    if(op==='HGET')return store.get(args[0])??null;
+    if(op==='HSETNX'){
+      writes++;if(concurrent&&args[0]===primary.field&&!store.has(args[0]))store.set(args[0],bad);
+      if(store.has(args[0]))return 0;store.set(args[0],args[1]);return 1;
+    }throw Error(op);
+  };
+  const run=()=>loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:fake});
+  const first=await run();assert.equal(first.length,0);assert.equal(first.integrityIssues[0].preserved,true);
+  assert.equal(store.get(primary.field),bad);
+  const alternate=[...store.entries()].find(([field])=>field!==primary.field);
+  assert.ok(alternate);const q=JSON.parse(alternate[1]);assert.equal(q.modernRaw,modernRaw);assert.equal(q.legacyRaw,legacyRaw);assert.equal(q.collision.raw,bad);
+  const before=writes;assert.equal((await run()).integrityIssues[0].preserved,true);assert.equal(writes,before);
+}
