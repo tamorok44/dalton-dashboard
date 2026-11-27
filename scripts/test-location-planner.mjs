@@ -235,3 +235,36 @@ assert.equal(sameWorldForOther.counts.atLocation,0);
     assert.deepEqual([...new Set(ids)],expected,'Faction proof: '+faction);
   }
 }
+
+
+// Invalid planner requests must stop before catalogue, provider or Add-on reads.
+{
+  const {default:plannerApi}=await import('../api/location-planner.js');
+  const keys=['KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','FOREVERDB_API_KEY'];
+  const old=Object.fromEntries(keys.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
+  try{
+    process.env.KV_REST_API_URL='https://planner-input-fixture.invalid';
+    process.env.KV_REST_API_TOKEN='synthetic';
+    process.env.FOREVERDB_API_KEY='synthetic';
+    let calls=0;
+    globalThis.fetch=async(url,options)=>{
+      calls++;
+      assert.equal(String(url),'https://planner-input-fixture.invalid');
+      assert.deepEqual(JSON.parse(options.body),['GET','dalton-dashboard:characters:v1']);
+      return Response.json({result:JSON.stringify(data)});
+    };
+    const call=async query=>{
+      const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await plannerApi({method:'GET',url:'/api/location-planner?'+query},res);
+      return res;
+    };
+    assert.equal((await call('character=%2Fbad')).code,400);
+    assert.equal((await call('location='+'x'.repeat(121))).code,400);
+    assert.equal(calls,0);
+    assert.equal((await call('character=unknown-dalton')).code,404);
+    assert.equal(calls,1);
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
+}
