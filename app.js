@@ -1155,7 +1155,7 @@ function cmpEntry(value,score=null,extra='',stale=false){
 function cmpTableRow(label,values,chars,{direction=1,comparable=true,iconUrl=null}={}){
   const scores=values.map(v=>v?.score).filter(v=>v!==null&&v!==undefined&&Number.isFinite(v));
   const min=scores.length?Math.min(...scores):null,max=scores.length?Math.max(...scores):null;
-  const diff=comparable&&scores.length>=2&&max!==min;
+  const diff=comparable&&values.every(v=>!v?.stale)&&scores.length>=2&&max!==min;
   return '<tr><th scope="row">'+(iconUrl?'<span class="knowledge-title">'+knowledgeIcon(iconUrl,22)+esc(label)+'</span>':esc(label))+'</th>'+values.map(v=>{
     const missing=!v||v.value==='–';
     const state=!diff||missing||v.score===null?'':(v.score===max?(direction===1?'best':'worst'):v.score===min?(direction===1?'worst':'best'):'middle');
@@ -1169,9 +1169,11 @@ function cmpTableRow(label,values,chars,{direction=1,comparable=true,iconUrl=nul
 function cmpSectionRows(id,chars){
   const rows=[];
   const push=(label,fn,opts={})=>rows.push(cmpTableRow(label,chars.map(fn),chars,opts));
+  const sameLevel=chars.length>1&&chars.every(c=>Number.isInteger(c.level)&&c.level===chars[0].level);
+  const sameClass=chars.length>1&&chars.every(c=>Number.isInteger(c.classId)&&c.classId===chars[0].classId);
   if(id==='stats'){
-    push('Level',c=>cmpEntry(c.level,c.level));
-    push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience));
+    push('Level',c=>cmpEntry(c.level,c.level,'',c.scrapeOk===false));
+    push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience,'',c.scrapeOk===false),{comparable:sameLevel});
     const namesByEnum=new Map();
     for(const c of chars)for(const entry of Array.isArray(c.statsDetails)?c.statsDetails:[]){
       if(entry?.enum&&entry?.name&&!namesByEnum.has(entry.enum))namesByEnum.set(entry.enum,entry.name);
@@ -1186,16 +1188,16 @@ function cmpSectionRows(id,chars){
         const detail=(c.statsDetails||[]).find(entry=>entry?.enum===enumKey);
         const value=c.statsByEnum?.[enumKey];
         return cmpEntry(detail?formatStatValue({...detail,value}):'–',value,'',c.scrapeOk===false||!(c.statsFreshEnums||[]).includes(enumKey));
-      });
+      },{comparable:sameLevel&&sameClass});
     }
   }
   if(id==='equipment'){
-    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL));
+    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,'',c.scrapeOk===false||c.equipmentVerified===false),{comparable:sameLevel&&sameClass});
     const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=item?.slotType;if(key&&!m.has(key)&&item.item)m.set(key,item)}return m});
     for(const slotType of equipmentSlotOrder){
       const label=slots.map(m=>m.get(slotType)?.slot).find(Boolean);
       if(!label)continue;
-      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:sameLevel&&sameClass});
     }
   }
   if(id==='talents'){
@@ -1253,7 +1255,7 @@ function renderComparison(){
       const visible=comparisonState.mode==='differences'?rows.filter(row=>{const cells=[...row.matchAll(/<span class="compare-value">([^<]*)<\/span>/g)].map(m=>m[1]);return new Set(cells).size>1;}):rows;
       return '<tr class="compare-section-heading"><th colspan="'+(selected.length+1)+'"><button type="button" data-compare-section="'+id+'" aria-expanded="'+comparisonState.expanded.has(id)+'">'+(comparisonState.expanded.has(id)?'▾ ':'▸ ')+esc(label)+' · '+visible.length+'</button></th></tr>'+
         (comparisonState.expanded.has(id)?visible.join(''):'');
-    }).join('')+'</tbody></table></div><p class="compare-legend"><span class="compare-best">Bester Wert</span><span class="compare-middle">Zwischenwert</span><span class="compare-worst">Niedrigster Wert</span><span>Gleich / nicht bewertbar: neutral</span></p>';
+    }).join('')+'</tbody></table></div><p class="compare-legend"><span class="compare-best">Höchster Zahlenwert</span><span class="compare-middle">Zwischenwert</span><span class="compare-worst">Niedrigster Zahlenwert</span><span>Keine Aussage über Spielstärke; unterschiedliche Klassen/Stufen und nicht aktuelle Werte bleiben bei Ausrüstung und Kampfwerten neutral.</span></p>';
   compareRoot.innerHTML=choices+content;
   compareRoot.querySelectorAll('[data-compare-character]').forEach(input=>input.addEventListener('change',()=>{
     if(input.checked)comparisonState.selected.add(input.dataset.compareCharacter);else comparisonState.selected.delete(input.dataset.compareCharacter);
@@ -2038,6 +2040,8 @@ let lastGeneratedAt=null;
 let lastDataVersion=null;
 let dataLoadPromise=null;
 let versionCheckPromise=null;
+let lastVersionCheckStarted=0;
+const VERSION_EVENT_MIN_INTERVAL_MS=10000;
 function payloadDataVersion(payload={}){
   if(typeof payload?.dataVersion?.version==='string'&&payload.dataVersion.version)return payload.dataVersion.version;
   return ['data-v1',payload?.data?.generatedAt||'',payload?.petRules?.checkedAt||'',payload?.petRules?.rulebookVersion||'',payload?.petRules?.overall||''].join('|');
@@ -2105,6 +2109,9 @@ async function load({silent=false,force=false}={}){
 }
 async function checkForNewData(){
   if(document.visibilityState==='hidden'||button.disabled||versionCheckPromise)return false;
+  const now=Date.now();
+  if(now-lastVersionCheckStarted<VERSION_EVENT_MIN_INTERVAL_MS)return false;
+  lastVersionCheckStarted=now;
   versionCheckPromise=(async()=>{
     try{
       const response=await fetch('/api/data-version?t='+Date.now(),{cache:'no-store'});
@@ -2171,7 +2178,7 @@ button.addEventListener('click',refreshLive);
 load();
 syncMainView();
 
-const DATA_FRESHNESS_INTERVAL_MS=60*1000;
+const DATA_FRESHNESS_INTERVAL_MS=120*1000;
 setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()},DATA_FRESHNESS_INTERVAL_MS);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForNewData()});
 window.addEventListener('focus',()=>checkForNewData());
