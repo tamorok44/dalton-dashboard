@@ -329,8 +329,12 @@ try{
    const page=await offline.newPage();
    await page.route(url=>url.origin!==origin,r=>r.abort());
    const before=providerReads;
-   await page.goto(origin+'/');
+   // A static same-origin document without the app's auto-registration.
+   await page.goto(origin+'/icon.svg');
    await page.evaluate(async()=>{
+     await caches.open('unrelated-qa-cache');
+     await caches.open('daltons-talent-planner-obsolete-qa');
+     await caches.open('daltons-refresh-security-obsolete-qa');
      if(!('serviceWorker' in navigator))throw Error('service worker unavailable');
      await navigator.serviceWorker.register('/sw.js');
    });
@@ -344,7 +348,7 @@ try{
      const paths=(await cache.keys()).map(r=>new URL(r.url).pathname+new URL(r.url).search);
      return {keys,paths,apiCached:paths.some(p=>p.startsWith('/api/')||p.startsWith('/data/'))};
    },expectedCache);
-   assert.deepEqual(installed.keys,[expectedCache],'Only the current declared app-shell cache may remain');
+   assert.deepEqual(installed.keys.slice().sort(),[expectedCache,'unrelated-qa-cache'].sort(),'Only Dalton-owned obsolete caches may be removed');
    assert.ok(installed.paths.includes('/talent-planner.js')&&installed.paths.includes('/talent-personal-state.js')&&installed.paths.includes('/talent-text-quality.js'));
    assert.ok(installed.paths.includes('/')&&installed.paths.some(p=>p.startsWith('/app.js?v=')));
    assert.equal(installed.apiCached,false);
