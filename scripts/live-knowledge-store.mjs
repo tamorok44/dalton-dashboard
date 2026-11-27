@@ -258,7 +258,6 @@ async function writableQuarantine(key,modern,legacy,reason,snapshot){
   }
   throw Error('QUARANTINE_COLLISION_LIMIT');
 }
-}
 async function saveRecord(key,value,{changed,lockToken,expectedModern,expectedLegacy,legacyType=expectedLegacy===null?'none':'string',quarantine=null,proofChecks=[]}){
   if(!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
   // Record, implicit index and version are fields of one hash. The one
