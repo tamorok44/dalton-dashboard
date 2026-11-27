@@ -3,7 +3,7 @@ import {rosterMatches} from './daily-roster.mjs';
 import {VERSION_METADATA_KEY,CORE_COMPACT_KEY,characterVersionMetadata} from './version-metadata.mjs';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
-import {runRedisRequest,ADDON_LEASE_SECONDS} from './sync-deadline.mjs';
+import {runRedisRequest,assertSyncBudget,armSyncFence,fenceRedisCommand,ADDON_LEASE_SECONDS,SERVER_CLOCK_MARGIN_MS} from './sync-deadline.mjs';
 import {normalizeVerifiedPlayerTerminology} from './player-terminology.mjs';
 const require=createRequire(import.meta.url);
 const initial=require('../data/characters.json');
@@ -22,10 +22,11 @@ function settings(){
   if(parsed.protocol!=='https:')throw new Error('Redis muss HTTPS verwenden');
   return {url:parsed.origin+parsed.pathname.replace(/\/$/,''),token};
 }
-export async function redis(command){
+export async function redis(command,{control=false}={}){
   const {url,token}=settings();
+  const wire=control?command:fenceRedisCommand(command);
   return runRedisRequest(async signal=>{
-    const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(command),signal});
+    const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(wire),signal});
     if(!response.ok)throw new Error('Redis HTTP '+response.status);
     const payload=await response.json();
     if(payload.error)throw new Error('Redis: '+String(payload.error).slice(0,120));
@@ -41,19 +42,56 @@ export async function loadCharacters(){
   if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Gespeicherter Datensatz ist ungültig');
   return {data:normalizeVerifiedPlayerTerminology(data),fallback:false};
 }
+// A unique, short-lived permit is created before attempting the shared
+// lease. A delayed acquisition cannot recreate a lease after revocation.
+// Both expire at the absolute server-clock work cutoff, not 22s after
+// an arbitrarily delayed SET. TIME is sampled before issuance; no local
+// wall-clock synchronization is assumed.
+const permitKey=(key,token)=>key+':permit:'+token;
+const SERVER_NOW="local t=redis.call('TIME'); local now=tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000); ";
+const ISSUE_ADDON_PERMIT="-- addon-permit-issue:v1\n"+SERVER_NOW+"local untilMs=tonumber(ARGV[1]); if now>=untilMs then return redis.error_reply('ADDON_SYNC_DEADLINE') end; return redis.call('SET',KEYS[1],ARGV[1],'PXAT',ARGV[1],'NX')";
+const ACQUIRE_ADDON="-- addon-lock-acquire:v1\n"+SERVER_NOW+"local untilMs=tonumber(ARGV[2]); if now>=untilMs then return redis.error_reply('ADDON_SYNC_DEADLINE') end; if redis.call('GET',KEYS[2])~=ARGV[2] then return redis.error_reply('ADDON_PERMIT_REVOKED') end; return redis.call('SET',KEYS[1],ARGV[1],'PXAT',ARGV[2],'NX')";
 export async function acquireRefreshLock({addon=false,token=randomUUID()}={}){
   const key=addon?addonSyncLockKey():LOCK;
+  let deadlineMs=null;
   try{
-    const ok=await redis(['SET',key,token,'EX',addon?ADDON_LEASE_SECONDS:120,'NX']);
-    return ok==='OK'?token:null;
+    let ok;
+    if(addon){
+      const sampled=await redis(['TIME'],{control:true});
+      const sec=Number(sampled?.[0]),micros=Number(sampled?.[1]);
+      if(!Array.isArray(sampled)||sampled.length!==2||!Number.isSafeInteger(sec)||sec<=0||!Number.isInteger(micros)||micros<0||micros>=1000000)throw Error('Ungültige Redis-Zeit');
+      const scope=assertSyncBudget(),remaining=scope?scope.deadlineAt-performance.now():ADDON_LEASE_SECONDS*1000;
+      deadlineMs=Math.floor(sec*1000+micros/1000+remaining-SERVER_CLOCK_MARGIN_MS);
+      const permit=permitKey(key,token),issued=await redis(['EVAL',ISSUE_ADDON_PERMIT,1,permit,String(deadlineMs)],{control:true});
+      if(issued!=='OK')throw Error('ADDON_PERMIT_NOT_ISSUED');
+      ok=await redis(['EVAL',ACQUIRE_ADDON,2,key,permit,token,String(deadlineMs)],{control:true});
+    }else ok=await redis(['SET',key,token,'EX',120,'NX']);
+    if(ok==='OK'){
+      if(addon)armSyncFence({key,token,deadlineMs});
+      return token;
+    }
+    return null;
   }catch(error){
-    try{if(await redis(['GET',key])===token)return token;}catch{}
+    try{
+      if(await redis(['GET',key],{control:true})===token&&(!addon||deadlineMs!==null&&await redis(['GET',permitKey(key,token)],{control:true})===String(deadlineMs))){
+        if(addon)armSyncFence({key,token,deadlineMs});
+        return token;
+      }
+    }catch{}
     throw error;
   }
 }
 export async function releaseRefreshLock(token,{addon=false}={}){
+  if(addon){
+    const key=addonSyncLockKey();
+    // Exactly one DEL mutation, never delete another owner's lock.
+    const lua="-- addon-lock-revoke:v1\nif redis.call('GET',KEYS[1])==ARGV[1] then redis.call('DEL',KEYS[2],KEYS[1]) else redis.call('DEL',KEYS[2]) end; return 1";
+    const result=await redis(['EVAL',lua,2,key,permitKey(key,token),token],{control:true});
+    if(result!==1)throw Error('ADDON_REVOKE_UNCONFIRMED');
+    return result;
+  }
   const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
-  return redis(['EVAL',lua,1,addon?addonSyncLockKey():LOCK,token]);
+  return redis(['EVAL',lua,1,LOCK,token]);
 }
 export async function manualCooldown(){
   return (await redis(['SET',COOLDOWN,'1','EX',60,'NX']))==='OK';

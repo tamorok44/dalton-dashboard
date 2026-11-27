@@ -192,7 +192,7 @@ if(!hasRedis){
     const {default:addon,createAddonSyncHandler}=await import('../api/addon-sync.js');
     const boundedAddon=createAddonSyncHandler({workMs:700,cleanupUntilMs:1200});
     const {ADDON_LEASE_SECONDS,runSyncDeadline}=await import('./sync-deadline.mjs');
-    assert.equal(ADDON_LEASE_SECONDS,35);
+    assert.equal(ADDON_LEASE_SECONDS,22);
     const rosterKey='dalton-dashboard:characters:v1',lockKey='dalton-dashboard:refresh:lock',versionKey='dalton-dashboard:core:compact:v2:production';
     const syncKey=slug=>'dalton-dashboard:addon-sync:v1:production:'+slug;
     cli('SET',rosterKey,JSON.stringify({generatedAt:date(-4),characters:[
@@ -225,9 +225,9 @@ if(!hasRedis){
         if(mode==='stall-proof-read'&&op==='HGET'&&cmd[2]===proofTarget){
           mode=null;stallObserved=true;await new Promise(resolve=>{stalledRelease=resolve});
         }
-        if(mode==='stall-lock-reply'&&op==='SET'&&key===lockKey&&cmd[4]===ADDON_LEASE_SECONDS){
+        if(mode==='stall-lock-reply'&&op==='EVAL'&&cmd[3]===lockKey&&cmd[1].includes('addon-lock-acquire:v1')){
           mode=null;assert.equal(cli(...cmd),'OK');stallObserved=true;
-          assert.ok(cli('PTTL',key)>0&&cli('PTTL',key)<=35000);
+          assert.ok(cli('PTTL',lockKey)>0&&cli('PTTL',lockKey)<=22000);
           await new Promise(resolve=>{stalledRelease=resolve});
           return Response.json({result:'OK'});
         }
@@ -625,10 +625,8 @@ if(!hasRedis){
     const cleanupStart=performance.now();
     assert.equal((await call(cleanup,boundedAddon)).http,200);
     assert.ok(stallObserved);assert.ok(performance.now()-cleanupStart<1800);
-    assert.ok(cli('PTTL',lockKey)>0&&cli('PTTL',lockKey)<=35000);
-    assert.equal((await call(payload('Audit Two','blocked-by-lease',[133,143],now+27))).http,409);
-    // Accelerated lease expiry in isolated fixture, never a production unlock.
-    cli('PEXPIRE',lockKey,10);await delay(30);stalledRelease();
+    assert.equal(cli('GET',lockKey),null,'lease expires at work cutoff even when cleanup stalls');
+    stalledRelease();
     assert.equal((await call(payload('Audit Two','after-lease-expiry',[133,143],now+27))).http,200);
     // Closing a scope also blocks subsequent Redis commands in work that
     // ignored cancellation and finished after the deadline.

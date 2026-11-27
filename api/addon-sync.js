@@ -75,7 +75,14 @@ export function createAddonSyncHandler({workMs=ADDON_WORK_MS,cleanupUntilMs=ADDO
       // be cleaned up, but never delete another owner's lease.
       if(ownership.token){
         try{await runSyncDeadline(started+cleanupUntilMs,()=>releaseRefreshLock(ownership.token,{addon:true}));}
-        catch(error){console.warn('Addon-Sync-Lock konnte nicht freigegeben werden:',String(error.message).slice(0,140));}
+        catch(error){
+          console.warn('Addon-Sync-Lock konnte nicht freigegeben werden:',String(error.message).slice(0,140));
+          // If revocation cannot be proved, do not respond before the
+          // absolute work cutoff. Permit and lease expire by that cutoff
+          // on a normally progressing provider clock.
+          const remaining=started+workMs-performance.now();
+          if(remaining>0)await new Promise(resolve=>setTimeout(resolve,Math.ceil(remaining)));
+        }
       }
     }
     return res.status(result.status).json(result.body);
@@ -104,7 +111,7 @@ async function syncRequest(req,ownership){
     // an already successful sync for another character.
     ownership.token=randomUUID();
     lockToken=await acquireRefreshLock({addon:true,token:ownership.token});
-    if(!lockToken){ownership.token=null;return reply(409,{error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});}
+    if(!lockToken){return reply(409,{error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});}
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
