@@ -312,3 +312,13 @@ assert.deepEqual([...orderApp.matchAll(/^import .*? from ['"]([^'"]+)['"];/gm)].
 assert.ok(orderApp.includes("displayList('alphabetical',list,rep=>{"),'Reputation must use central alphabetical order');
 
 assert.ok(orderApp.includes("displayList('talentCoordinates',tree.talents")&&orderApp.includes("displayList('fixedControls',klass.trees"),'Talent trees retain original game geometry and order');
+
+
+// F15 staged CSP: do not switch to enforced policy before a complete
+// protected preview and native browser compatibility review.
+{
+  const header=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy-Report-Only');
+  assert.ok(header,'CSP report-only candidate required');
+  for(const directive of ["default-src 'self'","script-src 'self'","object-src 'none'","frame-ancestors 'none'","base-uri 'self'","connect-src 'self'"])assert.ok(header.value.split(';').map(s=>s.trim()).includes(directive));
+  assert.ok(!vercelConfig.headers.flatMap(x=>x.headers).some(x=>x.key==='Content-Security-Policy'),'Do not silently enable enforcement');
+}
