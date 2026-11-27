@@ -1,4 +1,5 @@
-import {addonCompactKey,addonVersionMetadata} from './version-metadata.mjs';
+import {addonCompactKey,addonVersionMetadata,addonVersionField,VERSION_METADATA_KEY,parseVersionMetadata} from './version-metadata.mjs';
+import {selectVersionEvidence} from './storage-reconciliation.mjs';
 import {redis,configured,CHARACTER_KEY,addonSyncLockKey,REDIS_TYPE_GUARD,REDIS_COMPACT_READ,normalizedCharacterWrite} from './character-store.mjs';
 import {createHash} from 'node:crypto';
 import {addonSyncContentIdentity} from './addon-sync.mjs';
@@ -11,6 +12,7 @@ function keyFor(characterSlug){
   return 'dalton-dashboard:addon-sync:v1:'+environmentScope()+':'+characterSlug;
 }
 
+const summaryKey=slug=>'dalton-dashboard:addon-summary:v1:'+environmentScope()+':'+slug;
 const RECEIPT_LIMIT=64;
 function digest(value){return createHash('sha256').update(JSON.stringify(addonSyncContentIdentity(value))).digest('hex')}
 function epoch(value){
@@ -73,16 +75,17 @@ export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,r
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
   const state={characterSlug,receivedAt,payload,receipts,pendingObservations,...(pendingObservations&&pendingObservationPayload?{pendingObservationPayload}:{})};
   const args=[JSON.stringify(state),characterSlug,JSON.stringify(addonVersionMetadata(state))];
+  const summary=JSON.stringify({schema:1,summary:publicAddonSyncSummary(state)});
   const production=environmentScope()==='production';
   if(!lockToken)throw new Error('Schreibsperre für Addon-Sync erforderlich');
   if(!production&&roster)throw new Error('Preview darf keine Charakterdaten schreiben');
-  const guard=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
+  const guard=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'string') or not valid(KEYS[#KEYS],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
   const prepare="local meta=compact(KEYS[2]); if meta.addon~=nil and type(meta.addon)~='table' then return redis.error_reply('INVALID_COMPACT_METADATA') end; meta.addon=meta.addon or {}; meta.addon[ARGV[2]]=cjson.decode(ARGV[3]); ";
-  const write="return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],cjson.encode(meta))";
-  const atomic=guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[5] then meta.characters=cjson.decode(ARGV[6]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[5],KEYS[2],cjson.encode(meta)) end; "+write;
+  const write="return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],cjson.encode(meta),KEYS[#KEYS],ARGV[5])";
+  const atomic=guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[6] then meta.characters=cjson.decode(ARGV[7]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[6],KEYS[2],cjson.encode(meta),KEYS[5],ARGV[5]) end; "+write;
   const result=production
-    ?await redis(['EVAL',atomic,4,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),CHARACTER_KEY,...args,lockToken,...(roster?normalizedCharacterWrite(roster):[])])
-    :await redis(['EVAL',guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; "+prepare+write,3,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),...args,lockToken]);
+    ?await redis(['EVAL',atomic,5,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),CHARACTER_KEY,summaryKey(characterSlug),...args,lockToken,summary,...(roster?normalizedCharacterWrite(roster):[])])
+    :await redis(['EVAL',guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; "+prepare+write,4,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),summaryKey(characterSlug),...args,lockToken,summary]);
   if(result!=='OK')throw new Error('Addon-Sync-Status nicht gespeichert');
   return state;
 }
@@ -103,15 +106,36 @@ export async function loadAddonSyncStates(characterSlugs=[]){
   return Object.fromEntries(entries.filter(([,state])=>state));
 }
 
+// Read only the bounded projection on the warm path. Old writers and
+// missing/corrupt projections use the authoritative raw state, never an
+// unverified cache. No migration write on public reads.
 export async function loadPublicAddonSyncStates(characterSlugs=[]){
-  const result={};
-  for(const slug of characterSlugs){
-    try{
-      const state=await loadAddonSyncState(slug);
-      if(state)result[slug]=publicAddonSyncSummary(state);
-    }catch(error){
-      console.warn('Addon-Sync-Status konnte nicht geladen werden:',String(error.message).slice(0,140));
+  const slugs=[...new Set(characterSlugs)].filter(slug=>typeof slug==='string'&&slug);
+  if(!configured()||!slugs.length)return {};
+  const result={},missing=new Set(slugs);
+  try{
+    const [rows,legacy]=await Promise.all([
+      redis(['MGET',addonCompactKey(),...slugs.map(summaryKey)]),
+      redis(['HMGET',VERSION_METADATA_KEY,...slugs.map(addonVersionField)])
+    ]);
+    const core=JSON.parse(rows?.[0]||'{}');
+    if(!Array.isArray(rows)||rows.length!==slugs.length+1||!Array.isArray(legacy)||legacy.length!==slugs.length)throw Error('Ungültige Projektionsantwort');
+    for(let i=0;i<slugs.length;i++){
+      const slug=slugs[i],modern=core?.addon?.[slug];
+      const old=parseVersionMetadata(legacy[i]);
+      if(legacy[i]!=null&&!old)continue;
+      if(!modern||typeof modern.receivedAt!=='string'||!Number.isFinite(Date.parse(modern.receivedAt)))continue;
+      const selected=selectVersionEvidence(modern,old,'receivedAt');
+      if(selected.conflict||selected.value!==modern)continue;
+      let envelope;try{envelope=JSON.parse(rows[i+1])}catch{continue}
+      const summary=envelope?.summary;
+      if(envelope?.schema!==1||summary?.characterSlug!==slug||summary.syncId!==(modern.syncId??null)||summary.receivedAt!==modern.receivedAt||!Array.isArray(summary.lockouts)||!Array.isArray(summary.visitedInstances))continue;
+      result[slug]=summary;missing.delete(slug);
     }
+  }catch(error){
+    console.warn('Addon-Projektion nicht verfügbar:',String(error.message).slice(0,120));
   }
+  const raw=await loadAddonSyncStates([...missing]);
+  for(const [slug,state] of Object.entries(raw))result[slug]=publicAddonSyncSummary(state);
   return result;
 }
