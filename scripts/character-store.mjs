@@ -3,6 +3,7 @@ import {rosterMatches} from './daily-roster.mjs';
 import {VERSION_METADATA_KEY,CORE_COMPACT_KEY,characterVersionMetadata} from './version-metadata.mjs';
 import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
+import {runRedisRequest,ADDON_LEASE_SECONDS} from './sync-deadline.mjs';
 import {normalizeVerifiedPlayerTerminology} from './player-terminology.mjs';
 const require=createRequire(import.meta.url);
 const initial=require('../data/characters.json');
@@ -23,11 +24,13 @@ function settings(){
 }
 export async function redis(command){
   const {url,token}=settings();
-  const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(command),signal:AbortSignal.timeout(10000)});
-  if(!response.ok)throw new Error('Redis HTTP '+response.status);
-  const payload=await response.json();
-  if(payload.error)throw new Error('Redis: '+String(payload.error).slice(0,120));
-  return payload.result;
+  return runRedisRequest(async signal=>{
+    const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(command),signal});
+    if(!response.ok)throw new Error('Redis HTTP '+response.status);
+    const payload=await response.json();
+    if(payload.error)throw new Error('Redis: '+String(payload.error).slice(0,120));
+    return payload.result;
+  });
 }
 export function configured(){return Boolean((process.env.KV_REST_API_URL||process.env.UPSTASH_REDIS_REST_URL)&&(process.env.KV_REST_API_TOKEN||process.env.UPSTASH_REDIS_REST_TOKEN))}
 export async function loadCharacters(){
@@ -38,10 +41,10 @@ export async function loadCharacters(){
   if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Gespeicherter Datensatz ist ungültig');
   return {data:normalizeVerifiedPlayerTerminology(data),fallback:false};
 }
-export async function acquireRefreshLock({addon=false}={}){
-  const token=randomUUID(),key=addon?addonSyncLockKey():LOCK;
+export async function acquireRefreshLock({addon=false,token=randomUUID()}={}){
+  const key=addon?addonSyncLockKey():LOCK;
   try{
-    const ok=await redis(['SET',key,token,'EX',120,'NX']);
+    const ok=await redis(['SET',key,token,'EX',addon?ADDON_LEASE_SECONDS:120,'NX']);
     return ok==='OK'?token:null;
   }catch(error){
     try{if(await redis(['GET',key])===token)return token;}catch{}
