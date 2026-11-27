@@ -116,7 +116,7 @@ async function syncRequest(req,ownership){
     if(!lockToken){return reply(409,{error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});}
     const {data:before}=await loadCharacters();
     const characterSection=payload.sections.character;
-    const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
+    const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID,realm:characterSection.realm},{allowLegacyFirstName:false});
     if(Number(target.classId)!==Number(characterSection.classID))throw new Error('Klasse des Addon-Syncs passt nicht zum Charakter');
     if(device&&!deviceMaySync(device,target.slug,payload.client?.transport)){
       return reply(403,{error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
