@@ -379,3 +379,54 @@ console.log('Werkstatt: Katalog, Autocomplete, Browse, Mengenplanung, Produktion
   const huge=fixture([recipe(3001,'Huge',8301,[[8302,1000000000]])]);
   assert.equal(buildProductionPlan(huge,8301,2).issues[0].code,'quantity-limit');
 }
+
+
+// F10/F17: short queries stop before storage; an empty remote result with
+// local matches must not masquerade as full catalog coverage.
+{
+  const {default:workshopApi}=await import('../api/workshop.js');
+  const envKeys=['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','FOREVERDB_API_KEY'];
+  const old=Object.fromEntries(envKeys.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
+  try{
+    process.env.VERCEL_ENV='production';
+    process.env.KV_REST_API_URL='https://workshop-search-fixture.invalid';
+    process.env.KV_REST_API_TOKEN='synthetic';
+    process.env.FOREVERDB_API_KEY='synthetic';
+    let redisCalls=0,remoteCalls=0;
+    globalThis.fetch=async(url,options)=>{
+      const address=String(url);
+      if(address==='https://workshop-search-fixture.invalid'){
+        redisCalls++;
+        const [op,key]=JSON.parse(options.body);
+        if(op==='EVAL')return Response.json({result:1});
+        if(op==='GET')return Response.json({result:key==='dalton-dashboard:characters:v1'?JSON.stringify(data):null});
+        if(op==='SET')return Response.json({result:'OK'});
+        throw Error('Unexpected isolated Redis operation '+op);
+      }
+      assert.equal(new URL(address).pathname,'/api/v1/items');
+      remoteCalls++;
+      return Response.json({data:[]});
+    };
+    const call=async q=>{
+      const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await workshopApi({method:'GET',url:'/api/workshop?q='+encodeURIComponent(q)},res);
+      return res;
+    };
+    for(const q of ['','ab','x'.repeat(121)])assert.equal((await call(q)).code,400);
+    assert.equal(redisCalls,0);assert.equal(remoteCalls,0);
+    const fallback=await call('Kupfer');
+    assert.equal(fallback.code,200);
+    assert.ok(fallback.body.suggestions.length>0);
+    assert.equal(fallback.body.source,'blizzard-known');
+    assert.equal(fallback.body.fullCatalog,false);
+    const empty=await call('zz-no-match');
+    assert.equal(empty.code,200);
+    assert.equal(empty.body.source,'foreverdb');
+    assert.equal(empty.body.fullCatalog,true);
+    assert.deepEqual(empty.body.suggestions,[]);
+    assert.equal(remoteCalls,2);
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
+}
