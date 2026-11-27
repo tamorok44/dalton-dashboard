@@ -1,0 +1,17 @@
+name: Privacy history inventory (read only)
+on:
+  push:
+    branches: [audit/privacy-production-2026-11-27]
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Inventory Git objects without exposing matched values
+        run: python3 docs/audits/2026-11-27/privacy-production/history-scan.py 0608cf575f6e46e3bbdee800c790ce5ae7c13235
