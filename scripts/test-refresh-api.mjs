@@ -71,7 +71,7 @@ function armoryHtml(old){
 }
 let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false;
 globalThis.fetch=async (url,options={})=>{
-  if(String(url).startsWith('https://test-redis.example.com')){
+  if(['https://test-redis.example.com','https://test-preview-redis.example.com'].includes(String(url))){
     redisRequests++;
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
@@ -292,6 +292,8 @@ try{
     assert.deepEqual(await savePetRuleState(state),state);
     assert.deepEqual(await savePetRuleState({...state,checkedAt:'2099-11-25T00:00:00.000Z',talentRuleObservation:null}),state);
     process.env.VERCEL_ENV='preview';
+    process.env.DALTON_PREVIEW_REDIS_REST_URL='https://test-preview-redis.example.com';
+    process.env.DALTON_PREVIEW_REDIS_REST_TOKEN='synthetic-preview-token';
     const preview=await savePetRuleState({...state,checkedAt:'2099-11-25T02:00:00.000Z',
       talentRuleObservation:{...observation,status:'source_unavailable'}});
     assert.deepEqual(preview.talentRuleObservation,observation);
@@ -321,10 +323,38 @@ try{
     assert.equal((await productionSave(afterExpiry)).talentRuleObservation.revisionSince,afterExpiry);
 
   }finally{
+    delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;
     if(priorEnvironment===undefined)delete process.env.VERCEL_ENV;
     else process.env.VERCEL_ENV=priorEnvironment;
   }
   console.log('Manual API: parallel German Armory fetch, source-backed stats, profession fail-closed behavior and outages: OK');
 }finally{
   globalThis.fetch=originalFetch;
+}
+
+
+// Shared ordinary Vercel bindings must never be used by deployed previews.
+{
+  const {redisConnection,configured,redis}=await import('./character-store.mjs');
+  const base={KV_REST_API_URL:'https://synthetic-prod.invalid',KV_REST_API_TOKEN:'synthetic-prod'};
+  assert.ok(redisConnection({...base,VERCEL_ENV:'production'}));
+  for(const scope of ['preview','development']){
+    assert.equal(redisConnection({...base,VERCEL_ENV:scope}),null);
+    assert.equal(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:base.KV_REST_API_URL,DALTON_PREVIEW_REDIS_REST_TOKEN:'other'}),null);
+    assert.equal(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-preview.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:base.KV_REST_API_TOKEN}),null);
+    assert.deepEqual(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-preview.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:'synthetic-preview'}),{url:'https://synthetic-preview.invalid',token:'synthetic-preview'});
+  }
+  const names=['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','BLOB_STORE_ID','BLOB_READ_WRITE_TOKEN'];
+  const old=Object.fromEntries(names.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
+  try{
+    Object.assign(process.env,base,{VERCEL_ENV:'preview',BLOB_STORE_ID:'synthetic-shared',BLOB_READ_WRITE_TOKEN:'synthetic-shared'});
+    delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;
+    globalThis.fetch=async()=>{throw Error('Network forbidden')};
+    assert.equal(configured(),false);
+    assert.equal(imageStoreConfigured(),false);
+    await assert.rejects(redis(['GET','test']),/nicht konfiguriert|nicht isoliert/);
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
 }
