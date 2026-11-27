@@ -1,5 +1,4 @@
 import {inspectKnowledgePair,knowledgeQuarantine,knowledgeRawDigest} from './storage-reconciliation.mjs';
-import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
 import {createHash} from 'node:crypto';
 import {redis,configured,addonSyncLockKey,REDIS_TYPE_GUARD} from './character-store.mjs';
 
@@ -233,7 +232,7 @@ async function ingestSnapshot(snapshot,{lockToken=null}={}){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
   const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
   const [expectedModern,expectedLegacy]=await Promise.all([redis(['HGET',recordsKey(),key]),redis(['GET',key])]);
-  const inspected=inspectKnowledgePair(expectedModern,expectedLegacy);
+  const inspected=inspectKnowledgePair(expectedModern,expectedLegacy,key);
   const quarantine=inspected.reason?knowledgeQuarantine(key,expectedModern,expectedLegacy,inspected.reason,snapshot):null;
   if(quarantine&&Date.parse(snapshot.capturedAt)<=inspected.latestTime){
     // No ordering proof. Persist the incoming evidence, do not choose a
@@ -320,8 +319,9 @@ export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null,l
 export async function loadLiveKnowledge({build=null,kind=null,historicalMerchantsOnly=false,redisImpl=redis,enabled=configured()}={}){
   if(!enabled)return [];
   const [members,fields]=await Promise.all([redisImpl(['SMEMBERS',indexKey()]),redisImpl(['HKEYS',recordsKey()])]);
-  const current=new Set((Array.isArray(fields)?fields:[]).filter(key=>String(key).startsWith(prefix()+'record:')));
-  const legacyKeys=new Set(Array.isArray(members)?members:[]);
+  const knownFields=new Set(Array.isArray(fields)?fields:[]);
+  const current=new Set([...knownFields].filter(key=>String(key).startsWith(prefix()+'record:')));
+  const legacyKeys=new Set((Array.isArray(members)?members:[]).filter(key=>String(key).startsWith(prefix()+'record:')));
   const keys=[...new Set([...legacyKeys,...current])].filter(key=>{
     const parts=String(key).slice((prefix()+'record:').length).split(':');
     if(historicalMerchantsOnly)return parts[0]==='merchant'&&parts[1]!==encodeURIComponent(build);
@@ -330,13 +330,28 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
   const result=[],issues=[];
   // Read only the requested build, in bounded batches. Preserve all evidence.
   for(let i=0;i<keys.length;i+=8){
-    const batch=keys.slice(i,i+8),modern=batch.filter(key=>current.has(key)),legacy=batch.filter(key=>legacyKeys.has(key));
+    const batch=keys.slice(i,i+8),modern=batch.filter(key=>current.has(key)),legacy=batch; // physical v1 counterpart, even if not indexed
     const [modernValues,legacyValues]=await Promise.all([modern.length?redisImpl(['HMGET',recordsKey(),...modern]):[],legacy.length?redisImpl(['MGET',...legacy]):[]]);
     const modernByKey=new Map(modern.map((key,i)=>[key,modernValues?.[i]??null]));
     const legacyByKey=new Map(legacy.map((key,i)=>[key,legacyValues?.[i]??null]));
     for(const key of batch){
-      const inspected=inspectKnowledgePair(modernByKey.get(key),legacyByKey.get(key));
-      if(inspected.reason){issues.push({key,reason:inspected.reason});continue;}
+      const modernRaw=modernByKey.get(key),legacyRaw=legacyByKey.get(key);
+      const inspected=inspectKnowledgePair(modernRaw,legacyRaw,key);
+      if(inspected.reason){
+        // Evidence-only append. Never alter the active record in a reader.
+        // Preserve the exact bytes observed, even if a legacy writer has
+        // since replaced them. HSETNX is idempotent and a single mutation.
+        const q=knowledgeQuarantine(key,modernRaw,legacyRaw,inspected.reason);
+        let preserved=knownFields.has(q.field);
+        if(!preserved){
+          try{
+            const written=await redisImpl(['HSETNX',recordsKey(),q.field,JSON.stringify(q.evidence)]);
+            preserved=written===0||written===1;
+            if(preserved)knownFields.add(q.field);
+          }catch{ /* Unavailable storage is reported, not called preserved. */ }
+        }
+        issues.push({key,reason:inspected.reason,preserved});continue;
+      }
       const record=inspected.record;
       if(!record)continue;
       if(historicalMerchantsOnly){if(record.kind!=='merchant'||record.build===build||record.latestSnapshot?.complete!==true)continue;}
@@ -355,6 +370,7 @@ export function publicLiveKnowledgeSummary(records=[]){
   return {
     recordCount:list.length,
     excludedIntegrityRecords:records?.integrityIssues?.length||0,
+    unpreservedIntegrityRecords:(records?.integrityIssues||[]).filter(issue=>issue.preserved===false).length,
     merchantCount:merchants.length,
     trainerCount:trainers.length,
     observationCount:list.reduce((sum,record)=>sum+(Number(record.observationCount)||0),0),
@@ -375,20 +391,14 @@ export async function loadLiveKnowledgeVersion({redisImpl=redis,enabled=configur
   return modern&&legacy?JSON.stringify([modern,legacy]):modern??legacy;
 }
 
- // Historical merchant snapshots remain conflict evidence across builds.
- // Cache only the relevant projection, never the complete change log.
+// During migration legacy writes need not update a version marker. Do not
+// serve a historical projection from cache before old writers are retired.
 export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,enabled=configured()}={}){
   if(!enabled||!build)return [];
-  const version=await loadLiveKnowledgeVersion({redisImpl,enabled});
-  const key=prefix()+'merchant-conflict-history:v1';
-  const cached=await readCompactMaster(key,{redisImpl});
-  if(cached?.build===build&&cached.version===version&&Array.isArray(cached.records))return cached.records;
   const source=await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled});
-  const records=source.map(record=>({
+  return attachIntegrityIssues(source.map(record=>({
     kind:'merchant',build:record.build,characterSlug:record.characterSlug||null,
     npc:record.npc,location:record.location||null,lastObservedAt:record.lastObservedAt||null,
     latestSnapshot:record.latestSnapshot
-  }));
-  if(!source.integrityIssues?.length&&await loadLiveKnowledgeVersion({redisImpl,enabled})===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
-  return attachIntegrityIssues(records,source.integrityIssues||[]);
+  })),source.integrityIssues||[]);
 }

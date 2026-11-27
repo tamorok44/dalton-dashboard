@@ -80,24 +80,39 @@ function mergeEvidence(latest,older){
 }
 
 export const knowledgeRawDigest=raw=>raw==null?null:createHash('sha256').update(String(raw)).digest('hex');
-function decodeRecord(raw){
-  if(raw==null)return {record:null,invalid:false};
+// Capture-time evidence survives structural validation failures. It is
+// used only as a lower bound for repairs, never to publish malformed data.
+function captureFloor(record){return Math.max(at(record?.latestSnapshot?.capturedAt),at(record?.lastObservedAt));}
+function identitySuffix(record){
+  const npc=record?.npc||{},id=Number(npc.id);
+  const identity=Number.isInteger(id)&&id>0?'id-'+id:
+    typeof npc.name==='string'&&npc.name.trim()?'name-'+createHash('sha1').update(npc.name.toLocaleLowerCase('de-DE')).digest('hex'):null;
+  if(!identity||!['merchant','trainer'].includes(record?.kind)||typeof record.build!=='string'||!record.build)return null;
+  return 'record:'+record.kind+':'+encodeURIComponent(record.build)+':'+identity+
+    (record.kind==='merchant'&&record.characterSlug?':observer:'+encodeURIComponent(record.characterSlug):'');
+}
+function decodeRecord(raw,key){
+  if(raw==null)return {record:null,invalid:false,floor:-Infinity};
+  let record=null;
   try{
-    const record=typeof raw==='string'?JSON.parse(raw):raw;
+    record=typeof raw==='string'?JSON.parse(raw):raw;
     if(!record||!['merchant','trainer'].includes(record.kind)||typeof record.build!=='string'||!record.npc||
       !Number.isFinite(timeOf(record))||!Array.isArray(record.latestSnapshot?.entries)||
       (record.observationIds!=null&&!Array.isArray(record.observationIds))||
       (record.changes!=null&&!Array.isArray(record.changes))||
       (record.offers!=null&&!Array.isArray(record.offers))||
       (record.services!=null&&!Array.isArray(record.services)))throw Error('invalid');
-    return {record,invalid:false};
-  }catch{return {record:null,invalid:true};}
+    const suffix=identitySuffix(record),snapshot=record.latestSnapshot;
+    if(!suffix||key&&!key.endsWith(':'+suffix)||
+      identitySuffix({...snapshot,characterSlug:snapshot.characterSlug??record.characterSlug})!==suffix)throw Error('identity mismatch');
+    return {record,invalid:false,floor:captureFloor(record)};
+  }catch{return {record:null,invalid:true,floor:captureFloor(record)};}
 }
 // One record's ambiguous data is never substituted for another's. Keep both
 // raw inputs separately; a later independently captured observation may
 // become current without inventing an order for the historical conflict.
-export function inspectKnowledgePair(modernRaw,legacyRaw){
-  const m=decodeRecord(modernRaw),l=decodeRecord(legacyRaw);
+export function inspectKnowledgePair(modernRaw,legacyRaw,key=null){
+  const m=decodeRecord(modernRaw,key),l=decodeRecord(legacyRaw,key);
   const marker=m.record?.migrationRepair;
   if(marker&&legacyRaw!=null&&marker.legacyDigest===knowledgeRawDigest(legacyRaw)&&
       Number.isFinite(at(marker.resolvedAt))&&timeOf(m.record)>=at(marker.resolvedAt))
@@ -107,7 +122,7 @@ export function inspectKnowledgePair(modernRaw,legacyRaw){
     try{return {record:reconcileKnowledgeRecords(m.record,l.record),reason:null,modern:m.record,legacy:l.record};}
     catch{reason='conflicting_record';}
   }
-  return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(timeOf(m.record),timeOf(l.record))};
+  return {record:null,reason,modern:m.record,legacy:l.record,latestTime:Math.max(m.floor,l.floor)};
 }
 export function knowledgeQuarantine(key,modernRaw,legacyRaw,reason,incoming=null){
   const evidence={schema:1,key,reason,modernRaw:modernRaw??null,legacyRaw:legacyRaw??null,incoming};

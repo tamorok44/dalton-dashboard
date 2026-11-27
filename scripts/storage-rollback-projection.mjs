@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {verifyRestoreInventory} from './restore-inventory.mjs';
 import {canonicalRoster} from './daily-roster.mjs';
 import {characterVersionMetadata,addonVersionMetadata,VERSION_METADATA_KEY} from './version-metadata.mjs';
 import {inspectKnowledgePair,knowledgeQuarantine,selectDailyReceipt} from './storage-reconciliation.mjs';
@@ -10,17 +11,9 @@ import {inspectKnowledgePair,knowledgeQuarantine,selectDailyReceipt} from './sto
 export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dailyRows,petMetadata,modernReceipt=null,legacyReceipt=null,date,scope='production',inventory,quarantineRecords=[]}){
   if(!['production','preview'].includes(scope))throw new Error('Ungültiger Speicherbereich');
   if(!Array.isArray(addonStates)||!Array.isArray(knowledgePairs)||!Array.isArray(dailyRows))throw new Error('Vollständiger Export erforderlich');
-  // Inventory must be collected independently from the quiescent source.
-  // This checks omission against that inventory, not provider completeness.
-  const match=(actual,expected)=>{
-    if(!Array.isArray(expected)||new Set(expected).size!==expected.length||
-      JSON.stringify([...actual].sort())!==JSON.stringify([...expected].sort()))throw Error('Export-Inventur stimmt nicht überein');
-  };
-  if(!inventory||!Array.isArray(quarantineRecords))throw Error('Unabhängige Export-Inventur erforderlich');
-  match(addonStates.map(x=>x?.characterSlug),inventory.addonSlugs);
-  match(knowledgePairs.map(x=>x?.key),inventory.knowledgeKeys);
-  match(dailyRows.map(x=>x?.date),inventory.dailyDates);
-  match(quarantineRecords.map(x=>x?.field),inventory.quarantineFields);
+  // Independent inventory must include both raw halves, their exact hashes,
+  // and explicit nulls. Names alone cannot prove export completeness.
+  verifyRestoreInventory({roster,addonStates,knowledgePairs,dailyRows,quarantineRecords},inventory);
   const identities=canonicalRoster(roster?.characters?.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})));
   if(!Number.isFinite(Date.parse(roster.generatedAt)))throw new Error('Ungültiger Roster-Export');
   const commands=[['SET','dalton-dashboard:characters:v1',JSON.stringify(roster)]],metadata=['characters',JSON.stringify(characterVersionMetadata(roster)),'pet',JSON.stringify(petMetadata??null)];
@@ -49,7 +42,7 @@ export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dai
     seenKeys.add(entry.key);
     const raw=value=>value==null?null:typeof value==='string'?value:JSON.stringify(value);
     const modern=raw(entry.modern),legacy=raw(entry.legacy);
-    const inspected=inspectKnowledgePair(modern,legacy);
+    const inspected=inspectKnowledgePair(modern,legacy,entry.key);
     if(inspected.reason){
       const q=knowledgeQuarantine(entry.key,modern,legacy,inspected.reason);
       quarantined.push({key:entry.key,reason:inspected.reason,digest:q.digest});
@@ -72,6 +65,6 @@ export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dai
   const dates=[...days.keys()].sort();
   for(const key of dates)commands.push(['HSET','dalton-dashboard:history:daily:index:v1',key,JSON.stringify(days.get(key))]);
   if(dates.length)commands.push(['SET','dalton-dashboard:history:daily:last:v1',JSON.stringify(days.get(dates.at(-1)))]);
-  return {commands,manifest:{schema:'legacy-read-projection-v1',scope,roster:identities.length,addonStates:states.size,observations:ordered.length,quarantined,sourceObservationPairs:seenKeys.size,preservedQuarantineRecords:quarantineRecords.length,completeForLegacyReaders:quarantined.length===0,inventoryVerified:true,days:dates.length,latestDate:dates.at(-1)??null,
+  return {commands,manifest:{schema:'legacy-read-projection-v1',scope,roster:identities.length,addonStates:states.size,observations:ordered.length,quarantined,sourceObservationPairs:seenKeys.size,preservedQuarantineRecords:quarantineRecords.length,completeForLegacyReaders:quarantined.length===0&&quarantineRecords.length===0,inventoryVerified:true,days:dates.length,latestDate:dates.at(-1)??null,
     sha256:createHash('sha256').update(JSON.stringify(commands)).digest('hex')}};
 }
