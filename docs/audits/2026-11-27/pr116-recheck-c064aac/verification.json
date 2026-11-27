@@ -1,0 +1,77 @@
+{
+  "reviewedCommit": "c064aacffe33e2533a6eb96b475010489bdbe50a",
+  "previousCommit": "6a6275e63270f6baf09ae3e2d0d4a4abc54e76db",
+  "previousAuditCommit": "1dbf89779eb77ab8dcfc08171815c4a96767fba4",
+  "reviewDateBerlin": "2026-11-27",
+  "matrix": [
+    {
+      "redis": "7.0.15",
+      "node": "22.23.5",
+      "previousGroupsControlled": 111,
+      "previousGroupsRerun": 111,
+      "additionalGroups": 13,
+      "totalGroups": 124,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0,
+      "simulatedTimedOutProofRequestMs": 10000,
+      "configuredFunctionSeconds": 30,
+      "singleHandlerMeasuredMs": 30078
+    },
+    {
+      "redis": "8.0.2",
+      "node": "26.13.1",
+      "previousGroupsControlled": 111,
+      "previousGroupsRerun": 111,
+      "additionalGroups": 13,
+      "totalGroups": 124,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0,
+      "simulatedTimedOutProofRequestMs": 10000,
+      "configuredFunctionSeconds": 30,
+      "singleHandlerMeasuredMs": 30100
+    }
+  ],
+  "technicalBlockersConfirmedByBoth": [
+    "cas-v2-absence-collides-with-empty-raw-value",
+    "proof-timeouts-exceed-handler-deadline"
+  ],
+  "actions": [
+    {
+      "run": 46007840247,
+      "result": "success"
+    },
+    {
+      "run": 46007840248,
+      "result": "success"
+    },
+    {
+      "run": 46007840312,
+      "result": "success"
+    }
+  ],
+  "restore": {
+    "legacyGateSelfTestPassed": true,
+    "cliCleanProjectionPasses": true,
+    "cliQuarantinedLegacyActivationDenied": true,
+    "collisionNativeLocalRdbRestorePassed": true,
+    "liveProviderRestore": false,
+    "actualLegacyWriterRetirement": false
+  },
+  "provider": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 136,
+    "cleanupPassed": true,
+    "mocksBlobTransport": true,
+    "realProviderRun": false,
+    "realQuotasMeasured": false,
+    "actualVercelCancellationTested": false
+  },
+  "localRedisIsolation": {
+    "privateUnixSocket": true,
+    "syntheticData": true
+  }
+}
