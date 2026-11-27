@@ -276,6 +276,37 @@ if(!hasRedis){
     const roster=()=>JSON.parse(cli('GET',rosterKey));
     const ids=slug=>roster().characters.find(x=>x.slug===slug).knownClassAbilities.map(x=>x.id).sort((a,b)=>a-b);
     assert.deepEqual(ids('audit-one'),[133]);assert.deepEqual(ids('audit-two'),[133,143]);
+    // F11: warm summaries are identical to the authoritative public view,
+    // but no large raw payload is read. Legacy newer evidence forces fallback.
+    {
+      const {loadPublicAddonSyncStates}=await import('./addon-sync-store.mjs');
+      const {publicAddonSyncSummary}=await import('./addon-sync.mjs');
+      const slugs=['audit-one','audit-two'];
+      const expected=Object.fromEntries(slugs.map(slug=>[slug,publicAddonSyncSummary(JSON.parse(cli('GET',syncKey(slug))))]));
+      const seen=[],original=globalThis.fetch;
+      globalThis.fetch=async(url,options)=>{seen.push(JSON.parse(options.body));return original(url,options);};
+      const metaKey='dalton-dashboard:data-version:meta:v1',field='addon:production:audit-one';
+      const prior=cli('HGET',metaKey,field);
+      try{
+        assert.deepEqual(await loadPublicAddonSyncStates(slugs),expected);
+        assert.equal(seen.length,2);
+        assert.ok(seen.every(cmd=>!cmd.some(part=>typeof part==='string'&&part.includes(':addon-sync:v1:'))));
+        cli('HSET',metaKey,field,JSON.stringify({syncId:'legacy-newer',receivedAt:new Date(Date.now()+60000).toISOString()}));
+        seen.length=0;
+        assert.deepEqual(await loadPublicAddonSyncStates(slugs),expected);
+        assert.ok(seen.some(cmd=>cmd[0]==='GET'&&cmd[1]===syncKey('audit-one')));
+        const key='dalton-dashboard:addon-summary:v1:production:audit-two';
+        const raw=cli('GET',key);
+        cli('SET',key,'invalid');
+        seen.length=0;
+        assert.deepEqual(await loadPublicAddonSyncStates(slugs),expected);
+        assert.ok(seen.some(cmd=>cmd[0]==='GET'&&cmd[1]===syncKey('audit-two')));
+        cli('SET',key,raw);
+      }finally{
+        globalThis.fetch=original;
+        if(prior===null)cli('HDEL',metaKey,field);else cli('HSET',metaKey,field,prior);
+      }
+    }
     const oldState=cli('GET',syncKey('audit-one')),oldRoster=cli('GET',rosterKey);
     mode='fail-before';
     assert.equal((await call(newer)).http,503);assert.equal(cli('GET',rosterKey),oldRoster);assert.equal(cli('GET',syncKey('audit-one')),oldState);
