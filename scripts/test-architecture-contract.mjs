@@ -322,3 +322,11 @@ assert.ok(orderApp.includes("displayList('talentCoordinates',tree.talents")&&ord
   for(const directive of ["default-src 'self'","script-src 'self'","object-src 'none'","frame-ancestors 'none'","base-uri 'self'","connect-src 'self'"])assert.ok(header.value.split(';').map(s=>s.trim()).includes(directive));
   assert.ok(!vercelConfig.headers.flatMap(x=>x.headers).some(x=>x.key==='Content-Security-Policy'),'Do not silently enable enforcement');
 }
+
+
+// F17: retire duplicate public design pages without deleting the
+// historical source or permanently caching redirects at the client.
+{
+  const previews=['/vorschau.html','/vorschau-abzeichen.html'];
+  for(const path of previews)assert.deepEqual(vercelConfig.redirects.find(x=>x.source===path),{source:path,destination:'/',permanent:false});
+}
