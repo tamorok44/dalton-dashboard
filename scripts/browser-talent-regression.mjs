@@ -286,6 +286,22 @@ try{
    assert.equal(await page.locator('.talent-planner-steps li').count(),51,'complete rank-zero path at level 60');
    await page.evaluate(()=>{location.hash='#charaktere'});
    const beforeDisplay=displayRequests,beforePlan=plannerRequests;
+   const tabs=page.locator('button[data-character-slug="qa-class-8"][data-character-tab]');
+   const stats=tabs.filter({hasText:'Charakterwerte'});
+   const equipment=tabs.filter({hasText:'Ausrüstung'});
+   await stats.waitFor({state:'visible'});
+   await stats.focus();
+   await stats.press('ArrowRight');
+   assert.equal(await equipment.getAttribute('aria-selected'),'true');
+   assert.equal(await equipment.getAttribute('tabindex'),'0');
+   assert.equal(await stats.getAttribute('tabindex'),'-1');
+   assert.equal(await page.locator('#qa-class-8-panel-equipment').getAttribute('aria-labelledby'),'qa-class-8-tab-equipment');
+   assert.equal(await page.locator('#qa-class-8-panel-equipment').isVisible(),true);
+   await equipment.press('End');
+   assert.equal(await tabs.last().getAttribute('aria-selected'),'true');
+   await tabs.last().press('Home');
+   assert.equal(await stats.getAttribute('aria-selected'),'true');
+   assert.equal(await stats.evaluate(el=>document.activeElement===el),true);
    async function showTalent(classId,id){
      await page.locator('button[data-character-slug="qa-class-'+classId+'"][data-character-tab="talents"]').click();
      const panel=page.locator('#qa-class-'+classId+'-panel-talents');
