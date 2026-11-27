@@ -1,0 +1,112 @@
+{
+  "reviewedCommit": "6569cd13173d23ce8be1b57aa40d4afc6aeab7bd",
+  "previousCommit": "c064aacffe33e2533a6eb96b475010489bdbe50a",
+  "previousAuditCommit": "4f7e2db06993406636973b04f43141af9076f261",
+  "reviewDateBerlin": "2026-11-27",
+  "matrix": [
+    {
+      "redis": "7.0.15",
+      "node": "22.23.5",
+      "previousGroupsControlled": 124,
+      "previousGroupsRerun": 124,
+      "additionalGroups": 8,
+      "totalGroups": 132,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "additionalGroupExitCodes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "repositoryPassed": 166,
+      "repositoryFailed": 0,
+      "threeProofTimeoutsHandlerMs": 22009,
+      "handlerWithStalledCleanupMs": 27011,
+      "lateObservationExecutedMs": 28201,
+      "lateAcquisitionExecutedMs": 28203,
+      "realLeaseExpiryAfterWorkerStartMs": 35684
+    },
+    {
+      "redis": "8.0.2",
+      "node": "26.13.1",
+      "previousGroupsControlled": 124,
+      "previousGroupsRerun": 124,
+      "additionalGroups": 8,
+      "totalGroups": 132,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "additionalGroupExitCodes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "repositoryPassed": 166,
+      "repositoryFailed": 0,
+      "threeProofTimeoutsHandlerMs": 22015,
+      "handlerWithStalledCleanupMs": 27004,
+      "lateObservationExecutedMs": 28201,
+      "lateAcquisitionExecutedMs": 28215,
+      "realLeaseExpiryAfterWorkerStartMs": 35803
+    }
+  ],
+  "budget": {
+    "workMs": 22000,
+    "cleanupUntilMs": 27000,
+    "configuredFunctionsSeconds": 30,
+    "addOnLeaseSeconds": 35,
+    "refreshLeaseSeconds": 120,
+    "noAcceleratedTimersInAdditionalScenarios": true,
+    "actualVercelCancellationTested": false
+  },
+  "technicalBlockersConfirmedByBoth": [
+    "late-dispatched-observation-commits-after-fenced-cleanup-deadline",
+    "late-provider-lease-is-created-after-empty-cleanup"
+  ],
+  "actions": [
+    {
+      "run": 46017422532,
+      "result": "success"
+    },
+    {
+      "run": 46017425015,
+      "result": "success"
+    },
+    {
+      "run": 46017423084,
+      "firstConclusion": "failure",
+      "firstMacJob": "cancelled",
+      "successfulJobs": 4,
+      "macJobRerun": 140604331792,
+      "rerunAtAudit": "queued"
+    }
+  ],
+  "restore": {
+    "legacyGateSelfTestPassed": true,
+    "cliCleanProjectionPasses": true,
+    "cliQuarantinedLegacyActivationDenied": true,
+    "liveProviderRestore": false,
+    "actualLegacyWriterRetirement": false
+  },
+  "provider": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 137,
+    "cleanupPassed": true,
+    "mocksBlobTransport": true,
+    "realProviderRun": false,
+    "realQuotasMeasured": false
+  },
+  "localRedisIsolation": {
+    "privateUnixSocket": true,
+    "syntheticData": true
+  }
+}
