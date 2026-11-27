@@ -55,9 +55,9 @@ export async function runRedisRequest(work){
   }finally{clearTimeout(timer);signal.removeEventListener('abort',onAbort);controller.abort();}
 }
 
-export function armSyncFence({key,token,deadlineMs}){
+export function armSyncFence({key,token,deadlineMs,permit=null}){
   const scope=assertSyncBudget();
-  if(scope)scope.fence={key,token,deadlineMs};
+  if(scope)scope.fence={key,token,deadlineMs,permit};
 }
 // Bind the exact authorized Redis record, not the bearer token. A changed
 // or deleted record invalidates further writes in this request.
@@ -93,13 +93,16 @@ export function fenceRedisCommand(command){
   if(index<0){index=keys.length;keys.push(f.key);extra=true;}
   // Append the device key last, then remove it before the original script.
   // Existing key and argument positions are preserved, including multi-key commits.
+  if(f.permit)keys.push(f.permit);
   if(device)keys.push(device.key);
   const deviceEnvelope=device?"local deviceRaw=table.remove(ARGV); local deviceKey=table.remove(KEYS); ":"";
   const deviceCheck=device?" if rawRedis.call('GET',deviceKey)~=deviceRaw then error('DEVICE_AUTH_REVOKED') end; ":"";
-  const prefix="-- addon-sync-fence:v1\n"+deviceEnvelope+
-    "local syncDeadline=tonumber(table.remove(ARGV)); local syncToken=table.remove(ARGV); local syncLock=KEYS["+ (index+1) +"]; "+
+  const permitEnvelope=f.permit?"local syncPermit=table.remove(KEYS); ":"";
+  const permitCheck=f.permit?" if rawRedis.call('GET',syncPermit)~=syncDeadlineText then error('ADDON_PERMIT_REVOKED') end; ":"";
+  const prefix="-- addon-sync-fence:v1\n"+deviceEnvelope+permitEnvelope+
+    "local syncDeadlineText=table.remove(ARGV); local syncDeadline=tonumber(syncDeadlineText); local syncToken=table.remove(ARGV); local syncLock=KEYS["+ (index+1) +"]; "+
     (extra?"table.remove(KEYS); ":"")+
-    "local rawRedis=redis; local function checkSyncFence() local t=rawRedis.call('TIME'); if tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000)>=syncDeadline then error('ADDON_SYNC_DEADLINE') end; if rawRedis.call('GET',syncLock)~=syncToken then error('REFRESH_LOCK_LOST') end; "+deviceCheck+"end; checkSyncFence(); "+
+    "local rawRedis=redis; local function checkSyncFence() local t=rawRedis.call('TIME'); if tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000)>=syncDeadline then error('ADDON_SYNC_DEADLINE') end; if rawRedis.call('GET',syncLock)~=syncToken then error('REFRESH_LOCK_LOST') end; "+permitCheck+deviceCheck+"end; checkSyncFence(); "+
     "local syncReads={"+READ_TABLE+"}; local mutationStarted=false; local function beforeSyncCommand(cmd) if not mutationStarted and not syncReads[string.upper(cmd)] then checkSyncFence(); mutationStarted=true end end; "+
     "local redis=setmetatable({call=function(cmd,...) beforeSyncCommand(cmd); return rawRedis.call(cmd,...) end,pcall=function(cmd,...) beforeSyncCommand(cmd); return rawRedis.pcall(cmd,...) end},{__index=rawRedis}); ";
   return ['EVAL',prefix+script,keys.length,...keys,...args,f.token,String(f.deadlineMs),...(device?[device.raw]:[])];
