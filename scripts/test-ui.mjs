@@ -850,8 +850,9 @@ assert.ok(refreshService.includes('refreshCharacters([c])'),'Shared refresh serv
 assert.ok(refreshApi.includes("runLockedRefresh(lockToken,req.method==='GET'?'manual':'scheduled')"),'Manual and scheduled refresh sources stay distinguishable');
 assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"')&&vercelConfig.includes('"schedule": "37 4 * * *"'),'Primary and idempotent retry Vercel cron are configured');
 const dailySnapshot=read('api/daily-snapshot.js');
-assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs)'),'Daily rule verification runs before the Blizzard snapshot');
-assert.ok(dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('const refresh=await refreshDailyCharacters()'),'Daily rule verification runs before the persistent character refresh');
+assert.ok(!dailySnapshot.includes('fetchForeverSnapshot(')&&!dailySnapshot.includes('saveDailySnapshot('),'Daily cron must not collect or upload a public raw archive');
+assert.ok(dailySnapshot.includes('disabledArchiveMetadata(local.date)'),'The suspended archive is explicitly recorded');
+assert.ok(dailySnapshot.indexOf('petRuleState=await ensureRules')<dailySnapshot.indexOf('const refresh=await refreshCharacters()'),'Daily rule verification runs before the persistent character refresh');
 assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf('refreshAndPersist({lockToken,source})'),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
 assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Only the lightweight stored-data version is checked periodically');
 assert.ok(!/setInterval\([\s\S]{0,300}refreshLive/.test(source),'Periodic checks must never trigger Blizzard live refreshes');

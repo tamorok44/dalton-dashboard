@@ -53,3 +53,42 @@ assert.equal(dailyRefreshComplete(null),false,'Ohne Snapshot-Metadaten ist der T
 assert.equal(dailyRefreshComplete({date:'2026-11-22'}),false,'Ein gespeicherter Snapshot allein darf einen fehlgeschlagenen Profil-Refresh nicht verdecken');
 assert.equal(dailyRefreshComplete({refresh:{persisted:false}}),false,'Nicht persistierter Refresh bleibt wiederholbar');
 assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),true,'Erst ein persistierter Profil-Refresh schliesst den Tageslauf ab');
+
+// Exercise the actual authenticated daily handler without network or storage.
+const {createDailySnapshotHandler}=await import('../api/daily-snapshot.js');
+const {dailySnapshotStoreConfigured,saveDailySnapshot}=await import('./daily-snapshot-store.mjs');
+const oldEnv=process.env.CRON_SECRET;
+process.env.CRON_SECRET='synthetic-privacy-test';
+let stored=null,events=[],persisted=false;
+const run=createDailySnapshotHandler({
+  clock:()=>({date:'2026-11-27',hour:5,minute:7}),configured:()=>true,blizzardConfigured:()=>true,
+  getDailySnapshot:async()=>stored,registerDailySnapshot:async meta=>{stored=structuredClone(meta);events.push('register');},
+  acquireDailySnapshotLock:async()=>{events.push('lock');return 'local-lock';},
+  releaseDailySnapshotLock:async(date,token)=>{assert.equal(token,'local-lock');events.push('release');},
+  ensurePetRuleState:async({force})=>{events.push('rules:'+force);return {};},
+  refreshDailyCharacters:async()=>{events.push('refresh');return {persisted};},publicPetRuleState:()=>null
+});
+const call=async(auth='Bearer synthetic-privacy-test')=>{
+  const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+  await run({method:'GET',headers:{authorization:auth}},res);return res;
+};
+const originalFetch=globalThis.fetch;
+globalThis.fetch=async()=>{throw Error('Network forbidden in privacy regression');};
+try{
+  assert.equal(dailySnapshotStoreConfigured(),false);
+  await assert.rejects(saveDailySnapshot({private:'synthetic'},'2026-11-27'),/deaktiviert/);
+  assert.equal((await call('wrong')).code,401);assert.deepEqual(events,[]);
+  const first=await call();assert.equal(first.code,200);assert.equal(first.body.saved,false);
+  assert.equal(stored.archiveStatus,'disabled');assert.equal(stored.url,null);
+  assert.equal(dailyRefreshComplete(stored),false);assert.deepEqual(events,['lock','rules:true','register','refresh','register','release']);
+  events=[];persisted=true;
+  const retry=await call();assert.equal(retry.body.retried,true);assert.equal(dailyRefreshComplete(stored),true);
+  assert.deepEqual(events,['lock','rules:false','refresh','register','release']);
+  events=[];assert.equal((await call()).body.reason,'already_completed');assert.deepEqual(events,[]);
+  stored={date:'2026-11-27',url:'https://synthetic.invalid/old.gz',refresh:{persisted:false}};
+  const historical=await call();assert.equal(historical.body.archiveStatus,'legacy_public');assert.equal(stored.url,'https://synthetic.invalid/old.gz');
+  console.log('Privacy: raw archive disabled, daily refresh and retry preserved, old reference unchanged: OK');
+}finally{
+  globalThis.fetch=originalFetch;
+  if(oldEnv===undefined)delete process.env.CRON_SECRET;else process.env.CRON_SECRET=oldEnv;
+}

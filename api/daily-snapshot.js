@@ -1,5 +1,5 @@
-import {fetchForeverSnapshot,blizzardApiConfigured} from '../scripts/blizzard-api.mjs';
-import {saveDailySnapshot,dailySnapshotStoreConfigured} from '../scripts/daily-snapshot-store.mjs';
+import {blizzardApiConfigured} from '../scripts/blizzard-api.mjs';
+import {disabledArchiveMetadata} from '../scripts/daily-snapshot-store.mjs';
 import {configured,loadCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {getDailySnapshot,registerDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from '../scripts/history-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
@@ -50,60 +50,67 @@ async function refreshDailyCharacters(){
   return refresh;
 }
 
-export default async function handler(req,res){
+// Dependency injection permits a network-free regression of the real handler.
+export function createDailySnapshotHandler(deps={}){
+const {clock=berlinClock,configured:redisConfigured=configured,blizzardConfigured=blizzardApiConfigured,
+  getDailySnapshot:readSnapshot=getDailySnapshot,registerDailySnapshot:registerSnapshot=registerDailySnapshot,
+  acquireDailySnapshotLock:takeLock=acquireDailySnapshotLock,releaseDailySnapshotLock:releaseLock=releaseDailySnapshotLock,
+  ensurePetRuleState:ensureRules=ensurePetRuleState,refreshDailyCharacters:refreshCharacters=refreshDailyCharacters,
+  publicPetRuleState:publicRules=publicPetRuleState}=deps;
+return async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Methode nicht erlaubt'})}
   const secret=process.env.CRON_SECRET;
   if(!secret||req.headers?.authorization!=='Bearer '+secret)return res.status(401).json({error:'Nicht autorisiert'});
-  const local=berlinClock();
+  const local=clock();
   if(![5,6].includes(local.hour))return res.status(200).json({skipped:true,reason:'outside_early_morning_window',local});
-  if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt'});
-  if(!blizzardApiConfigured())return res.status(503).json({error:'Blizzard API-Zugangsdaten fehlen'});
-  if(!dailySnapshotStoreConfigured())return res.status(503).json({error:'Blob-Speicher fehlt'});
+  if(!redisConfigured())return res.status(503).json({error:'Datenbankverbindung fehlt'});
+  if(!blizzardConfigured())return res.status(503).json({error:'Blizzard API-Zugangsdaten fehlen'});
 
-  const existing=await getDailySnapshot(local.date);
+  const existing=await readSnapshot(local.date);
   if(dailyRefreshComplete(existing))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:existing});
 
-  const dailyLock=await acquireDailySnapshotLock(local.date);
+  const dailyLock=await takeLock(local.date);
   if(!dailyLock)return res.status(200).json({pending:true,reason:'daily_snapshot_running'});
   try{
-    const secondCheck=await getDailySnapshot(local.date);
+    const secondCheck=await readSnapshot(local.date);
     if(dailyRefreshComplete(secondCheck))return res.status(200).json({skipped:true,reason:'already_completed',snapshot:secondCheck});
 
     let meta=secondCheck||existing||null;
     let petRuleState;
-    let saved=false;
-    if(!meta){
-      // Regelprüfung bewusst vor Snapshot und Profil-Refresh: neue Livewerte dürfen nie mit ungeprüften Pet-Regeln verrechnet werden.
-      petRuleState=await ensurePetRuleState({force:true});
-      const {data:current}=await loadCharacters();
-      const slugs=current.characters.map(c=>c.slug);
-      const snapshot=await fetchForeverSnapshot(slugs);
-      meta=await saveDailySnapshot(snapshot,local.date);
-      await registerDailySnapshot(meta);
-      saved=true;
+    const firstAttempt=!meta;
+    if(firstAttempt){
+      // Privacy containment: do not fetch full raw profiles for public archives.
+      // Keep the existing daily refresh and its retry marker independent of Blob.
+      petRuleState=await ensureRules({force:true});
+      meta=disabledArchiveMetadata(local.date);
+      await registerSnapshot(meta);
     }else{
-      // Ein bereits archivierter Snapshot wird nie erneut geschrieben. Ein unvollständiger Profil-Refresh darf aber wiederholt werden.
-      petRuleState=await ensurePetRuleState({force:false});
+      // Never delete or overwrite historical archive references.
+      petRuleState=await ensureRules({force:false});
     }
 
-    const refresh=await refreshDailyCharacters();
+    const refresh=await refreshCharacters();
     const completedMeta={
       ...meta,
       refresh:{...refresh,attemptedAt:new Date().toISOString()}
     };
-    await registerDailySnapshot(completedMeta);
+    await registerSnapshot(completedMeta);
     return res.status(200).json({
-      saved,
-      retried:!saved,
+      saved:false,
+      retried:!firstAttempt,
+      archiveStatus:completedMeta.archiveStatus||'legacy_public',
       snapshot:completedMeta,
       refresh,
-      petRules:publicPetRuleState(petRuleState)
+      petRules:publicRules(petRuleState)
     });
   }catch(error){
     console.error('Tageslauf fehlgeschlagen:',error);
     return res.status(503).json({error:'Tageslauf konnte nicht vollständig abgeschlossen werden'});
   }finally{
-    try{await releaseDailySnapshotLock(local.date,dailyLock)}catch(error){console.error('Daily-Snapshot-Sperre konnte nicht freigegeben werden:',error)}
+    try{await releaseLock(local.date,dailyLock)}catch(error){console.error('Daily-Snapshot-Sperre konnte nicht freigegeben werden:',error)}
   }
 }
+
+}
+export default createDailySnapshotHandler();
