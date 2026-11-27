@@ -335,12 +335,16 @@ try{
      await navigator.serviceWorker.register('/sw.js');
    });
    await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,{},{timeout:20000});
-   const installed=await page.evaluate(async()=>{
-     const keys=await caches.keys(),cache=await caches.open(keys.find(k=>k.startsWith('daltons-talent-planner-'))??'missing');
+   const expectedCache=/^const CACHE="([^"]+)";/m.exec(shell)?.[1];
+   assert.ok(expectedCache,'Service worker cache version must be declared');
+   const installed=await page.evaluate(async(expected)=>{
+     const keys=await caches.keys();
+     if(!keys.includes(expected))return {keys,paths:[],apiCached:false};
+     const cache=await caches.open(expected);
      const paths=(await cache.keys()).map(r=>new URL(r.url).pathname+new URL(r.url).search);
      return {keys,paths,apiCached:paths.some(p=>p.startsWith('/api/')||p.startsWith('/data/'))};
-   });
-   assert.equal(installed.keys.filter(k=>k.startsWith('daltons-talent-planner-')).length,1);
+   },expectedCache);
+   assert.deepEqual(installed.keys,[expectedCache],'Only the current declared app-shell cache may remain');
    assert.ok(installed.paths.includes('/talent-planner.js')&&installed.paths.includes('/talent-personal-state.js')&&installed.paths.includes('/talent-text-quality.js'));
    assert.ok(installed.paths.includes('/')&&installed.paths.some(p=>p.startsWith('/app.js?v=')));
    assert.equal(installed.apiCached,false);
@@ -353,10 +357,13 @@ try{
      }));
      let liveUnavailable=false;
      try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8',{cache:'no-store'});liveUnavailable=!r.ok}catch{liveUnavailable=true}
-     return {results,liveUnavailable};
+     let refreshUnavailable=false;
+     try{const r=await fetch('/api/refresh',{method:'POST',headers:{Authorization:'Bearer offline-synthetic-code'},cache:'no-store'});refreshUnavailable=!r.ok}catch{refreshUnavailable=true}
+     return {results,liveUnavailable,refreshUnavailable};
    });
    assert.deepEqual(staticResult.results,[true,true,true,true],'app shell must remain available offline');
    assert.equal(staticResult.liveUnavailable,true,'live plans must not be served by service worker offline');
+   assert.equal(staticResult.refreshUnavailable,true,'Authorized POST must never be answered by offline cache');
    assert.equal(providerReads,before,'PWA install/offline cache must not trigger provider observation');
    report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true,networkFailure:'fixture_socket_abort'};
  }catch(error){report.pwa={status:'failed',error:String(error.stack||error)};console.error(report.pwa.error);throw error}
