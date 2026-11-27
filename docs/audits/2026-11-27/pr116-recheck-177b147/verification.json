@@ -1,0 +1,72 @@
+{
+  "reviewedCommit": "177b14712a1dbd26c569ecb670cc2906b10920d7",
+  "previousCommit": "33aad3cf0f61b09d4cb88ecc81a17ccc4032dfa4",
+  "previousAuditCommit": "0d5d20f4f1947f1073efb2ec5efec1ff9f834f89",
+  "independent": [
+    {
+      "node": "22.23.5",
+      "redis": "7.0.15",
+      "priorControl": 62,
+      "previousGroupsRechecked": 62,
+      "currentGroups": 74
+    },
+    {
+      "node": "22.23.5",
+      "redis": "8.0.2",
+      "priorControl": 62,
+      "previousGroupsRechecked": 62,
+      "currentGroups": 74
+    }
+  ],
+  "repositorySuites": [
+    {
+      "node": "22.23.5",
+      "redis": "7.0.15",
+      "passed": 164,
+      "failed": 0
+    },
+    {
+      "node": "26.13.1",
+      "redis": "8.0.2",
+      "passed": 164,
+      "failed": 0
+    }
+  ],
+  "actions": [
+    {
+      "run": 45978976974,
+      "result": "success"
+    },
+    {
+      "run": 45978976827,
+      "result": "success"
+    },
+    {
+      "run": 45978976838,
+      "result": "success"
+    }
+  ],
+  "isolation": {
+    "localRedisOnly": true,
+    "privateUnixSocket": true,
+    "syntheticBlobTransport": true,
+    "testedPlannerApiHandlers": [
+      "workshop",
+      "location-planner",
+      "profession-planner"
+    ],
+    "historicalReadCommits": [
+      "0608cf575f6e46e3bbdee800c790ce5ae7c13235",
+      "5a577232d4a07ef8cc032e100fccaed97d77c93d"
+    ]
+  },
+  "providerPlan": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 43,
+    "liveProviderProbeExecuted": false,
+    "sideSpecificInventorySelfTestPassed": true
+  },
+  "vercelReadOnly": {
+    "newestListedProductionCommit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235"
+  }
+}

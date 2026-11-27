@@ -1,0 +1,3 @@
+{"phase":"redis-single-commands","msetAndHset":true,"readonlyDenialsPreservedState":true,"staleLockFenced":true,"quarantineAndRepair":true}
+{"phase":"blob-private-object","authenticatedRecovery":true,"anonymousStatus":403,"overwriteRejected":true,"bytes":295}
+{"phase":"finished","requests":43,"requestBytes":40967,"responseBytes":18801,"elapsedMs":401,"cleanupPassed":true,"result":"passed"}
