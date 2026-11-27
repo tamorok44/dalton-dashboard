@@ -49,7 +49,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1141,4 +1141,34 @@ console.log('Sparse verified Armory snapshot, exact ID/rank/spell, scoped ambigu
   assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(8,21,200)])));
   assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(8,20,200,true)])));
   assert.ok(/compare-best/.test(health([c(8,20,100),c(8,20,200)])));
+}
+
+
+// F11: two tabs share only a short-lived version hint; lock contention,
+// unsupported locks, denied storage and failed requests never block later checks.
+{
+  const values=new Map();
+  const storage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v)};
+  let now=100000,calls=0,busy=false,finish;
+  const locks={async request(key,options,callback){
+    assert.equal(options.ifAvailable,true);
+    if(busy)return callback(null);
+    busy=true;try{return await callback({name:key})}finally{busy=false}
+  }};
+  const delayed=()=>{calls++;return new Promise(resolve=>{finish=resolve});};
+  const first=ui.sharedVersionCheck({storage,locks,fetchVersion:delayed,clock:()=>now});
+  assert.equal(await ui.sharedVersionCheck({storage,locks,fetchVersion:delayed,clock:()=>now}),null);
+  assert.equal(calls,1);
+  finish('public-version-1');
+  assert.equal(await first,'public-version-1');
+  assert.equal(await ui.sharedVersionCheck({storage,locks,fetchVersion:delayed,clock:()=>now}),'public-version-1');
+  assert.equal(calls,1);
+  now+=90001;
+  assert.equal(await ui.sharedVersionCheck({storage,locks,fetchVersion:async()=>{calls++;return 'public-version-2'},clock:()=>now}),'public-version-2');
+  assert.equal(calls,2);
+  assert.deepEqual(Object.keys(JSON.parse([...values.values()][0])).sort(),['checkedAt','version']);
+  const denied={getItem(){throw Error('disabled')},setItem(){throw Error('disabled')}};
+  assert.equal(await ui.sharedVersionCheck({storage:denied,locks:null,fetchVersion:async()=>'fallback',clock:()=>now}),'fallback');
+  const rejectedLocks={request:async()=>{throw Error('unsupported')}};
+  assert.equal(await ui.sharedVersionCheck({storage:denied,locks:rejectedLocks,fetchVersion:async()=>'fallback-2',clock:()=>now}),'fallback-2');
 }
