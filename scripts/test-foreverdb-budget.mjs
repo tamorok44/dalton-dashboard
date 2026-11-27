@@ -34,9 +34,11 @@ globalThis.fetch=async (url,options={})=>{
   if(op==='EVAL'){
     const key=String(command[3]),token=String(command[4]);
     if(key.includes(':daily-budget:')){
-      const n=Number(store.get(key)||0);
-      if(n>=Number(token))return redisResult(-1);
-      store.set(key,String(n+1));return redisResult(n+1);
+      assert.equal(command[2],2);
+      const minute=command[4],n=Number(store.get(key)||0),m=Number(store.get(minute)||0);
+      if(n>=Number(command[5]))return redisResult(-1);
+      if(m>=Number(command[6]))return redisResult(-2);
+      store.set(minute,String(m+1));store.set(key,String(n+1));return redisResult(n+1);
     }
     if(store.get(key)===token){store.delete(key);return redisResult(1)}
     return redisResult(0);
@@ -123,13 +125,16 @@ assert.equal(fixture.get(legacyKey),JSON.stringify(large),'Legacy master is pres
 await writeCompactMaster(legacyKey,{recipes:[]},{redisImpl:fakeRedis});
 assert.deepEqual(await readCompactMaster(legacyKey,{redisImpl:fakeRedis}),{recipes:[]});
 
-const {reserveForeverDbRequest,foreverDbBudgetKey,FOREVERDB_DAILY_BUDGET}=await import('./foreverdb-budget.mjs');
+const {reserveForeverDbRequest,foreverDbBudgetKey,foreverDbMinuteBudgetKey,FOREVERDB_DAILY_BUDGET,FOREVERDB_MINUTE_BUDGET}=await import('./foreverdb-budget.mjs');
 const day=new Date('2026-11-25T13:00:00Z');
 const opts={apiKey:'fixture-key',now:day,enabled:true};
 let count=FOREVERDB_DAILY_BUDGET-1;
-const counter=async ([op,script,num,key,limit])=>{
+const counter=async ([op,script,num,key,minute,limit,minuteLimit])=>{
+  assert.equal(num,2);
   assert.equal(key,foreverDbBudgetKey(opts.apiKey,day));
-  assert.ok(!key.includes(opts.apiKey));
+  assert.equal(minute,foreverDbMinuteBudgetKey(opts.apiKey,day));
+  assert.ok(!key.includes(opts.apiKey)&&!minute.includes(opts.apiKey));
+  assert.equal(Number(minuteLimit),FOREVERDB_MINUTE_BUDGET);
   if(count>=Number(limit))return -1;
   return ++count;
 };
@@ -149,3 +154,23 @@ assert.equal(unchangedAcrossDelta(delta,'spell',457),false,'Unresolved ability/r
 assert.equal((await readBuildDelta(nextBuild,{readPage:async()=>({data:{changes:[]},meta:{total:0}})})).complete,false);
 assert.equal((await readBuildDelta(nextBuild,{readPage:async()=>({data:{build:nextBuild,previousBuild,changes:[{type:'item',change:'changed',id:1}]},meta:{total:1}})})).complete,false,'Generic change-row ID is not a typed entity ID');
 assert.equal((await readBuildDelta(nextBuild,{readPage:async()=>({data:{build:nextBuild,previousBuild,changes:rows},meta:{total:9}}),maxPages:1})).complete,false);
+
+
+// The combined reservation must preserve the daily counter across minute
+// boundaries and fail closed at the internal minute limit.
+{
+  const counts=new Map();
+  const reserve=async ([op,script,num,daily,minute,dailyLimit,minuteLimit])=>{
+    assert.equal(op,'EVAL');assert.equal(num,2);
+    const d=counts.get(daily)||0,m=counts.get(minute)||0;
+    if(d>=Number(dailyLimit))return -1;
+    if(m>=Number(minuteLimit))return -2;
+    counts.set(daily,d+1);counts.set(minute,m+1);return d+1;
+  };
+  const time=new Date('2026-11-25T13:05:10Z');
+  const results=await Promise.allSettled(Array.from({length:FOREVERDB_MINUTE_BUDGET+1},()=>reserveForeverDbRequest({...opts,now:time,redisImpl:reserve})));
+  assert.equal(results.filter(x=>x.status==='fulfilled').length,FOREVERDB_MINUTE_BUDGET);
+  assert.equal(results.find(x=>x.status==='rejected').reason.code,'FOREVERDB_INTERNAL_RATE_LIMIT');
+  assert.equal(counts.get(foreverDbBudgetKey(opts.apiKey,time)),FOREVERDB_MINUTE_BUDGET);
+  assert.equal(await reserveForeverDbRequest({...opts,now:new Date('2026-11-25T13:06:00Z'),redisImpl:reserve}),FOREVERDB_MINUTE_BUDGET+1);
+}
