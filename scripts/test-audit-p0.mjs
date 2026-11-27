@@ -202,7 +202,7 @@ if(!hasRedis){
     const classFixtures=new Map(['1.60.1.71139','1.60.1.70790'].map(build=>['dalton-dashboard:foreverdb:class-master:v9:mage:'+build+':gz1',encodeCompactMaster({observedBuild:build,classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}})]));
     let mode=null,proofTarget=null,restoreProof=null,collisionTarget=null,lateCommand=null,stalledRelease=null,stallObserved=false,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
     const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
-    let pauseFirst=true;
+    let pauseFirst=true,issuedPermitCommand=null;
     globalThis.fetch=async(url,options={})=>{
       assert.equal(String(url),'https://offline-audit.invalid','all real destinations blocked');
       const cmd=JSON.parse(options.body),[op,key]=cmd;
@@ -212,6 +212,12 @@ if(!hasRedis){
         }
         if(op==='GET'&&classFixtures.has(key))return Response.json({result:classFixtures.get(key)});
         if(op==='HMGET'&&key.includes('class-'))return Response.json({result:cmd.slice(2).map(id=>JSON.stringify({id:Number(id),name:'Feuerball',rank:'Rang'}))});
+        if(op==='EVAL'&&cmd[1].includes('addon-permit-issue:v1'))issuedPermitCommand=cmd;
+        if(mode==='ahead-time'&&op==='TIME'){
+          mode=null;
+          const time=cli('TIME');
+          return Response.json({result:[String(Number(time[0])+40),String(time[1])]});
+        }
         const isSync=op==='EVAL'&&cmd[3]?.includes(':addon-sync:');
         if(isSync&&mode==='lose-before'){cli('SET',lockKey,'other-owner');mode=null;}
         if(isSync&&mode==='fail-before'){mode=null;throw Error('fixture interruption before commit');}
@@ -675,9 +681,23 @@ if(!hasRedis){
     assert.equal(cli('GET',lockKey),null);
     const acquireCommand=lateCommand;
     const [sec,micros]=cli('TIME').map(Number);
-    assert.ok(sec*1000+micros/1000<Number(acquireCommand.at(-1)),'exercise revocation BEFORE expiry');
-    assert.equal(cli('GET',acquireCommand[4]),null);
+    assert.ok(sec*1000+micros/1000<Number(acquireCommand.at(-2)),'exercise revocation BEFORE expiry');
+    assert.equal(cli('GET',acquireCommand[4]),'revoked');
+    assert.equal(issuedPermitCommand[3],acquireCommand[4]);
+    assert.equal(cli(...issuedPermitCommand),null,'Duplicate delivery of original issuance must not resurrect revoked permit');
+    assert.equal(cli('GET',acquireCommand[4]),'revoked');
     assert.throws(()=>cli(...acquireCommand),/ADDON_PERMIT_REVOKED/);
+    // A falsely advanced TIME response cannot create a longer-lived permit.
+    mode='ahead-time';
+    const ahead=await call(payload('Audit One','ahead-time',[133,143],now+28));
+    assert.equal(ahead.http,503,JSON.stringify(ahead.value));
+    assert.equal(cli('GET',lockKey),null);
+    const impossibleIssue=issuedPermitCommand;
+    assert.throws(()=>cli(...impossibleIssue),/ADDON_SYNC_DEADLINE/);
+    const tooFar=Number(impossibleIssue[4]);
+    cli('SET',impossibleIssue[3],String(tooFar),'EX',60);
+    assert.throws(()=>cli(...acquireCommand.slice(0,4),impossibleIssue[3],acquireCommand[5],String(tooFar),acquireCommand.at(-1)),/ADDON_SYNC_DEADLINE/);
+    cli('DEL',impossibleIssue[3]);
     assert.equal(cli('GET',lockKey),null);
     assert.equal((await call(payload('Audit Two','after-deferred-acquire',[133,143],now+28))).http,200);
     assert.equal((await call(delayedAcquire)).http,200);
