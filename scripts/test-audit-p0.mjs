@@ -681,6 +681,83 @@ if(!hasRedis){
       await delay(50);try{await redis(['SET','audit:late-forbidden','1']);}catch(error){lateError=error.message;}
     }),/ADDON_SYNC_DEADLINE/);
     await delay(60);assert.equal(lateError,'ADDON_SYNC_DEADLINE');assert.equal(cli('GET','audit:late-forbidden'),null);
+    // F18: use the actual handler, actual central Redis fence and a real
+    // isolated Redis server. Never issue a real device token or call providers.
+    const {createHash}=await import('node:crypto');
+    const {armDeviceWriteFence,armSyncFence}=await import('./sync-deadline.mjs');
+    const syntheticDevice='ddv1_'+'f18-fixture-'.repeat(4);
+    const deviceHash=createHash('sha256').update(syntheticDevice).digest('hex');
+    const deviceKey='dalton-dashboard:addon-device:v1:production:token:'+deviceHash;
+    const deviceRaw=JSON.stringify({schemaVersion:1,deviceId:'qa-f18',characterSlug:'cole-dalton',revokedAt:null});
+    const {authorizeDeviceTokenWithProof}=await import('./addon-device-auth.mjs');
+    const previousFetch=globalThis.fetch;
+    cli('SET',deviceKey,deviceRaw);
+    const authProof=await authorizeDeviceTokenWithProof(syntheticDevice);
+    assert.deepEqual(authProof.proof,{key:deviceKey,raw:deviceRaw});
+    assert.equal(await authorizeDeviceTokenWithProof(syntheticDevice,{targetScope:'preview'}),null);
+    const fenceKey='audit:f18:lease',fenceToken='qa-f18-lease';
+    const protectedKey='audit:f18:protected';
+    cli('SET',fenceKey,fenceToken,'EX',60);
+    const serverTime=cli('TIME');
+    const cutoff=Number(serverTime[0])*1000+Math.floor(Number(serverTime[1])/1000)+20000;
+    await runSyncDeadline(performance.now()+10000,async()=>{
+      armDeviceWriteFence(authProof.proof);
+      assert.equal(await redis(['GET',deviceKey]),deviceRaw);
+      await assert.rejects(redis(['SET',protectedKey,'before-lock']),/DEVICE_WRITE_FENCE_NOT_ARMED/);
+      armSyncFence({key:fenceKey,token:fenceToken,deadlineMs:cutoff});
+      assert.equal(await redis(['SET',protectedKey,'accepted']),'OK');
+      cli('DEL',deviceKey);
+      await assert.rejects(redis(['SET',protectedKey,'revoked']),/DEVICE_AUTH_REVOKED/);
+      await assert.rejects(redis(['EVAL',"return redis.call('SET',KEYS[1],ARGV[1])",1,protectedKey,'revoked-lua']),/DEVICE_AUTH_REVOKED/);
+      assert.equal(cli('GET',protectedKey),'accepted');
+      cli('SET',deviceKey,JSON.stringify({...authProof.record,deviceId:'changed'}));
+      await assert.rejects(redis(['HSET','audit:f18:hash','field','changed-record']),/DEVICE_AUTH_REVOKED/);
+      assert.equal(cli('EXISTS','audit:f18:hash'),0);
+      cli('SET',deviceKey,deviceRaw);
+      assert.equal(await redis(['EVAL',"return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],ARGV[2])",2,protectedKey,'audit:f18:second','atomic','second']),'OK');
+    });
+    assert.equal(cli('GET',protectedKey),'atomic');
+    assert.equal(cli('GET','audit:f18:second'),'second');
+    cli('DEL',fenceKey);
+
+    const coleState=syncKey('cole-dalton');
+    const originalRoster=JSON.parse(cli('GET',rosterKey));
+    cli('SET',rosterKey,JSON.stringify({...originalRoster,characters:[...originalRoster.characters,{slug:'cole-dalton',name:'Cole Dalton',classId:8,level:12}]}));
+    const deviceCall=async body=>{
+      const res=response();
+      await addon({method:'POST',headers:{authorization:'Device '+syntheticDevice},body},res);
+      return res;
+    };
+    const f18Payload=payload('Cole Dalton','f18-first',[133],now+30);
+    let revokedBeforeCore=false;
+    const unchangedCore=[cli('GET',rosterKey),cli('GET',coleState),cli('GET',versionKey)];
+    try{
+      globalThis.fetch=async(url,options)=>{
+        const cmd=JSON.parse(options.body);
+        if(!revokedBeforeCore&&cmd[0]==='EVAL'&&cmd[3]===coleState&&cmd[1].includes('addon-sync-fence:v1')){
+          revokedBeforeCore=true;
+          assert.ok(cmd.includes(deviceKey),'Device key must reach actual core commit');
+          cli('DEL',deviceKey);
+        }
+        return previousFetch(url,options);
+      };
+      const rejectedCore=await deviceCall(f18Payload);
+      assert.equal(rejectedCore.http,401,JSON.stringify(rejectedCore.value));
+      assert.ok(revokedBeforeCore);
+      assert.deepEqual([cli('GET',rosterKey),cli('GET',coleState),cli('GET',versionKey)],unchangedCore);
+      assert.equal(cli('GET',lockKey),null,'Revocation must not prevent lease cleanup');
+      assert.equal((await deviceCall(f18Payload)).http,401);
+      cli('SET',deviceKey,deviceRaw);
+      globalThis.fetch=previousFetch;
+      assert.equal((await deviceCall(f18Payload)).http,200,'Active device can still sync');
+      const committedState=cli('GET',coleState);
+      assert.ok(committedState);
+      assert.equal(JSON.parse(committedState).payload.syncId,'f18-first');
+    }finally{
+      globalThis.fetch=previousFetch;
+      cli('DEL',deviceKey);
+    }
+    console.log('F18 real Redis: pre-lock denial, single-key and Lua commit fencing, revoked/changed device, API core denial, lease cleanup and active-device compatibility: OK');
     console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof, index reconciliation and offline legacy-reader projection: OK');
   }finally{
     globalThis.fetch=originalFetch;
