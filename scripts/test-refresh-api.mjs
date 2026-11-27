@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {PET_DB2_BASELINE,PET_DB2_REVIEWED_BUILD} from './pet-db2-baseline.mjs';
 import {petDb2Url} from './pet-db2-audit.mjs';
 import {createRequire} from 'node:module';
-import handler from '../api/refresh.js';
+import handler,{refreshAuthorization} from '../api/refresh.js';
 import {savePetRuleState} from './pet-rule-store.mjs';
 import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
@@ -18,6 +18,9 @@ const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
 process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
 process.env.CRON_SECRET='test-cron-secret';
+process.env.DALTON_MANUAL_REFRESH_TOKEN='synthetic-manual-refresh-code-0123456789';
+process.env.VERCEL_ENV='production';
+const manualRequest={method:'POST',headers:{authorization:'Bearer '+process.env.DALTON_MANUAL_REFRESH_TOKEN}};
 const previousBlobId=process.env.BLOB_STORE_ID;
 const previousBlobToken=process.env.BLOB_READ_WRITE_TOKEN;
 delete process.env.BLOB_STORE_ID;
@@ -66,9 +69,10 @@ function armoryHtml(old){
   };
   return '<script>var characterProfileInitialState = '+JSON.stringify({character})+';</script>';
 }
-let peak=0,inFlight=0,requests=0,failSlug=null,failAll=false;
+let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false;
 globalThis.fetch=async (url,options={})=>{
   if(String(url).startsWith('https://test-redis.example.com')){
+    redisRequests++;
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
     if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?saved:null})};
@@ -177,12 +181,30 @@ try{
   const denied=fakeResponse();
   await handler({method:'POST',headers:{}},denied);
   assert.equal(denied.result().status,401);
+  const publicGet=fakeResponse();
+  await handler({method:'GET',headers:manualRequest.headers},publicGet);
+  assert.equal(publicGet.result().status,405);
+  const invalid=fakeResponse();
+  await handler({method:'POST',headers:{authorization:'Bearer incorrect'}},invalid);
+  assert.equal(invalid.result().status,401);
+  process.env.VERCEL_ENV='preview';
+  const previewDenied=fakeResponse();
+  await handler(manualRequest,previewDenied);assert.equal(previewDenied.result().status,401);
+  const previewCron=fakeResponse();
+  await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},previewCron);
+  assert.equal(previewCron.result().status,401);
+  process.env.VERCEL_ENV='production';
+  assert.equal(refreshAuthorization(manualRequest,{VERCEL_ENV:'production'}),null);
+  assert.equal(refreshAuthorization(manualRequest,{VERCEL_ENV:'production',DALTON_MANUAL_REFRESH_TOKEN:process.env.DALTON_MANUAL_REFRESH_TOKEN,
+    SPELLBOOK_SYNC_TOKEN:process.env.DALTON_MANUAL_REFRESH_TOKEN}),null);
+  assert.equal(redisRequests,0,'Unauthorized requests must never query Redis or consume cooldown');
+  assert.equal(requests,0,'Unauthorized requests must never query Blizzard');
 
   failPetRuleSave=true;
   cooldown=false;
   const releasesBeforeRuleFailure=lockReleases;
   const ruleFailure=fakeResponse();
-  await handler({method:'GET'},ruleFailure);
+  await handler(manualRequest,ruleFailure);
   assert.equal(ruleFailure.result().status,503,'Pet-Regelprüfungsfehler darf den Refresh nicht als erfolgreich melden');
   assert.equal(lock,null,'Refresh-Lock wird auch freigegeben, wenn die Pet-Regelprüfung vor dem Profilabruf scheitert');
   assert.equal(lockReleases,releasesBeforeRuleFailure+1,'Fehler vor refreshAndPersist führt genau eine Lock-Freigabe aus');
@@ -190,7 +212,7 @@ try{
   cooldown=false;
 
   const ok=fakeResponse();
-  await handler({method:'GET'},ok);
+  await handler(manualRequest,ok);
   const result=ok.result();
   assert.equal(result.status,200);
   assert.equal(result.payload.success,4);
@@ -228,7 +250,7 @@ try{
   cooldown=false;
   failSlug='chucky-dalton';
   const partial=fakeResponse();
-  await handler({method:'GET'},partial);
+  await handler(manualRequest,partial);
   const partialResult=partial.result();
   assert.equal(partialResult.status,200,'Partial failure does not hide successful profiles');
   assert.equal(partialResult.payload.success,3);
@@ -240,7 +262,7 @@ try{
   cooldown=false;
   failAll=true;
   const unavailable=fakeResponse();
-  await handler({method:'GET'},unavailable);
+  await handler(manualRequest,unavailable);
   assert.equal(unavailable.result().status,503,'Total outage must not claim fresh data');
   assert.ok(unavailable.result().payload.error);
   const scheduled=fakeResponse();
@@ -259,7 +281,7 @@ try{
   lock=null;
   cooldown=true;
   const throttled=fakeResponse();
-  await handler({method:'GET'},throttled);
+  await handler(manualRequest,throttled);
   assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
   const priorEnvironment=process.env.VERCEL_ENV;
   try{
