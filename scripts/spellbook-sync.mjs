@@ -72,19 +72,25 @@ export function expandKnownClassAbilities(entries=[],classMaster=null,localized=
     };
   }).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||(a.rank||'').localeCompare(b.rank||'','de')||a.id-b.id);
 }
-export function resolveSpellbookCharacter(data,snapshot){
+// Full SavedVariables syncs must match a unique complete name or slug.
+// The old DALTON1 code may use an explicitly separated first name; never
+// accept arbitrary prefixes. Realm mismatch is rejected when both sides
+// actually have a textual realm identity. Missing metadata is not proof.
+export function resolveSpellbookCharacter(data,snapshot,{allowLegacyFirstName=true}={}){
   if(!data||!Array.isArray(data.characters))throw new Error('Charakterdaten ungültig');
   const requested=slug(snapshot?.characterSlug);
-  const exact=data.characters.find(character=>character?.slug===requested);
-  if(exact)return exact;
-  const candidates=data.characters.filter(character=>
-    Number(character?.classId)===Number(snapshot?.classId)&&(
-      slug(character?.name)===requested||
-      slug(character?.slug).startsWith(requested+'-')
-    )
-  );
-  if(candidates.length===1)return candidates[0];
-  throw new Error('Charakter nicht gefunden');
+  if(!requested)throw new Error('Charakter nicht gefunden');
+  const exact=data.characters.filter(character=>character?.slug===requested||slug(character?.name)===requested);
+  const candidates=exact.length?exact:allowLegacyFirstName&&!requested.includes('-')?data.characters.filter(character=>
+    Number(character?.classId)===Number(snapshot?.classId)&&slug(character?.name).split('-')[0]===requested
+  ):[];
+  if(candidates.length!==1)throw new Error('Charakter nicht eindeutig gefunden');
+  const character=candidates[0];
+  if(Number(character?.classId)!==Number(snapshot?.classId))throw new Error('Klasse passt nicht zum Charakter');
+  const expectedRealm=slug(typeof character.realm==='string'?character.realm:character.realm?.slug||character.realm?.name);
+  const actualRealm=slug(snapshot?.realm);
+  if(expectedRealm&&actualRealm&&expectedRealm!==actualRealm)throw new Error('Realm passt nicht zum Charakter');
+  return character;
 }
 export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized={},syncedAt=new Date().toISOString()}={}){
   const current=resolveSpellbookCharacter(data,snapshot);
