@@ -5,7 +5,14 @@ import {foreverDbConfigured,fetchForeverDbClass} from './foreverdb-api.mjs';
 import {CLASSIC_CLASS_TRAINER_COSTS} from './class-training-classic-costs.mjs';
 import {CLASS_TRAINER_ZONE_DE} from './class-trainer-zones-de.mjs';
 
-const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v8:';
+// v8 could label a current response with the caller's requested build.
+// Never trust its historical cache metadata as proof of the observed build.
+const CACHE_PREFIX='dalton-dashboard:foreverdb:class-master:v9:';
+const CURRENT_BUILD_TTL=21600;
+export function classBuildIdentity(value){
+  const s=typeof value==='string'?value.trim():'';
+  return /^\d+\.\d+\.\d+\.\d+$/.test(s)?s:null;
+}
 const PUBLIC_DATA_BASE='https://foreverdb.net/data/';
 let publicTrainerCache=null;
 let publicClassDataCache=null;
@@ -438,35 +445,40 @@ export async function cachedGermanClassSpells(ids,{fetchImpl=fetch}={}){
 }
 
 export async function cachedForeverDbClassMaster(classId,{build=null,fetchImpl=fetch}={}){
-  const slug=CLASS_BY_ID[Number(classId)];
-  if(!slug)return null;
-  const key=CACHE_PREFIX+slug+':'+(build||'current');
+  const slug=CLASS_BY_ID[Number(classId)],requested=classBuildIdentity(build);
+  if(!slug||(build!=null&&!requested))return null;
+  const key=CACHE_PREFIX+slug+':'+(requested||'current');
   if(redisConfigured()){
-    const parsed=await readCompactMaster(key);
-    if(parsed?.classMaster?.slug===slug&&Array.isArray(parsed.classMaster.abilities)&&parsed.classMaster.abilities.length){
-      return {...parsed.classMaster,cached:true};
+    const parsed=await readCompactMaster(key,{ttl:requested?null:CURRENT_BUILD_TTL});
+    const observed=classBuildIdentity(parsed?.observedBuild);
+    if(observed&&(!requested||observed===requested)&&parsed?.classMaster?.slug===slug&&Array.isArray(parsed.classMaster.abilities)&&parsed.classMaster.abilities.length){
+      return {...parsed.classMaster,observedBuild:observed,cached:true};
     }
   }
   if(!foreverDbConfigured())return null;
   const result=await fetchForeverDbClassMaster(classId,{fetchImpl});
-  if(!result.classMaster?.slug)return null;
-  if(redisConfigured())await writeCompactMaster(key,{classMaster:result.classMaster,generatedAt:new Date().toISOString(),build:build||result.build||null});
-  return {...result.classMaster,cached:false};
+  const observed=classBuildIdentity(result.build);
+  if(!observed||requested&&observed!==requested||result.classMaster?.slug!==slug||!result.classMaster?.abilities?.length)return null;
+  if(redisConfigured())await writeCompactMaster(key,{classMaster:result.classMaster,generatedAt:new Date().toISOString(),observedBuild:observed},{ttl:requested?null:CURRENT_BUILD_TTL});
+  return {...result.classMaster,observedBuild:observed,cached:false};
 }
 
-// A class's world locations are a tiny build-scoped projection. The planner
-// only needs the selected class's large ability master after this index exists.
+// Build proof travels with the small location projection as well.
 export async function cachedForeverDbClassLocations(classId,{build=null,fetchImpl=fetch,classMaster=null}={}){
-  const slug=CLASS_BY_ID[Number(classId)];
-  if(!slug)return [];
-  const key=CACHE_PREFIX+slug+':'+(build||'current')+':locations:v1';
+  const slug=CLASS_BY_ID[Number(classId)],requested=classBuildIdentity(build);
+  if(!slug||(build!=null&&!requested))return [];
+  const key=CACHE_PREFIX+slug+':'+(requested||'current')+':locations:v2';
   if(redisConfigured()&&!classMaster){
     const raw=await redis(['GET',key]);
-    if(raw){try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))return parsed}catch{}}
+    if(raw){try{
+      const parsed=JSON.parse(raw),observed=classBuildIdentity(parsed?.observedBuild);
+      if(observed&&(!requested||observed===requested)&&Array.isArray(parsed.locations))return parsed.locations;
+    }catch{}}
   }
   const master=classMaster||await cachedForeverDbClassMaster(classId,{build,fetchImpl});
-  if(!master)return [];
+  const observed=classBuildIdentity(master?.observedBuild);
+  if(!master||master.slug!==slug||!observed||requested&&observed!==requested)return [];
   const names=collectPlannerKnownLocations({classMasters:[master]});
-  if(redisConfigured())await redis(['SET',key,JSON.stringify(names)]);
+  if(redisConfigured())await redis(['SET',key,JSON.stringify({observedBuild:observed,locations:names}),...(!requested?['EX',String(CURRENT_BUILD_TTL)]:[])]);
   return names;
 }
