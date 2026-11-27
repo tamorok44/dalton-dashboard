@@ -1,0 +1,16 @@
+# Geräteberechtigungen / F04 – erste Eindämmung
+
+Basis: 0608cf5. Keine Abhängigkeit von PR #116 oder #117.
+
+- Historische automatische Geräteübernahme in neue Deployment-Versionen geschlossen (HTTP 410 ohne Datenbankzugriff). Server-Helfer entfernt, neue Bridge verweigert Altkommando lokal. Autorisierung darf nur den aktuellen Scope lesen. Charakter-Allowlist prüft eigene Einträge.
+- Bestehende gültige Produktionstoken und normale Kopplung bleiben erhalten, einschließlich legitim übernommener Geräte. Keine Rotation, keine Sperrung, kein Re-Enrollment im Zuge dieses PR.
+- Kein vollständiger Nachweis der realen Umgebungsisolation: Alte Preview-Deployments mit alten Zugangsdaten können weiter auf dieselbe Datenbank zugreifen. Vor F04-Freigabe sind alte Schreibzugänge am Speicher zu entziehen und die bereits ausgestellten Berechtigungen zu inventarisieren. Token- bzw. Rechtewechsel getrennt abnehmen; kein automatischer Widerruf von aktiven Teamgeräten. Produktion nur nach Freigabe.
+- F05 (gemeinsame Speicherbindung und öffentlicher Refresh) sowie F18 (Einladungs-/Widerrufsatomarität) separat. Keine neuen personenbezogenen Daten oder Schlüsselwerte in den Nachweisen.
+
+
+## F18 – Einladungs- und Widerrufsintegrität (QA 27.11.)
+- Neue Einladungen werden nur nach bestätigtem SET NX ausgegeben. Einlösung prüft Rohwert und Restlaufzeit erneut im Redis-Skript; ein einzelnes MSET speichert gleichzeitig Gerät und ungültigen Verbrauchsmarker. Kein vorgelagertes DEL. Gerätetoken und bestehende Schlüsselstruktur bleiben unverändert. Bei abgewiesener MSET-Mutation bleibt der Code gültig; parallele Einlösungen und zufällige Geräteschlüsselkollisionen werden abgewiesen. Die Marker-TTL wird nach MSET best effort wiederhergestellt; bei verweigerter Bereinigung bleibt der Marker ungültig und erfordert Inventur/Bereinigung, kein erneuter Zugriff.
+- Widerruf meldet nur bei bestätigtem DEL=1 Erfolg; gleichzeitig widerrufende Anfragen können nicht beide eine Löschung bestätigen. Nachfolgende Autorisierung scheitert. Bereits autorisierte laufende Anfragen können aber noch schreiben: eine atomare Berechtigungsprüfung an allen finalen Schreibgrenzen (auch Einladungserstellung, Live-Knowledge, Roster und Outbox) bleibt offen. Kein Anspruch auf sofortigen Abbruch laufender Anfragen.
+- Antwortverlust NACH erfolgreichem Commit bleibt mehrdeutig: Code verbraucht, Gerät möglicherweise gespeichert, Token nicht beim Client angekommen. Keine automatische Wiederausgabe von Credentials; vor produktiver Freigabe Verfahren für gezielte Inventur/Widerruf und Ersatzcode definieren. Keine Garantie für störungsfreie Wiederholung bei unklarem Commit.
+- Neue CI nutzt ausschließlich kurzlebige Redis-7/8-Docker-Container. Prüft echte ACL-Verweigerung von MSET/PEXPIRE/DEL, CAS, parallele Einlösung und Löschung, Ablauf, Kollision, Antwortverlust. Kein Upstash-Provider-Nachweis: EVAL/GET/PTTL/EXISTS/MSET/PEXPIRE/DEL und Multi-Key-Unterstützung separat im isolierten Zielsystem nachweisen. Altdeployments vor Umstellung stilllegen (können ansonsten alte Einlösungslogik ausführen).
+- Keine produktiven Gerätesperren, Tokenrotation, Konfigurations- oder Tarifänderung. F18 bleibt offen bis CI, unabhängige Gegenprüfung, vollständige Schreibgrenzen und Provider-Abnahme belegt sind.
