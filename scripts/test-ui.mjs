@@ -847,7 +847,9 @@ assert.ok(updateWorkflow.includes('run: npm test'),'Keep tests on code changes')
 assert.ok(source.includes("button.addEventListener('click',refreshLive)"),'Manual button still calls Blizzard live');
 assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button requests live API');
 assert.ok(refreshService.includes('refreshCharacters([c])'),'Shared refresh service fetches Blizzard character profiles');
-assert.ok(refreshApi.includes("runLockedRefresh(lockToken,req.method==='GET'?'manual':'scheduled')"),'Manual and scheduled refresh sources stay distinguishable');
+assert.ok(refreshApi.includes('runLockedRefresh(lockToken,source)')&&refreshApi.includes("return 'manual'")&&refreshApi.includes("return 'scheduled'"),'Manual and scheduled refresh sources stay distinguishable');
+assert.ok(refreshApi.includes("req.method!=='POST'")&&refreshApi.indexOf('const source=refreshAuthorization(req)')<refreshApi.indexOf('if(!configured())'),'Authorization precedes provider activity');
+assert.ok(source.includes("method:'POST',cache:'no-store',redirect:'error'")&&source.includes("Authorization:'Bearer '+manualRefreshCode"),'Manual refresh uses dedicated authorized POST');
 assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"')&&vercelConfig.includes('"schedule": "37 4 * * *"'),'Primary and idempotent retry Vercel cron are configured');
 const dailySnapshot=read('api/daily-snapshot.js');
 assert.ok(dailySnapshot.includes('petRuleState=await ensurePetRuleState({force:!existing})')&&dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs,{fetchImpl})'),'Daily rule verification runs before the Blizzard snapshot');
