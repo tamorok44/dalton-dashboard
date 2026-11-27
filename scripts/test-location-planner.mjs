@@ -218,3 +218,20 @@ const sameWorldForOther=buildLocationPlanner(roster,index,{characterSlug:'other-
 assert.deepEqual(sameWorldForCole.locations.map(entry=>entry.name),sameWorldForOther.locations.map(entry=>entry.name),'World locations are shared, independent of learned recipes and class');
 assert.equal(sameWorldForOther.selectedLocation,'Die Insel Zephras');
 assert.equal(sameWorldForOther.counts.atLocation,0);
+
+
+// F08: unknown/contradictory faction must never imply access to a faction-bound offer.
+{
+  const factionRecipe={id:901,name:'Fraktionsprobe',professionSlug:'alchemy',requiredSkill:1,craftedItem:{id:902,name:'Fraktionsprobe'},learning:{sources:[
+    vendor(991,'Allianz-Händler','Stormwind',10),
+    vendor(992,'Horden-Händler','Stormwind',20,{side:'horde'}),
+    vendor(993,'Neutraler Händler','Stormwind',30,{side:'neutral'})
+  ]}};
+  const factionPlan=faction=>buildLocationPlanner({...data,characters:[{...baseCharacter,faction}]},{recipes:[factionRecipe],professions:[]},{characterSlug:'cole-dalton',location:'Stormwind'});
+  for(const [faction,expected] of [['Allianz',[991,993]],['Alliance',[991,993]],['Horde',[992,993]],[null,[993]],['',[993]],['Unbekannt',[993]],['Allianz/Horde',[993]]]){
+    const action=factionPlan(faction).actions.find(a=>a.id===901);
+    assert.ok(action,'Neutral offer remains accessible');
+    const ids=[action.source.id,...action.alternatives.map(s=>s.id)].sort((x,y)=>x-y);
+    assert.deepEqual([...new Set(ids)],expected,'Faction proof: '+faction);
+  }
+}
