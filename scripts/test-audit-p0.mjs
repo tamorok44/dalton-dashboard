@@ -199,7 +199,7 @@ if(!hasRedis){
       {slug:'audit-one',name:'Audit One',classId:8,level:12},
       {slug:'audit-two',name:'Audit Two',classId:8,level:12}
     ]}));
-    const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
+    const classFixture=encodeCompactMaster({observedBuild:'1.60.1.71139',classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
     let mode=null,proofTarget=null,restoreProof=null,collisionTarget=null,lateCommand=null,stalledRelease=null,stallObserved=false,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
     const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
     let pauseFirst=true;
@@ -210,7 +210,7 @@ if(!hasRedis){
         if(op==='GET'&&key===rosterKey&&pauseFirst){
           pauseFirst=false;assert.ok(cli('GET',lockKey));readReached();await continueRead;
         }
-        if(op==='GET'&&key.includes('class-master')&&key.endsWith(':gz1'))return Response.json({result:classFixture});
+        if(op==='GET'&&key==='dalton-dashboard:foreverdb:class-master:v9:mage:1.60.1.71139:gz1')return Response.json({result:classFixture});
         if(op==='HMGET'&&key.includes('class-'))return Response.json({result:cmd.slice(2).map(id=>JSON.stringify({id:Number(id),name:'Feuerball',rank:'Rang'}))});
         const isSync=op==='EVAL'&&cmd[3]?.includes(':addon-sync:');
         if(isSync&&mode==='lose-before'){cli('SET',lockKey,'other-owner');mode=null;}
