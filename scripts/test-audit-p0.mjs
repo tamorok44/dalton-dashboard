@@ -798,6 +798,24 @@ if(!hasRedis){
       globalThis.fetch=previousFetch;
       cli('DEL',deviceKey);
     }
+    // Real Redis: one combined reservation per attempt; no network to ForeverDB.
+    {
+      const {reserveForeverDbRequest,foreverDbBudgetKey,foreverDbMinuteBudgetKey,FOREVERDB_DAILY_BUDGET,FOREVERDB_MINUTE_BUDGET}=await import('./foreverdb-budget.mjs');
+      const apiKey='qa-isolated-budget',time=new Date('2026-11-25T13:05:10Z');
+      const opts={apiKey,now:time,enabled:true,redisImpl:redis};
+      const dayKey=foreverDbBudgetKey(apiKey,time),minuteKey=foreverDbMinuteBudgetKey(apiKey,time);
+      const results=await Promise.allSettled(Array.from({length:FOREVERDB_MINUTE_BUDGET+1},()=>reserveForeverDbRequest(opts)));
+      assert.equal(results.filter(x=>x.status==='fulfilled').length,FOREVERDB_MINUTE_BUDGET);
+      assert.equal(results.find(x=>x.status==='rejected').reason.code,'FOREVERDB_INTERNAL_RATE_LIMIT');
+      assert.equal(Number(cli('GET',dayKey)),FOREVERDB_MINUTE_BUDGET);
+      assert.ok(Number(cli('TTL',minuteKey))>0);
+      assert.equal(await reserveForeverDbRequest({...opts,now:new Date('2026-11-25T13:06:00Z')}),FOREVERDB_MINUTE_BUDGET+1);
+      cli('SET',dayKey,String(FOREVERDB_DAILY_BUDGET));
+      await assert.rejects(reserveForeverDbRequest({...opts,now:new Date('2026-11-25T13:07:00Z')}),/Tagesbudget/);
+      assert.equal(cli('GET',foreverDbMinuteBudgetKey(apiKey,new Date('2026-11-25T13:07:00Z'))),null);
+      cli('DEL',dayKey,minuteKey,foreverDbMinuteBudgetKey(apiKey,new Date('2026-11-25T13:06:00Z')));
+      console.log('F10 real Redis: combined quota, concurrent minute limit, rollover and TTL OK');
+    }
     console.log('F18 real Redis: pre-lock denial, single-key and Lua commit fencing, revoked/changed device, API core denial, lease cleanup and active-device compatibility: OK');
     console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof, index reconciliation and offline legacy-reader projection: OK');
   }finally{
