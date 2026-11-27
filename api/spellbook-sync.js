@@ -52,6 +52,7 @@ async function archiveKnownAbilityIcons(data,characterSlug){
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
   if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
+  if(process.env.VERCEL_ENV!=='production')return res.status(403).json({error:'Spellbook-Synchronisierung nur in Produktion verfügbar'});
   const expected=process.env.SPELLBOOK_SYNC_TOKEN;
   if(!expected)return res.status(503).json({error:'Spellbook-Synchronisierung ist nicht konfiguriert'});
   let snapshot;
