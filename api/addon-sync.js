@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {runSyncDeadline,assertSyncBudget,ADDON_WORK_MS,ADDON_CLEANUP_UNTIL_MS} from '../scripts/sync-deadline.mjs';
+import {runSyncDeadline,assertSyncBudget,armDeviceWriteFence,ADDON_WORK_MS,ADDON_CLEANUP_UNTIL_MS} from '../scripts/sync-deadline.mjs';
 import {loadCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
@@ -8,7 +8,7 @@ import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
 import {loadAddonSyncState,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
 import {ingestAddonLiveKnowledge,snapshotsFromAddonPayload} from '../scripts/live-knowledge-store.mjs';
-import {authorizeDeviceToken,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {authorizeDeviceTokenWithProof,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
 export const config={maxDuration:30};
 
@@ -94,8 +94,10 @@ async function syncRequest(req,ownership){
 
   const masterAuthorized=masterSyncTokenMatches(authValue(req,'Bearer'));
   const deviceToken=authValue(req,'Device');
-  const device=masterAuthorized?null:await authorizeDeviceToken(deviceToken);
+  const authorization=masterAuthorized?null:await authorizeDeviceTokenWithProof(deviceToken);
+  const device=authorization?.record??null;
   if(!masterAuthorized&&!device)return reply(401,{error:'Ungültige Addon-Sync-Berechtigung'});
+  if(authorization)armDeviceWriteFence(authorization.proof);
 
   let payload;
   try{payload=normalizeAddonSyncPayload(await requestBody(req))}catch(error){
@@ -195,6 +197,7 @@ async function syncRequest(req,ownership){
     });
   }catch(error){
     console.error('Addon-Synchronisierung fehlgeschlagen:',error);
+    if(String(error.message).includes('DEVICE_AUTH_REVOKED'))return reply(401,{error:'Geräteberechtigung nicht mehr gültig'});
     const status=/^(SYNC_CONFLICT|STALE_SPELLBOOK)/.test(String(error.message))?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
     return reply(status,{error:String(error.message).slice(0,180)});
   }
