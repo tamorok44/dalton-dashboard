@@ -43,12 +43,36 @@ export function masterSyncTokenMatches(token){
   const expected=process.env.DALTON_SYNC_TOKEN||process.env.SPELLBOOK_SYNC_TOKEN;
   return Boolean(expected)&&safeEqual(token,expected);
 }
-export async function createDeviceEnrollment(characterSlug){
+function enrollmentDenied(){return Object.assign(new Error('Nicht berechtigt'),{code:'DEVICE_ENROLLMENT_DENIED'})}
+export async function createDeviceEnrollment(characterSlug,{issuerToken=null}={}){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!isTrustedCharacterSlug(characterSlug))throw new Error('Unbekannter Dalton-Charakter');
   const code='dalton-'+randomBytes(24).toString('base64url');
   const record={characterSlug,createdAt:now(),expiresInSeconds:ENROLL_TTL_SECONDS};
-  const saved=await redis(['SET',inviteKey(code),JSON.stringify(record),'EX',ENROLL_TTL_SECONDS,'NX']);
+  const key=inviteKey(code),value=JSON.stringify(record);
+  let saved;
+  if(issuerToken===null){
+    // Internal trusted caller, after master credential validation at the API boundary.
+    saved=await redis(['SET',key,value,'EX',ENROLL_TTL_SECONDS,'NX']);
+  }else{
+    if(typeof issuerToken!=='string'||!issuerToken.startsWith('ddv1_'))throw enrollmentDenied();
+    const issuerKey=deviceKey(issuerToken);
+    const raw=await redis(['GET',issuerKey]);
+    let issuer;
+    try{issuer=JSON.parse(raw)}catch{throw enrollmentDenied()}
+    if(!issuer||issuer.revokedAt||!deviceMayCreateEnrollment(issuer,characterSlug))throw enrollmentDenied();
+    // Exact original record must still be authorized at the mutation boundary.
+    // A revoke/change before the script executes blocks creation; no new invite.
+    const lua=`
+if redis.call('GET',KEYS[1])~=ARGV[1] then return -1 end
+local saved=redis.call('SET',KEYS[2],ARGV[2],'EX',ARGV[3],'NX')
+if not saved then return 0 end
+return 1
+`;
+    const result=await redis(['EVAL',lua,2,issuerKey,key,raw,value,ENROLL_TTL_SECONDS]);
+    if(result===-1)throw enrollmentDenied();
+    saved=result===1?'OK':null;
+  }
   if(saved!=='OK')throw new Error('Einrichtungscode konnte nicht gespeichert werden');
   return {code,characterSlug,characterName:trustedCharacterName(characterSlug),expiresInSeconds:ENROLL_TTL_SECONDS};
 }
