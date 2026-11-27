@@ -1,0 +1,34 @@
+{
+  "workflowRun": 46039378480,
+  "job": 140642899450,
+  "scannedCommit": "12053beaba36dffcd51e644bbd0c2aea8dc51fd2",
+  "results": [
+    {
+      "author_metadata": {
+        "distinct_author_address_count": 2,
+        "non_github_noreply_address_count": 1
+      },
+      "commit": "0608cf575f6e46e3bbdee800c790ce5ae7c13235",
+      "counts": {
+        "binary_blobs_not_scanned": 4,
+        "blobs": 1357,
+        "text_blobs_scanned": 1353
+      },
+      "matching_blobs_by_pattern": {},
+      "scope": "production ancestry"
+    },
+    {
+      "author_metadata": {
+        "distinct_author_address_count": 3,
+        "non_github_noreply_address_count": 1
+      },
+      "counts": {
+        "binary_blobs_not_scanned": 4,
+        "blobs": 2711,
+        "text_blobs_scanned": 2707
+      },
+      "matching_blobs_by_pattern": {},
+      "scope": "all fetched refs"
+    }
+  ]
+}

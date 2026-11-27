@@ -19,3 +19,7 @@ PR #117 (cfad310) schaltet neue öffentliche Roharchive aus; täglicher Refresh,
 3. Preview-Promotion schließen, Speicherumgebungen trennen, manuellen Refresh mit vertrauenswürdigem Zugriff absichern, ohne Team-Workflow versehentlich zu brechen.
 4. Übertragungs-Feldvertrag und öffentliche UI-Projektion einschließlich Spielerzuordnung/Zeiten prüfen; effektive Bridge-Dateirechte und Relay-Identität testen.
 5. PR #116 bleibt getrennt; Original-F02-Korrektur in möglichst kleiner separater Änderung prüfen. Kein neuer Kosten-/Ressourcenbedarf ohne Freigabe.
+
+## Abgeschlossener Git-Historien-Scan
+
+[Workflow 46039378480](https://github.com/tamorok44/dalton-dashboard/actions/runs/46039378480), exakter Audit-Commit 12053beaba36dffcd51e644bbd0c2aea8dc51fd2, erfolgreich. Produktionshistorie: 1.353 Textblobs von 1.357; alle ausgecheckten refs: 2.707 Textblobs von 2.711. Keine Treffer für die geprüften Muster. Je vier Binärblobs ausgenommen. Git-Autormetadaten: zwei unterschiedliche Adressen im Produktionsstamm bzw. drei über alle ausgecheckten refs; jeweils eine außerhalb GitHub-Noreply. Adresse wird bewusst nicht veröffentlicht; prüfen, ob persönliche oder Funktionsadresse. GitHub-Privatsphäreneinstellung schützt neue Commits, nicht bestehende Historie. Kein Beweis der Abwesenheit beliebiger oder anders formatierter Secrets. Provider-/Release-/Binärprüfung weiterhin offen.
