@@ -1,4 +1,4 @@
-import {readdirSync,appendFileSync,writeFileSync} from 'node:fs';
+import {readdirSync,appendFileSync,writeFileSync,readFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {performance} from 'node:perf_hooks';
@@ -72,8 +72,15 @@ const phases=[
   }
 ];
 const expected=readdirSync(new URL('./',import.meta.url)).filter(f=>/^test-.*\.mjs$/.test(f)).map(f=>'scripts/'+f).sort();
-const assigned=phases.flatMap(p=>p.files);
-assert.deepEqual([...assigned].sort(),expected,'Every test script must belong to exactly one ordered phase');
+// Provider integration requires a dedicated ephemeral Redis service, not
+// the ordinary network-free suite (also used by Add-on packaging).
+const externalTests=[{file:'scripts/test-device-enrollment-redis.mjs',workflow:'.github/workflows/device-enrollment-redis.yml'}];
+for(const {file,workflow} of externalTests){
+  const source=readFileSync(new URL('../'+workflow,import.meta.url),'utf8');
+  assert.ok(source.includes('run: node '+file)&&source.includes('DALTON_TEST_REDIS_CONTAINER:'),'External test must have an explicit isolated CI job: '+file);
+}
+const assigned=[...phases.flatMap(p=>p.files),...externalTests.map(t=>t.file)];
+assert.deepEqual([...assigned].sort(),expected,'Every test script must belong to exactly one ordered or dedicated CI phase');
 // Discover syntax targets rather than naming production modules in this test runner.
 const syntax=new Set();
 for(const dir of ['','scripts/','api/'])for(const f of readdirSync(new URL('../'+dir,import.meta.url),{withFileTypes:true})){
@@ -100,7 +107,7 @@ for(const phase of phases){
   }
 }
 const failed=results.filter(x=>x.status==='failed');
-const report={schemaVersion:1,node:process.version,commit:process.env.GITHUB_SHA??null,passed:results.length-failed.length,failed:failed.length,results};
+const report={schemaVersion:1,node:process.version,commit:process.env.GITHUB_SHA??null,externalTests:externalTests.map(t=>({...t,status:'separate_ci_not_run_here'})),passed:results.length-failed.length,failed:failed.length,results};
 console.log('\nGesamttest: '+report.passed+'/'+results.length+' bestanden; '+failed.length+' fehlgeschlagen.');
 if(failed.length)console.error('Fehler:\n'+failed.map(x=>x.phase+' | '+x.test+' | '+(x.error??x.signal??x.exitCode)).join('\n'));
 if(process.env.DALTON_TEST_REPORT)writeFileSync(process.env.DALTON_TEST_REPORT,JSON.stringify(report,null,2)+'\n');
