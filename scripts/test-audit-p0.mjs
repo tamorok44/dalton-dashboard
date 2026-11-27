@@ -368,7 +368,10 @@ if(!hasRedis){
     assert.equal(conflictedProjection.manifest.completeForLegacyReaders,false);assert.equal(conflictedProjection.manifest.quarantined.length,1);
     assert.ok(conflictedProjection.commands.some(c=>c[0]==='HSET'&&c[2].startsWith('__quarantine:v1:')));
     assert.ok(!conflictedProjection.commands.some(c=>c[0]==='SET'&&c[1]===knowledgeKey));
-    assert.throws(()=>buildLegacyReadProjection({...input,addonStates:[{...states[0],pendingObservations:true},states[1]]}),/Ausstehende Beobachtungen/);
+    const pendingInput={...input,addonStates:[{...states[0],pendingObservations:true},states[1]]};
+    assert.throws(()=>buildLegacyReadProjection(pendingInput),/Inventurdifferenz/);
+    pendingInput.inventory=summarizeRestoreInventory(pendingInput);
+    assert.throws(()=>buildLegacyReadProjection(pendingInput),/Ausstehende Beobachtungen/);
     const rawRoster=cli('GET',rosterKey),rawStates=states.map(state=>[syncKey(state.characterSlug),cli('GET',syncKey(state.characterSlug))]);
     database=1;
     try{
