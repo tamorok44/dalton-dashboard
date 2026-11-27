@@ -23,7 +23,7 @@ function safeEqual(a,b){
   return left.length===right.length&&timingSafeEqual(left,right);
 }
 export function trustedCharacterSlugs(){return Object.keys(TRUSTED_CHARACTERS)}
-export function trustedCharacterName(slug){return TRUSTED_CHARACTERS[String(slug||'')]||null}
+export function trustedCharacterName(slug){const key=String(slug||'');return Object.hasOwn(TRUSTED_CHARACTERS,key)?TRUSTED_CHARACTERS[key]:null}
 export function isTrustedCharacterSlug(slug){return Boolean(trustedCharacterName(slug))}
 export function deviceMaySync(device,targetSlug,transport){
   const own=String(device?.characterSlug||'');
@@ -72,15 +72,20 @@ export async function redeemDeviceEnrollment(code){
   await redis(['SET',deviceKey(token),JSON.stringify(record)]);
   return {token,...record};
 }
-export async function authorizeDeviceToken(token,{targetScope=scope()}={}){
+export async function authorizeDeviceTokenWithProof(token,{targetScope=scope()}={}){
+  if(targetScope!==scope())return null;
   if(!configured()||typeof token!=='string'||!token.startsWith('ddv1_'))return null;
-  const raw=await redis(['GET',deviceKeyForScope(token,targetScope)]);
+  const key=deviceKeyForScope(token,targetScope);
+  const raw=await redis(['GET',key]);
   if(!raw)return null;
   try{
     const record=JSON.parse(raw);
     if(!record||record.revokedAt||!isTrustedCharacterSlug(record.characterSlug))return null;
-    return record;
+    return {record,proof:{key,raw}};
   }catch{return null}
+}
+export async function authorizeDeviceToken(token,options){
+  return (await authorizeDeviceTokenWithProof(token,options))?.record??null;
 }
 export async function promoteColeDeviceToProduction(token){
   if(process.env.VERCEL_ENV==='production')throw new Error('Geräteübernahme ist nur aus dem Preview möglich');
