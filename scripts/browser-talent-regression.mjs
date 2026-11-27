@@ -43,6 +43,9 @@ for(const c of roster.filter(c=>[2,3,11].includes(c.classId))){c.talentDetailsVe
 const mageCharacter=roster.find(c=>c.classId===8),mageFrost=displayMaster.classes[8].trees.find(t=>t.id===11601),mageNode=mageFrost.talents.find(n=>n.id===105779);
 mageCharacter.talentDetailsVerified=true;mageCharacter.talentsVerified=true;mageCharacter.talents='Frost: 3';mageCharacter.talentDetails=[{name:'Frost',spentPoints:3,talents:[{id:mageNode.profileId,rank:3,spellId:mageNode.rankSpellIds[0]}]}];
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
+const vercelConfig=JSON.parse(readFileSync(resolve(root,'vercel.json'),'utf8'));
+const cspCandidate=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy-Report-Only')?.value;
+assert.ok(cspCandidate,'CSP candidate must be exercised in browser fixture');
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
 let offlineFixture=false,refreshRequests=0;
 const syntheticRefreshCode='synthetic-browser-refresh-code-0123456789';
@@ -73,7 +76,7 @@ const server=createServer(async(req,res)=>{
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);
  const file=resolve(root,'.'+pathname);
  if(!file.startsWith(root.endsWith(sep)?root:root+sep)||!statSync(file).isFile())throw Error('Not found');
- res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Cache-Control':'no-store'});createReadStream(file).pipe(res);
+ res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Cache-Control':'no-store',...(extname(file)==='.html'?{'Content-Security-Policy-Report-Only':cspCandidate}:{})});createReadStream(file).pipe(res);
  }catch{if(!res.headersSent)res.writeHead(404);res.end('Not found')}
 });
 await new Promise((ok,bad)=>{server.once('error',bad);server.listen(0,'127.0.0.1',ok)});
@@ -95,6 +98,10 @@ try{
  assert.ok(report.rawScriptBytes<=40000&&report.gzipScriptBytes<=12000,'Talent planner JS size budget exceeded');
  for(const item of cases){
   const context=await browser.newContext({...item.options,serviceWorkers:'block',locale:'de-DE',reducedMotion:'reduce'});
+  await context.addInitScript(()=>{
+    window.__qaCspViolations=[];
+    document.addEventListener('securitypolicyviolation',event=>window.__qaCspViolations.push({directive:event.effectiveDirective,blocked:event.blockedURI,disposition:event.disposition}));
+  });
   const page=await context.newPage(),errors=[],outside=[];
   let cdp=null;
   const baselineRequests=plannerRequests;
@@ -328,6 +335,9 @@ try{
    assert.equal(plannerRequests,beforePlan,'character view must not trigger plan requests');
    await druid.screenshot({path:resolve(reportDir,item.name+'-hotfix.png'),scale:'css'});
    result.additionalClassPaths=2;result.legacyRank5Verified=true;result.correctedCharacterViews=3;result.characterCatalogReads=displayRequests-beforeDisplay;
+   const violations=await page.evaluate(()=>window.__qaCspViolations||[]);
+   assert.deepEqual(violations,[],'CSP candidate would block exercised application behavior');
+   result.cspViolations=violations.length;
    assert.deepEqual(errors,[],'browser page errors');
    assert.deepEqual(unexpected,[],'unexpected backend endpoints');
    result.plannerRequests=plannerRequests-baselineRequests;
