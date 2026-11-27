@@ -211,7 +211,7 @@
     },
     {
       "owner": "installCharacterTabs",
-      "line": "cards.querySelectorAll('button[data-character-tab]').forEach(button=>"
+      "line": "cards.querySelectorAll('button[data-character-tab]').forEach(button=>{"
     },
     {
       "owner": "keepNewestProfiles",
