@@ -1,0 +1,73 @@
+{
+  "reviewedCommit": "6a6275e63270f6baf09ae3e2d0d4a4abc54e76db",
+  "previousCommit": "26c1b74065616d0b5f44b59ec9c0af990df7b2b0",
+  "previousAuditCommit": "a880abf3b3908115cf4b46030d6380226d779725",
+  "reviewDateBerlin": "2026-11-27",
+  "matrix": [
+    {
+      "redis": "7.0.15",
+      "node": "22.23.5",
+      "previousGroupsControlled": 99,
+      "previousGroupsRerun": 99,
+      "additionalGroups": 12,
+      "totalGroups": 111,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0,
+      "serializedProofBytesOverThreeCasAttempts": 12819
+    },
+    {
+      "redis": "8.0.2",
+      "node": "26.13.1",
+      "previousGroupsControlled": 99,
+      "previousGroupsRerun": 99,
+      "additionalGroups": 12,
+      "totalGroups": 111,
+      "candidateExit": 0,
+      "controlExit": 0,
+      "repositoryPassed": 165,
+      "repositoryFailed": 0,
+      "serializedProofBytesOverThreeCasAttempts": 12819
+    }
+  ],
+  "technicalBlockersConfirmedByBoth": [
+    "transient-proof-read-finalizes-fresh-evidence-without-replay",
+    "restored-proof-not-compared-on-negative-branch",
+    "reader-only-collision-has-no-alternate"
+  ],
+  "actions": [
+    {
+      "run": 46004996769,
+      "result": "success"
+    },
+    {
+      "run": 46004996701,
+      "result": "success"
+    },
+    {
+      "run": 46004996770,
+      "result": "success"
+    }
+  ],
+  "restore": {
+    "legacyGateSelfTestPassed": true,
+    "cliCleanProjectionPasses": true,
+    "cliQuarantinedLegacyActivationDenied": true,
+    "collisionNativeLocalRdbRestorePassed": true,
+    "liveProviderRestore": false,
+    "actualLegacyWriterRetirement": false
+  },
+  "provider": {
+    "localSmokePassed": true,
+    "redisRequestsInSmoke": 110,
+    "cleanupPassed": true,
+    "mocksBlobTransport": true,
+    "realProviderRun": false,
+    "realQuotasMeasured": false
+  },
+  "localRedisIsolation": {
+    "privateUnixSocket": true,
+    "syntheticData": true
+  }
+}

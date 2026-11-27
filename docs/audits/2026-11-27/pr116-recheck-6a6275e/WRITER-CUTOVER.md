@@ -1,0 +1,63 @@
+# Belegbare Stilllegung alter Writer
+
+Stand 27. November 2026, Prüfcommit `6a6275e63270f6baf09ae3e2d0d4a4abc54e76db`. Dieses Verfahren ist für das spätere, separat autorisierte Migrationsfenster bestimmt. Die aktuelle Gegenprüfung erteilt keine Betriebsfreigabe. Die lokale Probe nutzt ausschließlich synthetische Daten.
+
+Die Vorgabe ist technisch sinnvoll. `HSETNX` sichert eine bereits gelesene Kopie, kann eine vor dem Aufruf verlorene Kopie jedoch nicht wiederherstellen. Die alte v1-Implementierung schreibt ohne einen neuen Migrationsmarker. Der einzige belastbare Übergang ist deshalb eine Sperre am autoritativen Speicher vor dem Export, kombiniert mit dem Entzug der Einstiegspunkte. Eine Domainumschaltung oder eine Änderung der Projekt-Umgebungsvariablen allein lässt ältere Deployments und deren gespeicherte Zugangsdaten bestehen. Bloß ausbleibender Traffic beweist keine Stilllegung. [Vercel-Deployment-URLs](https://vercel.com/docs/deployments/generated-urls) · [Vercel-Geheimnisrotation](https://vercel.com/docs/environment-variables/rotating-secrets) · [Upstash-REST-Zugänge](https://upstash.com/docs/redis/features/restapi)
+
+## 1. Schreiber und Datenzugänge erfassen
+
+Eine verantwortliche Betriebsrolle und eine zweite Person für die Abnahme benennen. Vor der Änderung die tatsächlichen Provider-IDs, Regionen, Ressourcen, Deployment-SHAs, Endpunkte und Credential-Generationen in geschützter Ablage erfassen. Für jede Inventurposition muss ein späterer Negativnachweis oder belegter Ausschluss möglich sein. Die Publikation enthält nur Gruppen, Mengen, Hashes und Zeitstempel.
+
+| Gruppe | Prüfobjekte |
+| --- | --- |
+| `vercel-urls` | Produktionsdomain und sämtliche verknüpften Aliasse, Branch-URLs, individuelle Preview- und Produktions-URLs alter Builds, andere Projekte mit geteilter Integration, Freigabelinks und Automations-Bypass. Paginierte Deployment- und Domain-Ausgaben mit Projekt- und Environment-Zuordnung sichern. |
+| `scheduled-and-queued` | Beide in `vercel.json` definierten Tagesläufe, externe Schedules und CI, laufende oder wiederholte Jobs, Warteschlangen, Webhooks und Relay-Wiederholungen. Das Zeitfenster in UTC planen. |
+| `manual-and-external` | Add-on/Bridge/Sync-Companion, Gerätedienste, CLI-/Administrationsskripte, manuelle Refreshs und alle weiteren Prozesse mit REST-, TCP- oder Blob-Schreibrecht. Relevante Endpunkte umfassen `addon-sync`, `spellbook-sync`, `refresh`, `daily-snapshot` und Geräteregistrierung. |
+| `read-side-mutations` | GET-Endpunkte und Aufwärmer mit Nebenwirkungen, insbesondere Werkstatt, Orts- und Berufsplaner sowie Wege zu Katalog-, Cache-, Medien- oder Beobachtungsschreibzugriffen. `HSETNX` im neuen Leser zählt während des Exports ebenfalls als Schreibzugriff. |
+| Providerzugänge | Upstash-REST-Standardtoken plus ACL-Identitäten und abweichende `KV_REST_*`-Bindungen, TCP/Redis-Passwörter und bestehende Verbindungen, Blob-Tokens und OIDC/Service-Rollen je altem und neuem Store. OAuth für Verbrauch und administrative Lesezugriffe getrennt halten. |
+
+Die Inventargrenze richtet sich nach allen Identitäten mit Zugang zum autoritativen Backend. Eine vorgeschaltete HTTP-Sperre muss auch erzeugte URLs und autorisierte Bypässe abdecken. Eine leere Gruppe braucht einen exportierten Beleg dafür, dass kein solcher Zugang vorhanden ist. [Vercel Deployment Protection](https://vercel.com/docs/deployment-protection)
+
+## 2. Schreibzugriffe sperren und messen
+
+1. **Zulauf schließen.** Cron und externe Schedules anhalten. Retry-Jobs pausieren, Queue-Rückstand erfassen und bestehende Verbindungen kontrolliert leeren. Alte öffentliche und interne Endpunkte sowohl über Aliasse als auch direkt über erzeugte URLs sperren. Direkte Deployments, Bypässe und historische Cron-Autorisierung separat abdecken. Kandidaten dürfen während des Freeze mit der Quelle ausschließlich über das Inventurkonto sprechen.
+2. **Berechtigung am Speicher entziehen.** Geteilte Upstash-Standardzugänge nach dokumentierter Rotation widerrufen. Upstash dokumentiert, dass ein DB-Passwortreset die Standard- und Read-only-REST-Tokens invalidiert. ACL-basierte Identitäten einzeln entziehen und aktive TCP-Sitzungen auf Trennung prüfen. Vercel-Umgebungsvariablen separat aktualisieren. Alte Builds bleiben mit ihren bisherigen Werten belegt und dürfen keine neuen Zugangsdaten erhalten. Blob-Schreibzugriffe am betroffenen Store widerrufen oder vor einer Umschaltung technisch isolieren. Kann eine Altidentität den autoritativen Bestand weiterhin erreichen, bleibt dieser Migrationspfad gesperrt. [Upstash REST und ACL](https://upstash.com/docs/redis/features/restapi) · [Upstash Passwortreset](https://upstash.com/docs/devops/developer-api/redis/reset_password) · [Vercel Blob Security](https://vercel.com/docs/vercel-blob/security)
+3. **Provider- und Routenbelege erheben.** Je alter Zugangsgeneration und betroffenem Backend eine tatsächliche Authentifizierungs-/Autorisierungsverweigerung an einer vorab reservierten synthetischen Prüfressource protokollieren. Je alter URL die serverseitige Sperre prüfen. Erwartet werden aussagekräftige Provider- oder Policy-Denials. Ein Timeout, ein fehlender Datensatz, ein falscher Host oder ein bloßer Anwendungsstatus ohne Herkunft reicht nicht. Der unabhängige Inventurzugang muss parallel über dieselbe Zielbindung einen vorher bekannten Marker lesen können. Nach jeder Stichprobe prüfen, dass der Prüfwert unverändert blieb. Während der Gegenprüfung werden diese Abläufe nur lokal oder auf separat freigegebenen isolierten Providerressourcen ausgeführt.
+4. **Abklingen belegen.** Ab wirksamem Berechtigungsentzug mindestens die größte tatsächlich konfigurierte In-flight-Dauer aller erfassten Wege einschließlich Provider- und externer Retrygrenzen plus deren Unsicherheitsreserve abwarten. Die 60 Sekunden im Prüfschema sind eine Untergrenze aus dem Tageslauf. Länger laufende Jobs separat abwarten bzw. nachweislich abbrechen. Provider- und Ausführungslogs über das komplette Drain- und Exportfenster auf erfolgreiche Mutationen prüfen. Zwei unabhängig erzeugte, gleiche Bestandsfingerabdrücke mit Abstand von mindestens dieser Dauer sind ein zusätzlicher Nachweis. Sie ersetzen die Sperre am Speicher nicht.
+5. **Schreibstilllegung schließen.** Zeitpunkte für Sperre, wirksamen Entzug, Drain und beide Prüfstichproben in UTC dokumentieren. Beide Betriebsrollen gleichen die Hashes mit den geschützten Originalnachweisen ab. Bei verbleibender Aktivität, nicht belegbarer Provider-Autorisierung oder wechselndem Fingerabdruck den Export stoppen. Der lokale ACL-Probelauf ließ einen echten alten Handler vor dem Entzug schreiben und wies seine erneute Ausführung bei deaktiviertem anonymen Standardbenutzer mit 503 ab. Der neue Testbenutzer konnte anschließend separat schreiben.
+
+## 3. Autoritativer Export und Rollback-Gate
+
+- Den autoritativen Export erst nach bestandenem Stilllegungsgate starten. Die Quelle bleibt während Export, zweitem unabhängigen Inventurdurchgang, Restore und Umschaltentscheidung schreibgesperrt. Ein Backup vor der Sperre kann der Wiederauffindbarkeit dienen. Der autoritative Datensatz entsteht nach dem Freeze.
+- Die Quellfingerabdrücke aus derselben kanonischen physischen Selektionsliste bilden. Schlüsseltypen, Schlüssel, Werte und vorhandene Ablaufzeiten erfassen. Für Ablaufzeiten absolute Ablaufzeitpunkte statt des laufend fallenden TTL-Werts vergleichen. Ablaufende relevante Daten vor der Freigabe als Abweichung behandeln. Versionen, Roster, Sync-Outbox, Tag und Zeiger, Pet, beide Tagesbelegformate sowie Haupt- und Quarantänefelder einbeziehen. Blob-Objektliste und Metadaten vor und nach dem Freeze separat sichern. Rohwerte und anbieterspezifische Backup-Dateien bleiben in geschützter Ablage.
+- Die Offline-Projektion in einer leeren isolierten Instanz herstellen. Nicht-String-Legacy-Schlüssel gehören in die physische Inventur und einen geschützten nativen Backup-Nachweis. Sie dürfen im JSON-Export nie als abwesend erscheinen. Abweichungen vor einer Rollback-Freigabe kontrolliert auflösen und getrennt als Original nachweisen. Ein Hersteller-Backup bzw. bei vorhandener Fähigkeit `DUMP`/absolute Ablaufzeit in kontrolliertem Export ist dafür geeignet.
+- Beschädigte Quarantäne-Primärfelder und Ausweichbelege gehören beide in den autoritativen Export. Die strikte JSON-Projektion kann das Primärfeld trotz passender Inventur ablehnen. Dies ist ein Stopp für die Leseraktivierung. Das unveränderte Backup in einem isolierten Redis-Klon nativ wiederherstellen und Primärfelder, rekursive Kollisionsbytes und Referenzen prüfen. Übergehende Beobachtungen mit `repair_evidence_unavailable` separat bilanzieren und bis zum nachgewiesenen Wiederanlauf in der Abnahme offenhalten.
+- Alte Writer bleiben auch im Rückfall dauerhaft gesperrt. Für einen kompatiblen Reader- oder Writer-Anker vorab exakten SHA, Datenformat und getrennte Identität festlegen. `completeForLegacyReaders:false` sperrt alte Leser hart. Historische Leser aus `0608cf5` und `5a57723` dienen als Prüfproben im Klon. Die Kandidatenprojektion kann für einen forensischen Klon bewusst auch Befehle zu einer unvollständigen v1-Ansicht enthalten. Der Aktivierungsschritt muss das separate Gate verbindlich auswerten.
+- Erst nach verifiziertem Restore, behobenen technischen Blockern und Betriebsabnahme darf eine neue Schreibidentität an den freigegebenen Kandidaten gebunden werden. Vorher keine Umschaltung. Später auf der alten Identität erneut Denials und auf der isolierten neuen Identität Funktion und Buchhaltung nachweisen. Bei erneuter Schreibaktivität alter Identitäten den Cutover abbrechen und die Belege sichern.
+
+## 4. Ausführbare Nachweisprüfung
+
+```sh
+audit=docs/audits/2026-11-27/pr116-recheck-6a6275e
+candidate=../dalton-check-current
+node "$audit/migration-gate.mjs" --self-test
+node "$audit/migration-gate.mjs" freeze /sicher/stilllegung.json
+node "$audit/verify-restore-inventory.mjs" /sicher/export.json /sicher/inventur.json
+node "$audit/migration-gate.mjs" restore /sicher/stilllegung.json /sicher/export.json /sicher/inventur.json "$candidate"
+node "$audit/migration-gate.mjs" legacy-reader /sicher/stilllegung.json /sicher/export.json /sicher/inventur.json "$candidate"
+```
+
+`freeze` prüft Vollständigkeit und zeitliche Reihenfolge des zusammengetragenen Belegpakets. `restore` bindet die beiden Originaldateien und prüft den SHA des exakten Kandidaten sowie dessen Offline-Projektion. `legacy-reader` verlangt zusätzlich `inventoryVerified:true` und `completeForLegacyReaders:true`. Die Skripte sind offline und geben keine Schreibbefehle, Credentials oder Nutzzustände aus. Sie bestätigen die Konsistenz des attestierten Pakets. Provider-Logs und Negativnachweise müssen daher unabhängig überprüft und geschützt hinterlegt werden.
+
+Das JSON-Paket hat folgende Felder. Alle `*Sha256`-Werte sind vollständige 64-stellige Kleinbuchstaben-Hexwerte. Vor dem Freeze-Prüflauf kann `authoritativeExport` fehlen.
+
+| Feld | Inhalt |
+| --- | --- |
+| `commit`, `sourceIdSha256` | Vollständiger Kandidaten-SHA und Hash eines geschützten Manifests der Quellressourcen. |
+| `writerGroups`, `credentialGroups` | Je eine Zeile pro oben definierter Writer-Gruppe bzw. pro `upstash-rest`, `upstash-tcp`, `vercel-blob`. Zeilen enthalten `name`, `inventoriedCount`, `deniedOrDisabledCount`, `inventoryEvidenceSha256` und `denialEvidenceSha256`. |
+| `entrypointsBlockedAt`, `revocationEffectiveAt`, `inFlightDrainedAt`, `maxInFlightSeconds` | UTC-Zeitpunkte und dokumentierte maximale Drain-Dauer in Sekunden. |
+| `quietSamples` | Zwei aufeinanderfolgende Objekte mit `at` und `sourceFingerprintSha256`. |
+| `unexpectedSuccessfulWrites`, `providerLogsSha256`, `positiveReadControlSha256`, `inFlightEvidenceSha256` | Zahl erfolgreicher unerwarteter Schreiboperationen und Hashes der Originalnachweise. |
+| `authoritativeExport` | `startedAt`, `verifiedAt`, `exportSha256`, `inventorySha256`, `fingerprintSha256` und `unresolvedTypeOrIndexDiscrepancies`. |
+
+[Infrastruktur-Abnahmeplan](INFRASTRUCTURE-ACCEPTANCE.md) · [Migration-Gate](migration-gate.mjs) · [Unabhängiger Inventurprüfer](verify-restore-inventory.mjs)
