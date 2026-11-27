@@ -103,7 +103,12 @@ try{
    assert.equal(await talentNav.isVisible(),true,'released tab visible without feature flag');
    const refreshResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===200);
    await page.locator('#refreshButton').click();
-   await refreshResponse;
+   await page.locator('#refreshAuthorizationDialog').waitFor({state:'visible'});
+   await page.locator('#refreshAuthorizationCode').fill('synthetic-browser-refresh-code-0123456789');
+   await page.locator('#refreshAuthorizationDialog button[value="confirm"]').click();
+   const authorizedRefresh=await refreshResponse;
+   assert.equal(authorizedRefresh.request().method(),'POST');
+   assert.equal((await authorizedRefresh.request().allHeaders()).authorization,'Bearer synthetic-browser-refresh-code-0123456789');
    await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
    assert.equal(await talentNav.isVisible(),true,'refresh payload must never hide released tab');
    await page.locator('[data-view-link="characters"]').click();

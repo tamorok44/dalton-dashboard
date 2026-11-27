@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=ios-20261124c" sizes="180x180">
   <link rel="preload" media="(min-width: 741px)" href="/skyborne-horizon.svg?v=mainstreet-20261120c" as="image" type="image/svg+xml">
   <link rel="preload" media="(max-width: 740px)" href="/skyborne-mainstreet-mobile.svg?v=mainstreet-20261120c" as="image" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css?v=talent-planner-20261126n">
+  <link rel="stylesheet" href="/styles.css?v=refresh-security-20261127a">
   <title>Die Daltons · Noch keine Legenden, aber schon gesucht.</title>
 </head>
 <body>
@@ -79,6 +79,16 @@
     <p>Eigenentwicklung für WoW Forever. Eigene Auswertungen, Planungsfunktionen und eine eigenständige Oberfläche verbinden Spieldaten mit dem Fortschritt der Charaktere.</p>
     <p>Datenbasis: Blizzard-Forever-API, Blizzard-Armory, externe Spieldatenbanken und deutsche Forever-Clientdaten, ergänzt durch eigene Erhebungen und Prüfungen. Spielbegriffe werden ausschließlich aus deutschen Quelldaten übernommen. Ausrüstung und Porträts können sich erst nach dem Ausloggen aktualisieren.</p>
   </footer>
-  <script type="module" src="/app.js?v=talent-planner-20261126n"></script>
+  <dialog id="refreshAuthorizationDialog" class="refresh-authorization" aria-labelledby="refreshAuthorizationTitle">
+    <form method="dialog">
+      <h2 id="refreshAuthorizationTitle">Live-Aktualisierung freigeben</h2>
+      <p>Der Aktualisierungscode schützt den Live-Abruf der Dalton-Gruppe. Normale Ansichten bleiben ohne Code verfügbar.</p>
+      <label for="refreshAuthorizationCode">Aktualisierungscode</label>
+      <input id="refreshAuthorizationCode" type="password" maxlength="256" required autocomplete="off" autocapitalize="off" spellcheck="false">
+      <small>Der Code bleibt nur im geöffneten Tab gespeichert.</small>
+      <div class="refresh-authorization-actions"><button type="submit" value="cancel" formnovalidate>Abbrechen</button><button type="submit" value="confirm">Aktualisieren</button></div>
+    </form>
+  </dialog>
+  <script type="module" src="/app.js?v=refresh-security-20261127a"></script>
 </body>
 </html>

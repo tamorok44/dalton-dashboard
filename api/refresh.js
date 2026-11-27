@@ -1,3 +1,4 @@
+import {timingSafeEqual} from 'node:crypto';
 import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
 import {loadPublicAddonSyncStates} from '../scripts/addon-sync-store.mjs';
 import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
@@ -19,26 +20,45 @@ async function runLockedRefresh(lockToken,source){
   }
 }
 
+function matchesToken(value,expected){
+  if(typeof value!=='string'||typeof expected!=='string'||!expected||value.length>512)return false;
+  const left=Buffer.from(value),right=Buffer.from(expected);
+  return left.length===right.length&&timingSafeEqual(left,right);
+}
+export function refreshAuthorization(req,env=process.env){
+  if(env.VERCEL_ENV!=='production')return null;
+  const authorization=req.headers?.authorization;
+  if(typeof authorization!=='string'||!authorization.startsWith('Bearer '))return null;
+  const token=authorization.slice(7);
+  const scheduled=env.CRON_SECRET;
+  const manual=env.DALTON_MANUAL_REFRESH_TOKEN;
+  if(matchesToken(token,scheduled))return 'scheduled';
+  // This credential is restricted to this route and must not reuse a
+  // privileged application/cron/device setup token.
+  const other=[scheduled,env.DALTON_SYNC_TOKEN,env.SPELLBOOK_SYNC_TOKEN,env.DALTON_PREVIEW_SETUP_TOKEN,
+    env.BLIZZARD_CLIENT_SECRET,env.FOREVERDB_API_KEY,env.KV_REST_API_TOKEN,env.UPSTASH_REDIS_REST_TOKEN,env.BLOB_READ_WRITE_TOKEN];
+  if(typeof manual==='string'&&manual.length>=32&&manual.length<=256&&!other.some(secret=>secret&&matchesToken(manual,secret))&&matchesToken(token,manual))return 'manual';
+  return null;
+}
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
-  if(!['GET','POST'].includes(req.method)){res.setHeader('Allow','GET, POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
-  if(req.method==='POST'){
-    const secret=process.env.CRON_SECRET;
-    if(!secret||req.headers?.authorization!=='Bearer '+secret)return res.status(401).json({error:'Nicht autorisiert'});
-  }
+  if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Live-Aktualisierung erfordert einen autorisierten POST-Aufruf'})}
+  const source=refreshAuthorization(req);
+  if(!source)return res.status(401).json({error:'Nicht autorisiert'});
+  const manual=source==='manual';
   if(!configured())return res.status(503).json({error:'Datenbankverbindung fehlt; Live-Daten wurden nicht gespeichert'});
   try{
     if(pending){
-      if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
+      if(!manual)return res.status(200).json({pending:true,reason:'already_running'});
       return res.status(202).json({pending:true,reason:'already_running'});
     }
-    if(req.method==='GET'&&!(await manualCooldown()))return res.status(429).json({error:'Aktualisierung wurde kürzlich gestartet. Bitte eine Minute warten.'});
+    if(manual&&!(await manualCooldown()))return res.status(429).json({error:'Aktualisierung wurde kürzlich gestartet. Bitte eine Minute warten.'});
     const lockToken=await acquireRefreshLock();
     if(!lockToken){
-      if(req.method==='POST')return res.status(200).json({pending:true,reason:'already_running'});
+      if(!manual)return res.status(200).json({pending:true,reason:'already_running'});
       return res.status(202).json({pending:true,reason:'already_running'});
     }
-    pending=runLockedRefresh(lockToken,req.method==='GET'?'manual':'scheduled')
+    pending=runLockedRefresh(lockToken,source)
       .finally(()=>{pending=null});
     const {result,petRuleState}=await pending;
     if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
