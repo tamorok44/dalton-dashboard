@@ -753,6 +753,47 @@ if(!hasRedis){
       const committedState=cli('GET',coleState);
       assert.ok(committedState);
       assert.equal(JSON.parse(committedState).payload.syncId,'f18-first');
+      // A revoked device may not finish an observation write after its
+      // authoritative core commit. The durable pending receipt must survive.
+      const later=payload('Cole Dalton','f18-observation',[133],now+31);
+      const f18NpcId=12359;
+      later.sections.interactions={capturedAt:now+31,trainerHistory:[{...trainer(93),npc:{id:f18NpcId,name:'F18 observation fixture'},capturedAt:now+31}]};
+      const f18KnowledgeKey=knowledgeKey.replace('id-12345','id-'+f18NpcId);
+      let revokedBeforeObservation=false;
+      globalThis.fetch=async(url,options)=>{
+        const cmd=JSON.parse(options.body);
+        if(!revokedBeforeObservation&&cmd[0]==='EVAL'&&cmd[3]===knowledgeIndex&&cmd.includes(f18KnowledgeKey)&&cmd.includes(deviceKey)){
+          revokedBeforeObservation=true;
+          cli('DEL',deviceKey);
+        }
+        return previousFetch(url,options);
+      };
+      const rejectedObservation=await deviceCall(later);
+      assert.equal(rejectedObservation.http,401,JSON.stringify(rejectedObservation.value));
+      assert.ok(revokedBeforeObservation,'Device proof must reach real observation commit');
+      assert.equal(cli('HGET',knowledgeIndex,f18KnowledgeKey),null);
+      const pending=await loadAddonSyncState('cole-dalton');
+      assert.equal(pending.payload.syncId,'f18-observation');
+      assert.equal(pending.pendingObservations,true);
+      assert.equal(cli('GET',lockKey),null);
+      globalThis.fetch=previousFetch;
+      assert.equal((await deviceCall(later)).http,401);
+      // A distinct, newly authorized credential may recover the prior
+      // accepted core's pending observation exactly once.
+      const replacementToken='ddv1_'+'f18-replacement-'.repeat(3);
+      const replacementKey='dalton-dashboard:addon-device:v1:production:token:'+createHash('sha256').update(replacementToken).digest('hex');
+      cli('SET',replacementKey,JSON.stringify({...authProof.record,deviceId:'qa-f18-replacement'}));
+      try{
+        const recovered=response();
+        await addon({method:'POST',headers:{authorization:'Device '+replacementToken},body:later},recovered);
+        assert.equal(recovered.http,200,JSON.stringify(recovered.value));
+        assert.equal(recovered.value.duplicate,true);
+        assert.equal((await loadAddonSyncState('cole-dalton')).pendingObservations,false);
+        const fact=JSON.parse(cli('HGET',knowledgeIndex,f18KnowledgeKey));
+        assert.equal(fact.observationCount,1);
+        assert.equal(fact.latestSnapshot.entries[0].priceCopper,93);
+      }finally{cli('DEL',replacementKey);}
+
     }finally{
       globalThis.fetch=previousFetch;
       cli('DEL',deviceKey);
