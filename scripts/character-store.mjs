@@ -52,6 +52,7 @@ const permitKey=(key,token)=>key+':permit:'+token;
 // including delayed duplicate delivery. Never recreate the same permit.
 const permitRevoked='revoked';
 const maxLeaseMs=ADDON_LEASE_SECONDS*1000;
+const permitRevocationMs=120000; // bounded replay guard, including the tested +40s skew
 const SERVER_NOW="local t=redis.call('TIME'); local now=tonumber(t[1])*1000+math.floor(tonumber(t[2])/1000); ";
 const ISSUE_ADDON_PERMIT="-- addon-permit-issue:v1\n"+SERVER_NOW+"local untilMs=tonumber(ARGV[1]); if not untilMs or untilMs<=now or untilMs-now>tonumber(ARGV[2]) then return redis.error_reply('ADDON_SYNC_DEADLINE') end; return redis.call('SET',KEYS[1],ARGV[1],'PXAT',ARGV[1],'NX')";
 const ACQUIRE_ADDON="-- addon-lock-acquire:v1\n"+SERVER_NOW+"local untilMs=tonumber(ARGV[2]); if not untilMs or untilMs<=now or untilMs-now>tonumber(ARGV[3]) then return redis.error_reply('ADDON_SYNC_DEADLINE') end; if redis.call('GET',KEYS[2])~=ARGV[2] then return redis.error_reply('ADDON_PERMIT_REVOKED') end; return redis.call('SET',KEYS[1],ARGV[1],'PXAT',ARGV[2],'NX')";
@@ -71,14 +72,14 @@ export async function acquireRefreshLock({addon=false,token=randomUUID()}={}){
       ok=await redis(['EVAL',ACQUIRE_ADDON,2,key,permit,token,String(deadlineMs),String(maxLeaseMs)],{control:true});
     }else ok=await redis(['SET',key,token,'EX',120,'NX']);
     if(ok==='OK'){
-      if(addon)armSyncFence({key,token,deadlineMs});
+      if(addon)armSyncFence({key,token,deadlineMs,permit:permitKey(key,token)});
       return token;
     }
     return null;
   }catch(error){
     try{
       if(await redis(['GET',key],{control:true})===token&&(!addon||deadlineMs!==null&&await redis(['GET',permitKey(key,token)],{control:true})===String(deadlineMs))){
-        if(addon)armSyncFence({key,token,deadlineMs});
+        if(addon)armSyncFence({key,token,deadlineMs,permit:permitKey(key,token)});
         return token;
       }
     }catch{}
@@ -93,7 +94,7 @@ export async function releaseRefreshLock(token,{addon=false}={}){
     // covers the maximum admissible lease from cleanup time. A different
     // owner's shared lock remains untouched.
     const lua="-- addon-lock-revoke:v1\nlocal marked=redis.call('SET',KEYS[2],ARGV[2],'PX',ARGV[3]); if not marked then return 0 end; if redis.call('GET',KEYS[1])==ARGV[1] then redis.call('DEL',KEYS[1]) end; return 1";
-    const result=await redis(['EVAL',lua,2,key,permitKey(key,token),token,permitRevoked,String(maxLeaseMs)],{control:true});
+    const result=await redis(['EVAL',lua,2,key,permitKey(key,token),token,permitRevoked,String(permitRevocationMs)],{control:true});
     if(result!==1)throw Error('ADDON_REVOKE_UNCONFIRMED');
     return result;
   }
