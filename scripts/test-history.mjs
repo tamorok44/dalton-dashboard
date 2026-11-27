@@ -57,12 +57,14 @@ assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),true,'Erst ein per
 // Exercise the actual authenticated daily handler without network or storage.
 const {createDailySnapshotHandler}=await import('../api/daily-snapshot.js');
 const {dailySnapshotStoreConfigured,saveDailySnapshot}=await import('./daily-snapshot-store.mjs');
-const oldEnv=process.env.CRON_SECRET;
+const oldEnv=process.env.CRON_SECRET,oldScope=process.env.VERCEL_ENV;
+process.env.VERCEL_ENV='production';
 process.env.CRON_SECRET='synthetic-privacy-test';
-let stored=null,events=[],persisted=false;
+let stored=null,events=[],persisted=false,dependencyCalls=0;
+const touched=value=>{dependencyCalls++;return value};
 const run=createDailySnapshotHandler({
-  clock:()=>({date:'2026-11-27',hour:5,minute:7}),configured:()=>true,blizzardConfigured:()=>true,
-  getDailySnapshot:async()=>stored,registerDailySnapshot:async meta=>{stored=structuredClone(meta);events.push('register');},
+  clock:()=>touched({date:'2026-11-27',hour:5,minute:7}),configured:()=>touched(true),blizzardConfigured:()=>touched(true),
+  getDailySnapshot:async()=>touched(stored),registerDailySnapshot:async meta=>{stored=structuredClone(meta);events.push('register');},
   acquireDailySnapshotLock:async()=>{events.push('lock');return 'local-lock';},
   releaseDailySnapshotLock:async(date,token)=>{assert.equal(token,'local-lock');events.push('release');},
   ensurePetRuleState:async({force})=>{events.push('rules:'+force);return {};},
@@ -77,7 +79,14 @@ globalThis.fetch=async()=>{throw Error('Network forbidden in privacy regression'
 try{
   assert.equal(dailySnapshotStoreConfigured(),false);
   await assert.rejects(saveDailySnapshot({private:'synthetic'},'2026-11-27'),/deaktiviert/);
-  assert.equal((await call('wrong')).code,401);assert.deepEqual(events,[]);
+  for(const scope of ['preview','development','',undefined,'Production']){
+    if(scope===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=scope;
+    assert.equal((await call()).code,403,'Valid Cron token must not permit non-production daily writes');
+  }
+  assert.equal(dependencyCalls,0,'Non-production requests must not consult even the clock, configuration or read store');
+  assert.deepEqual(events,[]);assert.equal(stored,null);
+  process.env.VERCEL_ENV='production';
+  assert.equal((await call('wrong')).code,401);assert.deepEqual(events,[]);assert.equal(dependencyCalls,0);
   const first=await call();assert.equal(first.code,200);assert.equal(first.body.saved,false);
   assert.equal(stored.archiveStatus,'disabled');assert.equal(stored.url,null);
   assert.equal(dailyRefreshComplete(stored),false);assert.deepEqual(events,['lock','rules:true','register','refresh','register','release']);
@@ -91,4 +100,5 @@ try{
 }finally{
   globalThis.fetch=originalFetch;
   if(oldEnv===undefined)delete process.env.CRON_SECRET;else process.env.CRON_SECRET=oldEnv;
+  if(oldScope===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=oldScope;
 }
