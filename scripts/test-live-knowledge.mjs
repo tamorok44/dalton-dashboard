@@ -92,8 +92,8 @@ console.log('Live-Wissen: Normalisierung, persistierbare Snapshots und unbekannt
 
 const calls=[];const scope=process.env.VERCEL_ENV==='production'?'production':'preview';
 const pref='dalton-dashboard:live-knowledge:v1:'+scope+':record:';
-const current=[pref+'merchant:1.60.1.71037:id-1',pref+'trainer:1.60.1.71037:id-2'];
-const old=pref+'merchant:1.60.1.70999:id-1';
+const current=[pref+'merchant:1.60.1.71037:id-257006',pref+'trainer:1.60.1.71037:id-257006'];
+const old=pref+'merchant:1.60.1.70999:id-257006';
 const found=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
   calls.push(command);
   if(command[0]==='SMEMBERS')return [...current,old];
@@ -110,7 +110,7 @@ const personalRecords=records.map(r=>r.kind==='merchant'?{...r,characterSlug:'co
 assert.equal(liveKnowledgeAsAddonStates(personalRecords)[0].characterSlug,'cole-dalton');
 
 const historicalCalls=[];const {loadHistoricalMerchantKnowledge}=await import('./live-knowledge-store.mjs');
-const cache=new Map();const oldRecord={...records[0],build:'1.60.1.70999',changes:[{large:'history'}]};
+const cache=new Map();const oldRecord={...records[0],build:'1.60.1.70999',latestSnapshot:{...merchant,build:'1.60.1.70999'},changes:[{large:'history'}]};
 const fake=async ([op,key,...args])=>{
  historicalCalls.push([op,key,...args]);
  if(op==='GET')return key.endsWith(':version')?'v1':cache.get(key)||null;
@@ -124,12 +124,12 @@ const fake=async ([op,key,...args])=>{
 const history=await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true});
 assert.equal(history.length,1);assert.equal(history[0].build,'1.60.1.70999');assert.equal(history[0].changes,undefined);
 assert.deepEqual(await loadHistoricalMerchantKnowledge('1.60.1.71037',{redisImpl:fake,enabled:true}),history);
-assert.equal(historicalCalls.filter(c=>c[0]==='MGET').length,1,'Historical snapshots are not downloaded on every click');
+assert.equal(historicalCalls.filter(c=>c[0]==='MGET').length,2,'Historical migration reads must detect unmarked legacy writes');
 
-const migratedCalls=[];const modernRecord={...records[0],npc:{id:123,name:'Modern'}};
+const migratedCalls=[];const modernRecord=records[0];
 const modern=await loadLiveKnowledge({build:'1.60.1.71037',kind:'merchant',enabled:true,redisImpl:async command=>{
- migratedCalls.push(command);if(command[0]==='SMEMBERS')return [current[1],old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];throw Error('Unneeded legacy payload must not be read for a modern-only record: '+command[0]);
-}});assert.equal(modern.length,1);assert.equal(modern[0].npc.id,123);assert.equal(migratedCalls.filter(c=>c[0]==='MGET').length,0);
+ migratedCalls.push(command);if(command[0]==='SMEMBERS')return [current[1],old];if(command[0]==='HKEYS')return ['__version:v2',current[0]];if(command[0]==='HMGET')return [JSON.stringify(modernRecord)];if(command[0]==='MGET')return [null];throw Error(command[0]);
+}});assert.equal(modern.length,1);assert.equal(modern[0].npc.id,257006);assert.equal(migratedCalls.filter(c=>c[0]==='MGET').length,1);
 
 const {reconcileKnowledgeRecords}=await import('./storage-reconciliation.mjs');
 const v2={...records[1],observationIds:['v2'],observationCount:1,latestSnapshot:{...trainer,capturedAt:'2026-11-26T05:00:00Z',entries:[{name:'Spinnenwurst',priceCopper:20}]},services:[{key:'spinnenwurst',priceCopper:20,lastSeenAt:'2026-11-26T05:00:00Z'}]};
@@ -147,7 +147,8 @@ for(const oldRaw of [JSON.stringify(sameSecond),'{invalid-json']){
     if(op==='SMEMBERS')return [current[1]];
     if(op==='HKEYS')return [current[1],otherKey];
     if(op==='HMGET')return [JSON.stringify(v2),JSON.stringify(other)];
-    if(op==='MGET')return [oldRaw];
+    if(op==='MGET')return [oldRaw,null];
+    if(op==='HSETNX')return 1;
     throw Error(op);
   }});
   assert.equal(rows.length,1);assert.equal(rows[0].npc.id,3);
@@ -162,3 +163,25 @@ const combined=combineLiveKnowledge([],omitted);
 const safeEvidence=learningSourceEvidenceForIndex(recipeIndex,[{characterSlug:'cole-dalton',payload}],combined);
 assert.ok(!safeEvidence.observations.some(o=>o.source==='dalton-addon'&&o.sourceType==='trainer'&&o.npcId===trainer.npc.id&&o.build===trainer.build));
 assert.ok(safeEvidence.observations.some(o=>o.source==='dalton-addon'&&o.sourceType==='vendor'));
+
+const wrongIdentity={...v2,npc:{id:999,name:'Fremder NPC'},latestSnapshot:{...v2.latestSnapshot,npc:{id:999,name:'Fremder NPC'}}};
+const qWrites=[];
+const orphan=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op,...args])=>{
+  if(op==='SMEMBERS')return [];
+  if(op==='HKEYS')return [current[1],otherKey];
+  if(op==='HMGET')return [JSON.stringify(v2),JSON.stringify(other)];
+  if(op==='MGET')return [JSON.stringify(sameSecond),null];
+  if(op==='HSETNX'){qWrites.push(args);return 1;}
+  throw Error(op);
+}});
+assert.equal(orphan.length,1);assert.equal(orphan[0].npc.id,3);assert.equal(qWrites.length,1);
+assert.equal(JSON.parse(qWrites[0][2]).legacyRaw,JSON.stringify(sameSecond));
+const wrongRows=await loadLiveKnowledge({build:trainer.build,kind:'trainer',enabled:true,redisImpl:async ([op])=>{
+  if(op==='SMEMBERS')return [];
+  if(op==='HKEYS')return [current[1]];
+  if(op==='HMGET')return [JSON.stringify(wrongIdentity)];
+  if(op==='MGET')return [null];
+  if(op==='HSETNX')throw Error('fixture write denied');
+  throw Error(op);
+}});
+assert.equal(wrongRows.length,0);assert.equal(publicLiveKnowledgeSummary(wrongRows).unpreservedIntegrityRecords,1);

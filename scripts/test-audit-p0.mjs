@@ -352,14 +352,19 @@ if(!hasRedis){
     legacyRecord.lastObservedAt=legacyRecord.latestSnapshot.capturedAt;
     legacyRecord.latestSnapshot.entries[0].priceCopper=40;legacyRecord.services[0].priceCopper=40;legacyRecord.services[0].lastSeenAt=legacyRecord.lastObservedAt;
     legacyRecord.observationIds.push('intervening-legacy-fixture');
-    const input={roster:sourceRoster,addonStates:states,knowledgePairs:[{key:knowledgeKey,modern:modernRecord,legacy:legacyRecord}],
-      dailyRows:[await getDailySnapshot(day),newRow],petMetadata:null,modernReceipt:actualProof,legacyReceipt,date:day,
-      inventory:{addonSlugs:states.map(x=>x.characterSlug),knowledgeKeys:[knowledgeKey],dailyDates:[day,newDay],quarantineFields:[]}};
+    const {summarizeRestoreInventory}=await import('./restore-inventory.mjs');
+    const input={roster:sourceRoster,addonStates:states,knowledgePairs:[{key:knowledgeKey,modern:JSON.stringify(modernRecord),legacy:JSON.stringify(legacyRecord)}],
+      dailyRows:[await getDailySnapshot(day),newRow],quarantineRecords:[],petMetadata:null,modernReceipt:actualProof,legacyReceipt,date:day};
+    input.inventory=summarizeRestoreInventory(input);
+    assert.throws(()=>buildLegacyReadProjection({...input,knowledgePairs:[{...input.knowledgePairs[0],legacy:null}]}),/Inventurdifferenz/);
+    assert.throws(()=>buildLegacyReadProjection({...input,knowledgePairs:[{key:knowledgeKey,modern:JSON.stringify(modernRecord)}]}),/Beide Seiten/);
     const projection=buildLegacyReadProjection(input);
     assert.equal(projection.manifest.latestDate,newDay);assert.equal(projection.manifest.observations,1);
     assert.throws(()=>buildLegacyReadProjection({...input,knowledgePairs:[]}),/Export-Inventur/);
     const conflictLegacy=structuredClone(modernRecord);conflictLegacy.observationIds=['disjoint'];conflictLegacy.latestSnapshot.entries[0].priceCopper=99;
-    const conflictedProjection=buildLegacyReadProjection({...input,knowledgePairs:[{key:knowledgeKey,modern:modernRecord,legacy:conflictLegacy}]});
+    const conflictInput={...input,knowledgePairs:[{key:knowledgeKey,modern:JSON.stringify(modernRecord),legacy:JSON.stringify(conflictLegacy)}]};
+    conflictInput.inventory=summarizeRestoreInventory(conflictInput);
+    const conflictedProjection=buildLegacyReadProjection(conflictInput);
     assert.equal(conflictedProjection.manifest.completeForLegacyReaders,false);assert.equal(conflictedProjection.manifest.quarantined.length,1);
     assert.ok(conflictedProjection.commands.some(c=>c[0]==='HSET'&&c[2].startsWith('__quarantine:v1:')));
     assert.ok(!conflictedProjection.commands.some(c=>c[0]==='SET'&&c[1]===knowledgeKey));
@@ -390,6 +395,14 @@ if(!hasRedis){
     const ambiguous=await loadLiveKnowledge();
     assert.equal(ambiguous.length,1);assert.equal(ambiguous[0].npc.id,12346);
     assert.equal(publicLiveKnowledgeSummary(ambiguous).excludedIntegrityRecords,1);
+    const readQuarantine=cli('HKEYS',knowledgeIndex).filter(k=>k.startsWith('__quarantine:v1:'));
+    assert.ok(readQuarantine.some(k=>JSON.parse(cli('HGET',knowledgeIndex,k)).legacyRaw===conflictRaw),'Read conflict is durably preserved before next legacy write');
+    const replacement=JSON.stringify({...conflictLegacy,observationIds:['replaced']});
+    cli('SET',knowledgeKey,replacement);
+    assert.ok(readQuarantine.some(k=>JSON.parse(cli('HGET',knowledgeIndex,k)).legacyRaw===conflictRaw));
+    cli('SET',knowledgeKey,conflictRaw);
+    await loadLiveKnowledge();
+    assert.deepEqual(cli('HKEYS',knowledgeIndex).filter(k=>k.startsWith('__quarantine:v1:')).sort(),readQuarantine.sort(),'Repeat read does not grow quarantine');
     // Older observation of an unresolved pair is durably quarantined, not
     // asserted as current; a strictly later one can repair the active view.
     const conflictSync=payload('Audit One','conflict-sync',[133,143],now+9);
@@ -410,6 +423,20 @@ if(!hasRedis){
     const brokenResult=await call(repairBroken);assert.equal(brokenResult.http,200);assert.equal(brokenResult.value.liveKnowledge.repaired,1);
     assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,60);
     assert.equal(cli('GET',knowledgeKey),'{broken-json');
+    // Malformed structure with a valid future capture must still fence
+    // earlier repairs. No published price is rolled back.
+    const invalidLater=JSON.parse(cli('HGET',knowledgeIndex,knowledgeKey));
+    invalidLater.latestSnapshot.capturedAt=new Date((now+15)*1000).toISOString();
+    invalidLater.latestSnapshot.entries=null;
+    cli('SET',knowledgeKey,JSON.stringify(invalidLater));
+    const earlyRepair=payload('Audit One','repair-too-early',[133,143],now+12);
+    earlyRepair.sections.interactions={capturedAt:now+12,trainerHistory:[{...trainer(70),capturedAt:now+12}]};
+    const earlyResult=await call(earlyRepair);assert.equal(earlyResult.http,200);assert.equal(earlyResult.value.liveKnowledge.quarantined,1);
+    assert.equal(JSON.parse(cli('HGET',knowledgeIndex,knowledgeKey)).latestSnapshot.entries[0].priceCopper,60);
+    const lateRepair=payload('Audit One','repair-after-floor',[133,143],now+16);
+    lateRepair.sections.interactions={capturedAt:now+16,trainerHistory:[{...trainer(80),capturedAt:now+16}]};
+    const lateResult=await call(lateRepair);assert.equal(lateResult.http,200);assert.equal(lateResult.value.liveKnowledge.repaired,1);
+    assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,80);
     console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof, index reconciliation and offline legacy-reader projection: OK');
   }finally{
     globalThis.fetch=originalFetch;
