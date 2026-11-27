@@ -347,3 +347,35 @@ assert.ok(requests.every(url=>new URL(url).searchParams.get('lang')==='de'),'For
 if(previousKey===undefined)delete process.env.FOREVERDB_API_KEY;else process.env.FOREVERDB_API_KEY=previousKey;
 
 console.log('Werkstatt: Katalog, Autocomplete, Browse, Mengenplanung, Produktionsbaum und ForeverDB-Adapter: OK');
+
+
+// F07: a shared batch must be rounded once across distinct branches.
+{
+  const recipe=(id,name,out,reagents,min=1,max=min)=>({id,name,craftedItem:{id:out,name},craftedQuantity:{minimum:min,maximum:max},reagents:reagents.map(([id,quantity])=>({id,name:'Material '+id,quantity}))});
+  const fixture=recipes=>buildWorkshopCatalog({characters:[{slug:'cole-dalton',name:'Cole Dalton',professions:[{id:171,name:'Alchemie',knownRecipes:recipes}]}]});
+  const diamond=fixture([
+    recipe(1001,'Root',8101,[[8102,1],[8103,1]]),
+    recipe(1002,'Link A',8102,[[8104,1]]),
+    recipe(1003,'Link B',8103,[[8104,1]]),
+    recipe(1004,'Shared part',8104,[[8105,1]],2,4)
+  ]);
+  for(const [count,external] of [[1,1],[2,2],[3,3],[7,7]]){
+    const p=buildProductionPlan(diamond,8101,count);
+    assert.equal(p.complete,true);
+    assert.deepEqual(p.externalMaterials.map(x=>[x.id,x.quantity]),[[8105,external]]);
+  }
+  const one=buildProductionPlan(diamond,8101,1);
+  assert.equal(one.tree.materials[0].materials[0].recipe.craftsRequired,1);
+  assert.equal(one.tree.materials[1].materials[0].status,'from-surplus');
+  assert.equal(one.tree.materials[1].materials[0].fromSurplus,1);
+  const cycle=fixture([recipe(2001,'Cycle A',8201,[[8202,1]]),recipe(2002,'Cycle B',8202,[[8201,1]])]);
+  const blocked=buildProductionPlan(cycle,8201,1);
+  assert.equal(blocked.complete,false);
+  assert.equal(blocked.tree.status,'blocked');
+  assert.equal(blocked.issues[0].code,'cycle-detected');
+  assert.deepEqual(blocked.issues[0].path,[8201,8202,8201]);
+  assert.deepEqual(blocked.externalMaterials,[]);
+  assert.equal(buildProductionPlan(diamond,8101,10000).complete,false);
+  const huge=fixture([recipe(3001,'Huge',8301,[[8302,1000000000]])]);
+  assert.equal(buildProductionPlan(huge,8301,2).issues[0].code,'quantity-limit');
+}
