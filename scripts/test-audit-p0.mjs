@@ -189,7 +189,10 @@ if(!hasRedis){
     process.env.UPSTASH_REDIS_REST_URL='https://offline-audit.invalid';
     process.env.UPSTASH_REDIS_REST_TOKEN='isolated-fixture';
     process.env.DALTON_SYNC_TOKEN='isolated-fixture';
-    const {default:addon}=await import('../api/addon-sync.js');
+    const {default:addon,createAddonSyncHandler}=await import('../api/addon-sync.js');
+    const boundedAddon=createAddonSyncHandler({workMs:700,cleanupUntilMs:1200});
+    const {ADDON_LEASE_SECONDS,runSyncDeadline}=await import('./sync-deadline.mjs');
+    assert.equal(ADDON_LEASE_SECONDS,35);
     const rosterKey='dalton-dashboard:characters:v1',lockKey='dalton-dashboard:refresh:lock',versionKey='dalton-dashboard:core:compact:v2:production';
     const syncKey=slug=>'dalton-dashboard:addon-sync:v1:production:'+slug;
     cli('SET',rosterKey,JSON.stringify({generatedAt:date(-4),characters:[
@@ -197,7 +200,7 @@ if(!hasRedis){
       {slug:'audit-two',name:'Audit Two',classId:8,level:12}
     ]}));
     const classFixture=encodeCompactMaster({classMaster:{slug:'mage',abilities:[{ranks:[{id:133},{id:143}]}]}});
-    let mode=null,proofTarget=null,restoreProof=null,collisionTarget=null,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
+    let mode=null,proofTarget=null,restoreProof=null,collisionTarget=null,stalledRelease=null,stallObserved=false,releaseRead=null,readReached=null,previewObserved=null,previewRelease=null;const observedPreview=new Promise(r=>{previewObserved=r}),continuePreview=new Promise(r=>{previewRelease=r});
     const waitRead=new Promise(r=>{readReached=r}),continueRead=new Promise(r=>{releaseRead=r});
     let pauseFirst=true;
     globalThis.fetch=async(url,options={})=>{
@@ -216,6 +219,22 @@ if(!hasRedis){
         if(op==='SET'&&key.includes(':history:daily:lock:')&&mode==='drop-lock-reply'){mode=null;cli(...cmd);throw Error('fixture lock response lost');}
         if(op==='EVAL'&&cmd[3]?.includes(':live-knowledge:')&&mode==='fail-knowledge'){mode=null;throw Error('fixture interrupted before knowledge write');}
         const knowledgeCommit=op==='EVAL'&&cmd[3]==='dalton-dashboard:live-knowledge:v1:production:records:v2'&&cmd.length>=18;
+        if(mode==='empty-record-before-commit'&&knowledgeCommit){
+          mode=null;assert.equal(cmd[18],'0');cli('HSET',cmd[3],cmd[6],'');
+        }
+        if(mode==='stall-proof-read'&&op==='HGET'&&cmd[2]===proofTarget){
+          mode=null;stallObserved=true;await new Promise(resolve=>{stalledRelease=resolve});
+        }
+        if(mode==='stall-lock-reply'&&op==='SET'&&key===lockKey&&cmd[4]===ADDON_LEASE_SECONDS){
+          mode=null;assert.equal(cli(...cmd),'OK');stallObserved=true;
+          assert.ok(cli('PTTL',key)>0&&cli('PTTL',key)<=35000);
+          await new Promise(resolve=>{stalledRelease=resolve});
+          return Response.json({result:'OK'});
+        }
+        if(mode==='stall-release'&&op==='EVAL'&&cmd[3]===lockKey&&String(cmd[1]).includes("redis.call('DEL'")){
+          mode=null;stallObserved=true;await new Promise(resolve=>{stalledRelease=resolve});
+          return Response.json({result:0});
+        }
         if((mode==='fail-proof-read'||mode==='persistent-proof-read')&&op==='HGET'&&cmd[2]===proofTarget){if(mode==='fail-proof-read')mode=null;throw Error('fixture proof read unavailable');}
         if(mode==='restore-proof-before-commit'&&knowledgeCommit){
           mode=null;
@@ -235,7 +254,7 @@ if(!hasRedis){
         return Response.json({result});
       }catch(error){return Response.json({error:String(error.message)});}
     };
-    const call=async body=>{const res=response();await addon({method:'POST',headers:{authorization:'Bearer isolated-fixture'},body},res);return res};
+    const call=async (body,handler=addon)=>{const res=response();await handler({method:'POST',headers:{authorization:'Bearer isolated-fixture'},body},res);return res};
     const firstCall=call(old);await waitRead;
     const vars=parseLuaSavedVariable(readFileSync(new URL('./fixtures/bridge-savedvariables.lua',import.meta.url),'utf8'));
     vars.character.name='Audit Two';vars.character.level=12;
@@ -504,11 +523,30 @@ if(!hasRedis){
     const recoveredResponse=await call(recovered);assert.equal(recoveredResponse.http,200,JSON.stringify(recoveredResponse.value));assert.equal(recoveredResponse.value.liveKnowledge.stored,1);
     assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,83);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
+    // A non-cooperative provider read must not consume the whole function
+    // window or keep the global lease held. Resume the exact durable outbox.
+    const timed=payload('Audit One','bounded-proof-timeout',[133,143],now+20);
+    timed.sections.interactions={capturedAt:now+20,trainerHistory:[{...trainer(84),capturedAt:now+20}]};
+    mode='stall-proof-read';stallObserved=false;const timeoutStart=performance.now();
+    const timedResult=await call(timed,boundedAddon);
+    assert.equal(timedResult.http,503);assert.ok(stallObserved);
+    assert.ok(performance.now()-timeoutStart<1800,'shared deadline and cleanup must bound caller');
+    assert.equal(cli('GET',lockKey),null);
+    const savedPending=await loadAddonSyncState('audit-one');
+    assert.equal(savedPending.pendingObservations,true);
+    assert.equal(savedPending.pendingObservationPayload.sections.interactions.trainerHistory[0].services[0].priceCopper,84);
+    const rawBeforeLate=cli('HGET',knowledgeIndex,knowledgeKey);
+    stalledRelease();await delay(30);
+    assert.equal(cli('HGET',knowledgeIndex,knowledgeKey),rawBeforeLate,'late response must not start another commit');
+    assert.equal((await call(payload('Audit Two','after-deadline-other',[133,143],now+20))).http,200);
+    assert.equal((await call(timed)).http,200);
+    assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
+    assert.equal((await loadLiveKnowledge()).find(x=>x.npc.id===12345).latestSnapshot.entries[0].priceCopper,84);
     const beforeRace=cli('HGET',knowledgeIndex,knowledgeKey);
     // Delete a verified proof after validation but before the atomic commit.
     // Retry must quarantine the new capture, not publish price 85.
-    const raced=payload('Audit One','raced-proof',[133,143],now+20);
-    raced.sections.interactions={capturedAt:now+20,trainerHistory:[{...trainer(85),capturedAt:now+20}]};
+    const raced=payload('Audit One','raced-proof',[133,143],now+21);
+    raced.sections.interactions={capturedAt:now+21,trainerHistory:[{...trainer(85),capturedAt:now+21}]};
     mode='drop-proof-before-commit';
     const raceResult=await call(raced);
     assert.equal(raceResult.http,200);assert.equal(raceResult.value.liveKnowledge.quarantined,1);
@@ -517,8 +555,8 @@ if(!hasRedis){
     assert.ok(!(await loadLiveKnowledge()).some(x=>x.npc.id===12345));
     // Collision discovered only inside the write CAS. Preserve corrupt
     // bytes in place and use a new content-addressed envelope.
-    const collision=payload('Audit One','collision-recovery',[133,143],now+21);
-    collision.sections.interactions={capturedAt:now+21,trainerHistory:[{...trainer(86),capturedAt:now+21}]};
+    const collision=payload('Audit One','collision-recovery',[133,143],now+22);
+    collision.sections.interactions={capturedAt:now+22,trainerHistory:[{...trainer(86),capturedAt:now+22}]};
     mode='collide-before-commit';
     const collisionResult=await call(collision);
     assert.equal(collisionResult.http,200);assert.equal(collisionResult.value.liveKnowledge.quarantined,1);
@@ -528,7 +566,7 @@ if(!hasRedis){
       return q.collision?.field===collisionTarget&&q.collision.raw==='{"corrupt-fixture":true}'&&q.incoming?.entries?.[0]?.priceCopper===86;
     }));
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
-    assert.equal((await call(payload('Audit One','after-collision-core',[133,143],now+22))).http,200);
+    assert.equal((await call(payload('Audit One','after-collision-core',[133,143],now+23))).http,200);
     // Reader-only collision in real Redis; never overwrite primary.
     const {knowledgeQuarantine}=await import('./storage-reconciliation.mjs');
     const readQ=knowledgeQuarantine(knowledgeKey,beforeRace,cli('GET',knowledgeKey),'missing_repair_evidence');
@@ -548,8 +586,8 @@ if(!hasRedis){
     const badType=await loadLiveKnowledge();
     assert.ok(!badType.some(x=>x.npc.id===12345));
     assert.equal(publicLiveKnowledgeSummary(badType).unpreservedIntegrityRecords,1);
-    const typedSync=payload('Audit One','typed-conflict',[133,143],now+23);
-    typedSync.sections.interactions={capturedAt:now+23,trainerHistory:[{...trainer(90),capturedAt:now+23}]};
+    const typedSync=payload('Audit One','typed-conflict',[133,143],now+24);
+    typedSync.sections.interactions={capturedAt:now+24,trainerHistory:[{...trainer(90),capturedAt:now+24}]};
     const typedResult=await call(typedSync);
     assert.equal(typedResult.http,200);assert.equal(typedResult.value.liveKnowledge.quarantined,1);
     assert.equal((await loadAddonSyncState('audit-one')).pendingObservations,false);
@@ -560,6 +598,45 @@ if(!hasRedis){
     assert.ok(typeProof);
     cli('HSET',knowledgeIndex,typeProof,'{"corrupt":true}');
     assert.equal(publicLiveKnowledgeSummary(await loadLiveKnowledge()).unpreservedIntegrityRecords,1);
+    // Missing and empty values are not interchangeable CAS states.
+    const emptyKey=knowledgeKey.replace('id-12345','id-12347');
+    const emptySync=payload('Audit One','empty-cas-race',[133,143],now+25);
+    emptySync.sections.interactions={capturedAt:now+25,trainerHistory:[{...trainer(91),npc:{id:12347,name:'Empty CAS fixture'},capturedAt:now+25}]};
+    assert.equal(cli('HGET',knowledgeIndex,emptyKey),null);
+    mode='empty-record-before-commit';
+    const emptyResult=await call(emptySync);
+    assert.equal(emptyResult.http,200,JSON.stringify(emptyResult.value));
+    assert.equal(emptyResult.value.liveKnowledge.quarantined,1);
+    assert.equal(cli('HGET',knowledgeIndex,emptyKey),'');
+    assert.ok(cli('HKEYS',knowledgeIndex).filter(k=>k.startsWith('__quarantine:v1:')).some(k=>{
+      try{const q=JSON.parse(cli('HGET',knowledgeIndex,k));return q.key===emptyKey&&q.modernRaw===''&&q.incoming?.entries?.[0]?.priceCopper===91;}catch{return false;}
+    }));
+    // A SET that succeeded but whose response never arrived still has a
+    // known token, so bounded cleanup releases exactly that lease.
+    mode='stall-lock-reply';stallObserved=false;
+    const uncertain=payload('Audit One','uncertain-lock',[133,143],now+26);
+    assert.equal((await call(uncertain,boundedAddon)).http,503);
+    assert.ok(stallObserved);assert.equal(cli('GET',lockKey),null);
+    stalledRelease();await delay(20);
+    assert.equal((await call(uncertain)).http,200);
+    // If cleanup itself stalls, answer within reserve; token expires.
+    mode='stall-release';stallObserved=false;
+    const cleanup=payload('Audit One','stalled-cleanup',[133,143],now+27);
+    const cleanupStart=performance.now();
+    assert.equal((await call(cleanup,boundedAddon)).http,200);
+    assert.ok(stallObserved);assert.ok(performance.now()-cleanupStart<1800);
+    assert.ok(cli('PTTL',lockKey)>0&&cli('PTTL',lockKey)<=35000);
+    assert.equal((await call(payload('Audit Two','blocked-by-lease',[133,143],now+27))).http,409);
+    // Accelerated lease expiry in isolated fixture, never a production unlock.
+    cli('PEXPIRE',lockKey,10);await delay(30);stalledRelease();
+    assert.equal((await call(payload('Audit Two','after-lease-expiry',[133,143],now+27))).http,200);
+    // Closing a scope also blocks subsequent Redis commands in work that
+    // ignored cancellation and finished after the deadline.
+    const {redis}=await import('./character-store.mjs');let lateError=null;
+    await assert.rejects(runSyncDeadline(performance.now()+20,async()=>{
+      await delay(50);try{await redis(['SET','audit:late-forbidden','1']);}catch(error){lateError=error.message;}
+    }),/ADDON_SYNC_DEADLINE/);
+    await delay(60);assert.equal(lateError,'ADDON_SYNC_DEADLINE');assert.equal(cli('GET','audit:late-forbidden'),null);
     console.log('F02/F03/F14 real isolated Redis: contention, preview fencing, lock loss, lost response, stale retry, permission failures, daily proof, index reconciliation and offline legacy-reader projection: OK');
   }finally{
     globalThis.fetch=originalFetch;
