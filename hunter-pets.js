@@ -25,17 +25,18 @@ export const hunterPetMechanics=Object.freeze({
 });
 
 function freshCharacterStat(character,enumKey){
+  if(character?.scrapeOk===false)return null;
   const stats=character?.statsByEnum||{};
   const fresh=new Set(Array.isArray(character?.statsFreshEnums)?character.statsFreshEnums:
     character?.statsVerified===true?Object.keys(stats):[]);
-  const value=Number(stats[enumKey]);
-  if(!fresh.has(enumKey)||!Number.isFinite(value))return null;
+  const value=stats[enumKey];
+  if(!fresh.has(enumKey)||typeof value!=='number'||!Number.isFinite(value))return null;
   const localizedName=(Array.isArray(character?.statsDetails)?character.statsDetails:[])
     .find(entry=>entry?.enum===enumKey&&typeof entry?.name==='string')?.name||null;
   return {value,name:localizedName};
 }
 function enduranceTraining(character){
-  if(character?.talentDetailsVerified!==true)return null;
+  if(character?.scrapeOk===false||character?.talentDetailsVerified!==true)return null;
   for(const tree of Array.isArray(character?.talentDetails)?character.talentDetails:[]){
     for(const talent of Array.isArray(tree?.talents)?tree.talents:[]){
       if(Number(talent?.spellId)===19583){
