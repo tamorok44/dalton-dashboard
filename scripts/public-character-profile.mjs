@@ -23,8 +23,10 @@ const reputation=v=>({...pick(v,fields('id name iconUrl')),
   ...(v?.standing!==undefined?{standing:pick(v.standing,fields('raw value max tier name'))}:{})});
 const pet=v=>({...pick(v,fields('id name creatureId displayId level active summoned slot iconUrl imageUrl storedIconUrl storedImageUrl source')),
   ...(v?.family!==undefined?{family:pick(v.family,fields('id name enum slug'))}:{})});
-const statEnums=fields('HEALTH MANA STRENGTH INTELLECT AGILITY STAMINA CRITICALSTRIKE SPIRIT ARMOR ATTACKPOWER SPELLPOWER MELEECRIT RANGEDCRIT SPELLCRIT DODGE PARRY BLOCK ATTACKDPS ATTACKSPEED MANAREGEN ITEMLEVEL DEFENSE MELEEATTACKPOWER RANGEDATTACKPOWER RANGEDAP MELEEAP HIT EXPERTISE');
-const statNames=fields('Gesundheit|Mana|Stärke|Intelligenz|Beweglichkeit|Ausdauer|Willenskraft|Rüstung|Angriffskraft|Zaubermacht|Gegenstandsstufe|Verteidigung|Ausweichen|Parieren|Blocken'.replaceAll('|',' ')).concat(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Nahkampfangriffskraft','Fernkampfangriffskraft','Schaden pro Sekunde','Angriffstempo','Manaregeneration']);
+// Shared with Armory collection: explicit public game-stat identities, not arbitrary stored keys.
+export const PUBLIC_STAT_ENUMS=Object.freeze(fields('HEALTH MANA STRENGTH INTELLECT AGILITY STAMINA CRITICALSTRIKE SPIRIT ARMOR ATTACKPOWER SPELLPOWER MELEECRIT RANGEDCRIT SPELLCRIT DODGE PARRY BLOCK ATTACKDPS ATTACKSPEED MANAREGEN ITEMLEVEL DEFENSE MELEEATTACKPOWER RANGEDATTACKPOWER RANGEDAP MELEEAP HIT EXPERTISE HASTE HASTERATING MELEEHASTE RANGEDHASTE SPELLHASTE HITRATING CRITRATING CRITICALSTRIKERATING EXPERTISERATING DEFENSERATING DODGERATING PARRYRATING BLOCKRATING BLOCKVALUE SPELLHIT MELEEHIT RANGEDHIT SPELLPENETRATION ARMORPENETRATION RESILIENCE RESILIENCERATING ARCANE_RESISTANCE FIRE_RESISTANCE FROST_RESISTANCE NATURE_RESISTANCE SHADOW_RESISTANCE HOLY_RESISTANCE'));
+const statEnums=PUBLIC_STAT_ENUMS;
+const statNames=fields('Gesundheit|Mana|Stärke|Intelligenz|Beweglichkeit|Ausdauer|Willenskraft|Rüstung|Angriffskraft|Zaubermacht|Gegenstandsstufe|Verteidigung|Ausweichen|Parieren|Blocken'.replaceAll('|',' ')).concat(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Nahkampfangriffskraft','Fernkampfangriffskraft','Schaden pro Sekunde','Angriffstempo','Manaregeneration','Tempowertung','Tempo','Trefferwertung','Kritische Trefferwertung','Waffenkundewertung','Waffenkunde','Verteidigungswertung','Ausweichwertung','Parierwertung','Blockwertung','Blockwert','Zauberdurchschlag','Rüstungsdurchschlag','Abhärtung']);
 const numericMap=(v,keys)=>Object.fromEntries(keys.flatMap(k=>{const x=object(v)[k];return x===null||typeof x==='number'&&Number.isFinite(x)?[[k,x]]:[]}));
 const profileFields=fields('slug name player level class classId race gender faction gameStringsVerified gameStringsLocale talents url scrapeOk scrapedAt dataStatus imageUrl avatarUrl storedImageUrl storedAvatarUrl imageCheckedAt imageVerified statsVerified equipmentVerified talentsVerified source equipmentLanguage equipmentSource professionsVerified professionDetailsVerified sourceUpdatedLabel sourceUpdatedAt lastLoginAt apiProfileVerified apiProfileCheckedAt experience achievementPoints averageItemLevel equippedItemLevel hunterPetsVerified hunterPetsCheckedAt talentDetailsVerified reputationsVerified questsVerified completedQuestsVerified knownClassAbilitiesVerified knownClassAbilitiesSource knownClassAbilitiesCapturedAt knownClassAbilitiesSyncedAt knownClassAbilitiesCapturedLevel knownClassAbilitiesCheckedAt');
 export function publicCharacterProfile(value){
@@ -32,10 +34,18 @@ export function publicCharacterProfile(value){
   // Errors are status flags, never raw internal provider diagnostics.
   if(c.scrapeOk===false)out.scrapeError='Letzter Profilabruf fehlgeschlagen';
   for(const key of ['ruleset','realm'])if(c[key]!==undefined)out[key]=typeof c[key]==='string'?c[key]:pick(c[key],fields('id name slug'));
-  if(c.stats!==undefined)out.stats=numericMap(c.stats,statNames);
+  // A localized label from a recognized stat identity is valid if its
+  // numeric value agrees with the matching enum and display value.
+  const approvedNames=new Set(statNames);
+  if(Array.isArray(c.statsDetails)){
+    out.statsDetails=c.statsDetails.filter(x=>statEnums.includes(x?.enum)&&typeof x.name==='string'&&x.name.length<=100&&typeof x.value==='number'&&Number.isFinite(x.value)).map(x=>pick(x,fields('enum name value')));
+    for(const entry of out.statsDetails){
+      if(Object.hasOwn(object(c.stats),entry.name)&&Object.hasOwn(object(c.statsByEnum),entry.enum)&&c.stats[entry.name]===entry.value&&c.statsByEnum[entry.enum]===entry.value)approvedNames.add(entry.name);
+    }
+  }
+  if(c.stats!==undefined)out.stats=numericMap(c.stats,[...approvedNames]);
   if(c.statsByEnum!==undefined)out.statsByEnum=numericMap(c.statsByEnum,statEnums);
-  if(Array.isArray(c.statsDetails))out.statsDetails=c.statsDetails.filter(x=>statEnums.includes(x?.enum)).map(x=>pick(x,fields('enum name value')));
-  if(Array.isArray(c.statsFreshKeys))out.statsFreshKeys=strings(c.statsFreshKeys).filter(x=>statNames.includes(x));
+  if(Array.isArray(c.statsFreshKeys))out.statsFreshKeys=strings(c.statsFreshKeys).filter(x=>approvedNames.has(x));
   if(Array.isArray(c.statsFreshEnums))out.statsFreshEnums=strings(c.statsFreshEnums).filter(x=>statEnums.includes(x));
   if(Array.isArray(c.equipment))out.equipment=array(c.equipment,x=>pick(x,fields('id slotType sourceSlotType slot item icon iconUrl storedIconUrl level quality qualityName sourceName localized')));
   if(Array.isArray(c.professions))out.professions=array(c.professions,profession);
@@ -49,4 +59,21 @@ export function publicCharacterProfile(value){
 }
 export function publicCharacterData(data){
   return {...pick(data,['generatedAt']),characters:array(data?.characters,publicCharacterProfile)||[]};
+}
+
+
+// The upstream normalizer returns exactly these scalar quest fields.
+// Never forward unknown record properties or accept objects in scalar slots.
+export function publicQuestCatalog(value){
+  const entries=[];
+  for(const [key,record] of Object.entries(object(value))){
+    if(!/^[1-9]\d*$/.test(key)||!Number.isSafeInteger(Number(key))||Number(record?.id)!==Number(key))continue;
+    const out={id:Number(key)};
+    for(const field of ['title','description','area','locale','namespace','fetchedAt']){
+      if(record[field]===null||typeof record[field]==='string')out[field]=record[field];
+    }
+    if(record.minimumLevel===null||Number.isSafeInteger(record.minimumLevel)&&record.minimumLevel>=0)out.minimumLevel=record.minimumLevel;
+    entries.push([key,out]);
+  }
+  return Object.fromEntries(entries);
 }
