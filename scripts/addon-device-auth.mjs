@@ -48,12 +48,12 @@ export async function createDeviceEnrollment(characterSlug,{issuerToken=null}={}
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!isTrustedCharacterSlug(characterSlug))throw new Error('Unbekannter Dalton-Charakter');
   const code='dalton-'+randomBytes(24).toString('base64url');
-  const record={characterSlug,createdAt:now(),expiresInSeconds:ENROLL_TTL_SECONDS};
-  const key=inviteKey(code),value=JSON.stringify(record);
+  const record={schemaVersion:2,characterSlug,createdAt:now(),expiresInSeconds:ENROLL_TTL_SECONDS,issuer:null};
+  const key=inviteKey(code);
   let saved;
   if(issuerToken===null){
     // Internal trusted caller, after master credential validation at the API boundary.
-    saved=await redis(['SET',key,value,'EX',ENROLL_TTL_SECONDS,'NX']);
+    saved=await redis(['SET',key,JSON.stringify(record),'EX',ENROLL_TTL_SECONDS,'NX']);
   }else{
     if(typeof issuerToken!=='string'||!issuerToken.startsWith('ddv1_'))throw enrollmentDenied();
     const issuerKey=deviceKey(issuerToken);
@@ -61,6 +61,8 @@ export async function createDeviceEnrollment(characterSlug,{issuerToken=null}={}
     let issuer;
     try{issuer=JSON.parse(raw)}catch{throw enrollmentDenied()}
     if(!issuer||issuer.revokedAt||!deviceMayCreateEnrollment(issuer,characterSlug))throw enrollmentDenied();
+    record.issuer={key:issuerKey,recordDigest:sha(raw)};
+    const value=JSON.stringify(record);
     // Exact original record must still be authorized at the mutation boundary.
     // A revoke/change before the script executes blocks creation; no new invite.
     const lua=`
@@ -87,6 +89,18 @@ export async function redeemDeviceEnrollment(code){
   if(invite?.consumed===true)throw new Error('Einrichtungscode bereits verwendet');
   if(!isTrustedCharacterSlug(invite?.characterSlug))throw new Error('Einrichtungscode gehört zu keinem freigegebenen Charakter');
 
+  // Old invitations have no trustworthy issuer binding. Expire them logically
+  // at cutover and require reissue; already enrolled devices are unaffected.
+  if(invite.schemaVersion!==2||!Object.hasOwn(invite,'issuer'))throw new Error('Einrichtungscode ungültig: bitte neu erstellen');
+  let issuerKey=null,issuerRaw=null;
+  if(invite.issuer!==null){
+    issuerKey=invite.issuer?.key;
+    const prefix='dalton-dashboard:addon-device:v1:'+scope()+':token:';
+    if(typeof issuerKey!=='string'||!issuerKey.startsWith(prefix)||!/^[a-f0-9]{64}$/.test(issuerKey.slice(prefix.length)))throw enrollmentDenied();
+    issuerRaw=await redis(['GET',issuerKey]);
+    let issuer;try{issuer=JSON.parse(issuerRaw)}catch{throw enrollmentDenied()}
+    if(!issuer||issuer.revokedAt||!deviceMayCreateEnrollment(issuer,invite.characterSlug)||sha(issuerRaw)!==invite.issuer.recordDigest)throw enrollmentDenied();
+  }
   const token='ddv1_'+randomBytes(32).toString('base64url');
   const deviceId=randomUUID();
   const record={
@@ -105,6 +119,7 @@ local raw=redis.call('GET',KEYS[1])
 if not raw or raw~=ARGV[1] then return 0 end
 local ttl=redis.call('PTTL',KEYS[1])
 if ttl<=0 then return 0 end
+if #KEYS==3 and redis.call('GET',KEYS[3])~=ARGV[4] then return -2 end
 if redis.call('EXISTS',KEYS[2])~=0 then return -1 end
 redis.call('MSET',KEYS[1],ARGV[2],KEYS[2],ARGV[3])
 local cleanup=redis.pcall('PEXPIRE',KEYS[1],ttl)
@@ -112,7 +127,9 @@ if type(cleanup)=='table' and cleanup.err then return 2 end
 if cleanup~=1 then return 2 end
 return 1
 `;
-  const committed=await redis(['EVAL',lua,2,key,deviceKey(token),raw,JSON.stringify({consumed:true}),JSON.stringify(record)]);
+  const keys=[key,deviceKey(token),...(issuerKey?[issuerKey]:[])];
+  const committed=await redis(['EVAL',lua,keys.length,...keys,raw,JSON.stringify({consumed:true}),JSON.stringify(record),...(issuerKey?[issuerRaw]:[])]);
+  if(committed===-2)throw enrollmentDenied();
   if(committed===0)throw new Error('Einrichtungscode ungültig, abgelaufen oder bereits verwendet');
   if(committed!==1&&committed!==2)throw new Error('Geräteberechtigung konnte nicht gespeichert werden');
   if(committed===2)console.warn('Verbrauchter Einrichtungscode: automatische Marker-Bereinigung nicht bestätigt');
