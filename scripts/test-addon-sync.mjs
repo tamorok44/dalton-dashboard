@@ -235,3 +235,42 @@ try{
     assert.equal(calls,4);
   }finally{globalThis.fetch=before;}
 }
+
+
+// Actual CLI dispatch with a saved config, synthetic credentials and
+// no provider traffic. Explicit targets are never silently overridden.
+{
+  const {main,resolveBridgeTarget}=await import('./dalton-sync-client.mjs');
+  const keys=['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL'];
+  const old=Object.fromEntries(keys.map(k=>[k,process.env[k]])),before=globalThis.fetch;
+  const stored='https://stored.invalid/api/addon-sync',selected='https://selected.invalid/api/addon-sync',envTarget='https://env.invalid/api/addon-sync';
+  const config={endpoint:stored,deviceToken:'synthetic-saved',previewShareUrl:'https://stored.invalid/?share=synthetic',characterName:'Cole Dalton'};
+  const readConfig=async()=>config;
+  const calls=[];
+  try{
+    for(const k of keys)delete process.env[k];
+    globalThis.fetch=async(url,options)=>{calls.push({url:String(url),auth:options.headers?.Authorization});throw Error('fixture request stopped')};
+    assert.equal(resolveBridgeTarget({},config,{}).endpoint,stored);
+    assert.equal(resolveBridgeTarget({},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,envTarget);
+    assert.equal(resolveBridgeTarget({endpointProvided:true,endpoint:selected},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,selected);
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint',selected],{readConfig}),/anderem HTTPS-Ziel/);
+    await assert.rejects(main(['--revoke-device','--endpoint',selected],{readConfig}),/anderem HTTPS-Ziel/);
+    await assert.rejects(main(['--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig}),/anderem HTTPS-Ziel/);
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint'],{readConfig}),/benötigt/);
+    assert.equal(calls.length,0);
+    process.env.DALTON_SYNC_ENDPOINT=envTarget;
+    process.env.DALTON_SYNC_TOKEN='synthetic-explicit-master';
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint',selected],{readConfig}),/fixture request stopped/);
+    assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
+    await assert.rejects(main(['--create-enroll','dolly-dalton'],{readConfig}),/fixture request stopped/);
+    assert.deepEqual(calls.pop(),{url:'https://env.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
+    await assert.rejects(main(['--enroll','synthetic-invite','--endpoint',selected],{readConfig}),/fixture request stopped/);
+    assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:undefined});
+    // A real dry-run must not request the configured share URL.
+    await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
+    assert.equal(calls.length,0);
+  }finally{
+    globalThis.fetch=before;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
+}
