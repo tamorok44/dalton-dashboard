@@ -66,14 +66,14 @@ function armoryHtml(old){
       ['STRENGTH',old.stats.Stärke],['AGILITY',old.stats.Beweglichkeit],
       ['STAMINA',old.stats.Ausdauer],['INTELLECT',old.stats.Intelligenz],
       ['ARMOR',old.stats.Rüstung+5],['ATTACKPOWER',old.stats.Angriffskraft],
-      ['ITEMLEVEL',old.stats.Gegenstandsstufe],['HASTE',42],['HASTERATING',13],['UNKNOWN_HASTE',9125]
-    ].map(([key,value])=>({enum:key,name:statLabels[key],value:{value}}))}]},
+      ['ITEMLEVEL',old.stats.Gegenstandsstufe],['HASTE',unlabeledHaste?67:42],['HASTERATING',13],['UNKNOWN_HASTE',9125]
+    ].map(([key,value])=>({enum:key,name:unlabeledHaste&&key==='HASTE'?undefined:statLabels[key],value:{value}}))}]},
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
   };
   return '<script>var characterProfileInitialState = '+JSON.stringify({character})+';</script>';
 }
-let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false;
+let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false,unlabeledHaste=false;
 globalThis.fetch=async (url,options={})=>{
   if(['https://test-redis.example.com','https://test-preview-redis.example.com'].includes(String(url))){
     redisRequests++;
@@ -274,7 +274,8 @@ try{
   assert.ok(!JSON.stringify(refreshed).includes('9125'));
 
   cooldown=false;
-  failSlug='chucky-dalton';
+  failSlug='dolly-dalton';
+  unlabeledHaste=true;
   const partial=fakeResponse();
   await handler(manualRequest,partial);
   const partialResult=partial.result();
@@ -284,6 +285,22 @@ try{
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).scrapeOk,false);
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).level,baseline.get(failSlug).level+2,'Partially failed profile preserves last persisted live level');
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton').scrapeOk,true);
+  const stale=partialResult.payload.data.characters.find(c=>c.slug===failSlug);
+  assert.equal(stale.statsByEnum.HASTE,42);
+  assert.equal(stale.statsVerified,false);
+  assert.deepEqual(stale.statsFreshEnums,[]);
+  assert.deepEqual(stale.statsFreshKeys,[]);
+  const current=partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton');
+  assert.equal(current.statsByEnum.HASTE,67);
+  assert.equal(current.stats.Tempowertung,67);
+  assert.deepEqual(current.statsDetails.find(x=>x.enum==='HASTE'),{enum:'HASTE',name:'Tempowertung',value:67});
+  assert.ok(current.statsFreshEnums.includes('HASTE'));
+  assert.ok(current.statsFreshKeys.includes('Tempowertung'));
+  const partialGet=fakeResponse();await publicGetHandler({method:'GET',query:{}},partialGet);
+  assert.equal(partialGet.result().status,200);
+  assert.deepEqual(partialGet.result().payload.data.characters.find(c=>c.slug===failSlug).statsFreshEnums,[]);
+  assert.equal(partialGet.result().payload.data.characters.find(c=>c.slug==='cole-dalton').stats.Tempowertung,67);
+  assert.deepEqual(JSON.parse(saved).characters.find(c=>c.slug===failSlug).statsFreshEnums,[]);
 
   cooldown=false;
   failAll=true;
@@ -291,6 +308,11 @@ try{
   await handler(manualRequest,unavailable);
   assert.equal(unavailable.result().status,503,'Total outage must not claim fresh data');
   assert.ok(unavailable.result().payload.error);
+  const outageGet=fakeResponse();await publicGetHandler({method:'GET',query:{}},outageGet);
+  assert.equal(outageGet.result().status,200);
+  assert.ok(outageGet.result().payload.data.characters.every(c=>c.scrapeOk===false&&c.statsVerified===false&&c.statsFreshEnums.length===0&&c.statsFreshKeys.length===0));
+  assert.equal(outageGet.result().payload.data.characters.find(c=>c.slug==='cole-dalton').statsByEnum.HASTE,67);
+  unlabeledHaste=false;
   const scheduled=fakeResponse();
   failAll=false;failSlug=null;
   await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},scheduled);
