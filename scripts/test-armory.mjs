@@ -186,6 +186,7 @@ try{
   c=result.data.characters[0];
   assert.equal(c.equipment[0].item,previousItem);
   assert.equal(c.scrapeOk,false);
+  assert.equal(c.statsVerified,false);assert.deepEqual(c.statsFreshEnums,[]);assert.deepEqual(c.statsFreshKeys,[]);
   assert.equal(englishFetches,0);
 
   assert.ok(germanFetches>=3);
