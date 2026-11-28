@@ -4,6 +4,7 @@ import {readFileSync,mkdirSync,writeFileSync,statSync,createReadStream} from 'no
 import {resolve,extname,sep} from 'node:path';
 import {pathToFileURL,fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
+import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
 import {createTalentPlannerHandler} from './talent-planner-api.mjs';
 import {correctTalentDisplay} from './talent-display-corrections.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
@@ -42,6 +43,15 @@ const displayCatalog={classes:Object.fromEntries(Object.entries(displayMaster.cl
 for(const c of roster.filter(c=>[2,3,11].includes(c.classId))){c.talentDetailsVerified=true;c.talentDetails=displayMaster.classes[c.classId].trees.map(t=>({name:t.name,spentPoints:0,talents:[]}));}
 const mageCharacter=roster.find(c=>c.classId===8),mageFrost=displayMaster.classes[8].trees.find(t=>t.id===11601),mageNode=mageFrost.talents.find(n=>n.id===105779);
 mageCharacter.talentDetailsVerified=true;mageCharacter.talentsVerified=true;mageCharacter.talents='Frost: 3';mageCharacter.talentDetails=[{name:'Frost',spentPoints:3,talents:[{id:mageNode.profileId,rank:3,spellId:mageNode.rankSpellIds[0]}]}];
+// Deliberately reproduce an old stored record that still carries fresh flags
+// after a failed profile fetch. The browser and pet calculation must defend
+// independently of the server projection.
+const staleHunter={...roster.find(c=>c.classId===3),scrapeOk:false,statsVerified:true,
+  stats:{Rüstung:100},statsByEnum:{ARMOR:100},statsDetails:[{enum:'ARMOR',name:'Rüstung',value:100}],
+  statsFreshEnums:['ARMOR'],statsFreshKeys:['Rüstung'],hunterPetsVerified:true,hunterPetsCheckedAt:checkedAt,
+  hunterPets:{active:[{name:'QA Fuchs',level:15,active:true,family:{id:319,slug:'fox',name:'Fuchs'}}],stable:[]}};
+const browserRoster=roster.map(c=>c.classId===3?staleHunter:c);
+const browserPetRules={rulebookVersion:HUNTER_PET_RULEBOOK_VERSION,overall:'verified',rules:{'pet.scaling.armor':{status:'verified'}}};
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
 const vercelConfig=JSON.parse(readFileSync(resolve(root,'vercel.json'),'utf8'));
 const cspCandidate=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy-Report-Only')?.value;
@@ -63,12 +73,12 @@ const server=createServer(async(req,res)=>{
    return;
  }
  if(url.pathname==='/api/characters'&&url.searchParams.get('view')==='talents'){displayRequests++;return send(200,displayCatalog)}
- if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'}});
+ if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:browserRoster},petRules:browserPetRules,dataVersion:{version:'qa-browser-v1'}});
  if(url.pathname==='/api/refresh'){
    refreshRequests++;
    if(req.method!=='POST')return send(405,{error:'Method not allowed'});
    if(req.headers.authorization!=='Bearer '+syntheticRefreshCode)return send(401,{error:'Nicht autorisiert'});
-   return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},success:roster.length});
+   return send(200,{data:{generatedAt:checkedAt,characters:browserRoster},petRules:browserPetRules,dataVersion:{version:'qa-browser-v1'},success:roster.length-1});
  }
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
  if(url.pathname==='/qa-sw-shell'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<!doctype html><title>Isolated service worker test</title>')}
@@ -292,6 +302,19 @@ try{
    await page.locator('#talentPlannerLevel').selectOption('60');
    assert.equal(await page.locator('.talent-planner-steps li').count(),51,'complete rank-zero path at level 60');
    await page.evaluate(()=>{location.hash='#charaktere'});
+   const hunterStats=page.locator('#qa-class-3-panel-stats');
+   await page.locator('#qa-class-3-tab-stats').waitFor({state:'visible'});
+   await page.locator('#qa-class-3-tab-stats').click();
+   await hunterStats.locator('details.attributes summary').click();
+   const armorTile=hunterStats.locator('.stat-tile').filter({hasText:'Rüstung'});
+   assert.ok((await armorTile.innerText()).includes('letzter Stand'),'Failed profile must mark old armor stale despite legacy flags');
+   assert.ok((await armorTile.innerText()).includes('100'),'Last known armor stays visible');
+   await page.locator('#qa-class-3-tab-pets').click();
+   const petPanel=page.locator('#qa-class-3-panel-pets');
+   await petPanel.locator('.pet-combat').waitFor({state:'visible'});
+   assert.equal(await petPanel.getByText('Rüstung aus Dolly',{exact:true}).count(),0,'Stale armor must not drive inherited armor');
+   assert.ok((await petPanel.locator('.pet-combat-group').first().innerText()).includes('vorübergehend nicht verfügbar'));
+   result.staleProfileDefense=true;
    const beforeDisplay=displayRequests,beforePlan=plannerRequests;
    const tabs=page.locator('button[data-character-slug="qa-class-8"][data-character-tab]');
    const stats=tabs.filter({hasText:'Charakterwerte'});
