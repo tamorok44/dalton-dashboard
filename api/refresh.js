@@ -1,4 +1,4 @@
-import {publicCharacterData} from '../scripts/public-character-profile.mjs';
+import {publicCharacterData,publicQuestCatalog} from '../scripts/public-character-profile.mjs';
 import {timingSafeEqual} from 'node:crypto';
 import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
 import {loadPublicAddonSyncStates} from '../scripts/addon-sync-store.mjs';
@@ -69,7 +69,7 @@ export default async function handler(req,res){
     ]);
     const dataVersion=buildDataVersion({data:result.data,petRules,addonSync,liveKnowledgeVersion});
     const media=await enrichKnowledgeMedia(result.data,result.petCatalog,{allowFetch:false}).catch(()=>({data:result.data,petCatalog:result.petCatalog}));
-    return res.status(200).json({...result,...media,data:publicCharacterData(media.data),petRules,addonSync,dataVersion});
+    return res.status(200).json({...result,...media,data:publicCharacterData(media.data),questCatalog:publicQuestCatalog(result.questCatalog),petRules,addonSync,dataVersion});
   }catch(error){
     console.error('Live-Abruf oder Speichern fehlgeschlagen:',error);
     return res.status(503).json({error:'Aktualisierung konnte nicht dauerhaft gespeichert werden'});
