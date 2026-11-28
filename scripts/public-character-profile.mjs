@@ -85,14 +85,16 @@ function publicStats(c,{allowLegacyStats=false}={}){
   // One display key cannot represent two distinct enum identities. Keep their
   // separate enum/detail values but omit the ambiguous compatibility alias.
   const unambiguous=[...byName].filter(([,owners])=>owners.length===1);
+  const sourceConflicts=new Set((strings(c.statsConflictEnums)||[]).filter(id=>statEnums.includes(id)));
   const fresh=new Set(c.scrapeOk===false?[]:strings(c.statsFreshEnums)||[]);
-  const freshEnums=[...enumValues].filter(([id,value])=>validNumber(value)&&fresh.has(id)&&!conflictingEnums.has(id)).map(([id])=>id);
+  const freshEnums=[...enumValues].filter(([id,value])=>validNumber(value)&&fresh.has(id)&&!conflictingEnums.has(id)&&!sourceConflicts.has(id)).map(([id])=>id);
   const freshSet=new Set(freshEnums);
   return {
     stats:Object.fromEntries(unambiguous.map(([name,[owner]])=>[name,owner.value])),
     statsByEnum:Object.fromEntries(enumValues),
     statsDetails:detailRows,
     statsFreshEnums:freshEnums,
+    ...(sourceConflicts.size?{statsConflictEnums:[...sourceConflicts]}:{}),
     statsFreshKeys:unambiguous.filter(([,owners])=>freshSet.has(owners[0].id)).map(([name])=>name)
   };
 }
@@ -103,6 +105,7 @@ export function publicCharacterProfile(value,options={}){
   if(c.scrapeOk===false){out.scrapeError='Letzter Profilabruf fehlgeschlagen';out.statsVerified=false;}
   for(const key of ['ruleset','realm'])if(c[key]!==undefined)out[key]=typeof c[key]==='string'?c[key]:pick(c[key],fields('id name slug'));
   Object.assign(out,publicStats(c,options));
+  if(out.statsConflictEnums?.length)out.statsVerified=false;
   if(Array.isArray(c.equipment))out.equipment=array(c.equipment,x=>pick(x,fields('id slotType sourceSlotType slot item icon iconUrl storedIconUrl level quality qualityName sourceName localized')));
   if(Array.isArray(c.professions))out.professions=array(c.professions,profession);
   if(Array.isArray(c.talentDetails))out.talentDetails=array(c.talentDetails,tree);
