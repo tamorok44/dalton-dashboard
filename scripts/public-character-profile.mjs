@@ -23,7 +23,7 @@ const reputation=v=>({...pick(v,fields('id name iconUrl')),
   ...(v?.standing!==undefined?{standing:pick(v.standing,fields('raw value max tier name'))}:{})});
 const pet=v=>({...pick(v,fields('id name creatureId displayId level active summoned slot iconUrl imageUrl storedIconUrl storedImageUrl source')),
   ...(v?.family!==undefined?{family:pick(v.family,fields('id name enum slug'))}:{})});
-// Shared with Armory collection: explicit public game-stat identities, not arbitrary stored keys.
+// Explicit public game-stat identities. Authoritative collection retains unknown source values for later review.
 export const PUBLIC_STAT_ENUMS=Object.freeze(fields('HEALTH MANA STRENGTH INTELLECT AGILITY STAMINA CRITICALSTRIKE SPIRIT ARMOR ATTACKPOWER SPELLPOWER MELEECRIT RANGEDCRIT SPELLCRIT DODGE PARRY BLOCK ATTACKDPS ATTACKSPEED MANAREGEN ITEMLEVEL DEFENSE MELEEATTACKPOWER RANGEDATTACKPOWER RANGEDAP MELEEAP HIT EXPERTISE HASTE HASTERATING MELEEHASTE RANGEDHASTE SPELLHASTE HITRATING CRITRATING CRITICALSTRIKERATING EXPERTISERATING DEFENSERATING DODGERATING PARRYRATING BLOCKRATING BLOCKVALUE SPELLHIT MELEEHIT RANGEDHIT SPELLPENETRATION ARMORPENETRATION RESILIENCE RESILIENCERATING ARCANE_RESISTANCE FIRE_RESISTANCE FROST_RESISTANCE NATURE_RESISTANCE SHADOW_RESISTANCE HOLY_RESISTANCE'));
 const statEnums=PUBLIC_STAT_ENUMS;
 const statNames=fields('Gesundheit|Mana|Stärke|Intelligenz|Beweglichkeit|Ausdauer|Willenskraft|Rüstung|Angriffskraft|Zaubermacht|Gegenstandsstufe|Verteidigung|Ausweichen|Parieren|Blocken'.replaceAll('|',' ')).concat(['Kritische Trefferchance','Nahkampf-Krit','Fernkampf-Krit','Zauber-Krit','Nahkampfangriffskraft','Fernkampfangriffskraft','Schaden pro Sekunde','Angriffstempo','Manaregeneration','Tempowertung','Tempo','Trefferwertung','Kritische Trefferwertung','Waffenkundewertung','Waffenkunde','Verteidigungswertung','Ausweichwertung','Parierwertung','Blockwertung','Blockwert','Zauberdurchschlag','Rüstungsdurchschlag','Abhärtung']);
@@ -38,7 +38,7 @@ export function publicCharacterProfile(value){
   // numeric value agrees with the matching enum and display value.
   const approvedNames=new Set(statNames);
   if(Array.isArray(c.statsDetails)){
-    out.statsDetails=c.statsDetails.filter(x=>statEnums.includes(x?.enum)&&typeof x.name==='string'&&x.name.length<=100&&typeof x.value==='number'&&Number.isFinite(x.value)).map(x=>pick(x,fields('enum name value')));
+    out.statsDetails=c.statsDetails.filter(x=>statEnums.includes(x?.enum)&&typeof x.name==='string'&&x.name.length<=100&&!Object.hasOwn(Object.prototype,x.name)&&x.name!=='prototype'&&typeof x.value==='number'&&Number.isFinite(x.value)).map(x=>pick(x,fields('enum name value')));
     for(const entry of out.statsDetails){
       if(Object.hasOwn(object(c.stats),entry.name)&&Object.hasOwn(object(c.statsByEnum),entry.enum)&&c.stats[entry.name]===entry.value&&c.statsByEnum[entry.enum]===entry.value)approvedNames.add(entry.name);
     }
@@ -67,7 +67,7 @@ export function publicCharacterData(data){
 export function publicQuestCatalog(value){
   const entries=[];
   for(const [key,record] of Object.entries(object(value))){
-    if(!/^[1-9]\d*$/.test(key)||!Number.isSafeInteger(Number(key))||Number(record?.id)!==Number(key))continue;
+    if(!/^[1-9]\d*$/.test(key)||!Number.isSafeInteger(Number(key))||!(typeof record?.id==='number'||typeof record?.id==='string')||Number(record.id)!==Number(key))continue;
     const out={id:Number(key)};
     for(const field of ['title','description','area','locale','namespace','fetchedAt']){
       if(record[field]===null||typeof record[field]==='string')out[field]=record[field];
