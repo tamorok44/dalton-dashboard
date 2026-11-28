@@ -7,9 +7,9 @@ const record={generatedAt:'2026-11-27T18:00:00.000Z',internal:marker,characters:
   slug:'cole-dalton',name:'Cole Dalton',classId:8,level:12,player:'QA',
   internal:marker,deviceToken:marker,inventory:{secret:marker},
   scrapeOk:false,scrapeError:marker,
-  stats:{Gesundheit:200,Tempowertung:42,'Tempo (Nahkampf)':7,unknown:777},statsByEnum:{HEALTH:200,HASTE:42,MELEEHASTE:7,SECRET:777},
-  statsDetails:[{enum:'HEALTH',name:'Gesundheit',value:200,private:marker},{enum:'HASTE',name:'Tempowertung',value:42},{enum:'MELEEHASTE',name:'Tempo (Nahkampf)',value:7},{enum:'SECRET',name:'unknown',value:777}],
-  statsFreshEnums:['HEALTH','HASTE','MELEEHASTE','SECRET'],statsFreshKeys:['Gesundheit','Tempowertung','Tempo (Nahkampf)','SECRET'],
+  stats:{Gesundheit:200,Tempowertung:9125,'Tempo (Nahkampf)':7,unknown:777,Blockwert:9125},statsByEnum:{HEALTH:200,HASTE:42,MELEEHASTE:7,SECRET:777,UNKNOWN_HASTE:9125},
+  statsDetails:[{enum:'HEALTH',name:'Gesundheit',value:200,private:marker},{enum:'HASTE',name:'Tempowertung',value:42},{enum:'MELEEHASTE',name:'Tempo (Nahkampf)',value:7},{enum:'SECRET',name:'unknown',value:777},{enum:'UNKNOWN_HASTE',name:'Tempowertung',value:9125}],
+  statsFreshEnums:['HEALTH','HASTE','MELEEHASTE','SECRET','UNKNOWN_HASTE'],statsFreshKeys:['Gesundheit','Tempowertung','Tempo (Nahkampf)','SECRET','Blockwert'],
   equipment:[{id:10,slot:'Kopf',item:'Hut',level:4,internal:marker}],
   professions:[{id:171,name:'Alchemie',current:10,max:75,knownRecipes:[{id:11,name:'Trank',craftedItem:{id:12,name:'Trank',secret:marker},craftedQuantity:{minimum:1,maximum:2,secret:marker},reagents:[{id:13,name:'Kraut',quantity:2,private:marker}],secret:marker}],private:marker}],
   talentDetails:[{id:3,name:'Frost',spentPoints:1,talents:[{id:14,name:'Frost',rank:1,private:marker}],secret:marker}],
@@ -27,6 +27,27 @@ assert.equal(projected.characters[0].stats.Tempowertung,42);
 assert.equal(projected.characters[0].stats['Tempo (Nahkampf)'],7);
 assert.ok(!Object.hasOwn(projected.characters[0].stats,'unknown'));
 assert.ok(projected.characters[0].statsFreshKeys.includes('Tempo (Nahkampf)'));
+assert.ok(!JSON.stringify(projected).includes('9125'),'Unknown enum must not leak via a recognized label');
+assert.equal(record.characters[0].stats.Tempowertung,9125,'Stored raw value is not modified');
+const profile=fields=>publicCharacterData({characters:[fields]}).characters[0];
+assert.deepEqual(profile({stats:{Tempowertung:9125}}).stats,{},'Unproven legacy storage is not public');
+assert.deepEqual(publicCharacterData({characters:[{stats:{Gesundheit:200,unknown:9125}}]},{allowLegacyStats:true}).characters[0].stats,{Gesundheit:200});
+assert.deepEqual(profile({stats:{Tempowertung:9125},statsByEnum:{UNKNOWN_HASTE:9125},statsDetails:[{enum:'UNKNOWN_HASTE',name:'Tempowertung',value:9125}],statsFreshEnums:['UNKNOWN_HASTE'],statsFreshKeys:['Tempowertung']}).stats,{});
+const staleAlias=profile({stats:{Tempowertung:9125},statsByEnum:{HASTE:13,UNKNOWN_HASTE:9125},statsDetails:[{enum:'HASTE',name:'Tempowertung',value:13},{enum:'UNKNOWN_HASTE',name:'Tempowertung',value:9125}],statsFreshEnums:['UNKNOWN_HASTE'],statsFreshKeys:['Tempowertung']});
+assert.equal(staleAlias.stats.Tempowertung,13);
+assert.deepEqual(staleAlias.statsFreshKeys,[],'Unknown fresh enum cannot mark known value fresh');
+const ambiguous=profile({stats:{Tempowertung:9125},statsByEnum:{HASTE:13,HASTERATING:42},statsDetails:[{enum:'HASTE',name:'Tempowertung',value:13},{enum:'HASTERATING',name:'Tempowertung',value:42}],statsFreshEnums:['HASTE','HASTERATING']});
+assert.deepEqual(ambiguous.stats,{});
+assert.equal(ambiguous.statsDetails.length,2);
+assert.equal(ambiguous.statsByEnum.HASTE,13);
+assert.deepEqual(ambiguous.statsFreshKeys,[]);
+const conflict=profile({stats:{Tempowertung:9125},statsByEnum:{HASTE:13},statsDetails:[{enum:'HASTE',name:'Tempowertung',value:13},{enum:'HASTE',name:'Tempowertung',value:9125}],statsFreshEnums:['HASTE']});
+assert.equal(conflict.statsByEnum.HASTE,13);
+assert.deepEqual(conflict.stats,{});
+assert.deepEqual(conflict.statsDetails,[]);
+assert.deepEqual(conflict.statsFreshEnums,[]);
+assert.deepEqual(profile({stats:{Tempowertung:9125},statsDetails:[{enum:'HASTE',name:'Tempowertung',value:13}]}).stats,{Tempowertung:13});
+assert.deepEqual(profile({stats:{Tempowertung:9125},statsByEnum:{HASTE:13}}).stats,{Tempowertung:13});
 const quest={id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z',private:{token:marker},reward:{secret:marker}};
 assert.deepEqual(publicQuestCatalog({'16':quest,'17':{id:16,title:marker},'18':{id:18,title:{secret:marker}}}),{'16':{id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z'},'18':{id:18}});
 assert.equal(projected.characters[0].professions[0].knownRecipes[0].reagents[0].quantity,2);
@@ -58,6 +79,8 @@ try{
   assert.ok(!JSON.stringify(res.body).includes(marker),'Actual GET must not leak nested or root private data');
   assert.equal(res.body.data.characters[0].stats.Tempowertung,42);
   assert.equal(res.body.data.characters[0].statsByEnum.HASTE,42);
+  assert.ok(!JSON.stringify(res.body).includes('9125'));
+  assert.ok(!res.body.data.characters[0].statsFreshKeys.includes('Blockwert'));
   assert.equal(res.body.questCatalog['16'].title,'Quest');
   assert.deepEqual(res.body.questCatalog,publicQuestCatalog({'16':quest}));
   assert.equal(res.body.data.characters[0].knownClassAbilities[0].id,133);
