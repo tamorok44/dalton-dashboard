@@ -35,7 +35,7 @@ assert.equal(imageStoreConfigured(),true,'Existing token-based stores are still 
 if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
 if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
 else delete process.env.BLOB_READ_WRITE_TOKEN;
-let saved=null,petRulesSaved=null;
+let saved=null,petRulesSaved=null,rosterReadFault=null;
 const questMarker='PRIVATE_QUEST_NESTED_SENTINEL';
 const questRecord={id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z',unknown:{secret:questMarker}};
 let provideQuest=false;
@@ -79,7 +79,8 @@ globalThis.fetch=async (url,options={})=>{
     redisRequests++;
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
-    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?(saved??(provideQuest?JSON.stringify({...snapshot,characters:snapshot.characters.map(c=>({...c,activeQuests:[{id:16,name:'Quest'}]}))}):null)):null})};
+    if(op==='GET'&&key==='dalton-dashboard:characters:v1'&&rosterReadFault)return {ok:true,json:async()=>rosterReadFault.envelope};
+    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?(saved??JSON.stringify(provideQuest?{...snapshot,characters:snapshot.characters.map(c=>({...c,activeQuests:[{id:16,name:'Quest'}]}))}:snapshot)):null})};
     if(op==='HMGET'&&key==='dalton-dashboard:quest-catalog:latest:v1')return {ok:true,json:async()=>({result:provideQuest?['de_DE:static-1-forever-eu:16']:[]})};
     if(op==='HMGET'&&key==='dalton-dashboard:quest-catalog:v1')return {ok:true,json:async()=>({result:provideQuest?[JSON.stringify(questRecord)]:[]})};
     if(op==='SET'){
@@ -122,7 +123,7 @@ globalThis.fetch=async (url,options={})=>{
         return {ok:true,json:async()=>({result:petRulesSaved})};
       }
       const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
-        (lock===keys[6]?(saved=keys[7],'OK'):'ERROR');
+        (lock===keys[6]?(keys[10]===(saved??JSON.stringify(provideQuest?{...snapshot,characters:snapshot.characters.map(c=>({...c,activeQuests:[{id:16,name:'Quest'}]}))}:snapshot))?(saved=keys[7],'OK'):'PROFILE_BASE_CHANGED'):'ERROR');
       return {ok:true,json:async()=>({result})};
     }
     throw Error('Unexpected Redis command');
@@ -331,6 +332,18 @@ try{
   assert.equal(saved,savedBeforeConflict,'No stale data overwrites when another instance holds the lock');
   assert.equal(requests,requestsBeforeConflict,'Locked request does not contact Blizzard');
   lock=null;
+  // Malformed success envelopes must not be interpreted as absent keys or
+  // trigger even optional pet/Armory writes, and must release the lease.
+  const durableBeforeBadRead=saved,petBeforeBadRead=petRulesSaved,historyBeforeBadRead=history.length,requestsBeforeBadRead=requests;
+  for(const envelope of [{},null,[],{result:null},{result:false},{result:0},{result:{}},{result:[]},{result:''},{result:'null'},{result:'{}'},{result:JSON.stringify({generatedAt:snapshot.generatedAt,characters:[]})},{error:null,result:durableBeforeBadRead}]){
+    rosterReadFault={envelope};cooldown=false;
+    const rejectedRead=fakeResponse();await handler(manualRequest,rejectedRead);
+    assert.equal(rejectedRead.result().status,503,JSON.stringify(envelope));
+    assert.equal(saved,durableBeforeBadRead);assert.equal(petRulesSaved,petBeforeBadRead);
+    assert.equal(history.length,historyBeforeBadRead);assert.equal(requests,requestsBeforeBadRead);assert.equal(lock,null);
+    assert.ok(!rejectedRead.result().payload.persisted);
+  }
+  rosterReadFault=null;
   cooldown=true;
   const throttled=fakeResponse();
   await handler(manualRequest,throttled);
