@@ -158,7 +158,7 @@ export function mergeProfiles(previous,latest){
   return {generatedAt:latest.generatedAt,characters:(latest.characters||[]).map(c=>{
     const old=bySlug.get(c.slug);
     if(!old)return c;
-    if(c.scrapeOk===false)return {...old,scrapeOk:false,scrapeError:c.scrapeError};
+    if(c.scrapeOk===false)return {...old,scrapeOk:false,statsVerified:false,statsFreshKeys:[],statsFreshEnums:[],scrapeError:c.scrapeError};
     if(c.knownClassAbilitiesVerified===false&&old.knownClassAbilitiesVerified===true&&old.knownClassAbilitiesSource==='WoW-Spellbook'){
       return {
         ...c,
