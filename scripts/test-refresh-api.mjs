@@ -308,6 +308,10 @@ try{
   await handler(manualRequest,unavailable);
   assert.equal(unavailable.result().status,503,'Total outage must not claim fresh data');
   assert.ok(unavailable.result().payload.error);
+  assert.equal(unavailable.result().payload.success,0);
+  assert.equal(unavailable.result().payload.persisted,true);
+  assert.ok(unavailable.result().payload.data.characters.every(c=>c.scrapeOk===false&&c.statsFreshEnums.length===0));
+  assert.ok(Date.parse(unavailable.result().payload.data.generatedAt)>Date.parse(partialResult.payload.data.generatedAt));
   const outageGet=fakeResponse();await publicGetHandler({method:'GET',query:{}},outageGet);
   assert.equal(outageGet.result().status,200);
   assert.ok(outageGet.result().payload.data.characters.every(c=>c.scrapeOk===false&&c.statsVerified===false&&c.statsFreshEnums.length===0&&c.statsFreshKeys.length===0));
