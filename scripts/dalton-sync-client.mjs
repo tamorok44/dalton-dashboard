@@ -107,29 +107,30 @@ export async function createEnrollment(endpoint,characterSlug,auth,{previewShare
 function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb?.character?.name))}
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
-function args(argv){
+// Parse and validate the entire command before reading config, discovering
+// files, fetching preview cookies, or entering any credential-bearing path.
+export function args(argv){
   const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:null};
+  const switches=new Map([['--watch','watch'],['--dry-run','dryRun'],['--revoke-device','revokeDevice'],['--promote-production','promoteProduction'],['--help','help']]);
+  const values=new Map([['--file','file'],['--endpoint','endpoint'],['--enroll','enroll'],['--create-enroll','createEnroll'],['--character','character'],['--preview-share-url','previewShareUrl']]);
+  const seen=new Set();
   for(let i=0;i<argv.length;i++){
-    const value=argv[i];
-    if(value==='--watch')out.watch=true;
-    else if(value==='--dry-run')out.dryRun=true;
-    else if(value==='--file')out.file=argv[++i]||null;
-    else if(value==='--endpoint'){
-      const target=argv[++i];if(!target||target.startsWith('--'))throw Error('--endpoint benötigt eine HTTPS-URL');
-      out.endpoint=target;out.endpointProvided=true;
-    }
-    else if(value==='--enroll')out.enroll=argv[++i]||null;
-    else if(value==='--create-enroll')out.createEnroll=argv[++i]||null;
-    else if(value==='--revoke-device')out.revokeDevice=true;
-    else if(value==='--promote-production')out.promoteProduction=true;
-    else if(value==='--character')out.character=argv[++i]||null;
-    else if(value==='--preview-share-url'){
-      const share=argv[++i];if(!share||share.startsWith('--'))throw Error('--preview-share-url benötigt eine HTTPS-URL');
-      out.previewShareUrl=share;
-    }
-    else if(value==='--help')out.help=true;
-    else throw new Error('Unbekannte Option: '+value);
+    const flag=argv[i];
+    if(!switches.has(flag)&&!values.has(flag))throw Error('Unbekannte Option: '+String(flag));
+    if(seen.has(flag))throw Error('Option mehrfach angegeben: '+flag);
+    seen.add(flag);
+    if(switches.has(flag)){out[switches.get(flag)]=true;continue;}
+    const value=argv[++i];
+    if(typeof value!=='string'||!value.trim()||value.trimStart().startsWith('-'))throw Error(flag+' benötigt einen gültigen Argumentwert');
+    out[values.get(flag)]=value;
+    if(flag==='--endpoint')out.endpointProvided=true;
   }
+  const management=[out.enroll,out.createEnroll,out.revokeDevice,out.promoteProduction].filter(Boolean).length;
+  if(out.dryRun&&management)throw Error('--dry-run kann nicht mit Geräteverwaltung kombiniert werden');
+  if(management>1)throw Error('Nur ein Geräteverwaltungsbefehl gleichzeitig erlaubt');
+  if(management&&(out.watch||out.file))throw Error('Geräteverwaltung kann nicht mit Sync-Optionen kombiniert werden');
+  if(out.character&&!out.enroll)throw Error('--character ist nur bei --enroll erlaubt');
+  if(out.help&&seen.size>1)throw Error('--help muss allein stehen');
   return out;
 }
 // CLI > environment > saved configuration > default. A stored device
@@ -413,7 +414,6 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
 export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){
   const options=args(argv);
   if(options.help){help();return}
-  if(options.dryRun&&(options.createEnroll||options.enroll||options.revokeDevice||options.promoteProduction))throw Error('--dry-run kann nicht mit Geräteverwaltung kombiniert werden');
   const config=await readConfig();
   const target=resolveBridgeTarget(options,config);
   options.endpoint=target.endpoint;
