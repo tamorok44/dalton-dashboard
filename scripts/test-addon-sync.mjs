@@ -266,6 +266,13 @@ try{
     assert.deepEqual(calls.pop(),{url:'https://env.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
     await assert.rejects(main(['--enroll','synthetic-invite','--endpoint',selected],{readConfig}),/fixture request stopped/);
     assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:undefined});
+    // Sync path has the same precedence; the explicit master credential may
+    // be used for a consciously chosen target, the saved one never travels.
+    await main(['--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
+    assert.ok(calls.length>0,'sync fixture must actually exercise transport');
+    for(const call of calls)assert.deepEqual(call,{url:selected,auth:'Bearer synthetic-explicit-master'});
+    calls.length=0;
+    await assert.rejects(main(['--dry-run','--enroll','synthetic-invite','--endpoint',selected],{readConfig}),/nicht mit Geräteverwaltung/);
     // A real dry-run must not request the configured share URL.
     await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
     assert.equal(calls.length,0);
