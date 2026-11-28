@@ -1,3 +1,4 @@
+import {nextProfileGeneration} from './version-metadata.mjs';
 function slug(value){
   return String(value||'').trim().toLocaleLowerCase('en-US').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
@@ -123,7 +124,7 @@ export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized
   characters[index]=nextCharacter;
   return {
     ...data,
-    generatedAt:syncedAt,
+    generatedAt:nextProfileGeneration(data,Date.parse(syncedAt)),
     characters
   };
 }
