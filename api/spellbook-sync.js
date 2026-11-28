@@ -1,5 +1,5 @@
 import {timingSafeEqual} from 'node:crypto';
-import {loadCharacters,saveCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
+import {loadCharactersForWrite,saveCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {parseSpellbookCode,resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
@@ -64,7 +64,7 @@ export default async function handler(req,res){
   const lockToken=await acquireRefreshLock();
   if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte den Code gleich noch einmal übernehmen.'});
   try{
-    const {data:before}=await loadCharacters();
+    const {data:before,raw:expectedRoster}=await loadCharactersForWrite();
     const targetCharacter=resolveSpellbookCharacter(before,snapshot);
     snapshot.characterSlug=targetCharacter.slug;
     let classMaster=null;
@@ -78,7 +78,7 @@ export default async function handler(req,res){
     let updated=applySpellbookSnapshot(before,snapshot,{classMaster,localized,syncedAt});
     if(updated!==before){
       updated=await archiveKnownAbilityIcons(updated,snapshot.characterSlug);
-      await saveCharacters(updated,lockToken);
+      await saveCharacters(updated,lockToken,{expectedRoster});
       try{await appendChangeBatch(before,updated,{source:'spellbook-sync'})}catch(error){
         console.warn('Spellbook-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
       }
