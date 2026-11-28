@@ -3,6 +3,7 @@ import {PET_DB2_BASELINE,PET_DB2_REVIEWED_BUILD} from './pet-db2-baseline.mjs';
 import {petDb2Url} from './pet-db2-audit.mjs';
 import {createRequire} from 'node:module';
 import handler,{refreshAuthorization} from '../api/refresh.js';
+import publicGetHandler from '../api/characters.js';
 import {savePetRuleState} from './pet-rule-store.mjs';
 import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
@@ -12,7 +13,7 @@ const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
 const classIds={'Druide':11,'Magier':8,'Jäger':3};
 const statLabels={
   HEALTH:'Gesundheit',MANA:'Mana',STRENGTH:'Stärke',AGILITY:'Beweglichkeit',STAMINA:'Ausdauer',
-  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe'
+  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe',HASTE:'Tempowertung',HASTERATING:'Tempo'
 };
 const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
@@ -35,6 +36,9 @@ if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
 if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
 else delete process.env.BLOB_READ_WRITE_TOKEN;
 let saved=null,petRulesSaved=null;
+const questMarker='PRIVATE_QUEST_NESTED_SENTINEL';
+const questRecord={id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z',unknown:{secret:questMarker}};
+let provideQuest=false;
 let history=[];
 let lock=null,cooldown=false,lockReleases=0,failPetRuleSave=false;
 
@@ -62,7 +66,7 @@ function armoryHtml(old){
       ['STRENGTH',old.stats.Stärke],['AGILITY',old.stats.Beweglichkeit],
       ['STAMINA',old.stats.Ausdauer],['INTELLECT',old.stats.Intelligenz],
       ['ARMOR',old.stats.Rüstung+5],['ATTACKPOWER',old.stats.Angriffskraft],
-      ['ITEMLEVEL',old.stats.Gegenstandsstufe]
+      ['ITEMLEVEL',old.stats.Gegenstandsstufe],['HASTE',42],['HASTERATING',13]
     ].map(([key,value])=>({enum:key,name:statLabels[key],value:{value}}))}]},
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
@@ -75,7 +79,9 @@ globalThis.fetch=async (url,options={})=>{
     redisRequests++;
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
-    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?saved:null})};
+    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?(saved??(provideQuest?JSON.stringify({...snapshot,characters:snapshot.characters.map(c=>({...c,activeQuests:[{id:16,name:'Quest'}]}))}):null)):null})};
+    if(op==='HMGET'&&key==='dalton-dashboard:quest-catalog:latest:v1')return {ok:true,json:async()=>({result:provideQuest?['de_DE:static-1-forever-eu:16']:[]})};
+    if(op==='HMGET'&&key==='dalton-dashboard:quest-catalog:v1')return {ok:true,json:async()=>({result:provideQuest?[JSON.stringify(questRecord)]:[]})};
     if(op==='SET'){
       let result='OK';
       if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
@@ -211,6 +217,7 @@ try{
   failPetRuleSave=false;
   cooldown=false;
 
+  provideQuest=true;
   const ok=fakeResponse();
   await handler(manualRequest,ok);
   const result=ok.result();
@@ -241,11 +248,25 @@ try{
     assert.equal(c.professions[0].current,old.professions[0].current,'Without de_DE Game Data the last verified profession name/value is retained');
     assert.equal(c.professions[0].unverified,true,'Armory profession labels are never self-translated into visible data');
     assert.equal(c.stats.Gesundheit,old.stats.Gesundheit+50,'Latest source-backed German health value is returned');
+    assert.equal(c.stats.Tempowertung,42);assert.equal(c.statsByEnum.HASTE,42);
+    assert.equal(c.stats.Tempo,13);assert.equal(c.statsByEnum.HASTERATING,13);
+    assert.ok(c.statsDetails.some(s=>s.enum==='HASTE'&&s.value===42));
+    assert.ok(c.statsFreshKeys.includes('Tempowertung'));assert.ok(c.statsFreshEnums.includes('HASTE'));
     assert.equal(c.class,old.class,'German Armory class string is preserved verbatim');
     assert.equal(c.classId,classIds[old.class]);
     assert.equal(c.scrapeOk,true);
   }
   assert.equal(result.headers['Cache-Control'],'private, no-store');
+  assert.equal(result.payload.questCatalog['16']?.title,'Quest');
+  assert.ok(!JSON.stringify(result.payload).includes(questMarker));
+  const afterRefresh=fakeResponse();await publicGetHandler({method:'GET',query:{}},afterRefresh);
+  assert.equal(afterRefresh.result().status,200);
+  const refreshed=afterRefresh.result().payload;
+  assert.equal(refreshed.data.characters[0].stats.Tempowertung,42);
+  assert.equal(refreshed.data.characters[0].statsByEnum.HASTE,42);
+  assert.equal(refreshed.questCatalog['16']?.title,'Quest');
+  assert.ok(!JSON.stringify(refreshed).includes(questMarker));
+  assert.equal(JSON.parse(saved).characters[0].statsByEnum.HASTE,42);
 
   cooldown=false;
   failSlug='chucky-dalton';
