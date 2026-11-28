@@ -76,10 +76,12 @@ export default async function handler(req,res){
     try{localized=await cachedGermanClassSpells(directIds,{maxFetch:30})}catch{}
     const syncedAt=new Date().toISOString();
     let updated=applySpellbookSnapshot(before,snapshot,{classMaster,localized,syncedAt});
-    updated=await archiveKnownAbilityIcons(updated,snapshot.characterSlug);
-    await saveCharacters(updated,lockToken);
-    try{await appendChangeBatch(before,updated,{source:'spellbook-sync'})}catch(error){
-      console.warn('Spellbook-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
+    if(updated!==before){
+      updated=await archiveKnownAbilityIcons(updated,snapshot.characterSlug);
+      await saveCharacters(updated,lockToken);
+      try{await appendChangeBatch(before,updated,{source:'spellbook-sync'})}catch(error){
+        console.warn('Spellbook-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
+      }
     }
     const character=updated.characters.find(entry=>entry.slug===snapshot.characterSlug);
     return res.status(200).json({
