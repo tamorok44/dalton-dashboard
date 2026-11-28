@@ -294,6 +294,7 @@ try{
     process.env.VERCEL_ENV='preview';
     process.env.DALTON_PREVIEW_REDIS_REST_URL='https://test-preview-redis.example.com';
     process.env.DALTON_PREVIEW_REDIS_REST_TOKEN='synthetic-preview-token';
+    process.env.DALTON_PRODUCTION_REDIS_ORIGIN='https://test-redis.example.com';
     const preview=await savePetRuleState({...state,checkedAt:'2099-11-25T02:00:00.000Z',
       talentRuleObservation:{...observation,status:'source_unavailable'}});
     assert.deepEqual(preview.talentRuleObservation,observation);
@@ -323,7 +324,7 @@ try{
     assert.equal((await productionSave(afterExpiry)).talentRuleObservation.revisionSince,afterExpiry);
 
   }finally{
-    delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;
+    delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;delete process.env.DALTON_PRODUCTION_REDIS_ORIGIN;
     if(priorEnvironment===undefined)delete process.env.VERCEL_ENV;
     else process.env.VERCEL_ENV=priorEnvironment;
   }
@@ -336,7 +337,7 @@ try{
 // Shared ordinary Vercel bindings must never be used by deployed previews.
 {
   const {redisConnection,configured,redis}=await import('./character-store.mjs');
-  const base={KV_REST_API_URL:'https://synthetic-prod.invalid',KV_REST_API_TOKEN:'synthetic-prod'};
+  const base={KV_REST_API_URL:'https://synthetic-prod.invalid',KV_REST_API_TOKEN:'synthetic-prod',DALTON_PRODUCTION_REDIS_ORIGIN:'https://synthetic-prod.invalid'};
   assert.ok(redisConnection({...base,VERCEL_ENV:'production'}));
   for(const scope of ['preview','development']){
     assert.equal(redisConnection({...base,VERCEL_ENV:scope}),null);
@@ -344,7 +345,13 @@ try{
     assert.equal(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-preview.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:base.KV_REST_API_TOKEN}),null);
     assert.deepEqual(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-preview.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:'synthetic-preview'}),{url:'https://synthetic-preview.invalid',token:'synthetic-preview'});
   }
-  const names=['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','BLOB_STORE_ID','BLOB_READ_WRITE_TOKEN'];
+  const previewOnly={VERCEL_ENV:'preview',DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-prod.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:'different'};
+  assert.equal(redisConnection(previewOnly),null,'No production identity reference is not proof of isolation');
+  assert.equal(redisConnection({...previewOnly,DALTON_PRODUCTION_REDIS_ORIGIN:'https://synthetic-prod.invalid'}),null);
+  assert.equal(redisConnection({...base,...previewOnly,DALTON_PREVIEW_REDIS_REST_URL:'https://second-prod.invalid',UPSTASH_REDIS_REST_URL:'https://second-prod.invalid'}),null);
+  assert.equal(redisConnection({...base,...previewOnly,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-prod.invalid.:8443'}),null);
+  assert.equal(redisConnection({...base,VERCEL:'1',VERCEL_ENV:'unknown'}),null);
+  const names=['DALTON_PRODUCTION_REDIS_ORIGIN','VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','BLOB_STORE_ID','BLOB_READ_WRITE_TOKEN'];
   const old=Object.fromEntries(names.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
   try{
     Object.assign(process.env,base,{VERCEL_ENV:'preview',BLOB_STORE_ID:'synthetic-shared',BLOB_READ_WRITE_TOKEN:'synthetic-shared'});
