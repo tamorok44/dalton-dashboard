@@ -55,18 +55,43 @@ export async function redis(command,{control=false}={}){
     const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(wire),redirect:'error',signal});
     if(!response.ok)throw new Error('Redis HTTP '+response.status);
     const payload=await response.json();
-    if(payload.error)throw new Error('Redis: '+String(payload.error).slice(0,120));
-    return payload.result;
+    // A transport success is not a Redis result. In particular {} is not
+    // an absent key. Reject ambiguous envelopes before any caller can
+    // interpret undefined, false or an empty object as missing data.
+    if(!payload||typeof payload!=='object'||Array.isArray(payload))throw Error('REDIS_RESPONSE_UNCONFIRMED');
+    if(Object.hasOwn(payload,'error'))throw Error('Redis: '+String(payload.error).slice(0,120));
+    if(!Object.hasOwn(payload,'result')||payload.result===undefined)throw Error('REDIS_RESPONSE_UNCONFIRMED');
+    const result=payload.result,op=String(command[0]).toUpperCase();
+    if((op==='GET'||op==='HGET')&&result!==null&&typeof result!=='string')throw Error('REDIS_READ_UNCONFIRMED');
+    return result;
   });
 }
 export function configured(){return Boolean(redisConnection())}
-export async function loadCharacters(){
-  if(!configured())return {data:normalizeVerifiedPlayerTerminology(initial),fallback:true};
-  const value=await redis(['GET',KEY]);
-  if(!value)return {data:normalizeVerifiedPlayerTerminology(initial),fallback:true};
+function decodeStoredCharacters(value){
   const data=JSON.parse(value);
-  if(!Array.isArray(data.characters)||!Number.isFinite(Date.parse(data.generatedAt)))throw new Error('Gespeicherter Datensatz ist ungültig');
-  return {data:normalizeVerifiedPlayerTerminology(data),fallback:false};
+  if(!data||typeof data!=='object'||Array.isArray(data)||!Array.isArray(data.characters)||!data.characters.length||!Number.isFinite(Date.parse(data.generatedAt)))throw Error('Gespeicherter Datensatz ist ungültig');
+  const slugs=data.characters.map(c=>c?.slug);
+  if(slugs.some(slug=>typeof slug!=='string'||! /^[a-z0-9-]+$/i.test(slug))||new Set(slugs).size!==slugs.length)throw Error('Gespeicherter Charakterbestand ist ungültig');
+  return normalizeVerifiedPlayerTerminology(data);
+}
+function bundledCharacters(){return {data:normalizeVerifiedPlayerTerminology(initial),fallback:true};}
+export async function loadCharacters(){
+  if(!configured())return bundledCharacters();
+  const raw=await redis(['GET',KEY]);
+  if(raw===null)return bundledCharacters();
+  return {data:decodeStoredCharacters(raw),fallback:false};
+}
+// Mutating operations must obtain an authoritative baseline. Ordinary
+// production writes never initialize a missing roster from bundled data.
+// Isolated preview may use bundled identities ONLY on explicit absence.
+export async function loadCharactersForWrite({allowPreviewMissing=false}={}){
+  if(!configured())throw Error('Redis-Datenbank nicht konfiguriert; Profilbestand nicht bestätigt');
+  const raw=await redis(['GET',KEY]);
+  if(raw===null){
+    if(allowPreviewMissing&&['preview','development'].includes(process.env.VERCEL_ENV))return {...bundledCharacters(),raw:null};
+    throw Error('PROFILE_BASE_MISSING');
+  }
+  return {data:decodeStoredCharacters(raw),raw,fallback:false};
 }
 // A unique, short-lived permit is created before attempting the shared
 // lease. A delayed acquisition cannot recreate a lease after revocation.
@@ -143,14 +168,16 @@ export const REDIS_TYPE_GUARD="local function valid(k,t) local a=redis.call('TYP
 export const REDIS_COMPACT_READ="local function compact(k) local old=redis.call('GET',k); if not old then return {} end; local value=cjson.decode(old); if type(value)~='table' then error('INVALID_COMPACT_METADATA') end; return value end; ";
 // Both atomic profile write paths enforce monotonic UTC generations.
 // Historical UTC timestamps with omitted millisecond padding are supported.
-export const REDIS_PROFILE_GENERATION_GUARD="local function generation(v) if type(v)~='string' then error('INVALID_PROFILE_GENERATION') end; local base,frac=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)%.(%d+)Z$'); if not base then base=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)Z$'); frac='' end; if not base or string.len(frac)>3 then error('INVALID_PROFILE_GENERATION') end; return base..'.'..string.sub(frac..'000',1,3)..'Z' end; local function assertGeneration(k,nextRaw,nextMeta) local next=cjson.decode(nextRaw); local meta=cjson.decode(nextMeta); local stamp=generation(next.generatedAt); if stamp~=next.generatedAt or meta.generatedAt~=stamp then error('INVALID_PROFILE_GENERATION') end; local oldRaw=redis.call('GET',k); if oldRaw then local old=cjson.decode(oldRaw); if stamp<=generation(old.generatedAt) then error('PROFILE_GENERATION_NOT_ADVANCED') end end end; ";
-export async function saveCharacters(data,lockToken,{dailyReceipt=null}={}){
+export const REDIS_PROFILE_GENERATION_GUARD="local function generation(v) if type(v)~='string' then error('INVALID_PROFILE_GENERATION') end; local base,frac=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)%.(%d+)Z$'); if not base then base=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)Z$'); frac='' end; if not base or string.len(frac)>3 then error('INVALID_PROFILE_GENERATION') end; return base..'.'..string.sub(frac..'000',1,3)..'Z' end; local function assertRosterBase(k,expected,allowMissing) local raw=redis.call('GET',k); if not raw then if allowMissing and expected=='' then return false end; error('PROFILE_BASE_MISSING') end; if raw~=expected then error('PROFILE_BASE_CHANGED') end; return raw end; local function assertGeneration(k,nextRaw,nextMeta,expected) local next=cjson.decode(nextRaw); local meta=cjson.decode(nextMeta); local stamp=generation(next.generatedAt); if stamp~=next.generatedAt or meta.generatedAt~=stamp then error('INVALID_PROFILE_GENERATION') end; local oldRaw=assertRosterBase(k,expected,false); local old=cjson.decode(oldRaw); if stamp<=generation(old.generatedAt) then error('PROFILE_GENERATION_NOT_ADVANCED') end; if type(old.characters)~='table' or type(next.characters)~='table' or #old.characters==0 or #old.characters~=#next.characters then error('PROFILE_ROSTER_CHANGED') end; local seen={}; for _,c in ipairs(old.characters) do if type(c.slug)~='string' or seen[c.slug] then error('INVALID_PROFILE_ROSTER') end; seen[c.slug]=true end; for _,c in ipairs(next.characters) do if type(c.slug)~='string' or not seen[c.slug] then error('PROFILE_ROSTER_CHANGED') end; seen[c.slug]=nil end end; ";
+export async function saveCharacters(data,lockToken,{dailyReceipt=null,expectedRoster}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
+  if(typeof expectedRoster!=='string'||!expectedRoster)throw Error('PROFILE_BASE_REQUIRED');
   const args=normalizedCharacterWrite(data);
   if(dailyReceipt&&(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dailyReceipt.date)||dailyReceipt.source!=='daily'||dailyReceipt.generatedAt!==data.generatedAt||!Number.isInteger(dailyReceipt.success)||dailyReceipt.success<=0||!Number.isInteger(dailyReceipt.total)||dailyReceipt.total!==data.characters.length||!rosterMatches(dailyReceipt.roster,data.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})))||dailyReceipt.success>dailyReceipt.total||dailyReceipt.persisted!==true))throw new Error('Ungültiger Profil-Refresh-Nachweis');
-  const lua=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+REDIS_PROFILE_GENERATION_GUARD+"if not valid(KEYS[2],'string') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[1])~=ARGV[1] then return redis.error_reply('REFRESH_LOCK_LOST') end; assertGeneration(KEYS[2],ARGV[2],ARGV[3]); local meta=compact(KEYS[3]); meta.characters=cjson.decode(ARGV[3]); if ARGV[4] then meta.dailyReceipt=cjson.decode(ARGV[4]) end; local encoded=cjson.encode(meta); return redis.call('MSET',KEYS[2],ARGV[2],KEYS[3],encoded)";
-  const result=await redis(['EVAL',lua,3,LOCK,KEY,CORE_COMPACT_KEY,lockToken,...args,...(dailyReceipt?[JSON.stringify(dailyReceipt)]:[])]);
+  const lua=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+REDIS_PROFILE_GENERATION_GUARD+"if not valid(KEYS[2],'string') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[1])~=ARGV[1] then return redis.error_reply('REFRESH_LOCK_LOST') end; assertGeneration(KEYS[2],ARGV[2],ARGV[3],ARGV[5]); local meta=compact(KEYS[3]); meta.characters=cjson.decode(ARGV[3]); if ARGV[4]~='' then meta.dailyReceipt=cjson.decode(ARGV[4]) end; local encoded=cjson.encode(meta); return redis.call('MSET',KEYS[2],ARGV[2],KEYS[3],encoded)";
+  const result=await redis(['EVAL',lua,3,LOCK,KEY,CORE_COMPACT_KEY,lockToken,...args,dailyReceipt?JSON.stringify(dailyReceipt):'',expectedRoster]);
   if(result!=='OK')throw new Error('Charakterdaten nicht gespeichert');
+  return args[0]; // exact confirmed bytes for a subsequent same-lock media write
 }
 export async function loadDailyProfileReceipt(date){
   const [value,legacy]=await Promise.all([redis(['GET',CORE_COMPACT_KEY]),redis(['HGET',VERSION_METADATA_KEY,DAILY_PROFILE_RECEIPT_FIELD])]);
