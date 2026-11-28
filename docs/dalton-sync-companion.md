@@ -111,3 +111,8 @@ Die Geräteberechtigungen bleiben eng begrenzt:
 ## Getrennte Kopplung von Preview und Produktion
 
 Die automatische Übernahme eines Preview-Geräts in die Produktion ist abgeschaltet. Für eine neue Produktionskopplung ist ein regulär autorisierter Einrichtungscode aus der Produktionsumgebung erforderlich. Bereits gültige Produktionsgeräte bleiben unverändert gekoppelt. Ein Preview-Code oder Preview-Gerät gilt nicht als Produktionsberechtigung. Historische Deployments und bestehende Gerätezugänge müssen bei der betrieblichen Abnahme separat inventarisiert und gegebenenfalls widerrufen werden.
+
+
+### Zielwahl und Geräteberechtigungen
+
+Für alle Bridge-Befehle gilt: ausdrückliches `--endpoint` vor `DALTON_SYNC_ENDPOINT` vor gespeichertem Ziel vor Standardadresse. Jede zugangsdatenführende Anfrage verwendet HTTPS und folgt keinen Weiterleitungen. Ein lokal gespeicherter Gerätezugang ist an den HTTPS-Ursprung seiner Kopplung gebunden. Bei einem anderen Ziel muss dieses separat gekoppelt werden; ein explizit für das Ziel bereitgestelltes Umgebungs-Token kann für Sync und Einrichtungscode-Erstellung verwendet werden. Beim Widerruf wird ausschließlich der gespeicherte Gerätezugang am zugehörigen Ziel widerrufen. Ein abweichendes Ziel führt zum Abbruch ohne lokale Löschung. Ein gespeicherter Preview-Share-Link wird nur am gleichen HTTPS-Ursprung verwendet; ausdrücklich angegebene Share-Links müssen zum Ziel passen. `--dry-run` versendet keine Netzwerkanfragen und kann nicht mit Geräteverwaltung kombiniert werden.
