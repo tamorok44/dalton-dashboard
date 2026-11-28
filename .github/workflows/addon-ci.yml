@@ -93,11 +93,19 @@ jobs:
           cp scripts/dalton-sync-client.mjs dist/DaltonDashboardSyncCompanion/
           cp scripts/savedvariables-parser.mjs dist/DaltonDashboardSyncCompanion/
           cp scripts/addon-sync.mjs dist/DaltonDashboardSyncCompanion/
+          cp scripts/player-terminology.mjs dist/DaltonDashboardSyncCompanion/
           cp docs/dalton-sync-companion.md dist/DaltonDashboardSyncCompanion/README.md
           cd dist
           zip -r "DaltonDashboardSyncCompanion-0.1.0-beta.1.zip" DaltonDashboardSyncCompanion
           cd ..
           unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-beta.1.zip
+          scratch=$(mktemp -d)
+          trap 'rm -rf "$scratch"' EXIT
+          unzip -q dist/DaltonDashboardSyncCompanion-0.1.0-beta.1.zip -d "$scratch"
+          cp scripts/fixtures/bridge-savedvariables.lua "$scratch/fixture.lua"
+          cd "$scratch"
+          node DaltonDashboardSyncCompanion/dalton-sync-client.mjs --help
+          node DaltonDashboardSyncCompanion/dalton-sync-client.mjs --dry-run --file "$scratch/fixture.lua"
 
       - name: Addon-Testpaket bereitstellen
         uses: actions/upload-artifact@v4
