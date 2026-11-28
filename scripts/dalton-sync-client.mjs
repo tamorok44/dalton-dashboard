@@ -43,7 +43,7 @@ function enrollmentEndpoint(endpoint){
   url.pathname='/api/addon-device-enroll';
   return url;
 }
-async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
+export async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
   const base=enrollmentEndpoint(endpoint);
   const cookie=await previewCookie(previewShareUrl,base.origin);
   const response=await fetch(base,{
@@ -59,7 +59,7 @@ async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
   const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null});
   return {...body,configFile:file};
 }
-async function revokeDevice(config){
+export async function revokeDevice(config){
   const token=config?.deviceToken;
   if(!token)return {revoked:false,alreadyAbsent:true};
   const endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync';
@@ -86,7 +86,7 @@ async function revokeDevice(config){
   await saveConfig(clean);
   return {revoked:true,characterName:config.characterName||null};
 }
-async function createEnrollment(endpoint,characterSlug,auth,{previewShareUrl=null}={}){
+export async function createEnrollment(endpoint,characterSlug,auth,{previewShareUrl=null}={}){
   if(!auth)throw new Error('Kein berechtigter Hub-Zugang für Einrichtungscodes vorhanden');
   const base=enrollmentEndpoint(endpoint);
   const cookie=await previewCookie(previewShareUrl,base.origin);
@@ -362,7 +362,7 @@ async function previewCookie(shareUrl,expectedOrigin){
   if(!cookie)throw new Error('Preview-Freigabe hat keinen Vercel-Zugangscookie geliefert');
   return cookie;
 }
-async function postPayload(endpoint,auth,payload,{cookie=null}={}){
+export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
   const url=secureBridgeEndpoint(endpoint);
   const headers={
     Authorization:auth,
