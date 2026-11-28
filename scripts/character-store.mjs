@@ -20,7 +20,7 @@ const COOLDOWN='dalton-dashboard:refresh:manual:cooldown';
 export function redisConnection(env=process.env){
   const standardUrl=env.KV_REST_API_URL||env.UPSTASH_REDIS_REST_URL;
   const standardToken=env.KV_REST_API_TOKEN||env.UPSTASH_REDIS_REST_TOKEN;
-  if(env.VERCEL&&env.VERCEL_ENV!=='production'&&env.VERCEL_ENV!=='preview'&&env.VERCEL_ENV!=='development')return null;
+  if((env.VERCEL||env.VERCEL_ENV)&&!['production','preview','development'].includes(env.VERCEL_ENV))return null;
   const preview=env.VERCEL_ENV==='preview'||env.VERCEL_ENV==='development';
   const url=preview?env.DALTON_PREVIEW_REDIS_REST_URL:standardUrl;
   const token=preview?env.DALTON_PREVIEW_REDIS_REST_TOKEN:standardToken;
