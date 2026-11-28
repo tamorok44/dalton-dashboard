@@ -40,6 +40,14 @@ const updated=applySpellbookSnapshot(data,snapshot,{
 });
 const cole=updated.characters[0];
 assert.equal(updated.generatedAt,now);
+// Two changed snapshots with identical sync clocks or a rolled-back clock
+// must still have distinct increasing persisted generations.
+const rollback=applySpellbookSnapshot({...data,generatedAt:'2026-11-23T06:01:00.003Z'},snapshot,{classMaster,syncedAt:now});
+assert.equal(rollback.generatedAt,'2026-11-23T06:01:00.004Z');
+const sameClock=applySpellbookSnapshot(rollback,{...snapshot,capturedAt:'2026-11-23T05:56:00.000Z'},{classMaster,syncedAt:now});
+assert.equal(sameClock.generatedAt,'2026-11-23T06:01:00.005Z');
+assert.equal(sameClock.characters[0].knownClassAbilitiesSyncedAt,now,'Actual sync time stays separate from logical generation');
+assert.equal(applySpellbookSnapshot(sameClock,{...snapshot,capturedAt:'2026-11-23T05:56:00.000Z'},{classMaster,syncedAt:now}),sameClock);
 assert.equal(cole.knownClassAbilitiesVerified,true);
 assert.equal(cole.knownClassAbilitiesSource,'WoW-Spellbook');
 assert.equal(cole.knownClassAbilitiesCapturedLevel,11);
