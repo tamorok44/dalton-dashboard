@@ -54,7 +54,7 @@ export default async function handler(req,res){
     const dataVersion=buildDataVersion({data:result.data,petRules,addonSync,liveKnowledgeVersion});
     const media=await enrichKnowledgeMedia(result.data,petCatalog).catch(()=>({data:result.data,petCatalog}));
     const planner=talentPlannerAvailable()?{talentPlannerEnabled:true}:{};
-    return res.status(200).json({data:publicCharacterData(media.data),fallback:result.fallback===true,petCatalog:media.petCatalog,questCatalog:publicQuestCatalog(questCatalog),petRules,reputationCatalog,addonSync,dataVersion,...planner});
+    return res.status(200).json({data:publicCharacterData(media.data,{allowLegacyStats:result.fallback===true}),fallback:result.fallback===true,petCatalog:media.petCatalog,questCatalog:publicQuestCatalog(questCatalog),petRules,reputationCatalog,addonSync,dataVersion,...planner});
   }catch(e){
     console.error('Datenbank-Lesen fehlgeschlagen:',e);
     return res.status(503).json({error:'Gespeicherte Charakterdaten derzeit nicht erreichbar'});
