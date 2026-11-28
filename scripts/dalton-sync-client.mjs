@@ -116,8 +116,14 @@ async function revokeDeviceLocked(config,{endpoint,previewShareUrl}){
     body:JSON.stringify({action:'revoke'}),
     signal:AbortSignal.timeout(15000)
   });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('Gerätezugang konnte nicht widerrufen werden: '+String(body.error||response.statusText).slice(0,180));
+  // Never discard the only local credential without an explicit positive
+  // acknowledgement from the expected API. 2xx alone is not evidence.
+  const body=await response.json().catch(()=>null);
+  if(!response.ok)throw new Error('Gerätezugang konnte nicht widerrufen werden: '+String(body?.error||response.statusText).slice(0,180));
+  const jsonType=String(response.headers?.get('content-type')||'').split(';')[0].trim().toLowerCase();
+  const confirmed=body&&typeof body==='object'&&!Array.isArray(body)&&!Object.hasOwn(body,'error')&&
+    ((body.revoked===true&&body.alreadyRevoked===false)||(body.revoked===false&&body.alreadyRevoked===true));
+  if(response.status!==200||jsonType!=='application/json'||!confirmed)throw Error('Widerruf nicht eindeutig bestätigt; lokale Kopplung bleibt erhalten');
   const current=await loadConfig();
   // Protect against older, nonparticipating writers as well.
   if(current.deviceToken!==token||secureBridgeEndpoint(current.endpoint??DEFAULT_ENDPOINT).origin!==base.origin)throw Error('Lokale Kopplung wurde inzwischen geändert; neue Kopplung bleibt erhalten');
