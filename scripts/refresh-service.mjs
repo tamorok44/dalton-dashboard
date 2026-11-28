@@ -30,8 +30,9 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
     // Persist failure/freshness metadata under the same writer fence.
     // Preserve all last-known numeric values and do not produce a success
     // receipt, history batch or media archive for this failed attempt.
-    await saveCharacters(mergeProfiles(previous,latest),lockToken);
-    return {success:0};
+    const failed=mergeProfiles(previous,latest);
+    await saveCharacters(failed,lockToken);
+    return {success:0,persisted:true,data:failed};
   }
 
   if(blizzardApiConfigured()){
