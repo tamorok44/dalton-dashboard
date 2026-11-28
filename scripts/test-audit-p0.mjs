@@ -391,14 +391,21 @@ if(!hasRedis){
     const refreshLock=await acquireRefreshLock();
     const actualProof={...proof,generatedAt:new Date(Date.parse(roster().generatedAt)+1).toISOString(),success:2,total:2,roster:[{slug:'audit-one',id:null},{slug:'audit-two',id:null}]};
     const nextRoster={...roster(),generatedAt:actualProof.generatedAt};
-    await saveCharacters(nextRoster,refreshLock,{dailyReceipt:actualProof});
+    await saveCharacters(nextRoster,refreshLock,{dailyReceipt:actualProof,expectedRoster:cli('GET',rosterKey)});
     const unchangedRaw=cli('GET',rosterKey),unchangedMeta=cli('GET',versionKey);
-    await assert.rejects(saveCharacters({...nextRoster,characters:[]},refreshLock),/PROFILE_GENERATION_NOT_ADVANCED/);
-    await assert.rejects(saveCharacters({...nextRoster,generatedAt:new Date(Date.parse(nextRoster.generatedAt)-60003).toISOString()},refreshLock),/PROFILE_GENERATION_NOT_ADVANCED/);
+    await assert.rejects(saveCharacters({...nextRoster,characters:[]},refreshLock,{expectedRoster:unchangedRaw}),/PROFILE_GENERATION_NOT_ADVANCED/);
+    await assert.rejects(saveCharacters({...nextRoster,generatedAt:new Date(Date.parse(nextRoster.generatedAt)-60003).toISOString()},refreshLock,{expectedRoster:unchangedRaw}),/PROFILE_GENERATION_NOT_ADVANCED/);
     const priorState=await loadAddonSyncState('audit-one');
     const unchangedAddon=cli('GET',syncKey('audit-one'));
-    await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,roster:nextRoster,receipts:priorState.receipts}),/PROFILE_GENERATION_NOT_ADVANCED/);
+    await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,roster:nextRoster,receipts:priorState.receipts,expectedRoster:unchangedRaw,expectedState:unchangedAddon}),/PROFILE_GENERATION_NOT_ADVANCED/);
     assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey),cli('GET',syncKey('audit-one'))],[unchangedRaw,unchangedMeta,unchangedAddon],'Rejected generation must not mutate any atomic record');
+    const nextGeneration=new Date(Date.parse(nextRoster.generatedAt)+1).toISOString();
+    await assert.rejects(saveCharacters({...nextRoster,generatedAt:nextGeneration,characters:nextRoster.characters.slice(0,1)},refreshLock,{expectedRoster:unchangedRaw}),/PROFILE_ROSTER_CHANGED/);
+    await assert.rejects(saveCharacters({...nextRoster,generatedAt:nextGeneration},refreshLock,{expectedRoster:JSON.stringify({...nextRoster,unconfirmed:true})}),/PROFILE_BASE_CHANGED/);
+    await assert.rejects(saveCharacters({...nextRoster,generatedAt:nextGeneration},refreshLock),/PROFILE_BASE_REQUIRED/);
+    await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,expectedRoster:unchangedRaw,expectedState:null,receipts:priorState.receipts}),/ADDON_BASE_CHANGED/);
+    await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,roster:{...nextRoster,generatedAt:nextGeneration},expectedRoster:JSON.stringify({...nextRoster,unconfirmed:true}),expectedState:unchangedAddon}),/PROFILE_BASE_CHANGED/);
+    assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey),cli('GET',syncKey('audit-one'))],[unchangedRaw,unchangedMeta,unchangedAddon]);
     await releaseRefreshLock(refreshLock);
     assert.deepEqual(await loadDailyProfileReceipt(day),actualProof);
     mode='drop-lock-reply';
@@ -870,7 +877,7 @@ if(!hasRedis){
       const prior=roster();
       const seededAt=new RealDate(Math.max(clock+60003,RealDate.parse(prior.generatedAt)+1)).toISOString();
       const held=await acquireRefreshLock();
-      try{await saveCharacters({...prior,generatedAt:seededAt},held)}
+      try{await saveCharacters({...prior,generatedAt:seededAt},held,{expectedRoster:cli('GET',rosterKey)})}
       finally{await releaseRefreshLock(held)}
       const priorAddon=await loadAddonSyncState('cole-dalton');
       class FrozenDate extends RealDate{
