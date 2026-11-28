@@ -18,11 +18,19 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   const {data:previous}=await loadCharacters();
   const results=await Promise.all(previous.characters.map(c=>refreshCharacters([c])));
   const success=results.reduce((n,r)=>n+r.success,0);
-  if(success===0)return {success:0};
+
   let latest={
     generatedAt:new Date().toISOString(),
     characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))
   };
+
+  if(success===0){
+    // Persist failure/freshness metadata under the same writer fence.
+    // Preserve all last-known numeric values and do not produce a success
+    // receipt, history batch or media archive for this failed attempt.
+    await saveCharacters(mergeProfiles(previous,latest),lockToken);
+    return {success:0};
+  }
 
   if(blizzardApiConfigured()){
     try{
