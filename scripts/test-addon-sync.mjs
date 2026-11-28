@@ -253,9 +253,9 @@ try{
     assert.equal(resolveBridgeTarget({},config,{}).endpoint,stored);
     assert.equal(resolveBridgeTarget({},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,envTarget);
     assert.equal(resolveBridgeTarget({endpointProvided:true,endpoint:selected},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,selected);
-    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint',selected],{readConfig}),/anderem HTTPS-Ziel/);
-    await assert.rejects(main(['--revoke-device','--endpoint',selected],{readConfig}),/anderem HTTPS-Ziel/);
-    await assert.rejects(main(['--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig}),/anderem HTTPS-Ziel/);
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint',selected],{readConfig}),/anderen HTTPS-Ziel/);
+    await assert.rejects(main(['--revoke-device','--endpoint',selected],{readConfig}),/anderen HTTPS-Ziel/);
+    await assert.rejects(main(['--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig}),/anderen HTTPS-Ziel/);
     await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint'],{readConfig}),/benötigt/);
     assert.equal(calls.length,0);
     process.env.DALTON_SYNC_ENDPOINT=envTarget;
