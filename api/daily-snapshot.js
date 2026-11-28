@@ -1,7 +1,7 @@
 import {canonicalRoster,rosterMatches,rosterKey} from '../scripts/daily-roster.mjs';
 import {fetchForeverSnapshot,blizzardApiConfigured} from '../scripts/blizzard-api.mjs';
 import {saveDailySnapshot,recoverDailySnapshot,dailySnapshotStoreConfigured,withinArchiveDeadline,archivePath,verifyBlob} from '../scripts/daily-snapshot-store.mjs';
-import {configured,loadCharacters,acquireRefreshLock,releaseRefreshLock,loadDailyProfileReceipt} from '../scripts/character-store.mjs';
+import {configured,loadCharactersForWrite,acquireRefreshLock,releaseRefreshLock,loadDailyProfileReceipt} from '../scripts/character-store.mjs';
 import {getDailySnapshot,registerDailySnapshot,acquireDailySnapshotLock,releaseDailySnapshotLock} from '../scripts/history-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
 import {ensurePetRuleState} from '../scripts/pet-rule-store.mjs';
@@ -45,7 +45,7 @@ export function dailyRefreshComplete(snapshotMeta,archiveConfigured=false){
     (privateArchiveComplete(snapshotMeta,snapshotMeta?.refresh?.roster)||(!archiveConfigured&&snapshotMeta?.archiveStatus==='disabled')));
 }
 
-export async function refreshDailyCharacters(date,{takeLock=acquireRefreshLockWithRetry,releaseLock=releaseRefreshLock,readReceipt=loadDailyProfileReceipt,refresh=refreshAndPersist,readRoster=loadCharacters}={}){
+export async function refreshDailyCharacters(date,{takeLock=acquireRefreshLockWithRetry,releaseLock=releaseRefreshLock,readReceipt=loadDailyProfileReceipt,refresh=refreshAndPersist,readRoster=loadCharactersForWrite}={}){
   const refreshLock=await takeLock();
   if(!refreshLock)return {pending:true,reason:'refresh_lock_unavailable',persisted:false};
   try{
@@ -59,7 +59,7 @@ export async function refreshDailyCharacters(date,{takeLock=acquireRefreshLockWi
 }
 
 const dailyDependencies={configured,blizzardApiConfigured,dailySnapshotStoreConfigured,getDailySnapshot,
-  acquireDailySnapshotLock,releaseDailySnapshotLock,ensurePetRuleState,loadCharacters,
+  acquireDailySnapshotLock,releaseDailySnapshotLock,ensurePetRuleState,loadCharacters:loadCharactersForWrite,
   fetchForeverSnapshot,saveDailySnapshot,recoverDailySnapshot,registerDailySnapshot,refreshDailyCharacters,
   loadDailyProfileReceipt,publicPetRuleState,berlinClock,clock:Date.now};
 
