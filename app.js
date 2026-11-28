@@ -57,7 +57,7 @@ function statTile(entry,stale=false,icon=false){
 }
 function statsPanel(c,open=false){
   const details=Array.isArray(c.statsDetails)?c.statsDetails.filter(entry=>entry?.name&&entry?.enum):[];
-  const fresh=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:[]);
+  const fresh=new Set(c.scrapeOk!==false&&Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:[]);
   const byEnum=new Map(details.map(entry=>[entry.enum,entry]));
   const main=mainStatEnums.map(key=>byEnum.get(key)).filter(Boolean);
   const rest=displayOrder('alphabetical',details.filter(entry=>!mainStatEnums.includes(entry.enum)));
@@ -1002,7 +1002,7 @@ function keepNewestProfiles(data){
     if(c.scrapeOk===false){
       const oldTime=Date.parse(prior.scrapedAt||''),failedTime=Date.parse(c.scrapedAt||'');
       if(!Number.isFinite(oldTime)||(Number.isFinite(failedTime)&&oldTime<=failedTime))return c;
-      return {...prior,scrapeOk:false,scrapeError:c.scrapeError};
+      return {...prior,scrapeOk:false,statsVerified:false,statsFreshEnums:[],statsFreshKeys:[],scrapeError:c.scrapeError};
     }
     // Live fields always win. For only those subfields that Blizzard omitted,
     // reuse the latest value from this browser session instead of regressing
