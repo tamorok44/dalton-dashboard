@@ -2051,6 +2051,9 @@ function invalidateLocationPlannerData({reloadVisible=true}={}){
 
 let lastGeneratedAt=null;
 let lastDataVersion=null;
+let payloadRequestSequence=0;
+let appliedPayloadSequence=0;
+function beginPayloadRequest(){return ++payloadRequestSequence;}
 let dataLoadPromise=null;
 let versionCheckPromise=null;
 let lastVersionCheckStarted=0;
@@ -2059,11 +2062,18 @@ function payloadDataVersion(payload={}){
   if(typeof payload?.dataVersion?.version==='string'&&payload.dataVersion.version)return payload.dataVersion.version;
   return ['data-v1',payload?.data?.generatedAt||'',payload?.petRules?.checkedAt||'',payload?.petRules?.rulebookVersion||'',payload?.petRules?.overall||''].join('|');
 }
-function applyServerPayload(payload,{live=false,success=null,force=false}={}){
+function applyServerPayload(payload,{live=false,success=null,force=false,requestSequence=beginPayloadRequest()}={}){
   const data=payload?.data;
   if(!data||!Array.isArray(data.characters))return false;
   const nextVersion=payloadDataVersion(payload);
   const nextGeneratedAt=typeof data.generatedAt==='string'?data.generatedAt:null;
+  const nextTime=Date.parse(nextGeneratedAt||''),currentTime=Date.parse(lastGeneratedAt||'');
+  if(!Number.isFinite(nextTime))return false;
+  // A later response is not necessarily a later snapshot. Neither force
+  // nor request order may roll back a newer persisted profile state.
+  if(Number.isFinite(currentTime)&&nextTime<currentTime)return false;
+  if((!Number.isFinite(currentTime)||nextTime===currentTime)&&requestSequence<appliedPayloadSequence)return false;
+  appliedPayloadSequence=Math.max(appliedPayloadSequence,requestSequence);
   const characterDataChanged=nextGeneratedAt!==lastGeneratedAt;
   const plannerDataChanged=characterDataChanged||nextVersion!==lastDataVersion;
   if(!force&&lastDataVersion&&nextVersion===lastDataVersion)return false;
@@ -2092,13 +2102,14 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
 }
 async function load({silent=false,force=false}={}){
   if(dataLoadPromise)return dataLoadPromise;
+  const requestSequence=beginPayloadRequest();
   dataLoadPromise=(async()=>{
     if(!silent)status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
     try{
       const r=await fetch('/api/characters?t='+Date.now(),{cache:"no-store"});
       if(!r.ok)throw new Error("HTTP "+r.status);
       const result=await r.json();
-      applyServerPayload(result,{force});
+      applyServerPayload(result,{force,requestSequence});
       return true;
     }catch(e){
       if(!displayedData&&!silent){
@@ -2106,6 +2117,8 @@ async function load({silent=false,force=false}={}){
           const fallback=await fetch('/data/characters.json',{cache:'no-store'});
           if(!fallback.ok)throw Error('Fallback');
           const fallbackData=await fallback.json();
+          if(displayedData||requestSequence<appliedPayloadSequence)return false;
+          appliedPayloadSequence=requestSequence;
           lastGeneratedAt=fallbackData.generatedAt||null;
           render(fallbackData);
           if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)showTalentPlanner();
@@ -2198,6 +2211,7 @@ async function refreshLive(){
     manualRefreshCode=await requestRefreshCode();
     if(!manualRefreshCode)return;
   }
+  const requestSequence=beginPayloadRequest();
   button.disabled=true;button.textContent="↻ Wird aktualisiert …";
   if(freshness)freshness.textContent="Live-Abfrage läuft …";
   status.textContent="Blizzard-Profile werden jetzt direkt abgefragt …";
@@ -2213,7 +2227,7 @@ async function refreshLive(){
       return;
     }
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
-    applyServerPayload(response,{live:true,success:response.success,force:true});
+    applyServerPayload(response,{live:true,success:response.success,force:true,requestSequence});
   }catch(e){
     status.textContent=e.message==='REFRESH_UNAUTHORIZED'
       ?'Aktualisierungscode ungültig oder Live-Aktualisierung nicht freigeschaltet. Der gespeicherte Stand bleibt sichtbar.'
