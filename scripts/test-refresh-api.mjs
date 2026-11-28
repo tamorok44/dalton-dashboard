@@ -13,7 +13,7 @@ const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
 const classIds={'Druide':11,'Magier':8,'Jäger':3};
 const statLabels={
   HEALTH:'Gesundheit',MANA:'Mana',STRENGTH:'Stärke',AGILITY:'Beweglichkeit',STAMINA:'Ausdauer',
-  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe',HASTE:'Tempowertung',HASTERATING:'Tempo'
+  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe',HASTE:'Tempowertung',HASTERATING:'Tempo',UNKNOWN_HASTE:'Tempowertung'
 };
 const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
@@ -66,7 +66,7 @@ function armoryHtml(old){
       ['STRENGTH',old.stats.Stärke],['AGILITY',old.stats.Beweglichkeit],
       ['STAMINA',old.stats.Ausdauer],['INTELLECT',old.stats.Intelligenz],
       ['ARMOR',old.stats.Rüstung+5],['ATTACKPOWER',old.stats.Angriffskraft],
-      ['ITEMLEVEL',old.stats.Gegenstandsstufe],['HASTE',42],['HASTERATING',13]
+      ['ITEMLEVEL',old.stats.Gegenstandsstufe],['HASTE',42],['HASTERATING',13],['UNKNOWN_HASTE',9125]
     ].map(([key,value])=>({enum:key,name:statLabels[key],value:{value}}))}]},
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
@@ -250,6 +250,8 @@ try{
     assert.equal(c.stats.Gesundheit,old.stats.Gesundheit+50,'Latest source-backed German health value is returned');
     assert.equal(c.stats.Tempowertung,42);assert.equal(c.statsByEnum.HASTE,42);
     assert.equal(c.stats.Tempo,13);assert.equal(c.statsByEnum.HASTERATING,13);
+    assert.ok(!JSON.stringify(c).includes('9125'));
+    assert.ok(!c.statsFreshEnums.includes('UNKNOWN_HASTE'));
     assert.ok(c.statsDetails.some(s=>s.enum==='HASTE'&&s.value===42));
     assert.ok(c.statsFreshKeys.includes('Tempowertung'));assert.ok(c.statsFreshEnums.includes('HASTE'));
     assert.equal(c.class,old.class,'German Armory class string is preserved verbatim');
@@ -267,6 +269,9 @@ try{
   assert.equal(refreshed.questCatalog['16']?.title,'Quest');
   assert.ok(!JSON.stringify(refreshed).includes(questMarker));
   assert.equal(JSON.parse(saved).characters[0].statsByEnum.HASTE,42);
+  assert.equal(JSON.parse(saved).characters[0].statsByEnum.UNKNOWN_HASTE,9125,'Preserve raw unknown enum for later review');
+  assert.equal(JSON.parse(saved).characters[0].stats.Tempowertung,9125,'Fixture reproduced name collision in stored raw data');
+  assert.ok(!JSON.stringify(refreshed).includes('9125'));
 
   cooldown=false;
   failSlug='chucky-dalton';
