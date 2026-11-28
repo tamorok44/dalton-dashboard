@@ -273,6 +273,29 @@ try{
     for(const call of calls)assert.deepEqual(call,{url:selected,auth:'Bearer synthetic-explicit-master'});
     calls.length=0;
     await assert.rejects(main(['--dry-run','--enroll','synthetic-invite','--endpoint',selected],{readConfig}),/nicht mit Geräteverwaltung/);
+    // Every value-taking flag rejects missing, blank, or option-like values
+    // before config is read, including the case that previously ate --dry-run.
+    let configReads=0;
+    const mustNotRead=async()=>{configReads++;throw Error('config must not be read')};
+    const malformed=[];
+    for(const flag of ['--file','--endpoint','--enroll','--create-enroll','--character','--preview-share-url']){
+      for(const tail of [[],[''],['  '],['--dry-run'],['--watch'],['-x'],[' --help']]){
+        malformed.push([flag,...tail]);
+        malformed.push(['--dry-run',flag,...tail]);
+      }
+    }
+    malformed.push(['--enroll','--dry-run','--endpoint',selected],['--create-enroll','--dry-run'],
+      ['--enroll','synthetic-invite','--revoke-device'],
+      ['--revoke-device','--create-enroll','dolly-dalton'],
+      ['--enroll','synthetic-invite','--watch'],
+      ['--revoke-device','--file','scripts/fixtures/bridge-savedvariables.lua'],
+      ['--character','cole-dalton'],['--help','--watch'],
+      ['--dry-run','--dry-run'],['--endpoint',selected,'--endpoint',stored]);
+    for(const argv of malformed){
+      await assert.rejects(main(argv,{readConfig:mustNotRead}),error=>/Argumentwert|Geräteverwaltung|Geräteverwaltungsbefehl|nur bei|allein stehen|mehrfach angegeben/.test(error.message));
+    }
+    assert.equal(configReads,0);
+    assert.equal(calls.length,0,'Malformed invocation must never fetch');
     // A real dry-run must not request the configured share URL.
     await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
     assert.equal(calls.length,0);
