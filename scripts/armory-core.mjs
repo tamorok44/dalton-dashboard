@@ -1,4 +1,5 @@
 import {blizzardApiConfigured,fetchForeverProfile} from './blizzard-api.mjs';
+import {PUBLIC_STAT_ENUMS} from './public-character-profile.mjs';
 const statEnumOrder = ['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ARMOR','ATTACKPOWER','SPELLPOWER','MELEECRIT','RANGEDCRIT','SPELLCRIT','DODGE','PARRY','BLOCK','ATTACKDPS','ATTACKSPEED','MANAREGEN','ITEMLEVEL','DEFENSE'];
 const renderPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-main-raw\.png$/;
 const avatarPattern = /^https:\/\/render\.worldofwarcraft\.com\/forever-eu\/character\/\d{1,3}\/\d+-avatar\.jpg$/;
@@ -31,7 +32,7 @@ const statLocaleKeys=Object.freeze({
   HEALTH:'health',MANA:'mana',STRENGTH:'strength',INTELLECT:'intellect',AGILITY:'agility',STAMINA:'stamina',
   CRITICALSTRIKE:'critical-strike',SPIRIT:'spirit',ARMOR:'armor',ATTACKPOWER:'attack-power',SPELLPOWER:'spell-power',
   MELEECRIT:'melee-crit',RANGEDCRIT:'ranged-crit',SPELLCRIT:'spell-crit',DODGE:'dodge',PARRY:'parry',BLOCK:'block',
-  ATTACKDPS:'attack-dps',ATTACKSPEED:'attack-speed',MANAREGEN:'mana-regen',ITEMLEVEL:'item-level',DEFENSE:'defense'
+  ATTACKDPS:'attack-dps',ATTACKSPEED:'attack-speed',MANAREGEN:'mana-regen',ITEMLEVEL:'item-level',DEFENSE:'defense',HASTE:'haste',HASTERATING:'haste-rating'
 });
 function decodeJsQuoted(value=''){
   try{return JSON.parse('"'+value.replace(/"/g,'\\"')+'"')}catch{return String(value).replace(/\\(["'\\])/g,'$1')}
@@ -159,7 +160,7 @@ function stats(c) {
   for(const group of groups)for(const stat of group.stats||[]) {
     const n=Number(stat?.value?.value);
     const enumKey=typeof stat?.enum==='string'?stat.enum:null;
-    if(!enumKey||!Number.isFinite(n))continue;
+    if(!PUBLIC_STAT_ENUMS.includes(enumKey)||!Number.isFinite(n))continue;
     const prior=byEnum.get(enumKey)||{};
     byEnum.set(enumKey,{enum:enumKey,value:n,name:localizedStatLabel(stat)||prior.name||null});
   }
