@@ -204,3 +204,34 @@ try{
   globalThis.fetch=savedFetch;
   for(const [key,value] of Object.entries(savedEnv)){if(value===undefined)delete process.env[key];else process.env[key]=value;}
 }
+
+
+// No credential-bearing bridge path may reach fetch on a non-HTTPS,
+// ambiguous path, embedded credential, or mismatched preview origin.
+{
+  const {secureBridgeEndpoint,enrollDevice,revokeDevice,createEnrollment,postPayload}=await import('./dalton-sync-client.mjs');
+  const before=globalThis.fetch;let calls=0;
+  try{
+    globalThis.fetch=async()=>{calls++;throw Error('Network forbidden')};
+    for(const url of ['http://example.invalid/api/addon-sync','http://localhost/api/addon-sync','http://127.0.0.1/api/addon-sync','ftp://localhost/api/addon-sync','https://user:pass@example.invalid/api/addon-sync','https://example.invalid/not-sync','https://example.invalid/api/addon-sync?secret=bad','https://example.invalid/api/addon-sync#fragment']){
+      assert.throws(()=>secureBridgeEndpoint(url),/HTTPS/);
+      await assert.rejects(enrollDevice(url,'synthetic-invite'),/HTTPS/);
+      await assert.rejects(revokeDevice({endpoint:url,deviceToken:'synthetic-device'}),/HTTPS/);
+      await assert.rejects(createEnrollment(url,'dolly-dalton','Device synthetic'),/HTTPS/);
+      await assert.rejects(postPayload(url,'Device synthetic',{}),/HTTPS/);
+    }
+    const endpoint='https://example.invalid/api/addon-sync';
+    await assert.rejects(enrollDevice(endpoint,'synthetic-invite',null,'https://different.invalid/?share=synthetic'),/denselben HTTPS/);
+    await assert.rejects(revokeDevice({endpoint,deviceToken:'synthetic-device',previewShareUrl:'https://different.invalid/'}),/denselben HTTPS/);
+    assert.equal(calls,0);
+    globalThis.fetch=async(url,options)=>{
+      calls++;assert.equal(new URL(url).protocol,'https:');assert.equal(options.redirect,'error');
+      throw Error('synthetic redirect blocked');
+    };
+    await assert.rejects(enrollDevice(endpoint,'synthetic-invite'),/redirect blocked/);
+    await assert.rejects(revokeDevice({endpoint,deviceToken:'synthetic-device'}),/redirect blocked/);
+    await assert.rejects(createEnrollment(endpoint,'dolly-dalton','Device synthetic'),/redirect blocked/);
+    await assert.rejects(postPayload(endpoint,'Device synthetic',{}),/redirect blocked/);
+    assert.equal(calls,4);
+  }finally{globalThis.fetch=before;}
+}
