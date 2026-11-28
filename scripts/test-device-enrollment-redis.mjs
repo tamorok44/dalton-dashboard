@@ -23,7 +23,8 @@ async function command(args,{admin=false}={}){
 }
 const admin=(...args)=>command(args,{admin:true});
 const oldFetch=globalThis.fetch;
-const oldEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN'].map(k=>[k,process.env[k]]));
+const oldEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN'].map(k=>[k,process.env[k]]));
+delete process.env.UPSTASH_REDIS_REST_URL;delete process.env.UPSTASH_REDIS_REST_TOKEN;
 process.env.VERCEL_ENV='production';
 process.env.KV_REST_API_URL='https://device-test.invalid';
 process.env.KV_REST_API_TOKEN='synthetic-only';
@@ -80,11 +81,41 @@ try{
   assert.equal(await admin('PTTL',tokenKey(device.token)),-1,'Device is not an expiring invite');
   await assert.rejects(redeemDeviceEnrollment(first.code),/bereits verwendet/);
 
-  bothRead(tokenKey(device.token));
+  // Real handler: absence of a Redis binding is not absence of a device.
+  const {default:enrollmentApi}=await import('../api/addon-device-enroll.js');
+  const revokeApi=async(token)=>{
+    const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+    await enrollmentApi({method:'POST',headers:{authorization:'Device '+token},body:{action:'revoke'}},res);
+    return res;
+  };
+  delete process.env.KV_REST_API_URL;delete process.env.KV_REST_API_TOKEN;
+  let calls=0;
+  intercept=async(args,run)=>{calls++;return run();};
+  const unbound=await revokeApi(device.token);
+  assert.equal(unbound.code,503);
+  assert.ok(!Object.hasOwn(unbound.body,'alreadyRevoked'));
+  assert.equal(calls,0);
+  process.env.KV_REST_API_URL='https://device-test.invalid';process.env.KV_REST_API_TOKEN='synthetic-only';
+  assert.ok(await authorizeDeviceToken(device.token),'Binding loss must not be reported as revocation');
+  const invalid=await revokeApi('not-a-device-token');
+  assert.equal(invalid.code,401);
+  intercept=async(args,run)=>args[0]==='DEL'?null:run();
+  assert.equal((await revokeApi(device.token)).code,503);
+  assert.ok(await authorizeDeviceToken(device.token));
+  intercept=null;
   const revoked=await Promise.all([revokeDeviceToken(device.token),revokeDeviceToken(device.token)]);
   intercept=null;
   assert.deepEqual(revoked.sort(),[false,true]);
   assert.equal(await authorizeDeviceToken(device.token),null);
+  const retry=await revokeApi(device.token);
+  assert.equal(retry.code,200);
+  assert.deepEqual(retry.body,{revoked:false,alreadyRevoked:true});
+  // A malformed record is not interpreted as missing: remove it by key.
+  await admin('SET',tokenKey(device.token),'malformed-fixture');
+  const malformed=await revokeApi(device.token);
+  assert.equal(malformed.code,200);
+  assert.deepEqual(malformed.body,{revoked:true,alreadyRevoked:false});
+  assert.equal(await admin('GET',tokenKey(device.token)),null);
 
   const expired=await invite();
   const expiredKey=inviteKey(expired.code);
@@ -147,7 +178,6 @@ try{
   assert.equal((await admin('KEYS',prefix+'token:*')).length,1);
   await assert.rejects(redeemDeviceEnrollment(lost.code),/bereits verwendet/);
   // Actual enrollment API must pass the issuer to the atomic write boundary.
-  const {default:enrollmentApi}=await import('../api/addon-device-enroll.js');
   const hubToken='ddv1_'+'synthetic-hub-'.repeat(4);
   const hubKey=tokenKey(hubToken);
   const hubRaw=JSON.stringify({schemaVersion:1,deviceId:'qa-hub',characterSlug:'cole-dalton',revokedAt:null});
