@@ -123,7 +123,10 @@ function args(argv){
     else if(value==='--revoke-device')out.revokeDevice=true;
     else if(value==='--promote-production')out.promoteProduction=true;
     else if(value==='--character')out.character=argv[++i]||null;
-    else if(value==='--preview-share-url')out.previewShareUrl=argv[++i]||null;
+    else if(value==='--preview-share-url'){
+      const share=argv[++i];if(!share||share.startsWith('--'))throw Error('--preview-share-url benötigt eine HTTPS-URL');
+      out.previewShareUrl=share;
+    }
     else if(value==='--help')out.help=true;
     else throw new Error('Unbekannte Option: '+value);
   }
@@ -410,6 +413,7 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
 export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){
   const options=args(argv);
   if(options.help){help();return}
+  if(options.dryRun&&(options.createEnroll||options.enroll||options.revokeDevice||options.promoteProduction))throw Error('--dry-run kann nicht mit Geräteverwaltung kombiniert werden');
   const config=await readConfig();
   const target=resolveBridgeTarget(options,config);
   options.endpoint=target.endpoint;
