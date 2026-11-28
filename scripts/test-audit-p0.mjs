@@ -373,6 +373,7 @@ if(!hasRedis){
     // local test server for the legacy shared-key containment regression.
     process.env.DALTON_PREVIEW_REDIS_REST_URL='https://offline-preview-audit.invalid';
     process.env.DALTON_PREVIEW_REDIS_REST_TOKEN='isolated-preview-fixture';
+    process.env.DALTON_PRODUCTION_REDIS_ORIGIN='https://offline-audit.invalid';
     try{
       const early=payload('Audit One','preview-first',[133],now+5);
       early.sections.interactions={capturedAt:now+5,trainerHistory:[{capturedAt:now+5,complete:true,npc:{id:12345,name:'Test Trainer'},services:[{name:'Test Ability',priceCopper:10}]}]};
@@ -386,7 +387,7 @@ if(!hasRedis){
       assert.ok(finalPreview.receipts.some(x=>x.id==='preview-first')&&finalPreview.receipts.some(x=>x.id==='preview-second'));
       assert.equal(cli('GET',syncKey('audit-one')),beforePreview,'preview must not change production state');
       assert.equal(cli('GET',lockKey+':preview-addon'),null);
-    }finally{previewRelease();process.env.VERCEL_ENV='production';delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;}
+    }finally{previewRelease();process.env.VERCEL_ENV='production';delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;delete process.env.DALTON_PRODUCTION_REDIS_ORIGIN;}
     const refreshLock=await acquireRefreshLock();
     const actualProof={...proof,success:2,total:2,roster:[{slug:'audit-one',id:null},{slug:'audit-two',id:null}]};
     const nextRoster={...roster(),generatedAt:actualProof.generatedAt};
