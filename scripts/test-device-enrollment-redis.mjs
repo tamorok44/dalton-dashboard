@@ -218,6 +218,53 @@ try{
   assert.deepEqual((await admin('KEYS',prefix+'token:*')).sort(),tokensBefore);
   const legacy=await invite();await admin('SET',inviteKey(legacy.code),JSON.stringify({characterSlug:'dolly-dalton'}),'EX',60);
   await assert.rejects(redeemDeviceEnrollment(legacy.code),/neu erstellen/);
+  // G01 on both isolated Redis versions: strict read envelopes and exact
+  // atomic base proof, even if a transport supplies a plausible wrong roster.
+  {
+    const {CHARACTER_KEY,loadCharacters,loadCharactersForWrite,saveCharacters,acquireRefreshLock,releaseRefreshLock}=await import('./character-store.mjs');
+    const {saveAddonSyncState,loadAddonSyncStateForWrite}=await import('./addon-sync-store.mjs');
+    const {nextProfileGeneration}=await import('./version-metadata.mjs');
+    const compactKey='dalton-dashboard:core:compact:v2:production';
+    const addonKey='dalton-dashboard:addon-sync:v1:production:g01-one';
+    const summaryKey='dalton-dashboard:addon-summary:v1:production:g01-one';
+    await admin('ACL','SETUSER',user,'reset','on','>'+password,'~dalton-dashboard:*','+@all');
+    const initial={generatedAt:new Date().toISOString(),characters:[{slug:'g01-one',name:'G01 One',classId:8,level:12},{slug:'g01-two',name:'G01 Two',classId:8,level:12}]};
+    const raw=JSON.stringify(initial);
+    await admin('SET',CHARACTER_KEY,raw);
+    const lock=await acquireRefreshLock();assert.ok(lock);
+    try{
+      const baseline=await loadCharactersForWrite();
+      assert.equal(baseline.raw,raw);
+      for(const result of [undefined,false,0,{},[],null,'','{}','null']){
+        intercept=async(args,run)=>args[0]==='GET'&&args[1]===CHARACTER_KEY?result:run();
+        await assert.rejects(loadCharactersForWrite());
+        if(result!==null)await assert.rejects(loadCharacters());
+        assert.equal(await admin('GET',CHARACTER_KEY),raw);
+      }
+      intercept=null;
+      const next={...baseline.data,generatedAt:nextProfileGeneration(baseline.data)};
+      await assert.rejects(saveCharacters(next,lock),/PROFILE_BASE_REQUIRED/);
+      await assert.rejects(saveCharacters(next,lock,{expectedRoster:JSON.stringify({...initial,characters:initial.characters.slice(0,1)})}),/PROFILE_BASE_CHANGED/);
+      await assert.rejects(saveCharacters({...next,characters:next.characters.slice(0,1)},lock,{expectedRoster:raw}),/PROFILE_ROSTER_CHANGED/);
+      assert.equal(await admin('GET',CHARACTER_KEY),raw);
+      assert.equal(await admin('GET',compactKey),null);
+      const persisted=await saveCharacters(next,lock,{expectedRoster:raw});
+      assert.equal(await admin('GET',CHARACTER_KEY),persisted);
+      const payload={schemaVersion:1,syncId:'g01-first',sections:{character:{name:'G01 One',classID:8,level:12}}};
+      const next2={...next,generatedAt:nextProfileGeneration(next)};
+      await assert.rejects(saveAddonSyncState('g01-one',payload,{lockToken:lock,roster:next2,expectedRoster:raw,expectedState:null}),/PROFILE_BASE_CHANGED/);
+      assert.equal(await admin('GET',addonKey),null);
+      await saveAddonSyncState('g01-one',payload,{lockToken:lock,roster:next2,expectedRoster:persisted,expectedState:null});
+      const before=await Promise.all([CHARACTER_KEY,compactKey,addonKey,summaryKey].map(k=>admin('GET',k)));
+      assert.ok(before.every(x=>typeof x==='string'));
+      intercept=async(args,run)=>args[0]==='GET'&&args[1]===addonKey?undefined:run();
+      await assert.rejects(loadAddonSyncStateForWrite('g01-one'),/REDIS_RESPONSE_UNCONFIRMED/);
+      intercept=null;
+      await assert.rejects(saveAddonSyncState('g01-one',{...payload,syncId:'g01-second'},{lockToken:lock,expectedRoster:before[0],expectedState:null}),/ADDON_BASE_CHANGED/);
+      assert.deepEqual(await Promise.all([CHARACTER_KEY,compactKey,addonKey,summaryKey].map(k=>admin('GET',k))),before);
+    }finally{intercept=null;await releaseRefreshLock(lock);}
+    console.log('G01 Redis: confirmed baseline, malformed/false-null reads, roster membership and atomic Add-on state CAS OK');
+  }
   console.log('F18 API issuer regression: allowed peer enrollment, self/prototype denial, revoked issuer before mutation, no new invite: OK');
   console.log('Redis device regression: NX failure, denied MSET, concurrent redemption/revocation, expiry, CAS, collision, cleanup denial, revoke denial and ambiguous response: OK');
 }finally{
