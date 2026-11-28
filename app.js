@@ -1011,61 +1011,6 @@ function installCharacterTabs(){
   });
 }
 let displayedData=null;
-function keepNewestProfiles(data){
-  if(!displayedData)return data;
-  const priorBySlug=new Map((displayedData.characters||[]).map(c=>[c.slug,c]));
-  return {...data,characters:(data.characters||[]).map(c=>{
-    const prior=priorBySlug.get(c.slug);
-    if(!prior)return c;
-    if(c.scrapeOk===false){
-      const oldTime=Date.parse(prior.scrapedAt||''),failedTime=Date.parse(c.scrapedAt||'');
-      if(!Number.isFinite(oldTime)||(Number.isFinite(failedTime)&&oldTime<=failedTime))return c;
-      return {...prior,scrapeOk:false,statsVerified:false,statsFreshEnums:[],statsFreshKeys:[],scrapeError:c.scrapeError};
-    }
-    // Live fields always win. For only those subfields that Blizzard omitted,
-    // reuse the latest value from this browser session instead of regressing
-    // to the older build-time JSON snapshot.
-    const liveStats=new Set(Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:
-      c.statsVerified?Object.keys(c.stats||{}):[]);
-    const mergedStats={...c.stats};
-    for(const [key,value] of Object.entries(prior.stats||{})){
-      if(!liveStats.has(key))mergedStats[key]=value;
-    }
-    const liveStatEnums=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:
-      c.statsVerified?Object.keys(c.statsByEnum||{}):[]);
-    const conflicts=new Set(c.statsConflictEnums||[]);
-    const mergedStatsByEnum={...c.statsByEnum};
-    for(const [key,value] of Object.entries(prior.statsByEnum||{})){
-      if(!liveStatEnums.has(key))mergedStatsByEnum[key]=value;
-    }
-    const detailByEnum=new Map();
-    for(const entry of prior.statsDetails||[]){
-      if(entry?.enum&&!liveStatEnums.has(entry.enum))detailByEnum.set(entry.enum,entry);
-      if(entry?.enum&&liveStatEnums.has(entry.enum)&&!liveStats.has(entry.name))delete mergedStats[entry.name];
-    }
-    for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);
-    const mergedStatsDetails=[...detailByEnum.values()].filter(entry=>
-      !liveStatEnums.has(entry.enum)||(!conflicts.has(entry.enum)&&entry.value===mergedStatsByEnum[entry.enum]));
-    const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));
-    const mergedProfessions=(c.professions||[]).map(p=>{
-      const previous=priorSkills.get(p.name);
-      return p.unverified&&previous?{...previous,unverified:true}:p;
-    });
-    const keepPreviousImage=c.imageVerified===false&&prior.imageUrl;
-    return {...c,
-      stats:mergedStats,
-      statsByEnum:mergedStatsByEnum,
-      statsDetails:mergedStatsDetails,
-      professions:mergedProfessions,
-      equipment:c.equipmentVerified===false&&prior.equipment?prior.equipment:c.equipment,
-      talents:c.talentsVerified===false&&prior.talents!=null?prior.talents:c.talents,
-      hunterPets:c.hunterPetsVerified===false&&prior.hunterPets?prior.hunterPets:c.hunterPets,
-      imageUrl:keepPreviousImage?prior.imageUrl:c.imageUrl,
-      avatarUrl:keepPreviousImage?prior.avatarUrl:c.avatarUrl,
-      imageCheckedAt:keepPreviousImage?prior.imageCheckedAt:c.imageCheckedAt
-    };
-  })};
-}
 function lastActivity(c){
  const options={dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'};
  const login=Date.parse(c.lastLoginAt||'');

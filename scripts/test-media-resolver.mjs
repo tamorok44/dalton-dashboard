@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import {setTimeout as wait} from 'node:timers/promises';
 import {resolveMediaAsset,sourceImageAllowed} from './media-resolver.mjs';
+import {runSyncDeadline} from './sync-deadline.mjs';
 
 assert.equal(sourceImageAllowed('https://foreverdb.net/icons/133216.webp'),true);
 assert.equal(sourceImageAllowed('https://render.worldofwarcraft.com/forever-eu/icons/56/458223.jpg'),true);
@@ -9,6 +11,19 @@ assert.equal(sourceImageAllowed('https://example.com/icon.png'),false);
 
 const previousToken=process.env.BLOB_READ_WRITE_TOKEN;
 process.env.BLOB_READ_WRITE_TOKEN='test-token';
+let uploadAfterAbort=false,ignoredSignal;
+await assert.rejects(runSyncDeadline(performance.now()+25,()=>resolveMediaAsset({
+  entityType:'item',entityId:99999,role:'icon',sourceUrl:'https://foreverdb.net/icons/123.webp',
+  fetchImpl:async (_,options)=>{
+    ignoredSignal=options.signal;
+    await wait(65);
+    return new Response(new Uint8Array([1,2]),{headers:{'content-type':'image/webp'}});
+  },
+  putImpl:async()=>{uploadAfterAbort=true;throw Error('Unexpected upload');}
+})),/ADDON_SYNC_DEADLINE/);
+await wait(80);
+assert.equal(ignoredSignal?.aborted,true,'The media request inherits the shared deadline');
+assert.equal(uploadAfterAbort,false,'The provider can ignore cancellation without launching a later Blob write');
 let storedPath=null;
 const result=await resolveMediaAsset({
   entityType:'item',

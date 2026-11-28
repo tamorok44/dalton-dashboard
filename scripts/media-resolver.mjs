@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {loadMediaRecord,saveMediaRecord,loadMediaRecords,mediaField} from './media-registry.mjs';
+import {assertSyncBudget} from './sync-deadline.mjs';
 
 const MAX_IMAGE_BYTES=5_000_000;
 const ALLOWED_TYPES=new Set(['image/png','image/jpeg','image/webp']);
@@ -97,7 +98,8 @@ export async function resolveMediaAsset({
 
   if(!imageStoreConfigured())return null;
 
-  const signal=AbortSignal.timeout(12000);
+  const timeout=AbortSignal.timeout(12000),scope=assertSyncBudget();
+  const signal=scope?AbortSignal.any([timeout,scope.signal]):timeout;
   const response=await fetchImpl(sourceUrl,{
     headers:{'user-agent':'Dalton-Dashboard/1.0 media archiver'},
     redirect:'error',
@@ -132,6 +134,7 @@ export async function resolveMediaAsset({
     contentType,
     abortSignal:signal
   });
+  signal.throwIfAborted();
   await saveMediaRecord(type,id,kind,{sourceUrl,storedUrl:result.url,contentType});
   return result.url;
 }

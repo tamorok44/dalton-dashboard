@@ -214,38 +214,6 @@
       "line": "cards.querySelectorAll('button[data-character-tab]').forEach(button=>{"
     },
     {
-      "owner": "keepNewestProfiles",
-      "line": "const priorBySlug=new Map((displayedData.characters||[]).map(c=>[c.slug,c]));"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "return {...data,characters:(data.characters||[]).map(c=>{"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const [key,value] of Object.entries(prior.stats||{})){"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const [key,value] of Object.entries(prior.statsByEnum||{})){"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const entry of prior.statsDetails||[]){"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "const mergedProfessions=(c.professions||[]).map(p=>{"
-    },
-    {
       "owner": "render",
       "line": "const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));"
     },

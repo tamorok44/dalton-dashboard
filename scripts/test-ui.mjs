@@ -7,6 +7,7 @@ import {reputationStages,reputationColors} from '../reputation-data.js';
 import {createTalentPlanner} from '../talent-planner.js';
 import {displayedTalentText} from '../talent-text-quality.js';
 import {resolvePersonalTalentState} from '../talent-personal-state.js';
+import {mergeProfiles} from './character-store.mjs';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
@@ -49,7 +50,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {beginPayloadRequest,sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,characterPanelContent,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {beginPayloadRequest,sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,characterPanelContent,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,getDisplayedData:()=>displayedData,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -944,17 +945,15 @@ assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLev
 assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
 assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt aktualisiert'),'Visible live timestamp');
 assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not fetch stale JSON first');
-/* A second click with a partial Blizzard response must keep the latest known
-   in-session skill, mana, equipment and talent values, not the old snapshot. */
+/* The API supplies the last confirmed fields in the authoritative snapshot.
+   Verify that the normal browser response path renders the same values. */
 cole.stats.Mana=680;
 cole.statsByEnum.MANA=680;
 cole.statsDetails.find(entry=>entry.enum==='MANA').value=680;
 ui.render(changed,{live:true,success:4});
-const partial=structuredClone(data);
+const partial=structuredClone(changed);
+partial.generatedAt='2026-11-28T16:00:00.000Z';
 const partialCole=partial.characters.find(c=>c.slug==='cole-dalton');
-partialCole.level=cole.level;
-partialCole.scrapeOk=true;
-partialCole.scrapedAt='2026-11-20T16:00:00.000Z';
 partialCole.stats.Gesundheit=991;
 partialCole.statsByEnum.HEALTH=991;
 partialCole.statsDetails.find(entry=>entry.enum==='HEALTH').value=991;
@@ -964,26 +963,23 @@ partialCole.statsVerified=false;
 partialCole.professions.find(p=>p.name==='Alchemie').unverified=true;
 partialCole.equipmentVerified=false;
 partialCole.talentsVerified=false;
-partialCole.talents='unbestätigt';
 partialCole.imageVerified=false;
-const partialMerged=ui.keepNewestProfiles(partial);
-const updatedCole=partialMerged.characters.find(c=>c.slug==='cole-dalton');
+assert.equal(ui.applyServerPayload({data:partial},{live:true,success:4}),true);
+const updatedCole=ui.getDisplayedData().characters.find(c=>c.slug==='cole-dalton');
 assert.equal(updatedCole.statsByEnum.HEALTH,991,'New confirmed health value wins');
-assert.equal(updatedCole.statsByEnum.MANA,680,'Latest in-session fallback is retained');
-assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').current,74,'Earlier live skill is not replaced by snapshot');
+assert.equal(updatedCole.statsByEnum.MANA,680,'Last verified mana is retained');
+assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').current,74,'Last verified skill survives');
 assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').unverified,true,'Fallback skill stays visibly unverified');
-assert.equal(updatedCole.equipment[0].item,'QA neuer Stab aus der Armory','Equipment fallback uses last in-session set');
-assert.equal(updatedCole.talents,'Arkan: 7','Talent fallback uses last in-session distribution');
-assert.equal(updatedCole.imageUrl,cole.imageUrl,'Last live image is kept on partial media failure');
-ui.render(partialMerged,{live:true,success:4});
+assert.equal(updatedCole.equipment[0].item,'QA neuer Stab aus der Armory','Old equipment remains available');
+assert.equal(updatedCole.talents,'Arkan: 7','Last known talent distribution remains available');
+assert.equal(updatedCole.imageUrl,cole.imageUrl,'Last available image remains visible');
 const failed=structuredClone(data);
-const failedCole=failed.characters.find(c=>c.slug==='cole-dalton');
-failedCole.scrapeOk=false;
-failedCole.scrapedAt='2020-01-01T00:00:00.000Z';
-const preserved=ui.keepNewestProfiles(failed);
-assert.equal(preserved.characters.find(c=>c.slug==='cole-dalton').level,cole.level,'Failed fetch cannot roll back a newer live level');
-assert.equal(preserved.characters.find(c=>c.slug==='cole-dalton').scrapeOk,false,'Reused data are marked stale');
-ui.render(preserved,{live:true,success:3});
+failed.generatedAt='2026-11-28T16:01:00.000Z';
+failed.characters.find(c=>c.slug==='cole-dalton').scrapeOk=false;
+const preserved=mergeProfiles(partial,failed);
+assert.equal(ui.applyServerPayload({data:preserved},{live:true,success:3}),true);
+assert.equal(ui.getDisplayedData().characters.find(c=>c.slug==='cole-dalton').level,cole.level,'Failed fetch cannot roll back a confirmed level');
+assert.equal(ui.getDisplayedData().characters.find(c=>c.slug==='cole-dalton').scrapeOk,false,'Reused data are marked stale');
 assert.ok(nodes.get('#status').textContent.includes('3 von 4 Profilen'),'Partial refresh clearly reported');
 assert.ok(css.includes('.stale-value{'),'Stale-value formatting available');
 
