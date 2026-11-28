@@ -177,7 +177,9 @@ async function syncRequest(req,ownership){
       ?{addon:payload.addon,sections:{interactions:incomingInteractions}}:null;
     const pendingObservations=Boolean(pendingObservationPayload&&snapshotsFromAddonPayload(pendingObservationPayload,{characterSlug:target.slug}).length);
     assertSyncBudget();
-    let state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken,roster:spellbookApplied?updated:null,receipts:pendingObservations?prepared.receipts:confirmedReceipts(prepared.receipts),pendingObservations,pendingObservationPayload});
+    const priorReceiptTime=Date.parse(previousState?.receivedAt??'');
+    const receivedAt=new Date(Math.max(Date.now(),Number.isFinite(priorReceiptTime)?priorReceiptTime+1:0)).toISOString();
+    let state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken,receivedAt,roster:spellbookApplied?updated:null,receipts:pendingObservations?prepared.receipts:confirmedReceipts(prepared.receipts),pendingObservations,pendingObservationPayload});
     const liveKnowledge=pendingObservations?await ingestAddonLiveKnowledge(pendingObservationPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
     if(pendingObservations)state=await saveAddonSyncState(target.slug,state.payload,{...writeOptions,receipts:confirmedReceipts(state.receipts),receivedAt:state.receivedAt,pendingObservations:false});
     if(spellbookApplied){
