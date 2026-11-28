@@ -49,7 +49,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {beginPayloadRequest,sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -1176,4 +1176,22 @@ console.log('Sparse verified Armory snapshot, exact ID/rank/spell, scoped ambigu
   assert.equal(await ui.sharedVersionCheck({storage:denied,locks:null,fetchVersion:async()=>'fallback',clock:()=>now}),'fallback');
   const rejectedLocks={request:async()=>{throw Error('unsupported')}};
   assert.equal(await ui.sharedVersionCheck({storage:denied,locks:rejectedLocks,fetchVersion:async()=>'fallback-2',clock:()=>now}),'fallback-2');
+}
+
+
+// Both arrival order and persisted generation matter. A forced response
+// cannot roll back a newer failed snapshot even when its request is newer.
+{
+  const fresh={...structuredClone(data.characters[0]),slug:'qa-order',name:'QA Order',scrapeOk:true,statsVerified:true,statsFreshEnums:['ARMOR'],statsFreshKeys:['Rüstung'],statsByEnum:{ARMOR:100},statsDetails:[{enum:'ARMOR',name:'Rüstung',value:100}],stats:{Rüstung:100}};
+  const older={data:{generatedAt:'2098-01-01T00:00:00.000Z',characters:[fresh]},dataVersion:{version:'qa-old'}};
+  const failed={data:{generatedAt:'2098-01-01T00:00:00.001Z',characters:[{...fresh,scrapeOk:false,statsVerified:false,statsFreshEnums:[],statsFreshKeys:[]}]},dataVersion:{version:'qa-failed'}};
+  const oldRequest=ui.beginPayloadRequest(),refreshRequest=ui.beginPayloadRequest();
+  assert.equal(ui.applyServerPayload(failed,{force:true,requestSequence:refreshRequest}),true);
+  assert.equal(ui.applyServerPayload(older,{force:true,requestSequence:oldRequest}),false);
+  assert.equal(ui.applyServerPayload(older,{force:true}),false);
+  assert.equal(ui.applyServerPayload({...older,data:{...older.data,generatedAt:failed.data.generatedAt}},{force:true,requestSequence:oldRequest}),false);
+  assert.ok(nodes.get('#cards').innerHTML.includes('letzter Stand'));
+  const recovery={...older,data:{...older.data,generatedAt:'2098-01-01T00:00:00.002Z'},dataVersion:{version:'qa-recovered'}};
+  assert.equal(ui.applyServerPayload(recovery,{force:true}),true);
+  assert.ok(!nodes.get('#cards').innerHTML.includes('Rüstung <span class="stale-value"'));
 }
