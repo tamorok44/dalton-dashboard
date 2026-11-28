@@ -157,7 +157,8 @@ function stats(c) {
   ];
   const byEnum=new Map();
   for(const group of groups)for(const stat of group.stats||[]) {
-    const n=Number(stat?.value?.value);
+    const rawValue=stat?.value?.value;
+    const n=typeof rawValue==='number'||typeof rawValue==='string'&&rawValue.trim()?Number(rawValue):NaN;
     const enumKey=typeof stat?.enum==='string'?stat.enum:null;
     if(!enumKey||!Number.isFinite(n))continue;
     const prior=byEnum.get(enumKey)||{};
@@ -377,7 +378,14 @@ for(const old of characters){
       typeof apiProfile?.faction?.name==='string'&&apiProfile.faction.name.trim()?apiProfile.faction.name.trim():null;
     const statsDetailsByEnum=new Map((Array.isArray(old.statsDetails)?old.statsDetails:[])
       .filter(entry=>entry?.enum).map(entry=>[entry.enum,{...entry}]));
-    for(const entry of st.details)statsDetailsByEnum.set(entry.enum,{...statsDetailsByEnum.get(entry.enum),...entry});
+    // A fresh numeric value may arrive without a localized label. Reuse
+    // only the previous label of this exact enum, never a name-map value.
+    const labelsByEnum=new Map(st.details.map(entry=>[entry.enum,entry.name]));
+    for(const [id,value] of Object.entries(st.byEnum)){
+      const previous=statsDetailsByEnum.get(id);
+      const name=labelsByEnum.get(id)||previous?.name;
+      if(name)statsDetailsByEnum.set(id,{enum:id,name,value});
+    }
     const statsDetails=[
       ...statEnumOrder.filter(key=>statsDetailsByEnum.has(key)).map(key=>statsDetailsByEnum.get(key)),
       ...[...statsDetailsByEnum.values()].filter(entry=>!statEnumOrder.includes(entry.enum))
@@ -409,7 +417,7 @@ for(const old of characters){
       stats:{...(old.stats||{}),...st.display},
       statsByEnum:{...(old.statsByEnum||{}),...st.byEnum},
       statsDetails,
-      statsFreshKeys:Object.keys(st.display),
+      statsFreshKeys:statsDetails.filter(entry=>Object.hasOwn(st.byEnum,entry.enum)).map(entry=>entry.name),
       statsFreshEnums:Object.keys(st.byEnum),
       equipment,
       equipmentLanguage,
@@ -445,7 +453,7 @@ for(const old of characters){
     const petCount=(next.hunterPets?.active?.length||0)+(next.hunterPets?.stable?.length||0);
     console.log(old.name+': Level '+level+', Armory-Berufe '+ps.length+', Stats '+Object.keys(st.byEnum).length+', Ausrüstung '+eq.length+', Talente '+String(ta)+', Begleiter '+petCount+', Bild '+Boolean(next.imageUrl));
   }catch(e){
-    updated.push({...old,scrapeOk:false,scrapeError:String(e.message).slice(0,180)});
+    updated.push({...old,scrapeOk:false,statsVerified:false,statsFreshKeys:[],statsFreshEnums:[],scrapeError:String(e.message).slice(0,180)});
     console.error(old.name+': '+e.message+' – letzter bestätigter deutscher Stand bleibt erhalten');
   }
 }
