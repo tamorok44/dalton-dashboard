@@ -20,6 +20,7 @@ const COOLDOWN='dalton-dashboard:refresh:manual:cooldown';
 export function redisConnection(env=process.env){
   const standardUrl=env.KV_REST_API_URL||env.UPSTASH_REDIS_REST_URL;
   const standardToken=env.KV_REST_API_TOKEN||env.UPSTASH_REDIS_REST_TOKEN;
+  if(env.VERCEL&&env.VERCEL_ENV!=='production'&&env.VERCEL_ENV!=='preview'&&env.VERCEL_ENV!=='development')return null;
   const preview=env.VERCEL_ENV==='preview'||env.VERCEL_ENV==='development';
   const url=preview?env.DALTON_PREVIEW_REDIS_REST_URL:standardUrl;
   const token=preview?env.DALTON_PREVIEW_REDIS_REST_TOKEN:standardToken;
@@ -27,7 +28,18 @@ export function redisConnection(env=process.env){
   try{
     const parsed=new URL(url);
     if(parsed.protocol!=='https:'||parsed.username||parsed.password||parsed.search||parsed.hash)return null;
-    if(preview&&((standardUrl&&new URL(standardUrl).origin===parsed.origin)||(standardToken&&token===standardToken)))return null;
+    if(preview){
+      // Required independently provisioned production identity survives removal
+      // of the production credentials from Preview. Missing reference = deny.
+      const productionOrigin=env.DALTON_PRODUCTION_REDIS_ORIGIN;
+      if(!productionOrigin)return null;
+      const reference=new URL(productionOrigin);
+      if(reference.protocol!=='https:'||reference.origin!==productionOrigin||reference.username||reference.password)return null;
+      const forbiddenHosts=[reference.hostname,...[env.KV_REST_API_URL,env.UPSTASH_REDIS_REST_URL,env.KV_URL].filter(Boolean).map(value=>new URL(value).hostname)];
+      const canonicalHost=value=>value.toLowerCase().replace(/\.+$/,'');
+      if(forbiddenHosts.some(host=>canonicalHost(host)===canonicalHost(parsed.hostname)))return null;
+      if([env.KV_REST_API_TOKEN,env.UPSTASH_REDIS_REST_TOKEN,env.KV_REST_API_READ_ONLY_TOKEN].some(value=>value&&token===value))return null;
+    }
     return {url:parsed.origin+parsed.pathname.replace(/\/$/,''),token};
   }catch{return null;}
 }
@@ -40,7 +52,7 @@ export async function redis(command,{control=false}={}){
   const {url,token}=settings();
   const wire=control?command:fenceRedisCommand(command);
   return runRedisRequest(async signal=>{
-    const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(wire),signal});
+    const response=await fetch(url,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(wire),redirect:'error',signal});
     if(!response.ok)throw new Error('Redis HTTP '+response.status);
     const payload=await response.json();
     if(payload.error)throw new Error('Redis: '+String(payload.error).slice(0,120));
