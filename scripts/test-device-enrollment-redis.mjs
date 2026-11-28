@@ -176,6 +176,18 @@ try{
   assert.ok(raced,'Issuer revalidation must be atomic at invitation write');
   assert.deepEqual((await admin('KEYS',prefix+'invite:*')).sort(),beforeInvites);
   assert.equal((await apiCall(hubToken,'viola-dalton')).code,401);
+  await assert.rejects(redeemDeviceEnrollment(allowed.body.code),/Nicht berechtigt/);
+  await admin('SET',hubKey,hubRaw);
+  const raceInvite=await createDeviceEnrollment('viola-dalton',{issuerToken:hubToken});
+  const raceKey=inviteKey(raceInvite.code),raceRaw=await admin('GET',raceKey);
+  const tokensBefore=(await admin('KEYS',prefix+'token:*')).filter(k=>k!==hubKey).sort();
+  intercept=async(args,run)=>{if(args[0]==='EVAL'&&args[3]===raceKey)await admin('DEL',hubKey);return run()};
+  await assert.rejects(redeemDeviceEnrollment(raceInvite.code),/Nicht berechtigt/);
+  intercept=null;
+  assert.equal(await admin('GET',raceKey),raceRaw);
+  assert.deepEqual((await admin('KEYS',prefix+'token:*')).sort(),tokensBefore);
+  const legacy=await invite();await admin('SET',inviteKey(legacy.code),JSON.stringify({characterSlug:'dolly-dalton'}),'EX',60);
+  await assert.rejects(redeemDeviceEnrollment(legacy.code),/neu erstellen/);
   console.log('F18 API issuer regression: allowed peer enrollment, self/prototype denial, revoked issuer before mutation, no new invite: OK');
   console.log('Redis device regression: NX failure, denied MSET, concurrent redemption/revocation, expiry, CAS, collision, cleanup denial, revoke denial and ambiguous response: OK');
 }finally{
