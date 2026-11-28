@@ -1,12 +1,12 @@
 import {randomUUID} from 'node:crypto';
 import {runSyncDeadline,assertSyncBudget,armDeviceWriteFence,ADDON_WORK_MS,ADDON_CLEANUP_UNTIL_MS} from '../scripts/sync-deadline.mjs';
-import {loadCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
+import {loadCharactersForWrite,normalizedCharacterWrite,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
-import {loadAddonSyncState,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
+import {loadAddonSyncStateForWrite,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
 import {ingestAddonLiveKnowledge,snapshotsFromAddonPayload} from '../scripts/live-knowledge-store.mjs';
 import {authorizeDeviceTokenWithProof,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
 
@@ -114,21 +114,23 @@ async function syncRequest(req,ownership){
     ownership.token=randomUUID();
     lockToken=await acquireRefreshLock({addon:true,token:ownership.token});
     if(!lockToken){return reply(409,{error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});}
-    const {data:before}=await loadCharacters();
+    const {data:before,raw:expectedRoster}=await loadCharactersForWrite({allowPreviewMissing:previewIsolated});
     const characterSection=payload.sections.character;
     const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID,realm:characterSection.realm},{allowLegacyFirstName:false});
     if(Number(target.classId)!==Number(characterSection.classID))throw new Error('Klasse des Addon-Syncs passt nicht zum Charakter');
     if(device&&!deviceMaySync(device,target.slug,payload.client?.transport)){
       return reply(403,{error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
     }
-    let previousState=await loadAddonSyncState(target.slug);
-    const writeOptions={lockToken};
+    const stateRead=await loadAddonSyncStateForWrite(target.slug);
+    let previousState=stateRead.state;
+    const writeOptions={lockToken,expectedRoster,expectedState:stateRead.raw};
     const confirmedReceipts=receipts=>(Array.isArray(receipts)?receipts:[]).map((receipt,i,all)=>i===all.length-1?{...receipt,observationsConfirmed:true}:receipt);
     // A durable outbox is held in the same character state as the core commit.
     // Drain it before accepting a new sync, so no later receipt can hide it.
     if(previousState?.pendingObservations===true){
       await ingestAddonLiveKnowledge(previousState.pendingObservationPayload??previousState.payload,{characterSlug:target.slug,lockToken:writeOptions.lockToken});
       previousState=await saveAddonSyncState(target.slug,previousState.payload,{...writeOptions,receipts:confirmedReceipts(previousState.receipts),receivedAt:previousState.receivedAt,pendingObservations:false});
+      writeOptions.expectedState=JSON.stringify(previousState);
     }
     const prepared=prepareAddonSync(previousState,payload);
     if(prepared.duplicate){
@@ -179,7 +181,9 @@ async function syncRequest(req,ownership){
     assertSyncBudget();
     const priorReceiptTime=Date.parse(previousState?.receivedAt??'');
     const receivedAt=new Date(Math.max(Date.now(),Number.isFinite(priorReceiptTime)?priorReceiptTime+1:0)).toISOString();
-    let state=await saveAddonSyncState(target.slug,prepared.payload,{lockToken,receivedAt,roster:spellbookApplied?updated:null,receipts:pendingObservations?prepared.receipts:confirmedReceipts(prepared.receipts),pendingObservations,pendingObservationPayload});
+    let state=await saveAddonSyncState(target.slug,prepared.payload,{...writeOptions,receivedAt,roster:spellbookApplied?updated:null,receipts:pendingObservations?prepared.receipts:confirmedReceipts(prepared.receipts),pendingObservations,pendingObservationPayload});
+    writeOptions.expectedState=JSON.stringify(state);
+    if(spellbookApplied)writeOptions.expectedRoster=normalizedCharacterWrite(updated)[0];
     const liveKnowledge=pendingObservations?await ingestAddonLiveKnowledge(pendingObservationPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
     if(pendingObservations)state=await saveAddonSyncState(target.slug,state.payload,{...writeOptions,receipts:confirmedReceipts(state.receipts),receivedAt:state.receivedAt,pendingObservations:false});
     if(spellbookApplied){
