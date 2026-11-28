@@ -363,6 +363,8 @@ for(const old of characters){
     // Sichtbare WoW-Spielbegriffe stammen aus der deutschen Forever-Armory.
     const c=await fetchCharacter(old.slug,'de-de');
     const apiProfile=await apiProfilePromise;
+    if(apiProfile&&old.blizzardCharacterId!=null&&Number(old.blizzardCharacterId)!==apiProfile.id)
+      throw Error('Bestätigte Blizzard-Profil-ID stimmt nicht mit der gespeicherten Identität überein');
     const classId=Number(apiProfile?.character_class?.id??c.class?.id??old.classId);
     const isHunter=classId===3;
 

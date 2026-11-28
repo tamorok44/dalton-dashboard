@@ -173,7 +173,7 @@ for(const invalid of ['__proto__','constructor','toString','hasOwnProperty','unk
 const savedEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','DALTON_PRODUCTION_REDIS_ORIGIN'].map(k=>[k,process.env[k]]));
 const savedFetch=globalThis.fetch;
 const requests=[];
-const fakeToken='ddv1_'+'fixture'.repeat(7);
+const fakeToken='ddv1_'+'F'.repeat(43);
 const validRecord={deviceId:'synthetic-existing',characterSlug:'cole-dalton',revokedAt:null,promotedAt:'2026-11-20T00:00:00Z'};
 try{
   process.env.KV_REST_API_URL='https://fixture.invalid';
@@ -245,7 +245,7 @@ try{
     };
     await mkdir(dir,{recursive:true});
     await writeFile(join(dir,'config.json'),JSON.stringify({endpoint,deviceToken:'synthetic-device'}));
-    await assert.rejects(enrollDevice(endpoint,'synthetic-invite'),/redirect blocked/);
+    await assert.rejects(enrollDevice(endpoint,'dalton-'+'A'.repeat(32)),/redirect blocked/);
     await assert.rejects(revokeDevice({endpoint,deviceToken:'synthetic-device'}),/redirect blocked/);
     await assert.rejects(createEnrollment(endpoint,'dolly-dalton','Device synthetic'),/redirect blocked/);
     await assert.rejects(postPayload(endpoint,'Device synthetic',{}),/redirect blocked/);
@@ -279,14 +279,19 @@ try{
 // no provider traffic. Explicit targets are never silently overridden.
 {
   const {main,resolveBridgeTarget}=await import('./dalton-sync-client.mjs');
-  const keys=['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL'];
+  const {mkdtemp,rm}=await import('node:fs/promises');
+  const {tmpdir}=await import('node:os');
+  const {join}=await import('node:path');
+  const root=await mkdtemp(join(tmpdir(),'dalton-bridge-cli-'));
+  const keys=['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL','HOME','LOCALAPPDATA','XDG_CONFIG_HOME'];
   const old=Object.fromEntries(keys.map(k=>[k,process.env[k]])),before=globalThis.fetch;
   const stored='https://stored.invalid/api/addon-sync',selected='https://selected.invalid/api/addon-sync',envTarget='https://env.invalid/api/addon-sync';
   const config={endpoint:stored,deviceToken:'synthetic-saved',previewShareUrl:'https://stored.invalid/?share=synthetic',characterName:'Cole Dalton'};
   const readConfig=async()=>config;
   const calls=[];
   try{
-    for(const k of keys)delete process.env[k];
+    for(const k of keys.slice(0,4))delete process.env[k];
+    for(const k of keys.slice(4))process.env[k]=root;
     globalThis.fetch=async(url,options)=>{calls.push({url:String(url),auth:options.headers?.Authorization});throw Error('fixture request stopped')};
     assert.equal(resolveBridgeTarget({},config,{}).endpoint,stored);
     assert.equal(resolveBridgeTarget({},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,envTarget);
@@ -346,6 +351,7 @@ try{
   }finally{
     globalThis.fetch=before;
     for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+    await rm(root,{recursive:true,force:true});
   }
 }
 
@@ -361,7 +367,7 @@ try{
   const root=await mkdtemp(join(tmpdir(),'dalton-bridge-race-'));
   const dir=platform()==='win32'?join(root,'DaltonDashboardBridge'):platform()==='darwin'?join(root,'Library','Application Support','DaltonDashboardBridge'):join(root,'dalton-dashboard-bridge');
   const file=join(dir,'config.json'),entered=join(root,'entered'),release=join(root,'release'),traffic=join(root,'traffic'),preload=join(root,'mock.mjs');
-  const oldToken='ddv1_'+'A'.repeat(43),newToken='ddv1_'+'B'.repeat(43);
+  const oldToken='ddv1_'+'A'.repeat(43);
   const target='https://bridge-race.invalid/api/addon-sync';
   const env={...process.env,HOME:root,USERPROFILE:root,LOCALAPPDATA:root,XDG_CONFIG_HOME:root,BRIDGE_FIXTURE_ROOT:root};
   for(const key of ['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL','NODE_OPTIONS'])delete env[key];
@@ -401,7 +407,8 @@ try{
       "  throw Error('Fixture timeout');",
       " }",
       " await appendFile(join(root,'traffic'),'enroll\\n');",
-      " return Response.json({deviceToken:'ddv1_"+"B".repeat(43)+"',characterSlug:'cole-dalton',characterName:'Cole Dalton'});",
+      " if(process.env.ENROLL_RESPONSE==='lost')throw Error('Fixture: enrollment response lost');",
+      " return Response.json({deviceToken:body.proposedDeviceToken,characterSlug:'cole-dalton',characterName:'Cole Dalton'});",
       "};"
     ].join('\n'));
     const originalConfig=await readFile(file,'utf8');
@@ -429,12 +436,37 @@ try{
     await writeFile(release,'yes');
     const revoked=await revoke;assert.equal(revoked.code,0,revoked.output);
     assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
-    const enrolled=await run(['--enroll','dalton-'+'C'.repeat(32)]);
+    const invite='dalton-'+'C'.repeat(32),pendingFile=join(dir,'pending-enrollment.json');
+    env.ENROLL_RESPONSE='lost';
+    const lost=await run(['--enroll',invite]);
+    assert.notEqual(lost.code,0,lost.output);
+    const pending=JSON.parse(await readFile(pendingFile,'utf8'));
+    assert.match(pending.proposedDeviceToken,/^ddv1_[A-Za-z0-9_-]{43}$/);
+    assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
+    assert.ok(!lost.output.includes(pending.proposedDeviceToken));
+    delete env.ENROLL_RESPONSE;
+    const enrolled=await run(['--enroll',invite]);
     assert.equal(enrolled.code,0,enrolled.output);
     const final=JSON.parse(await readFile(file,'utf8'));
-    assert.equal(final.deviceToken,newToken);
+    assert.equal(final.deviceToken,pending.proposedDeviceToken);
+    assert.match(final.deviceToken,/^ddv1_[A-Za-z0-9_-]{43}$/);
+    assert.notEqual(final.deviceToken,oldToken);
     assert.ok(!Object.hasOwn(final,'revokedAt'));
-    assert.equal(await readFile(traffic,'utf8'),'revoke\nenroll\n');
+    await assert.rejects(readFile(pendingFile),{code:'ENOENT'});
+    assert.equal(await readFile(traffic,'utf8'),'revoke\nenroll\nenroll\n');
+    const installLock=dir+'.mutation.lock',owner='e'.repeat(32);
+    await mkdir(installLock);
+    await writeFile(join(installLock,'owner'),owner);
+    await writeFile(file,originalConfig);
+    env.REVOKE_RESPONSE='already';
+    env.DALTON_BRIDGE_INSTALL_LOCK='f'.repeat(32);
+    const wrongOwner=await run(['--revoke-device']);
+    assert.equal(wrongOwner.code,1);
+    assert.equal(await readFile(file,'utf8'),originalConfig);
+    env.DALTON_BRIDGE_INSTALL_LOCK=owner;
+    const owned=await run(['--revoke-device']);
+    assert.equal(owned.code,0,owned.output);
+    assert.equal(await readFile(join(installLock,'owner'),'utf8'),owner,'Only the wrapper releases its encompassing lock');
   }finally{
     for(const child of children)if(child.exitCode===null)child.kill();
     await rm(root,{recursive:true,force:true});

@@ -26,7 +26,8 @@ try {
     } finally {
       Remove-Item Env:DALTON_BRIDGE_INSTALL_LOCK -ErrorAction SilentlyContinue
     }
-  } elseif (Test-Path -LiteralPath (Join-Path $targetDir "config.json")) {
+  } elseif ((Test-Path -LiteralPath (Join-Path $targetDir "config.json")) -or
+            (Test-Path -LiteralPath (Join-Path $targetDir "pending-enrollment.json"))) {
     throw "Bridge-Datei fehlt. Die Kopplung bleibt bis zum bestätigten Widerruf erhalten."
   }
 

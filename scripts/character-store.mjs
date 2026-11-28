@@ -232,6 +232,24 @@ local function assertGeneration(oldRaw,compactCharacters,nextRaw,nextMeta)
   if stamp<=previous then error('PROFILE_GENERATION_NOT_ADVANCED') end
   if not sameRoster(old.characters,'slug',next.characters,'slug')
     or not sameRoster(next.characters,'slug',meta.slugs,false) then error('PROFILE_ROSTER_CHANGED') end
+  local oldIds,nextIds={},{}
+  for _,row in ipairs(old.characters) do
+    if row.blizzardCharacterId~=nil and row.blizzardCharacterId~=cjson.null then
+      local id=tonumber(row.blizzardCharacterId)
+      if not id or id<=0 or id~=math.floor(id) or id>9007199254740991 then error('INVALID_PROFILE_IDENTITY') end
+      oldIds[row.slug]=id
+    end
+  end
+  for _,row in ipairs(next.characters) do
+    local rawId=row.blizzardCharacterId
+    local id=nil
+    if rawId~=nil and rawId~=cjson.null then
+      id=tonumber(rawId)
+      if not id or id<=0 or id~=math.floor(id) or id>9007199254740991 or nextIds[id] then error('INVALID_PROFILE_IDENTITY') end
+      nextIds[id]=true
+    end
+    if oldIds[row.slug] and oldIds[row.slug]~=id then error('PROFILE_IDENTITY_CHANGED') end
+  end
   if compactCharacters~=nil and (type(compactCharacters)~='table'
     or generation(compactCharacters.generatedAt)>previous
     or not sameRoster(old.characters,'slug',compactCharacters.slugs,false)) then

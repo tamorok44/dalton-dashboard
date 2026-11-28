@@ -2065,6 +2065,7 @@ function invalidateLocationPlannerData({reloadVisible=true}={}){
 }
 
 let lastGeneratedAt=null;
+let lastProfileConfirmed=false;
 let lastDataVersion=null;
 let payloadRequestSequence=0;
 let appliedPayloadSequence=0;
@@ -2083,17 +2084,22 @@ function applyServerPayload(payload,{live=false,success=null,force=false,request
   const nextVersion=payloadDataVersion(payload);
   const nextGeneratedAt=typeof data.generatedAt==='string'?data.generatedAt:null;
   const nextTime=Date.parse(nextGeneratedAt||''),currentTime=Date.parse(lastGeneratedAt||'');
+  const confirmed=payload.fallback!==true;
   if(!Number.isFinite(nextTime))return false;
   // A later response is not necessarily a later snapshot. Neither force
   // nor request order may roll back a newer persisted profile state.
-  if(Number.isFinite(currentTime)&&nextTime<currentTime)return false;
-  if((!Number.isFinite(currentTime)||nextTime===currentTime)&&requestSequence<appliedPayloadSequence)return false;
+  if(lastProfileConfirmed&&!confirmed)return false;
+  if(confirmed===lastProfileConfirmed){
+    if(Number.isFinite(currentTime)&&nextTime<currentTime)return false;
+    if((!Number.isFinite(currentTime)||nextTime===currentTime)&&requestSequence<appliedPayloadSequence)return false;
+  }
   appliedPayloadSequence=Math.max(appliedPayloadSequence,requestSequence);
   const characterDataChanged=nextGeneratedAt!==lastGeneratedAt;
   const plannerDataChanged=characterDataChanged||nextVersion!==lastDataVersion;
-  if(!force&&lastDataVersion&&nextVersion===lastDataVersion)return false;
+  if(!force&&lastDataVersion&&nextVersion===lastDataVersion&&lastProfileConfirmed===confirmed)return false;
   lastDataVersion=nextVersion;
   lastGeneratedAt=nextGeneratedAt;
+  lastProfileConfirmed=confirmed;
   const renderData={...data,addonSync:payload?.addonSync&&typeof payload.addonSync==='object'?payload.addonSync:{}};
   render(renderData,{
     live,

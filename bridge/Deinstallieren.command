@@ -22,7 +22,7 @@ trap 'exit 143' TERM
 OWNER="$(uuidgen | tr -d '-')"
 printf '%s\n' "$OWNER" > "$LOCK/owner"
 
-if [[ ! -x "$TARGET" && -e "$TARGET_DIR/config.json" ]]; then
+if [[ ! -x "$TARGET" && ( -e "$TARGET_DIR/config.json" || -e "$TARGET_DIR/pending-enrollment.json" ) ]]; then
   echo "Bridge-Datei fehlt. Die Kopplung bleibt bis zum bestätigten Widerruf erhalten."
   exit 1
 fi

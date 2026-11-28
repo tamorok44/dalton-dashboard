@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-import {createDeviceEnrollment,redeemDeviceEnrollment,authorizeDeviceToken,revokeDeviceToken} from './addon-device-auth.mjs';
+import {createDeviceEnrollment,redeemDeviceEnrollment,authorizeDeviceToken,revokeDeviceToken,cancelDeviceEnrollment} from './addon-device-auth.mjs';
 
 // Explicit isolated CI service only. Never accept a real Redis URL/token.
 const container=process.env.DALTON_TEST_REDIS_CONTAINER;
@@ -80,6 +80,44 @@ try{
   assert.equal(await admin('PTTL',key)>0,true);
   assert.equal(await admin('PTTL',tokenKey(device.token)),-1,'Device is not an expiring invite');
   await assert.rejects(redeemDeviceEnrollment(first.code),/bereits verwendet/);
+
+  const recoverable=await invite(),proof='ddv1_'+'P'.repeat(43),wrong='ddv1_'+'Q'.repeat(43);
+  await assert.rejects(redeemDeviceEnrollment(recoverable.code,{proposedDeviceToken:proof,expectedCharacter:'cole-dalton'}),/Nicht berechtigt/);
+  intercept=async(args,run)=>{
+    const result=await run();
+    if(args[0]==='EVAL'&&args.includes(tokenKey(proof)))throw Error('Fixture: successful commit, response lost');
+    return result;
+  };
+  await assert.rejects(redeemDeviceEnrollment(recoverable.code,{proposedDeviceToken:proof}),/response lost/);
+  intercept=null;
+  await assert.rejects(redeemDeviceEnrollment(recoverable.code),/bereits verwendet/);
+  await assert.rejects(redeemDeviceEnrollment(recoverable.code,{proposedDeviceToken:wrong}),/bereits verwendet/);
+  const recovered=await redeemDeviceEnrollment(recoverable.code,{proposedDeviceToken:proof,expectedCharacter:'dolly-dalton'});
+  assert.equal(recovered.token,proof);
+  assert.equal(recovered.deviceId,(await authorizeDeviceToken(proof)).deviceId);
+  assert.ok(!String(await admin('GET',inviteKey(recoverable.code))).includes(proof),'Recovery receipt stores the digest only');
+  assert.equal(await cancelDeviceEnrollment(recoverable.code,wrong),true);
+  assert.ok(await authorizeDeviceToken(proof),'A different candidate cannot cancel a committed pairing');
+  await allow('-del');
+  await assert.rejects(cancelDeviceEnrollment(recoverable.code,proof));
+  assert.ok(await authorizeDeviceToken(proof),'Refused cancellation preserves recoverability');
+  await allow();
+  assert.equal(await cancelDeviceEnrollment(recoverable.code,proof),true);
+  assert.equal(await authorizeDeviceToken(proof),null);
+  await assert.rejects(redeemDeviceEnrollment(recoverable.code,{proposedDeviceToken:proof}),/bereits verwendet/);
+  const unused=await invite();
+  const waitForCancel=async(args,run)=>{
+    if(args[0]==='EVAL'&&args.includes(tokenKey(proof))){
+      intercept=null;
+      assert.equal(await cancelDeviceEnrollment(unused.code,proof),true);
+    }
+    return run();
+  };
+  intercept=waitForCancel;
+  await assert.rejects(redeemDeviceEnrollment(unused.code,{proposedDeviceToken:proof}),/bereits verwendet/);
+  assert.equal(await authorizeDeviceToken(proof),null,'A delayed redemption cannot resurrect a cancelled attempt');
+  assert.ok(await admin('PTTL',inviteKey(unused.code))>0,'Cancellation preserves the remaining invite TTL');
+  assert.equal(await authorizeDeviceToken('ddv1_short'),null,'An unrevocable legacy token shape cannot authorize');
 
   // Real handler: absence of a Redis binding is not absence of a device.
   const {default:enrollmentApi}=await import('../api/addon-device-enroll.js');
@@ -178,7 +216,7 @@ try{
   assert.equal((await admin('KEYS',prefix+'token:*')).length,1);
   await assert.rejects(redeemDeviceEnrollment(lost.code),/bereits verwendet/);
   // Actual enrollment API must pass the issuer to the atomic write boundary.
-  const hubToken='ddv1_'+'synthetic-hub-'.repeat(4);
+  const hubToken='ddv1_'+'H'.repeat(43);
   const hubKey=tokenKey(hubToken);
   const hubRaw=JSON.stringify({schemaVersion:1,deviceId:'qa-hub',characterSlug:'cole-dalton',revokedAt:null});
   const apiCall=async(token,characterSlug)=>{

@@ -61,7 +61,10 @@ const addonPayloadQa={
   }},
   dataVersion:{version:'data-v3|qa-addon-sync'}
 };
+const datedFallback={...addonPayloadQa,fallback:true,data:{...addonPayloadQa.data,generatedAt:'2099-01-01T00:00:00.000Z'}};
+assert.equal(ui.applyServerPayload(datedFallback),true,'A bundled fallback may populate an empty page');
 assert.equal(ui.applyServerPayload(addonPayloadQa,{force:true}),true,'Server payload with AddOn state is accepted');
+assert.equal(ui.applyServerPayload(datedFallback,{force:true}),false,'A bundled fallback never displaces confirmed live data');
 const addonRendered=nodes.get('#cards').innerHTML;
 assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered directly below the character activity');
 assert.ok(addonRendered.includes('62.1 / 73.4'),'WoW map coordinates are shown in the familiar xx.x / yy.y format without percent signs');

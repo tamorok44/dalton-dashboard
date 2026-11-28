@@ -114,6 +114,9 @@ export function historyProjection(c={}){
     lastLoginAt:c.lastLoginAt??null,
     talents:c.talents??null,
     talentDetails:talentDetailMap(c.talentDetails),
+    knownSpells:Object.fromEntries((c.knownClassAbilitiesVerified===true&&Array.isArray(c.knownClassAbilities)?c.knownClassAbilities:[])
+      .filter(entry=>Number.isSafeInteger(entry?.id)&&entry.id>0)
+      .map(entry=>[String(entry.id),true])),
     professions:professionMap(c.professions),
     reputations:reputationMap(c.reputations),
     activeQuests:questMap(c.activeQuests),
@@ -163,7 +166,8 @@ export async function appendChangeBatch(previous,latest,{source='manual'}={}){
     toGeneratedAt:latest.generatedAt||null,
     changes
   };
-  await redis(['RPUSH',CHANGE_KEY,JSON.stringify(batch)]);
+  const length=await redis(['RPUSH',CHANGE_KEY,JSON.stringify(batch)]);
+  if(!Number.isSafeInteger(length)||length<1)throw Error('Chronikeintrag nicht bestätigt');
   return {count:changes.length,id:batch.id};
 }
 export async function getDailySnapshot(date){

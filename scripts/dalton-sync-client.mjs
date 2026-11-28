@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {createHash,randomUUID} from 'node:crypto';
+import {createHash,randomBytes,randomUUID} from 'node:crypto';
 import {existsSync,promises as fs,watch} from 'node:fs';
 import {dirname,basename,join,resolve} from 'node:path';
 import {homedir,platform} from 'node:os';
@@ -24,13 +24,15 @@ function configFile(){
   if(platform()==='darwin')return join(homedir(),'Library','Application Support','DaltonDashboardBridge','config.json');
   return join(process.env.XDG_CONFIG_HOME||join(homedir(),'.config'),'dalton-dashboard-bridge','config.json');
 }
-async function loadConfig(){
+const pendingConfigFile=()=>join(dirname(configFile()),'pending-enrollment.json');
+async function readLocalState(file){
   try{
-    const value=JSON.parse(await fs.readFile(configFile(),'utf8'));
+    const value=JSON.parse(await fs.readFile(file,'utf8'));
     if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Ungültige Bridge-Konfiguration');
     return value;
   }catch(error){if(error.code==='ENOENT')return {};throw error;}
 }
+const loadConfig=()=>readLocalState(configFile());
 // Exclusive interprocess lock outside the installation directory. Never
 // steal a lock by age: a paused process could still commit. Fail closed.
 async function withConfigMutation(operation){
@@ -51,8 +53,8 @@ async function assertInstallLock(lock,owner){
   if(!/^[a-f0-9]{32}$/i.test(owner)||marker?.trim()!==owner)
     throw Error('Sperre für Bridge-Installation oder Deinstallation nicht bestätigt');
 }
-async function saveConfig(value){
-  const file=configFile(),dir=dirname(file);
+async function saveLocalState(file,value){
+  const dir=dirname(file);
   const owner=process.env.DALTON_BRIDGE_INSTALL_LOCK;
   await fs.mkdir(dir,{recursive:true,mode:0o700});
   const tmp=join(dir,'.config-'+randomUUID()+'.tmp');
@@ -64,9 +66,14 @@ async function saveConfig(value){
     await handle.close();handle=null;
     if(owner)await assertInstallLock(dir+'.mutation.lock',owner);
     await fs.rename(tmp,file);
+    if(platform()!=='win32'){
+      const directory=await fs.open(dir,'r');
+      try{await directory.sync();}finally{await directory.close();}
+    }
     return file;
   }finally{if(handle)await handle.close();await fs.rm(tmp,{force:true})}
 }
+const saveConfig=value=>saveLocalState(configFile(),value);
 // All credential-bearing requests share one transport boundary, including
 // enrollment and revoke. No plaintext loopback exceptions or redirects.
 export function secureBridgeEndpoint(endpoint){
@@ -93,24 +100,55 @@ export async function enrollDevice(endpoint,code,character=null,previewShareUrl=
 }
 async function enrollDeviceLocked(endpoint,code,character=null,previewShareUrl=null){
   const base=enrollmentEndpoint(endpoint);
+  if(!/^dalton-[A-Za-z0-9_-]{32}$/.test(code))throw Error('Ungültiger Einrichtungscode');
   const current=await loadConfig();
+  const pendingFile=pendingConfigFile();
+  const pending=await readLocalState(pendingFile);
+  const requested=character?normalizedName(character).replace(' ','-'):null;
+  if(Object.keys(pending).length&&(pending.code!==code||pending.endpoint!==endpoint||pending.character!==requested))
+    throw Error('Eine frühere Einrichtung ist offen. Gleichen Code erneut verwenden oder mit --cancel-enrollment abbrechen.');
+  const proposedDeviceToken=pending.proposedDeviceToken??'ddv1_'+randomBytes(32).toString('base64url');
+  if(!/^ddv1_[A-Za-z0-9_-]{43}$/.test(proposedDeviceToken))throw Error('Ausstehende Einrichtung ist beschädigt');
+  // The exact candidate secret survives lost responses and process crashes
+  // before the confirmed pairing reaches the active configuration.
+  await saveLocalState(pendingFile,{code,endpoint,character:requested,previewShareUrl,proposedDeviceToken});
   const cookie=await previewCookie(previewShareUrl,base.origin);
   const response=await fetch(base,{
     method:'POST',
     redirect:'error',
     headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,...(cookie?{Cookie:cookie}:{})},
-    body:JSON.stringify({code,character}),
+    body:JSON.stringify({code,character:requested,proposedDeviceToken}),
     signal:AbortSignal.timeout(15000)
   });
   const body=await confirmedJson(response,'Einrichtung');
-  const requested=character?normalizedName(character).replace(' ','-'):null;
-  if(!body||typeof body.deviceToken!=='string'||!/^ddv1_[A-Za-z0-9_-]{43}$/.test(body.deviceToken)||
+  if(!body||body.deviceToken!==proposedDeviceToken||
     !TRUSTED_SLUGS.has(body.characterSlug)||normalizedName(body.characterName)!==body.characterSlug.replace('-',' ')||
     requested&&body.characterSlug!==requested)throw Error('Ungültige Kopplungsantwort; lokale Konfiguration bleibt erhalten');
   const next={...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null};
   delete next.revokedAt;
   const file=await saveConfig(next);
+  await fs.rm(pendingFile,{force:true});
   return {...body,configFile:file};
+}
+async function cancelPendingEnrollment(current,{endpoint=null,previewShareUrl=null}={}){
+  const file=pendingConfigFile();
+  const pending=await readLocalState(file);
+  if(!Object.keys(pending).length)return false;
+  const base=enrollmentEndpoint(pending.endpoint);
+  if(endpoint&&secureBridgeEndpoint(endpoint).origin!==base.origin)throw Error('Ausstehende Einrichtung gehört zu einem anderen HTTPS-Ziel');
+  if(current.deviceToken!==pending.proposedDeviceToken){
+    const cookie=await previewCookie(previewShareUrl??pending.previewShareUrl,base.origin);
+    const response=await fetch(base,{
+      method:'POST',redirect:'error',
+      headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,...(cookie?{Cookie:cookie}:{})},
+      body:JSON.stringify({action:'cancel',code:pending.code,proposedDeviceToken:pending.proposedDeviceToken}),
+      signal:AbortSignal.timeout(15000)
+    });
+    if((await confirmedJson(response,'Abbruch der Einrichtung'))?.cancelled!==true)
+      throw Error('Abbruch der Einrichtung wurde nicht eindeutig bestätigt');
+  }
+  await fs.rm(file,{force:true});
+  return true;
 }
 export async function revokeDevice(config,{endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||DEFAULT_ENDPOINT,previewShareUrl=config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null}={}){
   if(!config?.deviceToken)return {revoked:false,alreadyAbsent:true};
@@ -179,8 +217,8 @@ function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*
 // Parse and validate the entire command before reading config, discovering
 // files, fetching preview cookies, or entering any credential-bearing path.
 export function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:null};
-  const switches=new Map([['--watch','watch'],['--dry-run','dryRun'],['--revoke-device','revokeDevice'],['--promote-production','promoteProduction'],['--help','help']]);
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,cancelEnrollment:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:null};
+  const switches=new Map([['--watch','watch'],['--dry-run','dryRun'],['--revoke-device','revokeDevice'],['--cancel-enrollment','cancelEnrollment'],['--promote-production','promoteProduction'],['--help','help']]);
   const values=new Map([['--file','file'],['--endpoint','endpoint'],['--enroll','enroll'],['--create-enroll','createEnroll'],['--character','character'],['--preview-share-url','previewShareUrl']]);
   const seen=new Set();
   for(let i=0;i<argv.length;i++){
@@ -194,7 +232,7 @@ export function args(argv){
     out[values.get(flag)]=value;
     if(flag==='--endpoint')out.endpointProvided=true;
   }
-  const management=[out.enroll,out.createEnroll,out.revokeDevice,out.promoteProduction].filter(Boolean).length;
+  const management=[out.enroll,out.createEnroll,out.revokeDevice,out.cancelEnrollment,out.promoteProduction].filter(Boolean).length;
   if(out.dryRun&&management)throw Error('--dry-run kann nicht mit Geräteverwaltung kombiniert werden');
   if(management>1)throw Error('Nur ein Geräteverwaltungsbefehl gleichzeitig erlaubt');
   if(management&&(out.watch||out.file))throw Error('Geräteverwaltung kann nicht mit Sync-Optionen kombiniert werden');
@@ -242,6 +280,7 @@ function help(){
   console.log('  node scripts/dalton-sync-client.mjs --enroll <Einrichtungscode>');
   console.log('  node scripts/dalton-sync-client.mjs --create-enroll <character-slug>   # nur Administrator');
   console.log('  node scripts/dalton-sync-client.mjs --revoke-device                    # Gerätezugang widerrufen');
+  console.log('  node scripts/dalton-sync-client.mjs --cancel-enrollment                # offene Einrichtung abbrechen');
   console.log('  Produktionskopplung: regulären Einrichtungscode der Zielumgebung verwenden.');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
@@ -504,15 +543,25 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
 export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){
   const options=args(argv);
   if(options.help){help();return}
-  if(options.enroll||options.revokeDevice){
+  if(options.enroll||options.revokeDevice||options.cancelEnrollment){
     return withConfigMutation(async()=>{
       const config=await readConfig();
+      if(options.cancelEnrollment){
+        const cancelled=await cancelPendingEnrollment(config,{
+          endpoint:options.endpoint??process.env.DALTON_SYNC_ENDPOINT,
+          previewShareUrl:options.previewShareUrl??process.env.DALTON_SYNC_PREVIEW_SHARE_URL
+        });
+        console.log(cancelled?'Offene Einrichtung aufgelöst.':'Keine offene Einrichtung vorhanden.');
+        return;
+      }
       const target=resolveBridgeTarget(options,config);
       if(options.enroll){
         const enrolled=await enrollDeviceLocked(target.endpoint,options.enroll,options.character,target.previewShareUrl);
         console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
         console.log('Konfiguration: '+enrolled.configFile);
       }else{
+        assertStoredDeviceOrigin(config,target.endpoint);
+        await cancelPendingEnrollment(config);
         const result=await revokeDeviceLocked(config,target);
         if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
         else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));

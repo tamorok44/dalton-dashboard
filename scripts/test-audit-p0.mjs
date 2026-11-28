@@ -388,7 +388,8 @@ if(!hasRedis){
     restrictedUser='limited-sync';
     const aclFailure=await call(third);
     restrictedUser=null;
-    assert.equal(aclFailure.http,503);assert.match(aclFailure.value.error,/NOPERM|ACL|permission|can't run this command/i);
+    assert.equal(aclFailure.http,503);
+    assert.equal(aclFailure.value.error,'Die Synchronisierung konnte derzeit nicht bestätigt werden.');
     assert.deepEqual([cli('GET',rosterKey),cli('GET',syncKey('audit-one')),cli('GET',versionKey)],beforeACL);
     cli('ACL','DELUSER','limited-sync');
     const observation=payload('Audit One','observation',[133,143],now+2);
@@ -467,6 +468,20 @@ if(!hasRedis){
       roster:{...nextRoster,generatedAt:nextGeneration},expectedRoster:unchangedRaw,expectedState:unchangedAddon}),/PROFILE_METADATA_CONFLICT/);
     assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey),cli('GET',syncKey('audit-one'))],[unchangedRaw,conflictingMeta,unchangedAddon]);
     cli('SET',versionKey,unchangedMeta);
+    const normalizedHistorical={...nextRoster,generatedAt:nextRoster.generatedAt.slice(0,-1)+'000+00:00'};
+    const legacyRaw=JSON.stringify(normalizedHistorical);
+    cli('SET',rosterKey,legacyRaw);
+    await saveCharacters({...nextRoster,generatedAt:nextGeneration},refreshLock,{expectedRoster:legacyRaw});
+    const writable=cli('GET',rosterKey);
+    const identified={...JSON.parse(writable),generatedAt:new Date(Date.parse(nextGeneration)+1).toISOString(),
+      characters:nextRoster.characters.map((c,i)=>({...c,blizzardCharacterId:100+i}))};
+    await saveCharacters(identified,refreshLock,{expectedRoster:writable});
+    const established=cli('GET',rosterKey),establishedVersion=cli('GET',versionKey);
+    const wrongIdentity={...identified,generatedAt:new Date(Date.parse(identified.generatedAt)+1).toISOString(),
+      characters:identified.characters.map((c,i)=>i===0?{...c,blizzardCharacterId:499}:c)};
+    await assert.rejects(saveCharacters(wrongIdentity,refreshLock,{expectedRoster:established}),/PROFILE_IDENTITY_CHANGED/);
+    assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey)],[established,establishedVersion]);
+    cli('MSET',rosterKey,unchangedRaw,versionKey,unchangedMeta);
     await releaseRefreshLock(refreshLock);
     assert.deepEqual(await loadDailyProfileReceipt(day),actualProof);
     mode='drop-lock-reply';
@@ -817,7 +832,7 @@ if(!hasRedis){
     // isolated Redis server. Never issue a real device token or call providers.
     const {createHash}=await import('node:crypto');
     const {armDeviceWriteFence,armSyncFence}=await import('./sync-deadline.mjs');
-    const syntheticDevice='ddv1_'+'f18-fixture-'.repeat(4);
+    const syntheticDevice='ddv1_'+'A'.repeat(43);
     const deviceHash=createHash('sha256').update(syntheticDevice).digest('hex');
     const deviceKey='dalton-dashboard:addon-device:v1:production:token:'+deviceHash;
     const deviceRaw=JSON.stringify({schemaVersion:1,deviceId:'qa-f18',characterSlug:'cole-dalton',revokedAt:null});
@@ -916,7 +931,7 @@ if(!hasRedis){
       assert.equal((await deviceCall(later)).http,401);
       // A distinct, newly authorized credential may recover the prior
       // accepted core's pending observation exactly once.
-      const replacementToken='ddv1_'+'f18-replacement-'.repeat(3);
+      const replacementToken='ddv1_'+'B'.repeat(43);
       const replacementKey='dalton-dashboard:addon-device:v1:production:token:'+createHash('sha256').update(replacementToken).digest('hex');
       cli('SET',replacementKey,JSON.stringify({...authProof.record,deviceId:'qa-f18-replacement'}));
       try{

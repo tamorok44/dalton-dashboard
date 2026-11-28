@@ -80,7 +80,7 @@ export async function readCompactVersion({redisImpl=redis,readCharacters=loadCha
     const sameSlugs=modern.slugs.length===legacy.slugs.length&&legacy.slugs.every(slug=>modern.slugs.includes(slug));
     // Only the new compact value participates in the current atomic commit.
     // A newer legacy hint or different membership requires the real roster.
-    return prior>next||!sameSlugs?verified():modern;
+    return prior>=next||!sameSlugs?verified():modern;
   }
   const [characters,petRules]=await Promise.all([
     characterEvidence(),

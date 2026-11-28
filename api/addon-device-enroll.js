@@ -1,4 +1,4 @@
-import {authorizeDeviceToken,createDeviceEnrollment,deviceMayCreateEnrollment,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches,trustedCharacterSlugs,trustedCharacterName} from '../scripts/addon-device-auth.mjs';
+import {authorizeDeviceToken,cancelDeviceEnrollment,createDeviceEnrollment,deviceMayCreateEnrollment,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches,trustedCharacterSlugs,trustedCharacterName} from '../scripts/addon-device-auth.mjs';
 import {readRequestJson,RequestJsonError} from '../scripts/request-json.mjs';
 
 export const config={maxDuration:15};
@@ -22,8 +22,10 @@ export default async function handler(req,res){
   if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
   try{
     const body=await readRequestJson(req,20000);
-    if(Object.hasOwn(body,'action')&&!['create','revoke'].includes(body.action))throw new RequestJsonError(400,'Unbekannte Geräteaktion');
-    const allowed=body.action==='create'?['action','characterSlug']:body.action==='revoke'?['action']:['code','character'];
+    if(Object.hasOwn(body,'action')&&!['create','revoke','cancel'].includes(body.action))throw new RequestJsonError(400,'Unbekannte Geräteaktion');
+    const allowed={
+      create:['action','characterSlug'],revoke:['action'],cancel:['action','code','proposedDeviceToken']
+    }[body.action]||['code','character','proposedDeviceToken'];
     if(Object.keys(body).some(key=>!allowed.includes(key)))throw new RequestJsonError(400,'Widersprüchliche Geräteparameter');
     if(body?.action==='create'){
       if(typeof body.characterSlug!=='string')throw new RequestJsonError(400,'Ungültiger Charakter');
@@ -40,8 +42,14 @@ export default async function handler(req,res){
       const revoked=await revokeDeviceToken(token);
       return res.status(200).json({revoked,alreadyRevoked:!revoked});
     }
+    if(body.action==='cancel'){
+      const cancelled=await cancelDeviceEnrollment(body.code,body.proposedDeviceToken);
+      return res.status(200).json({cancelled});
+    }
     if(typeof body.code!=='string')throw new RequestJsonError(400,'Ungültiger Einrichtungscode');
-    const enrolled=await redeemDeviceEnrollment(body.code,{expectedCharacter:requestedCharacter(body.character)});
+    const enrolled=await redeemDeviceEnrollment(body.code,{
+      expectedCharacter:requestedCharacter(body.character),proposedDeviceToken:body.proposedDeviceToken??null
+    });
     return res.status(200).json({
       deviceToken:enrolled.token,
       deviceId:enrolled.deviceId,

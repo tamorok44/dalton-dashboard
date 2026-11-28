@@ -28,9 +28,10 @@ export default async function handler(req,res){
   }
   if(!safeEqual(snapshot.token,expected))return res.status(401).json({error:'Spellbook-Code wurde nicht für dieses Dashboard erstellt'});
   delete snapshot.token;
-  const lockToken=await acquireRefreshLock();
-  if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte den Code gleich noch einmal übernehmen.'});
+  let lockToken=null;
   try{
+    lockToken=await acquireRefreshLock();
+    if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte den Code gleich noch einmal übernehmen.'});
     const {data:before,raw:expectedRoster}=await loadCharactersForWrite();
     const targetCharacter=resolveSpellbookCharacter(before,snapshot);
     snapshot.characterSlug=targetCharacter.slug;
@@ -66,8 +67,8 @@ export default async function handler(req,res){
   }catch(error){
     console.error('Spellbook-Synchronisierung fehlgeschlagen:',error);
     const status=String(error.message).startsWith('STALE_SPELLBOOK')?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich/.test(String(error.message))?400:503;
-    return res.status(status).json({error:String(error.message).slice(0,180)});
+    return res.status(status).json({error:status===503?'Die Synchronisierung konnte derzeit nicht bestätigt werden.':String(error.message).slice(0,180)});
   }finally{
-    try{await releaseRefreshLock(lockToken)}catch(error){console.error('Spellbook-Lock konnte nicht freigegeben werden:',error)}
+    if(lockToken)try{await releaseRefreshLock(lockToken)}catch(error){console.error('Spellbook-Lock konnte nicht freigegeben werden:',error)}
   }
 }

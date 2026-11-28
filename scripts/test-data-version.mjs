@@ -76,3 +76,5 @@ const actualUpgrade=await readCompactVersion({...inputs,readCharacters:async()=>
   generatedAt:'2026-11-26T07:00:00Z',characters:[{slug:'cole-dalton'},{slug:'dolly-dalton'}]
 }})});
 assert.equal(actualUpgrade.generatedAt,'2026-11-26T07:00:00Z','a verified historical writer can still be observed');
+fields.set('characters',JSON.stringify({generatedAt:'2026-11-26T06:00:00.000Z',slugs:['cole-dalton','dolly-dalton']}));
+assert.equal((await readCompactVersion(inputs)).generatedAt,'2026-11-21T05:07:00.000Z','Equal v1 and v2 hints alone do not prove a half-restored roster');

@@ -71,9 +71,10 @@ function armoryHtml(old){
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
   };
+  if(malformedStatLayout)character.stats.basic={primary:{bad:'fixture'},groups:[null,{stats:{bad:'fixture'}}]};
   return '<script>var characterProfileInitialState = '+JSON.stringify({character})+';</script>';
 }
-let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false,unlabeledHaste=false;
+let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false,unlabeledHaste=false,malformedStatLayout=false;
 globalThis.fetch=async (url,options={})=>{
   if(['https://test-redis.example.com','https://test-preview-redis.example.com'].includes(String(url))){
     redisRequests++;
@@ -303,6 +304,21 @@ try{
   assert.deepEqual(partialGet.result().payload.data.characters.find(c=>c.slug===failSlug).statsFreshEnums,[]);
   assert.equal(partialGet.result().payload.data.characters.find(c=>c.slug==='cole-dalton').stats.Tempowertung,67);
   assert.deepEqual(JSON.parse(saved).characters.find(c=>c.slug===failSlug).statsFreshEnums,[]);
+
+  cooldown=false;
+  failSlug=null;
+  malformedStatLayout=true;
+  const ambiguous=JSON.parse(saved);
+  ambiguous.characters[0].statsDetails.push({enum:'HASTE',name:'Historischer Konflikt',value:31});
+  saved=JSON.stringify(ambiguous);
+  const corrected=fakeResponse();
+  await handler(manualRequest,corrected);
+  const safe=corrected.result().payload.data.characters.find(c=>c.slug===ambiguous.characters[0].slug);
+  assert.equal(corrected.result().status,200);
+  assert.equal(safe.statsByEnum.HASTE,67,'Malformed optional stat section does not discard valid numeric observations');
+  assert.ok(!safe.statsDetails.some(x=>x.enum==='HASTE'),'Conflicting historical labels cannot be attached to a fresh unlabeled measurement');
+  assert.ok(!Object.hasOwn(safe.stats,'Historischer Konflikt'));
+  malformedStatLayout=false;
 
   cooldown=false;
   failAll=true;

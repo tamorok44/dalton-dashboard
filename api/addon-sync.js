@@ -20,6 +20,11 @@ function authValue(req,scheme){
 }
 
 const reply=(status,body)=>({status,body});
+function unconfirmedSync(error){
+  const message=String(error?.message);
+  const code=message.match(/\b(ADDON_SYNC_DEADLINE|REDIS_REQUEST_TIMEOUT|REFRESH_LOCK_LOST|REPAIR_EVIDENCE_CHANGED|REPAIR_EVIDENCE_UNAVAILABLE|QUARANTINE_COLLISION_LIMIT|OBSERVATION_CONFLICT)\b/)?.[0]??'SYNC_UNCONFIRMED';
+  return reply(503,{code,error:'Die Synchronisierung konnte derzeit nicht bestätigt werden.'});
+}
 export function createAddonSyncHandler({workMs=ADDON_WORK_MS,cleanupUntilMs=ADDON_CLEANUP_UNTIL_MS}={}){
   if(!(workMs>0&&cleanupUntilMs>workMs&&workMs<=ADDON_WORK_MS&&cleanupUntilMs<=ADDON_CLEANUP_UNTIL_MS))throw Error('Ungültiges Sync-Zeitbudget');
   return async function handler(req,res){
@@ -31,7 +36,7 @@ export function createAddonSyncHandler({workMs=ADDON_WORK_MS,cleanupUntilMs=ADDO
       result=await runSyncDeadline(started+workMs,()=>syncRequest(req,ownership));
     }catch(error){
       console.warn('Addon-Sync-Zeitbudget oder Anfrage fehlgeschlagen:',String(error.message).slice(0,140));
-      result=reply(503,{error:String(error.message).slice(0,180)});
+      result=unconfirmedSync(error);
     }finally{
       // The token is known before SET. Even an ambiguous acquisition may
       // be cleaned up, but never delete another owner's lease.
@@ -169,6 +174,6 @@ async function syncRequest(req,ownership){
     console.error('Addon-Synchronisierung fehlgeschlagen:',error);
     if(String(error.message).includes('DEVICE_AUTH_REVOKED'))return reply(401,{error:'Geräteberechtigung nicht mehr gültig'});
     const status=/^(SYNC_CONFLICT|STALE_SPELLBOOK)/.test(String(error.message))?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
-    return reply(status,{error:String(error.message).slice(0,180)});
+    return status===503?unconfirmedSync(error):reply(status,{error:String(error.message).slice(0,180)});
   }
 }
