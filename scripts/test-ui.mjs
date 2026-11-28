@@ -169,6 +169,11 @@ const statDetails=[
   ['DODGE','Ausweichen',5.2468],['PARRY','Parieren',4.88],['BLOCK','Blocken',0],['ATTACKSPEED','Angriffsgeschwindigkeit',1.961]
 ].map(([enumKey,name,value])=>({enum:enumKey,name,value}));
 const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshEnums:statDetails.map(x=>x.enum),statsDetails:statDetails});
+const failedStats=ui.statsPanel({slug:'qa-failed',scrapeOk:false,statsVerified:true,statsFreshEnums:['ARMOR'],statsDetails:[{enum:'ARMOR',name:'Rüstung',value:100}]});
+assert.ok(failedStats.includes('letzter Stand')&&failedStats.includes('100'));
+const stalePet=hunterPetCombatProfile({scrapeOk:false,statsVerified:true,statsFreshEnums:['ARMOR','STAMINA','MELEECRIT','RANGEDCRIT'],statsByEnum:{ARMOR:100,STAMINA:20,MELEECRIT:4,RANGEDCRIT:6}});
+assert.equal(stalePet.inherited.armor,null);assert.equal(stalePet.inherited.health,null);assert.equal(stalePet.inherited.crit,null);
+assert.equal(hunterPetCombatProfile({scrapeOk:true,statsFreshEnums:['ARMOR'],statsByEnum:{ARMOR:null}}).inherited.armor,null);
 assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,10);
 assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,7);
 assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %')&&statQa.includes('4,9 %'));
