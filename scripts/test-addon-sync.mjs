@@ -162,7 +162,7 @@ for(const invalid of ['__proto__','constructor','toString','hasOwnProperty','unk
   assert.equal(trustedCharacterName(invalid),null);assert.equal(isTrustedCharacterSlug(invalid),false);
   assert.equal(deviceMayCreateEnrollment(coleDevice,invalid),false);
 }
-const savedEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN'].map(k=>[k,process.env[k]]));
+const savedEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','DALTON_PRODUCTION_REDIS_ORIGIN'].map(k=>[k,process.env[k]]));
 const savedFetch=globalThis.fetch;
 const requests=[];
 const fakeToken='ddv1_'+'fixture'.repeat(7);
@@ -172,6 +172,7 @@ try{
   process.env.KV_REST_API_TOKEN='synthetic';
   process.env.DALTON_PREVIEW_REDIS_REST_URL='https://preview-fixture.invalid';
   process.env.DALTON_PREVIEW_REDIS_REST_TOKEN='synthetic-preview';
+  process.env.DALTON_PRODUCTION_REDIS_ORIGIN='https://fixture.invalid';
   let returnedRecord=validRecord;
   globalThis.fetch=async (url,options)=>{
     assert.equal(String(url),process.env.VERCEL_ENV==='preview'?'https://preview-fixture.invalid':'https://fixture.invalid');
