@@ -20,7 +20,9 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   const success=results.reduce((n,r)=>n+r.success,0);
 
   let latest={
-    generatedAt:new Date().toISOString(),
+    // The distributed writer lock establishes a strict persisted order even
+    // when two attempts share a millisecond or a server clock steps back.
+    generatedAt:new Date(Math.max(Date.now(),Date.parse(previous.generatedAt)+1||0)).toISOString(),
     characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))
   };
 
