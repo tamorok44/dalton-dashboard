@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {createHash} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {existsSync,promises as fs,watch} from 'node:fs';
 import {dirname,basename,join,resolve} from 'node:path';
 import {homedir,platform} from 'node:os';
@@ -13,6 +13,7 @@ const execFileAsync=promisify(execFile);
 const VERSION='0.1.0-beta.1';
 const DEFAULT_ENDPOINT='https://dalton-dashboard-eight.vercel.app/api/addon-sync';
 const TRUSTED_NAMES=new Set(['cole dalton','chucky dalton','dolly dalton','viola dalton']);
+const TRUSTED_SLUGS=new Set([...TRUSTED_NAMES].map(name=>name.replace(' ','-')));
 
 function normalizedName(value){return String(value||'').trim().toLocaleLowerCase('de-DE')}
 function configFile(){
@@ -24,13 +25,35 @@ function configFile(){
   return join(process.env.XDG_CONFIG_HOME||join(homedir(),'.config'),'dalton-dashboard-bridge','config.json');
 }
 async function loadConfig(){
-  try{return JSON.parse(await fs.readFile(configFile(),'utf8'))}catch{return {}}
+  try{
+    const value=JSON.parse(await fs.readFile(configFile(),'utf8'));
+    if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Ungültige Bridge-Konfiguration');
+    return value;
+  }catch(error){if(error.code==='ENOENT')return {};throw error;}
+}
+// Exclusive interprocess lock outside the installation directory. Never
+// steal a lock by age: a paused process could still commit. Fail closed.
+async function withConfigMutation(operation){
+  const dir=dirname(configFile()),lock=dir+'.mutation.lock';
+  await fs.mkdir(dirname(dir),{recursive:true});
+  try{await fs.mkdir(lock,{mode:0o700})}
+  catch(error){if(error.code==='EEXIST')throw Error('Andere Geräteverwaltung aktiv oder unterbrochen; bitte nach Prüfung erneut versuchen');throw error;}
+  try{return await operation()}
+  finally{await fs.rmdir(lock)}
 }
 async function saveConfig(value){
-  const file=configFile();
-  await fs.mkdir(dirname(file),{recursive:true});
-  await fs.writeFile(file,JSON.stringify(value,null,2)+'\n',{mode:0o600});
-  return file;
+  const file=configFile(),dir=dirname(file);
+  await fs.mkdir(dir,{recursive:true,mode:0o700});
+  const tmp=join(dir,'.config-'+randomUUID()+'.tmp');
+  let handle;
+  try{
+    handle=await fs.open(tmp,'wx',0o600);
+    await handle.writeFile(JSON.stringify(value,null,2)+'\n');
+    await handle.sync();
+    await handle.close();handle=null;
+    await fs.rename(tmp,file);
+    return file;
+  }finally{if(handle)await handle.close();await fs.rm(tmp,{force:true})}
 }
 // All credential-bearing requests share one transport boundary, including
 // enrollment and revoke. No plaintext loopback exceptions or redirects.
@@ -46,6 +69,12 @@ function enrollmentEndpoint(endpoint){
 }
 export async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
   const base=enrollmentEndpoint(endpoint);
+  validateShareUrl(previewShareUrl,base.origin);
+  return withConfigMutation(()=>enrollDeviceLocked(endpoint,code,character,previewShareUrl));
+}
+async function enrollDeviceLocked(endpoint,code,character=null,previewShareUrl=null){
+  const base=enrollmentEndpoint(endpoint);
+  const current=await loadConfig();
   const cookie=await previewCookie(previewShareUrl,base.origin);
   const response=await fetch(base,{
     method:'POST',
@@ -56,11 +85,19 @@ export async function enrollDevice(endpoint,code,character=null,previewShareUrl=
   });
   const body=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error('Einrichtung fehlgeschlagen: '+String(body.error||response.statusText).slice(0,180));
-  const current=await loadConfig();
-  const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null});
+  if(typeof body.deviceToken!=='string'||!/^ddv1_[A-Za-z0-9_-]{43}$/.test(body.deviceToken)||!TRUSTED_SLUGS.has(body.characterSlug)||normalizedName(body.characterName)!==body.characterSlug.replace('-',' '))throw Error('Ungültige Kopplungsantwort; lokale Konfiguration bleibt erhalten');
+  const next={...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null};
+  delete next.revokedAt;
+  const file=await saveConfig(next);
   return {...body,configFile:file};
 }
 export async function revokeDevice(config,{endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||DEFAULT_ENDPOINT,previewShareUrl=config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null}={}){
+  if(!config?.deviceToken)return {revoked:false,alreadyAbsent:true};
+  assertStoredDeviceOrigin(config,endpoint);
+  validateShareUrl(previewShareUrl,secureBridgeEndpoint(endpoint).origin);
+  return withConfigMutation(()=>revokeDeviceLocked(config,{endpoint,previewShareUrl}));
+}
+async function revokeDeviceLocked(config,{endpoint,previewShareUrl}){
   const token=config?.deviceToken;
   if(!token)return {revoked:false,alreadyAbsent:true};
   assertStoredDeviceOrigin(config,endpoint);
@@ -81,7 +118,10 @@ export async function revokeDevice(config,{endpoint=config.endpoint||process.env
   });
   const body=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error('Gerätezugang konnte nicht widerrufen werden: '+String(body.error||response.statusText).slice(0,180));
-  const clean={...config};
+  const current=await loadConfig();
+  // Protect against older, nonparticipating writers as well.
+  if(current.deviceToken!==token||secureBridgeEndpoint(current.endpoint??DEFAULT_ENDPOINT).origin!==base.origin)throw Error('Lokale Kopplung wurde inzwischen geändert; neue Kopplung bleibt erhalten');
+  const clean={...current};
   delete clean.deviceToken;
   clean.revokedAt=new Date().toISOString();
   await saveConfig(clean);
@@ -131,6 +171,15 @@ export function args(argv){
   if(management&&(out.watch||out.file))throw Error('Geräteverwaltung kann nicht mit Sync-Optionen kombiniert werden');
   if(out.character&&!out.enroll)throw Error('--character ist nur bei --enroll erlaubt');
   if(out.help&&seen.size>1)throw Error('--help muss allein stehen');
+  if(out.help)return out;
+  if(out.promoteProduction)throw Error('Automatische Geräteübernahme deaktiviert. Bitte einen regulären Einrichtungscode für die Produktionsumgebung verwenden.');
+  if(out.enroll&&!/^dalton-[A-Za-z0-9_-]{32}$/.test(out.enroll))throw Error('Ungültiger Einrichtungscode');
+  if(out.createEnroll&&!TRUSTED_SLUGS.has(out.createEnroll))throw Error('Unbekannter Dalton-Charakter');
+  if(out.character&&!TRUSTED_SLUGS.has(out.character)&&!TRUSTED_NAMES.has(normalizedName(out.character)))throw Error('Unbekannter Dalton-Charakter');
+  const explicitEndpoint=out.endpointProvided?out.endpoint:process.env.DALTON_SYNC_ENDPOINT;
+  const explicitShare=out.previewShareUrl??process.env.DALTON_SYNC_PREVIEW_SHARE_URL;
+  const origin=explicitEndpoint!==undefined?secureBridgeEndpoint(explicitEndpoint).origin:undefined;
+  validateShareUrl(explicitShare,origin);
   return out;
 }
 // CLI > environment > saved configuration > default. A stored device
@@ -143,6 +192,7 @@ export function resolveBridgeTarget(options,config={},env=process.env){
     const stored=secureBridgeEndpoint(config.endpoint??DEFAULT_ENDPOINT);
     if(stored.origin===new URL(endpoint).origin)previewShareUrl=config.previewShareUrl;
   }
+  validateShareUrl(previewShareUrl,new URL(endpoint).origin);
   return {endpoint,previewShareUrl};
 }
 function assertStoredDeviceOrigin(config,endpoint){
@@ -379,10 +429,15 @@ export function previewCookieFromSetCookie(values=[]){
     .filter(value=>value.startsWith('_vercel_jwt='))
     .join('; ');
 }
-async function previewCookie(shareUrl,expectedOrigin){
-  if(!shareUrl)return null;
+function validateShareUrl(shareUrl,expectedOrigin){
+  if(shareUrl==null)return null;
   const url=new URL(shareUrl);
-  if(url.protocol!=='https:'||url.username||url.password||url.origin!==expectedOrigin)throw new Error('Preview-Share-Link muss denselben HTTPS-Ursprung wie der Sync-Endpunkt verwenden');
+  if(url.protocol!=='https:'||url.username||url.password||(expectedOrigin!==undefined&&url.origin!==expectedOrigin))throw new Error('Preview-Share-Link muss denselben HTTPS-Ursprung wie der Sync-Endpunkt verwenden');
+  return url;
+}
+async function previewCookie(shareUrl,expectedOrigin){
+  const url=validateShareUrl(shareUrl,expectedOrigin);
+  if(!url)return null;
   const response=await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(15000)});
   if(response.status<200||response.status>=400)throw new Error('Preview-Freigabe HTTP '+response.status);
   const raw=typeof response.headers.getSetCookie==='function'
@@ -414,6 +469,21 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
 export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){
   const options=args(argv);
   if(options.help){help();return}
+  if(options.enroll||options.revokeDevice){
+    return withConfigMutation(async()=>{
+      const config=await readConfig();
+      const target=resolveBridgeTarget(options,config);
+      if(options.enroll){
+        const enrolled=await enrollDeviceLocked(target.endpoint,options.enroll,options.character,target.previewShareUrl);
+        console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
+        console.log('Konfiguration: '+enrolled.configFile);
+      }else{
+        const result=await revokeDeviceLocked(config,target);
+        if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
+        else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));
+      }
+    });
+  }
   const config=await readConfig();
   const target=resolveBridgeTarget(options,config);
   options.endpoint=target.endpoint;
@@ -425,23 +495,8 @@ export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}
     console.log('Gültig für '+Math.round(Number(created.expiresInSeconds||0)/3600)+' Stunden und genau einmal.');
     return;
   }
-  if(options.enroll){
-    const enrolled=await enrollDevice(target.endpoint,options.enroll,options.character,target.previewShareUrl);
-    console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
-    console.log('Konfiguration: '+enrolled.configFile);
-    return;
-  }
-  if(options.revokeDevice){
-    const result=await revokeDevice(config,target);
-    if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
-    else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));
-    return;
-  }
-  if(options.promoteProduction){
-    throw new Error('Automatische Geräteübernahme deaktiviert. Bitte einen regulären Einrichtungscode für die Produktionsumgebung verwenden.');
-  }
-
   const auth=options.dryRun?null:bridgeAuthorization(config,target.endpoint);
+  if(!options.dryRun&&!auth)throw Error('Bridge ist noch nicht eingerichtet');
   const sources=await resolveSourcesWithRetry(options.file,options.watch,{characterName:config.deviceToken?config.characterName:null});
   if(sources.characterFile)console.log('Eigener Charakter: '+sources.characterFile);
   if(sources.relayFile)console.log('Relay-Postfach: '+sources.relayFile);
@@ -457,7 +512,6 @@ export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}
     try{
       const records=await readRecords(sources);
       if(!records.length)return;
-      if(!options.dryRun&&!auth)throw new Error('Bridge ist noch nicht eingerichtet');
 
       for(const record of records){
         if(lastHashes.get(record.key)===record.hash)continue;
