@@ -31,12 +31,24 @@ async function saveConfig(value){
   await fs.writeFile(file,JSON.stringify(value,null,2)+'\n',{mode:0o600});
   return file;
 }
+// All credential-bearing requests share one transport boundary, including
+// enrollment and revoke. No plaintext loopback exceptions or redirects.
+export function secureBridgeEndpoint(endpoint){
+  const url=new URL(endpoint);
+  if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/api/addon-sync')throw Error('Sync-Endpunkt muss eine HTTPS-URL ohne Zugangsdaten, Query oder Fragment sein');
+  return url;
+}
+function enrollmentEndpoint(endpoint){
+  const url=secureBridgeEndpoint(endpoint);
+  url.pathname='/api/addon-device-enroll';
+  return url;
+}
 async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
-  const base=new URL(endpoint);
-  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
-  const cookie=await previewCookie(previewShareUrl);
+  const base=enrollmentEndpoint(endpoint);
+  const cookie=await previewCookie(previewShareUrl,base.origin);
   const response=await fetch(base,{
     method:'POST',
+    redirect:'error',
     headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,...(cookie?{Cookie:cookie}:{})},
     body:JSON.stringify({code,character}),
     signal:AbortSignal.timeout(15000)
@@ -51,9 +63,8 @@ async function revokeDevice(config){
   const token=config?.deviceToken;
   if(!token)return {revoked:false,alreadyAbsent:true};
   const endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync';
-  const base=new URL(endpoint);
-  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
-  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const base=enrollmentEndpoint(endpoint);
+  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null,base.origin);
   const headers={
     Authorization:'Device '+token,
     'Content-Type':'application/json',
@@ -62,6 +73,7 @@ async function revokeDevice(config){
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(base,{
     method:'POST',
+    redirect:'error',
     headers,
     body:JSON.stringify({action:'revoke'}),
     signal:AbortSignal.timeout(15000)
@@ -76,13 +88,13 @@ async function revokeDevice(config){
 }
 async function createEnrollment(endpoint,characterSlug,auth,{previewShareUrl=null}={}){
   if(!auth)throw new Error('Kein berechtigter Hub-Zugang für Einrichtungscodes vorhanden');
-  const base=new URL(endpoint);
-  base.pathname=base.pathname.replace(/\/api\/addon-sync$/,'/api/addon-device-enroll');
-  const cookie=await previewCookie(previewShareUrl);
+  const base=enrollmentEndpoint(endpoint);
+  const cookie=await previewCookie(previewShareUrl,base.origin);
   const headers={Authorization:auth,'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION};
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(base,{
     method:'POST',
+    redirect:'error',
     headers,
     body:JSON.stringify({action:'create',characterSlug}),
     signal:AbortSignal.timeout(15000)
@@ -337,10 +349,10 @@ export function previewCookieFromSetCookie(values=[]){
     .filter(value=>value.startsWith('_vercel_jwt='))
     .join('; ');
 }
-async function previewCookie(shareUrl){
+async function previewCookie(shareUrl,expectedOrigin){
   if(!shareUrl)return null;
   const url=new URL(shareUrl);
-  if(url.protocol!=='https:')throw new Error('Preview-Share-Link muss HTTPS verwenden');
+  if(url.protocol!=='https:'||url.username||url.password||url.origin!==expectedOrigin)throw new Error('Preview-Share-Link muss denselben HTTPS-Ursprung wie der Sync-Endpunkt verwenden');
   const response=await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(15000)});
   if(response.status<200||response.status>=400)throw new Error('Preview-Freigabe HTTP '+response.status);
   const raw=typeof response.headers.getSetCookie==='function'
@@ -351,8 +363,7 @@ async function previewCookie(shareUrl){
   return cookie;
 }
 async function postPayload(endpoint,auth,payload,{cookie=null}={}){
-  const url=new URL(endpoint);
-  if(url.protocol!=='https:'&&url.hostname!=='localhost'&&url.hostname!=='127.0.0.1')throw new Error('Sync-Endpunkt muss HTTPS verwenden');
+  const url=secureBridgeEndpoint(endpoint);
   const headers={
     Authorization:auth,
     'Content-Type':'application/json',
@@ -361,6 +372,7 @@ async function postPayload(endpoint,auth,payload,{cookie=null}={}){
   if(cookie)headers.Cookie=cookie;
   const response=await fetch(url,{
     method:'POST',
+    redirect:'error',
     headers,
     body:JSON.stringify(payload),
     signal:AbortSignal.timeout(20000)
@@ -411,7 +423,7 @@ async function main(){
   const lastHashes=new Map();
   let running=false;
   let rerun=false;
-  const previewAuthCookie=await previewCookie(options.previewShareUrl||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null);
+  const previewAuthCookie=await previewCookie(options.previewShareUrl||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null,secureBridgeEndpoint(options.endpoint).origin);
 
   const sync=async()=>{
     if(running){rerun=true;return}
