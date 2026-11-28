@@ -62,7 +62,7 @@ export default async function handler(req,res){
     pending=runLockedRefresh(lockToken,source)
       .finally(()=>{pending=null});
     const {result,petRuleState}=await pending;
-    if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten'});
+    if(result.success===0)return res.status(503).json({error:'Die aktuellen Profilquellen sind nicht erreichbar; gespeicherte Daten bleiben erhalten',success:0,persisted:result.persisted===true,data:publicCharacterData(result.data)});
     const petRules=publicPetRuleState(petRuleState);
     const [addonSync,liveKnowledgeVersion]=await Promise.all([
       loadPublicAddonSyncStates((result.data?.characters||[]).map(c=>c.slug).filter(Boolean)),loadLiveKnowledgeVersion().catch(()=>null)
