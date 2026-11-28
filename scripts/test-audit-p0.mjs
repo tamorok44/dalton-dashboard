@@ -862,6 +862,53 @@ if(!hasRedis){
       globalThis.fetch=previousFetch;
       cli('DEL',deviceKey);
     }
+    // S08: exercise the actual Add-on API against real isolated Redis under
+    // a backward clock step and two distinct changes in the same millisecond.
+    // The existing writer lock must protect both the roster and compact metadata.
+    {
+      const RealDate=Date,clock=RealDate.now();
+      const prior=roster();
+      const seededAt=new RealDate(Math.max(clock+60003,RealDate.parse(prior.generatedAt)+1)).toISOString();
+      const held=await acquireRefreshLock();
+      try{await saveCharacters({...prior,generatedAt:seededAt},held)}
+      finally{await releaseRefreshLock(held)}
+      const priorAddon=await loadAddonSyncState('cole-dalton');
+      class FrozenDate extends RealDate{
+        constructor(...args){super(...(args.length?args:[clock]))}
+        static now(){return clock}
+      }
+      try{
+        globalThis.Date=FrozenDate;
+        const earlier=payload('Cole Dalton','generation-rollback',[133,143],now+32);
+        const later=payload('Cole Dalton','generation-same-ms',[133],now+33);
+        const first=await call(earlier);assert.equal(first.http,200,JSON.stringify(first.value));assert.equal(first.value.spellbookApplied,true);
+        const one=roster();
+        assert.equal(RealDate.parse(one.generatedAt),RealDate.parse(seededAt)+1);
+        assert.deepEqual(ids('cole-dalton'),[133,143]);
+        const firstState=await loadAddonSyncState('cole-dalton');
+        assert.ok(RealDate.parse(firstState.receivedAt)>RealDate.parse(priorAddon.receivedAt));
+        assert.equal(JSON.parse(cli('GET',versionKey)).characters.generatedAt,one.generatedAt);
+        const second=await call(later);assert.equal(second.http,200,JSON.stringify(second.value));assert.equal(second.value.spellbookApplied,true);
+        const two=roster();
+        assert.equal(RealDate.parse(two.generatedAt),RealDate.parse(one.generatedAt)+1);
+        assert.deepEqual(ids('cole-dalton'),[133]);
+        const secondState=await loadAddonSyncState('cole-dalton');
+        assert.ok(RealDate.parse(secondState.receivedAt)>RealDate.parse(firstState.receivedAt));
+        assert.equal(JSON.parse(cli('GET',versionKey)).characters.generatedAt,two.generatedAt);
+        const duplicate=await call(later);
+        assert.equal(duplicate.http,200);assert.equal(duplicate.value.duplicate,true);
+        assert.equal(roster().generatedAt,two.generatedAt,'Replay must not advance the profile');
+        assert.equal((await loadAddonSyncState('cole-dalton')).receivedAt,secondState.receivedAt,'Replay must not advance receipt');
+        const {default:charactersApi}=await import('../api/characters.js');
+        const publicRes=response();
+        await charactersApi({method:'GET',query:{}},publicRes);
+        assert.equal(publicRes.http,200,JSON.stringify(publicRes.value));
+        assert.equal(publicRes.value.data.generatedAt,two.generatedAt);
+        assert.equal(publicRes.value.dataVersion.generatedAt,two.generatedAt);
+        assert.deepEqual(publicRes.value.data.characters.find(c=>c.slug==='cole-dalton').knownClassAbilities.map(x=>x.id),[133]);
+      }finally{globalThis.Date=RealDate;}
+      console.log('S08 actual API/Redis: backward clock, same-ms distinct writes, atomic versions, GET and idempotent replay OK');
+    }
     // Real Redis: one combined reservation per attempt; no network to ForeverDB.
     {
       const {reserveForeverDbRequest,foreverDbBudgetKey,foreverDbMinuteBudgetKey,FOREVERDB_DAILY_BUDGET,FOREVERDB_MINUTE_BUDGET}=await import('./foreverdb-budget.mjs');
