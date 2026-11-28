@@ -54,7 +54,7 @@ const browserRoster=roster.map(c=>c.classId===3?staleHunter:c);
 const browserPetRules={rulebookVersion:HUNTER_PET_RULEBOOK_VERSION,overall:'verified',rules:{'pet.scaling.armor':{status:'verified'}}};
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
 const vercelConfig=JSON.parse(readFileSync(resolve(root,'vercel.json'),'utf8'));
-const cspCandidate=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy-Report-Only')?.value;
+const cspCandidate=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy')?.value;
 assert.ok(cspCandidate,'CSP candidate must be exercised in browser fixture');
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
 let offlineFixture=false,refreshRequests=0;
@@ -86,7 +86,7 @@ const server=createServer(async(req,res)=>{
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);
  const file=resolve(root,'.'+pathname);
  if(!file.startsWith(root.endsWith(sep)?root:root+sep)||!statSync(file).isFile())throw Error('Not found');
- res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Cache-Control':'no-store',...(extname(file)==='.html'?{'Content-Security-Policy-Report-Only':cspCandidate}:{})});createReadStream(file).pipe(res);
+ res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Cache-Control':'no-store',...(extname(file)==='.html'?{'Content-Security-Policy':cspCandidate}:{})});createReadStream(file).pipe(res);
  }catch{if(!res.headersSent)res.writeHead(404);res.end('Not found')}
 });
 await new Promise((ok,bad)=>{server.once('error',bad);server.listen(0,'127.0.0.1',ok)});

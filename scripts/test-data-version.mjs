@@ -69,4 +69,10 @@ fields.set('characters',JSON.stringify({generatedAt:'2026-11-26T07:00:00Z',slugs
 const legacyAddonField='addon:'+(process.env.VERCEL_ENV==='production'?'production':'preview')+':cole-dalton';
 fields.set(legacyAddonField,JSON.stringify({syncId:'intervening-v1',receivedAt:'2026-11-26T07:01:00Z'}));
 const upgraded=await readCompactVersion(inputs);
-assert.equal(upgraded.generatedAt,'2026-11-26T07:00:00Z');assert.ok(upgraded.addonSyncVersion.includes('intervening-v1'));assert.equal(fullReads,4,'re-upgrade detects newer v1 metadata without full payload reads');
+assert.equal(upgraded.generatedAt,'2026-11-21T05:07:00.000Z');
+assert.ok(upgraded.addonSyncVersion.includes('intervening-v1'));
+assert.equal(fullReads,5,'a conflicting legacy hint requires the authoritative roster');
+const actualUpgrade=await readCompactVersion({...inputs,readCharacters:async()=>({data:{
+  generatedAt:'2026-11-26T07:00:00Z',characters:[{slug:'cole-dalton'},{slug:'dolly-dalton'}]
+}})});
+assert.equal(actualUpgrade.generatedAt,'2026-11-26T07:00:00Z','a verified historical writer can still be observed');

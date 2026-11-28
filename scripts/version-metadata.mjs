@@ -13,11 +13,21 @@ export function petVersionMetadata(state){return state?{checkedAt:state.checkedA
 export function addonVersionMetadata(state){return state?{syncId:state.payload?.syncId||null,receivedAt:state.receivedAt||null}:null}
 export function parseVersionMetadata(raw){try{return typeof raw==='string'?JSON.parse(raw):raw??null}catch{return null}}
 
+// Accept the historical UTC spellings while keeping one sortable millisecond
+// representation. Date.parse alone also accepts ambiguous or impossible dates.
+export function canonicalProfileGeneration(value){
+  const match=typeof value==='string'&&/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?(?:Z|\+00:00)$/.exec(value);
+  if(!match)return null;
+  const canonical=match[1]+'.'+(match[2]||'').padEnd(3,'0').slice(0,3)+'Z';
+  const time=Date.parse(canonical);
+  return Number.isFinite(time)&&new Date(time).toISOString()===canonical?canonical:null;
+}
+
 // Shared logical profile generation, independent of capture/receipt time.
 // Call while holding the common profile-writer lock. Every changed roster
 // must advance, even with an equal millisecond or a backwards clock step.
 export function nextProfileGeneration(previous,clock=Date.now()){
-  const prior=Date.parse(previous?.generatedAt??'');
+  const prior=Date.parse(canonicalProfileGeneration(previous?.generatedAt)??'');
   if(!Number.isFinite(prior)||!Number.isFinite(clock))throw Error('Ungültige Profilgeneration');
   return new Date(Math.max(Math.trunc(clock),prior+1)).toISOString();
 }

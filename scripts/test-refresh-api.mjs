@@ -271,7 +271,8 @@ try{
   assert.ok(!JSON.stringify(refreshed).includes(questMarker));
   assert.equal(JSON.parse(saved).characters[0].statsByEnum.HASTE,42);
   assert.equal(JSON.parse(saved).characters[0].statsByEnum.UNKNOWN_HASTE,9125,'Preserve raw unknown enum for later review');
-  assert.equal(JSON.parse(saved).characters[0].stats.Tempowertung,9125,'Fixture reproduced name collision in stored raw data');
+  assert.ok(!Object.hasOwn(JSON.parse(saved).characters[0].stats,'Tempowertung'),'Ambiguous name is not persisted as an authoritative lookup');
+  assert.ok(JSON.parse(saved).characters[0].statsDetails.some(x=>x.enum==='HASTE'&&x.value===42),'The validated enum keeps its provider label and value');
   assert.ok(!JSON.stringify(refreshed).includes('9125'));
 
   cooldown=false;

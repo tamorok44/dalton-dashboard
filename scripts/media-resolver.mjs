@@ -23,13 +23,46 @@ function extensionFor(type){
   if(type==='image/webp')return 'webp';
   return 'jpg';
 }
-export function imageStoreConfigured(){
-  if(['preview','development'].includes(process.env.VERCEL_ENV))return false;
-  return Boolean(process.env.BLOB_STORE_ID||process.env.BLOB_READ_WRITE_TOKEN);
+export function publicBlobWritesAllowed(env=process.env){
+  if((env.VERCEL||env.VERCEL_ENV)&&env.VERCEL_ENV!=='production')return false;
+  return Boolean(env.BLOB_STORE_ID||env.BLOB_READ_WRITE_TOKEN);
 }
+export const imageStoreConfigured=publicBlobWritesAllowed;
 export function sourceImageAllowed(url){
   return SOURCE_RULES.some(rule=>rule.test(String(url||'')));
 }
+
+async function readImageBody(response,signal){
+  const length=response.headers.get('content-length');
+  if(length!==null&&(!/^\d+$/.test(length)||Number(length)>MAX_IMAGE_BYTES)){
+    void response.body?.cancel().catch(()=>{});
+    throw Error('Bildgröße unzulässig');
+  }
+  if(!response.body)throw Error('Bildgröße unzulässig');
+  const reader=response.body.getReader();
+  const chunks=[];
+  let size=0,complete=false;
+  const abort=()=>{void reader.cancel(signal.reason).catch(()=>{});};
+  signal.addEventListener('abort',abort,{once:true});
+  try{
+    while(true){
+      signal.throwIfAborted();
+      const {done,value}=await reader.read();
+      signal.throwIfAborted();
+      if(done){complete=true;break;}
+      size+=value.byteLength;
+      if(size>MAX_IMAGE_BYTES)throw Error('Bildgröße unzulässig');
+      chunks.push(value);
+    }
+  }finally{
+    signal.removeEventListener('abort',abort);
+    if(!complete)abort();
+    reader.releaseLock();
+  }
+  if(!size)throw Error('Bildgröße unzulässig');
+  return Buffer.concat(chunks,size);
+}
+
 export async function resolveMediaAsset({
   entityType,
   entityId,
@@ -64,11 +97,18 @@ export async function resolveMediaAsset({
 
   if(!imageStoreConfigured())return null;
 
+  const signal=AbortSignal.timeout(12000);
   const response=await fetchImpl(sourceUrl,{
     headers:{'user-agent':'Dalton-Dashboard/1.0 media archiver'},
-    signal:AbortSignal.timeout(12000)
+    redirect:'error',
+    signal
   });
+  if(response.redirected||response.url&&!sourceImageAllowed(response.url)){
+    void response.body?.cancel().catch(()=>{});
+    throw Error('Bildquelle außerhalb der erlaubten Ziele');
+  }
   if(!response.ok){
+    void response.body?.cancel().catch(()=>{});
     if(response.status===403||response.status===404){
       try{await saveMediaRecord(type,id,kind,{sourceUrl,storedUrl:null,contentType:null})}catch{}
       return null;
@@ -76,17 +116,21 @@ export async function resolveMediaAsset({
     throw Error('Bildquelle HTTP '+response.status);
   }
   const contentType=(response.headers.get('content-type')||'').split(';')[0];
-  if(!ALLOWED_TYPES.has(contentType))throw Error('Ungültiges Bildformat');
-  const body=Buffer.from(await response.arrayBuffer());
-  if(body.length===0||body.length>MAX_IMAGE_BYTES)throw Error('Bildgröße unzulässig');
+  if(!ALLOWED_TYPES.has(contentType)){
+    void response.body?.cancel().catch(()=>{});
+    throw Error('Ungültiges Bildformat');
+  }
+  const body=await readImageBody(response,signal);
 
   const put=putImpl||((await import('@vercel/blob')).put);
+  signal.throwIfAborted();
   const path='media/'+type+'/'+id+'/'+kind+'-'+hash(sourceUrl)+'.'+extensionFor(contentType);
   const result=await put(path,body,{
     access:'public',
     addRandomSuffix:false,
     allowOverwrite:true,
-    contentType
+    contentType,
+    abortSignal:signal
   });
   await saveMediaRecord(type,id,kind,{sourceUrl,storedUrl:result.url,contentType});
   return result.url;

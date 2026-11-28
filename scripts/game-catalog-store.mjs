@@ -1,4 +1,5 @@
 import {configured,redis} from './character-store.mjs';
+import {publicBlobWritesAllowed} from './media-resolver.mjs';
 import {factionSeedByName,factionCrestFor,factionCrestKindFor} from '../reputation-data.js';
 
 const CATALOG_PREFIX='dalton-dashboard:game-catalog:v1:';
@@ -174,7 +175,7 @@ export async function loadCatalogMeta(){
 export async function archiveCatalogSnapshot(type,records,{build='unversioned'}={}){
   const t=cleanType(type);
   if(!t||!Array.isArray(records))throw new Error('Ungültiger Katalog-Snapshot');
-  if(!(process.env.BLOB_STORE_ID||process.env.BLOB_READ_WRITE_TOKEN))return null;
+  if(!publicBlobWritesAllowed())return null;
   const safeBuild=String(build||'unversioned').replace(/[^a-z0-9._-]+/gi,'-');
   const {put}=await import('@vercel/blob');
   const body=Buffer.from(JSON.stringify({type:t,build,generatedAt:new Date().toISOString(),records},null,2));

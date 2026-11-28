@@ -3,51 +3,14 @@ import {loadCharactersForWrite,saveCharacters,acquireRefreshLock,releaseRefreshL
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {parseSpellbookCode,resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
-import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
+import {archiveKnownAbilityIcons} from '../scripts/knowledge-media.mjs';
+import {readRequestJson,RequestJsonError} from '../scripts/request-json.mjs';
 
 export const config={maxDuration:30};
 
 function safeEqual(a,b){
   const left=Buffer.from(String(a||'')),right=Buffer.from(String(b||''));
   return left.length===right.length&&timingSafeEqual(left,right);
-}
-async function requestCode(req){
-  if(typeof req.body==='string'){
-    try{return JSON.parse(req.body)?.code||null}catch{return null}
-  }
-  if(req.body&&typeof req.body==='object')return req.body.code||null;
-  if(typeof req[Symbol.asyncIterator]!=='function')return null;
-  let raw='';
-  for await(const chunk of req){
-    raw+=chunk;
-    if(raw.length>250000)throw new Error('Spellbook-Anfrage ist zu groß');
-  }
-  try{return JSON.parse(raw)?.code||null}catch{return null}
-}
-async function archiveKnownAbilityIcons(data,characterSlug){
-  const characters=[...(data?.characters||[])];
-  const index=characters.findIndex(character=>character?.slug===characterSlug);
-  if(index<0)return data;
-  const character=characters[index];
-  const abilities=await Promise.all((character.knownClassAbilities||[]).map(async ability=>{
-    const iconId=Number(ability?.iconId);
-    if(!Number.isInteger(iconId)||iconId<=0)return ability;
-    try{
-      const iconUrl=await resolveMediaAsset({
-        entityType:'spell',
-        entityId:ability.id,
-        role:'icon',
-        sourceUrl:'https://foreverdb.net/icons/'+iconId+'.webp',
-        priorStoredUrl:ability.iconUrl||null
-      });
-      return {...ability,iconUrl:iconUrl||ability.iconUrl||null};
-    }catch(error){
-      console.warn('Spellbook-Icon konnte nicht archiviert werden:',String(error.message).slice(0,120));
-      return ability;
-    }
-  }));
-  characters[index]={...character,knownClassAbilities:abilities};
-  return {...data,characters};
 }
 export default async function handler(req,res){
   res.setHeader('Cache-Control','private, no-store');
@@ -56,8 +19,12 @@ export default async function handler(req,res){
   const expected=process.env.SPELLBOOK_SYNC_TOKEN;
   if(!expected)return res.status(503).json({error:'Spellbook-Synchronisierung ist nicht konfiguriert'});
   let snapshot;
-  try{snapshot=parseSpellbookCode(await requestCode(req))}catch(error){
-    return res.status(400).json({error:String(error.message).slice(0,160)});
+  try{
+    const body=await readRequestJson(req,250000);
+    if(typeof body.code!=='string')throw new RequestJsonError(400,'Ungültiger Spellbook-Code');
+    snapshot=parseSpellbookCode(body.code);
+  }catch(error){
+    return res.status(error instanceof RequestJsonError?error.status:400).json({error:String(error.message).slice(0,160)});
   }
   if(!safeEqual(snapshot.token,expected))return res.status(401).json({error:'Spellbook-Code wurde nicht für dieses Dashboard erstellt'});
   delete snapshot.token;

@@ -1,6 +1,6 @@
 import {selectVersionEvidence} from './storage-reconciliation.mjs';
-import {VERSION_METADATA_KEY,CORE_COMPACT_KEY,PREVIEW_COMPACT_KEY,versionScope,addonVersionField,characterVersionMetadata,petVersionMetadata,addonVersionMetadata,parseVersionMetadata} from './version-metadata.mjs';
-import {loadCharacters,configured,redis} from './character-store.mjs';
+import {VERSION_METADATA_KEY,CORE_COMPACT_KEY,PREVIEW_COMPACT_KEY,versionScope,addonVersionField,characterVersionMetadata,petVersionMetadata,addonVersionMetadata,parseVersionMetadata,canonicalProfileGeneration} from './version-metadata.mjs';
+import {loadCharacters,loadCharactersForWrite,configured,redis} from './character-store.mjs';
 import {loadPublicPetRuleState} from './pet-rule-store.mjs';
 import {loadLiveKnowledgeVersion} from './live-knowledge-store.mjs';
 import {loadPublicAddonSyncStates,loadAddonSyncState} from './addon-sync-store.mjs';
@@ -64,8 +64,26 @@ export async function readCompactVersion({redisImpl=redis,readCharacters=loadCha
     const selected=selectVersionEvidence(modern,legacy,timeField);
     return selected.conflict?read():selected.value;
   }
+  async function characterEvidence(){
+    const verified=async()=>characterVersionMetadata((await readCharacters()).data);
+    const valid=value=>canonicalProfileGeneration(value?.generatedAt)&&Array.isArray(value.slugs)&&
+      value.slugs.length>0&&value.slugs.every(slug=>typeof slug==='string'&&/^[a-z0-9-]+$/i.test(slug))&&
+      new Set(value.slugs).size===value.slugs.length;
+    const modern=core.characters,legacy=parseVersionMetadata(fields.get('characters'));
+    if(modern==null){
+      if(!fields.has('characters'))return field('characters',verified);
+      return valid(legacy)?legacy:verified();
+    }
+    if(!valid(modern))return verified();
+    if(!valid(legacy))return modern;
+    const next=canonicalProfileGeneration(modern.generatedAt),prior=canonicalProfileGeneration(legacy.generatedAt);
+    const sameSlugs=modern.slugs.length===legacy.slugs.length&&legacy.slugs.every(slug=>modern.slugs.includes(slug));
+    // Only the new compact value participates in the current atomic commit.
+    // A newer legacy hint or different membership requires the real roster.
+    return prior>next||!sameSlugs?verified():modern;
+  }
   const [characters,petRules]=await Promise.all([
-    reconciled('characters',core.characters,'generatedAt',async()=>characterVersionMetadata((await readCharacters()).data)),
+    characterEvidence(),
     field('pet',async()=>petVersionMetadata(await readPet()))
   ]);
   const entries=await Promise.all((characters?.slugs||[]).map(async slug=>[slug,await reconciled(addonVersionField(slug),scoped.addon?.[slug],'receivedAt',async()=>addonVersionMetadata(await readAddon(slug)))]));
@@ -73,5 +91,5 @@ export async function readCompactVersion({redisImpl=redis,readCharacters=loadCha
 }
 export async function loadCurrentDataVersion(){
   if(!configured())return legacyDataVersion();
-  return readCompactVersion();
+  return readCompactVersion({readCharacters:()=>loadCharactersForWrite({allowPreviewMissing:true})});
 }

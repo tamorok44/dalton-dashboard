@@ -35,14 +35,25 @@ async function loadConfig(){
 // steal a lock by age: a paused process could still commit. Fail closed.
 async function withConfigMutation(operation){
   const dir=dirname(configFile()),lock=dir+'.mutation.lock';
+  const owner=process.env.DALTON_BRIDGE_INSTALL_LOCK;
+  if(owner){
+    await assertInstallLock(lock,owner);
+    return operation();
+  }
   await fs.mkdir(dirname(dir),{recursive:true});
   try{await fs.mkdir(lock,{mode:0o700})}
   catch(error){if(error.code==='EEXIST')throw Error('Andere Geräteverwaltung aktiv oder unterbrochen; bitte nach Prüfung erneut versuchen');throw error;}
   try{return await operation()}
   finally{await fs.rmdir(lock)}
 }
+async function assertInstallLock(lock,owner){
+  const marker=await fs.readFile(join(lock,'owner'),'utf8').catch(()=>null);
+  if(!/^[a-f0-9]{32}$/i.test(owner)||marker?.trim()!==owner)
+    throw Error('Sperre für Bridge-Installation oder Deinstallation nicht bestätigt');
+}
 async function saveConfig(value){
   const file=configFile(),dir=dirname(file);
+  const owner=process.env.DALTON_BRIDGE_INSTALL_LOCK;
   await fs.mkdir(dir,{recursive:true,mode:0o700});
   const tmp=join(dir,'.config-'+randomUUID()+'.tmp');
   let handle;
@@ -51,6 +62,7 @@ async function saveConfig(value){
     await handle.writeFile(JSON.stringify(value,null,2)+'\n');
     await handle.sync();
     await handle.close();handle=null;
+    if(owner)await assertInstallLock(dir+'.mutation.lock',owner);
     await fs.rename(tmp,file);
     return file;
   }finally{if(handle)await handle.close();await fs.rm(tmp,{force:true})}
@@ -66,6 +78,13 @@ function enrollmentEndpoint(endpoint){
   const url=secureBridgeEndpoint(endpoint);
   url.pathname='/api/addon-device-enroll';
   return url;
+}
+async function confirmedJson(response,operation){
+  const type=response.headers?.get('content-type')?.split(';')[0].trim().toLowerCase();
+  if(!response.ok)throw Error(operation+' fehlgeschlagen (HTTP '+response.status+')');
+  if(response.status!==200||type!=='application/json')return null;
+  const body=await response.json().catch(()=>null);
+  return body&&typeof body==='object'&&!Array.isArray(body)&&!Object.hasOwn(body,'error')?body:null;
 }
 export async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
   const base=enrollmentEndpoint(endpoint);
@@ -83,9 +102,11 @@ async function enrollDeviceLocked(endpoint,code,character=null,previewShareUrl=n
     body:JSON.stringify({code,character}),
     signal:AbortSignal.timeout(15000)
   });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('Einrichtung fehlgeschlagen: '+String(body.error||response.statusText).slice(0,180));
-  if(typeof body.deviceToken!=='string'||!/^ddv1_[A-Za-z0-9_-]{43}$/.test(body.deviceToken)||!TRUSTED_SLUGS.has(body.characterSlug)||normalizedName(body.characterName)!==body.characterSlug.replace('-',' '))throw Error('Ungültige Kopplungsantwort; lokale Konfiguration bleibt erhalten');
+  const body=await confirmedJson(response,'Einrichtung');
+  const requested=character?normalizedName(character).replace(' ','-'):null;
+  if(!body||typeof body.deviceToken!=='string'||!/^ddv1_[A-Za-z0-9_-]{43}$/.test(body.deviceToken)||
+    !TRUSTED_SLUGS.has(body.characterSlug)||normalizedName(body.characterName)!==body.characterSlug.replace('-',' ')||
+    requested&&body.characterSlug!==requested)throw Error('Ungültige Kopplungsantwort; lokale Konfiguration bleibt erhalten');
   const next={...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null};
   delete next.revokedAt;
   const file=await saveConfig(next);
@@ -102,6 +123,8 @@ async function revokeDeviceLocked(config,{endpoint,previewShareUrl}){
   if(!token)return {revoked:false,alreadyAbsent:true};
   assertStoredDeviceOrigin(config,endpoint);
   const base=enrollmentEndpoint(endpoint);
+  const sameDevice=value=>value.deviceToken===token&&secureBridgeEndpoint(value.endpoint??DEFAULT_ENDPOINT).origin===base.origin;
+  if(!sameDevice(await loadConfig()))throw Error('Lokale Kopplung wurde inzwischen geändert');
   const cookie=await previewCookie(previewShareUrl,base.origin);
   const headers={
     Authorization:'Device '+token,
@@ -118,15 +141,12 @@ async function revokeDeviceLocked(config,{endpoint,previewShareUrl}){
   });
   // Never discard the only local credential without an explicit positive
   // acknowledgement from the expected API. 2xx alone is not evidence.
-  const body=await response.json().catch(()=>null);
-  if(!response.ok)throw new Error('Gerätezugang konnte nicht widerrufen werden: '+String(body?.error||response.statusText).slice(0,180));
-  const jsonType=String(response.headers?.get('content-type')||'').split(';')[0].trim().toLowerCase();
-  const confirmed=body&&typeof body==='object'&&!Array.isArray(body)&&!Object.hasOwn(body,'error')&&
-    ((body.revoked===true&&body.alreadyRevoked===false)||(body.revoked===false&&body.alreadyRevoked===true));
-  if(response.status!==200||jsonType!=='application/json'||!confirmed)throw Error('Widerruf nicht eindeutig bestätigt; lokale Kopplung bleibt erhalten');
+  const body=await confirmedJson(response,'Widerruf');
+  const confirmed=body&&((body.revoked===true&&body.alreadyRevoked===false)||(body.revoked===false&&body.alreadyRevoked===true));
+  if(!confirmed)throw Error('Widerruf nicht eindeutig bestätigt; lokale Kopplung bleibt erhalten');
   const current=await loadConfig();
   // Protect against older, nonparticipating writers as well.
-  if(current.deviceToken!==token||secureBridgeEndpoint(current.endpoint??DEFAULT_ENDPOINT).origin!==base.origin)throw Error('Lokale Kopplung wurde inzwischen geändert; neue Kopplung bleibt erhalten');
+  if(!sameDevice(current))throw Error('Lokale Kopplung wurde inzwischen geändert; neue Kopplung bleibt erhalten');
   const clean={...current};
   delete clean.deviceToken;
   clean.revokedAt=new Date().toISOString();
@@ -146,8 +166,11 @@ export async function createEnrollment(endpoint,characterSlug,auth,{previewShare
     body:JSON.stringify({action:'create',characterSlug}),
     signal:AbortSignal.timeout(15000)
   });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('Einrichtungscode konnte nicht erstellt werden: '+String(body.error||response.statusText).slice(0,180));
+  const body=await confirmedJson(response,'Einrichtungscode');
+  if(!body||!/^dalton-[A-Za-z0-9_-]{32}$/.test(body.code)||body.characterSlug!==characterSlug||
+    normalizedName(body.characterName)!==characterSlug.replace('-',' ')||
+    !Number.isSafeInteger(body.expiresInSeconds)||body.expiresInSeconds<=0||body.expiresInSeconds>86400)
+    throw Error('Einrichtungscode wurde nicht eindeutig bestätigt');
   return body;
 }
 function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb?.character?.name))}
@@ -191,12 +214,14 @@ export function args(argv){
 // CLI > environment > saved configuration > default. A stored device
 // credential belongs to its original origin, never an arbitrary override.
 export function resolveBridgeTarget(options,config={},env=process.env){
-  const endpoint=secureBridgeEndpoint(options.endpointProvided?options.endpoint:(env.DALTON_SYNC_ENDPOINT??config.endpoint??DEFAULT_ENDPOINT)).href;
   const explicitShare=options.previewShareUrl??env.DALTON_SYNC_PREVIEW_SHARE_URL;
+  const explicit=options.endpointProvided?options.endpoint:env.DALTON_SYNC_ENDPOINT;
+  const endpoint=secureBridgeEndpoint(explicit??(options.dryRun?DEFAULT_ENDPOINT:config.endpoint??DEFAULT_ENDPOINT)).href;
   let previewShareUrl=explicitShare??null;
-  if(explicitShare==null&&config.previewShareUrl){
-    const stored=secureBridgeEndpoint(config.endpoint??DEFAULT_ENDPOINT);
-    if(stored.origin===new URL(endpoint).origin)previewShareUrl=config.previewShareUrl;
+  if(!options.dryRun&&explicitShare==null&&config.previewShareUrl){
+    let stored;
+    try{stored=secureBridgeEndpoint(config.endpoint??DEFAULT_ENDPOINT)}catch(error){if(!options.enroll||!explicit)throw error;}
+    if(stored?.origin===new URL(endpoint).origin)previewShareUrl=config.previewShareUrl;
   }
   validateShareUrl(previewShareUrl,new URL(endpoint).origin);
   return {endpoint,previewShareUrl};
@@ -468,8 +493,12 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
     body:JSON.stringify(payload),
     signal:AbortSignal.timeout(20000)
   });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('Sync HTTP '+response.status+': '+String(body.error||response.statusText).slice(0,180));
+  const body=await confirmedJson(response,'Sync');
+  if(!body||typeof body.duplicate!=='boolean'||typeof body.character?.slug!=='string'||
+    !body.summary||typeof body.summary!=='object'||Array.isArray(body.summary)||
+    (body.acceptedSyncId??body.summary.syncId)!==payload.syncId||
+    typeof body.character.name!=='string'||normalizedName(body.character.name)!==normalizedName(payload.sections?.character?.name))
+    throw Error('Synchronisation wurde nicht eindeutig bestätigt; Daten bleiben für einen erneuten Versuch erhalten');
   return body;
 }
 export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){

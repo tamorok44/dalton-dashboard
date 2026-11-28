@@ -49,7 +49,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {beginPayloadRequest,sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {beginPayloadRequest,sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,characterPanelContent,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -67,7 +67,7 @@ assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered d
 assert.ok(addonRendered.includes('62.1 / 73.4'),'WoW map coordinates are shown in the familiar xx.x / yy.y format without percent signs');
 assert.ok(!addonRendered.includes('direkte Bridge')&&!addonRendered.includes('Build 71037'),'Technical transport/build diagnostics are hidden from the player-facing game status');
 assert.ok(!addonRendered.includes('Standort-Historie')&&!addonRendered.includes('Händler & Lehrer'),'Internal history and live-evidence counters stay out of the player-facing game status');
-assert.ok(addonRendered.includes('Instanzen &amp; Dungeons'),'Game tab is now the player-facing instances and dungeons area');
+assert.ok(ui.characterPanelContent(addonPayloadQa.data.characters[0],'game',new Set()).includes('Instanzen &amp; Dungeons'),'Game tab is now the player-facing instances and dungeons area');
 
 const classAbilityQa=ui.classAbilitiesPanel({
   knownClassAbilitiesVerified:true,
@@ -206,7 +206,7 @@ ui.render({generatedAt:'2026-11-21T12:00:00.000Z',characters:[{...data.character
     }}
   }}
 });
-const repHtml=nodes.get('#cards').innerHTML;
+const repHtml=ui.characterPanelContent(repQa,'reputation',new Set());
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#00991A'),'Friendly status uses canonical Blizzard green');
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#E6B300'),'Neutral status uses canonical Blizzard yellow');
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#BF4500'),'Unfriendly status uses canonical Blizzard orange');
@@ -358,7 +358,7 @@ assert.equal(derived.focus.regenPerSecond,10);
 assert.equal(derived.enduranceTraining.rank,1);
 
 ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
-const petCards=nodes.get('#cards').innerHTML;
+const petCards=nodes.get('#cards').innerHTML+ui.characterPanelContent(petDolly,'pets',new Set());
 assert.ok(!petCards.includes('Quellenstand aktuell'),'Normal player view hides technical source status');
 assert.ok(!petCards.includes('Referenzmodell')&&!petCards.includes('Clientdaten')&&!petCards.includes('Offiziell')&&!petCards.includes('Regelstatus-Protokoll'),'Normal player view hides evidence and rule-history jargon');
 const blockedRules=structuredClone(verifiedPetRules);
@@ -437,11 +437,7 @@ questBySlug.get('viola-dalton').activeQuests=[{id:1001,name:'Gemeinsam für alle
 questBySlug.get('dolly-dalton').completedQuestIds=[1003];
 questBySlug.get('viola-dalton').completedQuestIds=[1003,1004];
 ui.render(questData,{questCatalog:{1001:{id:1001,title:'Gemeinsam für alle',description:'Erledige die gemeinsame Aufgabe.',area:'Testgebiet',minimumLevel:10}}});
-const questCards=nodes.get('#cards').innerHTML;
-const coleMarker=questCards.indexOf('<h2 class="name">Cole Dalton</h2>');
-const coleStart=questCards.lastIndexOf('<article class="card ',coleMarker);
-const coleEnd=questCards.indexOf('</article>',coleMarker);
-const coleArea=questCards.slice(coleStart,coleEnd);
+const coleArea=ui.characterPanelContent(questBySlug.get('cole-dalton'),'quests',new Set());
 const q1=coleArea.indexOf('Gemeinsam für alle');
 const q2=coleArea.indexOf('Gemeinsam für drei');
 const q3=coleArea.indexOf('Gemeinsam für zwei');
@@ -465,19 +461,22 @@ assert.ok(css.includes('.hero-cast::after{'),'Preserve the original hero overlay
 assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain dynamic character images');
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
-assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
+const panelSet=(characters,id)=>characters.map(c=>ui.characterPanelContent(c,id,new Set())).join('');
+const professionsMarkup=panelSet(data.characters,'professions');
+const equipmentMarkup=panelSet(data.characters,'equipment');
+assert.equal((professionsMarkup.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
 const testMainStatEnums=new Set(['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ATTACKDPS','MANAREGEN']);
 const expectedMainStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>testMainStatEnums.has(entry.enum)).length,0);
 const expectedDetailStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>!testMainStatEnums.has(entry.enum)).length,0);
 assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,expectedMainStats);
 assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,expectedDetailStats);
-assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
+assert.equal((professionsMarkup.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
 assert.ok(css.includes('.roster-title{flex:1 1 auto;min-width:0}'),'Shared roster title can shrink on narrow screens');
 assert.ok(css.includes('#compareContent{min-width:0;max-width:100%}'),'Comparison content is constrained to the viewport');
 assert.ok(css.includes('.compare-scroll{width:100%;min-width:0;max-width:100%;overflow-x:auto'),'Only the comparison table scroller may overflow horizontally');
 assert.ok(css.includes('.roster-rule{display:none}'),'Decorative roster rules are removed on narrow screens');
-assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
-assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
+assert.equal((professionsMarkup.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
+assert.equal((professionsMarkup.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
 assert.deepEqual(
   ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).map(tab=>tab.id),
   ['stats','equipment','talents','abilities','professions','reputation','quests','game'],
@@ -536,6 +535,8 @@ const expectedCharacterTabs=data.characters.reduce((count,character)=>count+8+(N
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
+assert.equal((cards.match(/data-mounted="true"/g)||[]).length,data.characters.length,'Initial DOM only builds each active panel');
+assert.equal((cards.match(/ hidden><\/section>/g)||[]).length,expectedCharacterTabs-data.characters.length,'Unvisited tabs are empty ARIA targets');
 assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab)"),'A tab click changes only the selected character card');
 assert.ok(source.includes('function addonDataRequirement'),'AddOn-abhängige Dashboardbereiche verwenden eine zentrale Statuskomponente');
 assert.ok(!source.includes('data-spellbook-code')&&!source.includes('Spellbook übernehmen'),'Manueller Spellbook-Code ist aus der Dashboard-Oberfläche entfernt');
@@ -587,8 +588,8 @@ assert.ok(sharedBarBlock.includes('letter-spacing:.025em'),'All three progress b
 assert.ok(sharedBarBlock.includes('font-variant-numeric:tabular-nums'),'All three progress bars align numbers consistently');
 assert.ok(sharedBarBlock.includes('1px 0 #04101b,-1px 0 #04101b'),'All three progress bars use the same text shadow');
 
-assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
-assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
+assert.equal((equipmentMarkup.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
+assert.equal((equipmentMarkup.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
 assert.equal(ui.equipmentSlotOrder.length,19);
 for(const [slug,klass] of Object.entries({
   'cole-dalton':'scene-cole','dolly-dalton':'scene-dolly','chucky-dalton':'scene-chucky','viola-dalton':'scene-viola'
@@ -859,7 +860,10 @@ assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"')&&vercelConfig.include
 const dailySnapshot=read('api/daily-snapshot.js');
 assert.ok(dailySnapshot.includes('petRuleState=await ensurePetRuleState({force:!existing})')&&dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs,{fetchImpl})'),'Daily rule verification runs before the Blizzard snapshot');
 assert.ok(dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('refresh=await refreshDailyCharacters(local.date)'),'Daily rule verification runs before the persistent character refresh');
-assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf('refreshAndPersist({lockToken,source})'),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
+const manualSteps=['await loadCharactersForWrite()','await ensurePetRuleState({force:false})','await refreshAndPersist({lockToken,source,profileRead})']
+  .map(step=>refreshApi.indexOf(step));
+assert.ok(manualSteps[0]>=0&&manualSteps[0]<manualSteps[1]&&manualSteps[1]<manualSteps[2],
+  'Manual refresh validates its authoritative roster before the rule guard and Blizzard profile refresh');
 assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Only the lightweight stored-data version is checked periodically');
 assert.ok(!/setInterval\([\s\S]{0,300}refreshLive/.test(source),'Periodic checks must never trigger Blizzard live refreshes');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
@@ -923,7 +927,7 @@ cole.talents='Arkan: 7';
 cole.talentsVerified=true;
 changed.generatedAt='2026-11-20T15:32:00.000Z';
 ui.render(changed,{live:true,success:4});
-const changedCards=nodes.get('#cards').innerHTML;
+const changedCards=nodes.get('#cards').innerHTML+['equipment','talents','professions'].map(id=>panelSet(changed.characters,id)).join('');
 const changedSummary=nodes.get('#summary').innerHTML;
 const changedLevels=changed.characters.map(c=>c.level);
 assert.ok(changedCards.includes('class="level" aria-label="Stufe '+cole.level+'"'),'Live level updates sheriff badge');

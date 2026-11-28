@@ -231,7 +231,7 @@
     },
     {
       "owner": "keepNewestProfiles",
-      "line": "const detailByEnum=new Map((prior.statsDetails||[]).filter(x=>x?.enum).map(x=>[x.enum,x]));"
+      "line": "for(const entry of prior.statsDetails||[]){"
     },
     {
       "owner": "keepNewestProfiles",
@@ -267,7 +267,11 @@
     },
     {
       "owner": "render",
-      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));"
+      "line": "${characterTabsFor(c).map(({id})=>characterTabPanel(c,id,id===activeCharacterTabFor(c)?characterPanelContent(c,id,openDetails):'')).join('')}"
+    },
+    {
+      "owner": "render",
+      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"][data-mounted]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));"
     },
     {
       "owner": "segmentedControl",

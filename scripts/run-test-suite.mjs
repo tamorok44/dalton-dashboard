@@ -34,6 +34,7 @@ const phases=[
       "scripts/test-history.mjs",
       "scripts/test-data-version.mjs",
       "scripts/test-public-character-profile.mjs",
+      "scripts/test-request-json.mjs",
       "scripts/test-foreverdb-budget.mjs",
       "scripts/test-refresh-api.mjs",
       "scripts/test-talent-planner-preview.mjs"

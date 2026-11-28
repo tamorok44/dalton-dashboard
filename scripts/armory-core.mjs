@@ -56,18 +56,20 @@ export function extractGermanStatLabels(html=''){
   }
   return labels;
 }
+function armoryStatRows(raw){
+  const rows=value=>Array.isArray(value)?value:[];
+  return [
+    ...rows(raw?.groups).flatMap(group=>rows(group?.stats)),
+    ...rows(raw?.basic?.groups).flatMap(group=>rows(group?.stats)),
+    ...rows(raw?.basic?.primary),
+    ...rows(raw?.basic?.secondary),
+    ...rows(raw?.overview)
+  ];
+}
 function applyGermanStatLabels(character,html){
   const labels=extractGermanStatLabels(html);
   if(!Object.keys(labels).length)return character;
-  const raw=character?.stats;
-  if(!raw||typeof raw!=='object')return character;
-  const candidates=[
-    ...(Array.isArray(raw.groups)?raw.groups:[]),
-    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
-    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
-    {stats:Array.isArray(raw.overview)?raw.overview:[]}
-  ];
-  for(const group of candidates)for(const stat of group.stats||[]){
+  for(const stat of armoryStatRows(character?.stats)){
     const enumKey=typeof stat?.enum==='string'?stat.enum:null;
     if(enumKey&&labels[enumKey])stat.name=labels[enumKey];
   }
@@ -148,15 +150,8 @@ function localizedStatLabel(stat){
   return candidates.find(value=>typeof value==='string'&&value.trim())?.trim()||null;
 }
 function stats(c) {
-  const raw=c.stats||{};
-  const groups=[
-    ...(Array.isArray(raw.groups)?raw.groups:[]),
-    ...(Array.isArray(raw.basic?.groups)?raw.basic.groups:[]),
-    {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
-    {stats:Array.isArray(raw.overview)?raw.overview:[]}
-  ];
   const observations=new Map();
-  for(const group of groups)for(const stat of Array.isArray(group?.stats)?group.stats:[]) {
+  for(const stat of armoryStatRows(c.stats)) {
     const rawValue=stat?.value?.value;
     const n=typeof rawValue==='number'||typeof rawValue==='string'&&rawValue.trim()?Number(rawValue):NaN;
     const enumKey=typeof stat?.enum==='string'?stat.enum:null;
@@ -180,9 +175,45 @@ function stats(c) {
   ];
   const details=ordered.filter(entry=>entry.name);
   return {
-    display:Object.fromEntries(details.map(entry=>[entry.name,entry.value])),
     byEnum:Object.fromEntries(ordered.map(entry=>[entry.enum,entry.value])),
     details,conflicts:conflicts.sort()
+  };
+}
+
+function mergeStatDetails(old,st){
+  const stored=new Map(),ambiguous=new Set();
+  const display=new Map(Object.entries(old.stats||{}));
+  for(const entry of Array.isArray(old.statsDetails)?old.statsDetails:[]){
+    if(typeof entry?.enum!=='string'||typeof entry.name!=='string'||!entry.name.trim()||!Number.isFinite(entry.value))continue;
+    display.delete(entry.name);
+    const prior=stored.get(entry.enum);
+    if(prior&&(prior.name!==entry.name||prior.value!==entry.value))ambiguous.add(entry.enum);
+    else if(!prior)stored.set(entry.enum,entry);
+  }
+  for(const id of ambiguous)stored.delete(id);
+  const labels=new Map(st.details.map(entry=>[entry.enum,entry.name]));
+  for(const [id,value] of Object.entries(st.byEnum)){
+    const previous=stored.get(id);
+    const name=labels.get(id)||(previous?.value===old.statsByEnum?.[id]?previous?.name:null);
+    if(name)stored.set(id,{enum:id,name,value});
+    else stored.delete(id);
+  }
+  const ordered=[
+    ...statEnumOrder.filter(id=>stored.has(id)).map(id=>stored.get(id)),
+    ...[...stored.values()].filter(entry=>!statEnumOrder.includes(entry.enum))
+  ];
+  const byName=new Map(),duplicateNames=new Set();
+  for(const entry of ordered){
+    if(byName.has(entry.name))duplicateNames.add(entry.name);
+    else byName.set(entry.name,entry);
+  }
+  for(const [name,entry] of byName){
+    if(!duplicateNames.has(name))display.set(name,entry.value);
+  }
+  return {
+    stats:Object.fromEntries(display),
+    statsDetails:ordered,
+    statsFreshKeys:ordered.filter(entry=>Object.hasOwn(st.byEnum,entry.enum)&&!duplicateNames.has(entry.name)).map(entry=>entry.name)
   };
 }
 function gear(c) {
@@ -386,20 +417,6 @@ for(const old of characters){
       typeof apiProfile?.race?.name==='string'&&apiProfile.race.name.trim()?apiProfile.race.name.trim():null;
     const sourceFaction=typeof c.faction?.name==='string'&&c.faction.name.trim()?c.faction.name.trim():
       typeof apiProfile?.faction?.name==='string'&&apiProfile.faction.name.trim()?apiProfile.faction.name.trim():null;
-    const statsDetailsByEnum=new Map((Array.isArray(old.statsDetails)?old.statsDetails:[])
-      .filter(entry=>entry?.enum).map(entry=>[entry.enum,{...entry}]));
-    // A fresh numeric value may arrive without a localized label. Reuse
-    // only the previous label of this exact enum, never a name-map value.
-    const labelsByEnum=new Map(st.details.map(entry=>[entry.enum,entry.name]));
-    for(const [id,value] of Object.entries(st.byEnum)){
-      const previous=statsDetailsByEnum.get(id);
-      const name=labelsByEnum.get(id)||previous?.name;
-      if(name)statsDetailsByEnum.set(id,{enum:id,name,value});
-    }
-    const statsDetails=[
-      ...statEnumOrder.filter(key=>statsDetailsByEnum.has(key)).map(key=>statsDetailsByEnum.get(key)),
-      ...[...statsDetailsByEnum.values()].filter(entry=>!statEnumOrder.includes(entry.enum))
-    ];
 
     const next={
       ...old,
@@ -424,10 +441,8 @@ for(const old of characters){
       hunterPetsVerified,
       hunterPetsCheckedAt,
       hunterPetsError,
-      stats:{...(old.stats||{}),...st.display},
+      ...mergeStatDetails(old,st),
       statsByEnum:{...(old.statsByEnum||{}),...st.byEnum},
-      statsDetails,
-      statsFreshKeys:statsDetails.filter(entry=>Object.hasOwn(st.byEnum,entry.enum)).map(entry=>entry.name),
       statsFreshEnums:Object.keys(st.byEnum),
       statsConflictEnums:st.conflicts,
       equipment,

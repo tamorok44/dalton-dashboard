@@ -78,7 +78,7 @@ return 1
   if(saved!=='OK')throw new Error('Einrichtungscode konnte nicht gespeichert werden');
   return {code,characterSlug,characterName:trustedCharacterName(characterSlug),expiresInSeconds:ENROLL_TTL_SECONDS};
 }
-export async function redeemDeviceEnrollment(code){
+export async function redeemDeviceEnrollment(code,{expectedCharacter=null}={}){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(typeof code!=='string'||code.length<20||code.length>200)throw new Error('Ungültiger Einrichtungscode');
   const key=inviteKey(code);
@@ -88,6 +88,7 @@ export async function redeemDeviceEnrollment(code){
   try{invite=JSON.parse(raw)}catch{throw new Error('Einrichtungscode beschädigt')}
   if(invite?.consumed===true)throw new Error('Einrichtungscode bereits verwendet');
   if(!isTrustedCharacterSlug(invite?.characterSlug))throw new Error('Einrichtungscode gehört zu keinem freigegebenen Charakter');
+  if(expectedCharacter!==null&&expectedCharacter!==invite.characterSlug)throw enrollmentDenied();
 
   // Old invitations have no trustworthy issuer binding. Expire them logically
   // at cutover and require reissue; already enrolled devices are unaffected.

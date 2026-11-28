@@ -60,6 +60,12 @@ const partial=structuredClone(snapshot);partial.characters.test.hunterPets={stat
 assert.equal(classifySnapshot(partial).status,'partial');
 const meta=await saveDailySnapshot(snapshot,day,{putImpl,expectedRoster:testRoster});
 assert.equal(meta.archiveStatus,'private');assert.equal(meta.quality.status,'complete');assert.equal(uploads,1);
+assert.equal(meta.quality.content.status,'partial','A successful HTTP object is not proof of restorable domain content');
+assert.equal(meta.quality.content.validated,1);
+const shaped=structuredClone(snapshot);
+shaped.characters.test.professions.data={primaries:[],secondaries:[]};
+shaped.characters.test.equipment.data={equipped_items:[]};
+assert.equal(classifySnapshot(shaped).content.validated,3,'Confirmed empty domain arrays carry schema evidence');
 assert.deepEqual(await recoverDailySnapshot(day,{getImpl,expectedRoster:testRoster}),meta);
 assert.equal(uploads,1,'orphaned upload is recovered rather than overwritten');
 assert.equal(await recoverDailySnapshot(day,{getImpl,expectedRoster:[{slug:'other',id:321}]}),null,'different roster has independent immutable object path');
@@ -452,6 +458,15 @@ if(!hasRedis){
     await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,expectedRoster:unchangedRaw,expectedState:null,receipts:priorState.receipts}),/ADDON_BASE_CHANGED/);
     await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,roster:{...nextRoster,generatedAt:nextGeneration},expectedRoster:JSON.stringify({...nextRoster,unconfirmed:true}),expectedState:unchangedAddon}),/PROFILE_BASE_CHANGED/);
     assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey),cli('GET',syncKey('audit-one'))],[unchangedRaw,unchangedMeta,unchangedAddon]);
+    const conflictingMeta=JSON.stringify({...JSON.parse(unchangedMeta),characters:{
+      ...JSON.parse(unchangedMeta).characters,generatedAt:new Date(Date.parse(nextGeneration)+1000).toISOString()
+    }});
+    cli('SET',versionKey,conflictingMeta);
+    await assert.rejects(saveCharacters({...nextRoster,generatedAt:nextGeneration},refreshLock,{expectedRoster:unchangedRaw}),/PROFILE_METADATA_CONFLICT/);
+    await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,
+      roster:{...nextRoster,generatedAt:nextGeneration},expectedRoster:unchangedRaw,expectedState:unchangedAddon}),/PROFILE_METADATA_CONFLICT/);
+    assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey),cli('GET',syncKey('audit-one'))],[unchangedRaw,conflictingMeta,unchangedAddon]);
+    cli('SET',versionKey,unchangedMeta);
     await releaseRefreshLock(refreshLock);
     assert.deepEqual(await loadDailyProfileReceipt(day),actualProof);
     mode='drop-lock-reply';
@@ -839,7 +854,11 @@ if(!hasRedis){
 
     const coleState=syncKey('cole-dalton');
     const originalRoster=JSON.parse(cli('GET',rosterKey));
-    cli('SET',rosterKey,JSON.stringify({...originalRoster,characters:[...originalRoster.characters,{slug:'cole-dalton',name:'Cole Dalton',classId:8,level:12}]}));
+    const registeredRoster={...originalRoster,characters:[...originalRoster.characters,{slug:'cole-dalton',name:'Cole Dalton',classId:8,level:12}]};
+    const previousVersion=JSON.parse(cli('GET',versionKey));
+    cli('MSET',rosterKey,JSON.stringify(registeredRoster),versionKey,JSON.stringify({
+      ...previousVersion,characters:{generatedAt:registeredRoster.generatedAt,slugs:registeredRoster.characters.map(c=>c.slug)}
+    }));
     const deviceCall=async body=>{
       const res=response();
       await addon({method:'POST',headers:{authorization:'Device '+syntheticDevice},body},res);
@@ -971,9 +990,29 @@ if(!hasRedis){
       const results=await Promise.allSettled(Array.from({length:FOREVERDB_MINUTE_BUDGET+1},()=>reserveForeverDbRequest(opts)));
       assert.equal(results.filter(x=>x.status==='fulfilled').length,FOREVERDB_MINUTE_BUDGET);
       assert.equal(results.find(x=>x.status==='rejected').reason.code,'FOREVERDB_INTERNAL_RATE_LIMIT');
-      assert.equal(Number(cli('GET',dayKey)),FOREVERDB_MINUTE_BUDGET);
-      assert.ok(Number(cli('TTL',minuteKey))>0);
+      assert.deepEqual(JSON.parse(cli('GET',dayKey)),{day:FOREVERDB_MINUTE_BUDGET,minute:'2026-11-25T13:05',used:FOREVERDB_MINUTE_BUDGET});
+      assert.ok(Number(cli('TTL',dayKey))>0);
+      assert.equal(cli('GET',minuteKey),null);
       assert.equal(await reserveForeverDbRequest({...opts,now:new Date('2026-11-25T13:06:00Z')}),FOREVERDB_MINUTE_BUDGET+1);
+      assert.deepEqual(JSON.parse(cli('GET',dayKey)),{day:31,minute:'2026-11-25T13:06',used:1});
+      assert.equal(await reserveForeverDbRequest(opts),FOREVERDB_MINUTE_BUDGET+2);
+      assert.deepEqual(JSON.parse(cli('GET',dayKey)),{day:32,minute:'2026-11-25T13:06',used:2});
+      // Numeric legacy day and minute counts are carried into the one record.
+      cli('SET',dayKey,'20');
+      cli('SET',minuteKey,'9','EX',120);
+      assert.equal(await reserveForeverDbRequest(opts),21);
+      assert.deepEqual(JSON.parse(cli('GET',dayKey)),{day:21,minute:'2026-11-25T13:05',used:10});
+      assert.ok(Number(cli('TTL',dayKey))>0);
+      cli('ACL','SETUSER','budget-fixture','on','>local-fixture-password','~*','+@all','-expire');
+      try{
+        restrictedUser='budget-fixture';
+        assert.equal(await reserveForeverDbRequest(opts),22,'SET EX does not require an independent EXPIRE');
+        const before=cli('GET',dayKey);
+        cli('ACL','SETUSER','budget-fixture','-set');
+        await assert.rejects(reserveForeverDbRequest(opts));
+        assert.equal(cli('GET',dayKey),before,'Denied write leaves the counters unchanged');
+        assert.ok(Number(cli('TTL',dayKey))>0);
+      }finally{restrictedUser=null;cli('ACL','DELUSER','budget-fixture');}
       cli('SET',dayKey,String(FOREVERDB_DAILY_BUDGET));
       await assert.rejects(reserveForeverDbRequest({...opts,now:new Date('2026-11-25T13:07:00Z')}),/Tagesbudget/);
       assert.equal(cli('GET',foreverDbMinuteBudgetKey(apiKey,new Date('2026-11-25T13:07:00Z'))),null);

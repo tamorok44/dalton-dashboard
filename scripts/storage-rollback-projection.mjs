@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {verifyRestoreInventory} from './restore-inventory.mjs';
 import {canonicalRoster} from './daily-roster.mjs';
-import {characterVersionMetadata,addonVersionMetadata,VERSION_METADATA_KEY} from './version-metadata.mjs';
+import {characterVersionMetadata,addonVersionMetadata,VERSION_METADATA_KEY,canonicalProfileGeneration} from './version-metadata.mjs';
 import {inspectKnowledgePair,knowledgeQuarantine,selectDailyReceipt} from './storage-reconciliation.mjs';
 
 // Offline-only export transformer. It never imports redis(), reads an env
@@ -15,7 +15,7 @@ export function buildLegacyReadProjection({roster,addonStates,knowledgePairs,dai
   // and explicit nulls. Names alone cannot prove export completeness.
   verifyRestoreInventory({roster,addonStates,knowledgePairs,dailyRows,quarantineRecords,petMetadata,modernReceipt,legacyReceipt,date,scope},inventory);
   const identities=canonicalRoster(roster?.characters?.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})));
-  if(!Number.isFinite(Date.parse(roster.generatedAt)))throw new Error('Ungültiger Roster-Export');
+  if(!canonicalProfileGeneration(roster.generatedAt))throw new Error('Ungültiger Roster-Export');
   const commands=[['SET','dalton-dashboard:characters:v1',JSON.stringify(roster)]],metadata=['characters',JSON.stringify(characterVersionMetadata(roster)),'pet',JSON.stringify(petMetadata??null)];
   const states=new Map();
   for(const state of addonStates){

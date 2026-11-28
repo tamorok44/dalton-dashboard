@@ -218,6 +218,13 @@ try{
 // ambiguous path, embedded credential, or mismatched preview origin.
 {
   const {secureBridgeEndpoint,enrollDevice,revokeDevice,createEnrollment,postPayload}=await import('./dalton-sync-client.mjs');
+  const {mkdtemp,mkdir,writeFile,rm}=await import('node:fs/promises');
+  const {tmpdir,platform}=await import('node:os');
+  const {join}=await import('node:path');
+  const root=await mkdtemp(join(tmpdir(),'dalton-bridge-transport-'));
+  const dir=platform()==='win32'?join(root,'DaltonDashboardBridge'):platform()==='darwin'?join(root,'Library','Application Support','DaltonDashboardBridge'):join(root,'dalton-dashboard-bridge');
+  const originalEnv=Object.fromEntries(['HOME','LOCALAPPDATA','XDG_CONFIG_HOME'].map(key=>[key,process.env[key]]));
+  for(const key of Object.keys(originalEnv))process.env[key]=root;
   const before=globalThis.fetch;let calls=0;
   try{
     globalThis.fetch=async()=>{calls++;throw Error('Network forbidden')};
@@ -236,12 +243,35 @@ try{
       calls++;assert.equal(new URL(url).protocol,'https:');assert.equal(options.redirect,'error');
       throw Error('synthetic redirect blocked');
     };
+    await mkdir(dir,{recursive:true});
+    await writeFile(join(dir,'config.json'),JSON.stringify({endpoint,deviceToken:'synthetic-device'}));
     await assert.rejects(enrollDevice(endpoint,'synthetic-invite'),/redirect blocked/);
     await assert.rejects(revokeDevice({endpoint,deviceToken:'synthetic-device'}),/redirect blocked/);
     await assert.rejects(createEnrollment(endpoint,'dolly-dalton','Device synthetic'),/redirect blocked/);
     await assert.rejects(postPayload(endpoint,'Device synthetic',{}),/redirect blocked/);
     assert.equal(calls,4);
-  }finally{globalThis.fetch=before;}
+    await assert.rejects(revokeDevice({endpoint,deviceToken:'prior-device'}),/inzwischen geändert/);
+    assert.equal(calls,4,'Stale local revoke never reaches the network');
+    const payload={syncId:'current',sections:{character:{name:'Cole Dalton'}}};
+    const confirmed={duplicate:true,acceptedSyncId:'current',character:{slug:'cole-dalton',name:'Cole Dalton'},summary:{syncId:'newer'}};
+    for(const getResponse of [
+      ()=>new Response('<html>success</html>'),()=>Response.json(null),
+      ()=>Response.json({...confirmed,acceptedSyncId:'incorrect'}),
+      ()=>Response.json({...confirmed,character:{slug:'dolly-dalton',name:'Dolly Dalton'}}),
+      ()=>Response.json({...confirmed,error:'synthetic confidential error'})
+    ]){
+      globalThis.fetch=getResponse;
+      await assert.rejects(postPayload(endpoint,'Device synthetic',payload),/nicht eindeutig bestätigt/);
+    }
+    globalThis.fetch=()=>Response.json({error:'synthetic confidential error'},{status:503});
+    await assert.rejects(postPayload(endpoint,'Device synthetic',payload),error=>error.message==='Sync fehlgeschlagen (HTTP 503)');
+    globalThis.fetch=()=>Response.json(confirmed);
+    assert.deepEqual(await postPayload(endpoint,'Device synthetic',payload),confirmed);
+  }finally{
+    globalThis.fetch=before;
+    for(const [key,value] of Object.entries(originalEnv))if(value===undefined)delete process.env[key];else process.env[key]=value;
+    await rm(root,{recursive:true,force:true});
+  }
 }
 
 
@@ -310,6 +340,9 @@ try{
     // A real dry-run must not request the configured share URL.
     await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
     assert.equal(calls.length,0);
+    const legacyConfig={...config,endpoint:'http://old-host.invalid/api/addon-sync'};
+    await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua'],{readConfig:async()=>legacyConfig});
+    assert.equal(calls.length,0,'Offline dry-run works with a legacy HTTP config and sends nothing');
   }finally{
     globalThis.fetch=before;
     for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}

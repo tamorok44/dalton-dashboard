@@ -4,11 +4,12 @@ import {loadCharactersForWrite,normalizedCharacterWrite,acquireRefreshLock,relea
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
-import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
+import {archiveKnownAbilityIcons} from '../scripts/knowledge-media.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
 import {loadAddonSyncStateForWrite,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
 import {ingestAddonLiveKnowledge,snapshotsFromAddonPayload} from '../scripts/live-knowledge-store.mjs';
 import {authorizeDeviceTokenWithProof,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {readRequestJson,RequestJsonError} from '../scripts/request-json.mjs';
 
 export const config={maxDuration:30};
 
@@ -16,45 +17,6 @@ function authValue(req,scheme){
   const raw=String(req.headers?.authorization||'');
   const prefix=scheme+' ';
   return raw.startsWith(prefix)?raw.slice(prefix.length):'';
-}
-async function requestBody(req){
-  if(req.body&&typeof req.body==='object')return req.body;
-  if(typeof req.body==='string'){
-    if(req.body.length>900000)throw new Error('Addon-Sync-Anfrage ist zu groß');
-    return JSON.parse(req.body);
-  }
-  if(typeof req[Symbol.asyncIterator]!=='function')return null;
-  let raw='';
-  for await(const chunk of req){
-    raw+=chunk;
-    if(raw.length>900000)throw new Error('Addon-Sync-Anfrage ist zu groß');
-  }
-  return JSON.parse(raw||'null');
-}
-async function archiveKnownAbilityIcons(data,characterSlug){
-  const characters=[...(data?.characters||[])];
-  const index=characters.findIndex(character=>character?.slug===characterSlug);
-  if(index<0)return data;
-  const character=characters[index];
-  const abilities=await Promise.all((character.knownClassAbilities||[]).map(async ability=>{
-    const iconId=Number(ability?.iconId);
-    if(!Number.isInteger(iconId)||iconId<=0)return ability;
-    try{
-      const iconUrl=await resolveMediaAsset({
-        entityType:'spell',
-        entityId:ability.id,
-        role:'icon',
-        sourceUrl:'https://foreverdb.net/icons/'+iconId+'.webp',
-        priorStoredUrl:ability.iconUrl||null
-      });
-      return {...ability,iconUrl:iconUrl||ability.iconUrl||null};
-    }catch(error){
-      console.warn('Addon-Sync-Spellicon konnte nicht archiviert werden:',String(error.message).slice(0,120));
-      return ability;
-    }
-  }));
-  characters[index]={...character,knownClassAbilities:abilities};
-  return {...data,characters};
 }
 
 const reply=(status,body)=>({status,body});
@@ -100,8 +62,9 @@ async function syncRequest(req,ownership){
   if(authorization)armDeviceWriteFence(authorization.proof);
 
   let payload;
-  try{payload=normalizeAddonSyncPayload(await requestBody(req))}catch(error){
-    return reply(400,{error:String(error.message).slice(0,180)});
+  try{payload=normalizeAddonSyncPayload(await readRequestJson(req,900000))}catch(error){
+    const status=error instanceof RequestJsonError?error.status:400;
+    return reply(status,{error:String(error.message).slice(0,180)});
   }
 
   const previewIsolated=process.env.VERCEL_ENV!=='production';
@@ -138,7 +101,7 @@ async function syncRequest(req,ownership){
       // knowledge write. Replaying observations is idempotent and fenced.
       const liveKnowledge=prepared.replayPayload?await ingestAddonLiveKnowledge(prepared.replayPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
       return reply(200,{
-        duplicate:true,liveKnowledge,ignoredSections:prepared.ignoredSections,
+        duplicate:true,acceptedSyncId:payload.syncId,liveKnowledge,ignoredSections:prepared.ignoredSections,
         character:{slug:target.slug,name:target.name},
         summary:publicAddonSyncSummary(previousState)
       });
@@ -194,6 +157,7 @@ async function syncRequest(req,ownership){
     const character=(updated.characters||before.characters).find(entry=>entry.slug===target.slug)||target;
     return reply(200,{
       duplicate:false,
+      acceptedSyncId:payload.syncId,
       ignoredSections:prepared.ignoredSections,
       previewIsolated,
       spellbookApplied,

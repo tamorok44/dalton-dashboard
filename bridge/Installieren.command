@@ -28,17 +28,29 @@ UNINSTALL_SOURCE="$DIR/Deinstallieren.command"
 UNINSTALL_TARGET="$HOME/Applications/Dalton Dashboard Bridge deinstallieren.command"
 ENROLL_HELPER_SOURCE="$DIR/Einrichtungscode-erstellen.command"
 ENROLL_HELPER_TARGET="$HOME/Applications/Dalton Dashboard Einrichtungscode erstellen.command"
-mkdir -p "$TARGET_DIR" "$HOME/Library/LaunchAgents" "$HOME/Applications"
-cp "$SOURCE" "$TARGET"
-chmod 700 "$TARGET"
+mkdir -p "${TARGET_DIR:h}" "$HOME/Library/LaunchAgents" "$HOME/Applications"
+LOCK="$TARGET_DIR.mutation.lock"
+if ! (umask 077; mkdir "$LOCK"); then
+  echo "Andere Geräteverwaltung aktiv oder unterbrochen."
+  exit 1
+fi
+STAGED="$TARGET_DIR/.bridge-install"
+trap 'rm -f "$STAGED" "$LOCK/owner"; rmdir "$LOCK"' EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+OWNER="$(uuidgen | tr -d '-')"
+printf '%s\n' "$OWNER" > "$LOCK/owner"
+mkdir -p "$TARGET_DIR"
+cp "$SOURCE" "$STAGED"
+chmod 700 "$STAGED"
+xattr -d com.apple.quarantine "$STAGED" >/dev/null 2>&1 || true
+DALTON_BRIDGE_INSTALL_LOCK="$OWNER" "$STAGED" --enroll "$CODE"
+mv -f "$STAGED" "$TARGET"
 if [[ -f "$UNINSTALL_SOURCE" ]]; then
   cp "$UNINSTALL_SOURCE" "$UNINSTALL_TARGET"
   chmod 700 "$UNINSTALL_TARGET"
 fi
-xattr -dr com.apple.quarantine "$TARGET_DIR" >/dev/null 2>&1 || true
 xattr -d com.apple.quarantine "$UNINSTALL_TARGET" >/dev/null 2>&1 || true
-
-"$TARGET" --enroll "$CODE"
 
 if grep -q '"characterSlug": "cole-dalton"' "$TARGET_DIR/config.json" 2>/dev/null && [[ -f "$ENROLL_HELPER_SOURCE" ]]; then
   cp "$ENROLL_HELPER_SOURCE" "$ENROLL_HELPER_TARGET"

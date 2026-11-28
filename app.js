@@ -956,7 +956,21 @@ function characterTabsNav(c){
 }
 function characterTabPanel(c,id,content){
   const active=activeCharacterTabFor(c);
-  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" aria-labelledby="'+esc(c.slug+'-tab-'+id)+'" tabindex="0" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?'':' hidden')+'>'+content+'</section>';
+  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" aria-labelledby="'+esc(c.slug+'-tab-'+id)+'" tabindex="0" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?' data-mounted="true"':' hidden')+'>'+content+'</section>';
+}
+function characterPanelContent(c,id,openDetails){
+  switch(id){
+    case 'stats':return statsPanel(c,openDetails.has(c.slug+':stats'));
+    case 'equipment':return equipmentPanel(c,openDetails.has(c.slug+':equipment'));
+    case 'talents':return talentPanel(c);
+    case 'abilities':return classAbilitiesPanel(c);
+    case 'pets':return hunterPetsPanel(c);
+    case 'professions':return professionsPanel(c,openDetails);
+    case 'reputation':return reputationPanel(c);
+    case 'quests':return questsPanel(c,questGroupStatus(displayedData.characters),displayedQuestCatalog,openDetails);
+    case 'game':return gameStatusPanel(c);
+  }
+  return '';
 }
 function setActiveCharacterTab(slug,tab){
   const character=displayedData?.characters?.find(item=>item.slug===slug);
@@ -972,6 +986,10 @@ function setActiveCharacterTab(slug,tab){
   cards.querySelectorAll('[data-character-panel]').forEach(panel=>{
     if(panel.dataset.characterSlug!==slug)return;
     panel.hidden=panel.dataset.characterPanel!==tab;
+    if(panel.hidden||panel.dataset.mounted)return;
+    panel.innerHTML=characterPanelContent(character,tab,new Set());
+    panel.dataset.mounted='true';
+    if(tab==='talents')bindTalentPanel(panel,character);
   });
   if(tab==='talents')loadTalentCatalog();
 }
@@ -1015,13 +1033,19 @@ function keepNewestProfiles(data){
     }
     const liveStatEnums=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:
       c.statsVerified?Object.keys(c.statsByEnum||{}):[]);
+    const conflicts=new Set(c.statsConflictEnums||[]);
     const mergedStatsByEnum={...c.statsByEnum};
     for(const [key,value] of Object.entries(prior.statsByEnum||{})){
       if(!liveStatEnums.has(key))mergedStatsByEnum[key]=value;
     }
-    const detailByEnum=new Map((prior.statsDetails||[]).filter(x=>x?.enum).map(x=>[x.enum,x]));
+    const detailByEnum=new Map();
+    for(const entry of prior.statsDetails||[]){
+      if(entry?.enum&&!liveStatEnums.has(entry.enum))detailByEnum.set(entry.enum,entry);
+      if(entry?.enum&&liveStatEnums.has(entry.enum)&&!liveStats.has(entry.name))delete mergedStats[entry.name];
+    }
     for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);
-    const mergedStatsDetails=[...detailByEnum.values()];
+    const mergedStatsDetails=[...detailByEnum.values()].filter(entry=>
+      !liveStatEnums.has(entry.enum)||(!conflicts.has(entry.enum)&&entry.value===mergedStatsByEnum[entry.enum]));
     const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));
     const mergedProfessions=(c.professions||[]).map(p=>{
       const previous=priorSkills.get(p.name);
@@ -1058,7 +1082,6 @@ function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog
  displayedPetCatalog=petCatalog||{};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=displayOrder('alphabetical',data.characters||[]);
- const questStatus=questGroupStatus(chars);
 
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  const min=levels.length?Math.min(...levels):null,max=levels.length?Math.max(...levels):null;
@@ -1075,7 +1098,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColor(c)}">
   <div class="cardhead">
     <div class="card-intro">
-      <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
+      <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</span>
       <h2 class="name">${esc(c.name)}</h2>
       <p class="player">Abenteurer: <strong>${esc(c.player)}</strong></p>
     </div>
@@ -1089,20 +1112,12 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${experienceProgress(c)}
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
-    ${characterTabPanel(c,'stats',statsPanel(c,openDetails.has(c.slug+':stats')))}
-    ${characterTabPanel(c,'equipment',equipmentPanel(c,openDetails.has(c.slug+':equipment')))}
-    ${characterTabPanel(c,'talents',talentPanel(c))}
-    ${characterTabPanel(c,'abilities',classAbilitiesPanel(c))}
-    ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
-    ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
-    ${characterTabPanel(c,'reputation',reputationPanel(c))}
-    ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}
-    ${characterTabPanel(c,'game',gameStatusPanel(c))}
+    ${characterTabsFor(c).map(({id})=>characterTabPanel(c,id,id===activeCharacterTabFor(c)?characterPanelContent(c,id,openDetails):'')).join('')}
   </div>
  </article>`).join("");
  installPortraitFallbacks();
  installCharacterTabs();
- cards.querySelectorAll('[data-character-panel="talents"]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));
+ cards.querySelectorAll('[data-character-panel="talents"][data-mounted]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));
  if(chars.some(c=>activeCharacterTabs.get(c.slug)==='talents'))loadTalentCatalog();
  if(!compareView.hidden)renderComparison();
 }
@@ -2124,6 +2139,7 @@ async function load({silent=false,force=false}={}){
           if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)showTalentPlanner();
           status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';
         }catch{
+          if(displayedData||requestSequence<appliedPayloadSequence)return false;
           status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>';
           if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)document.querySelector('#talentPlannerContent').innerHTML='<p class="talent-planner-card" role="status">Die Charakterdaten sind derzeit nicht erreichbar. Bitte lade die Seite erneut, sobald die Verbindung wieder verfügbar ist.</p>';
         }
