@@ -70,7 +70,7 @@ export function prepareAddonSync(previous,payload,{now=Date.now()}={}){
   }
   return {duplicate:false,payload:{...payload,sections},receipts:[...receipts,{...next,ignoredSections}].slice(-RECEIPT_LIMIT),ignoredSections};
 }
-export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,roster=null,receipts=[],pendingObservations=false,pendingObservationPayload=null,receivedAt=new Date().toISOString()}={}){
+export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,roster=null,expectedRoster,expectedState,receipts=[],pendingObservations=false,pendingObservationPayload=null,receivedAt=new Date().toISOString()}={}){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!characterSlug||!payload)throw new Error('Addon-Sync-Status unvollständig');
   const state={characterSlug,receivedAt,payload,receipts,pendingObservations,...(pendingObservations&&pendingObservationPayload?{pendingObservationPayload}:{})};
@@ -79,23 +79,30 @@ export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,r
   const production=environmentScope()==='production';
   if(!lockToken)throw new Error('Schreibsperre für Addon-Sync erforderlich');
   if(!production&&roster)throw new Error('Preview darf keine Charakterdaten schreiben');
+  if(!(typeof expectedRoster==='string'&&expectedRoster)&&!(expectedRoster===null&&!production))throw Error('PROFILE_BASE_REQUIRED');
+  if(expectedState!==null&&!(typeof expectedState==='string'&&expectedState))throw Error('ADDON_BASE_REQUIRED');
   const guard=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'string') or not valid(KEYS[#KEYS],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
   const prepare="local meta=compact(KEYS[2]); if meta.addon~=nil and type(meta.addon)~='table' then return redis.error_reply('INVALID_COMPACT_METADATA') end; meta.addon=meta.addon or {}; meta.addon[ARGV[2]]=cjson.decode(ARGV[3]); ";
   const write="return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],cjson.encode(meta),KEYS[#KEYS],ARGV[5])";
-  const atomic=guard+REDIS_PROFILE_GENERATION_GUARD+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[6] then assertGeneration(KEYS[4],ARGV[6],ARGV[7]); meta.characters=cjson.decode(ARGV[7]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[6],KEYS[2],cjson.encode(meta),KEYS[5],ARGV[5]) end; "+write;
-  const result=production
-    ?await redis(['EVAL',atomic,5,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),CHARACTER_KEY,summaryKey(characterSlug),...args,lockToken,summary,...(roster?normalizedCharacterWrite(roster):[])])
-    :await redis(['EVAL',guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; "+prepare+write,4,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),summaryKey(characterSlug),...args,lockToken,summary]);
+  // Bind both roster and Add-on state to the exact read under the shared
+  // lock. A valid-looking but stale/false-null response cannot erase either.
+  const atomic=guard+REDIS_PROFILE_GENERATION_GUARD+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; assertRosterBase(KEYS[4],ARGV[8],ARGV[10]=='preview'); local oldState=redis.call('GET',KEYS[1]); if (oldState and oldState~=ARGV[9]) or (not oldState and ARGV[9]~='') then return redis.error_reply('ADDON_BASE_CHANGED') end; "+prepare+"if ARGV[6]~='' then assertGeneration(KEYS[4],ARGV[6],ARGV[7],ARGV[8]); meta.characters=cjson.decode(ARGV[7]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[6],KEYS[2],cjson.encode(meta),KEYS[5],ARGV[5]) end; "+write;
+  const result=await redis(['EVAL',atomic,5,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),CHARACTER_KEY,summaryKey(characterSlug),...args,lockToken,summary,...(roster?normalizedCharacterWrite(roster):['','']),expectedRoster??'',expectedState??'',production?'production':'preview']);
   if(result!=='OK')throw new Error('Addon-Sync-Status nicht gespeichert');
   return state;
 }
 
+export async function loadAddonSyncStateForWrite(characterSlug){
+  if(!configured())throw Error('Redis-Datenbank nicht konfiguriert; Addon-Bestand nicht bestätigt');
+  const raw=await redis(['GET',keyFor(characterSlug)]);
+  if(raw===null)return {state:null,raw:null};
+  const state=JSON.parse(raw);
+  if(!state||typeof state!=='object'||Array.isArray(state)||state.characterSlug!==characterSlug||!state.payload||typeof state.payload!=='object'||Array.isArray(state.payload)||!Number.isFinite(Date.parse(state.receivedAt)))throw Error('ADDON_BASE_INVALID');
+  return {state,raw};
+}
 export async function loadAddonSyncState(characterSlug){
   if(!configured())return null;
-  const value=await redis(['GET',keyFor(characterSlug)]);
-  if(!value)return null;
-  const parsed=JSON.parse(value);
-  return parsed&&typeof parsed==='object'?parsed:null;
+  return (await loadAddonSyncStateForWrite(characterSlug)).state;
 }
 
 export async function loadAddonSyncStates(characterSlugs=[]){
