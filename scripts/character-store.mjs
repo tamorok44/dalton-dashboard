@@ -143,73 +143,7 @@ export const REDIS_TYPE_GUARD="local function valid(k,t) local a=redis.call('TYP
 export const REDIS_COMPACT_READ="local function compact(k) local old=redis.call('GET',k); if not old then return {} end; local value=cjson.decode(old); if type(value)~='table' then error('INVALID_COMPACT_METADATA') end; return value end; ";
 // Both atomic profile write paths enforce monotonic UTC generations.
 // Historical UTC timestamps with omitted millisecond padding are supported.
-export const REDIS_PROFILE_GENERATION_GUARD="local function generation(v) if type(v)~='string' then error('INVALID_PROFILE_GENERATION') end; local base,frac=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)%.(%d+)Z
-  if(!lockToken)throw new Error('Schreibsperre erforderlich');
-  const args=normalizedCharacterWrite(data);
-  if(dailyReceipt&&(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dailyReceipt.date)||dailyReceipt.source!=='daily'||dailyReceipt.generatedAt!==data.generatedAt||!Number.isInteger(dailyReceipt.success)||dailyReceipt.success<=0||!Number.isInteger(dailyReceipt.total)||dailyReceipt.total!==data.characters.length||!rosterMatches(dailyReceipt.roster,data.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})))||dailyReceipt.success>dailyReceipt.total||dailyReceipt.persisted!==true))throw new Error('Ungültiger Profil-Refresh-Nachweis');
-  const lua=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+REDIS_PROFILE_GENERATION_GUARD+"if not valid(KEYS[2],'string') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[1])~=ARGV[1] then return redis.error_reply('REFRESH_LOCK_LOST') end; assertGeneration(KEYS[2],ARGV[2],ARGV[3]); local meta=compact(KEYS[3]); meta.characters=cjson.decode(ARGV[3]); if ARGV[4] then meta.dailyReceipt=cjson.decode(ARGV[4]) end; local encoded=cjson.encode(meta); return redis.call('MSET',KEYS[2],ARGV[2],KEYS[3],encoded)";
-  const result=await redis(['EVAL',lua,3,LOCK,KEY,CORE_COMPACT_KEY,lockToken,...args,...(dailyReceipt?[JSON.stringify(dailyReceipt)]:[])]);
-  if(result!=='OK')throw new Error('Charakterdaten nicht gespeichert');
-}
-export async function loadDailyProfileReceipt(date){
-  const [value,legacy]=await Promise.all([redis(['GET',CORE_COMPACT_KEY]),redis(['HGET',VERSION_METADATA_KEY,DAILY_PROFILE_RECEIPT_FIELD])]);
-  return selectDailyReceipt(value?JSON.parse(value).dailyReceipt:null,legacy?JSON.parse(legacy):null,date);
-}
-export function mergeProfiles(previous,latest){
-  const bySlug=new Map((previous.characters||[]).map(c=>[c.slug,c]));
-  return {generatedAt:latest.generatedAt,characters:(latest.characters||[]).map(c=>{
-    const old=bySlug.get(c.slug);
-    if(!old)return c;
-    if(c.scrapeOk===false)return {...old,scrapeOk:false,statsVerified:false,statsFreshKeys:[],statsFreshEnums:[],scrapeError:c.scrapeError};
-    if(c.knownClassAbilitiesVerified===false&&old.knownClassAbilitiesVerified===true&&old.knownClassAbilitiesSource==='WoW-Spellbook'){
-      return {
-        ...c,
-        knownClassAbilities:Array.isArray(old.knownClassAbilities)?old.knownClassAbilities:[],
-        knownClassAbilitiesVerified:true,
-        knownClassAbilitiesSource:old.knownClassAbilitiesSource||null,
-        knownClassAbilitiesCapturedAt:old.knownClassAbilitiesCapturedAt||null,
-        knownClassAbilitiesSyncedAt:old.knownClassAbilitiesSyncedAt||null,
-        knownClassAbilitiesCapturedLevel:old.knownClassAbilitiesCapturedLevel??null,
-        knownClassAbilitiesCheckedAt:old.knownClassAbilitiesCapturedAt||old.knownClassAbilitiesCheckedAt||c.knownClassAbilitiesCheckedAt||null
-      };
-    }
-    return c;
-  })};
-}
-); if not base then base=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)Z
-  if(!lockToken)throw new Error('Schreibsperre erforderlich');
-  const args=normalizedCharacterWrite(data);
-  if(dailyReceipt&&(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(dailyReceipt.date)||dailyReceipt.source!=='daily'||dailyReceipt.generatedAt!==data.generatedAt||!Number.isInteger(dailyReceipt.success)||dailyReceipt.success<=0||!Number.isInteger(dailyReceipt.total)||dailyReceipt.total!==data.characters.length||!rosterMatches(dailyReceipt.roster,data.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null})))||dailyReceipt.success>dailyReceipt.total||dailyReceipt.persisted!==true))throw new Error('Ungültiger Profil-Refresh-Nachweis');
-  const lua=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+REDIS_PROFILE_GENERATION_GUARD+"if not valid(KEYS[2],'string') or not valid(KEYS[3],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[1])~=ARGV[1] then return redis.error_reply('REFRESH_LOCK_LOST') end; assertGeneration(KEYS[2],ARGV[2],ARGV[3]); local meta=compact(KEYS[3]); meta.characters=cjson.decode(ARGV[3]); if ARGV[4] then meta.dailyReceipt=cjson.decode(ARGV[4]) end; local encoded=cjson.encode(meta); return redis.call('MSET',KEYS[2],ARGV[2],KEYS[3],encoded)";
-  const result=await redis(['EVAL',lua,3,LOCK,KEY,CORE_COMPACT_KEY,lockToken,...args,...(dailyReceipt?[JSON.stringify(dailyReceipt)]:[])]);
-  if(result!=='OK')throw new Error('Charakterdaten nicht gespeichert');
-}
-export async function loadDailyProfileReceipt(date){
-  const [value,legacy]=await Promise.all([redis(['GET',CORE_COMPACT_KEY]),redis(['HGET',VERSION_METADATA_KEY,DAILY_PROFILE_RECEIPT_FIELD])]);
-  return selectDailyReceipt(value?JSON.parse(value).dailyReceipt:null,legacy?JSON.parse(legacy):null,date);
-}
-export function mergeProfiles(previous,latest){
-  const bySlug=new Map((previous.characters||[]).map(c=>[c.slug,c]));
-  return {generatedAt:latest.generatedAt,characters:(latest.characters||[]).map(c=>{
-    const old=bySlug.get(c.slug);
-    if(!old)return c;
-    if(c.scrapeOk===false)return {...old,scrapeOk:false,statsVerified:false,statsFreshKeys:[],statsFreshEnums:[],scrapeError:c.scrapeError};
-    if(c.knownClassAbilitiesVerified===false&&old.knownClassAbilitiesVerified===true&&old.knownClassAbilitiesSource==='WoW-Spellbook'){
-      return {
-        ...c,
-        knownClassAbilities:Array.isArray(old.knownClassAbilities)?old.knownClassAbilities:[],
-        knownClassAbilitiesVerified:true,
-        knownClassAbilitiesSource:old.knownClassAbilitiesSource||null,
-        knownClassAbilitiesCapturedAt:old.knownClassAbilitiesCapturedAt||null,
-        knownClassAbilitiesSyncedAt:old.knownClassAbilitiesSyncedAt||null,
-        knownClassAbilitiesCapturedLevel:old.knownClassAbilitiesCapturedLevel??null,
-        knownClassAbilitiesCheckedAt:old.knownClassAbilitiesCapturedAt||old.knownClassAbilitiesCheckedAt||c.knownClassAbilitiesCheckedAt||null
-      };
-    }
-    return c;
-  })};
-}
-); frac='' end; if not base or string.len(frac)>3 then error('INVALID_PROFILE_GENERATION') end; return base..'.'..string.sub(frac..'000',1,3)..'Z' end; local function assertGeneration(k,nextRaw,nextMeta) local next=cjson.decode(nextRaw); local meta=cjson.decode(nextMeta); local stamp=generation(next.generatedAt); if stamp~=next.generatedAt or meta.generatedAt~=stamp then error('INVALID_PROFILE_GENERATION') end; local oldRaw=redis.call('GET',k); if oldRaw then local old=cjson.decode(oldRaw); if stamp<=generation(old.generatedAt) then error('PROFILE_GENERATION_NOT_ADVANCED') end end end; ";
+export const REDIS_PROFILE_GENERATION_GUARD="local function generation(v) if type(v)~='string' then error('INVALID_PROFILE_GENERATION') end; local base,frac=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)%.(%d+)Z$'); if not base then base=string.match(v,'^(%d%d%d%d%-%d%d%-%d%dT%d%d:%d%d:%d%d)Z$'); frac='' end; if not base or string.len(frac)>3 then error('INVALID_PROFILE_GENERATION') end; return base..'.'..string.sub(frac..'000',1,3)..'Z' end; local function assertGeneration(k,nextRaw,nextMeta) local next=cjson.decode(nextRaw); local meta=cjson.decode(nextMeta); local stamp=generation(next.generatedAt); if stamp~=next.generatedAt or meta.generatedAt~=stamp then error('INVALID_PROFILE_GENERATION') end; local oldRaw=redis.call('GET',k); if oldRaw then local old=cjson.decode(oldRaw); if stamp<=generation(old.generatedAt) then error('PROFILE_GENERATION_NOT_ADVANCED') end end end; ";
 export async function saveCharacters(data,lockToken,{dailyReceipt=null}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
   const args=normalizedCharacterWrite(data);
