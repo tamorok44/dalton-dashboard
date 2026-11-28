@@ -85,7 +85,7 @@ function publicStats(c,{allowLegacyStats=false}={}){
   // One display key cannot represent two distinct enum identities. Keep their
   // separate enum/detail values but omit the ambiguous compatibility alias.
   const unambiguous=[...byName].filter(([,owners])=>owners.length===1);
-  const fresh=new Set(strings(c.statsFreshEnums)||[]);
+  const fresh=new Set(c.scrapeOk===false?[]:strings(c.statsFreshEnums)||[]);
   const freshEnums=[...enumValues].filter(([id,value])=>validNumber(value)&&fresh.has(id)&&!conflictingEnums.has(id)).map(([id])=>id);
   const freshSet=new Set(freshEnums);
   return {
@@ -100,7 +100,7 @@ const profileFields=fields('slug name player level class classId race gender fac
 export function publicCharacterProfile(value,options={}){
   const c=object(value),out=pick(c,profileFields);
   // Errors are status flags, never raw internal provider diagnostics.
-  if(c.scrapeOk===false)out.scrapeError='Letzter Profilabruf fehlgeschlagen';
+  if(c.scrapeOk===false){out.scrapeError='Letzter Profilabruf fehlgeschlagen';out.statsVerified=false;}
   for(const key of ['ruleset','realm'])if(c[key]!==undefined)out[key]=typeof c[key]==='string'?c[key]:pick(c[key],fields('id name slug'));
   Object.assign(out,publicStats(c,options));
   if(Array.isArray(c.equipment))out.equipment=array(c.equipment,x=>pick(x,fields('id slotType sourceSlotType slot item icon iconUrl storedIconUrl level quality qualityName sourceName localized')));
