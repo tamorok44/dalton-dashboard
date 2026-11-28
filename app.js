@@ -2219,8 +2219,15 @@ async function refreshLive(){
     const r=await fetch('/api/refresh?t='+Date.now(),{method:'POST',cache:'no-store',redirect:'error',
       headers:{Authorization:'Bearer '+manualRefreshCode}});
     if(r.status===401){manualRefreshCode=null;throw new Error('REFRESH_UNAUTHORIZED');}
-    if(!r.ok)throw new Error('HTTP '+r.status);
     const response=await r.json();
+    if(!r.ok){
+      // A persisted total source outage is still a newer profile generation,
+      // not a successful refresh. Publish its stale state immediately.
+      if(r.status===503&&response.persisted===true&&response.success===0&&Array.isArray(response.data?.characters)&&response.data.characters.every(c=>c.scrapeOk===false)){
+        applyServerPayload({...response,addonSync:displayedData?.addonSync||{},questCatalog:displayedQuestCatalog,petRules:displayedPetRules,reputationCatalog:displayedReputationCatalog,petCatalog:displayedPetCatalog},{live:true,success:0,force:true,requestSequence});
+      }
+      throw new Error('HTTP '+r.status);
+    }
     if(response.pending){
       status.textContent='Eine andere Aktualisierung läuft bereits. Der neue Serverstand wird automatisch übernommen, sobald er gespeichert ist.';
       setTimeout(()=>checkForNewData(),5000);
