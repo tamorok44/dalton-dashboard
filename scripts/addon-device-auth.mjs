@@ -152,9 +152,12 @@ export async function authorizeDeviceToken(token,options){
   return (await authorizeDeviceTokenWithProof(token,options))?.record??null;
 }
 export async function revokeDeviceToken(token){
-  const record=await authorizeDeviceToken(token);
-  if(!record)return false;
-  // Concurrent revocations must not both claim that they removed the record.
+  // A null authorization also covers missing bindings or malformed records,
+  // and is therefore NOT evidence that a credential is gone.
+  if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert; Widerruf nicht bestätigt');
+  if(typeof token!=='string'||!/^ddv1_[A-Za-z0-9_-]{43}$/.test(token))throw enrollmentDenied();
+  // DEL=0 is authoritative absence in the configured scope; DEL=1 proves
+  // removal, including malformed records. No preliminary GET/DEL race.
   const removed=await redis(['DEL',deviceKey(token)]);
   if(removed!==0&&removed!==1)throw new Error('Gerätewiderruf konnte nicht bestätigt werden');
   return removed===1;
