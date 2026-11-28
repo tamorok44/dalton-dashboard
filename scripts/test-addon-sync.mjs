@@ -1,4 +1,12 @@
 import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir as testTmpdir} from 'node:os';
+import {join as testJoin} from 'node:path';
+// All test helpers that may acquire a local config lock run in an isolated
+// writable home, never the tester's actual Bridge configuration directory.
+const isolatedHome=mkdtempSync(testJoin(testTmpdir(),'dalton-bridge-tests-'));
+for(const key of ['HOME','USERPROFILE','LOCALAPPDATA','XDG_CONFIG_HOME'])process.env[key]=isolatedHome;
+process.on('exit',()=>rmSync(isolatedHome,{recursive:true,force:true}));
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
@@ -347,14 +355,37 @@ try{
       " if(body.action==='revoke'){",
       "  if(options.headers.Authorization!=='Device ddv1_"+"A".repeat(43)+"')throw Error('Wrong old credential');",
       "  await appendFile(join(root,'traffic'),'revoke\\n');",
+      "  if(process.env.REVOKE_RESPONSE==='html')return new Response('<html>OK</html>',{status:200,headers:{'content-type':'text/html'}});",
+      "  if(process.env.REVOKE_RESPONSE==='empty')return new Response(null,{status:204});",
+      "  if(process.env.REVOKE_RESPONSE==='negative')return Response.json({revoked:false,alreadyRevoked:false});",
+      "  if(process.env.REVOKE_RESPONSE==='ambiguous')return Response.json({revoked:true,alreadyRevoked:true});",
+      "  if(process.env.REVOKE_RESPONSE==='partial')return Response.json({revoked:true});",
+      "  if(process.env.REVOKE_RESPONSE==='string')return Response.json({revoked:'true',alreadyRevoked:false});",
+      "  if(process.env.REVOKE_RESPONSE==='error')return Response.json({revoked:true,alreadyRevoked:false,error:'failure'});",
+      "  if(process.env.REVOKE_RESPONSE==='already')return Response.json({revoked:false,alreadyRevoked:true});",
       "  await writeFile(join(root,'entered'),'yes');",
-      "  for(let i=0;i<400;i++){try{await access(join(root,'release'));return Response.json({revoked:true});}catch{}await delay(25);}",
+      "  for(let i=0;i<400;i++){try{await access(join(root,'release'));return Response.json({revoked:true,alreadyRevoked:false});}catch{}await delay(25);}",
       "  throw Error('Fixture timeout');",
       " }",
       " await appendFile(join(root,'traffic'),'enroll\\n');",
       " return Response.json({deviceToken:'ddv1_"+"B".repeat(43)+"',characterSlug:'cole-dalton',characterName:'Cole Dalton'});",
       "};"
     ].join('\n'));
+    const originalConfig=await readFile(file,'utf8');
+    for(const mode of ['html','empty','negative','ambiguous','partial','string','error']){
+      env.REVOKE_RESPONSE=mode;
+      const rejected=await run(['--revoke-device']);
+      assert.notEqual(rejected.code,0,mode+': '+rejected.output);
+      assert.match(rejected.output,/Widerruf nicht eindeutig bestätigt/);
+      assert.equal(await readFile(file,'utf8'),originalConfig,'Rejected response must preserve exact config: '+mode);
+    }
+    env.REVOKE_RESPONSE='already';
+    const already=await run(['--revoke-device']);
+    assert.equal(already.code,0,already.output);
+    assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
+    await writeFile(file,originalConfig);
+    await writeFile(traffic,'');
+    delete env.REVOKE_RESPONSE;
     const revoke=run(['--revoke-device']);
     await waitFile(entered);
     const competing=await run(['--enroll','dalton-'+'C'.repeat(32)]);
