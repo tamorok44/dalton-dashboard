@@ -315,6 +315,51 @@ try{
    assert.equal(await petPanel.getByText('Rüstung aus Dolly',{exact:true}).count(),0,'Stale armor must not drive inherited armor');
    assert.ok((await petPanel.locator('.pet-combat-group').first().innerText()).includes('vorübergehend nicht verfügbar'));
    result.staleProfileDefense=true;
+   // An independent page holds its first GET in flight while an authorized
+   // partial refresh publishes the newer failed profile. Release the old
+   // response only after the new status is rendered.
+   const racePage=await context.newPage();
+   let releaseOld,oldStarted;
+   const oldGate=new Promise(resolve=>{releaseOld=resolve});
+   const oldRequested=new Promise(resolve=>{oldStarted=resolve});
+   const oldStamp=new Date(Date.parse(checkedAt)-1000).toISOString();
+   try{
+     await racePage.route('**/*',route=>{
+       if(!route.request().url().startsWith(origin+'/'))return route.abort();
+       return route.continue();
+     });
+     await racePage.route(url=>url.origin===origin&&url.pathname==='/api/characters'&&!url.searchParams.has('view'),async route=>{
+       oldStarted();
+       await oldGate;
+       await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+         data:{generatedAt:oldStamp,characters:browserRoster.map(c=>c.classId===3?{...c,scrapeOk:true}:c)},
+         petRules:browserPetRules,dataVersion:{version:'qa-delayed-old'}
+       })});
+     });
+     await racePage.goto(origin+'/#charaktere',{waitUntil:'domcontentloaded'});
+     await oldRequested;
+     await racePage.locator('#refreshButton').click();
+     await racePage.locator('#refreshAuthorizationDialog').waitFor({state:'visible'});
+     await racePage.locator('#refreshAuthorizationCode').fill(syntheticRefreshCode);
+     await racePage.locator('#refreshAuthorizationDialog button[value="confirm"]').click();
+     const failedCard=racePage.locator('#qa-class-3-panel-stats');
+     await racePage.locator('#qa-class-3-tab-stats').waitFor({state:'visible'});
+     await racePage.locator('#qa-class-3-tab-stats').click();
+     await failedCard.locator('details.attributes summary').click();
+     const tile=failedCard.locator('.stat-tile').filter({hasText:'Rüstung'});
+     assert.ok((await tile.innerText()).includes('letzter Stand'));
+     const delayedResponse=racePage.waitForResponse(res=>res.url().includes('/api/characters?')&&!new URL(res.url()).searchParams.has('view'));
+     releaseOld();
+     const delivered=await delayedResponse;
+     await delivered.finished();
+     // Wait for the renderer's promise chain to settle after JSON delivery.
+     await racePage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     assert.ok((await tile.innerText()).includes('letzter Stand'),'Delayed older GET must not replace the newer failure status');
+     await racePage.locator('#qa-class-3-tab-pets').click();
+     assert.equal(await racePage.locator('#qa-class-3-panel-pets').getByText('Rüstung aus Dolly',{exact:true}).count(),0);
+     result.delayedGetDefense=true;
+   }finally{releaseOld();await racePage.close();}
+
    const beforeDisplay=displayRequests,beforePlan=plannerRequests;
    const tabs=page.locator('button[data-character-slug="qa-class-8"][data-character-tab]');
    const stats=tabs.filter({hasText:'Charakterwerte'});
