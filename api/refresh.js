@@ -3,7 +3,7 @@ import {timingSafeEqual} from 'node:crypto';
 import {loadLiveKnowledgeVersion} from '../scripts/live-knowledge-store.mjs';
 import {loadPublicAddonSyncStates} from '../scripts/addon-sync-store.mjs';
 import {enrichKnowledgeMedia} from '../scripts/knowledge-media.mjs';
-import {configured,acquireRefreshLock,releaseRefreshLock,manualCooldown} from '../scripts/character-store.mjs';
+import {configured,acquireRefreshLock,releaseRefreshLock,manualCooldown,loadCharactersForWrite} from '../scripts/character-store.mjs';
 import {refreshAndPersist} from '../scripts/refresh-service.mjs';
 import {ensurePetRuleState} from '../scripts/pet-rule-store.mjs';
 import {publicPetRuleState} from '../scripts/pet-rulebook.mjs';
@@ -13,8 +13,9 @@ let pending=null;
 
 async function runLockedRefresh(lockToken,source){
   try{
+    const profileRead=await loadCharactersForWrite();
     const petRuleState=await ensurePetRuleState({force:false});
-    const result=await refreshAndPersist({lockToken,source});
+    const result=await refreshAndPersist({lockToken,source,profileRead});
     return {result,petRuleState};
   }finally{
     try{await releaseRefreshLock(lockToken)}catch(error){console.error('Redis-Refresh-Sperre konnte nicht freigegeben werden:',error)}
