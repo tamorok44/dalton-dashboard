@@ -1,4 +1,12 @@
 import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir as testTmpdir} from 'node:os';
+import {join as testJoin} from 'node:path';
+// All test helpers that may acquire a local config lock run in an isolated
+// writable home, never the tester's actual Bridge configuration directory.
+const isolatedHome=mkdtempSync(testJoin(testTmpdir(),'dalton-bridge-tests-'));
+for(const key of ['HOME','USERPROFILE','LOCALAPPDATA','XDG_CONFIG_HOME'])process.env[key]=isolatedHome;
+process.on('exit',()=>rmSync(isolatedHome,{recursive:true,force:true}));
 import {parseLuaSavedVariable} from './savedvariables-parser.mjs';
 import {buildSafeAddonSyncPayload,normalizeAddonSyncPayload,addonSpellbookSnapshot,addonSyncContentIdentity,publicAddonSyncSummary} from './addon-sync.mjs';
 import {mergeProfiles} from './character-store.mjs';
@@ -153,3 +161,316 @@ assert.ok(previewStoreSource.includes("process.env.VERCEL_ENV==='production'?'pr
 if(originalVercelEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalVercelEnv;
 
 console.log('Addon Sync: SavedVariables-Parser, Privacy-Whitelist, Klassenfilter, Preview-Isolation und Refresh-Persistenz: OK');
+
+
+// Device namespace and retired-promotion regression: no provider access.
+const {authorizeDeviceToken,isTrustedCharacterSlug}=await import('./addon-device-auth.mjs');
+const {default:retiredPromotion}=await import('../api/addon-device-promote.js');
+for(const invalid of ['__proto__','constructor','toString','hasOwnProperty','unknown']){
+  assert.equal(trustedCharacterName(invalid),null);assert.equal(isTrustedCharacterSlug(invalid),false);
+  assert.equal(deviceMayCreateEnrollment(coleDevice,invalid),false);
+}
+const savedEnv=Object.fromEntries(['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','DALTON_PRODUCTION_REDIS_ORIGIN'].map(k=>[k,process.env[k]]));
+const savedFetch=globalThis.fetch;
+const requests=[];
+const fakeToken='ddv1_'+'F'.repeat(43);
+const validRecord={deviceId:'synthetic-existing',characterSlug:'cole-dalton',revokedAt:null,promotedAt:'2026-11-20T00:00:00Z'};
+try{
+  process.env.KV_REST_API_URL='https://fixture.invalid';
+  process.env.KV_REST_API_TOKEN='synthetic';
+  process.env.DALTON_PREVIEW_REDIS_REST_URL='https://preview-fixture.invalid';
+  process.env.DALTON_PREVIEW_REDIS_REST_TOKEN='synthetic-preview';
+  process.env.DALTON_PRODUCTION_REDIS_ORIGIN='https://fixture.invalid';
+  let returnedRecord=validRecord;
+  globalThis.fetch=async (url,options)=>{
+    assert.equal(String(url),process.env.VERCEL_ENV==='preview'?'https://preview-fixture.invalid':'https://fixture.invalid');
+    const command=JSON.parse(options.body);requests.push(command);
+    assert.equal(command[0],'GET');
+    return Response.json({result:JSON.stringify(returnedRecord)});
+  };
+  for(const scope of ['preview','production']){
+    process.env.VERCEL_ENV=scope;
+    requests.length=0;
+    for(const method of ['GET','POST','DELETE']){
+      const response={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await retiredPromotion({method,headers:{authorization:'Device '+fakeToken}},response);
+      assert.equal(response.code,410);assert.ok(!response.body.deviceToken);
+    }
+    assert.equal(requests.length,0);
+    assert.equal(await authorizeDeviceToken(fakeToken,{targetScope:scope==='preview'?'production':'preview'}),null);
+    assert.equal(requests.length,0);
+    assert.deepEqual(await authorizeDeviceToken(fakeToken),validRecord);
+    assert.equal(requests.length,1);assert.ok(requests[0][1].includes(':'+scope+':token:'));
+    returnedRecord={...validRecord,characterSlug:'constructor'};
+    assert.equal(await authorizeDeviceToken(fakeToken),null);
+    returnedRecord={...validRecord,revokedAt:'2026-11-27T00:00:00Z'};
+    assert.equal(await authorizeDeviceToken(fakeToken),null);
+    returnedRecord=validRecord;
+  }
+  console.log('Privacy: promotion closed, scope-bound authorization and existing production devices preserved: OK');
+}finally{
+  globalThis.fetch=savedFetch;
+  for(const [key,value] of Object.entries(savedEnv)){if(value===undefined)delete process.env[key];else process.env[key]=value;}
+}
+
+
+// No credential-bearing bridge path may reach fetch on a non-HTTPS,
+// ambiguous path, embedded credential, or mismatched preview origin.
+{
+  const {secureBridgeEndpoint,enrollDevice,revokeDevice,createEnrollment,postPayload}=await import('./dalton-sync-client.mjs');
+  const {mkdtemp,mkdir,writeFile,rm}=await import('node:fs/promises');
+  const {tmpdir,platform}=await import('node:os');
+  const {join}=await import('node:path');
+  const root=await mkdtemp(join(tmpdir(),'dalton-bridge-transport-'));
+  const dir=platform()==='win32'?join(root,'DaltonDashboardBridge'):platform()==='darwin'?join(root,'Library','Application Support','DaltonDashboardBridge'):join(root,'dalton-dashboard-bridge');
+  const originalEnv=Object.fromEntries(['HOME','LOCALAPPDATA','XDG_CONFIG_HOME'].map(key=>[key,process.env[key]]));
+  for(const key of Object.keys(originalEnv))process.env[key]=root;
+  const before=globalThis.fetch;let calls=0;
+  try{
+    globalThis.fetch=async()=>{calls++;throw Error('Network forbidden')};
+    for(const url of ['http://example.invalid/api/addon-sync','http://localhost/api/addon-sync','http://127.0.0.1/api/addon-sync','ftp://localhost/api/addon-sync','https://user:pass@example.invalid/api/addon-sync','https://example.invalid/not-sync','https://example.invalid/api/addon-sync?secret=bad','https://example.invalid/api/addon-sync#fragment']){
+      assert.throws(()=>secureBridgeEndpoint(url),/HTTPS/);
+      await assert.rejects(enrollDevice(url,'synthetic-invite'),/HTTPS/);
+      await assert.rejects(revokeDevice({endpoint:url,deviceToken:'synthetic-device'}),/HTTPS/);
+      await assert.rejects(createEnrollment(url,'dolly-dalton','Device synthetic'),/HTTPS/);
+      await assert.rejects(postPayload(url,'Device synthetic',{}),/HTTPS/);
+    }
+    const endpoint='https://example.invalid/api/addon-sync';
+    await assert.rejects(enrollDevice(endpoint,'synthetic-invite',null,'https://different.invalid/?share=synthetic'),/denselben HTTPS/);
+    await assert.rejects(revokeDevice({endpoint,deviceToken:'synthetic-device',previewShareUrl:'https://different.invalid/'}),/denselben HTTPS/);
+    assert.equal(calls,0);
+    globalThis.fetch=async(url,options)=>{
+      calls++;assert.equal(new URL(url).protocol,'https:');assert.equal(options.redirect,'error');
+      throw Error('synthetic redirect blocked');
+    };
+    await mkdir(dir,{recursive:true});
+    await writeFile(join(dir,'config.json'),JSON.stringify({endpoint,deviceToken:'synthetic-device'}));
+    await assert.rejects(enrollDevice(endpoint,'dalton-'+'A'.repeat(32)),/redirect blocked/);
+    await assert.rejects(revokeDevice({endpoint,deviceToken:'synthetic-device'}),/redirect blocked/);
+    await assert.rejects(createEnrollment(endpoint,'dolly-dalton','Device synthetic'),/redirect blocked/);
+    await assert.rejects(postPayload(endpoint,'Device synthetic',{}),/redirect blocked/);
+    assert.equal(calls,4);
+    await assert.rejects(revokeDevice({endpoint,deviceToken:'prior-device'}),/inzwischen geändert/);
+    assert.equal(calls,4,'Stale local revoke never reaches the network');
+    const payload={syncId:'current',sections:{character:{name:'Cole Dalton'}}};
+    const confirmed={duplicate:true,acceptedSyncId:'current',character:{slug:'cole-dalton',name:'Cole Dalton'},summary:{syncId:'newer'}};
+    for(const getResponse of [
+      ()=>new Response('<html>success</html>'),()=>Response.json(null),
+      ()=>Response.json({...confirmed,acceptedSyncId:'incorrect'}),
+      ()=>Response.json({...confirmed,character:{slug:'dolly-dalton',name:'Dolly Dalton'}}),
+      ()=>Response.json({...confirmed,error:'synthetic confidential error'})
+    ]){
+      globalThis.fetch=getResponse;
+      await assert.rejects(postPayload(endpoint,'Device synthetic',payload),/nicht eindeutig bestätigt/);
+    }
+    globalThis.fetch=()=>Response.json({error:'synthetic confidential error'},{status:503});
+    await assert.rejects(postPayload(endpoint,'Device synthetic',payload),error=>error.message==='Sync fehlgeschlagen (HTTP 503)');
+    globalThis.fetch=()=>Response.json(confirmed);
+    assert.deepEqual(await postPayload(endpoint,'Device synthetic',payload),confirmed);
+  }finally{
+    globalThis.fetch=before;
+    for(const [key,value] of Object.entries(originalEnv))if(value===undefined)delete process.env[key];else process.env[key]=value;
+    await rm(root,{recursive:true,force:true});
+  }
+}
+
+
+// Actual CLI dispatch with a saved config, synthetic credentials and
+// no provider traffic. Explicit targets are never silently overridden.
+{
+  const {main,resolveBridgeTarget}=await import('./dalton-sync-client.mjs');
+  const {mkdtemp,rm}=await import('node:fs/promises');
+  const {tmpdir}=await import('node:os');
+  const {join}=await import('node:path');
+  const root=await mkdtemp(join(tmpdir(),'dalton-bridge-cli-'));
+  const keys=['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL','HOME','LOCALAPPDATA','XDG_CONFIG_HOME'];
+  const old=Object.fromEntries(keys.map(k=>[k,process.env[k]])),before=globalThis.fetch;
+  const stored='https://stored.invalid/api/addon-sync',selected='https://selected.invalid/api/addon-sync',envTarget='https://env.invalid/api/addon-sync';
+  const config={endpoint:stored,deviceToken:'synthetic-saved',previewShareUrl:'https://stored.invalid/?share=synthetic',characterName:'Cole Dalton'};
+  const readConfig=async()=>config;
+  const calls=[];
+  try{
+    for(const k of keys.slice(0,4))delete process.env[k];
+    for(const k of keys.slice(4))process.env[k]=root;
+    globalThis.fetch=async(url,options)=>{calls.push({url:String(url),auth:options.headers?.Authorization});throw Error('fixture request stopped')};
+    assert.equal(resolveBridgeTarget({},config,{}).endpoint,stored);
+    assert.equal(resolveBridgeTarget({},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,envTarget);
+    assert.equal(resolveBridgeTarget({endpointProvided:true,endpoint:selected},config,{DALTON_SYNC_ENDPOINT:envTarget}).endpoint,selected);
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint',selected],{readConfig}),/anderen HTTPS-Ziel/);
+    await assert.rejects(main(['--revoke-device','--endpoint',selected],{readConfig}),/anderen HTTPS-Ziel/);
+    await assert.rejects(main(['--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig}),/anderen HTTPS-Ziel/);
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint'],{readConfig}),/benötigt/);
+    assert.equal(calls.length,0);
+    process.env.DALTON_SYNC_ENDPOINT=envTarget;
+    process.env.DALTON_SYNC_TOKEN='synthetic-explicit-master';
+    await assert.rejects(main(['--create-enroll','dolly-dalton','--endpoint',selected],{readConfig}),/fixture request stopped/);
+    assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
+    await assert.rejects(main(['--create-enroll','dolly-dalton'],{readConfig}),/fixture request stopped/);
+    assert.deepEqual(calls.pop(),{url:'https://env.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
+    await assert.rejects(main(['--enroll','dalton-'+'A'.repeat(32),'--endpoint',selected],{readConfig}),/fixture request stopped/);
+    assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:undefined});
+    // Sync path has the same precedence; the explicit master credential may
+    // be used for a consciously chosen target, the saved one never travels.
+    await main(['--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
+    assert.ok(calls.length>0,'sync fixture must actually exercise transport');
+    for(const call of calls)assert.deepEqual(call,{url:selected,auth:'Bearer synthetic-explicit-master'});
+    calls.length=0;
+    await assert.rejects(main(['--dry-run','--enroll','synthetic-invite','--endpoint',selected],{readConfig}),/nicht mit Geräteverwaltung/);
+    // Every value-taking flag rejects missing, blank, or option-like values
+    // before config is read, including the case that previously ate --dry-run.
+    let configReads=0;
+    const mustNotRead=async()=>{configReads++;throw Error('config must not be read')};
+    const malformed=[];
+    for(const flag of ['--file','--endpoint','--enroll','--create-enroll','--character','--preview-share-url']){
+      for(const tail of [[],[''],['  '],['--dry-run'],['--watch'],['-x'],[' --help']]){
+        malformed.push([flag,...tail]);
+        malformed.push(['--dry-run',flag,...tail]);
+      }
+    }
+    malformed.push(['--enroll','--dry-run','--endpoint',selected],['--create-enroll','--dry-run'],
+      ['--enroll','synthetic-invite','--revoke-device'],
+      ['--revoke-device','--create-enroll','dolly-dalton'],
+      ['--enroll','synthetic-invite','--watch'],
+      ['--revoke-device','--file','scripts/fixtures/bridge-savedvariables.lua'],
+      ['--character','cole-dalton'],['--help','--watch'],
+      ['--dry-run','--dry-run'],['--endpoint',selected,'--endpoint',stored],
+      ['--promote-production'],['--enroll','invalid-short-code'],['--create-enroll','unbekannt'],
+      ['--enroll','dalton-'+'A'.repeat(32),'--character','unknown'],['--endpoint','http://stored.invalid/api/addon-sync'],
+      ['--endpoint',selected,'--preview-share-url','https://foreign.invalid/']);
+    for(const argv of malformed){
+      await assert.rejects(main(argv,{readConfig:mustNotRead}),error=>/Argumentwert|Geräteverwaltung|Geräteverwaltungsbefehl|nur bei|allein stehen|mehrfach angegeben|deaktiviert|Ungültiger Einrichtungscode|Unbekannter Dalton-Charakter|HTTPS/.test(error.message));
+    }
+    assert.equal(configReads,0);
+    assert.equal(calls.length,0,'Malformed invocation must never fetch');
+    // A real dry-run must not request the configured share URL.
+    await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua','--endpoint',selected],{readConfig});
+    assert.equal(calls.length,0);
+    const legacyConfig={...config,endpoint:'http://old-host.invalid/api/addon-sync'};
+    await main(['--dry-run','--file','scripts/fixtures/bridge-savedvariables.lua'],{readConfig:async()=>legacyConfig});
+    assert.equal(calls.length,0,'Offline dry-run works with a legacy HTTP config and sends nothing');
+  }finally{
+    globalThis.fetch=before;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+    await rm(root,{recursive:true,force:true});
+  }
+}
+
+
+// Actual separate CLI processes, isolated home and intercepted transport.
+// Hold the old revoke at its HTTP response, race an enroll, then retry it.
+{
+  const {mkdtemp,writeFile,readFile,mkdir,rm,access}=await import('node:fs/promises');
+  const {tmpdir,platform}=await import('node:os');
+  const {join,dirname,resolve}=await import('node:path');
+  const {spawn}=await import('node:child_process');
+  const {setTimeout:delay}=await import('node:timers/promises');
+  const root=await mkdtemp(join(tmpdir(),'dalton-bridge-race-'));
+  const dir=platform()==='win32'?join(root,'DaltonDashboardBridge'):platform()==='darwin'?join(root,'Library','Application Support','DaltonDashboardBridge'):join(root,'dalton-dashboard-bridge');
+  const file=join(dir,'config.json'),entered=join(root,'entered'),release=join(root,'release'),traffic=join(root,'traffic'),preload=join(root,'mock.mjs');
+  const oldToken='ddv1_'+'A'.repeat(43);
+  const target='https://bridge-race.invalid/api/addon-sync';
+  const env={...process.env,HOME:root,USERPROFILE:root,LOCALAPPDATA:root,XDG_CONFIG_HOME:root,BRIDGE_FIXTURE_ROOT:root};
+  for(const key of ['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL','NODE_OPTIONS'])delete env[key];
+  const children=[];
+  function run(args){
+    const proc=spawn(process.execPath,['--import',preload,resolve('scripts/dalton-sync-client.mjs'),...args],{env,stdio:['ignore','pipe','pipe']});
+    children.push(proc);let output='';
+    proc.stdout.on('data',x=>output+=x);proc.stderr.on('data',x=>output+=x);
+    const done=new Promise((res,rej)=>{proc.on('error',rej);proc.on('close',code=>res({code,output}));});
+    return done;
+  }
+  async function waitFile(path){for(let i=0;i<200;i++){try{await access(path);return;}catch{}await delay(25);}throw Error('Missing fixture barrier');}
+  try{
+    await mkdir(dir,{recursive:true});
+    await writeFile(file,JSON.stringify({endpoint:target,deviceToken:oldToken,characterSlug:'cole-dalton',characterName:'Cole Dalton'}));
+    await writeFile(preload,[
+      "import {appendFile,writeFile,access} from 'node:fs/promises';",
+      "import {join} from 'node:path';",
+      "import {setTimeout as delay} from 'node:timers/promises';",
+      "const root=process.env.BRIDGE_FIXTURE_ROOT;",
+      "globalThis.fetch=async(url,options)=>{",
+      " if(String(url)!=='https://bridge-race.invalid/api/addon-device-enroll')throw Error('Unexpected network destination');",
+      " const body=JSON.parse(options.body);",
+      " if(body.action==='scope')return Response.json({scope:'production'});",
+      " if(body.action==='locate')return Response.json({scope:'production'});",
+      " if(body.action==='revoke'){",
+      "  if(options.headers.Authorization!=='Device ddv1_"+"A".repeat(43)+"')throw Error('Wrong old credential');",
+      "  await appendFile(join(root,'traffic'),'revoke\\n');",
+      "  if(process.env.REVOKE_RESPONSE==='html')return new Response('<html>OK</html>',{status:200,headers:{'content-type':'text/html'}});",
+      "  if(process.env.REVOKE_RESPONSE==='empty')return new Response(null,{status:204});",
+      "  if(process.env.REVOKE_RESPONSE==='negative')return Response.json({scope:'production',revoked:false,alreadyRevoked:false});",
+      "  if(process.env.REVOKE_RESPONSE==='ambiguous')return Response.json({scope:'production',revoked:true,alreadyRevoked:true});",
+      "  if(process.env.REVOKE_RESPONSE==='partial')return Response.json({scope:'production',revoked:true});",
+      "  if(process.env.REVOKE_RESPONSE==='string')return Response.json({scope:'production',revoked:'true',alreadyRevoked:false});",
+      "  if(process.env.REVOKE_RESPONSE==='error')return Response.json({scope:'production',revoked:true,alreadyRevoked:false,error:'failure'});",
+      "  if(process.env.REVOKE_RESPONSE==='already')return Response.json({scope:'production',revoked:false,alreadyRevoked:true});",
+      "  await writeFile(join(root,'entered'),'yes');",
+      "  for(let i=0;i<400;i++){try{await access(join(root,'release'));return Response.json({scope:'production',revoked:true,alreadyRevoked:false});}catch{}await delay(25);}",
+      "  throw Error('Fixture timeout');",
+      " }",
+      " await appendFile(join(root,'traffic'),'enroll\\n');",
+      " if(process.env.ENROLL_RESPONSE==='lost')throw Error('Fixture: enrollment response lost');",
+      " return Response.json({deviceToken:body.proposedDeviceToken,deviceId:'synthetic-id',scope:'production',characterSlug:'cole-dalton',characterName:'Cole Dalton'});",
+      "};"
+    ].join('\n'));
+    const originalConfig=await readFile(file,'utf8');
+    for(const mode of ['html','empty','negative','ambiguous','partial','string','error']){
+      env.REVOKE_RESPONSE=mode;
+      const rejected=await run(['--revoke-device']);
+      assert.notEqual(rejected.code,0,mode+': '+rejected.output);
+      assert.match(rejected.output,/Widerruf nicht eindeutig bestätigt/);
+      assert.equal(await readFile(file,'utf8'),originalConfig,'Rejected response must preserve exact config: '+mode);
+    }
+    env.REVOKE_RESPONSE='already';
+    const already=await run(['--revoke-device']);
+    assert.equal(already.code,0,already.output);
+    assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
+    await writeFile(file,originalConfig);
+    await writeFile(traffic,'');
+    delete env.REVOKE_RESPONSE;
+    const revoke=run(['--revoke-device']);
+    await waitFile(entered);
+    const competing=await run(['--enroll','dalton-'+'C'.repeat(32)]);
+    assert.notEqual(competing.code,0,competing.output);
+    assert.match(competing.output,/Andere Geräteverwaltung/);
+    assert.equal(JSON.parse(await readFile(file,'utf8')).deviceToken,oldToken);
+    assert.equal(await readFile(traffic,'utf8'),'revoke\n','Losing process must not consume invitation');
+    await writeFile(release,'yes');
+    const revoked=await revoke;assert.equal(revoked.code,0,revoked.output);
+    assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
+    const invite='dalton-'+'C'.repeat(32),pendingFile=join(dir,'pending-enrollment.json');
+    env.ENROLL_RESPONSE='lost';
+    const lost=await run(['--enroll',invite]);
+    assert.notEqual(lost.code,0,lost.output);
+    const pending=JSON.parse(await readFile(pendingFile,'utf8'));
+    assert.match(pending.proposedDeviceToken,/^ddv1_[A-Za-z0-9_-]{43}$/);
+    assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
+    assert.ok(!lost.output.includes(pending.proposedDeviceToken));
+    delete env.ENROLL_RESPONSE;
+    const enrolled=await run(['--enroll',invite]);
+    assert.equal(enrolled.code,0,enrolled.output);
+    const final=JSON.parse(await readFile(file,'utf8'));
+    assert.equal(final.deviceToken,pending.proposedDeviceToken);
+    assert.match(final.deviceToken,/^ddv1_[A-Za-z0-9_-]{43}$/);
+    assert.notEqual(final.deviceToken,oldToken);
+    assert.ok(!Object.hasOwn(final,'revokedAt'));
+    await assert.rejects(readFile(pendingFile),{code:'ENOENT'});
+    assert.equal(await readFile(traffic,'utf8'),'revoke\nenroll\nenroll\n');
+    const installLock=dir+'.mutation.lock',owner='e'.repeat(32);
+    await mkdir(installLock);
+    await writeFile(join(installLock,'owner'),owner);
+    await writeFile(file,originalConfig);
+    env.REVOKE_RESPONSE='already';
+    env.DALTON_BRIDGE_INSTALL_LOCK='f'.repeat(32);
+    const wrongOwner=await run(['--revoke-device']);
+    assert.equal(wrongOwner.code,1);
+    assert.equal(await readFile(file,'utf8'),originalConfig);
+    env.DALTON_BRIDGE_INSTALL_LOCK=owner;
+    const owned=await run(['--revoke-device']);
+    assert.equal(owned.code,0,owned.output);
+    assert.equal(await readFile(join(installLock,'owner'),'utf8'),owner,'Only the wrapper releases its encompassing lock');
+  }finally{
+    for(const child of children)if(child.exitCode===null)child.kill();
+    await rm(root,{recursive:true,force:true});
+  }
+}

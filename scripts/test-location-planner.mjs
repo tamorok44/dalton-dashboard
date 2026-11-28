@@ -218,3 +218,53 @@ const sameWorldForOther=buildLocationPlanner(roster,index,{characterSlug:'other-
 assert.deepEqual(sameWorldForCole.locations.map(entry=>entry.name),sameWorldForOther.locations.map(entry=>entry.name),'World locations are shared, independent of learned recipes and class');
 assert.equal(sameWorldForOther.selectedLocation,'Die Insel Zephras');
 assert.equal(sameWorldForOther.counts.atLocation,0);
+
+
+// F08: unknown/contradictory faction must never imply access to a faction-bound offer.
+{
+  const factionRecipe={id:901,name:'Fraktionsprobe',professionSlug:'alchemy',requiredSkill:1,craftedItem:{id:902,name:'Fraktionsprobe'},learning:{sources:[
+    vendor(991,'Allianz-Händler','Stormwind',10),
+    vendor(992,'Horden-Händler','Stormwind',20,{side:'horde'}),
+    vendor(993,'Neutraler Händler','Stormwind',30,{side:'neutral'})
+  ]}};
+  const factionPlan=faction=>buildLocationPlanner({...data,characters:[{...baseCharacter,faction}]},{recipes:[factionRecipe],professions:[]},{characterSlug:'cole-dalton',location:'Stormwind'});
+  for(const [faction,expected] of [['Allianz',[991,993]],['Alliance',[991,993]],['Horde',[992,993]],[null,[993]],['',[993]],['Unbekannt',[993]],['Allianz/Horde',[993]]]){
+    const action=factionPlan(faction).actions.find(a=>a.id===901);
+    assert.ok(action,'Neutral offer remains accessible');
+    const ids=[action.source.id,...action.alternatives.map(s=>s.id)].sort((x,y)=>x-y);
+    assert.deepEqual([...new Set(ids)],expected,'Faction proof: '+faction);
+  }
+}
+
+
+// Invalid planner requests must stop before catalogue, provider or Add-on reads.
+{
+  const {default:plannerApi}=await import('../api/location-planner.js');
+  const keys=['KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','FOREVERDB_API_KEY'];
+  const old=Object.fromEntries(keys.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
+  try{
+    process.env.KV_REST_API_URL='https://planner-input-fixture.invalid';
+    process.env.KV_REST_API_TOKEN='synthetic';
+    process.env.FOREVERDB_API_KEY='synthetic';
+    let calls=0;
+    globalThis.fetch=async(url,options)=>{
+      calls++;
+      assert.equal(String(url),'https://planner-input-fixture.invalid');
+      assert.deepEqual(JSON.parse(options.body),['GET','dalton-dashboard:characters:v1']);
+      return Response.json({result:JSON.stringify(data)});
+    };
+    const call=async query=>{
+      const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await plannerApi({method:'GET',url:'/api/location-planner?'+query},res);
+      return res;
+    };
+    assert.equal((await call('character=%2Fbad')).code,400);
+    assert.equal((await call('location='+'x'.repeat(121))).code,400);
+    assert.equal(calls,0);
+    assert.equal((await call('character=unknown-dalton')).code,404);
+    assert.equal(calls,1);
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
+}

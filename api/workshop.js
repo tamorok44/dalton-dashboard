@@ -18,7 +18,7 @@ import {getForeverDbMasterRecipeIndex,getCachedForeverDbMasterRecipeIndex,cached
 import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
 import {applyLearningSourceEvidence,learningSourceEvidenceForIndex} from '../scripts/learning-source-evidence.mjs';
 import {loadAddonSyncStates} from '../scripts/addon-sync-store.mjs';
-import {loadLiveKnowledge,loadHistoricalMerchantKnowledge,publicLiveKnowledgeSummary} from '../scripts/live-knowledge-store.mjs';
+import {loadLiveKnowledge,loadHistoricalMerchantKnowledge,publicLiveKnowledgeSummary,combineLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
 
 function normalize(value){
   return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de-DE').trim();
@@ -157,10 +157,11 @@ export default async function handler(req,res){
     return res.status(405).json({error:'Methode nicht erlaubt'});
   }
   try{
-    const stored=await loadCharacters();
-    const catalog=buildWorkshopCatalog(stored.data);
     const url=queryUrl(req);
     const q=(url.searchParams.get('q')||'').trim();
+    if(url.searchParams.has('q')&&(q.length<3||q.length>120))return res.status(400).json({error:'Suchbegriff muss 3 bis 120 Zeichen enthalten'});
+    const stored=await loadCharacters();
+    const catalog=buildWorkshopCatalog(stored.data);
     const itemId=Number(url.searchParams.get('item'));
     const quantity=Math.max(1,Math.min(9999,Math.ceil(Number(url.searchParams.get('quantity'))||1)));
     const remoteReady=foreverDbConfigured();
@@ -183,7 +184,11 @@ export default async function handler(req,res){
         }
       }
       if(!suggestions.length&&scope==='all'){
-        suggestions=searchWorkshopItems(catalog,q,{limit:50}).map(publicItem);
+        const local=searchWorkshopItems(catalog,q,{limit:50}).map(publicItem);
+        if(local.length||source!=='foreverdb'){
+          suggestions=local;
+          source='blizzard-known';
+        }
       }
       return res.status(200).json({
         query:q,
@@ -214,7 +219,7 @@ export default async function handler(req,res){
               loadLiveKnowledge({build:index?.build||null}),
               loadHistoricalMerchantKnowledge(index?.build||null)
             ]);
-            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,[...liveKnowledge,...historicalMerchants]));
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,combineLiveKnowledge(liveKnowledge,historicalMerchants)));
           }
           enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
           remoteRecipe=preferredForeverRecipeForItem(recipeIndex,itemId);
@@ -287,7 +292,7 @@ export default async function handler(req,res){
               loadLiveKnowledge({build:index?.build||null}),
               loadHistoricalMerchantKnowledge(index?.build||null)
             ]);
-            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,[...liveKnowledge,...historicalMerchants]));
+            recipeIndex=applyLearningSourceEvidence(index,learningSourceEvidenceForIndex(index,addonStates,combineLiveKnowledge(liveKnowledge,historicalMerchants)));
           }
         enrichWorkshopCatalogWithForeverDb(catalog,recipeIndex);
       }

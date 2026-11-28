@@ -14,6 +14,10 @@ Installation
 4. Den persönlichen Einrichtungscode eingeben und Enter drücken.
 5. Sobald "Dalton Dashboard Bridge ist eingerichtet" erscheint, ist die Installation fertig.
 
+Bei einer unterbrochenen Installation den Installer erneut öffnen. Das Codefeld
+leer lassen, um eine offene Kopplung fortzusetzen. Eine bestätigte Neukopplung
+ersetzt den bisherigen Zugang dieser Installation.
+
 Danach
 ------
 Die Bridge startet künftig automatisch bei deiner macOS-Anmeldung und läuft unsichtbar im Hintergrund.
@@ -27,6 +31,7 @@ Deinstallation
 Im Benutzerordner "Programme" wird bei der Installation die Datei
 "Dalton Dashboard Bridge deinstallieren.command" angelegt.
 Sie widerruft zuerst den Gerätezugang und entfernt anschließend Bridge, Konfiguration und Autostart.
-Das WoW-AddOn selbst bleibt davon unberührt und kann separat über CurseForge entfernt werden.
+Falls der Widerruf nicht bestätigt werden kann, bleiben die Daten für einen
+erneuten Versuch erhalten. Das WoW-AddOn selbst bleibt davon unberührt und kann separat über CurseForge entfernt werden.
 
 Gold, Taschen und Bank gehören nicht zum Standard-Sync.

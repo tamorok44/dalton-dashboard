@@ -1,3 +1,4 @@
+import {nextProfileGeneration} from './version-metadata.mjs';
 function slug(value){
   return String(value||'').trim().toLocaleLowerCase('en-US').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
@@ -72,19 +73,25 @@ export function expandKnownClassAbilities(entries=[],classMaster=null,localized=
     };
   }).sort((a,b)=>(a.name||'').localeCompare(b.name||'','de')||(a.rank||'').localeCompare(b.rank||'','de')||a.id-b.id);
 }
-export function resolveSpellbookCharacter(data,snapshot){
+// Full SavedVariables syncs must match a unique complete name or slug.
+// The old DALTON1 code may use an explicitly separated first name; never
+// accept arbitrary prefixes. Realm mismatch is rejected when both sides
+// actually have a textual realm identity. Missing metadata is not proof.
+export function resolveSpellbookCharacter(data,snapshot,{allowLegacyFirstName=true}={}){
   if(!data||!Array.isArray(data.characters))throw new Error('Charakterdaten ungültig');
   const requested=slug(snapshot?.characterSlug);
-  const exact=data.characters.find(character=>character?.slug===requested);
-  if(exact)return exact;
-  const candidates=data.characters.filter(character=>
-    Number(character?.classId)===Number(snapshot?.classId)&&(
-      slug(character?.name)===requested||
-      slug(character?.slug).startsWith(requested+'-')
-    )
-  );
-  if(candidates.length===1)return candidates[0];
-  throw new Error('Charakter nicht gefunden');
+  if(!requested)throw new Error('Charakter nicht gefunden');
+  const exact=data.characters.filter(character=>character?.slug===requested||slug(character?.name)===requested);
+  const candidates=exact.length?exact:allowLegacyFirstName&&!requested.includes('-')?data.characters.filter(character=>
+    Number(character?.classId)===Number(snapshot?.classId)&&slug(character?.name).split('-')[0]===requested
+  ):[];
+  if(candidates.length!==1)throw new Error('Charakter nicht eindeutig gefunden');
+  const character=candidates[0];
+  if(Number(character?.classId)!==Number(snapshot?.classId))throw new Error('Klasse passt nicht zum Charakter');
+  const expectedRealm=slug(typeof character.realm==='string'?character.realm:character.realm?.slug||character.realm?.name);
+  const actualRealm=slug(snapshot?.realm);
+  if(expectedRealm&&actualRealm&&expectedRealm!==actualRealm)throw new Error('Realm passt nicht zum Charakter');
+  return character;
 }
 export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized={},syncedAt=new Date().toISOString()}={}){
   const current=resolveSpellbookCharacter(data,snapshot);
@@ -95,6 +102,15 @@ export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized
   const capturedTime=Date.parse(snapshot.capturedAt);
   if(!Number.isFinite(capturedTime)||capturedTime>Date.now()+10*60*1000||capturedTime<Date.now()-30*24*60*60*1000)throw new Error('Spellbook-Code ist zeitlich nicht plausibel');
   const knownClassAbilities=expandKnownClassAbilities(snapshot.entries,classMaster,localized);
+  const priorTime=Date.parse(current.knownClassAbilitiesCapturedAt||'');
+  if(current.knownClassAbilitiesVerified===true&&Number.isFinite(priorTime)){
+    if(capturedTime<priorTime)throw new Error('STALE_SPELLBOOK: Zauberbuchaufnahme ist älter als der gespeicherte Stand');
+    if(capturedTime===priorTime){
+      const ids=list=>JSON.stringify((list||[]).map(x=>Number(x.id)).sort((a,b)=>a-b));
+      if(ids(current.knownClassAbilities)!==ids(knownClassAbilities))throw new Error('STALE_SPELLBOOK: widersprüchliche gleichzeitige Zauberbuchaufnahme');
+      return data;
+    }
+  }
   const nextCharacter={
     ...current,
     knownClassAbilities,
@@ -108,7 +124,7 @@ export function applySpellbookSnapshot(data,snapshot,{classMaster=null,localized
   characters[index]=nextCharacter;
   return {
     ...data,
-    generatedAt:syncedAt,
+    generatedAt:nextProfileGeneration(data,Date.parse(syncedAt)),
     characters
   };
 }

@@ -57,7 +57,7 @@ function statTile(entry,stale=false,icon=false){
 }
 function statsPanel(c,open=false){
   const details=Array.isArray(c.statsDetails)?c.statsDetails.filter(entry=>entry?.name&&entry?.enum):[];
-  const fresh=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:[]);
+  const fresh=new Set(c.scrapeOk!==false&&Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:[]);
   const byEnum=new Map(details.map(entry=>[entry.enum,entry]));
   const main=mainStatEnums.map(key=>byEnum.get(key)).filter(Boolean);
   const rest=displayOrder('alphabetical',details.filter(entry=>!mainStatEnums.includes(entry.enum)));
@@ -339,7 +339,7 @@ function bindTalentPanel(panel,c){
   }));
 }
 function refreshTalentPanels(){
-  cards.querySelectorAll('[data-character-panel="talents"]').forEach(panel=>{
+  cards.querySelectorAll('[data-character-panel="talents"][data-mounted]').forEach(panel=>{
     const c=displayedData?.characters?.find(x=>x.slug===panel.dataset.characterSlug);
     if(c){panel.innerHTML=talentPanel(c);bindTalentPanel(panel,c)}
   });
@@ -951,12 +951,26 @@ function characterTabsNav(c){
   const active=activeCharacterTabFor(c);
   return '<div class="character-tabs" role="tablist" aria-label="Details von '+esc(c.name)+'">'+characterTabsFor(c).map(tab=>{
     const selected=tab.id===active;
-    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-slug="'+esc(c.slug)+'" data-character-tab="'+tab.id+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
+    return '<button type="button" role="tab" class="character-tab'+(selected?' is-active':'')+'" data-character-slug="'+esc(c.slug)+'" data-character-tab="'+tab.id+'" id="'+esc(c.slug+'-tab-'+tab.id)+'" tabindex="'+(selected?'0':'-1')+'" aria-selected="'+String(selected)+'" aria-controls="'+esc(c.slug+'-panel-'+tab.id)+'">'+esc(tab.label)+'</button>';
   }).join('')+'</div>';
 }
 function characterTabPanel(c,id,content){
   const active=activeCharacterTabFor(c);
-  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?'':' hidden')+'>'+content+'</section>';
+  return '<section id="'+esc(c.slug+'-panel-'+id)+'" class="character-tab-panel" role="tabpanel" aria-labelledby="'+esc(c.slug+'-tab-'+id)+'" tabindex="0" data-character-slug="'+esc(c.slug)+'" data-character-panel="'+id+'"'+(id===active?' data-mounted="true"':' hidden')+'>'+content+'</section>';
+}
+function characterPanelContent(c,id,openDetails){
+  switch(id){
+    case 'stats':return statsPanel(c,openDetails.has(c.slug+':stats'));
+    case 'equipment':return equipmentPanel(c,openDetails.has(c.slug+':equipment'));
+    case 'talents':return talentPanel(c);
+    case 'abilities':return classAbilitiesPanel(c);
+    case 'pets':return hunterPetsPanel(c);
+    case 'professions':return professionsPanel(c,openDetails);
+    case 'reputation':return reputationPanel(c);
+    case 'quests':return questsPanel(c,questGroupStatus(displayedData.characters),displayedQuestCatalog,openDetails);
+    case 'game':return gameStatusPanel(c);
+  }
+  return '';
 }
 function setActiveCharacterTab(slug,tab){
   const character=displayedData?.characters?.find(item=>item.slug===slug);
@@ -967,68 +981,36 @@ function setActiveCharacterTab(slug,tab){
     const selected=button.dataset.characterTab===tab;
     button.classList.toggle('is-active',selected);
     button.setAttribute('aria-selected',String(selected));
+    button.tabIndex=selected?0:-1;
   });
   cards.querySelectorAll('[data-character-panel]').forEach(panel=>{
     if(panel.dataset.characterSlug!==slug)return;
     panel.hidden=panel.dataset.characterPanel!==tab;
+    if(panel.hidden||panel.dataset.mounted)return;
+    panel.innerHTML=characterPanelContent(character,tab,new Set());
+    panel.dataset.mounted='true';
+    if(tab==='talents')bindTalentPanel(panel,character);
   });
   if(tab==='talents')loadTalentCatalog();
 }
 function installCharacterTabs(){
-  cards.querySelectorAll('button[data-character-tab]').forEach(button=>
-    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab))
-  );
+  cards.querySelectorAll('button[data-character-tab]').forEach(button=>{
+    button.addEventListener('click',()=>setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab));
+    button.addEventListener('keydown',event=>{
+      if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+      const siblings=[...button.closest('[role="tablist"]').querySelectorAll('button[data-character-tab]')];
+      const index=siblings.indexOf(button);
+      if(index<0||!siblings.length)return;
+      const next=event.key==='Home'?0:event.key==='End'?siblings.length-1:
+        (index+(event.key==='ArrowRight'?1:-1)+siblings.length)%siblings.length;
+      event.preventDefault();
+      const target=siblings[next];
+      setActiveCharacterTab(target.dataset.characterSlug,target.dataset.characterTab);
+      target.focus();
+    });
+  });
 }
 let displayedData=null;
-function keepNewestProfiles(data){
-  if(!displayedData)return data;
-  const priorBySlug=new Map((displayedData.characters||[]).map(c=>[c.slug,c]));
-  return {...data,characters:(data.characters||[]).map(c=>{
-    const prior=priorBySlug.get(c.slug);
-    if(!prior)return c;
-    if(c.scrapeOk===false){
-      const oldTime=Date.parse(prior.scrapedAt||''),failedTime=Date.parse(c.scrapedAt||'');
-      if(!Number.isFinite(oldTime)||(Number.isFinite(failedTime)&&oldTime<=failedTime))return c;
-      return {...prior,scrapeOk:false,scrapeError:c.scrapeError};
-    }
-    // Live fields always win. For only those subfields that Blizzard omitted,
-    // reuse the latest value from this browser session instead of regressing
-    // to the older build-time JSON snapshot.
-    const liveStats=new Set(Array.isArray(c.statsFreshKeys)?c.statsFreshKeys:
-      c.statsVerified?Object.keys(c.stats||{}):[]);
-    const mergedStats={...c.stats};
-    for(const [key,value] of Object.entries(prior.stats||{})){
-      if(!liveStats.has(key))mergedStats[key]=value;
-    }
-    const liveStatEnums=new Set(Array.isArray(c.statsFreshEnums)?c.statsFreshEnums:
-      c.statsVerified?Object.keys(c.statsByEnum||{}):[]);
-    const mergedStatsByEnum={...c.statsByEnum};
-    for(const [key,value] of Object.entries(prior.statsByEnum||{})){
-      if(!liveStatEnums.has(key))mergedStatsByEnum[key]=value;
-    }
-    const detailByEnum=new Map((prior.statsDetails||[]).filter(x=>x?.enum).map(x=>[x.enum,x]));
-    for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);
-    const mergedStatsDetails=[...detailByEnum.values()];
-    const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));
-    const mergedProfessions=(c.professions||[]).map(p=>{
-      const previous=priorSkills.get(p.name);
-      return p.unverified&&previous?{...previous,unverified:true}:p;
-    });
-    const keepPreviousImage=c.imageVerified===false&&prior.imageUrl;
-    return {...c,
-      stats:mergedStats,
-      statsByEnum:mergedStatsByEnum,
-      statsDetails:mergedStatsDetails,
-      professions:mergedProfessions,
-      equipment:c.equipmentVerified===false&&prior.equipment?prior.equipment:c.equipment,
-      talents:c.talentsVerified===false&&prior.talents!=null?prior.talents:c.talents,
-      hunterPets:c.hunterPetsVerified===false&&prior.hunterPets?prior.hunterPets:c.hunterPets,
-      imageUrl:keepPreviousImage?prior.imageUrl:c.imageUrl,
-      avatarUrl:keepPreviousImage?prior.avatarUrl:c.avatarUrl,
-      imageCheckedAt:keepPreviousImage?prior.imageCheckedAt:c.imageCheckedAt
-    };
-  })};
-}
 function lastActivity(c){
  const options={dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'};
  const login=Date.parse(c.lastLoginAt||'');
@@ -1045,7 +1027,6 @@ function render(data,{live=false,success=null,questCatalog=displayedQuestCatalog
  displayedPetCatalog=petCatalog||{};
  const openDetails=new Set([...cards.querySelectorAll('details[data-detail-key][open]')].map(el=>el.dataset.detailKey));
  const chars=displayOrder('alphabetical',data.characters||[]);
- const questStatus=questGroupStatus(chars);
 
 const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  const min=levels.length?Math.min(...levels):null,max=levels.length?Math.max(...levels):null;
@@ -1062,7 +1043,7 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
  cards.innerHTML=chars.map((c,index)=>`<article class="card ${classColor(c)}">
   <div class="cardhead">
     <div class="card-intro">
-      <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / 04</span>
+      <span class="card-overline">STECKBRIEF NR. ${String(index+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}</span>
       <h2 class="name">${esc(c.name)}</h2>
       <p class="player">Abenteurer: <strong>${esc(c.player)}</strong></p>
     </div>
@@ -1076,20 +1057,12 @@ const levels=chars.map(c=>c.level).filter(n=>Number.isInteger(n)&&n>0);
   ${experienceProgress(c)}
   ${characterTabsNav(c)}
   <div class="character-tab-panels">
-    ${characterTabPanel(c,'stats',statsPanel(c,openDetails.has(c.slug+':stats')))}
-    ${characterTabPanel(c,'equipment',equipmentPanel(c,openDetails.has(c.slug+':equipment')))}
-    ${characterTabPanel(c,'talents',talentPanel(c))}
-    ${characterTabPanel(c,'abilities',classAbilitiesPanel(c))}
-    ${isHunter(c)?characterTabPanel(c,'pets',hunterPetsPanel(c)):''}
-    ${characterTabPanel(c,'professions',professionsPanel(c,openDetails))}
-    ${characterTabPanel(c,'reputation',reputationPanel(c))}
-    ${characterTabPanel(c,'quests',questsPanel(c,questStatus,displayedQuestCatalog,openDetails))}
-    ${characterTabPanel(c,'game',gameStatusPanel(c))}
+    ${characterTabsFor(c).map(({id})=>characterTabPanel(c,id,id===activeCharacterTabFor(c)?characterPanelContent(c,id,openDetails):'')).join('')}
   </div>
  </article>`).join("");
  installPortraitFallbacks();
  installCharacterTabs();
- cards.querySelectorAll('[data-character-panel="talents"]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));
+ cards.querySelectorAll('[data-character-panel="talents"][data-mounted]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));
  if(chars.some(c=>activeCharacterTabs.get(c.slug)==='talents'))loadTalentCatalog();
  if(!compareView.hidden)renderComparison();
 }
@@ -1155,7 +1128,7 @@ function cmpEntry(value,score=null,extra='',stale=false){
 function cmpTableRow(label,values,chars,{direction=1,comparable=true,iconUrl=null}={}){
   const scores=values.map(v=>v?.score).filter(v=>v!==null&&v!==undefined&&Number.isFinite(v));
   const min=scores.length?Math.min(...scores):null,max=scores.length?Math.max(...scores):null;
-  const diff=comparable&&scores.length>=2&&max!==min;
+  const diff=comparable&&values.every(v=>!v?.stale)&&scores.length>=2&&max!==min;
   return '<tr><th scope="row">'+(iconUrl?'<span class="knowledge-title">'+knowledgeIcon(iconUrl,22)+esc(label)+'</span>':esc(label))+'</th>'+values.map(v=>{
     const missing=!v||v.value==='–';
     const state=!diff||missing||v.score===null?'':(v.score===max?(direction===1?'best':'worst'):v.score===min?(direction===1?'worst':'best'):'middle');
@@ -1169,9 +1142,11 @@ function cmpTableRow(label,values,chars,{direction=1,comparable=true,iconUrl=nul
 function cmpSectionRows(id,chars){
   const rows=[];
   const push=(label,fn,opts={})=>rows.push(cmpTableRow(label,chars.map(fn),chars,opts));
+  const sameLevel=chars.length>1&&chars.every(c=>Number.isInteger(c.level)&&c.level===chars[0].level);
+  const sameClass=chars.length>1&&chars.every(c=>Number.isInteger(c.classId)&&c.classId===chars[0].classId);
   if(id==='stats'){
-    push('Level',c=>cmpEntry(c.level,c.level));
-    push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience));
+    push('Level',c=>cmpEntry(c.level,c.level,'',c.scrapeOk===false));
+    push('Erfahrung (aktuelle Stufe)',c=>cmpEntry(c.experience==null?'–':new Intl.NumberFormat('de-DE').format(c.experience),c.experience,'',c.scrapeOk===false),{comparable:sameLevel});
     const namesByEnum=new Map();
     for(const c of chars)for(const entry of Array.isArray(c.statsDetails)?c.statsDetails:[]){
       if(entry?.enum&&entry?.name&&!namesByEnum.has(entry.enum))namesByEnum.set(entry.enum,entry.name);
@@ -1186,16 +1161,16 @@ function cmpSectionRows(id,chars){
         const detail=(c.statsDetails||[]).find(entry=>entry?.enum===enumKey);
         const value=c.statsByEnum?.[enumKey];
         return cmpEntry(detail?formatStatValue({...detail,value}):'–',value,'',c.scrapeOk===false||!(c.statsFreshEnums||[]).includes(enumKey));
-      });
+      },{comparable:sameLevel&&sameClass});
     }
   }
   if(id==='equipment'){
-    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL));
+    push('Gegenstandsstufe',c=>cmpEntry(c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,c.equippedItemLevel??c.statsByEnum?.ITEMLEVEL,'',c.scrapeOk===false||c.equipmentVerified===false),{comparable:sameLevel&&sameClass});
     const slots=chars.map(c=>{const m=new Map();for(const item of c.equipment||[]){const key=item?.slotType;if(key&&!m.has(key)&&item.item)m.set(key,item)}return m});
     for(const slotType of equipmentSlotOrder){
       const label=slots.map(m=>m.get(slotType)?.slot).find(Boolean);
       if(!label)continue;
-      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:true});
+      push(label,(c,i)=>{const it=slots[i].get(slotType);return it?cmpEntry(it.item,it.level,'Stufe '+(it.level??'–'),c.equipmentVerified===false||c.scrapeOk===false):cmpEntry(c.equipmentVerified===false?'–':'Leer',null,'',c.equipmentVerified===false||c.scrapeOk===false)},{comparable:sameLevel&&sameClass});
     }
   }
   if(id==='talents'){
@@ -1253,7 +1228,7 @@ function renderComparison(){
       const visible=comparisonState.mode==='differences'?rows.filter(row=>{const cells=[...row.matchAll(/<span class="compare-value">([^<]*)<\/span>/g)].map(m=>m[1]);return new Set(cells).size>1;}):rows;
       return '<tr class="compare-section-heading"><th colspan="'+(selected.length+1)+'"><button type="button" data-compare-section="'+id+'" aria-expanded="'+comparisonState.expanded.has(id)+'">'+(comparisonState.expanded.has(id)?'▾ ':'▸ ')+esc(label)+' · '+visible.length+'</button></th></tr>'+
         (comparisonState.expanded.has(id)?visible.join(''):'');
-    }).join('')+'</tbody></table></div><p class="compare-legend"><span class="compare-best">Bester Wert</span><span class="compare-middle">Zwischenwert</span><span class="compare-worst">Niedrigster Wert</span><span>Gleich / nicht bewertbar: neutral</span></p>';
+    }).join('')+'</tbody></table></div><p class="compare-legend"><span class="compare-best">Höchster Zahlenwert</span><span class="compare-middle">Zwischenwert</span><span class="compare-worst">Niedrigster Zahlenwert</span><span>Keine Aussage über Spielstärke; unterschiedliche Klassen/Stufen und nicht aktuelle Werte bleiben bei Ausrüstung und Kampfwerten neutral.</span></p>';
   compareRoot.innerHTML=choices+content;
   compareRoot.querySelectorAll('[data-compare-character]').forEach(input=>input.addEventListener('change',()=>{
     if(input.checked)comparisonState.selected.add(input.dataset.compareCharacter);else comparisonState.selected.delete(input.dataset.compareCharacter);
@@ -1408,10 +1383,11 @@ function workshopTreeHtml(node,depth=0){
   const craftable=node.status==='craftable'&&node.recipe;
   const status=craftable
     ?'<span class="workshop-node-status is-craftable">Herstellbar · '+esc(workshopCrafterText(node.recipe.crafters||[]))+'</span>'
-    :'<span class="workshop-node-status is-obtain">Muss beschafft werden</span>';
+    :node.status==='from-surplus'?'<span class="workshop-node-status is-craftable">Aus bereits geplanter Herstellung</span>':'<span class="workshop-node-status is-obtain">Muss beschafft werden</span>';
   const recipe=craftable
     ?'<div class="workshop-node-meta"><span>'+esc(node.recipe.profession||'Beruf')+'</span><span>'+esc(node.recipe.craftsRequired)+'× Herstellung</span>'+
-      (node.recipe.yieldPerCraft?.variable?'<span>Ausbeute '+esc(node.recipe.yieldPerCraft.min)+'–'+esc(node.recipe.yieldPerCraft.max)+'</span>':'')+'</div>'
+      (node.recipe.yieldPerCraft?.variable?'<span>Ausbeute '+esc(node.recipe.yieldPerCraft.min)+'–'+esc(node.recipe.yieldPerCraft.max)+'</span>':'')+
+      (node.fromSurplus?'<span>'+esc(node.fromSurplus)+'× aus geplanter Herstellung</span>':'')+'</div>'
     :'';
   const children=displayList('materialBranches',node.materials||[],child=>workshopTreeHtml(child,depth+1)).join('');
   return '<div class="workshop-tree-node" style="--workshop-depth:'+depth+'"><div class="workshop-node-card">'+
@@ -1424,15 +1400,19 @@ function workshopResultHtml(){
   const item=result.item||{};
   const tree=result.plan?.tree;
   const topCrafters=tree?.recipe?.crafters||item.crafters||[];
-  const craftable=tree?.status==='craftable';
+  const blocked=result.plan?.complete===false;
+  const craftable=!blocked&&tree?.status==='craftable';
   const base=(result.plan?.externalMaterials||[]);
+  const issue=result.plan?.issues?.[0]?.code;
+  const blockedReason=issue==='cycle-detected'?'Die Rezeptabhängigkeiten bilden einen Kreis.':'Die Berechnung überschreitet eine sichere Mengen- oder Strukturgrenze.';
   return '<article class="workshop-result">'+
-    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3 class="knowledge-title">'+knowledgeIcon(item.iconUrl,40)+esc(item.name||('Item '+item.id))+'</h3>'+
+    '<div class="workshop-result-head"><div><span class="workshop-kicker">'+(blocked?'PRODUKTIONSPLAN NICHT BERECHENBAR':craftable?'DIE DALTONS KÖNNEN DAS':'DERZEIT NICHT IM REPERTOIRE')+'</span><h3 class="knowledge-title">'+knowledgeIcon(item.iconUrl,40)+esc(item.name||('Item '+item.id))+'</h3>'+
     '<p>'+esc(workshopCrafterText(topCrafters))+'</p></div>'+
     (craftable?'<label class="workshop-quantity"><span>Menge</span><input id="workshopQuantity" type="number" min="1" max="9999" step="1" value="'+esc(workshopState.quantity)+'"></label>':'')+'</div>'+
     (craftable&&tree?'<section class="workshop-production"><h4>Produktionsbaum</h4>'+workshopTreeHtml({...tree,item:{...tree.item,name:item.name||tree.item?.name}},0)+'</section>':'')+
     (craftable&&base.length?'<section class="workshop-base-materials"><h4>Am Ende zu beschaffen</h4><div class="workshop-material-grid">'+displayList('alphabetical',base,material=>'<div><strong>'+esc(material.quantity)+'×</strong><span>'+esc(material.name)+'</span></div>').join('')+'</div></section>':'')+
-    (!craftable?workshopLearningHtml(result):'')+
+    (blocked?'<p class="error">'+esc(blockedReason)+' Es kann keine verlässliche Materialliste angezeigt werden.</p>':'')+
+    (!craftable&&!blocked?workshopLearningHtml(result):'')+
     (result.source==='foreverdb'?'<p class="workshop-credit">Rezeptdaten: <a href="https://foreverdb.net" target="_blank" rel="noopener">ForeverDB.net</a></p>':'')+
     '</article>';
 }
@@ -2030,23 +2010,41 @@ function invalidateLocationPlannerData({reloadVisible=true}={}){
 }
 
 let lastGeneratedAt=null;
+let lastProfileConfirmed=false;
 let lastDataVersion=null;
+let payloadRequestSequence=0;
+let appliedPayloadSequence=0;
+function beginPayloadRequest(){return ++payloadRequestSequence;}
 let dataLoadPromise=null;
 let versionCheckPromise=null;
+let lastVersionCheckStarted=0;
+const VERSION_EVENT_MIN_INTERVAL_MS=10000;
 function payloadDataVersion(payload={}){
   if(typeof payload?.dataVersion?.version==='string'&&payload.dataVersion.version)return payload.dataVersion.version;
   return ['data-v1',payload?.data?.generatedAt||'',payload?.petRules?.checkedAt||'',payload?.petRules?.rulebookVersion||'',payload?.petRules?.overall||''].join('|');
 }
-function applyServerPayload(payload,{live=false,success=null,force=false}={}){
+function applyServerPayload(payload,{live=false,success=null,force=false,requestSequence=beginPayloadRequest()}={}){
   const data=payload?.data;
   if(!data||!Array.isArray(data.characters))return false;
   const nextVersion=payloadDataVersion(payload);
   const nextGeneratedAt=typeof data.generatedAt==='string'?data.generatedAt:null;
+  const nextTime=Date.parse(nextGeneratedAt||''),currentTime=Date.parse(lastGeneratedAt||'');
+  const confirmed=payload.fallback!==true;
+  if(!Number.isFinite(nextTime))return false;
+  // A later response is not necessarily a later snapshot. Neither force
+  // nor request order may roll back a newer persisted profile state.
+  if(lastProfileConfirmed&&!confirmed)return false;
+  if(confirmed===lastProfileConfirmed){
+    if(Number.isFinite(currentTime)&&nextTime<currentTime)return false;
+    if((!Number.isFinite(currentTime)||nextTime===currentTime)&&requestSequence<appliedPayloadSequence)return false;
+  }
+  appliedPayloadSequence=Math.max(appliedPayloadSequence,requestSequence);
   const characterDataChanged=nextGeneratedAt!==lastGeneratedAt;
   const plannerDataChanged=characterDataChanged||nextVersion!==lastDataVersion;
-  if(!force&&lastDataVersion&&nextVersion===lastDataVersion)return false;
+  if(!force&&lastDataVersion&&nextVersion===lastDataVersion&&lastProfileConfirmed===confirmed)return false;
   lastDataVersion=nextVersion;
   lastGeneratedAt=nextGeneratedAt;
+  lastProfileConfirmed=confirmed;
   const renderData={...data,addonSync:payload?.addonSync&&typeof payload.addonSync==='object'?payload.addonSync:{}};
   render(renderData,{
     live,
@@ -2070,13 +2068,14 @@ function applyServerPayload(payload,{live=false,success=null,force=false}={}){
 }
 async function load({silent=false,force=false}={}){
   if(dataLoadPromise)return dataLoadPromise;
+  const requestSequence=beginPayloadRequest();
   dataLoadPromise=(async()=>{
     if(!silent)status.textContent="Dauerhaft gespeicherte Daten werden geladen …";
     try{
       const r=await fetch('/api/characters?t='+Date.now(),{cache:"no-store"});
       if(!r.ok)throw new Error("HTTP "+r.status);
       const result=await r.json();
-      applyServerPayload(result,{force});
+      applyServerPayload(result,{force,requestSequence});
       return true;
     }catch(e){
       if(!displayedData&&!silent){
@@ -2084,11 +2083,14 @@ async function load({silent=false,force=false}={}){
           const fallback=await fetch('/data/characters.json',{cache:'no-store'});
           if(!fallback.ok)throw Error('Fallback');
           const fallbackData=await fallback.json();
+          if(displayedData||requestSequence<appliedPayloadSequence)return false;
+          appliedPayloadSequence=requestSequence;
           lastGeneratedAt=fallbackData.generatedAt||null;
           render(fallbackData);
           if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)showTalentPlanner();
           status.textContent='Datenbank derzeit nicht verfügbar – letzter GitHub-Sicherungsstand.';
         }catch{
+          if(displayedData||requestSequence<appliedPayloadSequence)return false;
           status.innerHTML='<span class="error">Gespeicherte Daten konnten nicht geladen werden.</span>';
           if(location.hash==='#talentplaner'&&!talentPlannerView.hidden)document.querySelector('#talentPlannerContent').innerHTML='<p class="talent-planner-card" role="status">Die Charakterdaten sind derzeit nicht erreichbar. Bitte lade die Seite erneut, sobald die Verbindung wieder verfügbar ist.</p>';
         }
@@ -2098,15 +2100,53 @@ async function load({silent=false,force=false}={}){
   })();
   try{return await dataLoadPromise}finally{dataLoadPromise=null}
 }
+// Share only a short-lived PUBLIC version hint, never a payload or credential.
+// Web Locks prevents overlapping version requests across same-origin tabs.
+// Without Web Locks or writable storage we retain the per-tab polling path.
+const SHARED_VERSION_KEY='dalton-public-version-check-v1';
+const SHARED_VERSION_TTL_MS=90000;
+async function sharedVersionCheck({locks,storage,fetchVersion,clock=Date.now}){
+  const read=()=>{
+    try{
+      const cached=JSON.parse(storage?.getItem(SHARED_VERSION_KEY)||'null');
+      const age=clock()-cached?.checkedAt;
+      if(typeof cached?.version==='string'&&cached.version.length>0&&cached.version.length<=4096&&Number.isFinite(age)&&age>=0&&age<SHARED_VERSION_TTL_MS)return cached.version;
+    }catch{}
+    return null;
+  };
+  const fetchAndRemember=async()=>{
+    const version=await fetchVersion();
+    if(typeof version!=='string'||!version||version.length>4096)return null;
+    try{storage?.setItem(SHARED_VERSION_KEY,JSON.stringify({version,checkedAt:clock()}));}catch{}
+    return version;
+  };
+  const fresh=read();
+  if(fresh)return fresh;
+  if(!locks?.request||!storage)return fetchAndRemember();
+  let invoked=false;
+  try{
+    return await locks.request(SHARED_VERSION_KEY,{ifAvailable:true,mode:'exclusive'},async lock=>{
+      invoked=true;
+      return read()||(lock?await fetchAndRemember():null);
+    });
+  }catch{return invoked?null:fetchAndRemember();}
+}
 async function checkForNewData(){
   if(document.visibilityState==='hidden'||button.disabled||versionCheckPromise)return false;
+  const now=Date.now();
+  if(now-lastVersionCheckStarted<VERSION_EVENT_MIN_INTERVAL_MS)return false;
+  lastVersionCheckStarted=now;
   versionCheckPromise=(async()=>{
     try{
-      const response=await fetch('/api/data-version?t='+Date.now(),{cache:'no-store'});
-      if(!response.ok)return false;
-      const version=await response.json();
-      if(!version?.version)return false;
-      if(!lastDataVersion||version.version!==lastDataVersion){
+      let storage=null,locks=null;
+      try{storage=window.localStorage;locks=navigator.locks;}catch{}
+      const version=await sharedVersionCheck({storage,locks,fetchVersion:async()=>{
+        const response=await fetch('/api/data-version?t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(10000)});
+        if(!response.ok)return null;
+        return (await response.json())?.version??null;
+      }});
+      if(!version)return false;
+      if(!lastDataVersion||version!==lastDataVersion){
         await load({silent:true,force:true});
         return true;
       }
@@ -2115,24 +2155,57 @@ async function checkForNewData(){
   })();
   try{return await versionCheckPromise}finally{versionCheckPromise=null}
 }
+// Only the dedicated refresh credential is retained in this open tab.
+let manualRefreshCode=null;
+const refreshDialog=document.querySelector('#refreshAuthorizationDialog');
+const refreshCodeInput=document.querySelector('#refreshAuthorizationCode');
+function requestRefreshCode(){
+  return new Promise(resolve=>{
+    refreshCodeInput.value='';
+    refreshDialog.returnValue='cancel';
+    refreshDialog.addEventListener('close',()=>{
+      const value=refreshDialog.returnValue==='confirm'?refreshCodeInput.value.trim():null;
+      refreshCodeInput.value='';
+      resolve(value||null);
+    },{once:true});
+    refreshDialog.showModal();
+    refreshCodeInput.focus();
+  });
+}
 async function refreshLive(){
-  if(button.disabled)return;
+  if(button.disabled||refreshDialog.open)return;
+  if(!manualRefreshCode){
+    manualRefreshCode=await requestRefreshCode();
+    if(!manualRefreshCode)return;
+  }
+  const requestSequence=beginPayloadRequest();
   button.disabled=true;button.textContent="↻ Wird aktualisiert …";
   if(freshness)freshness.textContent="Live-Abfrage läuft …";
   status.textContent="Blizzard-Profile werden jetzt direkt abgefragt …";
   try{
-    const r=await fetch('/api/refresh?t='+Date.now(),{cache:"no-store"});
-    if(!r.ok)throw new Error('HTTP '+r.status);
+    const r=await fetch('/api/refresh?t='+Date.now(),{method:'POST',cache:'no-store',redirect:'error',
+      headers:{Authorization:'Bearer '+manualRefreshCode}});
+    if(r.status===401){manualRefreshCode=null;throw new Error('REFRESH_UNAUTHORIZED');}
     const response=await r.json();
+    if(!r.ok){
+      // A persisted total source outage is still a newer profile generation,
+      // not a successful refresh. Publish its stale state immediately.
+      if(r.status===503&&response.persisted===true&&response.success===0&&Array.isArray(response.data?.characters)&&response.data.characters.every(c=>c.scrapeOk===false)){
+        applyServerPayload({...response,addonSync:displayedData?.addonSync||{},questCatalog:displayedQuestCatalog,petRules:displayedPetRules,reputationCatalog:displayedReputationCatalog,petCatalog:displayedPetCatalog},{live:true,success:0,force:true,requestSequence});
+      }
+      throw new Error('HTTP '+r.status);
+    }
     if(response.pending){
       status.textContent='Eine andere Aktualisierung läuft bereits. Der neue Serverstand wird automatisch übernommen, sobald er gespeichert ist.';
       setTimeout(()=>checkForNewData(),5000);
       return;
     }
     if(!response.data||!response.success)throw new Error('Keine aktuellen Profile');
-    applyServerPayload(response,{live:true,success:response.success,force:true});
+    applyServerPayload(response,{live:true,success:response.success,force:true,requestSequence});
   }catch(e){
-    status.innerHTML='<span class="error">Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.</span>';
+    status.textContent=e.message==='REFRESH_UNAUTHORIZED'
+      ?'Aktualisierungscode ungültig oder Live-Aktualisierung nicht freigeschaltet. Der gespeicherte Stand bleibt sichtbar.'
+      :'Live-Abruf derzeit nicht verfügbar. Der gespeicherte Stand bleibt sichtbar. Bitte später erneut auf „Aktualisieren“ klicken.';
     if(freshness&&lastGeneratedAt){const t=Number.isFinite(Date.parse(lastGeneratedAt))?new Date(lastGeneratedAt).toLocaleString("de-DE",{dateStyle:"medium",timeStyle:"short"}):"unbekannt";freshness.textContent="Letzter angezeigter Datenstand: "+t;}
   }finally{button.disabled=false;button.textContent="↻ Aktualisieren"}
 }
@@ -2141,7 +2214,7 @@ button.addEventListener('click',refreshLive);
 load();
 syncMainView();
 
-const DATA_FRESHNESS_INTERVAL_MS=60*1000;
+const DATA_FRESHNESS_INTERVAL_MS=120*1000;
 setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()},DATA_FRESHNESS_INTERVAL_MS);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkForNewData()});
 window.addEventListener('focus',()=>checkForNewData());

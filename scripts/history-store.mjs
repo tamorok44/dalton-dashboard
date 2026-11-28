@@ -1,5 +1,6 @@
 import {randomUUID} from 'node:crypto';
-import {redis} from './character-store.mjs';
+import {selectDailyPointer} from './storage-reconciliation.mjs';
+import {redis,REDIS_TYPE_GUARD} from './character-store.mjs';
 
 const CHANGE_KEY='dalton-dashboard:history:changes:v1';
 const DAILY_INDEX='dalton-dashboard:history:daily:index:v1';
@@ -113,6 +114,9 @@ export function historyProjection(c={}){
     lastLoginAt:c.lastLoginAt??null,
     talents:c.talents??null,
     talentDetails:talentDetailMap(c.talentDetails),
+    knownSpells:Object.fromEntries((c.knownClassAbilitiesVerified===true&&Array.isArray(c.knownClassAbilities)?c.knownClassAbilities:[])
+      .filter(entry=>Number.isSafeInteger(entry?.id)&&entry.id>0)
+      .map(entry=>[String(entry.id),true])),
     professions:professionMap(c.professions),
     reputations:reputationMap(c.reputations),
     activeQuests:questMap(c.activeQuests),
@@ -162,23 +166,40 @@ export async function appendChangeBatch(previous,latest,{source='manual'}={}){
     toGeneratedAt:latest.generatedAt||null,
     changes
   };
-  await redis(['RPUSH',CHANGE_KEY,JSON.stringify(batch)]);
+  const length=await redis(['RPUSH',CHANGE_KEY,JSON.stringify(batch)]);
+  if(!Number.isSafeInteger(length)||length<1)throw Error('Chronikeintrag nicht bestätigt');
   return {count:changes.length,id:batch.id};
 }
 export async function getDailySnapshot(date){
   const value=await redis(['HGET',DAILY_INDEX,date]);
   return value?JSON.parse(value):null;
 }
-export async function registerDailySnapshot(meta){
-  if(!meta?.date||!meta?.url)throw new Error('Ungültige Snapshot-Metadaten');
-  const value=JSON.stringify(meta);
-  await redis(['HSET',DAILY_INDEX,meta.date,value]);
-  await redis(['SET',DAILY_LAST,value]);
+// The last pointer is a reserved field in the same index hash. The legacy
+// string is retained as a read-only migration fallback, never dual-written.
+const DAILY_LAST_FIELD='__last:v2';
+export async function getLastDailySnapshot(){
+  const [modern,legacy]=await Promise.all([redis(['HGET',DAILY_INDEX,DAILY_LAST_FIELD]),redis(['GET',DAILY_LAST])]);
+  const pointer=selectDailyPointer(modern?JSON.parse(modern):null,legacy?JSON.parse(legacy):null);
+  return pointer?(await getDailySnapshot(pointer.date))??pointer:null;
+}
+export async function registerDailySnapshot(meta,lockToken){
+  if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(meta?.date||'')||(!meta?.url&&!['disabled','failed','legacy_public'].includes(meta?.archiveStatus)))throw new Error('Ungültige Snapshot-Metadaten');
+  if(!lockToken)throw new Error('Tageslauf-Sperre erforderlich');
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[3] then return redis.error_reply('DAILY_LOCK_LOST') end; local old=redis.call('HGET',KEYS[1],ARGV[4]); local legacy=redis.call('GET',KEYS[2]); local prior=nil; for _,raw in ipairs({old or '',legacy or ''}) do if raw~='' then local p=cjson.decode(raw); if type(p.date)~='string' then return redis.error_reply('INVALID_DAILY_POINTER') end; if not prior or p.date>prior.date then prior=p; old=raw end end end; if prior then old=redis.call('HGET',KEYS[1],prior.date) or old end; if not prior or prior.date<=ARGV[1] then redis.call('HSET',KEYS[1],ARGV[1],ARGV[2],ARGV[4],ARGV[2]) else redis.call('HSET',KEYS[1],ARGV[1],ARGV[2],ARGV[4],old) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,DAILY_INDEX,DAILY_LAST,DAILY_LOCK_PREFIX+meta.date,meta.date,JSON.stringify(meta),lockToken,DAILY_LAST_FIELD]);
+  if(result!=='OK')throw new Error('Tagesindex nicht gespeichert');
 }
 export async function acquireDailySnapshotLock(date){
-  const token=randomUUID();
-  const ok=await redis(['SET',DAILY_LOCK_PREFIX+date,token,'EX',900,'NX']);
-  return ok==='OK'?token:null;
+  const token=randomUUID(),key=DAILY_LOCK_PREFIX+date;
+  try{
+    const ok=await redis(['SET',key,token,'EX',120,'NX']);
+    return ok==='OK'?token:null;
+  }catch(error){
+    // If the reply was lost after the lock was set, ownership is still
+    // recoverable. A competing token never qualifies as our own.
+    try{if(await redis(['GET',key])===token)return token;}catch{}
+    throw error;
+  }
 }
 export async function releaseDailySnapshotLock(date,token){
   const lua="if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";

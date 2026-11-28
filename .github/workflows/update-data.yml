@@ -26,13 +26,23 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Abhängigkeiten auf bekannte Schwachstellen prüfen
         run: npm audit --audit-level=high
+      - name: Isolierte Redis-Testlaufzeit bereitstellen
+        id: redis
+        run: |
+          if ! command -v redis-server || ! command -v redis-cli; then
+            sudo apt-get update -qq -o Acquire::Retries=3 -o APT::Update::Error-Mode=any -o Dir::Etc::sourcelist=sources.list.d/ubuntu.sources -o Dir::Etc::sourceparts=-
+            sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 redis-server redis-tools
+          fi
+          redis-server --version
+          redis-cli --version
       - name: Geordneten Gesamttest ausführen
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.redis.outcome == 'success' }}
         env:
+          DALTON_REQUIRE_LOCAL_REDIS: '1'
           DALTON_TEST_REPORT: ${{ runner.temp }}/dalton-test-report.json
         run: npm test
       - name: Gesamttest-Bericht archivieren
-        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && steps.redis.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: dalton-test-report-node-${{ matrix.node-version }}

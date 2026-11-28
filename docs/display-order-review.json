@@ -119,7 +119,7 @@
     },
     {
       "owner": "refreshTalentPanels",
-      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"]').forEach(panel=>{"
+      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"][data-mounted]').forEach(panel=>{"
     },
     {
       "owner": "loadTalentCatalog",
@@ -211,39 +211,7 @@
     },
     {
       "owner": "installCharacterTabs",
-      "line": "cards.querySelectorAll('button[data-character-tab]').forEach(button=>"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "const priorBySlug=new Map((displayedData.characters||[]).map(c=>[c.slug,c]));"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "return {...data,characters:(data.characters||[]).map(c=>{"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const [key,value] of Object.entries(prior.stats||{})){"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const [key,value] of Object.entries(prior.statsByEnum||{})){"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "const detailByEnum=new Map((prior.statsDetails||[]).filter(x=>x?.enum).map(x=>[x.enum,x]));"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "for(const entry of c.statsDetails||[])if(entry?.enum)detailByEnum.set(entry.enum,entry);"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "const priorSkills=new Map((prior.professions||[]).map(p=>[p.name,p]));"
-    },
-    {
-      "owner": "keepNewestProfiles",
-      "line": "const mergedProfessions=(c.professions||[]).map(p=>{"
+      "line": "cards.querySelectorAll('button[data-character-tab]').forEach(button=>{"
     },
     {
       "owner": "render",
@@ -267,7 +235,11 @@
     },
     {
       "owner": "render",
-      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));"
+      "line": "${characterTabsFor(c).map(({id})=>characterTabPanel(c,id,id===activeCharacterTabFor(c)?characterPanelContent(c,id,openDetails):'')).join('')}"
+    },
+    {
+      "owner": "render",
+      "line": "cards.querySelectorAll('[data-character-panel=\"talents\"][data-mounted]').forEach(panel=>bindTalentPanel(panel,chars.find(c=>c.slug===panel.dataset.characterSlug)));"
     },
     {
       "owner": "segmentedControl",

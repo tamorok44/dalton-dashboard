@@ -1,8 +1,10 @@
+import {nextProfileGeneration} from './version-metadata.mjs';
+import {canonicalRoster} from './daily-roster.mjs';
 import {repairProfessionKnowledge,preserveKnownRecipeDetails} from './profession-knowledge.mjs';
 import {getCachedForeverDbMasterRecipeIndex} from './workshop-store.mjs';
 import {refreshCharacters} from './armory-core.mjs';
 import {archiveImages} from './archive-images.mjs';
-import {loadCharacters,saveCharacters,mergeProfiles} from './character-store.mjs';
+import {loadCharactersForWrite,saveCharacters,mergeProfiles} from './character-store.mjs';
 import {appendChangeBatch} from './history-store.mjs';
 import {blizzardApiConfigured,fetchForeverSnapshot,fetchForeverRecipeDetails,fetchForeverLocalizedNames,fetchForeverQuestDetails} from './blizzard-api.mjs';
 import {collectKnownRecipeRefs,collectLocalizedRefs,enrichWithForeverDetails} from './forever-details.mjs';
@@ -11,17 +13,29 @@ import {collectCatalogRecords,saveCatalogRecords} from './game-catalog-store.mjs
 import {ensureReputationCatalog,loadPublicReputationCatalog} from './reputation-catalog-store.mjs';
 import {ensureGermanPetLocalizations,loadGermanPetLocalizations} from './pet-localization-store.mjs';
 
-export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true}={}){
+export async function refreshAndPersist({lockToken,source='manual',archiveMedia=true,dailyDate=null,profileRead=null}={}){
   if(!lockToken)throw new Error('Schreibsperre erforderlich');
   const start=Date.now();
-  const {data:previous}=await loadCharacters();
+  const {data:previous,raw:expectedRoster}=profileRead??await loadCharactersForWrite();
+  if(typeof expectedRoster!=='string'||!expectedRoster)throw Error('PROFILE_BASE_REQUIRED');
   const results=await Promise.all(previous.characters.map(c=>refreshCharacters([c])));
   const success=results.reduce((n,r)=>n+r.success,0);
-  if(success===0)return {success:0};
+
   let latest={
-    generatedAt:new Date().toISOString(),
+    // The distributed writer lock establishes a strict persisted order even
+    // when two attempts share a millisecond or a server clock steps back.
+    generatedAt:nextProfileGeneration(previous),
     characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))
   };
+
+  if(success===0){
+    // Persist failure/freshness metadata under the same writer fence.
+    // Preserve all last-known numeric values and do not produce a success
+    // receipt, history batch or media archive for this failed attempt.
+    const failed=mergeProfiles(previous,latest);
+    await saveCharacters(failed,lockToken,{expectedRoster});
+    return {success:0,persisted:true,data:failed};
+  }
 
   if(blizzardApiConfigured()){
     try{
@@ -87,7 +101,8 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   }
 
   const merged=mergeProfiles(previous,latest);
-  await saveCharacters(merged,lockToken);
+  const dailyReceipt=source==='daily'&&dailyDate?{date:dailyDate,source:'daily',success,total:previous.characters.length,roster:canonicalRoster(merged.characters.map(c=>({slug:c.slug,id:c.blizzardCharacterId??null}))),persisted:true,generatedAt:merged.generatedAt}:null;
+  const committedRoster=await saveCharacters(merged,lockToken,{dailyReceipt,expectedRoster});
   let changeLog={count:0,id:null};
   try{
     changeLog=await appendChangeBatch(previous,merged,{source});
@@ -98,7 +113,10 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   if(archiveMedia&&Date.now()-start<35000){
     try{
       archived=await archiveImages(merged,previous);
-      if(archived!==merged)await saveCharacters(archived,lockToken);
+      if(archived!==merged&&JSON.stringify(archived)!==JSON.stringify(merged)){
+        archived={...archived,generatedAt:nextProfileGeneration(merged)};
+        await saveCharacters(archived,lockToken,{expectedRoster:committedRoster});
+      }else archived=merged;
     }catch(error){
       console.warn('Bildarchiv nicht vollständig:',String(error.message).slice(0,140));
       archived=merged;
@@ -125,5 +143,5 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   if(!Object.keys(petCatalog).length&&petFamilySlugs.length){
     try{petCatalog=await loadGermanPetLocalizations(petFamilySlugs)}catch{}
   }
-  return {success,data:archived,questCatalog,reputationCatalog,petCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id};
+  return {success,data:archived,questCatalog,reputationCatalog,petCatalog,live:true,persisted:true,changes:changeLog.count,changeBatchId:changeLog.id,dailyReceipt};
 }

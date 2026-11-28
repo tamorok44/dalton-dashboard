@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import {extractGermanGear,extractGermanStatLabels,gear,refreshCharacters} from './armory-core.mjs';
+import {hunterPetCombatProfile} from '../hunter-pets.js';
+import {publicCharacterProfile} from './public-character-profile.mjs';
 
 const html=`<!doctype html><title>Cole Dalton - ForeverSpec</title>
 <div class="arm-panel"><div class="a-slot side-l" data-itemtype="back" data-itemid="7731373" data-itemlevel="8">
@@ -51,7 +53,7 @@ const fakeOld={
 
 let germanName='Neues Wams';
 let qualityType='RARE',qualityName='Selten';
-let gearAvailable=true,partialStats=false,missingSpecs=false,armoryAvailable=true,apiAvailable=true;
+let gearAvailable=true,partialStats=false,missingSpecs=false,armoryAvailable=true,apiAvailable=true,armorObservations=null;
 let germanFetches=0,englishFetches=0,oauthFetches=0,apiFetches=0,stableFetches=0;
 
 const fakeCharacter=()=>({
@@ -66,8 +68,8 @@ const fakeCharacter=()=>({
     ?{groups:[{stats:[{enum:'HEALTH',name:'Gesundheit',value:{value:100}}]}]}
     :{groups:[
       {stats:['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL']
-        .map((key,i)=>({enum:key,value:{value:100+i}}))},
-      {stats:[{enum:'CRITICALSTRIKE',value:{value:5.25}}]}
+        .filter(key=>key!=='ARMOR'||armorObservations===null).map((key,i)=>({enum:key,value:{value:100+['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','ARMOR','ATTACKPOWER','SPELLPOWER','DODGE','ITEMLEVEL'].indexOf(key)}}))},
+      {stats:[{enum:'CRITICALSTRIKE',value:{value:5.25}},...(armorObservations===null?[]:armorObservations.map(value=>({enum:'ARMOR',value:{value}})))]}
     ],overview:[{enum:'SPIRIT',value:{value:31}}]},
   media:{'main-raw':{url:originalMedia},avatar:{url:'https://render.worldofwarcraft.com/forever-eu/character/12/34567-avatar.jpg'}},
   specs:missingSpecs?undefined:[]
@@ -172,6 +174,28 @@ try{
   assert.equal(c.equipment[0].item,'Frisches Wams');
   assert.equal(c.equipment[0].qualityName,'Episch');
 
+  const lastArmor=c.statsByEnum.ARMOR;
+  for(const observations of [[100,900],[900,100],[100,null],[null,100]]){
+    armorObservations=observations;
+    result=await refreshCharacters([c]);const conflict=result.data.characters[0];
+    assert.equal(conflict.statsByEnum.ARMOR,lastArmor);
+    assert.ok(!conflict.statsFreshEnums.includes('ARMOR'));
+    assert.ok(!conflict.statsFreshKeys.includes('Rüstung'));
+    assert.deepEqual(conflict.statsConflictEnums,['ARMOR']);
+    assert.equal(conflict.statsVerified,false);
+    const projected=publicCharacterProfile(conflict);
+    assert.equal(hunterPetCombatProfile(projected).inherited.armor,null);
+    assert.ok(!projected.statsFreshEnums.includes('ARMOR'));
+    assert.equal(projected.stats.Rüstung,lastArmor);
+    assert.ok(projected.statsFreshEnums.includes('STAMINA'));
+  }
+  armorObservations=[100,100];
+  result=await refreshCharacters([c]);c=result.data.characters[0];
+  assert.deepEqual(c.statsConflictEnums,[]);
+  assert.equal(c.statsByEnum.ARMOR,100);
+  assert.ok(c.statsFreshEnums.includes('ARMOR'));
+  assert.equal(hunterPetCombatProfile(publicCharacterProfile(c)).inherited.armor.value,30);
+  armorObservations=null;
   partialStats=true;
   result=await refreshCharacters([c]);c=result.data.characters[0];
   assert.equal(c.statsVerified,false);
@@ -186,6 +210,7 @@ try{
   c=result.data.characters[0];
   assert.equal(c.equipment[0].item,previousItem);
   assert.equal(c.scrapeOk,false);
+  assert.equal(c.statsVerified,false);assert.deepEqual(c.statsFreshEnums,[]);assert.deepEqual(c.statsFreshKeys,[]);
   assert.equal(englishFetches,0);
 
   assert.ok(germanFetches>=3);

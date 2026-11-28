@@ -1,6 +1,6 @@
-import {readCompactMaster,writeCompactMaster} from './compact-master-cache.mjs';
+import {inspectKnowledgePair,knowledgeQuarantine,knowledgeRawDigest,repairMarkerMatches} from './storage-reconciliation.mjs';
 import {createHash} from 'node:crypto';
-import {redis,configured} from './character-store.mjs';
+import {redis,configured,addonSyncLockKey,REDIS_TYPE_GUARD} from './character-store.mjs';
 
 const SCHEMA_VERSION=1;
 const CHANGE_LIMIT=40;
@@ -14,6 +14,8 @@ function prefix(){
 }
 function indexKey(){return prefix()+'index'}
 function versionKey(){return prefix()+'version'}
+function recordsKey(){return prefix()+'records:v2'}
+const VERSION_FIELD='__version:v2';
 function text(value,max=240){return typeof value==='string'&&value.trim()?value.trim().slice(0,max):null}
 function finite(value){if(value===null||value===undefined||value==='')return null;const n=Number(value);return Number.isFinite(n)?n:null}
 function integer(value){const n=Number(value);return Number.isInteger(n)&&n>0?n:null}
@@ -30,7 +32,7 @@ function iso(value){
   const n=Number(value);
   if(Number.isFinite(n)&&n>0)return new Date(n*1000).toISOString();
   const parsed=Date.parse(value||'');
-  return Number.isFinite(parsed)?new Date(parsed).toISOString():new Date().toISOString();
+  return Number.isFinite(parsed)?new Date(parsed).toISOString():null;
 }
 function buildOf(snapshot={},addon={}){
   const raw=text(snapshot.build)||text(addon.build);
@@ -64,6 +66,20 @@ function npcKey(npc={}){
 }
 function recordKey(kind,build,npc,characterSlug=null){
   return prefix()+'record:'+kind+':'+encodeURIComponent(build)+':'+npcKey(npc)+(kind==='merchant'&&characterSlug?':observer:'+encodeURIComponent(characterSlug):'');
+}
+export function liveKnowledgeEvidenceKeys(observation={}){
+  const kind=observation.sourceType==='vendor'?'merchant':observation.sourceType==='trainer'?'trainer':null;
+  const npc=npcOf({npc:{id:observation.npcId,name:observation.npcName}});
+  if(!kind||!npc||!observation.build)return [];
+  const base=recordKey(kind,observation.build,npc);
+  return kind==='merchant'&&observation.characterSlug?[base,recordKey(kind,observation.build,npc,observation.characterSlug)]:[base];
+}
+function attachIntegrityIssues(records,issues){
+  Object.defineProperty(records,'integrityIssues',{value:issues,enumerable:false});
+  return records;
+}
+export function combineLiveKnowledge(...lists){
+  return attachIntegrityIssues(lists.flat(),[...new Map(lists.flatMap(list=>list?.integrityIssues||[]).map(issue=>[issue.key,issue])).values()]);
 }
 function offerKey(item={}){
   const id=integer(item.itemID??item.id);
@@ -120,10 +136,12 @@ function canonicalSnapshot(kind,snapshot,addon){
   if(kind==='merchant'&&snapshot.complete!==true)return null;
   const entries=kind==='merchant'?merchantItems(snapshot):trainerServices(snapshot);
   if(kind==='trainer'&&!entries.length)return null;
+  const capturedAt=iso(snapshot.capturedAt);
+  if(!capturedAt||Date.parse(capturedAt)>Date.now()+10*60*1000)return null;
   return {
     kind,
     build,
-    capturedAt:iso(snapshot.capturedAt),
+    capturedAt,
     complete:snapshot.complete===true,
     npc,
     location:locationOf(snapshot),
@@ -202,26 +220,111 @@ function mergeServiceKnowledge(existing=[],snapshot={}){
   }
   return [...map.values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'de'));
 }
-async function loadRecord(key){
-  const raw=await redis(['GET',key]);
-  if(!raw)return null;
-  try{return JSON.parse(raw)}catch{return null}
+// Type-aware lookup is one read operation; MGET silently returns null for
+// non-string keys, which must not be mistaken for absent evidence.
+const LEGACY_READ="local out={}; for _,key in ipairs(KEYS) do local t=redis.call('TYPE',key).ok; local raw=false; if t=='string' then raw=redis.call('GET',key) end; table.insert(out,{t,raw}); end; return out";
+async function readLegacy(keys,redisImpl=redis){
+  const rows=await redisImpl(['EVAL',LEGACY_READ,keys.length,...keys]);
+  if(!Array.isArray(rows)||rows.length!==keys.length||rows.some(row=>!Array.isArray(row)||typeof row[0]!=='string'||(row[0]==='string'&&typeof row[1]!=='string')))throw Error('Ungültige Legacy-Leseantwort');
+  return rows.map(([type,raw])=>({type,raw:type==='string'?raw:null}));
 }
-async function saveRecord(key,value){
-  await redis(['SET',key,JSON.stringify(value)]);
-  await redis(['SADD',indexKey(),key]);
+async function inspectStoredPair(key,modern,legacy,redisImpl=redis){
+  if(!['none','string'].includes(legacy.type))return {record:null,reason:'invalid_storage_type',unknownTime:true,latestTime:Infinity};
+  const proofChecks=new Map();
+  let invalidProof=false;
+  for(const raw of [modern,legacy.raw]){
+    let marker=null;
+    try{marker=JSON.parse(raw)?.migrationRepair;}catch{}
+    if(!marker)continue;
+    const field='__quarantine:v1:'+marker.quarantineDigest;
+    let proof;
+    try{proof=proofChecks.has(field)?proofChecks.get(field):await redisImpl(['HGET',recordsKey(),field]);}
+    catch{return {record:null,reason:'repair_evidence_unavailable',unknownTime:true,latestTime:Infinity};}
+    // Null is a known absence, not an unchecked state. Any unexpected
+    // transport shape is retryable, never treated as authoritative absence.
+    if(proof!==null&&typeof proof!=='string')return {record:null,reason:'repair_evidence_unavailable',unknownTime:true,latestTime:Infinity};
+    proofChecks.set(field,proof);
+    if(!repairMarkerMatches(key,marker,proof))invalidProof=true;
+  }
+  if(invalidProof)return {record:null,reason:'missing_repair_evidence',unknownTime:true,latestTime:Infinity,proofChecks:[...proofChecks]};
+  return {...inspectKnowledgePair(modern,legacy.raw,key),proofChecks:[...proofChecks]};
 }
-async function ingestSnapshot(snapshot){
+// A damaged occupied digest must not block a character forever. Use a
+// new content-addressed envelope containing the exact colliding bytes.
+// Never overwrite or delete the original field. Bounded retries handle
+// ordinary interleavings; a persistent provider failure stays retryable.
+// One deterministic collision chain for readers and writers. The reader
+// may append evidence only; the writer commits the chosen envelope in its
+// fenced record transaction. A lost/denied read is never a successful proof.
+async function resolveQuarantine(key,modern,legacy,reason,snapshot,{redisImpl=redis,persist=false}={}){
+  let collision=null;
+  for(let attempt=0;attempt<4;attempt++){
+    const q=knowledgeQuarantine(key,modern,legacy.raw,reason,snapshot,legacy.type,collision);
+    const expected=JSON.stringify(q.evidence);
+    let actual=await redisImpl(['HGET',recordsKey(),q.field]);
+    if(actual===null&&persist){
+      await redisImpl(['HSETNX',recordsKey(),q.field,expected]);
+      actual=await redisImpl(['HGET',recordsKey(),q.field]);
+      if(actual===null)throw Error('QUARANTINE_EVIDENCE_UNCONFIRMED');
+    }
+    if(actual===expected||(!persist&&actual===null))return q;
+    if(typeof actual!=='string')throw Error('QUARANTINE_EVIDENCE_UNCONFIRMED');
+    collision={field:q.field,raw:actual,previous:collision};
+  }
+  throw Error('QUARANTINE_COLLISION_LIMIT');
+}
+async function saveRecord(key,value,{changed,lockToken,expectedModern,expectedLegacy,legacyType=expectedLegacy===null?'none':'string',quarantine=null,proofChecks=[]}){
+  if(!lockToken)throw new Error('Schreibsperre für Beobachtungen erforderlich');
+  // Record, implicit index and version are fields of one hash. The one
+  // HSET is the sole mutation; legacy records are read-only fallbacks.
+  const lua=REDIS_TYPE_GUARD+"if not valid(KEYS[1],'hash') then return redis.error_reply('INVALID_STORAGE_TYPE') end; if redis.call('GET',KEYS[3])~=ARGV[7] then return redis.error_reply('REFRESH_LOCK_LOST') end; local modern=redis.call('HGET',KEYS[1],ARGV[1]); local typ=redis.call('TYPE',KEYS[2]).ok; local legacy=false; if typ=='string' then legacy=redis.call('GET',KEYS[2]) end; local expectedModern=ARGV[5]; if ARGV[13]=='0' then expectedModern=false end; local expectedLegacy=ARGV[6]; if ARGV[14]=='0' then expectedLegacy=false end; if typ~=ARGV[11] or modern~=expectedModern or legacy~=expectedLegacy then return redis.error_reply('OBSERVATION_CONFLICT') end; for _,proof in ipairs(cjson.decode(ARGV[12])) do local observed=redis.call('HGET',KEYS[1],proof[1]); local expected=proof[2]; if expected==cjson.null then expected=false end; if observed~=expected then return redis.error_reply('REPAIR_EVIDENCE_CHANGED') end end; local fields={}; if ARGV[2]~='' then table.insert(fields,ARGV[1]); table.insert(fields,ARGV[2]); end; if ARGV[9]~='' then local evidence=redis.call('HGET',KEYS[1],ARGV[9]); if evidence and evidence~=ARGV[10] then return redis.error_reply('QUARANTINE_EVIDENCE_CONFLICT') end; if not evidence then table.insert(fields,ARGV[9]); table.insert(fields,ARGV[10]); end end; if ARGV[3]=='1' or (#fields>0 and ARGV[9]~='') then table.insert(fields,ARGV[8]); table.insert(fields,ARGV[4]); end; if #fields>0 then redis.call('HSET',KEYS[1],unpack(fields)) end; return 'OK'";
+  const result=await redis(['EVAL',lua,3,recordsKey(),key,addonSyncLockKey(),key,value?JSON.stringify(value):'',changed?'1':'0',new Date().toISOString(),expectedModern??'',expectedLegacy??'',lockToken,VERSION_FIELD,quarantine?.field||'',quarantine?JSON.stringify(quarantine.evidence):'',legacyType,JSON.stringify(proofChecks),expectedModern===null?'0':'1',expectedLegacy===null?'0':'1']);
+  if(result!=='OK')throw new Error('Beobachtung nicht gespeichert');
+}
+async function ingestSnapshot(snapshot,options={}){
+  for(let attempt=0;;attempt++){
+    try{return await ingestSnapshotOnce(snapshot,options);}
+    catch(error){
+      if(attempt>=2||!/REPAIR_EVIDENCE_CHANGED|REPAIR_EVIDENCE_UNAVAILABLE|QUARANTINE_EVIDENCE_CONFLICT|OBSERVATION_CONFLICT/.test(String(error?.message)))throw error;
+    }
+  }
+}
+async function ingestSnapshotOnce(snapshot,{lockToken=null}={}){
   if(!configured()||!snapshot)return {stored:false,duplicate:false};
   const key=recordKey(snapshot.kind,snapshot.build,snapshot.npc,snapshot.characterSlug);
-  const existing=await loadRecord(key);
+  const [expectedModern,[legacy]]=await Promise.all([redis(['HGET',recordsKey(),key]),readLegacy([key])]);
+  const expectedLegacy=legacy.raw;
+  if(expectedModern!==null&&typeof expectedModern!=='string')throw Error('Ungültige v2-Leseantwort');
+  const inspected=await inspectStoredPair(key,expectedModern,legacy);
+  // A transient proof failure is not a terminal quarantine decision.
+  // The existing durable addon outbox retains the exact capture if all
+  // bounded retries fail. Never clear Pending or confirm receipt on this path.
+  if(inspected.reason==='repair_evidence_unavailable')throw Error('REPAIR_EVIDENCE_UNAVAILABLE');
+  const quarantine=inspected.reason?await resolveQuarantine(key,expectedModern,legacy,inspected.reason,snapshot):null;
+  const proofChecks=inspected.proofChecks||[];
+  const writeOptions={lockToken,expectedModern,expectedLegacy,legacyType:legacy.type,proofChecks};
+  if(quarantine&&(inspected.unknownTime||!Number.isFinite(inspected.latestTime)||Date.parse(snapshot.capturedAt)<=inspected.latestTime)){
+    // No ordering proof. Persist the incoming evidence, do not choose a
+    // price and do not leave the character's core outbox blocked.
+    await saveRecord(key,null,{changed:false,...writeOptions,quarantine});
+    return {stored:false,duplicate:false,quarantined:true,key};
+  }
+  const existing=inspected.record;
   const id=observationId(snapshot);
   const ids=Array.isArray(existing?.observationIds)?existing.observationIds:[];
-  if(ids.includes(id))return {stored:false,duplicate:true,key};
+  if(ids.includes(id)){
+    if(proofChecks.length)await saveRecord(key,null,{changed:false,...writeOptions});
+    return {stored:false,duplicate:true,key};
+  }
 
   const fingerprint=contentFingerprint(snapshot);
   const previous=existing?.latestSnapshot||null;
-  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt))return {stored:false,duplicate:true,key};
+  if(previous&&Date.parse(previous.capturedAt)>Date.parse(snapshot.capturedAt)){
+    if(proofChecks.length)await saveRecord(key,null,{changed:false,...writeOptions});
+    return {stored:false,duplicate:true,key};
+  }
+  // Different fingerprints in the same second are distinct evidence. Keep
+  // both in the bounded history, without asserting a finer clock resolution.
   const previousFingerprint=previous?contentFingerprint(previous):null;
   const changed=previousFingerprint!==fingerprint;
   const delta=changed?diff(previous,snapshot):{added:[],removed:[]};
@@ -230,6 +333,7 @@ async function ingestSnapshot(snapshot){
     changes.push({
       observedAt:snapshot.capturedAt,
       fingerprint,
+      ...(previous&&previous.capturedAt===snapshot.capturedAt?{sameSecond:true,previousFingerprint,previousEntries:previous.entries,entries:snapshot.entries}:{}),
       added:delta.added,
       removed:delta.removed,
       location:snapshot.location
@@ -248,14 +352,14 @@ async function ingestSnapshot(snapshot){
     observationCount:(Number(existing?.observationCount)||0)+1,
     contentChangeCount:(Number(existing?.contentChangeCount)||0)+(changed?1:0),
     latestSnapshot:snapshot,
+    ...(quarantine?{migrationRepair:{resolvedAt:snapshot.capturedAt,legacyDigest:knowledgeRawDigest(expectedLegacy),quarantineDigest:quarantine.digest}}:existing?.migrationRepair?{migrationRepair:existing.migrationRepair}:{}),
     observationIds,
     changes:changes.slice(-CHANGE_LIMIT),
     offers:snapshot.kind==='merchant'?mergeOfferKnowledge(existing?.offers,snapshot):undefined,
     services:snapshot.kind==='trainer'?mergeServiceKnowledge(existing?.services,snapshot):undefined
   };
-  await saveRecord(key,record);
-  if(changed)await redis(['SET',versionKey(),new Date().toISOString()]);
-  return {stored:true,duplicate:false,changed,key,record};
+  await saveRecord(key,record,{changed,...writeOptions,quarantine});
+  return {stored:true,duplicate:false,changed,key,record,...(quarantine?{repaired:true}:{})};
 }
 
 export function snapshotsFromAddonPayload(payload={}, {characterSlug=null}={}){
@@ -273,32 +377,57 @@ export function snapshotsFromAddonPayload(payload={}, {characterSlug=null}={}){
   return snapshots;
 }
 
-export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null}={}){
+export async function ingestAddonLiveKnowledge(payload={}, {characterSlug=null,lockToken=null}={}){
   if(!configured())return {stored:0,duplicates:0,changed:0};
-  let stored=0,duplicates=0,changed=0;
+  let stored=0,duplicates=0,changed=0,quarantined=0,repaired=0;
   for(const snapshot of snapshotsFromAddonPayload(payload,{characterSlug})){
-    const result=await ingestSnapshot(snapshot);
+    const result=await ingestSnapshot(snapshot,{lockToken});
     if(result.stored)stored++;
     if(result.duplicate)duplicates++;
     if(result.changed)changed++;
+    if(result.quarantined)quarantined++;
+    if(result.repaired)repaired++;
   }
-  return {stored,duplicates,changed};
+  return {stored,duplicates,changed,...(quarantined?{quarantined}:{}),...(repaired?{repaired}:{})};
 }
 
 export async function loadLiveKnowledge({build=null,kind=null,historicalMerchantsOnly=false,redisImpl=redis,enabled=configured()}={}){
   if(!enabled)return [];
-  const members=await redisImpl(['SMEMBERS',indexKey()]);
-  const keys=(Array.isArray(members)?members:[]).filter(key=>{
+  const [members,fields]=await Promise.all([redisImpl(['SMEMBERS',indexKey()]),redisImpl(['HKEYS',recordsKey()])]);
+  const knownFields=new Set(Array.isArray(fields)?fields:[]);
+  const current=new Set([...knownFields].filter(key=>String(key).startsWith(prefix()+'record:')));
+  const legacyKeys=new Set((Array.isArray(members)?members:[]).filter(key=>String(key).startsWith(prefix()+'record:')));
+  const keys=[...new Set([...legacyKeys,...current])].filter(key=>{
     const parts=String(key).slice((prefix()+'record:').length).split(':');
     if(historicalMerchantsOnly)return parts[0]==='merchant'&&parts[1]!==encodeURIComponent(build);
     return (!kind||parts[0]===kind)&&(!build||parts[1]===encodeURIComponent(build));
   });
-  const result=[];
+  const result=[],issues=[];
   // Read only the requested build, in bounded batches. Preserve all evidence.
   for(let i=0;i<keys.length;i+=8){
-    const values=await redisImpl(['MGET',...keys.slice(i,i+8)]);
-    for(const raw of Array.isArray(values)?values:[]){
-      let record;try{record=JSON.parse(raw)}catch{continue}
+    const batch=keys.slice(i,i+8),modern=batch.filter(key=>current.has(key)),legacy=batch; // physical v1 counterpart, even if not indexed
+    const [modernValues,legacyValues]=await Promise.all([modern.length?redisImpl(['HMGET',recordsKey(),...modern]):[],legacy.length?readLegacy(legacy,redisImpl):[]]);
+    const modernByKey=new Map(modern.map((key,i)=>[key,modernValues?.[i]??null]));
+    const legacyByKey=new Map(legacy.map((key,i)=>[key,legacyValues[i]]));
+    for(const key of batch){
+      const modernRaw=modernByKey.get(key),legacyValue=legacyByKey.get(key),legacyRaw=legacyValue.raw;
+      const inspected=await inspectStoredPair(key,modernRaw,legacyValue,redisImpl);
+      if(inspected.reason){
+        if(inspected.reason==='repair_evidence_unavailable'){
+          issues.push({key,reason:inspected.reason,preserved:false});continue;
+        }
+        // Evidence-only append. Never alter the active record in a reader.
+        // Preserve the exact bytes observed, even if a legacy writer has
+        // since replaced them. HSETNX is idempotent and a single mutation.
+        let preserved=false;
+        try{
+          await resolveQuarantine(key,modernRaw,legacyValue,inspected.reason,null,{redisImpl,persist:true});
+          // Non-string physical values are not contained in the JSON envelope.
+          preserved=inspected.reason!=='invalid_storage_type';
+        }catch{ /* Exhausted search or unavailable storage: not preserved. */ }
+        issues.push({key,reason:inspected.reason,preserved});continue;
+      }
+      const record=inspected.record;
       if(!record)continue;
       if(historicalMerchantsOnly){if(record.kind!=='merchant'||record.build===build||record.latestSnapshot?.complete!==true)continue;}
       else if(build&&record.build!==build)continue;
@@ -306,7 +435,7 @@ export async function loadLiveKnowledge({build=null,kind=null,historicalMerchant
       result.push(record);
     }
   }
-  return result.sort((a,b)=>String(b.lastObservedAt||'').localeCompare(String(a.lastObservedAt||'')));
+  return attachIntegrityIssues(result.sort((a,b)=>String(b.lastObservedAt||'').localeCompare(String(a.lastObservedAt||''))),issues);
 }
 
 export function publicLiveKnowledgeSummary(records=[]){
@@ -315,6 +444,8 @@ export function publicLiveKnowledgeSummary(records=[]){
   const trainers=list.filter(record=>record.kind==='trainer');
   return {
     recordCount:list.length,
+    excludedIntegrityRecords:records?.integrityIssues?.length||0,
+    unpreservedIntegrityRecords:(records?.integrityIssues||[]).filter(issue=>issue.preserved===false).length,
     merchantCount:merchants.length,
     trainerCount:trainers.length,
     observationCount:list.reduce((sum,record)=>sum+(Number(record.observationCount)||0),0),
@@ -326,25 +457,23 @@ export function publicLiveKnowledgeSummary(records=[]){
 }
 
 
-export async function loadLiveKnowledgeVersion(){
-  if(!configured())return null;
-  const value=await redis(['GET',versionKey()]);
-  return typeof value==='string'&&value?value:null;
+export async function loadLiveKnowledgeVersion({redisImpl=redis,enabled=configured()}={}){
+  if(!enabled)return null;
+  const values=await Promise.all([redisImpl(['HGET',recordsKey(),VERSION_FIELD]),redisImpl(['GET',versionKey()])]);
+  // Include both namespaces so even equal-time divergent writes invalidate
+  // cached projections. A legacy-only deployment keeps its original value.
+  const [modern,legacy]=values.map(value=>typeof value==='string'&&value?value:null);
+  return modern&&legacy?JSON.stringify([modern,legacy]):modern??legacy;
 }
 
- // Historical merchant snapshots remain conflict evidence across builds.
- // Cache only the relevant projection, never the complete change log.
+// During migration legacy writes need not update a version marker. Do not
+// serve a historical projection from cache before old writers are retired.
 export async function loadHistoricalMerchantKnowledge(build,{redisImpl=redis,enabled=configured()}={}){
   if(!enabled||!build)return [];
-  const version=await redisImpl(['GET',versionKey()]);
-  const key=prefix()+'merchant-conflict-history:v1';
-  const cached=await readCompactMaster(key,{redisImpl});
-  if(cached?.build===build&&cached.version===version&&Array.isArray(cached.records))return cached.records;
-  const records=(await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled})).map(record=>({
+  const source=await loadLiveKnowledge({build,historicalMerchantsOnly:true,redisImpl,enabled});
+  return attachIntegrityIssues(source.map(record=>({
     kind:'merchant',build:record.build,characterSlug:record.characterSlug||null,
     npc:record.npc,location:record.location||null,lastObservedAt:record.lastObservedAt||null,
     latestSnapshot:record.latestSnapshot
-  }));
-  if(await redisImpl(['GET',versionKey()])===version)await writeCompactMaster(key,{build,version,records},{redisImpl,ttl:3600});
-  return records;
+  })),source.integrityIssues||[]);
 }

@@ -7,6 +7,7 @@ import {reputationStages,reputationColors} from '../reputation-data.js';
 import {createTalentPlanner} from '../talent-planner.js';
 import {displayedTalentText} from '../talent-text-quality.js';
 import {resolvePersonalTalentState} from '../talent-personal-state.js';
+import {mergeProfiles} from './character-store.mjs';
 
 const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
@@ -49,7 +50,7 @@ const document={querySelector(selector){
 }};
 const window={addEventListener(){}};
 const location={hash:''};
-const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,keepNewestProfiles,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
+const ui=new Function('document','window','location','HUNTER_PET_RULEBOOK_VERSION','hunterPetFamily','hunterPetCombatProfile','hunterPetMechanics','reputationStages','reputationColors','createTalentPlanner','displayedTalentText','resolvePersonalTalentState',executableSource.slice(0,start)+'\nreturn {beginPayloadRequest,sharedVersionCheck,displayOrder,displayList,talentPanel,personalTalentRanks,talentNodeStatus,talentGraph,talentNodeDetail,setTalentCatalog:value=>{displayedTalentCatalog=value},compareGermanNames,sortNamedRecords,sortQuestRecords,questGroupStatus,characterPanelContent,highestKnownClassAbilities,professionKnowledgeForDisplay,cmpSectionRows,questsPanel,render,applyServerPayload,addonSyncState,addonPresence,instanceStatusPanel,recipeRows,professionRows,professionScale,sortProfessionsForDisplay,statsPanel,equipmentSlotOrder,getDisplayedData:()=>displayedData,experienceProgress,totalXpAtLevel,setActiveCharacterTab,hunterPetsPanel,hunterPetCombatPanel,characterTabsFor,classAbilitiesPanel,gameStatusPanel,reputationPanel,plannerState,plannerKnownCopper,plannerPrice,plannerPriceSource,plannerPriceTier,plannerPriceSourceLabel,plannerOffers,plannerCheapestKnownOffer,plannerRequestOfferSelection,plannerConfirmSwitch,plannerKeepSelection,plannerClearSelection,plannerSelectAllVisible,plannerSelectedActions,plannerSelectionHtml,plannerPriceWarningHtml,plannerSwitchHtml,plannerNpcHtml};')(document,window,location,HUNTER_PET_RULEBOOK_VERSION,hunterPetFamily,hunterPetCombatProfile,hunterPetMechanics,reputationStages,reputationColors,createTalentPlanner,displayedTalentText,resolvePersonalTalentState);
 
 const addonPayloadQa={
   data:{generatedAt:'2026-11-24T12:22:51.000Z',characters:[{...data.characters[0],slug:'cole-dalton',name:'Cole Dalton'}]},
@@ -61,13 +62,16 @@ const addonPayloadQa={
   }},
   dataVersion:{version:'data-v3|qa-addon-sync'}
 };
+const datedFallback={...addonPayloadQa,fallback:true,data:{...addonPayloadQa.data,generatedAt:'2099-01-01T00:00:00.000Z'}};
+assert.equal(ui.applyServerPayload(datedFallback),true,'A bundled fallback may populate an empty page');
 assert.equal(ui.applyServerPayload(addonPayloadQa,{force:true}),true,'Server payload with AddOn state is accepted');
+assert.equal(ui.applyServerPayload(datedFallback,{force:true}),false,'A bundled fallback never displaces confirmed live data');
 const addonRendered=nodes.get('#cards').innerHTML;
 assert.ok(addonRendered.includes('Valanaar'),'Synced location data is rendered directly below the character activity');
 assert.ok(addonRendered.includes('62.1 / 73.4'),'WoW map coordinates are shown in the familiar xx.x / yy.y format without percent signs');
 assert.ok(!addonRendered.includes('direkte Bridge')&&!addonRendered.includes('Build 71037'),'Technical transport/build diagnostics are hidden from the player-facing game status');
 assert.ok(!addonRendered.includes('Standort-Historie')&&!addonRendered.includes('Händler & Lehrer'),'Internal history and live-evidence counters stay out of the player-facing game status');
-assert.ok(addonRendered.includes('Instanzen &amp; Dungeons'),'Game tab is now the player-facing instances and dungeons area');
+assert.ok(ui.characterPanelContent(addonPayloadQa.data.characters[0],'game',new Set()).includes('Instanzen &amp; Dungeons'),'Game tab is now the player-facing instances and dungeons area');
 
 const classAbilityQa=ui.classAbilitiesPanel({
   knownClassAbilitiesVerified:true,
@@ -169,6 +173,11 @@ const statDetails=[
   ['DODGE','Ausweichen',5.2468],['PARRY','Parieren',4.88],['BLOCK','Blocken',0],['ATTACKSPEED','Angriffsgeschwindigkeit',1.961]
 ].map(([enumKey,name,value])=>({enum:enumKey,name,value}));
 const statQa=ui.statsPanel({slug:'qa',scrapeOk:true,statsVerified:true,statsFreshEnums:statDetails.map(x=>x.enum),statsDetails:statDetails});
+const failedStats=ui.statsPanel({slug:'qa-failed',scrapeOk:false,statsVerified:true,statsFreshEnums:['ARMOR'],statsDetails:[{enum:'ARMOR',name:'Rüstung',value:100}]});
+assert.ok(failedStats.includes('letzter Stand')&&failedStats.includes('100'));
+const stalePet=hunterPetCombatProfile({scrapeOk:false,statsVerified:true,statsFreshEnums:['ARMOR','STAMINA','MELEECRIT','RANGEDCRIT'],statsByEnum:{ARMOR:100,STAMINA:20,MELEECRIT:4,RANGEDCRIT:6}});
+assert.equal(stalePet.inherited.armor,null);assert.equal(stalePet.inherited.health,null);assert.equal(stalePet.inherited.crit,null);
+assert.equal(hunterPetCombatProfile({scrapeOk:true,statsFreshEnums:['ARMOR'],statsByEnum:{ARMOR:null}}).inherited.armor,null);
 assert.equal((statQa.match(/stat-tile stat-tile-main/g)||[]).length,10);
 assert.equal((statQa.match(/stat-tile stat-tile-detail/g)||[]).length,7);
 assert.ok(statQa.includes('5,0 %')&&statQa.includes('5,2 %')&&statQa.includes('4,9 %'));
@@ -201,7 +210,7 @@ ui.render({generatedAt:'2026-11-21T12:00:00.000Z',characters:[{...data.character
     }}
   }}
 });
-const repHtml=nodes.get('#cards').innerHTML;
+const repHtml=ui.characterPanelContent(repQa,'reputation',new Set());
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#00991A'),'Friendly status uses canonical Blizzard green');
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#E6B300'),'Neutral status uses canonical Blizzard yellow');
 assert.ok(repHtml.includes('reputation-standing" style="--rep-color:#BF4500'),'Unfriendly status uses canonical Blizzard orange');
@@ -353,7 +362,7 @@ assert.equal(derived.focus.regenPerSecond,10);
 assert.equal(derived.enduranceTraining.rank,1);
 
 ui.render(petData,{petRules:verifiedPetRules,petCatalog:verifiedPetCatalog});
-const petCards=nodes.get('#cards').innerHTML;
+const petCards=nodes.get('#cards').innerHTML+ui.characterPanelContent(petDolly,'pets',new Set());
 assert.ok(!petCards.includes('Quellenstand aktuell'),'Normal player view hides technical source status');
 assert.ok(!petCards.includes('Referenzmodell')&&!petCards.includes('Clientdaten')&&!petCards.includes('Offiziell')&&!petCards.includes('Regelstatus-Protokoll'),'Normal player view hides evidence and rule-history jargon');
 const blockedRules=structuredClone(verifiedPetRules);
@@ -432,11 +441,7 @@ questBySlug.get('viola-dalton').activeQuests=[{id:1001,name:'Gemeinsam für alle
 questBySlug.get('dolly-dalton').completedQuestIds=[1003];
 questBySlug.get('viola-dalton').completedQuestIds=[1003,1004];
 ui.render(questData,{questCatalog:{1001:{id:1001,title:'Gemeinsam für alle',description:'Erledige die gemeinsame Aufgabe.',area:'Testgebiet',minimumLevel:10}}});
-const questCards=nodes.get('#cards').innerHTML;
-const coleMarker=questCards.indexOf('<h2 class="name">Cole Dalton</h2>');
-const coleStart=questCards.lastIndexOf('<article class="card ',coleMarker);
-const coleEnd=questCards.indexOf('</article>',coleMarker);
-const coleArea=questCards.slice(coleStart,coleEnd);
+const coleArea=ui.characterPanelContent(questBySlug.get('cole-dalton'),'quests',new Set());
 const q1=coleArea.indexOf('Gemeinsam für alle');
 const q2=coleArea.indexOf('Gemeinsam für drei');
 const q3=coleArea.indexOf('Gemeinsam für zwei');
@@ -460,19 +465,22 @@ assert.ok(css.includes('.hero-cast::after{'),'Preserve the original hero overlay
 assert.equal(nodes.get('#heroCast')?.innerHTML??'', '', 'Hero must not contain dynamic character images');
 assert.ok(!source.includes('hero-figure'), 'No character renders may be injected into the hero');
 const cards=nodes.get('#cards').innerHTML;
-assert.equal((cards.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
+const panelSet=(characters,id)=>characters.map(c=>ui.characterPanelContent(c,id,new Set())).join('');
+const professionsMarkup=panelSet(data.characters,'professions');
+const equipmentMarkup=panelSet(data.characters,'equipment');
+assert.equal((professionsMarkup.match(/class="profession"/g)||[]).length,data.characters.reduce((n,c)=>n+c.professions.length,0));
 const testMainStatEnums=new Set(['HEALTH','MANA','STRENGTH','INTELLECT','AGILITY','STAMINA','CRITICALSTRIKE','SPIRIT','ATTACKDPS','MANAREGEN']);
 const expectedMainStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>testMainStatEnums.has(entry.enum)).length,0);
 const expectedDetailStats=data.characters.reduce((n,c)=>n+(c.statsDetails||[]).filter(entry=>!testMainStatEnums.has(entry.enum)).length,0);
 assert.equal((cards.match(/class="stat-tile stat-tile-main"/g)||[]).length,expectedMainStats);
 assert.equal((cards.match(/class="stat-tile stat-tile-detail"/g)||[]).length,expectedDetailStats);
-assert.equal((cards.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
+assert.equal((professionsMarkup.match(/class="profession-rank"/g)||[]).length,0,'No manually translated profession rank is rendered');
 assert.ok(css.includes('.roster-title{flex:1 1 auto;min-width:0}'),'Shared roster title can shrink on narrow screens');
 assert.ok(css.includes('#compareContent{min-width:0;max-width:100%}'),'Comparison content is constrained to the viewport');
 assert.ok(css.includes('.compare-scroll{width:100%;min-width:0;max-width:100%;overflow-x:auto'),'Only the comparison table scroller may overflow horizontally');
 assert.ok(css.includes('.roster-rule{display:none}'),'Decorative roster rules are removed on narrow screens');
-assert.equal((cards.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
-assert.equal((cards.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
+assert.equal((professionsMarkup.match(/class="profession-scale"/g)||[]).length,4,'Every character shows a shared 300-point reference');
+assert.equal((professionsMarkup.match(/class="profession-overlay"/g)||[]).length,20,'One visible fraction in each bar');
 assert.deepEqual(
   ui.characterTabsFor({slug:'mage-test',classId:8,class:'Magier'}).map(tab=>tab.id),
   ['stats','equipment','talents','abilities','professions','reputation','quests','game'],
@@ -531,6 +539,8 @@ const expectedCharacterTabs=data.characters.reduce((count,character)=>count+8+(N
 assert.equal((cards.match(/data-character-tab=/g)||[]).length,expectedCharacterTabs,'Only hunters receive the additional companion tab');
 assert.equal((cards.match(/class="character-tab is-active"/g)||[]).length,data.characters.length,'Exactly one tab is initially active per character');
 assert.equal((cards.match(/data-character-panel=/g)||[]).length,expectedCharacterTabs,'All applicable tab panels remain available without showing them at once');
+assert.equal((cards.match(/data-mounted="true"/g)||[]).length,data.characters.length,'Initial DOM only builds each active panel');
+assert.equal((cards.match(/ hidden><\/section>/g)||[]).length,expectedCharacterTabs-data.characters.length,'Unvisited tabs are empty ARIA targets');
 assert.ok(source.includes("setActiveCharacterTab(button.dataset.characterSlug,button.dataset.characterTab)"),'A tab click changes only the selected character card');
 assert.ok(source.includes('function addonDataRequirement'),'AddOn-abhängige Dashboardbereiche verwenden eine zentrale Statuskomponente');
 assert.ok(!source.includes('data-spellbook-code')&&!source.includes('Spellbook übernehmen'),'Manueller Spellbook-Code ist aus der Dashboard-Oberfläche entfernt');
@@ -582,8 +592,8 @@ assert.ok(sharedBarBlock.includes('letter-spacing:.025em'),'All three progress b
 assert.ok(sharedBarBlock.includes('font-variant-numeric:tabular-nums'),'All three progress bars align numbers consistently');
 assert.ok(sharedBarBlock.includes('1px 0 #04101b,-1px 0 #04101b'),'All three progress bars use the same text shadow');
 
-assert.equal((cards.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
-assert.equal((cards.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
+assert.equal((equipmentMarkup.match(/Ausrüstung anzeigen/g)||[]).length,data.characters.length);
+assert.equal((equipmentMarkup.match(/class="equip-name quality-/g)||[]).length,data.characters.reduce((n,c)=>n+c.equipment.length,0));
 assert.equal(ui.equipmentSlotOrder.length,19);
 for(const [slug,klass] of Object.entries({
   'cole-dalton':'scene-cole','dolly-dalton':'scene-dolly','chucky-dalton':'scene-chucky','viola-dalton':'scene-viola'
@@ -847,12 +857,17 @@ assert.ok(updateWorkflow.includes('run: npm test'),'Keep tests on code changes')
 assert.ok(source.includes("button.addEventListener('click',refreshLive)"),'Manual button still calls Blizzard live');
 assert.ok(source.includes("fetch('/api/refresh?t='+Date.now()"),'Refresh button requests live API');
 assert.ok(refreshService.includes('refreshCharacters([c])'),'Shared refresh service fetches Blizzard character profiles');
-assert.ok(refreshApi.includes("runLockedRefresh(lockToken,req.method==='GET'?'manual':'scheduled')"),'Manual and scheduled refresh sources stay distinguishable');
+assert.ok(refreshApi.includes('runLockedRefresh(lockToken,source)')&&refreshApi.includes("return 'manual'")&&refreshApi.includes("return 'scheduled'"),'Manual and scheduled refresh sources stay distinguishable');
+assert.ok(refreshApi.includes("req.method!=='POST'")&&refreshApi.indexOf('const source=refreshAuthorization(req)')<refreshApi.indexOf('if(!configured())'),'Authorization precedes provider activity');
+assert.ok(source.includes("method:'POST',cache:'no-store',redirect:'error'")&&source.includes("Authorization:'Bearer '+manualRefreshCode"),'Manual refresh uses dedicated authorized POST');
 assert.ok(vercelConfig.includes('"schedule": "7 4 * * *"')&&vercelConfig.includes('"schedule": "37 4 * * *"'),'Primary and idempotent retry Vercel cron are configured');
 const dailySnapshot=read('api/daily-snapshot.js');
-assert.ok(dailySnapshot.indexOf('ensurePetRuleState({force:true})')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs)'),'Daily rule verification runs before the Blizzard snapshot');
-assert.ok(dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('const refresh=await refreshDailyCharacters()'),'Daily rule verification runs before the persistent character refresh');
-assert.ok(refreshApi.indexOf('ensurePetRuleState({force:false})')<refreshApi.indexOf('refreshAndPersist({lockToken,source})'),'Manual refresh reuses or refreshes the rule guard before Blizzard profile refresh');
+assert.ok(dailySnapshot.includes('petRuleState=await ensurePetRuleState({force:!existing})')&&dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('fetchForeverSnapshot(slugs,{fetchImpl})'),'Daily rule verification runs before the Blizzard snapshot');
+assert.ok(dailySnapshot.indexOf('petRuleState=await ensurePetRuleState')<dailySnapshot.indexOf('refresh=await refreshDailyCharacters(local.date)'),'Daily rule verification runs before the persistent character refresh');
+const manualSteps=['await loadCharactersForWrite()','await ensurePetRuleState({force:false})','await refreshAndPersist({lockToken,source,profileRead})']
+  .map(step=>refreshApi.indexOf(step));
+assert.ok(manualSteps[0]>=0&&manualSteps[0]<manualSteps[1]&&manualSteps[1]<manualSteps[2],
+  'Manual refresh validates its authoritative roster before the rule guard and Blizzard profile refresh');
 assert.ok(source.includes("setInterval(()=>{if(document.visibilityState==='visible')checkForNewData()}"),'Only the lightweight stored-data version is checked periodically');
 assert.ok(!/setInterval\([\s\S]{0,300}refreshLive/.test(source),'Periodic checks must never trigger Blizzard live refreshes');
 assert.ok(!source.includes('automatische Aktualisierung läuft unabhängig weiter'),'No false automatic-update promises');
@@ -916,7 +931,7 @@ cole.talents='Arkan: 7';
 cole.talentsVerified=true;
 changed.generatedAt='2026-11-20T15:32:00.000Z';
 ui.render(changed,{live:true,success:4});
-const changedCards=nodes.get('#cards').innerHTML;
+const changedCards=nodes.get('#cards').innerHTML+['equipment','talents','professions'].map(id=>panelSet(changed.characters,id)).join('');
 const changedSummary=nodes.get('#summary').innerHTML;
 const changedLevels=changed.characters.map(c=>c.level);
 assert.ok(changedCards.includes('class="level" aria-label="Stufe '+cole.level+'"'),'Live level updates sheriff badge');
@@ -930,17 +945,15 @@ assert.ok(changedSummary.includes((changedLevels.reduce((a,b)=>a+b,0)/changedLev
 assert.ok(changedSummary.includes((Math.max(...changedLevels)-Math.min(...changedLevels))+' Level'),'Level gap is recomputed');
 assert.ok(nodes.get('#dataFreshness').textContent.includes('Zuletzt aktualisiert'),'Visible live timestamp');
 assert.ok(!source.includes('await load({silent:true})'),'Refresh button does not fetch stale JSON first');
-/* A second click with a partial Blizzard response must keep the latest known
-   in-session skill, mana, equipment and talent values, not the old snapshot. */
+/* The API supplies the last confirmed fields in the authoritative snapshot.
+   Verify that the normal browser response path renders the same values. */
 cole.stats.Mana=680;
 cole.statsByEnum.MANA=680;
 cole.statsDetails.find(entry=>entry.enum==='MANA').value=680;
 ui.render(changed,{live:true,success:4});
-const partial=structuredClone(data);
+const partial=structuredClone(changed);
+partial.generatedAt='2026-11-28T16:00:00.000Z';
 const partialCole=partial.characters.find(c=>c.slug==='cole-dalton');
-partialCole.level=cole.level;
-partialCole.scrapeOk=true;
-partialCole.scrapedAt='2026-11-20T16:00:00.000Z';
 partialCole.stats.Gesundheit=991;
 partialCole.statsByEnum.HEALTH=991;
 partialCole.statsDetails.find(entry=>entry.enum==='HEALTH').value=991;
@@ -950,26 +963,23 @@ partialCole.statsVerified=false;
 partialCole.professions.find(p=>p.name==='Alchemie').unverified=true;
 partialCole.equipmentVerified=false;
 partialCole.talentsVerified=false;
-partialCole.talents='unbestätigt';
 partialCole.imageVerified=false;
-const partialMerged=ui.keepNewestProfiles(partial);
-const updatedCole=partialMerged.characters.find(c=>c.slug==='cole-dalton');
+assert.equal(ui.applyServerPayload({data:partial},{live:true,success:4}),true);
+const updatedCole=ui.getDisplayedData().characters.find(c=>c.slug==='cole-dalton');
 assert.equal(updatedCole.statsByEnum.HEALTH,991,'New confirmed health value wins');
-assert.equal(updatedCole.statsByEnum.MANA,680,'Latest in-session fallback is retained');
-assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').current,74,'Earlier live skill is not replaced by snapshot');
+assert.equal(updatedCole.statsByEnum.MANA,680,'Last verified mana is retained');
+assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').current,74,'Last verified skill survives');
 assert.equal(updatedCole.professions.find(p=>p.name==='Alchemie').unverified,true,'Fallback skill stays visibly unverified');
-assert.equal(updatedCole.equipment[0].item,'QA neuer Stab aus der Armory','Equipment fallback uses last in-session set');
-assert.equal(updatedCole.talents,'Arkan: 7','Talent fallback uses last in-session distribution');
-assert.equal(updatedCole.imageUrl,cole.imageUrl,'Last live image is kept on partial media failure');
-ui.render(partialMerged,{live:true,success:4});
+assert.equal(updatedCole.equipment[0].item,'QA neuer Stab aus der Armory','Old equipment remains available');
+assert.equal(updatedCole.talents,'Arkan: 7','Last known talent distribution remains available');
+assert.equal(updatedCole.imageUrl,cole.imageUrl,'Last available image remains visible');
 const failed=structuredClone(data);
-const failedCole=failed.characters.find(c=>c.slug==='cole-dalton');
-failedCole.scrapeOk=false;
-failedCole.scrapedAt='2020-01-01T00:00:00.000Z';
-const preserved=ui.keepNewestProfiles(failed);
-assert.equal(preserved.characters.find(c=>c.slug==='cole-dalton').level,cole.level,'Failed fetch cannot roll back a newer live level');
-assert.equal(preserved.characters.find(c=>c.slug==='cole-dalton').scrapeOk,false,'Reused data are marked stale');
-ui.render(preserved,{live:true,success:3});
+failed.generatedAt='2026-11-28T16:01:00.000Z';
+failed.characters.find(c=>c.slug==='cole-dalton').scrapeOk=false;
+const preserved=mergeProfiles(partial,failed);
+assert.equal(ui.applyServerPayload({data:preserved},{live:true,success:3}),true);
+assert.equal(ui.getDisplayedData().characters.find(c=>c.slug==='cole-dalton').level,cole.level,'Failed fetch cannot roll back a confirmed level');
+assert.equal(ui.getDisplayedData().characters.find(c=>c.slug==='cole-dalton').scrapeOk,false,'Reused data are marked stale');
 assert.ok(nodes.get('#status').textContent.includes('3 von 4 Profilen'),'Partial refresh clearly reported');
 assert.ok(css.includes('.stale-value{'),'Stale-value formatting available');
 
@@ -1128,3 +1138,63 @@ assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMap
 assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[102]}).verified,true);
 assert.equal(ui.personalTalentRanks(sparseTalentChar,{...sparseClass,personalMappingUnverified:true,personalMappingUnverifiedTalentIds:[101]}).verified,false);
 console.log('Sparse verified Armory snapshot, exact ID/rank/spell, scoped ambiguous mapping: OK');
+
+
+// F16: raw character values are not a strength ranking across classes or
+// levels, and stale values must never determine a highlighted maximum.
+{
+  const c=(classId,level,value,stale=false)=>({slug:'qa-'+classId+'-'+value,classId,level,scrapeOk:!stale,statsDetails:[{enum:'HEALTH',name:'Gesundheit'}],statsByEnum:{HEALTH:value},statsFreshEnums:['HEALTH']});
+  const health=chars=>ui.cmpSectionRows('stats',chars).find(row=>row.includes('Gesundheit'));
+  assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(3,20,200)])));
+  assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(8,21,200)])));
+  assert.ok(!/compare-(best|worst|middle)/.test(health([c(8,20,100),c(8,20,200,true)])));
+  assert.ok(/compare-best/.test(health([c(8,20,100),c(8,20,200)])));
+}
+
+
+// F11: two tabs share only a short-lived version hint; lock contention,
+// unsupported locks, denied storage and failed requests never block later checks.
+{
+  const values=new Map();
+  const storage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v)};
+  let now=100000,calls=0,busy=false,finish;
+  const locks={async request(key,options,callback){
+    assert.equal(options.ifAvailable,true);
+    if(busy)return callback(null);
+    busy=true;try{return await callback({name:key})}finally{busy=false}
+  }};
+  const delayed=()=>{calls++;return new Promise(resolve=>{finish=resolve});};
+  const first=ui.sharedVersionCheck({storage,locks,fetchVersion:delayed,clock:()=>now});
+  assert.equal(await ui.sharedVersionCheck({storage,locks,fetchVersion:delayed,clock:()=>now}),null);
+  assert.equal(calls,1);
+  finish('public-version-1');
+  assert.equal(await first,'public-version-1');
+  assert.equal(await ui.sharedVersionCheck({storage,locks,fetchVersion:delayed,clock:()=>now}),'public-version-1');
+  assert.equal(calls,1);
+  now+=90001;
+  assert.equal(await ui.sharedVersionCheck({storage,locks,fetchVersion:async()=>{calls++;return 'public-version-2'},clock:()=>now}),'public-version-2');
+  assert.equal(calls,2);
+  assert.deepEqual(Object.keys(JSON.parse([...values.values()][0])).sort(),['checkedAt','version']);
+  const denied={getItem(){throw Error('disabled')},setItem(){throw Error('disabled')}};
+  assert.equal(await ui.sharedVersionCheck({storage:denied,locks:null,fetchVersion:async()=>'fallback',clock:()=>now}),'fallback');
+  const rejectedLocks={request:async()=>{throw Error('unsupported')}};
+  assert.equal(await ui.sharedVersionCheck({storage:denied,locks:rejectedLocks,fetchVersion:async()=>'fallback-2',clock:()=>now}),'fallback-2');
+}
+
+
+// Both arrival order and persisted generation matter. A forced response
+// cannot roll back a newer failed snapshot even when its request is newer.
+{
+  const fresh={...structuredClone(data.characters[0]),slug:'qa-order',name:'QA Order',scrapeOk:true,statsVerified:true,statsFreshEnums:['ARMOR'],statsFreshKeys:['Rüstung'],statsByEnum:{ARMOR:100},statsDetails:[{enum:'ARMOR',name:'Rüstung',value:100}],stats:{Rüstung:100}};
+  const older={data:{generatedAt:'2098-01-01T00:00:00.000Z',characters:[fresh]},dataVersion:{version:'qa-old'}};
+  const failed={data:{generatedAt:'2098-01-01T00:00:00.001Z',characters:[{...fresh,scrapeOk:false,statsVerified:false,statsFreshEnums:[],statsFreshKeys:[]}]},dataVersion:{version:'qa-failed'}};
+  const oldRequest=ui.beginPayloadRequest(),refreshRequest=ui.beginPayloadRequest();
+  assert.equal(ui.applyServerPayload(failed,{force:true,requestSequence:refreshRequest}),true);
+  assert.equal(ui.applyServerPayload(older,{force:true,requestSequence:oldRequest}),false);
+  assert.equal(ui.applyServerPayload(older,{force:true}),false);
+  assert.equal(ui.applyServerPayload({...older,data:{...older.data,generatedAt:failed.data.generatedAt}},{force:true,requestSequence:oldRequest}),false);
+  assert.ok(nodes.get('#cards').innerHTML.includes('letzter Stand'));
+  const recovery={...older,data:{...older.data,generatedAt:'2098-01-01T00:00:00.002Z'},dataVersion:{version:'qa-recovered'}};
+  assert.equal(ui.applyServerPayload(recovery,{force:true}),true);
+  assert.ok(!nodes.get('#cards').innerHTML.includes('Rüstung <span class="stale-value"'));
+}

@@ -93,11 +93,19 @@ jobs:
           cp scripts/dalton-sync-client.mjs dist/DaltonDashboardSyncCompanion/
           cp scripts/savedvariables-parser.mjs dist/DaltonDashboardSyncCompanion/
           cp scripts/addon-sync.mjs dist/DaltonDashboardSyncCompanion/
+          cp scripts/player-terminology.mjs dist/DaltonDashboardSyncCompanion/
           cp docs/dalton-sync-companion.md dist/DaltonDashboardSyncCompanion/README.md
           cd dist
           zip -r "DaltonDashboardSyncCompanion-0.1.0-beta.1.zip" DaltonDashboardSyncCompanion
           cd ..
           unzip -l dist/DaltonDashboardSyncCompanion-0.1.0-beta.1.zip
+          scratch=$(mktemp -d)
+          trap 'rm -rf "$scratch"' EXIT
+          unzip -q dist/DaltonDashboardSyncCompanion-0.1.0-beta.1.zip -d "$scratch"
+          cp scripts/fixtures/bridge-savedvariables.lua "$scratch/fixture.lua"
+          cd "$scratch"
+          node DaltonDashboardSyncCompanion/dalton-sync-client.mjs --help
+          node DaltonDashboardSyncCompanion/dalton-sync-client.mjs --dry-run --file "$scratch/fixture.lua"
 
       - name: Addon-Testpaket bereitstellen
         uses: actions/upload-artifact@v4
@@ -136,6 +144,13 @@ jobs:
           Copy-Item bridge/create-enroll-windows.ps1 dist/bridge-windows/
           Copy-Item bridge/Einrichtungscode-erstellen.cmd dist/bridge-windows/
 
+          foreach ($script in @("install-windows.ps1", "uninstall-windows.ps1")) {
+            $parseTokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path "dist/bridge-windows/$script").Path, [ref]$parseTokens, [ref]$parseErrors)
+            if ($parseErrors.Count -gt 0) { throw "PowerShell-Syntaxfehler in $script" }
+          }
           & dist/bridge-windows/DaltonDashboardBridge.exe --help
           if ($LASTEXITCODE -ne 0) { throw "Bridge --help fehlgeschlagen" }
           if (-not (Select-String -Path scripts/dalton-sync-client.mjs -Pattern "--revoke-device" -Quiet)) { throw "Bridge-Quellcode enthält Geräte-Widerruf nicht" }

@@ -107,3 +107,18 @@ Die Geräteberechtigungen bleiben eng begrenzt:
 - nur Coles Hub-Gerät darf zusätzlich einen echten `dalton-peer-relay`-Datensatz von Chucky, Dolly oder Viola weiterleiten;
 - Coles Hub-Gerät darf **keinen** fremden Direkt-Sync vortäuschen;
 - Peer-Geräte dürfen weder andere Dalton-Charaktere synchronisieren noch weitere Einrichtungscodes erzeugen.
+
+## Getrennte Kopplung von Preview und Produktion
+
+Die automatische Übernahme eines Preview-Geräts in die Produktion ist abgeschaltet. Für eine neue Produktionskopplung ist ein regulär autorisierter Einrichtungscode aus der Produktionsumgebung erforderlich. Bereits gültige Produktionsgeräte bleiben unverändert gekoppelt. Ein Preview-Code oder Preview-Gerät gilt nicht als Produktionsberechtigung. Historische Deployments und bestehende Gerätezugänge müssen bei der betrieblichen Abnahme separat inventarisiert und gegebenenfalls widerrufen werden.
+
+
+### Zielwahl und Geräteberechtigungen
+
+Für alle Bridge-Befehle gilt: ausdrückliches `--endpoint` vor `DALTON_SYNC_ENDPOINT` vor gespeichertem Ziel vor Standardadresse. Jede zugangsdatenführende Anfrage verwendet HTTPS und folgt keinen Weiterleitungen. Ein lokal gespeicherter Gerätezugang ist an den HTTPS-Ursprung seiner Kopplung gebunden. Bei einem anderen Ziel muss dieses separat gekoppelt werden; ein explizit für das Ziel bereitgestelltes Umgebungs-Token kann für Sync und Einrichtungscode-Erstellung verwendet werden. Beim Widerruf wird ausschließlich der gespeicherte Gerätezugang am zugehörigen Ziel widerrufen. Ein abweichendes Ziel führt zum Abbruch ohne lokale Löschung. Ein gespeicherter Preview-Share-Link wird nur am gleichen HTTPS-Ursprung verwendet; ausdrücklich angegebene Share-Links müssen zum Ziel passen. `--dry-run` versendet keine Netzwerkanfragen und kann nicht mit Geräteverwaltung kombiniert werden.
+
+Alle wertnehmenden Kommandozeilenoptionen benötigen genau einen nichtleeren, nicht als Option beginnenden Wert. Doppelte Optionen, mehrere Geräteverwaltungsaktionen und widersprüchliche Kombinationen werden vor dem Lesen der Konfiguration oder jedem Netzverkehr abgewiesen. `--help` steht allein; `--character` gehört nur zur Kopplung.
+
+Kopplung und Widerruf sind prozessübergreifend exklusiv. Ein gleichzeitig gestarteter zweiter Verwaltungsbefehl bricht vor dem Serverkontakt ab und kann danach erneut ausgeführt werden. Die lokale Konfiguration wird atomar ersetzt. Eine nach einem Prozessabsturz verbliebene Sperre darf erst entfernt werden, wenn kein Verwaltungsprozess mehr aktiv ist. Die Sperre liegt neben dem Bridge-Verzeichnis und heißt `DaltonDashboardBridge.mutation.lock` (macOS/Windows) bzw. `dalton-dashboard-bridge.mutation.lock` (Linux). Normale Sync-/Watch-Prozesse benötigen diese Schreibsperre nicht. Eine beschädigte Konfigurationsdatei wird nicht stillschweigend überschrieben.
+
+Ein Widerruf gilt nur bei HTTP 200 mit JSON-Inhalt und eindeutiger Bestätigung (`revoked: true, alreadyRevoked: false` oder `revoked: false, alreadyRevoked: true`). Leere, widersprüchliche, negative oder fremde Antworten lassen die lokale Konfiguration unverändert und führen zu einem Fehlerstatus. Damit brechen die vorhandenen Deinstallationsskripte in diesen Fällen ab.

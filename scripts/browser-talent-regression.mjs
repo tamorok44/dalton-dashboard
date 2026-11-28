@@ -4,6 +4,7 @@ import {readFileSync,mkdirSync,writeFileSync,statSync,createReadStream} from 'no
 import {resolve,extname,sep} from 'node:path';
 import {pathToFileURL,fileURLToPath} from 'node:url';
 import {gzipSync} from 'node:zlib';
+import {HUNTER_PET_RULEBOOK_VERSION} from '../hunter-pets.js';
 import {createTalentPlannerHandler} from './talent-planner-api.mjs';
 import {correctTalentDisplay} from './talent-display-corrections.mjs';
 import coverage from '../data/talent-planning/coverage-2026-11-25.json' with {type:'json'};
@@ -42,9 +43,22 @@ const displayCatalog={classes:Object.fromEntries(Object.entries(displayMaster.cl
 for(const c of roster.filter(c=>[2,3,11].includes(c.classId))){c.talentDetailsVerified=true;c.talentDetails=displayMaster.classes[c.classId].trees.map(t=>({name:t.name,spentPoints:0,talents:[]}));}
 const mageCharacter=roster.find(c=>c.classId===8),mageFrost=displayMaster.classes[8].trees.find(t=>t.id===11601),mageNode=mageFrost.talents.find(n=>n.id===105779);
 mageCharacter.talentDetailsVerified=true;mageCharacter.talentsVerified=true;mageCharacter.talents='Frost: 3';mageCharacter.talentDetails=[{name:'Frost',spentPoints:3,talents:[{id:mageNode.profileId,rank:3,spellId:mageNode.rankSpellIds[0]}]}];
+// Deliberately reproduce an old stored record that still carries fresh flags
+// after a failed profile fetch. The browser and pet calculation must defend
+// independently of the server projection.
+const staleHunter={...roster.find(c=>c.classId===3),scrapeOk:false,statsVerified:true,
+  stats:{Rüstung:100},statsByEnum:{ARMOR:100},statsDetails:[{enum:'ARMOR',name:'Rüstung',value:100}],
+  statsFreshEnums:['ARMOR'],statsFreshKeys:['Rüstung'],hunterPetsVerified:true,hunterPetsCheckedAt:checkedAt,
+  hunterPets:{active:[{name:'QA Fuchs',level:15,active:true,family:{id:319,slug:'fox',name:'Fuchs'}}],stable:[]}};
+const browserRoster=roster.map(c=>c.classId===3?staleHunter:c);
+const browserPetRules={rulebookVersion:HUNTER_PET_RULEBOOK_VERSION,overall:'verified',rules:{'pet.scaling.armor':{status:'verified'}}};
 let plannerRequests=0,discoveryBytes=0,pathBytes=0,unexpected=[],displayRequests=0;
+const vercelConfig=JSON.parse(readFileSync(resolve(root,'vercel.json'),'utf8'));
+const cspCandidate=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy')?.value;
+assert.ok(cspCandidate,'CSP candidate must be exercised in browser fixture');
 const types={'.html':'text/html; charset=utf-8','.js':'application/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json','.webmanifest':'application/manifest+json'};
-let offlineFixture=false;
+let offlineFixture=false,refreshRequests=0;
+const syntheticRefreshCode='synthetic-browser-refresh-code-0123456789';
 const server=createServer(async(req,res)=>{
  if(offlineFixture){req.socket.destroy();return;}
  try{
@@ -59,14 +73,20 @@ const server=createServer(async(req,res)=>{
    return;
  }
  if(url.pathname==='/api/characters'&&url.searchParams.get('view')==='talents'){displayRequests++;return send(200,displayCatalog)}
- if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'}});
- if(url.pathname==='/api/refresh')return send(200,{data:{generatedAt:checkedAt,characters:roster},dataVersion:{version:'qa-browser-v1'},success:roster.length});
+ if(url.pathname==='/api/characters')return send(200,{data:{generatedAt:checkedAt,characters:browserRoster},petRules:browserPetRules,dataVersion:{version:'qa-browser-v1'}});
+ if(url.pathname==='/api/refresh'){
+   refreshRequests++;
+   if(req.method!=='POST')return send(405,{error:'Method not allowed'});
+   if(req.headers.authorization!=='Bearer '+syntheticRefreshCode)return send(401,{error:'Nicht autorisiert'});
+   return send(200,{data:{generatedAt:checkedAt,characters:browserRoster},petRules:browserPetRules,dataVersion:{version:'qa-browser-v1'},success:roster.length-1});
+ }
  if(url.pathname==='/api/data-version')return send(200,{version:'qa-browser-v1'});
+ if(url.pathname==='/qa-sw-shell'){res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end('<!doctype html><title>Isolated service worker test</title>')}
  if(url.pathname.startsWith('/api/')){unexpected.push(url.pathname);return send(404,{ok:false})}
  const pathname=url.pathname==='/'?'/index.html':decodeURIComponent(url.pathname);
  const file=resolve(root,'.'+pathname);
  if(!file.startsWith(root.endsWith(sep)?root:root+sep)||!statSync(file).isFile())throw Error('Not found');
- res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Cache-Control':'no-store'});createReadStream(file).pipe(res);
+ res.writeHead(200,{'Content-Type':types[extname(file)]||'application/octet-stream','Cache-Control':'no-store',...(extname(file)==='.html'?{'Content-Security-Policy':cspCandidate}:{})});createReadStream(file).pipe(res);
  }catch{if(!res.headersSent)res.writeHead(404);res.end('Not found')}
 });
 await new Promise((ok,bad)=>{server.once('error',bad);server.listen(0,'127.0.0.1',ok)});
@@ -88,6 +108,10 @@ try{
  assert.ok(report.rawScriptBytes<=40000&&report.gzipScriptBytes<=12000,'Talent planner JS size budget exceeded');
  for(const item of cases){
   const context=await browser.newContext({...item.options,serviceWorkers:'block',locale:'de-DE',reducedMotion:'reduce'});
+  await context.addInitScript(()=>{
+    window.__qaCspViolations=[];
+    document.addEventListener('securitypolicyviolation',event=>window.__qaCspViolations.push({directive:event.effectiveDirective,blocked:event.blockedURI,disposition:event.disposition}));
+  });
   const page=await context.newPage(),errors=[],outside=[];
   let cdp=null;
   const baselineRequests=plannerRequests;
@@ -101,11 +125,46 @@ try{
    assert.equal(await character.locator('option').count(),10);
    const talentNav=page.locator('[data-view-link="talentPlanner"]');
    assert.equal(await talentNav.isVisible(),true,'released tab visible without feature flag');
+   const beforeRefresh=refreshRequests;
+   const refreshDialog=page.locator('#refreshAuthorizationDialog');
+   const refreshInput=page.locator('#refreshAuthorizationCode');
+   await page.locator('#refreshButton').click();
+   await refreshDialog.waitFor({state:'visible'});
+   await refreshInput.fill('cancelled-synthetic-code');
+   await refreshDialog.locator('button[value="cancel"]').click();
+   await refreshDialog.waitFor({state:'hidden'});
+   assert.equal(refreshRequests,beforeRefresh,'Cancelling must not contact the refresh endpoint');
+   const deniedResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===401);
+   await page.locator('#refreshButton').click();
+   await refreshDialog.waitFor({state:'visible'});
+   assert.equal(await refreshInput.inputValue(),'','Cancelled code must not survive the dialog');
+   await refreshInput.fill('invalid-synthetic-code');
+   await refreshDialog.locator('button[value="confirm"]').click();
+   await deniedResponse;
+   await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
+   assert.equal(refreshRequests,beforeRefresh+1,'Exactly one rejected refresh attempt');
    const refreshResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===200);
    await page.locator('#refreshButton').click();
-   await refreshResponse;
+   await page.locator('#refreshAuthorizationDialog').waitFor({state:'visible'});
+   assert.equal(await refreshInput.inputValue(),'','Rejected code must not survive the dialog');
+   await refreshInput.fill(syntheticRefreshCode);
+   await page.locator('#refreshAuthorizationDialog button[value="confirm"]').click();
+   const authorizedRefresh=await refreshResponse;
+   assert.equal(authorizedRefresh.request().method(),'POST');
+   assert.equal((await authorizedRefresh.request().allHeaders()).authorization,'Bearer '+syntheticRefreshCode);
+   assert.ok(!authorizedRefresh.url().includes(syntheticRefreshCode),'Credential must not be in URL');
    await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
    assert.equal(await talentNav.isVisible(),true,'refresh payload must never hide released tab');
+   assert.equal(await refreshInput.inputValue(),'','Code must be cleared from the input');
+   const stored=await page.evaluate(()=>JSON.stringify([Object.entries(localStorage),Object.entries(sessionStorage)]));
+   assert.ok(!stored.includes(syntheticRefreshCode),'Refresh credential must not persist in browser storage');
+   const repeatResponse=page.waitForResponse(r=>r.url().startsWith(origin+'/api/refresh?')&&r.status()===200);
+   await page.locator('#refreshButton').click();
+   const repeat=await repeatResponse;
+   assert.equal((await repeat.request().allHeaders()).authorization,'Bearer '+syntheticRefreshCode);
+   await page.waitForFunction(()=>!document.querySelector('#refreshButton').disabled);
+   assert.equal(await refreshDialog.isVisible(),false,'Valid code may be reused in the current tab');
+   assert.equal(refreshRequests,beforeRefresh+3,'Only rejected and two authorized attempts reach the fixture');
    await page.locator('[data-view-link="characters"]').click();
    await talentNav.click();
    await character.waitFor({state:'visible'});
@@ -243,7 +302,113 @@ try{
    await page.locator('#talentPlannerLevel').selectOption('60');
    assert.equal(await page.locator('.talent-planner-steps li').count(),51,'complete rank-zero path at level 60');
    await page.evaluate(()=>{location.hash='#charaktere'});
+   const hunterStats=page.locator('#qa-class-3-panel-stats');
+   await page.locator('#qa-class-3-tab-stats').waitFor({state:'visible'});
+   await page.locator('#qa-class-3-tab-stats').click();
+   await hunterStats.locator('details.attributes summary').click();
+   const armorTile=hunterStats.locator('.stat-tile').filter({hasText:'Rüstung'});
+   assert.ok((await armorTile.innerText()).includes('letzter Stand'),'Failed profile must mark old armor stale despite legacy flags');
+   assert.ok((await armorTile.innerText()).includes('100'),'Last known armor stays visible');
+   await page.locator('#qa-class-3-tab-pets').click();
+   const petPanel=page.locator('#qa-class-3-panel-pets');
+   await petPanel.locator('.pet-combat').waitFor({state:'visible'});
+   assert.equal(await petPanel.getByText('Rüstung aus Dolly',{exact:true}).count(),0,'Stale armor must not drive inherited armor');
+   assert.ok((await petPanel.locator('.pet-combat-group').first().innerText()).includes('vorübergehend nicht verfügbar'));
+   result.staleProfileDefense=true;
+   // An independent page holds its first GET in flight while an authorized
+   // partial refresh publishes the newer failed profile. Release the old
+   // response only after the new status is rendered.
+   const racePage=await context.newPage();
+   let releaseOld,oldStarted;
+   const oldGate=new Promise(resolve=>{releaseOld=resolve});
+   const oldRequested=new Promise(resolve=>{oldStarted=resolve});
+   const oldStamp=new Date(Date.parse(checkedAt)-1000).toISOString();
+   try{
+     await racePage.route('**/*',route=>{
+       if(!route.request().url().startsWith(origin+'/'))return route.abort();
+       return route.continue();
+     });
+     const characterGet=url=>url.origin===origin&&url.pathname==='/api/characters'&&!url.searchParams.has('view');
+     await racePage.route(characterGet,async route=>{
+       oldStarted();
+       await oldGate;
+       await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+         data:{generatedAt:oldStamp,characters:browserRoster.map(c=>c.classId===3?{...c,scrapeOk:true}:c)},
+         petRules:browserPetRules,dataVersion:{version:'qa-delayed-old'}
+       })});
+     });
+     await racePage.goto(origin+'/#charaktere',{waitUntil:'domcontentloaded'});
+     await oldRequested;
+     await racePage.locator('#refreshButton').click();
+     await racePage.locator('#refreshAuthorizationDialog').waitFor({state:'visible'});
+     await racePage.locator('#refreshAuthorizationCode').fill(syntheticRefreshCode);
+     await racePage.locator('#refreshAuthorizationDialog button[value="confirm"]').click();
+     const failedCard=racePage.locator('#qa-class-3-panel-stats');
+     await racePage.locator('#qa-class-3-tab-stats').waitFor({state:'visible'});
+     await racePage.locator('#qa-class-3-tab-stats').click();
+     await failedCard.locator('details.attributes summary').click();
+     const tile=failedCard.locator('.stat-tile').filter({hasText:'Rüstung'});
+     assert.ok((await tile.innerText()).includes('letzter Stand'));
+     const delayedResponse=racePage.waitForResponse(res=>res.url().includes('/api/characters?')&&!new URL(res.url()).searchParams.has('view'));
+     releaseOld();
+     const delivered=await delayedResponse;
+     await delivered.finished();
+     // Wait for the renderer's promise chain to settle after JSON delivery.
+     await racePage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     assert.ok((await tile.innerText()).includes('letzter Stand'),'Delayed older GET must not replace the newer failure status');
+     await racePage.locator('#qa-class-3-tab-pets').click();
+     assert.equal(await racePage.locator('#qa-class-3-panel-pets').getByText('Rüstung aus Dolly',{exact:true}).count(),0);
+     result.delayedGetDefense=true;
+     await racePage.unroute(characterGet);
+     const versionGet=url=>url.origin===origin&&url.pathname==='/api/data-version';
+     // Two logical generations from the same wall clock must both be visible
+     // without reloading. The actual Redis allocation is tested separately.
+     let generationIndex=1;
+     const generationPayload=()=>({
+       data:{generatedAt:new Date(Date.parse(checkedAt)+generationIndex).toISOString(),
+         characters:browserRoster.map(c=>c.classId===8?{...c,knownClassAbilitiesVerified:true,
+           knownClassAbilitiesCapturedAt:checkedAt,knownClassAbilitiesSyncedAt:checkedAt,
+           knownClassAbilities:[{id:generationIndex===1?133:116,name:generationIndex===1?'QA Feuerball':'QA Frostblitz',rank:'Rang 1'}]}:c)},
+       petRules:browserPetRules,dataVersion:{version:'qa-addon-generation-'+generationIndex}
+     });
+     await racePage.route(versionGet,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(generationPayload().dataVersion)}));
+     await racePage.route(characterGet,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(generationPayload())}));
+     await racePage.bringToFront();
+     await racePage.locator('#qa-class-8-tab-abilities').click();
+     const abilityPanel=racePage.locator('#qa-class-8-panel-abilities');
+     for(const [index,name] of [[1,'QA Feuerball'],[2,'QA Frostblitz']]){
+       generationIndex=index;
+       await racePage.evaluate(()=>{
+         const before=Date.now.bind(Date);Date.now=()=>before()+120000;
+         try{localStorage.removeItem('dalton-public-version-check-v1')}catch{}
+         try{Object.defineProperty(navigator,'locks',{configurable:true,value:undefined})}catch{}
+         window.dispatchEvent(new Event('online'));
+       });
+       await abilityPanel.getByText(name,{exact:true}).waitFor({state:'visible'});
+       if(index===2)assert.equal(await abilityPanel.getByText('QA Feuerball',{exact:true}).count(),0);
+       await racePage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     }
+     result.monotonicAddonGenerations=true;
+
+   }finally{releaseOld();await racePage.close();}
+
    const beforeDisplay=displayRequests,beforePlan=plannerRequests;
+   const tabs=page.locator('button[data-character-slug="qa-class-8"][data-character-tab]');
+   const stats=tabs.filter({hasText:'Charakterwerte'});
+   const equipment=tabs.filter({hasText:'Ausrüstung'});
+   await stats.waitFor({state:'visible'});
+   await stats.focus();
+   await stats.press('ArrowRight');
+   assert.equal(await equipment.getAttribute('aria-selected'),'true');
+   assert.equal(await equipment.getAttribute('tabindex'),'0');
+   assert.equal(await stats.getAttribute('tabindex'),'-1');
+   assert.equal(await page.locator('#qa-class-8-panel-equipment').getAttribute('aria-labelledby'),'qa-class-8-tab-equipment');
+   assert.equal(await page.locator('#qa-class-8-panel-equipment').isVisible(),true);
+   await equipment.press('End');
+   assert.equal(await tabs.last().getAttribute('aria-selected'),'true');
+   await tabs.last().press('Home');
+   assert.equal(await stats.getAttribute('aria-selected'),'true');
+   assert.equal(await stats.evaluate(el=>document.activeElement===el),true);
    async function showTalent(classId,id){
      await page.locator('button[data-character-slug="qa-class-'+classId+'"][data-character-tab="talents"]').click();
      const panel=page.locator('#qa-class-'+classId+'-panel-talents');
@@ -254,6 +419,9 @@ try{
      return panel;
    }
    const pal=await showTalent(2,105330);
+   const unopened=page.locator('#qa-class-8-panel-talents');
+   assert.equal(await unopened.getAttribute('data-mounted'),null,'Fetching the catalog must not mount another character’s tab');
+   assert.equal(await unopened.locator(':scope > *').count(),0,'Unopened talent tabs stay empty once the catalog has arrived');
    assert.ok((await pal.locator('.talent-node-detail').innerText()).includes('60 Minuten'));
    assert.ok((await pal.locator('.workshop-credit').innerText()).includes('Zephras'));
    const hunt=await showTalent(3,104964);
@@ -270,6 +438,9 @@ try{
    assert.equal(plannerRequests,beforePlan,'character view must not trigger plan requests');
    await druid.screenshot({path:resolve(reportDir,item.name+'-hotfix.png'),scale:'css'});
    result.additionalClassPaths=2;result.legacyRank5Verified=true;result.correctedCharacterViews=3;result.characterCatalogReads=displayRequests-beforeDisplay;
+   const violations=await page.evaluate(()=>window.__qaCspViolations||[]);
+   assert.deepEqual(violations,[],'CSP candidate would block exercised application behavior');
+   result.cspViolations=violations.length;
    assert.deepEqual(errors,[],'browser page errors');
    assert.deepEqual(unexpected,[],'unexpected backend endpoints');
    result.plannerRequests=plannerRequests-baselineRequests;
@@ -288,18 +459,27 @@ try{
    const page=await offline.newPage();
    await page.route(url=>url.origin!==origin,r=>r.abort());
    const before=providerReads;
-   await page.goto(origin+'/');
+   // A static same-origin document without the app's auto-registration.
+   await page.goto(origin+'/qa-sw-shell');
    await page.evaluate(async()=>{
+     const foreign=await caches.open('unrelated-qa-cache');
+     await foreign.put('/qa-foreign-only',new Response('foreign cache sentinel'));
+     await caches.open('daltons-talent-planner-obsolete-qa');
+     await caches.open('daltons-refresh-security-obsolete-qa');
      if(!('serviceWorker' in navigator))throw Error('service worker unavailable');
      await navigator.serviceWorker.register('/sw.js');
    });
    await page.waitForFunction(()=>navigator.serviceWorker.controller!==null,{},{timeout:20000});
-   const installed=await page.evaluate(async()=>{
-     const keys=await caches.keys(),cache=await caches.open(keys.find(k=>k.startsWith('daltons-talent-planner-'))??'missing');
+   const expectedCache=/^const CACHE="([^"]+)";/m.exec(shell)?.[1];
+   assert.ok(expectedCache,'Service worker cache version must be declared');
+   const installed=await page.evaluate(async(expected)=>{
+     const keys=await caches.keys();
+     if(!keys.includes(expected))return {keys,paths:[],apiCached:false};
+     const cache=await caches.open(expected);
      const paths=(await cache.keys()).map(r=>new URL(r.url).pathname+new URL(r.url).search);
      return {keys,paths,apiCached:paths.some(p=>p.startsWith('/api/')||p.startsWith('/data/'))};
-   });
-   assert.equal(installed.keys.filter(k=>k.startsWith('daltons-talent-planner-')).length,1);
+   },expectedCache);
+   assert.deepEqual(installed.keys.slice().sort(),[expectedCache,'unrelated-qa-cache'].sort(),'Only Dalton-owned obsolete caches may be removed');
    assert.ok(installed.paths.includes('/talent-planner.js')&&installed.paths.includes('/talent-personal-state.js')&&installed.paths.includes('/talent-text-quality.js'));
    assert.ok(installed.paths.includes('/')&&installed.paths.some(p=>p.startsWith('/app.js?v=')));
    assert.equal(installed.apiCached,false);
@@ -312,10 +492,16 @@ try{
      }));
      let liveUnavailable=false;
      try{const r=await fetch('/api/characters?view=talent-planner&character=qa-class-8',{cache:'no-store'});liveUnavailable=!r.ok}catch{liveUnavailable=true}
-     return {results,liveUnavailable};
+     let refreshUnavailable=false;
+     try{const r=await fetch('/api/refresh',{method:'POST',headers:{Authorization:'Bearer offline-synthetic-code'},cache:'no-store'});refreshUnavailable=!r.ok}catch{refreshUnavailable=true}
+     let foreignUnavailable=false;
+     try{const r=await fetch('/qa-foreign-only');foreignUnavailable=!r.ok}catch{foreignUnavailable=true}
+     return {results,liveUnavailable,refreshUnavailable,foreignUnavailable};
    });
    assert.deepEqual(staticResult.results,[true,true,true,true],'app shell must remain available offline');
    assert.equal(staticResult.liveUnavailable,true,'live plans must not be served by service worker offline');
+   assert.equal(staticResult.refreshUnavailable,true,'Authorized POST must never be answered by offline cache');
+   assert.equal(staticResult.foreignUnavailable,true,'Worker must never serve assets from unrelated caches');
    assert.equal(providerReads,before,'PWA install/offline cache must not trigger provider observation');
    report.pwa={status:'passed',cachedStaticAssets:installed.paths.length,apiCached:false,offlineAssets:4,offlineLiveBlocked:true,networkFailure:'fixture_socket_abort'};
  }catch(error){report.pwa={status:'failed',error:String(error.stack||error)};console.error(report.pwa.error);throw error}

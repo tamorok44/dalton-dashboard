@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import {PET_DB2_BASELINE,PET_DB2_REVIEWED_BUILD} from './pet-db2-baseline.mjs';
 import {petDb2Url} from './pet-db2-audit.mjs';
 import {createRequire} from 'node:module';
-import handler from '../api/refresh.js';
+import handler,{refreshAuthorization} from '../api/refresh.js';
+import publicGetHandler from '../api/characters.js';
 import {savePetRuleState} from './pet-rule-store.mjs';
 import {imageStoreConfigured} from '../scripts/archive-images.mjs';
 
@@ -12,12 +13,15 @@ const baseline=new Map(snapshot.characters.map(c=>[c.slug,c]));
 const classIds={'Druide':11,'Magier':8,'Jäger':3};
 const statLabels={
   HEALTH:'Gesundheit',MANA:'Mana',STRENGTH:'Stärke',AGILITY:'Beweglichkeit',STAMINA:'Ausdauer',
-  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe'
+  INTELLECT:'Intelligenz',ARMOR:'Rüstung',ATTACKPOWER:'Angriffskraft',ITEMLEVEL:'Gegenstandsstufe',HASTE:'Tempowertung',HASTERATING:'Tempo',UNKNOWN_HASTE:'Tempowertung'
 };
 const originalFetch=globalThis.fetch;
 process.env.UPSTASH_REDIS_REST_URL='https://test-redis.example.com';
 process.env.UPSTASH_REDIS_REST_TOKEN='test-token';
 process.env.CRON_SECRET='test-cron-secret';
+process.env.DALTON_MANUAL_REFRESH_TOKEN='synthetic-manual-refresh-code-0123456789';
+process.env.VERCEL_ENV='production';
+const manualRequest={method:'POST',headers:{authorization:'Bearer '+process.env.DALTON_MANUAL_REFRESH_TOKEN}};
 const previousBlobId=process.env.BLOB_STORE_ID;
 const previousBlobToken=process.env.BLOB_READ_WRITE_TOKEN;
 delete process.env.BLOB_STORE_ID;
@@ -31,7 +35,10 @@ assert.equal(imageStoreConfigured(),true,'Existing token-based stores are still 
 if(previousBlobId!==undefined)process.env.BLOB_STORE_ID=previousBlobId;
 if(previousBlobToken!==undefined)process.env.BLOB_READ_WRITE_TOKEN=previousBlobToken;
 else delete process.env.BLOB_READ_WRITE_TOKEN;
-let saved=null,petRulesSaved=null;
+let saved=null,petRulesSaved=null,rosterReadFault=null;
+const questMarker='PRIVATE_QUEST_NESTED_SENTINEL';
+const questRecord={id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z',unknown:{secret:questMarker}};
+let provideQuest=false;
 let history=[];
 let lock=null,cooldown=false,lockReleases=0,failPetRuleSave=false;
 
@@ -59,19 +66,24 @@ function armoryHtml(old){
       ['STRENGTH',old.stats.Stärke],['AGILITY',old.stats.Beweglichkeit],
       ['STAMINA',old.stats.Ausdauer],['INTELLECT',old.stats.Intelligenz],
       ['ARMOR',old.stats.Rüstung+5],['ATTACKPOWER',old.stats.Angriffskraft],
-      ['ITEMLEVEL',old.stats.Gegenstandsstufe]
-    ].map(([key,value])=>({enum:key,name:statLabels[key],value:{value}}))}]},
+      ['ITEMLEVEL',old.stats.Gegenstandsstufe],['HASTE',unlabeledHaste?67:42],['HASTERATING',13],['UNKNOWN_HASTE',9125]
+    ].map(([key,value])=>({enum:key,name:unlabeledHaste&&key==='HASTE'?undefined:statLabels[key],value:{value}}))}]},
     specs:[],
     media:{'main-raw':{url:old.imageUrl},avatar:{url:old.avatarUrl}}
   };
+  if(malformedStatLayout)character.stats.basic={primary:{bad:'fixture'},groups:[null,{stats:{bad:'fixture'}}]};
   return '<script>var characterProfileInitialState = '+JSON.stringify({character})+';</script>';
 }
-let peak=0,inFlight=0,requests=0,failSlug=null,failAll=false;
+let peak=0,inFlight=0,requests=0,redisRequests=0,failSlug=null,failAll=false,unlabeledHaste=false,malformedStatLayout=false;
 globalThis.fetch=async (url,options={})=>{
-  if(String(url).startsWith('https://test-redis.example.com')){
+  if(['https://test-redis.example.com','https://test-preview-redis.example.com'].includes(String(url))){
+    redisRequests++;
     const [op,key,value]=JSON.parse(options.body);
     assert.ok(op==='EVAL'||String(key).startsWith('dalton-dashboard:'),'Only dashboard-owned Redis keys');
-    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?saved:null})};
+    if(op==='GET'&&key==='dalton-dashboard:characters:v1'&&rosterReadFault)return {ok:true,json:async()=>rosterReadFault.envelope};
+    if(op==='GET')return {ok:true,json:async()=>({result:key==='dalton-dashboard:pet-rules:v1'?petRulesSaved:key==='dalton-dashboard:characters:v1'?(saved??JSON.stringify(provideQuest?{...snapshot,characters:snapshot.characters.map(c=>({...c,activeQuests:[{id:16,name:'Quest'}]}))}:snapshot)):null})};
+    if(op==='HMGET'&&key==='dalton-dashboard:quest-catalog:latest:v1')return {ok:true,json:async()=>({result:provideQuest?['de_DE:static-1-forever-eu:16']:[]})};
+    if(op==='HMGET'&&key==='dalton-dashboard:quest-catalog:v1')return {ok:true,json:async()=>({result:provideQuest?[JSON.stringify(questRecord)]:[]})};
     if(op==='SET'){
       let result='OK';
       if(key==='dalton-dashboard:refresh:lock'){if(lock)result=null;else lock=value}
@@ -112,7 +124,7 @@ globalThis.fetch=async (url,options={})=>{
         return {ok:true,json:async()=>({result:petRulesSaved})};
       }
       const result=keys[2]===1?(lock===keys[4]?(lock=null,lockReleases++,1):0):
-        (lock===keys[6]?(saved=keys[7],'OK'):'ERROR');
+        (lock===keys[6]?(keys[10]===(saved??JSON.stringify(provideQuest?{...snapshot,characters:snapshot.characters.map(c=>({...c,activeQuests:[{id:16,name:'Quest'}]}))}:snapshot))?(saved=keys[7],'OK'):'PROFILE_BASE_CHANGED'):'ERROR');
       return {ok:true,json:async()=>({result})};
     }
     throw Error('Unexpected Redis command');
@@ -177,20 +189,39 @@ try{
   const denied=fakeResponse();
   await handler({method:'POST',headers:{}},denied);
   assert.equal(denied.result().status,401);
+  const publicGet=fakeResponse();
+  await handler({method:'GET',headers:manualRequest.headers},publicGet);
+  assert.equal(publicGet.result().status,405);
+  const invalid=fakeResponse();
+  await handler({method:'POST',headers:{authorization:'Bearer incorrect'}},invalid);
+  assert.equal(invalid.result().status,401);
+  process.env.VERCEL_ENV='preview';
+  const previewDenied=fakeResponse();
+  await handler(manualRequest,previewDenied);assert.equal(previewDenied.result().status,401);
+  const previewCron=fakeResponse();
+  await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},previewCron);
+  assert.equal(previewCron.result().status,401);
+  process.env.VERCEL_ENV='production';
+  assert.equal(refreshAuthorization(manualRequest,{VERCEL_ENV:'production'}),null);
+  assert.equal(refreshAuthorization(manualRequest,{VERCEL_ENV:'production',DALTON_MANUAL_REFRESH_TOKEN:process.env.DALTON_MANUAL_REFRESH_TOKEN,
+    SPELLBOOK_SYNC_TOKEN:process.env.DALTON_MANUAL_REFRESH_TOKEN}),null);
+  assert.equal(redisRequests,0,'Unauthorized requests must never query Redis or consume cooldown');
+  assert.equal(requests,0,'Unauthorized requests must never query Blizzard');
 
   failPetRuleSave=true;
   cooldown=false;
   const releasesBeforeRuleFailure=lockReleases;
   const ruleFailure=fakeResponse();
-  await handler({method:'GET'},ruleFailure);
+  await handler(manualRequest,ruleFailure);
   assert.equal(ruleFailure.result().status,503,'Pet-Regelprüfungsfehler darf den Refresh nicht als erfolgreich melden');
   assert.equal(lock,null,'Refresh-Lock wird auch freigegeben, wenn die Pet-Regelprüfung vor dem Profilabruf scheitert');
   assert.equal(lockReleases,releasesBeforeRuleFailure+1,'Fehler vor refreshAndPersist führt genau eine Lock-Freigabe aus');
   failPetRuleSave=false;
   cooldown=false;
 
+  provideQuest=true;
   const ok=fakeResponse();
-  await handler({method:'GET'},ok);
+  await handler(manualRequest,ok);
   const result=ok.result();
   assert.equal(result.status,200);
   assert.equal(result.payload.success,4);
@@ -219,16 +250,37 @@ try{
     assert.equal(c.professions[0].current,old.professions[0].current,'Without de_DE Game Data the last verified profession name/value is retained');
     assert.equal(c.professions[0].unverified,true,'Armory profession labels are never self-translated into visible data');
     assert.equal(c.stats.Gesundheit,old.stats.Gesundheit+50,'Latest source-backed German health value is returned');
+    assert.equal(c.stats.Tempowertung,42);assert.equal(c.statsByEnum.HASTE,42);
+    assert.equal(c.stats.Tempo,13);assert.equal(c.statsByEnum.HASTERATING,13);
+    assert.ok(!JSON.stringify(c).includes('9125'));
+    assert.ok(!c.statsFreshEnums.includes('UNKNOWN_HASTE'));
+    assert.ok(c.statsDetails.some(s=>s.enum==='HASTE'&&s.value===42));
+    assert.ok(c.statsFreshKeys.includes('Tempowertung'));assert.ok(c.statsFreshEnums.includes('HASTE'));
     assert.equal(c.class,old.class,'German Armory class string is preserved verbatim');
     assert.equal(c.classId,classIds[old.class]);
     assert.equal(c.scrapeOk,true);
   }
   assert.equal(result.headers['Cache-Control'],'private, no-store');
+  assert.equal(result.payload.questCatalog['16']?.title,'Quest');
+  assert.ok(!JSON.stringify(result.payload).includes(questMarker));
+  const afterRefresh=fakeResponse();await publicGetHandler({method:'GET',query:{}},afterRefresh);
+  assert.equal(afterRefresh.result().status,200);
+  const refreshed=afterRefresh.result().payload;
+  assert.equal(refreshed.data.characters[0].stats.Tempowertung,42);
+  assert.equal(refreshed.data.characters[0].statsByEnum.HASTE,42);
+  assert.equal(refreshed.questCatalog['16']?.title,'Quest');
+  assert.ok(!JSON.stringify(refreshed).includes(questMarker));
+  assert.equal(JSON.parse(saved).characters[0].statsByEnum.HASTE,42);
+  assert.equal(JSON.parse(saved).characters[0].statsByEnum.UNKNOWN_HASTE,9125,'Preserve raw unknown enum for later review');
+  assert.ok(!Object.hasOwn(JSON.parse(saved).characters[0].stats,'Tempowertung'),'Ambiguous name is not persisted as an authoritative lookup');
+  assert.ok(JSON.parse(saved).characters[0].statsDetails.some(x=>x.enum==='HASTE'&&x.value===42),'The validated enum keeps its provider label and value');
+  assert.ok(!JSON.stringify(refreshed).includes('9125'));
 
   cooldown=false;
-  failSlug='chucky-dalton';
+  failSlug='dolly-dalton';
+  unlabeledHaste=true;
   const partial=fakeResponse();
-  await handler({method:'GET'},partial);
+  await handler(manualRequest,partial);
   const partialResult=partial.result();
   assert.equal(partialResult.status,200,'Partial failure does not hide successful profiles');
   assert.equal(partialResult.payload.success,3);
@@ -236,13 +288,53 @@ try{
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).scrapeOk,false);
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug===failSlug).level,baseline.get(failSlug).level+2,'Partially failed profile preserves last persisted live level');
   assert.equal(partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton').scrapeOk,true);
+  const stale=partialResult.payload.data.characters.find(c=>c.slug===failSlug);
+  assert.equal(stale.statsByEnum.HASTE,42);
+  assert.equal(stale.statsVerified,false);
+  assert.deepEqual(stale.statsFreshEnums,[]);
+  assert.deepEqual(stale.statsFreshKeys,[]);
+  const current=partialResult.payload.data.characters.find(c=>c.slug==='cole-dalton');
+  assert.equal(current.statsByEnum.HASTE,67);
+  assert.equal(current.stats.Tempowertung,67);
+  assert.deepEqual(current.statsDetails.find(x=>x.enum==='HASTE'),{enum:'HASTE',name:'Tempowertung',value:67});
+  assert.ok(current.statsFreshEnums.includes('HASTE'));
+  assert.ok(current.statsFreshKeys.includes('Tempowertung'));
+  const partialGet=fakeResponse();await publicGetHandler({method:'GET',query:{}},partialGet);
+  assert.equal(partialGet.result().status,200);
+  assert.deepEqual(partialGet.result().payload.data.characters.find(c=>c.slug===failSlug).statsFreshEnums,[]);
+  assert.equal(partialGet.result().payload.data.characters.find(c=>c.slug==='cole-dalton').stats.Tempowertung,67);
+  assert.deepEqual(JSON.parse(saved).characters.find(c=>c.slug===failSlug).statsFreshEnums,[]);
+
+  cooldown=false;
+  failSlug=null;
+  malformedStatLayout=true;
+  const ambiguous=JSON.parse(saved);
+  ambiguous.characters[0].statsDetails.push({enum:'HASTE',name:'Historischer Konflikt',value:31});
+  saved=JSON.stringify(ambiguous);
+  const corrected=fakeResponse();
+  await handler(manualRequest,corrected);
+  const safe=corrected.result().payload.data.characters.find(c=>c.slug===ambiguous.characters[0].slug);
+  assert.equal(corrected.result().status,200);
+  assert.equal(safe.statsByEnum.HASTE,67,'Malformed optional stat section does not discard valid numeric observations');
+  assert.ok(!safe.statsDetails.some(x=>x.enum==='HASTE'),'Conflicting historical labels cannot be attached to a fresh unlabeled measurement');
+  assert.ok(!Object.hasOwn(safe.stats,'Historischer Konflikt'));
+  malformedStatLayout=false;
 
   cooldown=false;
   failAll=true;
   const unavailable=fakeResponse();
-  await handler({method:'GET'},unavailable);
+  await handler(manualRequest,unavailable);
   assert.equal(unavailable.result().status,503,'Total outage must not claim fresh data');
   assert.ok(unavailable.result().payload.error);
+  assert.equal(unavailable.result().payload.success,0);
+  assert.equal(unavailable.result().payload.persisted,true);
+  assert.ok(unavailable.result().payload.data.characters.every(c=>c.scrapeOk===false&&c.statsFreshEnums.length===0));
+  assert.ok(Date.parse(unavailable.result().payload.data.generatedAt)>Date.parse(partialResult.payload.data.generatedAt));
+  const outageGet=fakeResponse();await publicGetHandler({method:'GET',query:{}},outageGet);
+  assert.equal(outageGet.result().status,200);
+  assert.ok(outageGet.result().payload.data.characters.every(c=>c.scrapeOk===false&&c.statsVerified===false&&c.statsFreshEnums.length===0&&c.statsFreshKeys.length===0));
+  assert.equal(outageGet.result().payload.data.characters.find(c=>c.slug==='cole-dalton').statsByEnum.HASTE,67);
+  unlabeledHaste=false;
   const scheduled=fakeResponse();
   failAll=false;failSlug=null;
   await handler({method:'POST',headers:{authorization:'Bearer test-cron-secret'}},scheduled);
@@ -257,9 +349,21 @@ try{
   assert.equal(saved,savedBeforeConflict,'No stale data overwrites when another instance holds the lock');
   assert.equal(requests,requestsBeforeConflict,'Locked request does not contact Blizzard');
   lock=null;
+  // Malformed success envelopes must not be interpreted as absent keys or
+  // trigger even optional pet/Armory writes, and must release the lease.
+  const durableBeforeBadRead=saved,petBeforeBadRead=petRulesSaved,historyBeforeBadRead=history.length,requestsBeforeBadRead=requests;
+  for(const envelope of [{},null,[],{result:null},{result:false},{result:0},{result:{}},{result:[]},{result:''},{result:'null'},{result:'{}'},{result:JSON.stringify({generatedAt:snapshot.generatedAt,characters:[]})},{error:null,result:durableBeforeBadRead}]){
+    rosterReadFault={envelope};cooldown=false;
+    const rejectedRead=fakeResponse();await handler(manualRequest,rejectedRead);
+    assert.equal(rejectedRead.result().status,503,JSON.stringify(envelope));
+    assert.equal(saved,durableBeforeBadRead);assert.equal(petRulesSaved,petBeforeBadRead);
+    assert.equal(history.length,historyBeforeBadRead);assert.equal(requests,requestsBeforeBadRead);assert.equal(lock,null);
+    assert.ok(!rejectedRead.result().payload.persisted);
+  }
+  rosterReadFault=null;
   cooldown=true;
   const throttled=fakeResponse();
-  await handler({method:'GET'},throttled);
+  await handler(manualRequest,throttled);
   assert.equal(throttled.result().status,429,'Manual refresh has a shared 60-second cooldown');
   const priorEnvironment=process.env.VERCEL_ENV;
   try{
@@ -270,6 +374,9 @@ try{
     assert.deepEqual(await savePetRuleState(state),state);
     assert.deepEqual(await savePetRuleState({...state,checkedAt:'2099-11-25T00:00:00.000Z',talentRuleObservation:null}),state);
     process.env.VERCEL_ENV='preview';
+    process.env.DALTON_PREVIEW_REDIS_REST_URL='https://test-preview-redis.example.com';
+    process.env.DALTON_PREVIEW_REDIS_REST_TOKEN='synthetic-preview-token';
+    process.env.DALTON_PRODUCTION_REDIS_ORIGIN='https://test-redis.example.com';
     const preview=await savePetRuleState({...state,checkedAt:'2099-11-25T02:00:00.000Z',
       talentRuleObservation:{...observation,status:'source_unavailable'}});
     assert.deepEqual(preview.talentRuleObservation,observation);
@@ -299,10 +406,44 @@ try{
     assert.equal((await productionSave(afterExpiry)).talentRuleObservation.revisionSince,afterExpiry);
 
   }finally{
+    delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;delete process.env.DALTON_PRODUCTION_REDIS_ORIGIN;
     if(priorEnvironment===undefined)delete process.env.VERCEL_ENV;
     else process.env.VERCEL_ENV=priorEnvironment;
   }
   console.log('Manual API: parallel German Armory fetch, source-backed stats, profession fail-closed behavior and outages: OK');
 }finally{
   globalThis.fetch=originalFetch;
+}
+
+
+// Shared ordinary Vercel bindings must never be used by deployed previews.
+{
+  const {redisConnection,configured,redis}=await import('./character-store.mjs');
+  const base={KV_REST_API_URL:'https://synthetic-prod.invalid',KV_REST_API_TOKEN:'synthetic-prod',DALTON_PRODUCTION_REDIS_ORIGIN:'https://synthetic-prod.invalid'};
+  assert.ok(redisConnection({...base,VERCEL_ENV:'production'}));
+  for(const scope of ['preview','development']){
+    assert.equal(redisConnection({...base,VERCEL_ENV:scope}),null);
+    assert.equal(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:base.KV_REST_API_URL,DALTON_PREVIEW_REDIS_REST_TOKEN:'other'}),null);
+    assert.equal(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-preview.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:base.KV_REST_API_TOKEN}),null);
+    assert.deepEqual(redisConnection({...base,VERCEL_ENV:scope,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-preview.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:'synthetic-preview'}),{url:'https://synthetic-preview.invalid',token:'synthetic-preview'});
+  }
+  const previewOnly={VERCEL_ENV:'preview',DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-prod.invalid',DALTON_PREVIEW_REDIS_REST_TOKEN:'different'};
+  assert.equal(redisConnection(previewOnly),null,'No production identity reference is not proof of isolation');
+  assert.equal(redisConnection({...previewOnly,DALTON_PRODUCTION_REDIS_ORIGIN:'https://synthetic-prod.invalid'}),null);
+  assert.equal(redisConnection({...base,...previewOnly,DALTON_PREVIEW_REDIS_REST_URL:'https://second-prod.invalid',UPSTASH_REDIS_REST_URL:'https://second-prod.invalid'}),null);
+  assert.equal(redisConnection({...base,...previewOnly,DALTON_PREVIEW_REDIS_REST_URL:'https://synthetic-prod.invalid.:8443'}),null);
+  assert.equal(redisConnection({...base,VERCEL:'1',VERCEL_ENV:'unknown'}),null);
+  const names=['DALTON_PRODUCTION_REDIS_ORIGIN','VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','DALTON_PREVIEW_REDIS_REST_URL','DALTON_PREVIEW_REDIS_REST_TOKEN','BLOB_STORE_ID','BLOB_READ_WRITE_TOKEN'];
+  const old=Object.fromEntries(names.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
+  try{
+    Object.assign(process.env,base,{VERCEL_ENV:'preview',BLOB_STORE_ID:'synthetic-shared',BLOB_READ_WRITE_TOKEN:'synthetic-shared'});
+    delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;
+    globalThis.fetch=async()=>{throw Error('Network forbidden')};
+    assert.equal(configured(),false);
+    assert.equal(imageStoreConfigured(),false);
+    await assert.rejects(redis(['GET','test']),/nicht konfiguriert|nicht isoliert/);
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
 }

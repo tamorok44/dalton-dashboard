@@ -93,7 +93,7 @@ assert.ok((sourceByFile.get('api/daily-snapshot.js')||'').includes('acquireRefre
 const refreshApi=sourceByFile.get('api/refresh.js')||'';
 const dailyApi=sourceByFile.get('api/daily-snapshot.js')||'';
 assert.ok(refreshApi.includes('async function runLockedRefresh')&&refreshApi.includes('releaseRefreshLock(lockToken)'),'Refresh lock release must cover pre-refresh validation failures');
-assert.ok(dailyApi.includes('dailyRefreshComplete(existing)')&&dailyApi.includes('registerDailySnapshot(completedMeta)'),'Daily snapshot must not suppress retry of an incomplete persisted refresh');
+assert.ok(dailyApi.includes('dailyRefreshComplete(existing,archiveConfigured)')&&dailyApi.includes('registerDailySnapshot(completedMeta,dailyLock)')&&dailyApi.includes('loadDailyProfileReceipt(local.date)'),'Daily snapshot must not suppress retry of an incomplete persisted refresh');
 const vercelConfig=JSON.parse(fs.readFileSync(path.join(root,'vercel.json'),'utf8'));
 assert.deepEqual(vercelConfig.regions,['fra1'],'Vercel functions must stay colocated with Redis and Blob in Frankfurt');
 const dailySchedules=(vercelConfig.crons||[]).filter(job=>job.path==='/api/daily-snapshot').map(job=>job.schedule).sort();
@@ -159,22 +159,23 @@ assert.ok(sourceByFile.has('api/addon-sync.js'),'Private full addon sync endpoin
 assert.ok(sourceByFile.has('scripts/addon-sync.mjs')&&sourceByFile.has('scripts/addon-sync-store.mjs'),'Addon sync needs centralized validation and persistence');
 assert.ok((sourceByFile.get('api/spellbook-sync.js')||'').includes('timingSafeEqual')&&(sourceByFile.get('api/spellbook-sync.js')||'').includes('SPELLBOOK_SYNC_TOKEN'),'Spellbook writes must require the private sync token with constant-time comparison');
 assert.ok(sourceByFile.has('scripts/addon-device-auth.mjs')&&sourceByFile.has('api/addon-device-enroll.js'),'Addon sync device authorization and one-time enrollment are required');
-assert.ok(sourceByFile.has('api/addon-device-promote.js'),'Cole preview device needs an explicit production-promotion endpoint');
+assert.ok(sourceByFile.has('api/addon-device-promote.js'),'Old promotion clients require an explicit closed compatibility endpoint');
 assert.ok((sourceByFile.get('scripts/addon-device-auth.mjs')||'').includes('timingSafeEqual')&&(sourceByFile.get('scripts/addon-device-auth.mjs')||'').includes('DALTON_SYNC_TOKEN'),'Master addon sync token must stay constant-time compared at the centralized auth boundary');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('authorizeDeviceToken')&&(sourceByFile.get('api/addon-sync.js')||'').includes('masterSyncTokenMatches'),'Addon sync must accept only the master token or a validated per-device token');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('deviceMaySync(device,target.slug,payload.client?.transport)'),'Device authorization must pass character and transport through the centralized policy');
 const deviceAuthSource=sourceByFile.get('scripts/addon-device-auth.mjs')||'';
 assert.ok(deviceAuthSource.includes("if(own===target)return true")&&deviceAuthSource.includes("own==='cole-dalton'")&&deviceAuthSource.includes("transport||'')==='dalton-peer-relay'"),'Device tokens stay character-bound; only Cole hub may forward trusted peer-relay payloads');
 assert.ok(deviceAuthSource.includes("deviceMayCreateEnrollment")&&deviceAuthSource.includes("String(targetSlug)!=='cole-dalton'"),'Only Cole hub may create one-time enrollment codes for other trusted Dalton characters, never for itself');
-assert.ok(deviceAuthSource.includes('promoteColeDeviceToProduction')&&deviceAuthSource.includes("device.characterSlug!=='cole-dalton'"),'Production promotion must be restricted to the authenticated Cole preview hub');
+assert.ok(!deviceAuthSource.includes('promoteColeDeviceToProduction')&&deviceAuthSource.includes('targetScope!==scope()'),'No device credential may authorize across namespaces');
 const promoteApi=sourceByFile.get('api/addon-device-promote.js')||'';
-assert.ok(promoteApi.includes("process.env.VERCEL_ENV==='production'")&&promoteApi.includes('promoteColeDeviceToProduction'),'Production-promotion endpoint must be disabled in production and validate the preview Cole device');
+assert.ok(promoteApi.includes('status(410)')&&!promoteApi.includes('import '),'Retired promotion route must have no storage or authentication dependency');
 assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes("process.env.VERCEL_ENV!=='production'")&&(sourceByFile.get('api/addon-sync.js')||'').includes('previewIsolated'),'Preview addon sync must never write verified spellbook data into the shared production character store');
 assert.ok((sourceByFile.get('scripts/addon-sync-store.mjs')||'').includes("?'production':'preview'"),'Addon sync raw-state Redis keys must be environment-scoped');
 assert.ok(sourceByFile.has('scripts/live-knowledge-store.mjs'),'Persistent build-scoped Dalton live-knowledge store is required');
 assert.ok((sourceByFile.get('scripts/live-knowledge-store.mjs')||'').includes("record:'+kind+':'+encodeURIComponent(build)"),'Live knowledge must be keyed by build, NPC and interaction kind');
 assert.ok((sourceByFile.get('scripts/live-knowledge-store.mjs')||'').includes('changes.slice(-CHANGE_LIMIT)'),'Live knowledge must keep only bounded factual change history instead of unbounded snapshots');
-assert.ok((sourceByFile.get('api/addon-sync.js')||'').includes('ingestAddonLiveKnowledge(payload,{characterSlug:target.slug})'),'Every addon sync must feed the shared live-knowledge layer');
+const syncHandler=sourceByFile.get('api/addon-sync.js')||'';
+assert.ok(syncHandler.includes('ingestAddonLiveKnowledge(pendingObservationPayload,{characterSlug:target.slug,lockToken})')&&syncHandler.includes('ingestAddonLiveKnowledge(previousState.pendingObservationPayload??previousState.payload')&&syncHandler.indexOf('let state=await saveAddonSyncState')<syncHandler.lastIndexOf('ingestAddonLiveKnowledge(pendingObservationPayload,'),'Every accepted sync must feed the shared live-knowledge layer after the core commit, including safe retries');
 assert.ok((sourceByFile.get('scripts/data-version.mjs')||'').includes('loadLiveKnowledgeVersion'),'Live-knowledge changes must participate in the global frontend data version');
 assert.ok((sourceByFile.get('api/location-planner.js')||'').includes('liveKnowledgeDiscoveries'),'Location planner must surface unresolved live learning-item discoveries without pretending they are classified recipes');
 assert.ok((sourceByFile.get('app.js')||'').includes('Live beobachtete neue Händlerangebote'),'Frontend must visibly separate unresolved live discoveries from selectable confirmed actions');
@@ -311,3 +312,20 @@ assert.deepEqual([...orderApp.matchAll(/^import .*? from ['"]([^'"]+)['"];/gm)].
 assert.ok(orderApp.includes("displayList('alphabetical',list,rep=>{"),'Reputation must use central alphabetical order');
 
 assert.ok(orderApp.includes("displayList('talentCoordinates',tree.talents")&&orderApp.includes("displayList('fixedControls',klass.trees"),'Talent trees retain original game geometry and order');
+
+
+// F15: exercise the enforced deployment policy in the browser fixture.
+{
+  const header=vercelConfig.headers.flatMap(x=>x.headers).find(x=>x.key==='Content-Security-Policy');
+  assert.ok(header,'Enforced CSP required');
+  for(const directive of ["default-src 'self'","script-src 'self'","object-src 'none'","frame-ancestors 'none'","base-uri 'self'","connect-src 'self'"])assert.ok(header.value.split(';').map(s=>s.trim()).includes(directive));
+  assert.ok(!vercelConfig.headers.flatMap(x=>x.headers).some(x=>x.key==='Content-Security-Policy-Report-Only'),'CSP must have one authoritative policy');
+}
+
+
+// F17: retire duplicate public design pages without deleting the
+// historical source or permanently caching redirects at the client.
+{
+  const previews=['/vorschau.html','/vorschau-abzeichen.html'];
+  for(const path of previews)assert.deepEqual(vercelConfig.redirects.find(x=>x.source===path),{source:path,destination:'/',permanent:false});
+}

@@ -104,6 +104,32 @@ export async function knowledgeIcons(refs,{characterSlug=null,allowFetch=true,ma
   return icons;
 }
 function iconFor(icons,entry){return icons[field(entry)]||null}
+export async function archiveKnownAbilityIcons(data,characterSlug){
+  const index=data.characters.findIndex(character=>character.slug===characterSlug);
+  const character=data.characters[index];
+  const abilities=character?.knownClassAbilities;
+  if(!Array.isArray(abilities)||!abilities.length||!imageStoreConfigured())return data;
+  const refs=abilities.map(ability=>ref('spell',ability.id,ability.iconId));
+  const icons=await knowledgeIcons(refs,{allowFetch:false});
+  const missing=new Map();
+  for(const [i,entry] of refs.entries()){
+    const key=field(entry);
+    if(entry?.iconId&&!abilities[i].iconUrl&&!icons[key]&&missing.size<4)missing.set(key,entry);
+  }
+  // Spellbook icon IDs came from ForeverDB. Keep the source contract and
+  // cap cold work before starting requests inside the profile lock.
+  await Promise.all([...missing].map(async ([key,entry])=>{
+    try{
+      icons[key]=await resolveMediaAsset({entityType:'spell',entityId:entry.id,role:'icon',
+        sourceUrl:'https://foreverdb.net/icons/'+entry.iconId+'.webp'});
+    }catch{/* A missing icon is presentation-only. */}
+  }));
+  const characters=[...data.characters];
+  characters[index]={...character,knownClassAbilities:abilities.map((ability,i)=>({
+    ...ability,iconUrl:iconFor(icons,refs[i])||ability.iconUrl||null
+  }))};
+  return {...data,characters};
+}
 export async function enrichKnowledgeMedia(data={},petCatalog={},options={}){
   const chars=Array.isArray(data.characters)?data.characters:[];
   const refs=[];

@@ -1,12 +1,15 @@
-import {loadCharacters,saveCharacters,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
+import {randomUUID} from 'node:crypto';
+import {runSyncDeadline,assertSyncBudget,armDeviceWriteFence,ADDON_WORK_MS,ADDON_CLEANUP_UNTIL_MS} from '../scripts/sync-deadline.mjs';
+import {loadCharactersForWrite,normalizedCharacterWrite,acquireRefreshLock,releaseRefreshLock} from '../scripts/character-store.mjs';
 import {appendChangeBatch} from '../scripts/history-store.mjs';
 import {cachedForeverDbClassMaster,cachedGermanClassSpells} from '../scripts/class-training-store.mjs';
 import {resolveSpellbookCharacter,applySpellbookSnapshot} from '../scripts/spellbook-sync.mjs';
-import {resolveMediaAsset} from '../scripts/media-resolver.mjs';
+import {archiveKnownAbilityIcons} from '../scripts/knowledge-media.mjs';
 import {normalizeAddonSyncPayload,addonSpellbookSnapshot,publicAddonSyncSummary} from '../scripts/addon-sync.mjs';
-import {loadAddonSyncState,saveAddonSyncState} from '../scripts/addon-sync-store.mjs';
-import {ingestAddonLiveKnowledge} from '../scripts/live-knowledge-store.mjs';
-import {authorizeDeviceToken,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {loadAddonSyncStateForWrite,saveAddonSyncState,prepareAddonSync} from '../scripts/addon-sync-store.mjs';
+import {ingestAddonLiveKnowledge,snapshotsFromAddonPayload} from '../scripts/live-knowledge-store.mjs';
+import {authorizeDeviceTokenWithProof,deviceMaySync,masterSyncTokenMatches} from '../scripts/addon-device-auth.mjs';
+import {readRequestJson,RequestJsonError} from '../scripts/request-json.mjs';
 
 export const config={maxDuration:30};
 
@@ -15,84 +18,100 @@ function authValue(req,scheme){
   const prefix=scheme+' ';
   return raw.startsWith(prefix)?raw.slice(prefix.length):'';
 }
-async function requestBody(req){
-  if(req.body&&typeof req.body==='object')return req.body;
-  if(typeof req.body==='string'){
-    if(req.body.length>900000)throw new Error('Addon-Sync-Anfrage ist zu groß');
-    return JSON.parse(req.body);
-  }
-  if(typeof req[Symbol.asyncIterator]!=='function')return null;
-  let raw='';
-  for await(const chunk of req){
-    raw+=chunk;
-    if(raw.length>900000)throw new Error('Addon-Sync-Anfrage ist zu groß');
-  }
-  return JSON.parse(raw||'null');
-}
-async function archiveKnownAbilityIcons(data,characterSlug){
-  const characters=[...(data?.characters||[])];
-  const index=characters.findIndex(character=>character?.slug===characterSlug);
-  if(index<0)return data;
-  const character=characters[index];
-  const abilities=await Promise.all((character.knownClassAbilities||[]).map(async ability=>{
-    const iconId=Number(ability?.iconId);
-    if(!Number.isInteger(iconId)||iconId<=0)return ability;
-    try{
-      const iconUrl=await resolveMediaAsset({
-        entityType:'spell',
-        entityId:ability.id,
-        role:'icon',
-        sourceUrl:'https://foreverdb.net/icons/'+iconId+'.webp',
-        priorStoredUrl:ability.iconUrl||null
-      });
-      return {...ability,iconUrl:iconUrl||ability.iconUrl||null};
-    }catch(error){
-      console.warn('Addon-Sync-Spellicon konnte nicht archiviert werden:',String(error.message).slice(0,120));
-      return ability;
-    }
-  }));
-  characters[index]={...character,knownClassAbilities:abilities};
-  return {...data,characters};
-}
 
-export default async function handler(req,res){
-  res.setHeader('Cache-Control','private, no-store');
-  if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
+const reply=(status,body)=>({status,body});
+function unconfirmedSync(error){
+  const message=String(error?.message);
+  const code=message.match(/\b(ADDON_SYNC_DEADLINE|REDIS_REQUEST_TIMEOUT|REFRESH_LOCK_LOST|REPAIR_EVIDENCE_CHANGED|REPAIR_EVIDENCE_UNAVAILABLE|QUARANTINE_COLLISION_LIMIT|OBSERVATION_CONFLICT)\b/)?.[0]??'SYNC_UNCONFIRMED';
+  return reply(503,{code,error:'Die Synchronisierung konnte derzeit nicht bestätigt werden.'});
+}
+export function createAddonSyncHandler({workMs=ADDON_WORK_MS,cleanupUntilMs=ADDON_CLEANUP_UNTIL_MS}={}){
+  if(!(workMs>0&&cleanupUntilMs>workMs&&workMs<=ADDON_WORK_MS&&cleanupUntilMs<=ADDON_CLEANUP_UNTIL_MS))throw Error('Ungültiges Sync-Zeitbudget');
+  return async function handler(req,res){
+    res.setHeader('Cache-Control','private, no-store');
+    if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Methode nicht erlaubt'});}
+    const started=performance.now(),ownership={token:null};
+    let result;
+    try{
+      result=await runSyncDeadline(started+workMs,()=>syncRequest(req,ownership));
+    }catch(error){
+      console.warn('Addon-Sync-Zeitbudget oder Anfrage fehlgeschlagen:',String(error.message).slice(0,140));
+      result=unconfirmedSync(error);
+    }finally{
+      // The token is known before SET. Even an ambiguous acquisition may
+      // be cleaned up, but never delete another owner's lease.
+      if(ownership.token){
+        try{await runSyncDeadline(started+cleanupUntilMs,()=>releaseRefreshLock(ownership.token,{addon:true}));}
+        catch(error){
+          console.warn('Addon-Sync-Lock konnte nicht freigegeben werden:',String(error.message).slice(0,140));
+          // If revocation cannot be proved, do not respond before the
+          // absolute work cutoff. Permit and lease expire by that cutoff
+          // on a normally progressing provider clock.
+          const remaining=started+workMs-performance.now();
+          if(remaining>0)await new Promise(resolve=>setTimeout(resolve,Math.ceil(remaining)));
+        }
+      }
+    }
+    return res.status(result.status).json(result.body);
+  };
+}
+export default createAddonSyncHandler();
+
+async function syncRequest(req,ownership){
 
   const masterAuthorized=masterSyncTokenMatches(authValue(req,'Bearer'));
   const deviceToken=authValue(req,'Device');
-  const device=masterAuthorized?null:await authorizeDeviceToken(deviceToken);
-  if(!masterAuthorized&&!device)return res.status(401).json({error:'Ungültige Addon-Sync-Berechtigung'});
+  const authorization=masterAuthorized?null:await authorizeDeviceTokenWithProof(deviceToken);
+  const device=authorization?.record??null;
+  if(!masterAuthorized&&!device)return reply(401,{error:'Ungültige Addon-Sync-Berechtigung'});
+  if(authorization)armDeviceWriteFence(authorization.proof);
 
   let payload;
-  try{payload=normalizeAddonSyncPayload(await requestBody(req))}catch(error){
-    return res.status(400).json({error:String(error.message).slice(0,180)});
+  try{payload=normalizeAddonSyncPayload(await readRequestJson(req,900000))}catch(error){
+    const status=error instanceof RequestJsonError?error.status:400;
+    return reply(status,{error:String(error.message).slice(0,180)});
   }
 
   const previewIsolated=process.env.VERCEL_ENV!=='production';
   let lockToken=null;
 
   try{
-    const {data:before}=await loadCharacters();
+    // The entire production read/modify/write sequence must use the same lock.
+    // Taking it after reading the roster would allow an older roster to erase
+    // an already successful sync for another character.
+    ownership.token=randomUUID();
+    lockToken=await acquireRefreshLock({addon:true,token:ownership.token});
+    if(!lockToken){return reply(409,{error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});}
+    const {data:before,raw:expectedRoster}=await loadCharactersForWrite({allowPreviewMissing:previewIsolated});
     const characterSection=payload.sections.character;
-    const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID});
+    const target=resolveSpellbookCharacter(before,{characterSlug:characterSection.name,classId:characterSection.classID,realm:characterSection.realm},{allowLegacyFirstName:false});
+    if(Number(target.classId)!==Number(characterSection.classID))throw new Error('Klasse des Addon-Syncs passt nicht zum Charakter');
     if(device&&!deviceMaySync(device,target.slug,payload.client?.transport)){
-      return res.status(403).json({error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
+      return reply(403,{error:'Dieser Gerätezugang darf diesen Charakter oder Transportweg nicht synchronisieren'});
     }
-    const previousState=await loadAddonSyncState(target.slug);
-    if(previousState?.payload?.syncId&&previousState.payload.syncId===payload.syncId){
-      return res.status(200).json({
-        duplicate:true,
-        liveKnowledge:{duplicate:true},
+    const stateRead=await loadAddonSyncStateForWrite(target.slug);
+    let previousState=stateRead.state;
+    const writeOptions={lockToken,expectedRoster,expectedState:stateRead.raw};
+    const confirmedReceipts=receipts=>(Array.isArray(receipts)?receipts:[]).map((receipt,i,all)=>i===all.length-1?{...receipt,observationsConfirmed:true}:receipt);
+    // A durable outbox is held in the same character state as the core commit.
+    // Drain it before accepting a new sync, so no later receipt can hide it.
+    if(previousState?.pendingObservations===true){
+      await ingestAddonLiveKnowledge(previousState.pendingObservationPayload??previousState.payload,{characterSlug:target.slug,lockToken:writeOptions.lockToken});
+      previousState=await saveAddonSyncState(target.slug,previousState.payload,{...writeOptions,receipts:confirmedReceipts(previousState.receipts),receivedAt:previousState.receivedAt,pendingObservations:false});
+      writeOptions.expectedState=JSON.stringify(previousState);
+    }
+    const prepared=prepareAddonSync(previousState,payload);
+    if(prepared.duplicate){
+      // An acknowledged core commit may have been followed by an interrupted
+      // knowledge write. Replaying observations is idempotent and fenced.
+      const liveKnowledge=prepared.replayPayload?await ingestAddonLiveKnowledge(prepared.replayPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
+      return reply(200,{
+        duplicate:true,acceptedSyncId:payload.syncId,liveKnowledge,ignoredSections:prepared.ignoredSections,
         character:{slug:target.slug,name:target.name},
         summary:publicAddonSyncSummary(previousState)
       });
     }
 
-    lockToken=previewIsolated?'preview-isolated':await acquireRefreshLock();
-    if(!lockToken)return res.status(409).json({error:'Gerade läuft eine andere Datenaktualisierung. Bitte die Synchronisierung erneut auslösen.'});
-
-    const liveKnowledge=await ingestAddonLiveKnowledge(payload,{characterSlug:target.slug});
     let updated=before;
     let spellbookApplied=false;
     let classMaster=null;
@@ -106,6 +125,10 @@ export default async function handler(req,res){
       console.warn('Klassenmaster beim Addon-Sync nicht verfügbar:',String(error.message).slice(0,140));
     }
 
+    const entries=payload.sections.spellbook?.entries;
+    const containsSpellbook=entries&&typeof entries==='object'&&Object.keys(entries).length>0;
+    if(!previewIsolated&&containsSpellbook&&(!Array.isArray(classMaster?.abilities)||!classMaster.abilities.length))
+      throw new Error('Klassenstammdaten derzeit nicht verfügbar; Synchronisation erneut versuchen');
     const snapshot=addonSpellbookSnapshot(payload,classMaster);
     if(snapshot&&classMaster&&!previewIsolated){
       snapshot.characterSlug=target.slug;
@@ -113,18 +136,34 @@ export default async function handler(req,res){
       let localized={};
       try{localized=await cachedGermanClassSpells(directIds)}catch{}
       updated=applySpellbookSnapshot(before,snapshot,{classMaster,localized,syncedAt:new Date().toISOString()});
-      updated=await archiveKnownAbilityIcons(updated,target.slug);
-      await saveCharacters(updated,lockToken);
+      spellbookApplied=updated!==before;
+      if(spellbookApplied)updated=await archiveKnownAbilityIcons(updated,target.slug);
+    }
+
+    // Only the accepted, actually supplied interaction domain may create
+    // pending work. Inherited history must not be replayed on every sync.
+    const incomingInteractions=payload.sections.interactions;
+    const pendingObservationPayload=incomingInteractions&&prepared.payload.sections.interactions===incomingInteractions
+      ?{addon:payload.addon,sections:{interactions:incomingInteractions}}:null;
+    const pendingObservations=Boolean(pendingObservationPayload&&snapshotsFromAddonPayload(pendingObservationPayload,{characterSlug:target.slug}).length);
+    assertSyncBudget();
+    const priorReceiptTime=Date.parse(previousState?.receivedAt??'');
+    const receivedAt=new Date(Math.max(Date.now(),Number.isFinite(priorReceiptTime)?priorReceiptTime+1:0)).toISOString();
+    let state=await saveAddonSyncState(target.slug,prepared.payload,{...writeOptions,receivedAt,roster:spellbookApplied?updated:null,receipts:pendingObservations?prepared.receipts:confirmedReceipts(prepared.receipts),pendingObservations,pendingObservationPayload});
+    writeOptions.expectedState=JSON.stringify(state);
+    if(spellbookApplied)writeOptions.expectedRoster=normalizedCharacterWrite(updated)[0];
+    const liveKnowledge=pendingObservations?await ingestAddonLiveKnowledge(pendingObservationPayload,{characterSlug:target.slug,lockToken}):{stored:0,duplicates:0,changed:0};
+    if(pendingObservations)state=await saveAddonSyncState(target.slug,state.payload,{...writeOptions,receipts:confirmedReceipts(state.receipts),receivedAt:state.receivedAt,pendingObservations:false});
+    if(spellbookApplied){
       try{await appendChangeBatch(before,updated,{source:'addon-sync'})}catch(error){
         console.warn('Addon-Sync-Änderungschronik konnte nicht geschrieben werden:',String(error.message).slice(0,140));
       }
-      spellbookApplied=true;
     }
-
-    const state=await saveAddonSyncState(target.slug,payload);
     const character=(updated.characters||before.characters).find(entry=>entry.slug===target.slug)||target;
-    return res.status(200).json({
+    return reply(200,{
       duplicate:false,
+      acceptedSyncId:payload.syncId,
+      ignoredSections:prepared.ignoredSections,
       previewIsolated,
       spellbookApplied,
       liveKnowledge,
@@ -133,11 +172,8 @@ export default async function handler(req,res){
     });
   }catch(error){
     console.error('Addon-Synchronisierung fehlgeschlagen:',error);
-    const status=/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
-    return res.status(status).json({error:String(error.message).slice(0,180)});
-  }finally{
-    if(lockToken&&!previewIsolated){
-      try{await releaseRefreshLock(lockToken)}catch(error){console.error('Addon-Sync-Lock konnte nicht freigegeben werden:',error)}
-    }
+    if(String(error.message).includes('DEVICE_AUTH_REVOKED'))return reply(401,{error:'Geräteberechtigung nicht mehr gültig'});
+    const status=/^(SYNC_CONFLICT|STALE_SPELLBOOK)/.test(String(error.message))?409:/Charakter nicht gefunden|Klasse .*passt|Charakterlevel|zeitlich|unvollständig|nicht unterstützt/.test(String(error.message))?400:503;
+    return status===503?unconfirmedSync(error):reply(status,{error:String(error.message).slice(0,180)});
   }
 }

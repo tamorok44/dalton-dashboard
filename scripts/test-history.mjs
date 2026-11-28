@@ -29,6 +29,8 @@ changed.characters[0].experience=250;
 changed.characters[0].professions[0].current=63;
 changed.characters[0].equipment[0].item='Neues Wams';
 changed.characters[0].completedQuestIds.push(9001);
+changed.characters[0].knownClassAbilitiesVerified=true;
+changed.characters[0].knownClassAbilities=[{id:133,iconUrl:'https://example.invalid/source'}];
 changed.characters[0].hunterPets={active:[{name:'Slydris',level:6,family:{id:319,name:'Fuchs',slug:'fox'},active:true,summoned:true,slot:0}],stable:[]};
 const changes=diffMeaningfulChanges(base,changed);
 assert.ok(changes.some(x=>x.path==='level'&&x.before===11&&x.after===12));
@@ -37,6 +39,8 @@ assert.ok(changes.some(x=>x.path==='professions.Alchemie.current'&&x.after===63)
 assert.ok(changes.some(x=>x.path==='equipment.Brust.item'&&x.after==='Neues Wams'));
 assert.ok(changes.some(x=>x.path==='hunterPets.active'&&Array.isArray(x.after)&&x.after[0]?.name==='Slydris'),'Ein neuer Jägerbegleiter wird historisiert');
 assert.ok(changes.some(x=>x.path==='completedQuests.9001'&&x.before===null&&x.after===true),'Ein neuer Questabschluss wird als einzelne ID statt als komplette Liste historisiert');
+assert.ok(changes.some(x=>x.path==='knownSpells.133'&&x.before===null&&x.after===true),'Confirmed spell acquisition is a stable ID in the journal');
+assert.ok(!JSON.stringify(changes).includes('https://example.invalid/source'),'Media paths do not inflate the spell chronicle');
 assert.ok(!changes.some(x=>x.path==='completedQuests'&&Array.isArray(x.after)),'Completed-Liste darf die Historie nicht mit Vollkopien aufblasen');
 assert.ok(!Object.hasOwn(historyProjection(changed.characters[0]),'scrapedAt'));
 console.log('Historie: nur fachliche Änderungen, keine Abrufzeitstempel: OK');
@@ -52,4 +56,5 @@ assert.equal(summerRetry.hour,6,'04:37 UTC remains inside the Berlin summer retr
 assert.equal(dailyRefreshComplete(null),false,'Ohne Snapshot-Metadaten ist der Tageslauf nicht vollständig');
 assert.equal(dailyRefreshComplete({date:'2026-11-22'}),false,'Ein gespeicherter Snapshot allein darf einen fehlgeschlagenen Profil-Refresh nicht verdecken');
 assert.equal(dailyRefreshComplete({refresh:{persisted:false}}),false,'Nicht persistierter Refresh bleibt wiederholbar');
-assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),true,'Erst ein persistierter Profil-Refresh schliesst den Tageslauf ab');
+assert.equal(dailyRefreshComplete({refresh:{persisted:true}}),false,'Legacy generatedAt heuristic is not proof');
+assert.equal(dailyRefreshComplete({date:'2026-11-22',archiveStatus:'disabled',refresh:{date:'2026-11-22',source:'daily',persisted:true,success:1,total:1,roster:[{slug:'test',id:null}],generatedAt:'2026-11-22T05:00:00Z'}}),true,'Explicit complete daily receipt and disabled archive are accepted');

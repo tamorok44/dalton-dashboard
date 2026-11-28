@@ -185,57 +185,83 @@ function preferredRecipe(catalog,item){
   return asArray(item?.recipeKeys).map(key=>catalog?.byRecipeKey?.get(key)).filter(Boolean)
     .sort((a,b)=>String(a.id??'').localeCompare(String(b.id??'')))[0]||null;
 }
-function planNode(catalog,itemId,quantity,path){
-  const id=integer(itemId),requested=Math.max(1,Math.ceil(finiteNumber(quantity)||1));
-  const item=catalog?.byItemId?.get(id);
-  if(!item)return {item:{id,name:'Item '+id},quantity:requested,craftable:false,status:'unknown-item',materials:[]};
-  if(path.has(id))return {item:{id:item.id,name:item.name},quantity:requested,craftable:item.craftable,status:'cycle-detected',materials:[]};
-  const recipe=preferredRecipe(catalog,item);
-  if(!recipe)return {item:{id:item.id,name:item.name},quantity:requested,craftable:false,status:'must-obtain',materials:[]};
+// Acyclic, bounded production graph; guaranteed minimum yield only.
+// A shared intermediate's surplus is consumed by subsequent branches.
+// This is equivalent to rounding aggregated demand once for each chosen
+// recipe in an acyclic graph, while keeping the tree useful to the player.
+const PLAN_LIMITS=Object.freeze({depth:64,nodes:2000,quantity:1000000000,rootQuantity:9999});
+function planFailure(code,itemId,path=[]){
+  throw Object.assign(new Error(code),{planIssue:{code,itemId,path:[...path,itemId]}});
+}
+function boundedQuantity(value,id,path){
+  if(!Number.isSafeInteger(value)||value<1||value>PLAN_LIMITS.quantity)planFailure('quantity-limit',id,path);
+  return value;
+}
+function validatePlanGraph(catalog,id,path,visited){
+  if(path.includes(id))planFailure('cycle-detected',id,path);
+  if(path.length>=PLAN_LIMITS.depth)planFailure('depth-limit',id,path);
+  if(visited.has(id))return;
+  if(visited.size>=PLAN_LIMITS.nodes)planFailure('node-limit',id,path);
+  visited.add(id);
+  const item=catalog?.byItemId?.get(id),recipe=preferredRecipe(catalog,item);
+  if(!recipe)return;
   const yieldInfo=recipe.craftedQuantity||{min:1,max:1,variable:false};
-  const crafts=Math.max(1,Math.ceil(requested/Math.max(1,yieldInfo.min||1)));
-  const nextPath=new Set(path);nextPath.add(id);
-  const materials=recipe.reagents.map(reagent=>{
-    const required=reagent.quantity*crafts;
-    const child=planNode(catalog,reagent.id,required,nextPath);
-    return {...child,perCraft:reagent.quantity};
-  });
+  boundedQuantity(yieldInfo.min,id,path);boundedQuantity(yieldInfo.max,id,path);
+  if(yieldInfo.max<yieldInfo.min)planFailure('invalid-yield',id,path);
+  for(const reagent of recipe.reagents){
+    boundedQuantity(reagent.quantity,reagent.id,[...path,id]);
+    validatePlanGraph(catalog,reagent.id,[...path,id],visited);
+  }
+}
+function planNode(catalog,id,requested,path,ledger){
+  boundedQuantity(requested,id,path);
+  if(++ledger.nodes>PLAN_LIMITS.nodes)planFailure('node-limit',id,path);
+  if(path.length>=PLAN_LIMITS.depth)planFailure('depth-limit',id,path);
+  const item=catalog?.byItemId?.get(id);
+  const label={id,name:item?.name||'Item '+id};
+  const recipe=preferredRecipe(catalog,item);
+  if(!recipe){
+    const previous=ledger.external.get(id)||{id,name:label.name,quantity:0};
+    previous.quantity=boundedQuantity(previous.quantity+requested,id,path);
+    ledger.external.set(id,previous);
+    return {item:label,quantity:requested,craftable:false,status:item?'must-obtain':'unknown-item',materials:[]};
+  }
+  const available=ledger.surplus.get(id)||0;
+  const fromSurplus=Math.min(available,requested),remaining=requested-fromSurplus;
+  ledger.surplus.set(id,available-fromSurplus);
+  if(!remaining)return {item:label,quantity:requested,craftable:true,status:'from-surplus',fromSurplus,materials:[]};
+  const yieldInfo=recipe.craftedQuantity||{min:1,max:1,variable:false};
+  const crafts=boundedQuantity(Math.ceil(remaining/yieldInfo.min),id,path);
+  const outputMin=boundedQuantity(crafts*yieldInfo.min,id,path),outputMax=boundedQuantity(crafts*yieldInfo.max,id,path);
+  const nextPath=[...path,id];
+  const materials=recipe.reagents.map(reagent=>({
+    ...planNode(catalog,reagent.id,boundedQuantity(reagent.quantity*crafts,reagent.id,nextPath),nextPath,ledger),
+    perCraft:reagent.quantity
+  }));
+  ledger.surplus.set(id,(ledger.surplus.get(id)||0)+outputMin-remaining);
   return {
-    item:{id:item.id,name:item.name},
-    quantity:requested,
-    craftable:true,
-    status:'craftable',
-    recipe:{
-      id:recipe.id,
-      name:recipe.name,
-      profession:recipe.profession,
-      professionId:recipe.professionId,
-      crafters:recipe.crafters,
-      craftsRequired:crafts,
+    item:label,quantity:requested,craftable:true,status:'craftable',
+    ...(fromSurplus?{fromSurplus}:{}),
+    recipe:{id:recipe.id,name:recipe.name,profession:recipe.profession,professionId:recipe.professionId,
+      crafters:recipe.crafters,craftsRequired:crafts,
       yieldPerCraft:{min:yieldInfo.min,max:yieldInfo.max,variable:yieldInfo.variable},
-      outputRange:{min:crafts*yieldInfo.min,max:crafts*yieldInfo.max}
-    },
+      outputRange:{min:outputMin,max:outputMax}},
     materials
   };
 }
-function collectExternal(node,totals){
-  if(!node)return;
-  if(node.status==='must-obtain'||node.status==='unknown-item'){
-    const id=node.item?.id;
-    if(!id)return;
-    const current=totals.get(id)||{id,name:node.item?.name||('Item '+id),quantity:0};
-    current.quantity+=Number(node.quantity)||0;totals.set(id,current);return;
-  }
-  for(const material of asArray(node.materials))collectExternal(material,totals);
-}
 export function buildProductionPlan(catalog,itemId,quantity=1){
-  const tree=planNode(catalog,itemId,quantity,new Set());
-  const totals=new Map();collectExternal(tree,totals);
-  return {
-    requested:{itemId:integer(itemId),quantity:Math.max(1,Math.ceil(finiteNumber(quantity)||1))},
-    tree,
-    externalMaterials:[...totals.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'))
-  };
+  const id=integer(itemId),requested=Math.max(1,Math.ceil(finiteNumber(quantity)||1));
+  const request={itemId:id,quantity:requested};
+  try{
+    if(!id||requested>PLAN_LIMITS.rootQuantity)planFailure('quantity-limit',id);
+    validatePlanGraph(catalog,id,[],new Set());
+    const ledger={nodes:0,surplus:new Map(),external:new Map()};
+    const tree=planNode(catalog,id,requested,[],ledger);
+    return {requested:request,complete:true,tree,externalMaterials:[...ledger.external.values()].sort((a,b)=>a.name.localeCompare(b.name,'de'))};
+  }catch(error){
+    if(!error.planIssue)throw error;
+    return {requested:request,complete:false,issues:[error.planIssue],tree:{item:{id,name:catalog?.byItemId?.get(id)?.name||'Item '+id},quantity:requested,craftable:false,status:'blocked',materials:[]},externalMaterials:[]};
+  }
 }
 
 

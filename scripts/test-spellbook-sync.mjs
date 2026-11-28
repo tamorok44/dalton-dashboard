@@ -40,6 +40,14 @@ const updated=applySpellbookSnapshot(data,snapshot,{
 });
 const cole=updated.characters[0];
 assert.equal(updated.generatedAt,now);
+// Two changed snapshots with identical sync clocks or a rolled-back clock
+// must still have distinct increasing persisted generations.
+const rollback=applySpellbookSnapshot({...data,generatedAt:'2026-11-23T06:01:00.003Z'},snapshot,{classMaster,syncedAt:now});
+assert.equal(rollback.generatedAt,'2026-11-23T06:01:00.004Z');
+const sameClock=applySpellbookSnapshot(rollback,{...snapshot,capturedAt:'2026-11-23T05:56:00.000Z'},{classMaster,syncedAt:now});
+assert.equal(sameClock.generatedAt,'2026-11-23T06:01:00.005Z');
+assert.equal(sameClock.characters[0].knownClassAbilitiesSyncedAt,now,'Actual sync time stays separate from logical generation');
+assert.equal(applySpellbookSnapshot(sameClock,{...snapshot,capturedAt:'2026-11-23T05:56:00.000Z'},{classMaster,syncedAt:now}),sameClock);
 assert.equal(cole.knownClassAbilitiesVerified,true);
 assert.equal(cole.knownClassAbilitiesSource,'WoW-Spellbook');
 assert.equal(cole.knownClassAbilitiesCapturedLevel,11);
@@ -50,4 +58,47 @@ assert.throws(()=>parseSpellbookCode('nichts'),/Ungültiger Spellbook-Code/);
 assert.throws(()=>applySpellbookSnapshot(data,{...snapshot,classId:11},{syncedAt:now}),/Klasse/);
 assert.throws(()=>applySpellbookSnapshot(data,{...snapshot,level:20},{syncedAt:now}),/Charakterlevel/);
 
+assert.throws(()=>applySpellbookSnapshot(updated,{...snapshot,capturedAt:'2026-11-23T05:54:00Z'},{classMaster}),/STALE_SPELLBOOK/);
+assert.throws(()=>applySpellbookSnapshot(updated,{...snapshot,entries:[{id:133}]},{classMaster}),/STALE_SPELLBOOK/);
+assert.equal(applySpellbookSnapshot(updated,snapshot,{classMaster}),updated,'Equal timestamp and same IDs are idempotent');
 console.log('Spellbook Sync: Code, Rang-Expansion, Validierung und persistenter Lernstand: OK');
+
+
+// Legacy spellbook endpoint must never touch providers in non-production,
+// even if a production-capable token is accidentally present.
+{
+  const {default:legacyHandler}=await import('../api/spellbook-sync.js');
+  const before=process.env.VERCEL_ENV,token=process.env.SPELLBOOK_SYNC_TOKEN,fetchBefore=globalThis.fetch;
+  try{
+    globalThis.fetch=async()=>{throw Error('Forbidden provider call in preview')};
+    process.env.SPELLBOOK_SYNC_TOKEN='synthetic-legacy-spellbook-token';
+    for(const scope of ['preview','development','',undefined]){
+      if(scope===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=scope;
+      const res={setHeader(){},status(code){this.code=code;return this;},json(body){this.body=body;return this;}};
+      await legacyHandler({method:'POST',body:{code:'synthetic'}},res);
+      assert.equal(res.code,403);
+    }
+  }finally{
+    globalThis.fetch=fetchBefore;
+    if(before===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=before;
+    if(token===undefined)delete process.env.SPELLBOOK_SYNC_TOKEN;else process.env.SPELLBOOK_SYNC_TOKEN=token;
+  }
+}
+
+
+// F13: full Sync names may not use ambiguous prefixes or duplicate
+// identities. Old manual codes retain a unique, explicit first-name fallback.
+{
+  const roster={characters:[
+    {slug:'cole-dalton',name:'Cole Dalton',classId:8,realm:{slug:'forever-test'}},
+    {slug:'cole-other',name:'Cole Other',classId:8,realm:{slug:'another-realm'}}
+  ]};
+  const resolve=(name,realm,legacy=false)=>resolveSpellbookCharacter(roster,{characterSlug:name,classId:8,realm},{allowLegacyFirstName:legacy});
+  assert.equal(resolve('Cole Dalton','Forever Test').slug,'cole-dalton');
+  assert.equal(resolve('Cole-Dalton',null).slug,'cole-dalton');
+  assert.throws(()=>resolve('Cole',null),/nicht eindeutig/);
+  assert.throws(()=>resolve('Cole',null,true),/nicht eindeutig/);
+  assert.throws(()=>resolve('Cole Dal',null),/nicht eindeutig/);
+  assert.throws(()=>resolve('Cole Dalton','another-realm'),/Realm/);
+  assert.throws(()=>resolveSpellbookCharacter({characters:[roster.characters[0],{...roster.characters[0]}]},{characterSlug:'cole-dalton',classId:8}),/nicht eindeutig/);
+}

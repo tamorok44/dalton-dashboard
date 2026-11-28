@@ -166,3 +166,72 @@ assert.equal(localized[143].rank,'Rang 2');
 assert.equal(localized[143].iconId,135812);
 
 console.log('Klassenmaster: Lehrerfähigkeiten, Ränge, Level, Quellen und Preis-Provenienz: OK');
+
+
+// F09: only provider-observed exact build can populate a cache or its location projection.
+{
+  const {cachedForeverDbClassMaster,cachedForeverDbClassLocations,classBuildIdentity}=await import('./class-training-store.mjs');
+  const {encodeCompactMaster,decodeCompactMaster}=await import('./compact-master-cache.mjs');
+  const envKeys=['VERCEL_ENV','KV_REST_API_URL','KV_REST_API_TOKEN','UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','FOREVERDB_API_KEY'];
+  const old=Object.fromEntries(envKeys.map(k=>[k,process.env[k]])),oldFetch=globalThis.fetch;
+  const store=new Map(),writes=[],requested='1.60.1.71139',different='1.60.1.71091';
+  const base='dalton-dashboard:foreverdb:class-master:v9:mage:';
+  const key=base+requested+':gz1';
+  let providerBuild=different,providerCalls=0;
+  try{
+    process.env.VERCEL_ENV='production';
+    process.env.KV_REST_API_URL='https://class-build-fixture.invalid';
+    process.env.KV_REST_API_TOKEN='synthetic';
+    process.env.FOREVERDB_API_KEY='synthetic';
+    globalThis.fetch=async(url,options)=>{
+      assert.equal(String(url),'https://class-build-fixture.invalid');
+      const [op,key,value,...args]=JSON.parse(options.body);
+      if(op==='EVAL')return Response.json({result:1});
+      if(op==='GET')return Response.json({result:store.get(key)??null});
+      if(op==='SET'){
+        writes.push([key,value,...args]);
+        store.set(key,value);
+        return Response.json({result:'OK'});
+      }
+      throw Error('Unexpected isolated Redis command: '+op);
+    };
+    const source=async url=>{
+      const path=new URL(url).pathname;
+      if(path.includes('/api/v1/classes/')){
+        providerCalls++;
+        return Response.json({data:{name:'Magier',abilities:[{name:'Feuerball',type:'Trainer',ranks:[{id:133,learnedLevel:1,trainerCost:10}]}]},meta:providerBuild?{build:providerBuild}:{}});
+      }
+      return Response.json([]);
+    };
+    assert.equal(classBuildIdentity('71139'),null);
+    assert.equal(classBuildIdentity(requested),requested);
+    assert.equal(await cachedForeverDbClassMaster(8,{build:requested,fetchImpl:source}),null);
+    assert.equal(writes.length,0,'Mismatched provider response cannot populate requested cache');
+    providerBuild=null;
+    assert.equal(await cachedForeverDbClassMaster(8,{build:requested,fetchImpl:source}),null);
+    assert.equal(writes.length,0,'Missing provider build is not proof');
+    providerBuild=requested;
+    const valid=await cachedForeverDbClassMaster(8,{build:requested,fetchImpl:source});
+    assert.equal(valid.observedBuild,requested);
+    assert.equal(decodeCompactMaster(store.get(key)).observedBuild,requested);
+    const count=providerCalls;
+    assert.equal((await cachedForeverDbClassMaster(8,{build:requested,fetchImpl:source})).cached,true);
+    assert.equal(providerCalls,count);
+    store.set(key,encodeCompactMaster({classMaster:valid,observedBuild:different}));
+    providerBuild=different;
+    assert.equal(await cachedForeverDbClassMaster(8,{build:requested,fetchImpl:source}),null,'Wrong cached proof cannot be used');
+    assert.equal(decodeCompactMaster(store.get(key)).observedBuild,different,'Mismatch not silently relabelled');
+    const before=writes.length;
+    assert.deepEqual(await cachedForeverDbClassLocations(8,{build:requested,classMaster:{...valid,observedBuild:different}}),[]);
+    assert.equal(writes.length,before);
+    const locations=await cachedForeverDbClassLocations(8,{build:requested,classMaster:valid});
+    assert.ok(Array.isArray(locations));
+    assert.equal(JSON.parse(store.get(base+requested+':locations:v2')).observedBuild,requested);
+    const current=await cachedForeverDbClassMaster(8,{fetchImpl:source});
+    assert.equal(current.observedBuild,different);
+    assert.deepEqual(writes.at(-1).slice(-2),['EX','21600']);
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
+}

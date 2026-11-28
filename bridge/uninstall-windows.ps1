@@ -11,25 +11,38 @@ $enrollLink = Join-Path $programs "Dalton Dashboard Einrichtungscode erstellen.l
 Write-Host "Dalton Dashboard Bridge deinstallieren"
 Write-Host ""
 
-if (Test-Path $target) {
-  Write-Host "Gerätezugang wird widerrufen ..."
-  & $target --revoke-device
-  if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-Host "Deinstallation abgebrochen: Der Gerätezugang konnte nicht sicher widerrufen werden."
-    Write-Host "Bitte Internetverbindung prüfen und erneut versuchen."
-    Read-Host "Enter zum Schließen"
-    exit 1
+$lock = "$targetDir.mutation.lock"
+$owner = [Guid]::NewGuid().ToString("N")
+$marker = Join-Path $lock "owner"
+New-Item -ItemType Directory -Path $lock -ErrorAction Stop | Out-Null
+try {
+  Set-Content -LiteralPath $marker -Value $owner -Encoding Ascii
+  if (Test-Path -LiteralPath $target) {
+    Write-Host "Gerätezugang wird widerrufen ..."
+    try {
+      $env:DALTON_BRIDGE_INSTALL_LOCK = $owner
+      & $target --revoke-device
+      if ($LASTEXITCODE -ne 0) { throw "Deinstallation abgebrochen: Der Gerätezugang konnte nicht sicher widerrufen werden." }
+    } finally {
+      Remove-Item Env:DALTON_BRIDGE_INSTALL_LOCK -ErrorAction SilentlyContinue
+    }
+  } elseif ((Test-Path -LiteralPath (Join-Path $targetDir "config.json")) -or
+            (Test-Path -LiteralPath (Join-Path $targetDir "pending-enrollment.json"))) {
+    throw "Bridge-Datei fehlt. Die Kopplung bleibt bis zum bestätigten Widerruf erhalten."
   }
-}
 
-Get-Process "DaltonDashboardBridge" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-Remove-Item $startupLink -Force -ErrorAction SilentlyContinue
-Remove-Item $uninstallLink -Force -ErrorAction SilentlyContinue
-Remove-Item $enrollLink -Force -ErrorAction SilentlyContinue
-
-if (Test-Path $targetDir) {
-  Remove-Item $targetDir -Recurse -Force -ErrorAction SilentlyContinue
+  foreach ($link in @($startupLink, $uninstallLink, $enrollLink)) {
+    if (Test-Path -LiteralPath $link) { Remove-Item -LiteralPath $link -Force }
+  }
+  Get-Process "DaltonDashboardBridge" -ErrorAction SilentlyContinue |
+    Where-Object { $_.Path -eq $target } |
+    ForEach-Object { Stop-Process -InputObject $_ -Force; Wait-Process -InputObject $_ -Timeout 10 }
+  if (Test-Path -LiteralPath $targetDir) {
+    Remove-Item -LiteralPath $targetDir -Recurse -Force
+  }
+} finally {
+  if (Test-Path -LiteralPath $marker) { Remove-Item -LiteralPath $marker -Force }
+  Remove-Item -LiteralPath $lock
 }
 
 Write-Host ""
