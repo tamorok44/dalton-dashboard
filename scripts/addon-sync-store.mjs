@@ -1,6 +1,6 @@
 import {addonCompactKey,addonVersionMetadata,addonVersionField,VERSION_METADATA_KEY,parseVersionMetadata} from './version-metadata.mjs';
 import {selectVersionEvidence} from './storage-reconciliation.mjs';
-import {redis,configured,CHARACTER_KEY,addonSyncLockKey,REDIS_TYPE_GUARD,REDIS_COMPACT_READ,normalizedCharacterWrite} from './character-store.mjs';
+import {redis,configured,CHARACTER_KEY,addonSyncLockKey,REDIS_TYPE_GUARD,REDIS_COMPACT_READ,REDIS_PROFILE_GENERATION_GUARD,normalizedCharacterWrite} from './character-store.mjs';
 import {createHash} from 'node:crypto';
 import {addonSyncContentIdentity} from './addon-sync.mjs';
 import {publicAddonSyncSummary} from './addon-sync.mjs';
@@ -82,7 +82,7 @@ export async function saveAddonSyncState(characterSlug,payload,{lockToken=null,r
   const guard=REDIS_TYPE_GUARD+REDIS_COMPACT_READ+"if not valid(KEYS[1],'string') or not valid(KEYS[2],'string') or not valid(KEYS[#KEYS],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; ";
   const prepare="local meta=compact(KEYS[2]); if meta.addon~=nil and type(meta.addon)~='table' then return redis.error_reply('INVALID_COMPACT_METADATA') end; meta.addon=meta.addon or {}; meta.addon[ARGV[2]]=cjson.decode(ARGV[3]); ";
   const write="return redis.call('MSET',KEYS[1],ARGV[1],KEYS[2],cjson.encode(meta),KEYS[#KEYS],ARGV[5])";
-  const atomic=guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[6] then meta.characters=cjson.decode(ARGV[7]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[6],KEYS[2],cjson.encode(meta),KEYS[5],ARGV[5]) end; "+write;
+  const atomic=guard+REDIS_PROFILE_GENERATION_GUARD+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; if not valid(KEYS[4],'string') then return redis.error_reply('INVALID_STORAGE_TYPE') end; "+prepare+"if ARGV[6] then assertGeneration(KEYS[4],ARGV[6],ARGV[7]); meta.characters=cjson.decode(ARGV[7]); return redis.call('MSET',KEYS[1],ARGV[1],KEYS[4],ARGV[6],KEYS[2],cjson.encode(meta),KEYS[5],ARGV[5]) end; "+write;
   const result=production
     ?await redis(['EVAL',atomic,5,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),CHARACTER_KEY,summaryKey(characterSlug),...args,lockToken,summary,...(roster?normalizedCharacterWrite(roster):[])])
     :await redis(['EVAL',guard+"if redis.call('GET',KEYS[3])~=ARGV[4] then return redis.error_reply('REFRESH_LOCK_LOST') end; "+prepare+write,4,keyFor(characterSlug),addonCompactKey(),addonSyncLockKey(),summaryKey(characterSlug),...args,lockToken,summary]);
