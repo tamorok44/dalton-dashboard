@@ -25,7 +25,7 @@ export const hunterPetMechanics=Object.freeze({
 });
 
 function freshCharacterStat(character,enumKey){
-  if(character?.scrapeOk===false)return null;
+  if(character?.scrapeOk===false||character?.statsConflictEnums?.includes(enumKey))return null;
   const stats=character?.statsByEnum||{};
   const fresh=new Set(Array.isArray(character?.statsFreshEnums)?character.statsFreshEnums:
     character?.statsVerified===true?Object.keys(stats):[]);
