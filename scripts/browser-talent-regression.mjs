@@ -328,7 +328,8 @@ try{
        if(!route.request().url().startsWith(origin+'/'))return route.abort();
        return route.continue();
      });
-     await racePage.route(url=>url.origin===origin&&url.pathname==='/api/characters'&&!url.searchParams.has('view'),async route=>{
+     const characterGet=url=>url.origin===origin&&url.pathname==='/api/characters'&&!url.searchParams.has('view');
+     await racePage.route(characterGet,async route=>{
        oldStarted();
        await oldGate;
        await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
@@ -358,6 +359,37 @@ try{
      await racePage.locator('#qa-class-3-tab-pets').click();
      assert.equal(await racePage.locator('#qa-class-3-panel-pets').getByText('Rüstung aus Dolly',{exact:true}).count(),0);
      result.delayedGetDefense=true;
+     await racePage.unroute(characterGet);
+     const versionGet=url=>url.origin===origin&&url.pathname==='/api/data-version';
+     // Two logical generations from the same wall clock must both be visible
+     // without reloading. The actual Redis allocation is tested separately.
+     let generationIndex=1;
+     const generationPayload=()=>({
+       data:{generatedAt:new Date(Date.parse(checkedAt)+generationIndex).toISOString(),
+         characters:browserRoster.map(c=>c.classId===8?{...c,knownClassAbilitiesVerified:true,
+           knownClassAbilitiesCapturedAt:checkedAt,knownClassAbilitiesSyncedAt:checkedAt,
+           knownClassAbilities:[{id:generationIndex===1?133:116,name:generationIndex===1?'QA Feuerball':'QA Frostblitz',rank:'Rang 1'}]}:c)},
+       petRules:browserPetRules,dataVersion:{version:'qa-addon-generation-'+generationIndex}
+     });
+     await racePage.route(versionGet,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(generationPayload().dataVersion)}));
+     await racePage.route(characterGet,route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(generationPayload())}));
+     await racePage.bringToFront();
+     await racePage.locator('#qa-class-8-tab-abilities').click();
+     const abilityPanel=racePage.locator('#qa-class-8-panel-abilities');
+     for(const [index,name] of [[1,'QA Feuerball'],[2,'QA Frostblitz']]){
+       generationIndex=index;
+       await racePage.evaluate(()=>{
+         const before=Date.now.bind(Date);Date.now=()=>before()+120000;
+         try{localStorage.removeItem('dalton-public-version-check-v1')}catch{}
+         try{Object.defineProperty(navigator,'locks',{configurable:true,value:undefined})}catch{}
+         window.dispatchEvent(new Event('online'));
+       });
+       await abilityPanel.getByText(name,{exact:true}).waitFor({state:'visible'});
+       if(index===2)assert.equal(await abilityPanel.getByText('QA Feuerball',{exact:true}).count(),0);
+       await racePage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+     }
+     result.monotonicAddonGenerations=true;
+
    }finally{releaseOld();await racePage.close();}
 
    const beforeDisplay=displayRequests,beforePlan=plannerRequests;
