@@ -11,6 +11,7 @@ import {buildSafeAddonSyncPayload,publicAddonSyncSummary,addonSyncContentIdentit
 
 const execFileAsync=promisify(execFile);
 const VERSION='0.1.0-beta.1';
+const DEFAULT_ENDPOINT='https://dalton-dashboard-eight.vercel.app/api/addon-sync';
 const TRUSTED_NAMES=new Set(['cole dalton','chucky dalton','dolly dalton','viola dalton']);
 
 function normalizedName(value){return String(value||'').trim().toLocaleLowerCase('de-DE')}
@@ -59,12 +60,12 @@ export async function enrollDevice(endpoint,code,character=null,previewShareUrl=
   const file=await saveConfig({...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null});
   return {...body,configFile:file};
 }
-export async function revokeDevice(config){
+export async function revokeDevice(config,{endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||DEFAULT_ENDPOINT,previewShareUrl=config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null}={}){
   const token=config?.deviceToken;
   if(!token)return {revoked:false,alreadyAbsent:true};
-  const endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync';
+  assertStoredDeviceOrigin(config,endpoint);
   const base=enrollmentEndpoint(endpoint);
-  const cookie=await previewCookie(config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null,base.origin);
+  const cookie=await previewCookie(previewShareUrl,base.origin);
   const headers={
     Authorization:'Device '+token,
     'Content-Type':'application/json',
@@ -107,13 +108,16 @@ function trustedCharacter(charDb){return TRUSTED_NAMES.has(normalizedName(charDb
 function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*=','m')}
 
 function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:process.env.DALTON_SYNC_ENDPOINT||'https://dalton-dashboard-eight.vercel.app/api/addon-sync'};
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:null};
   for(let i=0;i<argv.length;i++){
     const value=argv[i];
     if(value==='--watch')out.watch=true;
     else if(value==='--dry-run')out.dryRun=true;
     else if(value==='--file')out.file=argv[++i]||null;
-    else if(value==='--endpoint'){out.endpoint=argv[++i]||out.endpoint;out.endpointProvided=true;}
+    else if(value==='--endpoint'){
+      const target=argv[++i];if(!target||target.startsWith('--'))throw Error('--endpoint benötigt eine HTTPS-URL');
+      out.endpoint=target;out.endpointProvided=true;
+    }
     else if(value==='--enroll')out.enroll=argv[++i]||null;
     else if(value==='--create-enroll')out.createEnroll=argv[++i]||null;
     else if(value==='--revoke-device')out.revokeDevice=true;
@@ -124,6 +128,28 @@ function args(argv){
     else throw new Error('Unbekannte Option: '+value);
   }
   return out;
+}
+// CLI > environment > saved configuration > default. A stored device
+// credential belongs to its original origin, never an arbitrary override.
+export function resolveBridgeTarget(options,config={},env=process.env){
+  const endpoint=secureBridgeEndpoint(options.endpointProvided?options.endpoint:(env.DALTON_SYNC_ENDPOINT??config.endpoint??DEFAULT_ENDPOINT)).href;
+  const explicitShare=options.previewShareUrl??env.DALTON_SYNC_PREVIEW_SHARE_URL;
+  let previewShareUrl=explicitShare??null;
+  if(explicitShare==null&&config.previewShareUrl){
+    const stored=secureBridgeEndpoint(config.endpoint??DEFAULT_ENDPOINT);
+    if(stored.origin===new URL(endpoint).origin)previewShareUrl=config.previewShareUrl;
+  }
+  return {endpoint,previewShareUrl};
+}
+function assertStoredDeviceOrigin(config,endpoint){
+  if(config.deviceToken&&secureBridgeEndpoint(config.endpoint??DEFAULT_ENDPOINT).origin!==secureBridgeEndpoint(endpoint).origin)
+    throw Error('Gespeicherter Gerätezugang gehört zu einem anderen HTTPS-Ziel. Bitte Zielumgebung separat koppeln.');
+}
+function bridgeAuthorization(config,endpoint,env=process.env){
+  if(env.DALTON_SYNC_TOKEN)return 'Bearer '+env.DALTON_SYNC_TOKEN;
+  if(env.DALTON_DEVICE_TOKEN)return 'Device '+env.DALTON_DEVICE_TOKEN;
+  assertStoredDeviceOrigin(config,endpoint);
+  return config.deviceToken?'Device '+config.deviceToken:null;
 }
 function help(){
   console.log('Dalton Dashboard Sync Companion '+VERSION);
@@ -381,31 +407,28 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
   if(!response.ok)throw new Error('Sync HTTP '+response.status+': '+String(body.error||response.statusText).slice(0,180));
   return body;
 }
-async function main(){
-  const options=args(process.argv.slice(2));
+export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){
+  const options=args(argv);
   if(options.help){help();return}
+  const config=await readConfig();
+  const target=resolveBridgeTarget(options,config);
+  options.endpoint=target.endpoint;
   if(options.createEnroll){
-    const config=await loadConfig();
-    if(config.endpoint&&!process.env.DALTON_SYNC_ENDPOINT)options.endpoint=config.endpoint;
-    const masterToken=process.env.DALTON_SYNC_TOKEN||null;
-    const auth=masterToken?'Bearer '+masterToken:(config.deviceToken?'Device '+config.deviceToken:null);
-    const created=await createEnrollment(options.endpoint,options.createEnroll,auth,{
-      previewShareUrl:options.previewShareUrl||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null
-    });
+    const auth=bridgeAuthorization(config,target.endpoint);
+    const created=await createEnrollment(target.endpoint,options.createEnroll,auth,{previewShareUrl:target.previewShareUrl});
     console.log('Einrichtungscode für '+String(created.characterName||created.characterSlug)+':');
     console.log(created.code);
     console.log('Gültig für '+Math.round(Number(created.expiresInSeconds||0)/3600)+' Stunden und genau einmal.');
     return;
   }
   if(options.enroll){
-    const enrolled=await enrollDevice(options.endpoint,options.enroll,options.character,options.previewShareUrl);
+    const enrolled=await enrollDevice(target.endpoint,options.enroll,options.character,target.previewShareUrl);
     console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
     console.log('Konfiguration: '+enrolled.configFile);
     return;
   }
   if(options.revokeDevice){
-    const config=await loadConfig();
-    const result=await revokeDevice(config);
+    const result=await revokeDevice(config,target);
     if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
     else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));
     return;
@@ -414,8 +437,7 @@ async function main(){
     throw new Error('Automatische Geräteübernahme deaktiviert. Bitte einen regulären Einrichtungscode für die Produktionsumgebung verwenden.');
   }
 
-  const config=await loadConfig();
-  if(config.endpoint&&!process.env.DALTON_SYNC_ENDPOINT)options.endpoint=config.endpoint;
+  const auth=options.dryRun?null:bridgeAuthorization(config,target.endpoint);
   const sources=await resolveSourcesWithRetry(options.file,options.watch,{characterName:config.deviceToken?config.characterName:null});
   if(sources.characterFile)console.log('Eigener Charakter: '+sources.characterFile);
   if(sources.relayFile)console.log('Relay-Postfach: '+sources.relayFile);
@@ -423,7 +445,7 @@ async function main(){
   const lastHashes=new Map();
   let running=false;
   let rerun=false;
-  const previewAuthCookie=await previewCookie(options.previewShareUrl||config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null,secureBridgeEndpoint(options.endpoint).origin);
+  const previewAuthCookie=options.dryRun?null:await previewCookie(target.previewShareUrl,secureBridgeEndpoint(target.endpoint).origin);
 
   const sync=async()=>{
     if(running){rerun=true;return}
@@ -431,9 +453,6 @@ async function main(){
     try{
       const records=await readRecords(sources);
       if(!records.length)return;
-      const deviceToken=config.deviceToken||process.env.DALTON_DEVICE_TOKEN||null;
-      const masterToken=process.env.DALTON_SYNC_TOKEN||null;
-      const auth=options.dryRun?null:(masterToken?'Bearer '+masterToken:(deviceToken?'Device '+deviceToken:null));
       if(!options.dryRun&&!auth)throw new Error('Bridge ist noch nicht eingerichtet');
 
       for(const record of records){
