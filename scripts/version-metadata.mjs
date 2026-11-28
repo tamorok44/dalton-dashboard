@@ -12,3 +12,12 @@ export function characterVersionMetadata(data){return {generatedAt:data?.generat
 export function petVersionMetadata(state){return state?{checkedAt:state.checkedAt||null,rulebookVersion:state.rulebookVersion||null,overall:state.overall||null}:null}
 export function addonVersionMetadata(state){return state?{syncId:state.payload?.syncId||null,receivedAt:state.receivedAt||null}:null}
 export function parseVersionMetadata(raw){try{return typeof raw==='string'?JSON.parse(raw):raw??null}catch{return null}}
+
+// Shared logical profile generation, independent of capture/receipt time.
+// Call while holding the common profile-writer lock. Every changed roster
+// must advance, even with an equal millisecond or a backwards clock step.
+export function nextProfileGeneration(previous,clock=Date.now()){
+  const prior=Date.parse(previous?.generatedAt??'');
+  if(!Number.isFinite(prior)||!Number.isFinite(clock))throw Error('Ungültige Profilgeneration');
+  return new Date(Math.max(Math.trunc(clock),prior+1)).toISOString();
+}
