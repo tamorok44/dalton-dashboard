@@ -7,9 +7,8 @@ $source = Join-Path $PSScriptRoot "DaltonDashboardBridge.exe"
 if (-not (Test-Path $source)) { throw "DaltonDashboardBridge.exe fehlt im Installationspaket." }
 
 if ([string]::IsNullOrWhiteSpace($Code)) {
-  $Code = Read-Host "Einrichtungscode"
+  $Code = Read-Host "Einrichtungscode (leer lassen, um eine offene Installation fortzusetzen)"
 }
-if ([string]::IsNullOrWhiteSpace($Code)) { throw "Kein Einrichtungscode angegeben." }
 
 $targetDir = Join-Path $env:LOCALAPPDATA "DaltonDashboardBridge"
 $target = Join-Path $targetDir "DaltonDashboardBridge.exe"
@@ -28,9 +27,15 @@ try {
   Copy-Item -LiteralPath $source -Destination $staged
   try {
     $env:DALTON_BRIDGE_INSTALL_LOCK = $owner
-    & $staged --enroll $Code
+    $env:DALTON_BRIDGE_KEEP_ENROLLMENT = "1"
+    if ([string]::IsNullOrWhiteSpace($Code)) {
+      & $staged --resume-enrollment
+    } else {
+      & $staged --enroll $Code
+    }
     if ($LASTEXITCODE -ne 0) { throw "Die Bridge konnte nicht gekoppelt werden." }
   } finally {
+    Remove-Item Env:DALTON_BRIDGE_KEEP_ENROLLMENT -ErrorAction SilentlyContinue
     Remove-Item Env:DALTON_BRIDGE_INSTALL_LOCK -ErrorAction SilentlyContinue
   }
   Get-Process "DaltonDashboardBridge" -ErrorAction SilentlyContinue |
@@ -85,6 +90,13 @@ try {
   }
 
   Start-Process -FilePath $target -ArgumentList "--watch" -WindowStyle Hidden
+  try {
+    $env:DALTON_BRIDGE_INSTALL_LOCK = $owner
+    & $target --finish-install
+    if ($LASTEXITCODE -ne 0) { throw "Die Bridge-Installation konnte nicht bestätigt werden." }
+  } finally {
+    Remove-Item Env:DALTON_BRIDGE_INSTALL_LOCK -ErrorAction SilentlyContinue
+  }
 
   Write-Host ""
   Write-Host "Dalton Dashboard Bridge ist eingerichtet."

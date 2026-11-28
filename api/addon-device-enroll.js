@@ -1,4 +1,5 @@
-import {authorizeDeviceToken,cancelDeviceEnrollment,createDeviceEnrollment,deviceMayCreateEnrollment,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches,trustedCharacterSlugs,trustedCharacterName} from '../scripts/addon-device-auth.mjs';
+import {authorizeDeviceToken,cancelDeviceEnrollment,confirmDeviceEnrollment,createDeviceEnrollment,deviceEnrollmentScope,deviceMayCreateEnrollment,identifyPendingEnrollment,locateDeviceToken,redeemDeviceEnrollment,revokeDeviceToken,masterSyncTokenMatches,trustedCharacterSlugs,trustedCharacterName} from '../scripts/addon-device-auth.mjs';
+import {configured} from '../scripts/character-store.mjs';
 import {readRequestJson,RequestJsonError} from '../scripts/request-json.mjs';
 
 export const config={maxDuration:15};
@@ -22,11 +23,32 @@ export default async function handler(req,res){
   if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Methode nicht erlaubt'})}
   try{
     const body=await readRequestJson(req,20000);
-    if(Object.hasOwn(body,'action')&&!['create','revoke','cancel'].includes(body.action))throw new RequestJsonError(400,'Unbekannte Geräteaktion');
+    const scope=deviceEnrollmentScope();
     const allowed={
-      create:['action','characterSlug'],revoke:['action'],cancel:['action','code','proposedDeviceToken']
-    }[body.action]||['code','character','proposedDeviceToken'];
-    if(Object.keys(body).some(key=>!allowed.includes(key)))throw new RequestJsonError(400,'Widersprüchliche Geräteparameter');
+      create:['action','characterSlug'],revoke:['action','expectedScope'],cancel:['action','code','proposedDeviceToken','expectedScope'],
+      confirm:['action','code','character','proposedDeviceToken','expectedDeviceId','expectedScope'],
+      scope:['action'],inspect:['action','code','proposedDeviceToken'],locate:['action']
+    };
+    if(Object.hasOwn(body,'action')&&(typeof body.action!=='string'||!Object.hasOwn(allowed,body.action)))
+      throw new RequestJsonError(400,'Unbekannte Geräteaktion');
+    const fields=Object.hasOwn(body,'action')?allowed[body.action]:['code','character','proposedDeviceToken','expectedScope'];
+    if(Object.keys(body).some(key=>!fields.includes(key)))throw new RequestJsonError(400,'Widersprüchliche Geräteparameter');
+    if(Object.hasOwn(body,'expectedScope')&&body.expectedScope!==scope)
+      return res.status(409).json({error:'Gespeicherter Gerätezugang gehört zu einer anderen Umgebung'});
+    if(body.action==='scope'){
+      if(!configured())throw Error('Datenbank nicht verfügbar');
+      return res.status(200).json({scope});
+    }
+    if(body.action==='inspect'){
+      if(!await identifyPendingEnrollment(body.code,body.proposedDeviceToken))
+        return res.status(409).json({error:'Umgebung der offenen Kopplung nicht bestätigt'});
+      return res.status(200).json({scope});
+    }
+    if(body.action==='locate'){
+      if(!await locateDeviceToken(authToken(req,'Device')))
+        return res.status(409).json({error:'Umgebung des vorhandenen Gerätezugangs nicht bestätigt'});
+      return res.status(200).json({scope});
+    }
     if(body?.action==='create'){
       if(typeof body.characterSlug!=='string')throw new RequestJsonError(400,'Ungültiger Charakter');
       const characterSlug=body.characterSlug;
@@ -40,19 +62,21 @@ export default async function handler(req,res){
       const token=authToken(req,'Device');
       if(!token)return res.status(401).json({error:'Nicht berechtigt'});
       const revoked=await revokeDeviceToken(token);
-      return res.status(200).json({revoked,alreadyRevoked:!revoked});
+      return res.status(200).json({revoked,alreadyRevoked:!revoked,...(body.expectedScope?{scope}:{})});
     }
     if(body.action==='cancel'){
       const cancelled=await cancelDeviceEnrollment(body.code,body.proposedDeviceToken);
-      return res.status(200).json({cancelled});
+      return res.status(200).json({cancelled,...(body.expectedScope?{scope}:{})});
     }
     if(typeof body.code!=='string')throw new RequestJsonError(400,'Ungültiger Einrichtungscode');
-    const enrolled=await redeemDeviceEnrollment(body.code,{
-      expectedCharacter:requestedCharacter(body.character),proposedDeviceToken:body.proposedDeviceToken??null
-    });
+    const proof={expectedCharacter:requestedCharacter(body.character),proposedDeviceToken:body.proposedDeviceToken??null};
+    const enrolled=body.action==='confirm'
+      ?await confirmDeviceEnrollment(body.code,{...proof,expectedDeviceId:body.expectedDeviceId})
+      :await redeemDeviceEnrollment(body.code,proof);
     return res.status(200).json({
       deviceToken:enrolled.token,
       deviceId:enrolled.deviceId,
+      scope,
       characterSlug:enrolled.characterSlug,
       characterName:enrolled.characterName
     });

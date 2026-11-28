@@ -303,6 +303,8 @@ try{
     }finally{intercept=null;await releaseRefreshLock(lock);}
     console.log('G01 Redis: confirmed baseline, malformed/false-null reads, roster membership and atomic Add-on state CAS OK');
   }
+  const {verifyBridgeDeviceLifecycle}=await import('./fixtures/bridge-device-lifecycle.mjs');
+  await verifyBridgeDeviceLifecycle({admin,restrict:(...rules)=>admin('ACL','SETUSER',user,'reset','on','>'+password,'~dalton-dashboard:*','+@all',...rules)});
   console.log('F18 API issuer regression: allowed peer enrollment, self/prototype denial, revoked issuer before mutation, no new invite: OK');
   console.log('Redis device regression: NX failure, denied MSET, concurrent redemption/revocation, expiry, CAS, collision, cleanup denial, revoke denial and ambiguous response: OK');
 }finally{

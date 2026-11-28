@@ -46,4 +46,4 @@ rm -f "$INSTALLED_ENROLL_HELPER"
 echo ""
 echo "Dalton Dashboard Bridge wurde vollständig entfernt."
 echo "Das WoW-AddOn selbst wurde nicht verändert."
-read -r "?Enter zum Schließen …"
+read -r "?Enter zum Schließen …" || true

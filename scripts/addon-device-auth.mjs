@@ -10,6 +10,7 @@ const TRUSTED_CHARACTERS=Object.freeze({
 const ENROLL_TTL_SECONDS=86400;
 
 function scope(){return process.env.VERCEL_ENV==='production'?'production':'preview'}
+export {scope as deviceEnrollmentScope};
 function sha(value){return createHash('sha256').update(String(value)).digest('hex')}
 function inviteKey(code){return 'dalton-dashboard:addon-device:v1:'+scope()+':invite:'+sha(code)}
 function deviceKeyForScope(token,targetScope=scope()){
@@ -46,6 +47,40 @@ export function masterSyncTokenMatches(token){
   return Boolean(expected)&&safeEqual(token,expected);
 }
 function enrollmentDenied(){return Object.assign(new Error('Nicht berechtigt'),{code:'DEVICE_ENROLLMENT_DENIED'})}
+export async function locateDeviceToken(token){
+  if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
+  if(!validDeviceToken(token))throw enrollmentDenied();
+  const found=await redis(['EXISTS',deviceKey(token)]);
+  if(found!==0&&found!==1)throw Error('Geräteumgebung konnte nicht bestätigt werden');
+  return found===1;
+}
+export async function identifyPendingEnrollment(code,token){
+  if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
+  if(!validInvitation(code)||!validDeviceToken(token))throw enrollmentDenied();
+  // Compatibility for journals written before the target scope was recorded.
+  // A route with no matching evidence must not acknowledge cancellation.
+  const raw=await redis(['GET',inviteKey(code)]);
+  if(raw!==null){
+    const marker=JSON.parse(raw);
+    if(marker?.consumed===true)return !marker.deviceDigest||marker.deviceDigest===sha(token);
+    return marker?.schemaVersion===2&&isTrustedCharacterSlug(marker.characterSlug);
+  }
+  return (await authorizeDeviceToken(token))?.invitationDigest===sha(code);
+}
+export async function confirmDeviceEnrollment(code,{expectedCharacter,proposedDeviceToken,expectedDeviceId}){
+  if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
+  if(!validInvitation(code)||!validDeviceToken(proposedDeviceToken)||typeof expectedDeviceId!=='string'||!expectedDeviceId)
+    throw enrollmentDenied();
+  const record=await authorizeDeviceToken(proposedDeviceToken);
+  if(!record||record.deviceId!==expectedDeviceId||expectedCharacter!==null&&record.characterSlug!==expectedCharacter)
+    throw enrollmentDenied();
+  if(!record.invitationDigest){
+    const marker=JSON.parse(await redis(['GET',inviteKey(code)]));
+    if(marker?.consumed!==true||marker.deviceId!==record.deviceId||marker.deviceDigest!==sha(proposedDeviceToken))
+      throw enrollmentDenied();
+  }else if(record.invitationDigest!==sha(code))throw enrollmentDenied();
+  return {...record,token:proposedDeviceToken};
+}
 export async function createDeviceEnrollment(characterSlug,{issuerToken=null}={}){
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!isTrustedCharacterSlug(characterSlug))throw new Error('Unbekannter Dalton-Charakter');
@@ -84,19 +119,26 @@ export async function redeemDeviceEnrollment(code,{expectedCharacter=null,propos
   if(!configured())throw new Error('Redis-Datenbank nicht konfiguriert');
   if(!validInvitation(code)||proposedDeviceToken!==null&&!validDeviceToken(proposedDeviceToken))throw new Error('Ungültiger Einrichtungscode');
   const key=inviteKey(code);
+  const invitationDigest=sha(code);
   const raw=await redis(['GET',key]);
-  if(!raw)throw new Error('Einrichtungscode ungültig, abgelaufen oder bereits verwendet');
-  let invite;
-  try{invite=JSON.parse(raw)}catch{throw new Error('Einrichtungscode beschädigt')}
   async function confirmedDevice(marker){
-    if(!proposedDeviceToken||marker?.deviceDigest!==sha(proposedDeviceToken))return null;
-    // Replays prove possession of the exact locally retained secret. A
-    // revoked token (deleted key) is never recreated by this route.
+    if(!proposedDeviceToken||marker&&marker.deviceDigest!==sha(proposedDeviceToken))return null;
     const record=await authorizeDeviceToken(proposedDeviceToken);
-    if(!record||record.deviceId!==marker.deviceId||record.characterSlug!==marker.characterSlug||
-      expectedCharacter!==null&&expectedCharacter!==record.characterSlug)return null;
+    if(!record||expectedCharacter!==null&&expectedCharacter!==record.characterSlug)return null;
+    if(marker){
+      if(record.deviceId!==marker.deviceId||record.characterSlug!==marker.characterSlug)return null;
+    }else if(record.invitationDigest!==invitationDigest)return null;
     return {token:proposedDeviceToken,...record};
   }
+  if(raw===null){
+    // Replay with both original proofs also works after the invite TTL.
+    // A deleted device can never be recreated through this read-only path.
+    const confirmed=await confirmedDevice(null);
+    if(confirmed)return confirmed;
+    throw new Error('Einrichtungscode ungültig, abgelaufen oder bereits verwendet');
+  }
+  let invite;
+  try{invite=JSON.parse(raw)}catch{throw new Error('Einrichtungscode beschädigt')}
   if(invite?.consumed===true){
     const confirmed=await confirmedDevice(invite);
     if(confirmed)return confirmed;
@@ -125,7 +167,8 @@ export async function redeemDeviceEnrollment(code,{expectedCharacter=null,propos
     characterSlug:invite.characterSlug,
     characterName:trustedCharacterName(invite.characterSlug),
     createdAt:now(),
-    revokedAt:null
+    revokedAt:null,
+    ...(proposedDeviceToken?{invitationDigest}:{})
   };
   // Redis scripts do not roll back earlier writes on later command errors.
   // Compare the exact invitation and commit its invalidation + device in ONE MSET.
@@ -150,7 +193,7 @@ return 1
   if(committed===0){
     if(proposedDeviceToken){
       const current=JSON.parse(await redis(['GET',key]));
-      const confirmed=await confirmedDevice(current);
+      const confirmed=current===null||current.consumed===true?await confirmedDevice(current):null;
       if(confirmed)return confirmed;
     }
     throw new Error('Einrichtungscode ungültig, abgelaufen oder bereits verwendet');
@@ -168,28 +211,32 @@ export async function cancelDeviceEnrollment(code,token){
   // a delayed redeem because redeem compares the exact bytes in its script.
   const lua=`
 local raw=redis.call('GET',KEYS[1])
-if not raw then return 0 end
+local function removeDevice(expectedId)
+  local deviceRaw=redis.call('GET',KEYS[2])
+  if not deviceRaw then return 1 end
+  local device=cjson.decode(deviceRaw)
+  if type(device)~='table' then return -1 end
+  if expectedId and device.deviceId~=expectedId then return 1 end
+  if device.invitationDigest and device.invitationDigest~=ARGV[3] then return -1 end
+  redis.call('DEL',KEYS[2])
+  return 1
+end
+if not raw then return removeDevice(nil) end
 local record=cjson.decode(raw)
 if type(record)~='table' then return -1 end
 if record.consumed==true then
   if record.deviceDigest==ARGV[1] then
-    redis.call('DEL',KEYS[2])
+    return removeDevice(record.deviceId)
   end
   return 1
 end
 local ttl=redis.call('PTTL',KEYS[1])
-if ttl<=0 then return 0 end
+if ttl<=0 then return -1 end
 redis.call('SET',KEYS[1],ARGV[2],'PX',ttl)
 return 1
 `;
-  const result=await redis(['EVAL',lua,2,inviteKey(code),deviceKey(token),sha(token),JSON.stringify({consumed:true})]);
+  const result=await redis(['EVAL',lua,2,inviteKey(code),deviceKey(token),sha(token),JSON.stringify({consumed:true}),sha(code)]);
   if(result===-1)throw enrollmentDenied();
-  if(result===0){
-    // An expired invitation cannot be redeemed. The caller still knows the
-    // possible device token, so confirm deletion/absence under that token.
-    await revokeDeviceToken(token);
-    return true;
-  }
   if(result!==1)throw Error('Abbruch der Einrichtung nicht bestätigt');
   return true;
 }

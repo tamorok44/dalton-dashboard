@@ -339,7 +339,7 @@ function bindTalentPanel(panel,c){
   }));
 }
 function refreshTalentPanels(){
-  cards.querySelectorAll('[data-character-panel="talents"]').forEach(panel=>{
+  cards.querySelectorAll('[data-character-panel="talents"][data-mounted]').forEach(panel=>{
     const c=displayedData?.characters?.find(x=>x.slug===panel.dataset.characterSlug);
     if(c){panel.innerHTML=talentPanel(c);bindTalentPanel(panel,c)}
   });

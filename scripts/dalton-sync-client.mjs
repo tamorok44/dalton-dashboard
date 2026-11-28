@@ -25,12 +25,12 @@ function configFile(){
   return join(process.env.XDG_CONFIG_HOME||join(homedir(),'.config'),'dalton-dashboard-bridge','config.json');
 }
 const pendingConfigFile=()=>join(dirname(configFile()),'pending-enrollment.json');
-async function readLocalState(file){
+async function readLocalState(file,missing={}){
   try{
     const value=JSON.parse(await fs.readFile(file,'utf8'));
     if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Ungültige Bridge-Konfiguration');
     return value;
-  }catch(error){if(error.code==='ENOENT')return {};throw error;}
+  }catch(error){if(error.code==='ENOENT')return missing;throw error;}
 }
 const loadConfig=()=>readLocalState(configFile());
 // Exclusive interprocess lock outside the installation directory. Never
@@ -66,12 +66,21 @@ async function saveLocalState(file,value){
     await handle.close();handle=null;
     if(owner)await assertInstallLock(dir+'.mutation.lock',owner);
     await fs.rename(tmp,file);
-    if(platform()!=='win32'){
-      const directory=await fs.open(dir,'r');
-      try{await directory.sync();}finally{await directory.close();}
-    }
+    await syncStateDirectory(dir);
     return file;
   }finally{if(handle)await handle.close();await fs.rm(tmp,{force:true})}
+}
+async function syncStateDirectory(dir){
+  if(platform()==='win32')return;
+  const directory=await fs.open(dir,'r');
+  try{await directory.sync();}finally{await directory.close();}
+}
+async function removeJournal(){
+  const file=pendingConfigFile();
+  const owner=process.env.DALTON_BRIDGE_INSTALL_LOCK;
+  if(owner)await assertInstallLock(dirname(file)+'.mutation.lock',owner);
+  await fs.rm(file,{force:true});
+  await syncStateDirectory(dirname(file));
 }
 const saveConfig=value=>saveLocalState(configFile(),value);
 // All credential-bearing requests share one transport boundary, including
@@ -93,103 +102,259 @@ async function confirmedJson(response,operation){
   const body=await response.json().catch(()=>null);
   return body&&typeof body==='object'&&!Array.isArray(body)&&!Object.hasOwn(body,'error')?body:null;
 }
-export async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
-  const base=enrollmentEndpoint(endpoint);
-  validateShareUrl(previewShareUrl,base.origin);
-  return withConfigMutation(()=>enrollDeviceLocked(endpoint,code,character,previewShareUrl));
+const validDeviceToken=value=>typeof value==='string'&&/^ddv1_[A-Za-z0-9_-]{43}$/.test(value);
+const validScope=value=>value==='production'||value==='preview';
+const codeDigest=code=>createHash('sha256').update(code).digest('hex');
+
+function deviceReference(config){
+  if(!Object.hasOwn(config,'deviceToken'))return null;
+  if(typeof config.deviceToken!=='string'||!config.deviceToken||config.deviceScope!=null&&!validScope(config.deviceScope))
+    throw Error('Gespeicherter Gerätezugang ist beschädigt');
+  const endpoint=secureBridgeEndpoint(config.endpoint??DEFAULT_ENDPOINT).href;
+  return {deviceToken:config.deviceToken,endpoint,deviceScope:config.deviceScope??null,
+    previewShareUrl:config.previewShareUrl??null,characterName:config.characterName??null};
 }
-async function enrollDeviceLocked(endpoint,code,character=null,previewShareUrl=null){
-  const base=enrollmentEndpoint(endpoint);
-  if(!/^dalton-[A-Za-z0-9_-]{32}$/.test(code))throw Error('Ungültiger Einrichtungscode');
-  const current=await loadConfig();
-  const pendingFile=pendingConfigFile();
-  const pending=await readLocalState(pendingFile);
-  const requested=character?normalizedName(character).replace(' ','-'):null;
-  if(Object.keys(pending).length&&(pending.code!==code||pending.endpoint!==endpoint||pending.character!==requested))
-    throw Error('Eine frühere Einrichtung ist offen. Gleichen Code erneut verwenden oder mit --cancel-enrollment abbrechen.');
-  const proposedDeviceToken=pending.proposedDeviceToken??'ddv1_'+randomBytes(32).toString('base64url');
-  if(!/^ddv1_[A-Za-z0-9_-]{43}$/.test(proposedDeviceToken))throw Error('Ausstehende Einrichtung ist beschädigt');
-  // The exact candidate secret survives lost responses and process crashes
-  // before the confirmed pairing reaches the active configuration.
-  await saveLocalState(pendingFile,{code,endpoint,character:requested,previewShareUrl,proposedDeviceToken});
-  const cookie=await previewCookie(previewShareUrl,base.origin);
+function sameDevice(left,right){
+  if(!left||!right)return left===right;
+  return left.deviceToken===right.deviceToken&&left.endpoint===right.endpoint&&
+    (!left.deviceScope||!right.deviceScope||left.deviceScope===right.deviceScope);
+}
+function candidate(journal){
+  return {endpoint:journal.endpoint,previewShareUrl:journal.previewShareUrl,deviceToken:journal.proposedDeviceToken,
+    deviceScope:journal.pairing?.deviceScope??journal.deviceScope??null};
+}
+function enrollmentIdentityMatches(current,journal){
+  // A previous-version journal may accompany an already activated candidate.
+  return current&&current.deviceToken===journal.proposedDeviceToken&&current.endpoint===journal.endpoint&&
+    (!journal.pairing||current.deviceScope===journal.pairing.deviceScope);
+}
+function journalReference(value){
+  if(value===null)return null;
+  if(!value||typeof value.deviceToken!=='string'||typeof value.endpoint!=='string')
+    throw Error('Offener Gerätezugang ist beschädigt');
+  return deviceReference(value);
+}
+async function loadDeviceJournal(current){
+  const record=await readLocalState(pendingConfigFile(),null);
+  if(!record)return null;
+  if(!Object.hasOwn(record,'kind')){
+    // Before this version, the active configuration was overwritten directly.
+    // Keep the original candidate and snapshot whichever predecessor survives.
+    record.endpoint=secureBridgeEndpoint(record.endpoint).href;
+    record.kind='enroll';
+    record.phase='claim';
+    record.previous=enrollmentIdentityMatches(current,record)?null:current;
+  }
+  if(record.kind==='revoke'){
+    const previous=journalReference(record.previous);
+    const enrollment=record.enrollment===null?null:validatedEnrollment(record.enrollment);
+    if(!previous&&!enrollment)throw Error('Offener Widerruf ist beschädigt');
+    return {...record,previous,enrollment};
+  }
+  return validatedEnrollment(record);
+}
+function validatedEnrollment(record){
+  if(record?.kind!=='enroll'||!['claim','retire','activate','cancel'].includes(record.phase)||
+    !/^dalton-[A-Za-z0-9_-]{32}$/.test(record.code)||!validDeviceToken(record.proposedDeviceToken)||
+    typeof record.endpoint!=='string'||record.character!==null&&!TRUSTED_SLUGS.has(record.character))
+    throw Error('Ausstehende Einrichtung ist beschädigt');
+  const endpoint=secureBridgeEndpoint(record.endpoint).href;
+  if(record.deviceScope!=null&&!validScope(record.deviceScope))throw Error('Gespeicherte Kopplungsumgebung ist beschädigt');
+  const previous=journalReference(record.previous);
+  const pairing=record.pairing;
+  if(['retire','activate'].includes(record.phase)&&
+    (!validScope(pairing?.deviceScope)||!TRUSTED_SLUGS.has(pairing.characterSlug)||
+      normalizedName(pairing.characterName)!==pairing.characterSlug.replace('-',' ')||
+      typeof pairing.deviceId!=='string'||!pairing.deviceId))
+    throw Error('Kopplungsbeleg ist beschädigt');
+  return {...record,endpoint,previous};
+}
+const saveJournal=value=>saveLocalState(pendingConfigFile(),value);
+
+function scopedShare(ref,override){
+  const origin=secureBridgeEndpoint(ref.endpoint).origin;
+  const share=override?.previewShareUrl!=null&&secureBridgeEndpoint(override.endpoint).origin===origin
+    ?override.previewShareUrl:ref.previewShareUrl;
+  validateShareUrl(share,origin);
+  return share;
+}
+function sameOrigin(left,right){return secureBridgeEndpoint(left).origin===secureBridgeEndpoint(right).origin}
+function requireKnownOrigin(override,refs){
+  if(override?.endpoint&&!refs.some(ref=>ref&&sameOrigin(override.endpoint,ref.endpoint)))
+    throw Error('Gespeicherte Kopplung gehört zu einem anderen HTTPS-Ziel');
+}
+function assertConfigDevice(expected,actual){
+  if(!sameDevice(expected,actual))throw Error('Lokale Kopplung wurde inzwischen geändert');
+}
+async function deviceRequest(ref,body,operation,{override=null,auth=null}={}){
+  const base=enrollmentEndpoint(ref.endpoint);
+  const cookie=await previewCookie(scopedShare(ref,override),base.origin);
   const response=await fetch(base,{
-    method:'POST',
-    redirect:'error',
-    headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,...(cookie?{Cookie:cookie}:{})},
-    body:JSON.stringify({code,character:requested,proposedDeviceToken}),
+    method:'POST',redirect:'error',
+    headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,
+      ...(cookie?{Cookie:cookie}:{}),...(auth?{Authorization:'Device '+auth}:{})},
+    body:JSON.stringify({...body,...(ref.deviceScope?{expectedScope:ref.deviceScope}:{})}),
     signal:AbortSignal.timeout(15000)
   });
-  const body=await confirmedJson(response,'Einrichtung');
-  if(!body||body.deviceToken!==proposedDeviceToken||
-    !TRUSTED_SLUGS.has(body.characterSlug)||normalizedName(body.characterName)!==body.characterSlug.replace('-',' ')||
-    requested&&body.characterSlug!==requested)throw Error('Ungültige Kopplungsantwort; lokale Konfiguration bleibt erhalten');
-  const next={...current,deviceToken:body.deviceToken,characterSlug:body.characterSlug,characterName:body.characterName,endpoint,previewShareUrl:previewShareUrl||null};
+  const result=await confirmedJson(response,operation);
+  if(ref.deviceScope&&result&&result.scope!==ref.deviceScope)throw Error('Geräteumgebung wurde nicht eindeutig bestätigt');
+  return result;
+}
+async function readEnrollmentScope(journal,override,existing=false){
+  const request=existing?{action:'inspect',code:journal.code,proposedDeviceToken:journal.proposedDeviceToken}:{action:'scope'};
+  const body=await deviceRequest(candidate(journal),request,'Umgebungsprüfung',{override});
+  if(!validScope(body?.scope))throw Error('Kopplungsumgebung wurde nicht eindeutig bestätigt');
+  return body.scope;
+}
+async function bindDeviceScope(ref,override){
+  if(!ref||ref.deviceScope)return ref;
+  const body=await deviceRequest(ref,{action:'locate'},'Umgebungsprüfung',{override,auth:ref.deviceToken});
+  if(!validScope(body?.scope))throw Error('Umgebung des alten Gerätezugangs wurde nicht eindeutig bestätigt');
+  return {...ref,deviceScope:body.scope};
+}
+async function claimDevice(journal,override){
+  const body=await deviceRequest(candidate(journal),{
+    code:journal.code,character:journal.character,proposedDeviceToken:journal.proposedDeviceToken,
+    ...(journal.pairing?{action:'confirm',expectedDeviceId:journal.pairing.deviceId}:{})
+  },'Einrichtung',{override});
+  if(!body||body.deviceToken!==journal.proposedDeviceToken||!validScope(body.scope)||
+    typeof body.deviceId!=='string'||!body.deviceId||!TRUSTED_SLUGS.has(body.characterSlug)||
+    normalizedName(body.characterName)!==body.characterSlug.replace('-',' ')||
+    journal.character&&body.characterSlug!==journal.character||
+    journal.pairing&&body.deviceId!==journal.pairing.deviceId)
+    throw Error('Ungültige Kopplungsantwort; lokale Kopplung bleibt erhalten');
+  return {deviceId:body.deviceId,deviceScope:body.scope,characterSlug:body.characterSlug,characterName:body.characterName};
+}
+async function retireDevice(ref,override){
+  const body=await deviceRequest(ref,{action:'revoke'},'Widerruf',{override,auth:ref.deviceToken});
+  if(!(body?.revoked===true&&body.alreadyRevoked===false)&&!(body?.revoked===false&&body.alreadyRevoked===true))
+    throw Error('Widerruf nicht eindeutig bestätigt; lokale Kopplung bleibt erhalten');
+}
+async function cancelCandidate(journal,override){
+  const body=await deviceRequest(candidate(journal),{
+    action:'cancel',code:journal.code,proposedDeviceToken:journal.proposedDeviceToken
+  },'Abbruch der Einrichtung',{override});
+  if(body?.cancelled!==true)throw Error('Abbruch der Einrichtung wurde nicht eindeutig bestätigt');
+}
+
+export async function enrollDevice(endpoint,code,character=null,previewShareUrl=null){
+  const base=secureBridgeEndpoint(endpoint);
+  validateShareUrl(previewShareUrl,base.origin);
+  return withConfigMutation(()=>enrollDeviceLocked(base.href,code,character,previewShareUrl));
+}
+async function enrollDeviceLocked(endpoint,code,character=null,previewShareUrl=null){
+  if(!/^dalton-[A-Za-z0-9_-]{32}$/.test(code))throw Error('Ungültiger Einrichtungscode');
+  const config=await loadConfig();
+  const current=deviceReference(config);
+  let journal=await loadDeviceJournal(current);
+  const requested=character?normalizedName(character).replace(' ','-'):null;
+  if(journal){
+    if(journal.kind!=='enroll'||journal.code!==code||journal.endpoint!==endpoint||journal.character!==requested)
+      throw Error('Eine frühere Geräteverwaltung ist offen. Bitte zuerst fortsetzen oder widerrufen.');
+  }else if(current&&config.enrollmentDigest===codeDigest(code)){
+    if(current.endpoint!==endpoint||requested&&requested!==config.characterSlug)
+      throw Error('Einrichtungscode gehört zu einer anderen Kopplung');
+    const pairing=await claimDevice({code,endpoint,character:requested,previewShareUrl:previewShareUrl??current.previewShareUrl,
+      proposedDeviceToken:current.deviceToken,pairing:config});
+    return {...pairing,deviceToken:current.deviceToken,configFile:configFile()};
+  }else{
+    journal={kind:'enroll',phase:'claim',code,endpoint,character:requested,previewShareUrl:previewShareUrl??null,
+      proposedDeviceToken:'ddv1_'+randomBytes(32).toString('base64url'),previous:current};
+    journal.deviceScope=await readEnrollmentScope(journal);
+    assertConfigDevice(current,deviceReference(await loadConfig()));
+    await saveJournal(journal);
+  }
+  return completeEnrollment(config,current,journal,{endpoint,previewShareUrl});
+}
+async function completeEnrollment(config,current,journal,override){
+  if(journal.kind!=='enroll'||journal.phase==='cancel')
+    throw Error('Ein Widerruf oder Abbruch ist offen. Bitte den begonnenen Vorgang abschließen.');
+  requireKnownOrigin(override,[candidate(journal),journal.previous]);
+  if(!enrollmentIdentityMatches(current,journal))assertConfigDevice(journal.previous,current);
+  const pairing=await claimDevice(journal,override);
+  assertConfigDevice(current,deviceReference(await loadConfig()));
+  if(journal.phase==='claim'){
+    // A cancellation can preserve the previous credential only before this point.
+    const previous=await bindDeviceScope(journal.previous,override);
+    assertConfigDevice(current,deviceReference(await loadConfig()));
+    journal={...journal,phase:'retire',pairing,previous,previewShareUrl:scopedShare(candidate(journal),override)};
+    await saveJournal(journal);
+  }
+  if(journal.phase==='retire'){
+    if(journal.previous)await retireDevice(journal.previous,override);
+    assertConfigDevice(current,deviceReference(await loadConfig()));
+    journal={...journal,phase:'activate'};
+    await saveJournal(journal);
+  }
+  const next={...config,...pairing,deviceToken:journal.proposedDeviceToken,endpoint:journal.endpoint,
+    previewShareUrl:scopedShare(candidate(journal),override)??null,enrollmentDigest:codeDigest(journal.code)};
   delete next.revokedAt;
   const file=await saveConfig(next);
-  await fs.rm(pendingFile,{force:true});
-  return {...body,configFile:file};
+  if(!process.env.DALTON_BRIDGE_INSTALL_LOCK||process.env.DALTON_BRIDGE_KEEP_ENROLLMENT!=='1')
+    await removeJournal();
+  return {...pairing,deviceToken:next.deviceToken,configFile:file};
 }
-async function cancelPendingEnrollment(current,{endpoint=null,previewShareUrl=null}={}){
-  const file=pendingConfigFile();
-  const pending=await readLocalState(file);
-  if(!Object.keys(pending).length)return false;
-  const base=enrollmentEndpoint(pending.endpoint);
-  if(endpoint&&secureBridgeEndpoint(endpoint).origin!==base.origin)throw Error('Ausstehende Einrichtung gehört zu einem anderen HTTPS-Ziel');
-  if(current.deviceToken!==pending.proposedDeviceToken){
-    const cookie=await previewCookie(previewShareUrl??pending.previewShareUrl,base.origin);
-    const response=await fetch(base,{
-      method:'POST',redirect:'error',
-      headers:{'Content-Type':'application/json','User-Agent':'DaltonDashboardBridge/'+VERSION,...(cookie?{Cookie:cookie}:{})},
-      body:JSON.stringify({action:'cancel',code:pending.code,proposedDeviceToken:pending.proposedDeviceToken}),
-      signal:AbortSignal.timeout(15000)
-    });
-    if((await confirmedJson(response,'Abbruch der Einrichtung'))?.cancelled!==true)
-      throw Error('Abbruch der Einrichtung wurde nicht eindeutig bestätigt');
-  }
-  await fs.rm(file,{force:true});
+async function cancelPendingEnrollment(config,override){
+  const current=deviceReference(config);
+  let journal=await loadDeviceJournal(current);
+  if(!journal)return false;
+  if(journal.kind!=='enroll'||!['claim','cancel'].includes(journal.phase))
+    throw Error('Ablösung oder Widerruf wurde begonnen. Bitte fortsetzen oder alle Zugänge widerrufen.');
+  assertConfigDevice(journal.previous,current);
+  requireKnownOrigin(override,[candidate(journal)]);
+  if(!candidate(journal).deviceScope)journal={...journal,deviceScope:await readEnrollmentScope(journal,override,true)};
+  await saveJournal({...journal,phase:'cancel'});
+  await cancelCandidate(journal,override);
+  assertConfigDevice(current,deviceReference(await loadConfig()));
+  await removeJournal();
   return true;
 }
 export async function revokeDevice(config,{endpoint=config.endpoint||process.env.DALTON_SYNC_ENDPOINT||DEFAULT_ENDPOINT,previewShareUrl=config.previewShareUrl||process.env.DALTON_SYNC_PREVIEW_SHARE_URL||null}={}){
-  if(!config?.deviceToken)return {revoked:false,alreadyAbsent:true};
   assertStoredDeviceOrigin(config,endpoint);
   validateShareUrl(previewShareUrl,secureBridgeEndpoint(endpoint).origin);
-  return withConfigMutation(()=>revokeDeviceLocked(config,{endpoint,previewShareUrl}));
-}
-async function revokeDeviceLocked(config,{endpoint,previewShareUrl}){
-  const token=config?.deviceToken;
-  if(!token)return {revoked:false,alreadyAbsent:true};
-  assertStoredDeviceOrigin(config,endpoint);
-  const base=enrollmentEndpoint(endpoint);
-  const sameDevice=value=>value.deviceToken===token&&secureBridgeEndpoint(value.endpoint??DEFAULT_ENDPOINT).origin===base.origin;
-  if(!sameDevice(await loadConfig()))throw Error('Lokale Kopplung wurde inzwischen geändert');
-  const cookie=await previewCookie(previewShareUrl,base.origin);
-  const headers={
-    Authorization:'Device '+token,
-    'Content-Type':'application/json',
-    'User-Agent':'DaltonDashboardBridge/'+VERSION
-  };
-  if(cookie)headers.Cookie=cookie;
-  const response=await fetch(base,{
-    method:'POST',
-    redirect:'error',
-    headers,
-    body:JSON.stringify({action:'revoke'}),
-    signal:AbortSignal.timeout(15000)
+  return withConfigMutation(async()=>{
+    assertConfigDevice(deviceReference(config),deviceReference(await loadConfig()));
+    return revokeDeviceLocked(await loadConfig(),{endpoint,previewShareUrl});
   });
-  // Never discard the only local credential without an explicit positive
-  // acknowledgement from the expected API. 2xx alone is not evidence.
-  const body=await confirmedJson(response,'Widerruf');
-  const confirmed=body&&((body.revoked===true&&body.alreadyRevoked===false)||(body.revoked===false&&body.alreadyRevoked===true));
-  if(!confirmed)throw Error('Widerruf nicht eindeutig bestätigt; lokale Kopplung bleibt erhalten');
-  const current=await loadConfig();
-  // Protect against older, nonparticipating writers as well.
-  if(!sameDevice(current))throw Error('Lokale Kopplung wurde inzwischen geändert; neue Kopplung bleibt erhalten');
-  const clean={...current};
-  delete clean.deviceToken;
-  clean.revokedAt=new Date().toISOString();
-  await saveConfig(clean);
-  return {revoked:true,characterName:config.characterName||null};
+}
+async function revokeDeviceLocked(config,override){
+  const current=deviceReference(config);
+  const open=await loadDeviceJournal(current);
+  if(!open&&!current)return {revoked:false,alreadyAbsent:true};
+  let enrollment=open?.kind==='revoke'?open.enrollment:open;
+  let installed=open?.kind==='revoke'?open.previous:current;
+  const refs=[installed,enrollment?.previous,enrollment&&candidate(enrollment)].filter(Boolean);
+  requireKnownOrigin(override,refs);
+  if(current&&!refs.some(ref=>sameDevice(ref,current)))throw Error('Lokale Kopplung wurde inzwischen geändert');
+  if(enrollment&&!candidate(enrollment).deviceScope)
+    enrollment={...enrollment,deviceScope:await readEnrollmentScope(enrollment,override,true)};
+  installed=await bindDeviceScope(installed,override);
+  if(enrollment?.previous)enrollment={...enrollment,previous:sameDevice(installed,enrollment.previous)
+    ?installed:await bindDeviceScope(enrollment.previous,override)};
+  assertConfigDevice(current,deviceReference(await loadConfig()));
+  // Persist the intent before the first revoke, even for a single active device.
+  // The candidate and both origins stay available after any lost ACK.
+  await saveJournal({kind:'revoke',previous:installed,enrollment});
+  if(enrollment)await cancelCandidate(enrollment,override);
+  const retired=new Set();
+  for(const ref of [installed,enrollment?.previous]){
+    if(!ref)continue;
+    const identity=JSON.stringify([ref.endpoint,ref.deviceScope,ref.deviceToken]);
+    if(retired.has(identity))continue;
+    await retireDevice(ref,override);
+    retired.add(identity);
+  }
+  assertConfigDevice(current,deviceReference(await loadConfig()));
+  if(current){
+    const clean={...config,revokedAt:new Date().toISOString()};
+    delete clean.deviceToken;
+    delete clean.enrollmentDigest;
+    delete clean.deviceId;
+    delete clean.deviceScope;
+    await saveConfig(clean);
+  }
+  await removeJournal();
+  return {revoked:true,characterName:current?.characterName??installed?.characterName??null};
 }
 export async function createEnrollment(endpoint,characterSlug,auth,{previewShareUrl=null}={}){
   if(!auth)throw new Error('Kein berechtigter Hub-Zugang für Einrichtungscodes vorhanden');
@@ -217,8 +382,8 @@ function variablePattern(name){return new RegExp('(?:^|[\\r\\n])\\s*'+name+'\\s*
 // Parse and validate the entire command before reading config, discovering
 // files, fetching preview cookies, or entering any credential-bearing path.
 export function args(argv){
-  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,cancelEnrollment:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:null};
-  const switches=new Map([['--watch','watch'],['--dry-run','dryRun'],['--revoke-device','revokeDevice'],['--cancel-enrollment','cancelEnrollment'],['--promote-production','promoteProduction'],['--help','help']]);
+  const out={watch:false,dryRun:false,file:null,enroll:null,createEnroll:null,revokeDevice:false,cancelEnrollment:false,resumeEnrollment:false,finishInstall:false,promoteProduction:false,character:null,previewShareUrl:null,endpointProvided:false,endpoint:null};
+  const switches=new Map([['--watch','watch'],['--dry-run','dryRun'],['--revoke-device','revokeDevice'],['--cancel-enrollment','cancelEnrollment'],['--resume-enrollment','resumeEnrollment'],['--finish-install','finishInstall'],['--promote-production','promoteProduction'],['--help','help']]);
   const values=new Map([['--file','file'],['--endpoint','endpoint'],['--enroll','enroll'],['--create-enroll','createEnroll'],['--character','character'],['--preview-share-url','previewShareUrl']]);
   const seen=new Set();
   for(let i=0;i<argv.length;i++){
@@ -232,13 +397,14 @@ export function args(argv){
     out[values.get(flag)]=value;
     if(flag==='--endpoint')out.endpointProvided=true;
   }
-  const management=[out.enroll,out.createEnroll,out.revokeDevice,out.cancelEnrollment,out.promoteProduction].filter(Boolean).length;
+  const management=[out.enroll,out.createEnroll,out.revokeDevice,out.cancelEnrollment,out.resumeEnrollment,out.finishInstall,out.promoteProduction].filter(Boolean).length;
   if(out.dryRun&&management)throw Error('--dry-run kann nicht mit Geräteverwaltung kombiniert werden');
   if(management>1)throw Error('Nur ein Geräteverwaltungsbefehl gleichzeitig erlaubt');
   if(management&&(out.watch||out.file))throw Error('Geräteverwaltung kann nicht mit Sync-Optionen kombiniert werden');
   if(out.character&&!out.enroll)throw Error('--character ist nur bei --enroll erlaubt');
   if(out.help&&seen.size>1)throw Error('--help muss allein stehen');
   if(out.help)return out;
+  if(out.finishInstall&&(seen.size!==1||!process.env.DALTON_BRIDGE_INSTALL_LOCK))throw Error('Installationsabschluss erfordert die Installationssperre');
   if(out.promoteProduction)throw Error('Automatische Geräteübernahme deaktiviert. Bitte einen regulären Einrichtungscode für die Produktionsumgebung verwenden.');
   if(out.enroll&&!/^dalton-[A-Za-z0-9_-]{32}$/.test(out.enroll))throw Error('Ungültiger Einrichtungscode');
   if(out.createEnroll&&!TRUSTED_SLUGS.has(out.createEnroll))throw Error('Unbekannter Dalton-Charakter');
@@ -281,6 +447,7 @@ function help(){
   console.log('  node scripts/dalton-sync-client.mjs --create-enroll <character-slug>   # nur Administrator');
   console.log('  node scripts/dalton-sync-client.mjs --revoke-device                    # Gerätezugang widerrufen');
   console.log('  node scripts/dalton-sync-client.mjs --cancel-enrollment                # offene Einrichtung abbrechen');
+  console.log('  node scripts/dalton-sync-client.mjs --resume-enrollment                # offene Einrichtung fortsetzen');
   console.log('  Produktionskopplung: regulären Einrichtungscode der Zielumgebung verwenden.');
   console.log('');
   console.log('Synchronisiert Coles eigenen Datensatz und das ingame empfangene Dalton-Relay-Postfach.');
@@ -543,29 +710,45 @@ export async function postPayload(endpoint,auth,payload,{cookie=null}={}){
 export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}){
   const options=args(argv);
   if(options.help){help();return}
-  if(options.enroll||options.revokeDevice||options.cancelEnrollment){
+  if(options.enroll||options.revokeDevice||options.cancelEnrollment||options.resumeEnrollment||options.finishInstall){
     return withConfigMutation(async()=>{
       const config=await readConfig();
+      if(options.enroll){
+        const target=resolveBridgeTarget(options,config);
+        const enrolled=await enrollDeviceLocked(target.endpoint,options.enroll,options.character,target.previewShareUrl);
+        reportEnrollment(enrolled);
+        return;
+      }
+      const current=deviceReference(config);
+      const journal=await loadDeviceJournal(current);
+      if(options.finishInstall){
+        if(!current||!config.deviceId||!config.enrollmentDigest||
+          (journal&&(journal.kind!=='enroll'||journal.phase!=='activate'||!enrollmentIdentityMatches(current,journal))))
+          throw Error('Kopplung für die Installation ist nicht bestätigt');
+        if(journal)await removeJournal();
+        return;
+      }
+      const enrollment=journal?.kind==='revoke'?journal.enrollment:journal;
+      const explicitEndpoint=options.endpoint??process.env.DALTON_SYNC_ENDPOINT;
+      const previewShareUrl=options.previewShareUrl??process.env.DALTON_SYNC_PREVIEW_SHARE_URL;
+      const override=explicitEndpoint||previewShareUrl?{
+        endpoint:explicitEndpoint??((options.resumeEnrollment||options.cancelEnrollment)?enrollment?.endpoint:current?.endpoint??enrollment?.endpoint)
+          ??DEFAULT_ENDPOINT,
+        previewShareUrl
+      }:null;
       if(options.cancelEnrollment){
-        const cancelled=await cancelPendingEnrollment(config,{
-          endpoint:options.endpoint??process.env.DALTON_SYNC_ENDPOINT,
-          previewShareUrl:options.previewShareUrl??process.env.DALTON_SYNC_PREVIEW_SHARE_URL
-        });
+        const cancelled=await cancelPendingEnrollment(config,override);
         console.log(cancelled?'Offene Einrichtung aufgelöst.':'Keine offene Einrichtung vorhanden.');
         return;
       }
-      const target=resolveBridgeTarget(options,config);
-      if(options.enroll){
-        const enrolled=await enrollDeviceLocked(target.endpoint,options.enroll,options.character,target.previewShareUrl);
-        console.log('Bridge gekoppelt: '+String(enrolled.characterName||enrolled.characterSlug));
-        console.log('Konfiguration: '+enrolled.configFile);
-      }else{
-        assertStoredDeviceOrigin(config,target.endpoint);
-        await cancelPendingEnrollment(config);
-        const result=await revokeDeviceLocked(config,target);
-        if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
-        else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));
+      if(options.resumeEnrollment){
+        if(!journal)throw Error('Keine offene Einrichtung vorhanden');
+        reportEnrollment(await completeEnrollment(config,current,journal,override));
+        return;
       }
+      const result=await revokeDeviceLocked(config,override);
+      if(result.alreadyAbsent)console.log('Kein aktiver Gerätezugang vorhanden.');
+      else console.log('Gerätezugang widerrufen: '+String(result.characterName||'Dalton-Gerät'));
     });
   }
   const config=await readConfig();
@@ -656,6 +839,10 @@ export async function main(argv=process.argv.slice(2),{readConfig=loadConfig}={}
   const close=()=>{for(const watcher of watchers)watcher.close();process.exit(0)};
   process.on('SIGINT',close);
   process.on('SIGTERM',close);
+}
+function reportEnrollment(enrolled){
+  console.log('Bridge gekoppelt: '+enrolled.characterName);
+  console.log('Konfiguration: '+enrolled.configFile);
 }
 const invokedDirectly=import.meta.main===true||(Boolean(process.argv[1])&&import.meta.url===pathToFileURL(process.argv[1]).href);
 if(invokedDirectly){

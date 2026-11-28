@@ -14,12 +14,8 @@ if [[ ! -f "$SOURCE" ]]; then
   exit 1
 fi
 
-printf "Einrichtungscode: "
+printf "Einrichtungscode (leer lassen, um eine offene Installation fortzusetzen): "
 read -r CODE
-if [[ -z "$CODE" ]]; then
-  echo "Kein Einrichtungscode angegeben."
-  exit 1
-fi
 
 TARGET_DIR="$HOME/Library/Application Support/DaltonDashboardBridge"
 TARGET="$TARGET_DIR/DaltonDashboardBridge"
@@ -44,7 +40,11 @@ mkdir -p "$TARGET_DIR"
 cp "$SOURCE" "$STAGED"
 chmod 700 "$STAGED"
 xattr -d com.apple.quarantine "$STAGED" >/dev/null 2>&1 || true
-DALTON_BRIDGE_INSTALL_LOCK="$OWNER" "$STAGED" --enroll "$CODE"
+if [[ -n "$CODE" ]]; then
+  DALTON_BRIDGE_INSTALL_LOCK="$OWNER" DALTON_BRIDGE_KEEP_ENROLLMENT=1 "$STAGED" --enroll "$CODE"
+else
+  DALTON_BRIDGE_INSTALL_LOCK="$OWNER" DALTON_BRIDGE_KEEP_ENROLLMENT=1 "$STAGED" --resume-enrollment
+fi
 mv -f "$STAGED" "$TARGET"
 if [[ -f "$UNINSTALL_SOURCE" ]]; then
   cp "$UNINSTALL_SOURCE" "$UNINSTALL_TARGET"
@@ -83,6 +83,7 @@ EOF
 launchctl bootout "gui/$(id -u)" "$PLIST" >/dev/null 2>&1 || true
 launchctl bootstrap "gui/$(id -u)" "$PLIST"
 launchctl kickstart -k "gui/$(id -u)/de.dalton.dashboard.bridge"
+DALTON_BRIDGE_INSTALL_LOCK="$OWNER" "$TARGET" --finish-install
 
 echo ""
 echo "Dalton Dashboard Bridge ist eingerichtet."

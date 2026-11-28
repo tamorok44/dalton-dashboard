@@ -419,6 +419,9 @@ try{
      return panel;
    }
    const pal=await showTalent(2,105330);
+   const unopened=page.locator('#qa-class-8-panel-talents');
+   assert.equal(await unopened.getAttribute('data-mounted'),null,'Fetching the catalog must not mount another character’s tab');
+   assert.equal(await unopened.locator(':scope > *').count(),0,'Unopened talent tabs stay empty once the catalog has arrived');
    assert.ok((await pal.locator('.talent-node-detail').innerText()).includes('60 Minuten'));
    assert.ok((await pal.locator('.workshop-credit').innerText()).includes('Zephras'));
    const hunt=await showTalent(3,104964);
