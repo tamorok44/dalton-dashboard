@@ -264,7 +264,7 @@ try{
     assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
     await assert.rejects(main(['--create-enroll','dolly-dalton'],{readConfig}),/fixture request stopped/);
     assert.deepEqual(calls.pop(),{url:'https://env.invalid/api/addon-device-enroll',auth:'Bearer synthetic-explicit-master'});
-    await assert.rejects(main(['--enroll','synthetic-invite','--endpoint',selected],{readConfig}),/fixture request stopped/);
+    await assert.rejects(main(['--enroll','dalton-'+'A'.repeat(32),'--endpoint',selected],{readConfig}),/fixture request stopped/);
     assert.deepEqual(calls.pop(),{url:'https://selected.invalid/api/addon-device-enroll',auth:undefined});
     // Sync path has the same precedence; the explicit master credential may
     // be used for a consciously chosen target, the saved one never travels.
@@ -290,9 +290,12 @@ try{
       ['--enroll','synthetic-invite','--watch'],
       ['--revoke-device','--file','scripts/fixtures/bridge-savedvariables.lua'],
       ['--character','cole-dalton'],['--help','--watch'],
-      ['--dry-run','--dry-run'],['--endpoint',selected,'--endpoint',stored]);
+      ['--dry-run','--dry-run'],['--endpoint',selected,'--endpoint',stored],
+      ['--promote-production'],['--enroll','invalid-short-code'],['--create-enroll','unbekannt'],
+      ['--enroll','dalton-'+'A'.repeat(32),'--character','unknown'],['--endpoint','http://stored.invalid/api/addon-sync'],
+      ['--endpoint',selected,'--preview-share-url','https://foreign.invalid/']);
     for(const argv of malformed){
-      await assert.rejects(main(argv,{readConfig:mustNotRead}),error=>/Argumentwert|Geräteverwaltung|Geräteverwaltungsbefehl|nur bei|allein stehen|mehrfach angegeben/.test(error.message));
+      await assert.rejects(main(argv,{readConfig:mustNotRead}),error=>/Argumentwert|Geräteverwaltung|Geräteverwaltungsbefehl|nur bei|allein stehen|mehrfach angegeben|deaktiviert|Ungültiger Einrichtungscode|Unbekannter Dalton-Charakter|HTTPS/.test(error.message));
     }
     assert.equal(configReads,0);
     assert.equal(calls.length,0,'Malformed invocation must never fetch');
@@ -302,5 +305,74 @@ try{
   }finally{
     globalThis.fetch=before;
     for(const [k,v] of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+  }
+}
+
+
+// Actual separate CLI processes, isolated home and intercepted transport.
+// Hold the old revoke at its HTTP response, race an enroll, then retry it.
+{
+  const {mkdtemp,writeFile,readFile,mkdir,rm,access}=await import('node:fs/promises');
+  const {tmpdir,platform}=await import('node:os');
+  const {join,dirname,resolve}=await import('node:path');
+  const {spawn}=await import('node:child_process');
+  const {setTimeout:delay}=await import('node:timers/promises');
+  const root=await mkdtemp(join(tmpdir(),'dalton-bridge-race-'));
+  const dir=platform()==='win32'?join(root,'DaltonDashboardBridge'):platform()==='darwin'?join(root,'Library','Application Support','DaltonDashboardBridge'):join(root,'dalton-dashboard-bridge');
+  const file=join(dir,'config.json'),entered=join(root,'entered'),release=join(root,'release'),traffic=join(root,'traffic'),preload=join(root,'mock.mjs');
+  const oldToken='ddv1_'+'A'.repeat(43),newToken='ddv1_'+'B'.repeat(43);
+  const target='https://bridge-race.invalid/api/addon-sync';
+  const env={...process.env,HOME:root,USERPROFILE:root,LOCALAPPDATA:root,XDG_CONFIG_HOME:root,BRIDGE_FIXTURE_ROOT:root};
+  for(const key of ['DALTON_SYNC_ENDPOINT','DALTON_SYNC_TOKEN','DALTON_DEVICE_TOKEN','DALTON_SYNC_PREVIEW_SHARE_URL','NODE_OPTIONS'])delete env[key];
+  const children=[];
+  function run(args){
+    const proc=spawn(process.execPath,['--import',preload,resolve('scripts/dalton-sync-client.mjs'),...args],{env,stdio:['ignore','pipe','pipe']});
+    children.push(proc);let output='';
+    proc.stdout.on('data',x=>output+=x);proc.stderr.on('data',x=>output+=x);
+    const done=new Promise((res,rej)=>{proc.on('error',rej);proc.on('close',code=>res({code,output}));});
+    return done;
+  }
+  async function waitFile(path){for(let i=0;i<200;i++){try{await access(path);return;}catch{}await delay(25);}throw Error('Missing fixture barrier');}
+  try{
+    await mkdir(dir,{recursive:true});
+    await writeFile(file,JSON.stringify({endpoint:target,deviceToken:oldToken,characterSlug:'cole-dalton',characterName:'Cole Dalton'}));
+    await writeFile(preload,[
+      "import {appendFile,writeFile,access} from 'node:fs/promises';",
+      "import {join} from 'node:path';",
+      "import {setTimeout as delay} from 'node:timers/promises';",
+      "const root=process.env.BRIDGE_FIXTURE_ROOT;",
+      "globalThis.fetch=async(url,options)=>{",
+      " if(String(url)!=='https://bridge-race.invalid/api/addon-device-enroll')throw Error('Unexpected network destination');",
+      " const body=JSON.parse(options.body);",
+      " if(body.action==='revoke'){",
+      "  if(options.headers.Authorization!=='Device ddv1_"+"A".repeat(43)+"')throw Error('Wrong old credential');",
+      "  await appendFile(join(root,'traffic'),'revoke\\n');",
+      "  await writeFile(join(root,'entered'),'yes');",
+      "  for(let i=0;i<400;i++){try{await access(join(root,'release'));return Response.json({revoked:true});}catch{}await delay(25);}",
+      "  throw Error('Fixture timeout');",
+      " }",
+      " await appendFile(join(root,'traffic'),'enroll\\n');",
+      " return Response.json({deviceToken:'ddv1_"+"B".repeat(43)+"',characterSlug:'cole-dalton',characterName:'Cole Dalton'});",
+      "};"
+    ].join('\n'));
+    const revoke=run(['--revoke-device']);
+    await waitFile(entered);
+    const competing=await run(['--enroll','dalton-'+'C'.repeat(32)]);
+    assert.notEqual(competing.code,0,competing.output);
+    assert.match(competing.output,/Andere Geräteverwaltung/);
+    assert.equal(JSON.parse(await readFile(file,'utf8')).deviceToken,oldToken);
+    assert.equal(await readFile(traffic,'utf8'),'revoke\n','Losing process must not consume invitation');
+    await writeFile(release,'yes');
+    const revoked=await revoke;assert.equal(revoked.code,0,revoked.output);
+    assert.ok(!JSON.parse(await readFile(file,'utf8')).deviceToken);
+    const enrolled=await run(['--enroll','dalton-'+'C'.repeat(32)]);
+    assert.equal(enrolled.code,0,enrolled.output);
+    const final=JSON.parse(await readFile(file,'utf8'));
+    assert.equal(final.deviceToken,newToken);
+    assert.ok(!Object.hasOwn(final,'revokedAt'));
+    assert.equal(await readFile(traffic,'utf8'),'revoke\nenroll\n');
+  }finally{
+    for(const child of children)if(child.exitCode===null)child.kill();
+    await rm(root,{recursive:true,force:true});
   }
 }
