@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {publicCharacterData} from './public-character-profile.mjs';
+import {publicCharacterData,publicQuestCatalog} from './public-character-profile.mjs';
 import handler from '../api/characters.js';
 
 const marker='PRIVATE_TEST_SENTINEL_NOT_PUBLIC';
@@ -7,9 +7,9 @@ const record={generatedAt:'2026-11-27T18:00:00.000Z',internal:marker,characters:
   slug:'cole-dalton',name:'Cole Dalton',classId:8,level:12,player:'QA',
   internal:marker,deviceToken:marker,inventory:{secret:marker},
   scrapeOk:false,scrapeError:marker,
-  stats:{Gesundheit:200,unknown:777},statsByEnum:{HEALTH:200,SECRET:777},
-  statsDetails:[{enum:'HEALTH',name:'Gesundheit',value:200,private:marker}],
-  statsFreshEnums:['HEALTH','SECRET'],statsFreshKeys:['Gesundheit','SECRET'],
+  stats:{Gesundheit:200,Tempowertung:42,'Tempo (Nahkampf)':7,unknown:777},statsByEnum:{HEALTH:200,HASTE:42,MELEEHASTE:7,SECRET:777},
+  statsDetails:[{enum:'HEALTH',name:'Gesundheit',value:200,private:marker},{enum:'HASTE',name:'Tempowertung',value:42},{enum:'MELEEHASTE',name:'Tempo (Nahkampf)',value:7},{enum:'SECRET',name:'unknown',value:777}],
+  statsFreshEnums:['HEALTH','HASTE','MELEEHASTE','SECRET'],statsFreshKeys:['Gesundheit','Tempowertung','Tempo (Nahkampf)','SECRET'],
   equipment:[{id:10,slot:'Kopf',item:'Hut',level:4,internal:marker}],
   professions:[{id:171,name:'Alchemie',current:10,max:75,knownRecipes:[{id:11,name:'Trank',craftedItem:{id:12,name:'Trank',secret:marker},craftedQuantity:{minimum:1,maximum:2,secret:marker},reagents:[{id:13,name:'Kraut',quantity:2,private:marker}],secret:marker}],private:marker}],
   talentDetails:[{id:3,name:'Frost',spentPoints:1,talents:[{id:14,name:'Frost',rank:1,private:marker}],secret:marker}],
@@ -21,8 +21,14 @@ const record={generatedAt:'2026-11-27T18:00:00.000Z',internal:marker,characters:
 const projected=publicCharacterData(record);
 assert.ok(!JSON.stringify(projected).includes(marker));
 assert.equal(projected.characters[0].stats.Gesundheit,200);
-assert.deepEqual(projected.characters[0].statsByEnum,{HEALTH:200});
-assert.deepEqual(projected.characters[0].statsFreshEnums,['HEALTH']);
+assert.deepEqual(projected.characters[0].statsByEnum,{HEALTH:200,HASTE:42,MELEEHASTE:7});
+assert.deepEqual(projected.characters[0].statsFreshEnums,['HEALTH','HASTE','MELEEHASTE']);
+assert.equal(projected.characters[0].stats.Tempowertung,42);
+assert.equal(projected.characters[0].stats['Tempo (Nahkampf)'],7);
+assert.ok(!Object.hasOwn(projected.characters[0].stats,'unknown'));
+assert.ok(projected.characters[0].statsFreshKeys.includes('Tempo (Nahkampf)'));
+const quest={id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z',private:{token:marker},reward:{secret:marker}};
+assert.deepEqual(publicQuestCatalog({'16':quest,'17':{id:16,title:marker},'18':{id:18,title:{secret:marker}}}),{'16':{id:16,title:'Quest',description:'Aufgabe',area:'Stormwind',minimumLevel:5,locale:'de_DE',namespace:'static-1-forever-eu',fetchedAt:'2026-11-27T18:00:00Z'},'18':{id:18}});
 assert.equal(projected.characters[0].professions[0].knownRecipes[0].reagents[0].quantity,2);
 assert.equal(projected.characters[0].talentDetails[0].talents[0].rank,1);
 assert.equal(projected.characters[0].hunterPets.active[0].family.slug,'fox');
@@ -40,6 +46,8 @@ try{
     assert.equal(String(url),'https://public-profile-fixture.invalid','never reach real providers');
     const cmd=JSON.parse(options.body);
     if(cmd[0]==='GET'&&cmd[1]==='dalton-dashboard:characters:v1'){reads++;return Response.json({result:JSON.stringify(record)})}
+    if(cmd[0]==='HMGET'&&cmd[1]==='dalton-dashboard:quest-catalog:latest:v1')return Response.json({result:['de_DE:static-1-forever-eu:16']});
+    if(cmd[0]==='HMGET'&&cmd[1]==='dalton-dashboard:quest-catalog:v1')return Response.json({result:[JSON.stringify(quest)]});
     if(cmd[0]==='MGET'||cmd[0]==='HMGET')return Response.json({result:cmd.slice(1).map(()=>null)});
     return Response.json({result:null});
   };
@@ -48,6 +56,10 @@ try{
   assert.equal(res.code,200,JSON.stringify(res.body));
   assert.equal(reads,1);
   assert.ok(!JSON.stringify(res.body).includes(marker),'Actual GET must not leak nested or root private data');
+  assert.equal(res.body.data.characters[0].stats.Tempowertung,42);
+  assert.equal(res.body.data.characters[0].statsByEnum.HASTE,42);
+  assert.equal(res.body.questCatalog['16'].title,'Quest');
+  assert.deepEqual(res.body.questCatalog,publicQuestCatalog({'16':quest}));
   assert.equal(res.body.data.characters[0].knownClassAbilities[0].id,133);
   assert.equal(res.body.data.characters[0].professions[0].knownRecipes[0].craftedItem.id,12);
 }finally{
