@@ -283,6 +283,52 @@ if(!hasRedis){
     const roster=()=>JSON.parse(cli('GET',rosterKey));
     const ids=slug=>roster().characters.find(x=>x.slug===slug).knownClassAbilities.map(x=>x.id).sort((a,b)=>a-b);
     assert.deepEqual(ids('audit-one'),[133]);assert.deepEqual(ids('audit-two'),[133,143]);
+    // G01: a successful HTTP envelope without a Redis result is not a
+    // missing roster. Drive the actual production handlers with a real
+    // isolated Redis database holding two non-bundled profiles.
+    {
+      const {default:manualRefresh}=await import('../api/refresh.js');
+      const {default:legacySpellbook}=await import('../api/spellbook-sync.js');
+      const oldFetch=globalThis.fetch;
+      const envNames=['DALTON_MANUAL_REFRESH_TOKEN','SPELLBOOK_SYNC_TOKEN','BLOB_READ_WRITE_TOKEN','BLOB_STORE_ID','DALTON_PRIVATE_ARCHIVE_TOKEN'];
+      const oldEnv=Object.fromEntries(envNames.map(k=>[k,process.env[k]]));
+      process.env.DALTON_MANUAL_REFRESH_TOKEN='g01-isolated-manual-fixture-token-012345';
+      process.env.SPELLBOOK_SYNC_TOKEN='g01-isolated-legacy-fixture';
+      for(const k of ['BLOB_READ_WRITE_TOKEN','BLOB_STORE_ID','DALTON_PRIVATE_ARCHIVE_TOKEN'])delete process.env[k];
+      const keys=[rosterKey,versionKey,syncKey('audit-one'),syncKey('audit-two'),'dalton-dashboard:pet-rules:v1'];
+      const durable=keys.map(k=>cli('GET',k));
+      const originalKeys=cli('KEYS','*').filter(k=>!k.includes(':lock')&&!k.includes(':cooldown')).sort();
+      const request={method:'POST',headers:{authorization:'Bearer '+process.env.DALTON_MANUAL_REFRESH_TOKEN}};
+      try{
+        for(const envelope of [{},null,[],{result:null},{result:false},{result:0},{result:{}},{result:[]},{result:''},{result:'null'},{result:'{}'}]){
+          let reads=0;
+          globalThis.fetch=async(url,options)=>{
+            assert.equal(String(url),'https://offline-audit.invalid','G01 must never reach an external provider');
+            const cmd=JSON.parse(options.body);
+            if(cmd[0]==='GET'&&cmd[1]===rosterKey){reads++;return Response.json(envelope);}
+            return oldFetch(url,options);
+          };
+          // Isolate rate limiting between independent rejected attempts.
+          cli('DEL','dalton-dashboard:refresh:manual:cooldown');
+          const manual=response();await manualRefresh(request,manual);
+          assert.equal(manual.http,503,JSON.stringify(manual.value));
+          assert.ok(!manual.value.persisted);
+          const legacy=response();await legacySpellbook({method:'POST',body:{code:'DALTON1|'+process.env.SPELLBOOK_SYNC_TOKEN+'|audit-one|8|12|'+now+'|133:Feuerball:Rang%201'}},legacy);
+          assert.equal(legacy.http,503,JSON.stringify(legacy.value));
+          const sync=await call(payload('Audit One','g01-fault',[133],now+1));
+          assert.equal(sync.http,503,JSON.stringify(sync.value));
+          assert.ok(reads>=3,'All three writers read the same failing authority');
+          assert.deepEqual(keys.map(k=>cli('GET',k)),durable,'No authoritative data or versions may change');
+          assert.deepEqual(cli('KEYS','*').filter(k=>!k.includes(':lock')&&!k.includes(':cooldown')).sort(),originalKeys,'No ancillary durable keys may be introduced');
+          assert.equal(cli('GET',lockKey),null);
+        }
+      }finally{
+        globalThis.fetch=oldFetch;
+        cli('DEL','dalton-dashboard:refresh:manual:cooldown');
+        for(const [k,v] of Object.entries(oldEnv)){if(v===undefined)delete process.env[k];else process.env[k]=v;}
+      }
+      console.log('G01 actual Refresh/legacy/Add-on APIs: malformed Redis envelopes, absent roster and byte-identical persisted records OK');
+    }
     // F11: warm summaries are identical to the authoritative public view,
     // but no large raw payload is read. Legacy newer evidence forces fallback.
     {
