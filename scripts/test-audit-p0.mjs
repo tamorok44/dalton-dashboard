@@ -389,9 +389,16 @@ if(!hasRedis){
       assert.equal(cli('GET',lockKey+':preview-addon'),null);
     }finally{previewRelease();process.env.VERCEL_ENV='production';delete process.env.DALTON_PREVIEW_REDIS_REST_URL;delete process.env.DALTON_PREVIEW_REDIS_REST_TOKEN;delete process.env.DALTON_PRODUCTION_REDIS_ORIGIN;}
     const refreshLock=await acquireRefreshLock();
-    const actualProof={...proof,success:2,total:2,roster:[{slug:'audit-one',id:null},{slug:'audit-two',id:null}]};
+    const actualProof={...proof,generatedAt:new Date(Date.parse(roster().generatedAt)+1).toISOString(),success:2,total:2,roster:[{slug:'audit-one',id:null},{slug:'audit-two',id:null}]};
     const nextRoster={...roster(),generatedAt:actualProof.generatedAt};
     await saveCharacters(nextRoster,refreshLock,{dailyReceipt:actualProof});
+    const unchangedRaw=cli('GET',rosterKey),unchangedMeta=cli('GET',versionKey);
+    await assert.rejects(saveCharacters({...nextRoster,characters:[]},refreshLock),/PROFILE_GENERATION_NOT_ADVANCED/);
+    await assert.rejects(saveCharacters({...nextRoster,generatedAt:new Date(Date.parse(nextRoster.generatedAt)-60003).toISOString()},refreshLock),/PROFILE_GENERATION_NOT_ADVANCED/);
+    const priorState=await loadAddonSyncState('audit-one');
+    const unchangedAddon=cli('GET',syncKey('audit-one'));
+    await assert.rejects(saveAddonSyncState('audit-one',priorState.payload,{lockToken:refreshLock,roster:nextRoster,receipts:priorState.receipts}),/PROFILE_GENERATION_NOT_ADVANCED/);
+    assert.deepEqual([cli('GET',rosterKey),cli('GET',versionKey),cli('GET',syncKey('audit-one'))],[unchangedRaw,unchangedMeta,unchangedAddon],'Rejected generation must not mutate any atomic record');
     await releaseRefreshLock(refreshLock);
     assert.deepEqual(await loadDailyProfileReceipt(day),actualProof);
     mode='drop-lock-reply';
@@ -422,7 +429,7 @@ if(!hasRedis){
     await registerDailySnapshot({date:older,archiveStatus:'disabled'},oldDayLock);
     await releaseDailySnapshotLock(older,oldDayLock);
     assert.equal((await getLastDailySnapshot()).date,newDay);
-    const legacyReceipt={...actualProof,generatedAt:day+'T06:00:00Z'};
+    const legacyReceipt={...actualProof,generatedAt:new Date(Date.parse(actualProof.generatedAt)+1).toISOString()};
     cli('HSET','dalton-dashboard:data-version:meta:v1','daily-profile-refresh',JSON.stringify(legacyReceipt));
     assert.deepEqual(await loadDailyProfileReceipt(day),legacyReceipt);
     // Prepare an offline old-reader projection from both formats and restore
