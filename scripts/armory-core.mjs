@@ -155,14 +155,24 @@ function stats(c) {
     {stats:[...(raw.basic?.primary||[]),...(raw.basic?.secondary||[])]},
     {stats:Array.isArray(raw.overview)?raw.overview:[]}
   ];
-  const byEnum=new Map();
-  for(const group of groups)for(const stat of group.stats||[]) {
+  const observations=new Map();
+  for(const group of groups)for(const stat of Array.isArray(group?.stats)?group.stats:[]) {
     const rawValue=stat?.value?.value;
     const n=typeof rawValue==='number'||typeof rawValue==='string'&&rawValue.trim()?Number(rawValue):NaN;
     const enumKey=typeof stat?.enum==='string'?stat.enum:null;
-    if(!enumKey||!Number.isFinite(n))continue;
-    const prior=byEnum.get(enumKey)||{};
-    byEnum.set(enumKey,{enum:enumKey,value:n,name:localizedStatLabel(stat)||prior.name||null});
+    if(!enumKey)continue;
+    const entry=observations.get(enumKey)||{values:new Set(),names:new Set(),invalid:false};
+    if(Number.isFinite(n))entry.values.add(n);else entry.invalid=true;
+    const label=localizedStatLabel(stat);
+    if(label)entry.names.add(label);
+    observations.set(enumKey,entry);
+  }
+  // An enum is an identity, not a last-writer-wins field. Equal duplicate
+  // observations are harmless; conflicting or invalid observations are stale.
+  const byEnum=new Map(),conflicts=[];
+  for(const [id,entry] of observations){
+    if(entry.invalid||entry.values.size!==1||entry.names.size>1){conflicts.push(id);continue;}
+    byEnum.set(id,{enum:id,value:[...entry.values][0],name:[...entry.names][0]||null});
   }
   const ordered=[
     ...statEnumOrder.filter(key=>byEnum.has(key)).map(key=>byEnum.get(key)),
@@ -172,7 +182,7 @@ function stats(c) {
   return {
     display:Object.fromEntries(details.map(entry=>[entry.name,entry.value])),
     byEnum:Object.fromEntries(ordered.map(entry=>[entry.enum,entry.value])),
-    details
+    details,conflicts:conflicts.sort()
   };
 }
 function gear(c) {
@@ -365,7 +375,7 @@ for(const old of characters){
     const equipmentLanguage=hasOfficialGear?'de':old.equipmentLanguage||'de';
     const equipmentSource=hasOfficialGear?'Blizzard Armory (de-DE)':old.equipmentSource||'Letzter bestätigter deutscher Stand';
     const requiredStatEnums=['HEALTH','MANA','STRENGTH','AGILITY','STAMINA','INTELLECT','CRITICALSTRIKE','SPIRIT'];
-    const statsVerified=requiredStatEnums.every(key=>Number.isFinite(Number(st.byEnum[key])));
+    const statsVerified=st.conflicts.length===0&&requiredStatEnums.every(key=>Number.isFinite(st.byEnum[key]));
     const img=c.media?.['main-raw']?.url;
     const avatar=c.media?.avatar?.url;
     const now=new Date().toISOString();
@@ -419,6 +429,7 @@ for(const old of characters){
       statsDetails,
       statsFreshKeys:statsDetails.filter(entry=>Object.hasOwn(st.byEnum,entry.enum)).map(entry=>entry.name),
       statsFreshEnums:Object.keys(st.byEnum),
+      statsConflictEnums:st.conflicts,
       equipment,
       equipmentLanguage,
       equipmentSource,
