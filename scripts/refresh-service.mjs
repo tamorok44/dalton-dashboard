@@ -1,3 +1,4 @@
+import {nextProfileGeneration} from './version-metadata.mjs';
 import {canonicalRoster} from './daily-roster.mjs';
 import {repairProfessionKnowledge,preserveKnownRecipeDetails} from './profession-knowledge.mjs';
 import {getCachedForeverDbMasterRecipeIndex} from './workshop-store.mjs';
@@ -22,7 +23,7 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   let latest={
     // The distributed writer lock establishes a strict persisted order even
     // when two attempts share a millisecond or a server clock steps back.
-    generatedAt:new Date(Math.max(Date.now(),Date.parse(previous.generatedAt)+1||0)).toISOString(),
+    generatedAt:nextProfileGeneration(previous),
     characters:results.flatMap(r=>r.data.characters).sort((a,b)=>a.name.localeCompare(b.name,'de'))
   };
 
@@ -111,7 +112,10 @@ export async function refreshAndPersist({lockToken,source='manual',archiveMedia=
   if(archiveMedia&&Date.now()-start<35000){
     try{
       archived=await archiveImages(merged,previous);
-      if(archived!==merged)await saveCharacters(archived,lockToken);
+      if(archived!==merged&&JSON.stringify(archived)!==JSON.stringify(merged)){
+        archived={...archived,generatedAt:nextProfileGeneration(merged)};
+        await saveCharacters(archived,lockToken);
+      }else archived=merged;
     }catch(error){
       console.warn('Bildarchiv nicht vollständig:',String(error.message).slice(0,140));
       archived=merged;
